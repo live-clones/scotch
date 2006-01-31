@@ -1,0 +1,6 @@
+This copy of the Scotch 4.0 distribution is licensed to
+you under the terms of the GNU Lesser General Purpose License.
+
+A copy of this license is available in subdirectory "doc", in file
+named "lgpl.txt". Please read its terms carefully. Only if you accept
+them can you use this copy of the Scotch 4.0 distribution.

@@ -1,0 +1,14 @@
+EXE	=
+LIB	= .a
+OBJ	= .o
+
+AR	= ar
+CAT	= cat
+CC	= cc
+CFLAGS	= -Aa -z +DA1.1 +w1 +O4 +Onoinitcheck +Onolimit -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME
+LDFLAGS	= -L../../bin -lm
+CP	= cp
+LEX	= lex
+MV	= mv
+RANLIB	= ranlib
+YACC	= yacc
