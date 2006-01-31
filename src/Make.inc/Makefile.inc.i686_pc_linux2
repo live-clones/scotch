@@ -1,0 +1,14 @@
+EXE	=
+LIB	= .a
+OBJ	= .o
+
+AR	= ar
+CAT	= cat
+CC	= gcc
+CFLAGS	= -O3 -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME
+LDFLAGS	= -L../../bin -lm
+CP	= cp
+LEX	= flex
+MV	= mv
+RANLIB	= ranlib
+YACC	= bison -y
