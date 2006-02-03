@@ -43,7 +43,7 @@ include ../Makefile.inc
 all				:	libcommon$(LIB)
 
 install				:	all
-					-$(CP) common*.h libcommon$(LIB) ../../bin
+					-$(CP) common.h libcommon$(LIB) ../../bin
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB)
