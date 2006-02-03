@@ -1,0 +1,107 @@
+Scotch 4.0 installation instructions
+====================================
+
+
+1) Mandatory tools
+------------------
+
+In order for you to compile Scotch, you must have GNU Make,
+Lex and Yacc installed on your system. There is a possibility
+to install Scotch without having Lex or Yacc, but it may require
+the tuning of sample Flex and Bison (i.e., the GNU equivalents
+of Lex and Yacc) outputs created on a Linux system, which may
+need some tricky work to compile on other systems, because
+of different C library implementations.
+
+To check if GNU Make is installed and is found first, please
+type :
+
+%prompt% make --version
+
+It should read:
+% GNU Make x.xx
+% Copyright (C) 20xx  Free Software Foundation, Inc.
+etc, etc.
+
+Alternatively, if GNU Make is installed but its directory does
+not appear first in the PATH variable that is searched for
+executables, you can try to locate it using the which command :
+
+%prompt% which make
+
+If several occurences of make are found, one might be GNU Make,
+so try to figure out which of them.
+
+To see if lex and yacc are present, type
+%prompt% which lex
+%prompt% which yacc    (or "bison", the GNU flavor of yacc)
+
+If some of these are missing, please :
+- check your path variable (just in case they are located in
+  some unusual place, such as /usr/local/bin, /opt/bin,
+  /opt/local/bin/, /opt/gnu/bin, etc). Tools such as "which",
+  "locate" or "find" may help you find them;
+- ask your system administrator (highly recommended);
+- install a copy of GNU Make of your own (less recommended,
+  please ask your system engineer first). GNU Make is available
+  from the FSF website, at :
+  http://www.gnu.org/software/make/ and
+  http://ftp.gnu.org/pub/gnu/make/
+  A GNU version of lex and yacc is also available from the
+  very same FSF website, at :
+  http://www.gnu.org/software/flex/
+  http://ftp.gnu.org/non-gnu/flex/
+  http://www.gnu.org/software/bison/
+  http://ftp.gnu.org/pub/gnu/bison/ ;
+- use the "last resort" files placed in a directory judiciously
+  called "last_resort", located in subdirectory "src/libscotch".
+  These files are :
+  . parser_ll.c
+  . parser_ly.h
+  . parser_yy.c
+  They should be copied in the directory where object files are
+  created, and "touch"ed so that their modification date is more
+  recent than the ones of the corresponding "parser_ll.l" and
+  "parser_yy.y" files. Then cross your fingers and hope it
+  compiles properly on your system...
+  The Makefile of the libScotch library has been designed so as
+  to copy the last_resort/* files automatically when the lex or
+  yacc tools are not found.
+
+
+2) Configuration
+----------------
+
+Go to the "src/" directory.
+
+Look in the "Make.inc/" subdirectory for a configuration
+file which matches your system configuration. If there
+is none, build a proper one in the "Make.inc/" subdirectory.
+
+Create a symbolic link from the configuration file to the
+current "src/" working directory, renaming it as "Makefile.inc":
+
+%prompt% ln -s Make.inc/Makefile.inc.xxxx_xxx_xxx Makefile.inc
+
+If symbolic links are not available on your system, make a
+plain copy of the file to a file named "Makefile.inc" in the
+current "src/" working directory:
+
+%prompt% cp Make.inc/Makefile.inc.xxxx_xxx_xxx Makefile.inc
+
+
+Then, compile the Scotch distribution by simply typing "make"
+in the current "src/" working directory.
+
+If no error occurs, all of the relevant header, library and
+executable files will be created and copied to the "../bin/"
+directory, relatively to your current "src/" working
+directory.
+
+
+3) Documentation and use
+------------------------
+
+The Scotch user's manual is available in the "doc/" directory.
+It describes how to use the libscotch library as well as the
+standalone programs of the Scotch distribution.
