@@ -43,19 +43,39 @@ all				:	required
 					(cd common ; make all && make install)
 					(cd libscotch ; make all && make install)
 					(cd scotch ; make all && make install)
+					(cd graph ; make all && make install)
+					(cd order ; make all && make install)
+					(cd symbol ; make all && make install)
+					(cd fax ; make all && make install)
+					(cd esmumps ; make all && make install)
 
 long				:	required
 					(cd common ; make -DINT=long all && make install)
 					(cd libscotch ; make -DINT=long all && make install)
 					(cd scotch ; make -DINT=long all && make install)
+					(cd graph ; make -DINT=long all && make install)
+					(cd order ; make -DINT=long all && make install)
+					(cd symbol ; make -DINT=long all && make install)
+					(cd fax ; make -DINT=long all && make install)
+					(cd esmumps ; make -DINT=long all && make install)
 
 clean				:	required
 					(cd common ; make clean)
 					(cd libscotch ; make clean)
 					(cd scotch ; make clean)
+					(cd graph ; make clean)
+					(cd order ; make clean)
+					(cd symbol ; make clean)
+					(cd fax ; make clean)
+					(cd esmumps ; make clean)
 
 realclean			:	required
 					(cd common ; make realclean)
 					(cd libscotch ; make realclean)
 					(cd scotch ; make realclean)
+					(cd graph ; make realclean)
+					(cd order ; make realclean)
+					(cd symbol ; make realclean)
+					(cd fax ; make realclean)
+					(cd esmumps ; make realclean)
 					-$(RM) ../bin/*

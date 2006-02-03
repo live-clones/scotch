@@ -40,10 +40,10 @@ include ../Makefile.inc
 
 .PHONY				:	all
 
-all				:	libcommon$(LIB)
+all				:	libgraph$(LIB)
 
 install				:	all
-					-$(CP) common.h libcommon$(LIB) ../../bin
+					-$(CP) graph.h mesh.h libgraph$(LIB) ../../bin
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB)
@@ -54,22 +54,24 @@ realclean			:	clean
 ##  Todo list.
 ##
 
-common$(OBJ)			:	common.c				\
-					common.h
+graph_build$(OBJ)		:	graph_build.c				\
+					../../bin/common.h			\
+					../../bin/scotch.h			\
+					graph.h
 
-common_error$(OBJ)		:	common_error.c				\
-					common.h
+graph_graph$(OBJ)		:	graph_graph.c				\
+					../../bin/common.h			\
+					../../bin/scotch.h			\
+					graph.h
 
-common_integer$(OBJ)		:	common_integer.c			\
-					common.h				\
-					common_integer.h
+graph_grid$(OBJ)		:	graph_grid.c				\
+					../../bin/common.h			\
+					../../bin/scotch.h			\
+					graph.h					\
+					graph_grid.h
 
-common_memory$(OBJ)		:	common_memory.c				\
-					common.h
-
-libcommon$(LIB)			:	common$(OBJ)				\
-					common_error$(OBJ)			\
-					common_integer$(OBJ)			\
-					common_memory$(OBJ)
+libgraph$(LIB)			:	graph_build$(OBJ)			\
+					graph_graph$(OBJ)			\
+					graph_grid$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(^)
 					-$(RANLIB) $(@)
