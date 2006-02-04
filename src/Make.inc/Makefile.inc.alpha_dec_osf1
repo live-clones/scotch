@@ -2,6 +2,7 @@ EXE	=
 LIB	= .a
 OBJ	= .o
 
+MAKE	= gmake
 AR	= ar
 CAT	= cat
 CC	= cc
