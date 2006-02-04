@@ -78,13 +78,15 @@
 
 #include            <ctype.h>
 #include            <math.h>
-#include            <malloc.h>
 #include            <memory.h>
 #include            <stdio.h>
 #include            <stdarg.h>
 #include            <stdlib.h>
+#ifdef HAVE_MALLOC_H
+#include            <malloc.h>                    /* Deprecated, but required on some old systems */
+#endif /* HAVE_MALLOC_H */
 #include            <string.h>
-#include            <time.h>                     /* For the effective calls to clock () */
+#include            <time.h>                      /* For the effective calls to clock () */
 #include            <limits.h>
 #include            <float.h>
 #include            <sys/types.h>
