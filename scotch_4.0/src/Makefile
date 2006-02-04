@@ -40,22 +40,22 @@ Makefile.inc			:
 include Makefile.inc
 
 all				:	required
-					(cd common ; make all && make install)
-					(cd libscotch ; make all && make install)
-					(cd scotch ; make all && make install)
+					(cd common ;    $(MAKE) all && $(MAKE) install)
+					(cd libscotch ; $(MAKE) all && $(MAKE) install)
+					(cd scotch ;    $(MAKE) all && $(MAKE) install)
 
 long				:	required
-					(cd common ; make -DINT=long all && make install)
-					(cd libscotch ; make -DINT=long all && make install)
-					(cd scotch ; make -DINT=long all && make install)
+					(cd common ;    $(MAKE) -DINT=long all && $(MAKE) install)
+					(cd libscotch ; $(MAKE) -DINT=long all && $(MAKE) install)
+					(cd scotch ;    $(MAKE) -DINT=long all && $(MAKE) install)
 
 clean				:	required
-					(cd common ; make clean)
-					(cd libscotch ; make clean)
-					(cd scotch ; make clean)
+					(cd common ;    $(MAKE) clean)
+					(cd libscotch ; $(MAKE) clean)
+					(cd scotch ;    $(MAKE) clean)
 
 realclean			:	required
-					(cd common ; make realclean)
-					(cd libscotch ; make realclean)
-					(cd scotch ; make realclean)
+					(cd common ;    $(MAKE) realclean)
+					(cd libscotch ; $(MAKE) realclean)
+					(cd scotch ;    $(MAKE) realclean)
 					-$(RM) ../bin/*

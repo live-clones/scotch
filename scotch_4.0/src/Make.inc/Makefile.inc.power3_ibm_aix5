@@ -2,6 +2,7 @@ EXE	=
 LIB	= .a
 OBJ	= .o
 
+MAKE	= gmake
 AR	= ar -X32_64 -ruv
 CAT	= cat
 CC	= xlc
