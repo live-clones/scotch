@@ -1,0 +1,14 @@
+EXE	=
+LIB	= .a
+OBJ	= .o
+
+MAKE	= gmake
+AR	= ar
+ARFLAGS	= -ruv
+CAT	= cat
+CFLAGS	+= -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME
+LDFLAGS	+= -L../../bin -lm
+CP	= cp
+LEX	= flex
+MV	= mv
+RANLIB	= ranlib
