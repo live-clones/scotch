@@ -4,6 +4,7 @@ OBJ	= .o
 
 MAKE	= gmake
 AR	= ar
+ARFLAGS	= ruv
 CAT	= cat
 CC	= cc
 CFLAGS	= -v -O3 -omp -ansi_alias -ansi_args -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME

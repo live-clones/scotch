@@ -4,6 +4,7 @@ OBJ	= .o
 
 MAKE	= gmake
 AR	= ar
+ARFLAGS	= ruv
 CAT	= cat
 CC	= cc
 CFLAGS	= -Aa -z +DA1.1 +w1 +O4 +Onoinitcheck +Onolimit -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME

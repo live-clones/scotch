@@ -4,6 +4,7 @@ OBJ	= .o
 
 MAKE	= gmake
 AR	= ar
+ARFLAGS	= ruv
 CAT	= cat
 CC	= xlc
 CFLAGS	= -n32 -xansi -fullwarn -O2 -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME

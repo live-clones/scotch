@@ -3,10 +3,11 @@ LIB	= .a
 OBJ	= .o
 
 MAKE	= gmake
-AR	= ar -X32_64 -ruv
+AR	= ar
+ARFLAGS	= -X64 -ruv
 CAT	= cat
 CC	= xlc
-CFLAGS	= -ma -q64 -qarch=pwr3 -O3 -qstrict -qtune=pwr3 -s -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME
+CFLAGS	= -ma -q64 -qarch=pwr3 -O3 -qstrict -qtune=pwr3 -qlanglvl=extc99 -s -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME
 LDFLAGS	= -bmaxdata:0x80000000 -L../../bin -lm
 CP	= cp
 LEX	= lex
