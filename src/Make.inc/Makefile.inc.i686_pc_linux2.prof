@@ -4,6 +4,7 @@ OBJ	= .o
 
 MAKE	= gmake
 AR	= ar
+ARFLAGS	= -ruv
 CAT	= cat
 CC	= gcc
 CFLAGS	= -pg -O3 -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED
