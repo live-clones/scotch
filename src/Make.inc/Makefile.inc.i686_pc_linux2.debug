@@ -1,0 +1,17 @@
+EXE	=
+LIB	= .a
+OBJ	= .o
+
+MAKE	= make
+AR	= ar
+ARFLAGS	= -ruv
+CAT	= cat
+CC	= gcc
+CCP     = mpicc
+CFLAGS	= -g -O0 -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL
+LDFLAGS	= -g -L../../bin -lm -lrt
+CP	= cp
+LEX	= flex
+MV	= mv
+RANLIB	= ranlib
+YACC	= bison -y
