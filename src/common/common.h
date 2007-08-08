@@ -19,30 +19,7 @@
 ** write to the Free Software Foundation, Inc.,
 ** 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 **
-** $Id$
-*/
-/* Copyright INRIA 2004
-**
-** This file is part of the Scotch distribution.
-**
-** The Scotch distribution is libre/free software; you can
-** redistribute it and/or modify it under the terms of the
-** GNU Lesser General Public License as published by the
-** Free Software Foundation; either version 2.1 of the
-** License, or (at your option) any later version.
-**
-** The Scotch distribution is distributed in the hope that
-** it will be useful, but WITHOUT ANY WARRANTY; without even
-** the implied warranty of MERCHANTABILITY or FITNESS FOR A
-** PARTICULAR PURPOSE. See the GNU Lesser General Public
-** License for more details.
-**
-** You should have received a copy of the GNU Lesser General
-** Public License along with the Scotch distribution; if not,
-** write to the Free Software Foundation, Inc.,
-** 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
-**
-** $Id$
+** $Id:
 */
 /************************************************************/
 /**                                                        **/
@@ -52,31 +29,22 @@
 /**                Pascal HENON                            **/
 /**                Francois PELLEGRINI                     **/
 /**                Pierre RAMET                            **/
+/**                Cedric CHEVALIER                        **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel direct block solver. **/
 /**                These lines are the common data         **/
 /**                declarations for all modules.           **/
 /**                                                        **/
 /**   DATES      : # Version 0.0  : from : 08 may 1998     **/
-/**                                 to     08 jan 2001     **/
+/**                                 to   : 08 jan 2001     **/
 /**                # Version 1.0  : from : 06 jun 2002     **/
-/**                                 to     06 jun 2002     **/
+/**                                 to   : 06 jun 2002     **/
+/**                # Version 2.0  : from : 13 jun 2005     **/
+/**                                 to   : 27 apr 2006     **/
 /**                                                        **/
 /************************************************************/
 
 #define COMMON_H
-
-/*
-** External symbols
-**
-** Allowed are :
-**
-** - OS selection (Mutually exclusive) :
-**    X_OSDOS        : DOS.
-**    X_OSUNIX       : Generic UNIX :
-**                     X_OSUNIX_BSD : Berkeley UNIX.
-**                     X_OSUNIX_SV  : ATT Sys5 UNIX.
-*/
 
 /*
 ** Machine configuration values.
@@ -84,48 +52,23 @@
 ** `uname -m`, `uname -r`, and `uname -s` commands.
 */
 
-#define X_OSUNIX
-#define X_OSUNIX_SV
-
 #define X_C_RESTRICT
 
-#if (defined X_ARCHpower3_ibm_aix5) || (defined X_ARCHpower3_ibm_aix4) || (defined X_ARCHpower2_ibm_aix4) || (defined X_ARCHpowerPC_ibm_aix5) || (defined X_ARCHpowerPC_ibm_aix4)
+#if (defined X_ARCHpower_ibm_aix)
 #define X_INCLUDE_ESSL
 #undef  X_C_RESTRICT
-#endif /* (defined X_ARCHpower3_ibm_aix5) || (defined X_ARCHpower3_ibm_aix4) || (defined X_ARCHpower2_ibm_aix4) || (defined X_ARCHpowerPC_ibm_aix5) || (defined X_ARCHpowerPC_ibm_aix4) */
-
-#if (defined X_ARCHsparc_sun_sunos3) || (defined X_ARCHsparc_sun_sunos4)
-#undef X_OSUNIX_SV
-#define X_OSUNIX_BSD
-#endif /* (defined X_ARCHsparc_sun_sunos3) || (defined X_ARCHsparc_sun_sunos4) */
+#endif /* (defined X_ARCHpower_ibm_aix) */
 
 /*
 ** Compiler optimizations.
 */
 
-#ifdef X_C_RESTRICT
 #ifdef __GNUC__
 #define restrict                    __restrict
 #endif /* __GNUC__ */
-#else /* X_C_RESTRICT */
+#ifndef /* X_C_RESTRICT */
 #define restrict
 #endif /* X_C_RESTRICT */
-
-/*
-** Debug values.
-*/
-
-#ifdef DEBUG_ALL
-#define DEBUG_COMMON
-#define DEBUG_GRAPH
-#define DEBUG_DOF
-#define DEBUG_MESH
-#define DEBUG_SYMBOL
-#define DEBUG_SCOTCH
-#define DEBUG_ORDER
-#define DEBUG_FAX
-#define DEBUG_BLEND
-#endif /* DEBUG_ALL */
 
 /*
 ** The includes.
@@ -153,6 +96,10 @@
 #include            <essl.h>
 #endif /* X_INCLUDE_ESSL */
 
+#ifdef X_ASSERT
+#include <assert.h>
+#endif /* X_ASSERT */
+
 /*
 **  Working definitions.
 */
@@ -166,31 +113,16 @@
 #define memCpy(dst,src,siz)         memcpy((dst),(src),(siz))
 #define memMov(dst,src,siz)         memmove((dst),(src),(siz))
 
-#define FLAG_ASSERT /*+ not define for final version +*/
+#define MALLOC_ERROR(x)             {printf("error in %s allocation (line=%d,file=%s)\n",x,__LINE__,__FILE__); exit(1);}
 
-#ifdef FLAG_ASSERT
-#include <assert.h>
-#define MPI_PRINT_ERR(x,y) {char s[MPI_MAX_ERROR_STRING];int l;MPI_Error_string(y,s,&l);printf("error in %s (%s)(line=%d,file=%s)\n",x,s,__LINE__,__FILE__); exit(1);}
-#define CALL_MPI err_mpi=
-#define TEST_MPI(x) if (err_mpi!=MPI_SUCCESS) MPI_PRINT_ERR(x,err_mpi)
-#else
-#define CALL_MPI
-#define TEST_MPI(x)
-#endif
-
-#define MIN(x,y) (((x)<(y))?(x):(y))
-#define MAX(x,y) (((x)<(y))?(y):(x))
-
-#define MALLOC_ERROR(x) {printf("error in %s allocation (line=%d,file=%s)\n",x,__LINE__,__FILE__); exit(1);}
-
-#define FALSE 0
-#define TRUE 1
+#define MIN(x,y)                    (((x) < (y)) ? (x) : (y))
+#define MAX(x,y)                    (((x) < (y)) ? (y) : (x))
+#define ABS(x)                      MAX ((x), -(x))
+#define SIGN(x)                     (((x) < 0) ? -1 : 1)
 
 /*
-**  The handling of generic types.
+**  Handling of generic types.
 */
-
-#define byte unsigned char                        /*+ Byte type +*/
 
 #ifdef DOUBLE                                     /*+ If double data type wanted      +*/
 #ifndef FLOAT                                     /*+ If type not overriden           +*/
@@ -208,25 +140,46 @@
 #endif /* FLOAT */
 #endif /* DOUBLE */
 
-#ifndef INT                                       /*+ If type not overriden    +*/
-#define INT int                                   /*+ Generic integer type     +*/
-#define COMM_INT MPI_INT                          /*+ Generic MPI integer type +*/
+#ifndef INT                                       /* If type not overriden        */
+#ifdef LONG                                       /* If long ints not wanted      */
+#define INT long                                  /* Generic integer type to long */
+#else /* LONG */
+#define INT int                                   /* Generic integer type to int */
+#endif /* LONG */
 #endif /* INT */
+#define INT_TYPE_VAL_int            1
+#define INT_TYPE_VAL_long           2
+#define INT_TYPE_EXPAND(t)          (INT_TYPE_EXPAND_TWO(t))
+#define INT_TYPE_EXPAND_TWO(t)      (INT_TYPE_VAL_##t)
+#define INT_TYPE                    (INT_TYPE_EXPAND (INT))
+#ifndef COMM_INT
+#if (INT_TYPE == INT_TYPE_VAL_long)
+#define COMM_INT MPI_LONG                         /* Generic MPI integer type */
+#ifndef INT_MAX
+#define INT_MAX MAXLONG                           /* Hmm, it is an existing macro */
+#endif /* INT_MAX */
+#else /* (INT_TYPE == INT_TYPE_VAL_long) */
+#define COMM_INT MPI_INT                          /*+ Generic MPI integer type +*/
 #ifndef INT_MAX
 #define INT_MAX MAXINT
 #endif /* INT_MAX */
+#endif /* (INT_TYPE == INT_TYPE_VAL_long) */
+#endif /* COMM_INT */
 #ifndef INT_BITS
 #define INT_BITS (sizeof (INT) * 8)
 #endif /* INT_BITS */
 
-/*
-**  The handling of random numbers.
-*/
+#define byte unsigned char                        /* Byte type */
+#ifndef BYTE
+#define BYTE byte
+#endif /* BYTE */
+#ifndef COMM_BYTE
+#define COMM_BYTE MPI_BYTE
+#endif /* COMM_BYTE */
+#define COMM_PART COMM_BYTE
 
-#define RANDOMMAX                   65535        /* To comply with SYSV pseudo-random generators */
-
 /*
-**  The handling of timers.
+**  Handling of timers.
 */
 
 /** The clock type. **/
@@ -236,7 +189,7 @@ typedef struct Clock_ {
 } Clock;
 
 /*
-**  The handling of files.
+**  Handling of files.
 */
 
 /** The file structure. **/
@@ -244,11 +197,11 @@ typedef struct Clock_ {
 typedef struct File_ {
   char *                    name;                 /*+ File name    +*/
   FILE *                    pntr;                 /*+ File pointer +*/
-  char *                    mode;                 /*+ Open mode    +*/
+  char *                    mode;                 /*+ Opening mode +*/
 } File;
 
 /*
-**  The handling of generic BLAS.
+**  Handling of generic BLAS.
 */
 
 #ifdef BLAS_DOUBLE
@@ -296,7 +249,7 @@ typedef struct File_ {
 #endif
 
 /*
-**  The function prototypes.
+**  Function prototypes.
 */
 
 void *                      memAllocGroup       (void **, ...);
@@ -313,11 +266,13 @@ int                         intLoad             (FILE * const, INT * const);
 int                         intSave             (FILE * const, const INT);
 void                        intAscn             (INT * restrict const, const INT, const INT);
 void                        intPerm             (INT * restrict const, const INT);
+void                        intRandReset        (void);
 void                        intRandInit         (void);
 INT                         intRandVal          (INT);
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
 void                        intSort2asc2        (void * const, const INT);
+INT                         intSearchDicho      (const INT * const, const INT, const INT, const INT);
 
 void                        clockInit           (Clock * const);
 void                        clockStart          (Clock * const);
@@ -325,13 +280,8 @@ void                        clockStop           (Clock * const);
 double                      clockVal            (Clock * const);
 double                      clockGet            (void);
 
-void                        dgeam               (char * transa, char * transb, int m, int n, double alpha, double * a, int lda, double * b, int ldb);
-void                        sgeam               (char * transa, char * transb, int m, int n, float alpha, float * a, int lda, float * b, int ldb);
-void                        dgecp               (int m, int n, double * a, int lda, double * b, int ldb);
-void                        sgecp               (int m, int n, float * a, int lda, float * b, int ldb);
-
 /*
-**  The macro definitions.
+**  Macro definitions.
 */
 
 #define clockInit(clk)              ((clk)->time[0]  = (clk)->time[1] = 0)
@@ -339,7 +289,7 @@ void                        sgecp               (int m, int n, float * a, int ld
 #define clockStop(clk)              ((clk)->time[1] += (clockGet () - (clk)->time[0]))
 #define clockVal(clk)               ((clk)->time[1])
 
-#define intRandVal(ival)            ((((ival) <= (RANDOMMAX + 1)) ? (INT) random () : ((INT) (((double) random () * (double) (ival)) / (double) RANDOMMAX))) % (ival))
+#define intRandVal(ival)            ((INT) (((unsigned INT) random ()) % ((unsigned INT) (ival))))
 
 #define FORTRAN(nu,nl,pl,pc)                     \
 void nu pl;                                      \

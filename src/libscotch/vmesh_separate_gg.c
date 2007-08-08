@@ -78,7 +78,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
   VmeshSeparateGgElem *             sepaptr;      /* Head of chained list of elements to re-link                        */
   Gnum * restrict                   permtab;      /* Element permutation table for finding new roots                    */
   Gnum *                            permptr;      /* Pointer to current permutation index                               */
-  uint                              passnum;      /* Number of current pass                                             */
+  INT                               passnum;      /* Number of current pass                                             */
   Gnum                              ecmpsize0;    /* Number of elements in part 0         */
   Gnum                              ncmploaddlt;  /* Current imbalance of bipartition     */
   Gnum                              ncmpload2;    /* Current number of nodes in separator */

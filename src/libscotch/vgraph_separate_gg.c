@@ -86,7 +86,7 @@ const VgraphSeparateGgParam * const paraptr)      /*+ Method parameters +*/
   Gnum * restrict                   permtab;      /* Table for finding new roots          */
   Gnum                              permnum;      /* Current permutation index            */
   Gnum                              fronnum;
-  uint                              passnum;
+  INT                               passnum;
   const byte * restrict             velobax;      /* Data for handling of optional arrays */
   int                               velosiz;
   Gnum                              comploaddlt;
