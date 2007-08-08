@@ -35,7 +35,7 @@
 /**                # Version 3.3  : from : 01 oct 1998     **/
 /**                                 to     31 may 1999     **/
 /**                # Version 4.0  : from : 06 jan 2002     **/
-/**                                 to     31 aug 2005     **/
+/**                                 to     16 feb 2006     **/
 /**                                                        **/
 /************************************************************/
 
@@ -260,11 +260,17 @@ const Strat * restrict const  strat)              /*+ Separation strategy +*/
         return          (1);
       }
 
-      vgraphStoreSave  (grafptr, &savetab[1]);    /* Save initial bipartition           */
-      vgraphSeparateSt (grafptr, strat->data.select.strat[0]); /* Apply first strategy  */
-      vgraphStoreSave  (grafptr, &savetab[0]);    /* Save its result                    */
-      vgraphStoreUpdt  (grafptr, &savetab[1]);    /* Restore initial bipartition        */
-      vgraphSeparateSt (grafptr, strat->data.select.strat[1]); /* Apply second strategy */
+      vgraphStoreSave (grafptr, &savetab[1]);     /* Save initial bipartition                              */
+      if (vgraphSeparateSt (grafptr, strat->data.select.strat[0]) != 0) { /* If first strategy didn't work */
+        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition                           */
+        vgraphStoreSave (grafptr, &savetab[0]);   /* Save it as result                                     */
+      }
+      else {                                      /* First strategy worked       */
+        vgraphStoreSave (grafptr, &savetab[0]);   /* Save its result             */
+        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition */
+      }
+      if (vgraphSeparateSt (grafptr, strat->data.select.strat[1]) != 0) /* If second strategy didn't work */
+        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition as its result            */
 
       if ( (savetab[0].fronnbr <  grafptr->fronnbr) || /* If first strategy is better */
           ((savetab[0].fronnbr == grafptr->fronnbr) &&

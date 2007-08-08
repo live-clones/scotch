@@ -19,7 +19,7 @@
 ** write to the Free Software Foundation, Inc.,
 ** 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 **
-** $Id$
+** $Id: graph_induce.c 71 2006-02-28 16:01:15Z pelegrin $
 */
 /************************************************************/
 /**                                                        **/
@@ -43,7 +43,7 @@
 /**                # Version 3.2  : from : 07 sep 1996     **/
 /**                                 to     17 sep 1998     **/
 /**                # Version 4.0  : from : 28 nov 2001     **/
-/**                                 to     06 jan 2004     **/
+/**                                 to     17 apr 2006     **/
 /**                                                        **/
 /**   NOTES      : # Several algorithms, such as the       **/
 /**                  active graph building routine of      **/
@@ -329,9 +329,7 @@ const Gnum * restrict const   orgindxtax)         /* Array of numbers of selecte
     size_t              indedlooftval;            /* Offset of edge load array with respect to edge array */
 
     indedlooftval = indgrafptr->edlotax - indgrafptr->edgetax;
-    memReallocGroup ((void *) (indgrafptr->edgetax + indgrafptr->baseval),
-                     &indgrafptr->edgetax, (size_t) (indedgenbr          * sizeof (Gnum)),
-                     &indgrafptr->edlotax, (size_t) (indgrafptr->edgenbr * sizeof (Gnum)), NULL);
+    indgrafptr->edgetax  = memRealloc (indgrafptr->edgetax + indgrafptr->baseval, (indedlooftval + indgrafptr->edgenbr) * sizeof (Gnum));
     indgrafptr->edgetax -= indgrafptr->baseval;
     indgrafptr->edlotax  = indgrafptr->edgetax + indedlooftval; /* Use old index into old array as new index */
   }

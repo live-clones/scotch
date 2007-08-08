@@ -48,7 +48,7 @@
 /**                # Version 3.3  : from : 01 dec 1998     **/
 /**                                 to     02 dec 1998     **/
 /**                # Version 4.0  : from : 18 dec 2001     **/
-/**                                 to     31 aug 2004     **/
+/**                                 to     05 may 2006     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,7 +79,7 @@ typedef struct Bgraph_ {
   Gnum                      commgainextn0;        /*+ External gain if all swapped from part 0  +*/
   Anum                      domdist;              /*+ Distance between subdomains               +*/
   Gnum                      domwght[2];           /*+ Weights of the two subdomains             +*/
-  uint                      levlnum;              /*+ Coarsening level (uint since parameter)   +*/
+  INT                       levlnum;              /*+ Coarsening level                          +*/
 } Bgraph;
 
 /*+ The save graph structure. +*/

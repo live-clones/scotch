@@ -19,7 +19,7 @@
 ** write to the Free Software Foundation, Inc.,
 ** 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 **
-** $Id$
+** $Id:
 */
 /************************************************************/
 /**                                                        **/
@@ -29,17 +29,18 @@
 /**                Pascal HENON                            **/
 /**                Francois PELLEGRINI                     **/
 /**                Pierre RAMET                            **/
+/**                Cedric CHEVALIER                        **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel direct block solver. **/
 /**                These lines are the common data         **/
 /**                declarations for all modules.           **/
 /**                                                        **/
 /**   DATES      : # Version 0.0  : from : 08 may 1998     **/
-/**                                 to     08 jan 2001     **/
+/**                                 to   : 08 jan 2001     **/
 /**                # Version 1.0  : from : 06 jun 2002     **/
-/**                                 to     06 jun 2002     **/
-/**                # Version 0.2  : from : 13 jun 2005     **/
-/**                                 to     13 jun 2005     **/
+/**                                 to   : 06 jun 2002     **/
+/**                # Version 2.0  : from : 13 jun 2005     **/
+/**                                 to   : 27 apr 2006     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,9 +52,7 @@
 ** `uname -m`, `uname -r`, and `uname -s` commands.
 */
 
-#ifndef X_C_NORESTRICT
 #define X_C_RESTRICT
-#endif /* X_C_NORESTRICT */
 
 #if (defined X_ARCHpower_ibm_aix)
 #define X_INCLUDE_ESSL
@@ -64,11 +63,10 @@
 ** Compiler optimizations.
 */
 
-#ifdef X_C_RESTRICT
 #ifdef __GNUC__
 #define restrict                    __restrict
 #endif /* __GNUC__ */
-#else /* X_C_RESTRICT */
+#ifndef /* X_C_RESTRICT */
 #define restrict
 #endif /* X_C_RESTRICT */
 
@@ -106,82 +104,79 @@
 **  Working definitions.
 */
 
-#define memAlloc(size)              malloc(size)
+#define memAlloc(size)              malloc((size) | 8) /* For platforms which return NULL for malloc(0) */
 #define memAlloca(size)             alloca(size)
-#define memRealloc(ptr,size)        realloc((ptr),(size))
+#define memRealloc(ptr,size)        realloc((ptr),((size) | 8))
 #define memFree(ptr)                (free ((char *) (ptr)), 0)
-#define memFreea(ptr)               (0)           /* Freeing function in case memAlloca implemented as malloc */
+#define memFreea(ptr)               (0)           /* Freeing function if memAlloca implemented as malloc */
 #define memSet(ptr,val,siz)         memset((ptr),(val),(siz))
 #define memCpy(dst,src,siz)         memcpy((dst),(src),(siz))
 #define memMov(dst,src,siz)         memmove((dst),(src),(siz))
 
-#define MIN(x,y) (((x)<(y))?(x):(y))
-#define MAX(x,y) (((x)<(y))?(y):(x))
+#define MALLOC_ERROR(x)             {printf("error in %s allocation (line=%d,file=%s)\n",x,__LINE__,__FILE__); exit(1);}
 
-#define MALLOC_ERROR(x) {printf("error in %s allocation (line=%d,file=%s)\n",x,__LINE__,__FILE__); exit(1);}
-
-#define FALSE 0
-#define TRUE 1
+#define MIN(x,y)                    (((x) < (y)) ? (x) : (y))
+#define MAX(x,y)                    (((x) < (y)) ? (y) : (x))
+#define ABS(x)                      MAX ((x), -(x))
+#define SIGN(x)                     (((x) < 0) ? -1 : 1)
 
 /*
 **  Handling of generic types.
 */
 
-#define byte unsigned char                        /*+ Byte type +*/
-
-#ifndef FLOAT
-#define DOUBLE
-#endif
-
-#ifdef DOUBLE
-#define BLAS_DOUBLE
-#else
-#define BLAS_FLOAT
-#endif
-
-#ifdef CPLX
-#include <complex.h>
-#define COMM_FLOAT GetMpiType()
-#define COMM_SUM GetMpiSum()
-#ifdef DOUBLE
-#define FLOAT double complex
-#define ABS_FLOAT(x) cabs(x)
-#define BLAS_FLOAT dcmplx
-#else /* DOUBLE */
-#define FLOAT float complex
-#define ABS_FLOAT(x) cabsf(x)
-#define BLAS_FLOAT cmplx
-#endif /* DOUBLE */
-#else /* CPLX */
-#define COMM_SUM MPI_SUM
-#ifdef DOUBLE
-#define FLOAT double
-#define ABS_FLOAT(x) fabs(x)
-#define COMM_FLOAT MPI_DOUBLE
+#ifdef DOUBLE                                     /*+ If double data type wanted      +*/
+#ifndef FLOAT                                     /*+ If type not overriden           +*/
+#define FLOAT double                              /*+ Generic floating-point type     +*/
 #define FLOAT_MAX MAXDOUBLE
+#define BLAS_DOUBLE                               /*+ Sets double BLAS calls          +*/
+#define COMM_FLOAT MPI_DOUBLE                     /*+ Generic MPI floating-point type +*/
+#endif /* FLOAT */
 #else /* DOUBLE */
-#define FLOAT float
+#ifndef FLOAT                                     /*+ If type not overriden           +*/
+#define FLOAT float                               /*+ Generic floating-point type     +*/
 #define FLOAT_MAX MAXFLOAT
-#define ABS_FLOAT(x) fabsf(x)
+#define BLAS_FLOAT                                /*+ Sets float BLAS calls           +*/
+#define COMM_FLOAT MPI_FLOAT                      /*+ Generic MPI floating-point type +*/
+#endif /* FLOAT */
 #endif /* DOUBLE */
-#endif /* CPLX */
 
-#ifdef LONG
-#define INT long
-#define COMM_INT MPI_LONG
-#ifndef INT_MAX
-#define INT_MAX MAXLONG
-#endif /* INT_MAX */
+#ifndef INT                                       /* If type not overriden        */
+#ifdef LONG                                       /* If long ints not wanted      */
+#define INT long                                  /* Generic integer type to long */
 #else /* LONG */
-#define INT int
-#define COMM_INT MPI_INT
+#define INT int                                   /* Generic integer type to int */
+#endif /* LONG */
+#endif /* INT */
+#define INT_TYPE_VAL_int            1
+#define INT_TYPE_VAL_long           2
+#define INT_TYPE_EXPAND(t)          (INT_TYPE_EXPAND_TWO(t))
+#define INT_TYPE_EXPAND_TWO(t)      (INT_TYPE_VAL_##t)
+#define INT_TYPE                    (INT_TYPE_EXPAND (INT))
+#ifndef COMM_INT
+#if (INT_TYPE == INT_TYPE_VAL_long)
+#define COMM_INT MPI_LONG                         /* Generic MPI integer type */
+#ifndef INT_MAX
+#define INT_MAX MAXLONG                           /* Hmm, it is an existing macro */
+#endif /* INT_MAX */
+#else /* (INT_TYPE == INT_TYPE_VAL_long) */
+#define COMM_INT MPI_INT                          /*+ Generic MPI integer type +*/
 #ifndef INT_MAX
 #define INT_MAX MAXINT
 #endif /* INT_MAX */
-#endif /* LONG */
+#endif /* (INT_TYPE == INT_TYPE_VAL_long) */
+#endif /* COMM_INT */
 #ifndef INT_BITS
 #define INT_BITS (sizeof (INT) * 8)
 #endif /* INT_BITS */
+
+#define byte unsigned char                        /* Byte type */
+#ifndef BYTE
+#define BYTE byte
+#endif /* BYTE */
+#ifndef COMM_BYTE
+#define COMM_BYTE MPI_BYTE
+#endif /* COMM_BYTE */
+#define COMM_PART COMM_BYTE
 
 /*
 **  Handling of timers.
@@ -206,7 +201,55 @@ typedef struct File_ {
 } File;
 
 /*
-**  The function prototypes.
+**  Handling of generic BLAS.
+*/
+
+#ifdef BLAS_DOUBLE
+#define AXPY                        daxpy
+#define GEMM                        dgemm
+#define GEMV                        dgemv
+#define GEAM                        dgeam
+#define GECP                        dgecp
+#define SYMM                        gsymm
+#define TRSM                        dtrsm
+#define GEF                         dgef
+#define POF                         dpof
+#define PPF                         dppf
+#define GER                         dger
+#define GETMO                       dgetmo
+#define SYR                         dsyr
+#define SPR                         dspr
+#define SYRK                        dsyrk
+#define COPY                        dcopy
+#define SCAL                        dscal
+#define V_DIV                       dv_div
+#define POTRF                       dpotrf
+#define POTF2                       dpotf2
+#else
+#define AXPY                        saxpy
+#define GEMM                        sgemm
+#define GEMV                        sgemv
+#define GEAM                        sgeam
+#define GECP                        sgecp
+#define SYMM                        ssymm
+#define TRSM                        strsm
+#define GEF                         sgef
+#define POF                         spof
+#define PPF                         sppf
+#define GER                         sger
+#define GETMO                       sgetmo
+#define SYR                         ssyr
+#define SPR                         sspr
+#define SYRK                        ssyrk
+#define COPY                        scopy
+#define SCAL                        sscal
+#define V_DIV                       sv_div
+#define POTRF                       spotrf
+#define POTF2                       spotf2
+#endif
+
+/*
+**  Function prototypes.
 */
 
 void *                      memAllocGroup       (void **, ...);
@@ -229,6 +272,7 @@ INT                         intRandVal          (INT);
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
 void                        intSort2asc2        (void * const, const INT);
+INT                         intSearchDicho      (const INT * const, const INT, const INT, const INT);
 
 void                        clockInit           (Clock * const);
 void                        clockStart          (Clock * const);
@@ -237,7 +281,7 @@ double                      clockVal            (Clock * const);
 double                      clockGet            (void);
 
 /*
-**  The macro definitions.
+**  Macro definitions.
 */
 
 #define clockInit(clk)              ((clk)->time[0]  = (clk)->time[1] = 0)
