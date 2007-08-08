@@ -50,7 +50,7 @@
 /**                # Version 3.4  : from : 01 jun 2001     **/
 /**                                 to     01 jun 2001     **/
 /**                # Version 4.0  : from : 20 dec 2003     **/
-/**                                 to     07 dec 2005     **/
+/**                                 to     05 may 2006     **/
 /**                                                        **/
 /************************************************************/
 
@@ -140,7 +140,7 @@ Bgraph * restrict const           grafptr,        /*+ Active graph      +*/
 const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
 {
   GainTabl * restrict             tablptr;        /* Pointer to gain table                 */
-  uint                            passnbr;        /* Maximum number of passes to go        */
+  INT                             passnbr;        /* Maximum number of passes to go        */
   BgraphBipartFmSave * restrict   savetab;        /* Pointer to move array                 */
   Gnum                            movenbr;        /* Number of uneffective moves done      */
   Gnum                            savenbr;        /* Number of recorded backtrack moves    */

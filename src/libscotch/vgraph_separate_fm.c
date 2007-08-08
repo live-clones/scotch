@@ -130,7 +130,7 @@ Vgraph * restrict const             grafptr,      /*+ Active graph      +*/
 const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 {
   GainTabl * restrict             tablptr;        /* Pointer to gain tables                  */
-  uint                            passnbr;        /* Maximum number of passes to go          */
+  INT                             passnbr;        /* Maximum number of passes to go          */
   Gnum                            movenbr;        /* Number of uneffective moves done        */
   int                             moveflag;       /* Flag set if useful moves made           */
   Gnum                            savenbr;        /* Position of current move                */

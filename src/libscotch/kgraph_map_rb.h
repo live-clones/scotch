@@ -50,7 +50,7 @@
 /**                # Version 3.4  : from : 12 sep 2001     **/
 /**                                 to     06 nov 2001     **/
 /**                # Version 4.0  : from : 29 nov 2003     **/
-/**                                 to     12 feb 2005     **/
+/**                                 to     05 may 2006     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,7 +98,7 @@ typedef struct KgraphMapRbPool_ {
 typedef struct KgraphMapRbJob_ {
   KgraphMapRbPoolLink       poollink;             /*+ Link to job pool ; TRICK : FIRST         +*/
   KgraphMapRbPool *         poolptr;              /*+ Pointer to last/current job pool         +*/
-  uint                      poolflag;             /*+ Flag set if job in pool                  +*/
+  int                       poolflag;             /*+ Flag set if job in pool                  +*/
   Gnum                      prioval;              /*+ Job priority value by policy             +*/
   Gnum                      priolvl;              /*+ Priority level computed for this job     +*/
   ArchDom                   domorg;               /*+ Domain to which the vertices belong      +*/
