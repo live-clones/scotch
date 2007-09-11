@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version P0.2 : from : 02 feb 2000     **/
 /**                                 to   : 02 feb 2000     **/
 /**                # Version 5.0  : from : 20 jul 2005     **/
-/**                                 to   : 18 jul 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,7 +106,7 @@ const Gnum                  flagval)              /* Flags               */
   cheklocval = 0;
   vertloctax =
   edgeloctax = NULL;
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &vertloctax, (size_t) ((vertlocnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
 #ifdef SCOTCH_DEBUG_DGRAPH3
                      &vlblloctax, (size_t) (vertlocnbr       * sizeof (Gnum)),
@@ -115,7 +115,7 @@ const Gnum                  flagval)              /* Flags               */
     errorPrint ("dgraphBuildHcub: out of memory (1)");
     cheklocval = 1;
   }
-  else if (memAllocGroup ((void **)
+  else if (memAllocGroup ((void **) (void *)
                           &edgeloctax, (size_t) (edgelocnbr * sizeof (Gnum)),
                           &edloloctax, (size_t) (edlolocnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("dgraphBuildHcub: out of memory (2)");

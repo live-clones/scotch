@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 06 jan 2002     **/
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.0  : from : 25 jul 2007     **/
-/**                                 to   : 25 jul 2007     **/
+/**                                 to   : 12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,7 +104,7 @@ const HmeshOrderNdParam * const   paraptr)
   nspmeshdat.levlnum     = meshptr->levlnum;
 
   vertnbr = nspmeshdat.m.velmnbr + nspmeshdat.m.vnodnbr;
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                       &nspmeshdat.parttax, (size_t) (vertnbr * sizeof (GraphPart)),
                       &nspmeshdat.frontab, (size_t) (vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hmeshOrderNd: out of memory (1)");

@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                separation strategy.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 07 mar 2006     **/
-/**                                 to   : 03 aug 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -325,7 +325,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     }
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
 
-    if (memAllocGroup ((void**)
+    if (memAllocGroup ((void **) (void *)
                        &partglbtab, (size_t) (2 * coargrafptr->s.vertlocnbr * sizeof (VdgraphSeparateMlPart)),
                        /* Max nbr communications */
                        &requests,   (size_t) (3 * finegrafptr->s.procglbnbr * sizeof (MPI_Request)),
@@ -574,7 +574,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
     memFree (partglbtab);                         /* Free memory group leader */
     if (coargrafptr->s.procglbnbr != 0)
-      memFree ((void*)(coarmulttax + coargrafptr->s.baseval));
+      memFree ((void *) (coarmulttax + coargrafptr->s.baseval));
   }
   else                                            /* No coarse graph provided      */
     vdgraphZero (finegrafptr);                    /* Assign all vertices to part 0 */

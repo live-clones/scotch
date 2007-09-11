@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,8 +46,8 @@
 /**                                 to   : 04 feb 2000     **/
 /**                # Version 4.0  : from : 18 dec 2001     **/
 /**                                 to     19 jan 2004     **/
-/**                # Version 4.0  : from : 04 feb 2007     **/
-/**                                 to     04 feb 2007     **/
+/**                # Version 5.0  : from : 04 feb 2007     **/
+/**                                 to     31 aug 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,44 +77,47 @@ FILE * const                filesrcptr,           /* Topological data */
 FILE * const                filegeoptr,           /* No use           */
 const char * const          dataptr)              /* No use           */
 {
+  char              chalinetab[80];               /* Header line                */
   long              chavertnbr;                   /* Number of vertices         */
   Gnum              chavertnum;                   /* Number of vertex read      */
   long              chaedgenbr;                   /* Number of edges            */
-  int               chaflagnum;                   /* Flag on numeric form       */
+  long              chaflagval;                   /* Flag on numeric form       */
   char              chaflagstr[4];                /* Flag for optional data     */
   char              chabuffcar;                   /* Buffer for line processing */
   Gnum              edgenum;
+  Gnum              edlosum;
   Gnum              vertnum;
   Gnum              velosum;
   Gnum              vlblmax;
   Gnum              degrmax;
 
   do {                                            /* Skip comment lines   */
-    chabuffcar = fgetc (filesrcptr);              /* Read first character */
+    chabuffcar = getc (filesrcptr);               /* Read first character */
     if (chabuffcar == '%') {                      /* If comment line      */
       fscanf (filesrcptr, "%*[^\n]");             /* Purge line           */
-      fgetc  (filesrcptr);                        /* Purge newline        */
+      getc   (filesrcptr);                        /* Purge newline        */
     }
   } while (chabuffcar == '%');
   ungetc (chabuffcar, filesrcptr);
 
-  if (fscanf (filesrcptr, "%ld%ld%*[ \t]",        /* Read graph header */
-              &chavertnbr,
-              &chaedgenbr) < 2) {
+  chaflagval = 0;
+  if ((fscanf (filesrcptr, "%79[^\n]%*[^\n]", &chalinetab) != 1) || /* Read graph header */
+      (sscanf (chalinetab, "%ld%ld%ld",
+               &chavertnbr,
+               &chaedgenbr,
+               &chaflagval) < 2)) {
     errorPrint ("graphGeomLoadChac: bad input (1)");
     return     (1);
   }
+  getc (filesrcptr);                              /* Purge newline (cannot be merged with above fscanf) */
+
   chaflagstr[0] =                                 /* Pre-set flag array */
   chaflagstr[1] =
   chaflagstr[2] =
   chaflagstr[3] = '\0';
-  fscanf (filesrcptr, "%3[0-9]%*[^\n]",           /* Read flag string */
-          chaflagstr);
-  fgetc (filesrcptr);                             /* Purge newline */
-  chaflagnum    = atoi (chaflagstr);
-  chaflagstr[0] = '0' + ((chaflagnum / 100) % 10); /* Set the flags */
-  chaflagstr[1] = '0' + ((chaflagnum / 10)  % 10);
-  chaflagstr[2] = '0' + ((chaflagnum)       % 10);
+  chaflagstr[0] = '0' + ((chaflagval / 100) % 10); /* Set the flags */
+  chaflagstr[1] = '0' + ((chaflagval / 10)  % 10);
+  chaflagstr[2] = '0' + ((chaflagval)       % 10);
 
   grafptr->flagval = GRAPHFREETABS;
   grafptr->baseval = 1;                         /* Chaco graphs are based */
@@ -151,6 +154,7 @@ const char * const          dataptr)              /* No use           */
     velosum = 0;
   }
 
+  edlosum = grafptr->edgenbr;
   if (chaflagstr[2] != '0') {
     if ((grafptr->edlotax = (Gnum *) memAlloc (grafptr->edgenbr * sizeof (Gnum))) == NULL) {
       errorPrint ("graphGeomLoadChac: out of memory (4)");
@@ -158,15 +162,16 @@ const char * const          dataptr)              /* No use           */
       return     (1);
     }
     grafptr->edlotax -= grafptr->baseval;
+    edlosum = 0;
   }
 
   for (vertnum = edgenum = grafptr->baseval, degrmax = vlblmax = 0;
        vertnum < grafptr->vertnnd; vertnum ++) {
     do {                                          /* Skip comment lines   */
-      chabuffcar = fgetc (filesrcptr);            /* Read first character */
+      chabuffcar = getc (filesrcptr);             /* Read first character */
       if (chabuffcar == '%') {                    /* If comment line      */
         fscanf (filesrcptr, "%*[^\n]");           /* Purge line           */
-        fgetc  (filesrcptr);                      /* Purge newline        */
+        getc   (filesrcptr);                      /* Purge newline        */
       }
     } while (chabuffcar == '%');
     ungetc (chabuffcar, filesrcptr);              /* Put character back to filesrcptr */
@@ -193,36 +198,40 @@ const char * const          dataptr)              /* No use           */
     }
     grafptr->verttax[vertnum] = edgenum;          /* Set based edge array index */
 
-    do {                                          /* Read graph edges             */
-      fscanf (filesrcptr, "%*[ \t]");             /* Skip white spaces            */
-      chabuffcar = fgetc (filesrcptr);            /* Read next char               */
-      if (chabuffcar != '\n') {                   /* If line not complete         */
-        ungetc (chabuffcar, filesrcptr);          /* Put character back to stream */
+    while (1) {                                   /* Read graph edges              */
+      fscanf (filesrcptr, "%*[ \t\r]");           /* Skip white spaces except '\n' */
+      chabuffcar = getc (filesrcptr);             /* Read next char                */
+      if (chabuffcar == EOF)                      /* If end of file reached        */
+        chabuffcar = '\n';                        /* Indicate line as complete     */
+      if (chabuffcar == '\n')                     /* Exit loop if line is complete */
+        break;
 
-        if ((intLoad (filesrcptr, &chavertnum) != 1) ||
-            (chavertnum < 1)                         ||
-            (chavertnum > chavertnbr)                ||
-            ((grafptr->edlotax != NULL) &&
-             ((intLoad (filesrcptr, &grafptr->edlotax[edgenum]) != 1) ||
-              (grafptr->edlotax[edgenum] < 1)))) {
-          errorPrint ("graphGeomLoadChac: bad input (4)");
-          graphFree  (grafptr);
-          return     (1);
-        }
-        if (edgenum > (grafptr->edgenbr + grafptr-> baseval)) { /* Test edge array overflow */
-          errorPrint ("graphGeomLoadChac: bad input (5)");
-          graphFree  (grafptr);
-          return     (1);
-        }
-        grafptr->edgetax[edgenum ++] = chavertnum;
+      ungetc (chabuffcar, filesrcptr);            /* Else put character back to stream */
+
+      if ((intLoad (filesrcptr, &chavertnum) != 1) ||
+          (chavertnum < 1)                         ||
+          (chavertnum > chavertnbr)                ||
+          ((grafptr->edlotax != NULL) &&
+           ((intLoad (filesrcptr, &grafptr->edlotax[edgenum]) != 1) ||
+            (edlosum += grafptr->edlotax[edgenum], grafptr->edlotax[edgenum] < 1)))) {
+        errorPrint ("graphGeomLoadChac: bad input (4)");
+        graphFree  (grafptr);
+        return     (1);
       }
-    } while (chabuffcar != '\n');                 /* Till line complete */
+      if (edgenum > (grafptr->edgenbr + grafptr-> baseval)) { /* Test edge array overflow */
+        errorPrint ("graphGeomLoadChac: bad input (5)");
+        graphFree  (grafptr);
+        return     (1);
+      }
+      grafptr->edgetax[edgenum ++] = chavertnum;
+    }
 
     if ((edgenum - grafptr->verttax[vertnum]) > degrmax)
       degrmax = edgenum - grafptr->verttax[vertnum];
   }
   grafptr->verttax[vertnum] = edgenum;            /* Set end of based vertex array */
   grafptr->velosum = velosum;
+  grafptr->edlosum = edlosum;
   grafptr->degrmax = degrmax;
 
   if (grafptr->vlbltax != NULL) {                 /* If graph has labels       */

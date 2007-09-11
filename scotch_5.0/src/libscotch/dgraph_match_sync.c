@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                communications needed.                  **/
 /**                                                        **/
 /**   DATES      : # Version 0.5  : from : 14 sep 2006     **/
-/**                                 to   : 18 jul 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -175,10 +175,10 @@ int                               coarvertmax)    /* Maximum number of matching 
   }
 #endif /* SCOTCH_DETERMINIST */
 
-  if ((memAllocGroup ((void **)
-                      &nonmatequeue.qtab,  (size_t) ((finegraph->vertlocnbr + 1) * sizeof (Gnum)), /* +1 to avoid tail=head when the list is full */
+  if ((memAllocGroup ((void **) (void *)
+                      &nonmatequeue.qtab, (size_t) ((finegraph->vertlocnbr + 1) * sizeof (Gnum)), /* +1 to avoid tail=head when the list is full */
 #ifdef MATCH_ANTICIP
-                      &probatax,    (size_t) (finegraph->vertgstnbr * sizeof (int)),
+                      &probatax,          (size_t) (finegraph->vertgstnbr * sizeof (int)),
 #endif /* MATCH_ANTICIP */
                       NULL) == NULL)) {
     errorPrint ("dgraphMatchSyncDoMatching : out of memory (1)");
@@ -616,18 +616,17 @@ DgraphMatchSyncComm * restrict commptr)
   DgraphMatchSyncMessage * messageforother;
 
   procrcvnbr = finegraph->vertgstnbr - finegraph->vertlocnbr;
-  if ((memAllocGroup ((void **)
-                      &commptr->comsndtab, (size_t) (finegraph->procngbnbr * sizeof (DgraphMatchSyncCommProc)),
-                      &commptr->comrcvtab, (size_t) (finegraph->procngbnbr * sizeof (DgraphMatchSyncCommProc)),
-                      &commptr->requesttab,(size_t) (2 * finegraph->procngbnbr * sizeof (MPI_Request)),
-                      &message,  (size_t) ((procrcvnbr + finegraph->procsndnbr) * sizeof (DgraphMatchSyncMessage)),
-                      &commptr->coarmultgsttab, (size_t) (procrcvnbr * sizeof (DgraphCoarsenMulti)),
-                      &commptr->verttosndtab, (size_t) (finegraph->procglbnbr * sizeof (Gnum*)),
-                      &messageforother, (size_t) ((procrcvnbr) * sizeof (DgraphMatchSyncMessage)),
-                      &commptr->proccoarmulttab, (size_t) (finegraph->procngbnbr * sizeof (DgraphMatchSyncMessage*)),
-                      NULL) == NULL)) {
+  if ((memAllocGroup ((void **) (void *)
+                      &commptr->comsndtab,       (size_t) (finegraph->procngbnbr * sizeof (DgraphMatchSyncCommProc)),
+                      &commptr->comrcvtab,       (size_t) (finegraph->procngbnbr * sizeof (DgraphMatchSyncCommProc)),
+                      &commptr->requesttab,      (size_t) (2 * finegraph->procngbnbr * sizeof (MPI_Request)),
+                      &message,                  (size_t) ((procrcvnbr + finegraph->procsndnbr) * sizeof (DgraphMatchSyncMessage)),
+                      &commptr->coarmultgsttab,  (size_t) (procrcvnbr * sizeof (DgraphCoarsenMulti)),
+                      &commptr->verttosndtab,    (size_t) (finegraph->procglbnbr * sizeof (Gnum*)),
+                      &messageforother,          (size_t) ((procrcvnbr) * sizeof (DgraphMatchSyncMessage)),
+                      &commptr->proccoarmulttab, (size_t) (finegraph->procngbnbr * sizeof (DgraphMatchSyncMessage*)), NULL) == NULL)) {
     errorPrint ("dgraphMatchSyncCommInit: out of memory (1)");
-    return (1);
+    return     (1);
   }
   commptr->coarmultgsttab -= 2;
   commptr->coarmultgstnum = 2;
@@ -1064,7 +1063,7 @@ DgraphMatchSyncQueue * restrict nonmatequeue)
   finevertlastnum = finegraph->procvrttab[finegraph->proclocnum + 1];
   baseval = finegraph->baseval;
 
-  if (memAllocGroup ((void**)
+  if (memAllocGroup ((void **) (void *)
                      &ordertab,  (size_t) (finegraph->procngbnbr     * sizeof (int)),
                      &statustab, (size_t) (finegraph->procngbnbr * 2 * sizeof (MPI_Status)), NULL) == NULL) {
     errorPrint ("dgraphMatchSyncSimpleExchange: out of memory (1)");

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 01 jan 2003     **/
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.0  : from : 29 dec 2006     **/
-/**                                 to     30 jul 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -122,7 +122,7 @@ const HgraphOrderCpParam * const  paraptr)
   finehashmsk = finehashmsk * 4 + 3;              /* Fill hash table at 1/4 of capacity */
 
   if (((finecoartax = (Gnum *) memAlloc (finegrafptr->s.vertnbr * sizeof (Gnum))) == NULL) ||
-      (memAllocGroup ((void **)
+      (memAllocGroup ((void **) (void *)
                       &finehashtab, (size_t) ((finehashmsk + 1)      * sizeof (HgraphOrderCpHash)),
                       &finematetab, (size_t) (finegrafptr->s.degrmax * sizeof (HgraphOrderCpMate)), NULL) == NULL) ||
       ((finehsumtax = (Gnum *) memAlloc (finegrafptr->vnohnbr * sizeof (Gnum))) == NULL)) {
@@ -287,13 +287,13 @@ loop_failed: ;
 
   if (finegrafptr->s.velotax == NULL) {
     if (finegrafptr->s.vertnbr == finegrafptr->vnohnbr) { /* If no halo present */
-      dataptr = memAllocGroup ((void **)
+      dataptr = memAllocGroup ((void **) (void *)
                                &coargrafdat.s.verttax, (size_t) ((coarvertnbr + 1)   * sizeof (Gnum)),
                                &coargrafdat.s.velotax, (size_t) (coarvertnbr         * sizeof (Gnum)), NULL);
       coargrafdat.vnhdtax = coargrafdat.s.verttax + 1;
     }
     else {
-      dataptr = memAllocGroup ((void **)
+      dataptr = memAllocGroup ((void **) (void *)
                                &coargrafdat.s.verttax, (size_t) ((coarvertnbr + 1)   * sizeof (Gnum)),
                                &coargrafdat.vnhdtax,   (size_t) (coargrafdat.vnohnbr * sizeof (Gnum)),
                                &coargrafdat.s.velotax, (size_t) (coarvertnbr         * sizeof (Gnum)), NULL);
@@ -302,14 +302,14 @@ loop_failed: ;
   }
   else {
     if (finegrafptr->s.vertnbr == finegrafptr->vnohnbr) { /* If no halo present */
-      dataptr = memAllocGroup ((void **)
+      dataptr = memAllocGroup ((void **) (void *)
                                &coargrafdat.s.verttax, (size_t) ((coarvertnbr + 1)   * sizeof (Gnum)),
                                &coargrafdat.s.velotax, (size_t) (coarvertnbr         * sizeof (Gnum)),
                                &coarvsiztax,           (size_t) (coarvertnbr         * sizeof (Gnum)), NULL);
       coargrafdat.vnhdtax = coargrafdat.s.verttax + 1;
     }
     else {
-      dataptr = memAllocGroup ((void **)
+      dataptr = memAllocGroup ((void **) (void *)
                                &coargrafdat.s.verttax, (size_t) ((coarvertnbr + 1)   * sizeof (Gnum)),
                                &coargrafdat.vnhdtax,   (size_t) (coargrafdat.vnohnbr * sizeof (Gnum)),
                                &coargrafdat.s.velotax, (size_t) (coarvertnbr         * sizeof (Gnum)),

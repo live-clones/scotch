@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 4.0  : from : 08 feb 2004     **/
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.0  : from : 25 jul 2007     **/
-/**                                 to   : 25 jul 2007     **/
+/**                                 to   : 12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -129,7 +129,7 @@ const HmeshOrderCpParam * restrict const  paraptr)
        finehashmsk = finehashmsk * 2 + 1) ;
   finehashmsk = finehashmsk * 4 + 3;              /* Fill hash table at 1/4 of capacity */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &coarverttax, (size_t) ((coarvertmax + 1)      * sizeof (Gnum)),
                      &coarvsiztax, (size_t) (coarvsizsiz            * sizeof (Gnum)), /* TRICK: if no vertex loads, coarvsiztax points to coarvnodtax */
                      &coarvnlotax, (size_t) (coarvnodmax            * sizeof (Gnum)), /* Only change node weights                                     */

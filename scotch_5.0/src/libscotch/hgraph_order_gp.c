@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 02 oct 1998     **/
 /**                # Version 4.0  : from : 28 jun 2002     **/
 /**                                 to   : 01 dec 2003     **/
+/**                # Version 4.0  : from : 10 sep 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,7 +96,7 @@ const HgraphOrderGpParam * restrict const paraptr)
   Gnum                            ordeval;        /* Current ordering value         */
   Gnum                            ordevnd;        /* End value of ordering          */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
         &queudat.qtab, (size_t) (grafptr->vnohnbr * sizeof (Gnum)),
         &vexxtax,      (size_t) (grafptr->vnohnbr * sizeof (HgraphOrderGpVertex)), NULL) == NULL) {
     errorPrint ("hgraphOrderGp: out of memory");

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,7 +62,7 @@
 /**                # Version 4.0  : from : 16 jan 2004     **/
 /**                                 to     14 nov 2005     **/
 /**                # Version 5.0  : from : 13 sep 2006     **/
-/**                                 to     04 feb 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -135,7 +135,7 @@ FILE * restrict const           stream)
     return     (1);
   }
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &mapptab, (size_t) (mappnbr          * sizeof (MappingLoadMap)),
                      &permtab, (size_t) (mappptr->vertnbr * sizeof (MappingLoadPerm)), NULL) == NULL) {
     errorPrint ("mapLoad: out of memory (2)");

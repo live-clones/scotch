@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 16 sep 2002     **/
 /**                                 to     18 aug 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,7 +104,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
 
   velssiz = (meshptr->m.vnlotax == NULL) ? 0 : meshptr->m.velmnbr; /*  Compute size of vetex load sum array */
   if (((tablptr = gainTablInit (1999999999, VMESHSEPAGGSUBBITS)) == NULL) || /* Use logarithmic array only  */
-      ((vexxtab = (byte *) memAllocGroup ((void **)
+      ((vexxtab = (byte *) memAllocGroup ((void **) (void *)
                              &velxtax, (size_t) (meshptr->m.velmnbr * sizeof (VmeshSeparateGgElem)),
                              &vnoxtax, (size_t) (meshptr->m.vnodnbr * sizeof (VmeshSeparateGgNode)),
                              &velitax, (size_t) (meshptr->m.velmnbr * sizeof (Gnum)),

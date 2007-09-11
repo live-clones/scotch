@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                orderings.                              **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 27 apr 2006     **/
-/**                                 to     03 aug 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -113,7 +113,7 @@ FILE * restrict const         stream)
     Gnum                  vlblnbr;
 
     vlblnbr = (grafptr->vlblloctax != NULL) ? ordeptr->vnodglbnbr : 0;
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
                        &permtab, (size_t) (ordeptr->vnodglbnbr * sizeof (Gnum)),
                        &peritab, (size_t) (ordeptr->vnodglbnbr * sizeof (Gnum)),
                        &vlbltax, (size_t) (vlblnbr             * sizeof (Gnum)), NULL) == NULL) {

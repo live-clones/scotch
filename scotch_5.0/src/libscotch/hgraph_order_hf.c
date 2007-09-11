@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 23 nov 2001     **/
 /**                # Version 4.0  : from : 10 jan 2003     **/
 /**                                 to   : 24 jan 2004     **/
+/**                # Version 5.0  : from : 10 sep 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -112,7 +114,7 @@ const HgraphOrderHfParam * restrict const paraptr)
   if (iwlen < n)                                  /* Prepare to re-use array */
     iwlen = n;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &petab,   (size_t) (n     * sizeof (Gnum)),
                      &iwtab,   (size_t) (iwlen * sizeof (Gnum)),
                      &lentab,  (size_t) (n     * sizeof (Gnum)),
