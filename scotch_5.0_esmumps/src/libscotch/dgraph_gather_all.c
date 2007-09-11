@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                a distributed graph.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 07 feb 2006     **/
-/**                                 to     27 jul 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -170,14 +170,14 @@ const int                     protnum)            /* -1 means allgather */
     vlblnbr = (dgrfptr->vlblloctax != NULL) ? dgrfptr->vertglbnbr : 0;
     edlonbr = (dgrfptr->edloloctax != NULL) ? dgrfptr->edgeglbnbr : 0;
 
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
                        &cgrfptr->verttax, (size_t) ((dgrfptr->vertglbnbr + 1) * sizeof (Gnum)),
                        &cgrfptr->velotax, (size_t) (velonbr                   * sizeof (Gnum)),
                        &cgrfptr->vlbltax, (size_t) (vlblnbr                   * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("dgraphGatherAll2: out of memory (1)");
       cheklocval = 1;
     }
-    else if (memAllocGroup ((void **)
+    else if (memAllocGroup ((void **) (void *)
                             &cgrfptr->edgetax, (size_t) (dgrfptr->edgeglbnbr * sizeof (Gnum)),
                             &cgrfptr->edlotax, (size_t) (edlonbr             * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("dgraphGatherAll2: out of memory (2)");
@@ -195,7 +195,7 @@ const int                     protnum)            /* -1 means allgather */
   }
 
   if (cheklocval == 0) {
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
                        &recvcnttab, (size_t) (dgrfptr->procglbnbr * sizeof (int)), /* Allocated for non-roots too but don't care as these are very small */
                        &recvdsptab, (size_t) (dgrfptr->procglbnbr * sizeof (int)),
                        &vertloctab, (size_t) (vertlocnbr          * sizeof (Gnum)),

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 26 feb 2003     **/
 /**                                 to     06 may 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -358,10 +360,10 @@ printf ("FM Mbal=%ld\n", (long) ncmploaddltmat);
   hashmsk = hashsiz - 1;
 
   if (((tablptr = gainTablInit (meshptr->m.vnlosum, VMESHSEPAFMGAINBITS)) == NULL) ||
-      (memAllocGroup ((void **)
-         &helmtab, (size_t) (hashsiz * sizeof (VmeshSeparateFmElement)),
-         &hnodtab, (size_t) (hashsiz * sizeof (VmeshSeparateFmNode)),
-         &movetab, (size_t) (hashmax * sizeof (VmeshSeparateFmSave)), NULL) == NULL)) {
+      (memAllocGroup ((void **) (void *)
+                      &helmtab, (size_t) (hashsiz * sizeof (VmeshSeparateFmElement)),
+                      &hnodtab, (size_t) (hashsiz * sizeof (VmeshSeparateFmNode)),
+                      &movetab, (size_t) (hashmax * sizeof (VmeshSeparateFmSave)), NULL) == NULL)) {
     if (tablptr != NULL) {
       errorPrint   ("vmeshSeparateFm: out of memory (1)");
       gainTablExit (tablptr);

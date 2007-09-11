@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                ted graph folding function.             **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 23 apr 2006     **/
-/**                                 to   : 06 sep 2006     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,13 +163,13 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
     fldgrafptr->s.proclocnum = fldproclocnum;
     fldgrafptr->s.flagval    = DGRAPHFREETABS | DGRAPHVERTGROUP | DGRAPHEDGEGROUP | DGRAPHFREECOMM; /* For premature freeing on error; do not free vhndloctab as it is grouped with vertloctab */
 
-    if (memAllocGroup ((void **)                  /* Allocate distributed graph private data */
+    if (memAllocGroup ((void **) (void *)         /* Allocate distributed graph private data */
                        &fldvertadjtab, (size_t) (orggrafptr->s.procglbnbr * DGRAPHFOLDCOMMNBR * sizeof (Gnum)),
                        &fldvertdlttab, (size_t) (orggrafptr->s.procglbnbr * DGRAPHFOLDCOMMNBR * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("hdgraphFold2: out of memory (1)");
       cheklocval = 1;
     }
-    if (memAllocGroup ((void **)                  /* Allocate distributed graph private data */
+    if (memAllocGroup ((void **) (void *)         /* Allocate distributed graph private data */
                        &fldgrafptr->s.procdsptab, (size_t) ((fldprocglbnbr + 1) * sizeof (int)),
                        &fldgrafptr->s.proccnttab, (size_t) (fldprocglbnbr       * sizeof (int)),
                        &fldgrafptr->s.procngbtab, (size_t) (fldprocglbnbr       * sizeof (int)),
@@ -200,7 +200,7 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
       }
       fldvelolocnbr = (orggrafptr->s.veloloctax != NULL) ? fldvertlocnbr : 0;
 
-      if (memAllocGroup ((void **)                /* Allocate distributed graph public data */
+      if (memAllocGroup ((void **) (void *)       /* Allocate distributed graph public data */
                          &fldgrafptr->s.vertloctax, (size_t) ((fldvertlocnbr + DGRAPHFOLDCOMMNBR + 1) * sizeof (Gnum)), /* More slots for received vertex arrays  */
                          &fldgrafptr->s.vendloctax, (size_t) (fldvertlocnbr                           * sizeof (Gnum)), /* Vertex end array for non-halo vertices */
                          &fldgrafptr->s.vnumloctax, (size_t) (fldvertlocnbr                           * sizeof (Gnum)),
@@ -212,7 +212,7 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
                fldgrafptr->s.vendloctax -= orggrafptr->s.baseval,
                fldgrafptr->s.vnumloctax -= orggrafptr->s.baseval,
                fldgrafptr->s.veloloctax = ((fldvelolocnbr != 0) ? fldgrafptr->s.veloloctax - orggrafptr->s.baseval : NULL),
-               memAllocGroup ((void **)
+               memAllocGroup ((void **) (void *)
                               &fldgrafptr->s.edgeloctax, (size_t) (fldedgelocsiz            * sizeof (Gnum)),
                               &fldvhalloctax,            (size_t) (orggrafptr->s.edgeglbsmx * sizeof (Gnum)), NULL) == NULL) {
         errorPrint ("hdgraphFold2: out of memory (4)");

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                uncoarsening refinement.                **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 27 nov 2006     **/
-/**                                 to   : 29 may 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -105,7 +105,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   if (orgdistmax < 1)                             /* To simplify algorithm, always at least one layer of vertices around separator */
     orgdistmax = 1;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &queudat.qtab, (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), /* TRICK: no need of "+ 2" for anchor vertices (see below) */
                      &orgdisttax,   (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("bgraphBipartBd: out of memory (1)");
@@ -245,7 +245,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   bndgrafdat.s.vertnnd = bndvertnnd + 2;
 
   bndveexnbr = (orggrafptr->veextax != NULL) ? (bndvertnbr + 2) : 0;
-  if (memAllocGroup ((void **)                    /* Do not allocate vnumtab but keep queudat.qtab instead */
+  if (memAllocGroup ((void **) (void *)           /* Do not allocate vnumtab but keep queudat.qtab instead */
                      &bndgrafdat.s.verttax, (size_t) ((bndvertnbr + 3) * sizeof (Gnum)),
                      &bndgrafdat.s.velotax, (size_t) ((bndvertnbr + 2) * sizeof (Gnum)),
                      &bndveextax,           (size_t) (bndveexnbr       * sizeof (Gnum)),
@@ -269,7 +269,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   else
     bndveextax = NULL;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &bndgrafdat.s.edgetax, (size_t) (bndedgenbr * sizeof (Gnum)),
                      &bndgrafdat.s.edlotax, (size_t) (bndedgenbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("bgraphBipartBd: out of memory (3)");

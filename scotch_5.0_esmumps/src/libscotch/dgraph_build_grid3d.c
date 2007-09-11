@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                graphs.                                 **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 21 jul 2005     **/
-/**                                 to   : 18 jul 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -118,36 +118,38 @@ const Gnum                  rdepth,               /* Third dimension     */
 const int                   distribute)           /* By slices or random */
 {
   Gnum                procngbnum;
-  Gnum                vertglbnbr;    /* Total number of vertices */
-  Gnum                vertlocnbr = 0;    /* Number of local vertices */
+  Gnum                vertglbnbr;                 /* Total number of vertices */
+  Gnum                vertlocnbr;                 /* Number of local vertices */
   Gnum                vertlocnnd;
-  Gnum                vertlocnum = 0;    /* Index of current local vertex (based) */
-  Gnum *              vertloctnd;    /* End of local vertex array             */
-  Gnum *              vertloctax;    /* Array of vertices */
-  Gnum *              vertlocptr;    /* current vertices */
-  Gnum *              vlblloctax;    /* Array of labels */
-  Gnum *              vlbllocptr;    /* Pointer to the current label */
-  Gnum                edgeglbnbr = 0;
+  Gnum                vertlocnum;                 /* Index of current local vertex (based) */
+  Gnum *              vertloctnd;                 /* End of local vertex array             */
+  Gnum *              vertloctax;                 /* Array of vertices                     */
+  Gnum *              vertlocptr;                 /* Current vertices                      */
+  Gnum *              vlblloctax;                 /* Array of labels                       */
+  Gnum *              vlbllocptr;                 /* Pointer to the current label          */
+  Gnum                edgeglbnbr;
   Gnum                edgelocnbr;
   Gnum *              edgeloctax;
   Gnum *              edgelocptr;
   Gnum                edgelocnum;
   Gnum *              edloloctax;
   Gnum *              edlolocptr;
-  Gnum                slicewidth = 0;
-  Gnum                sliceoffset = 0;   /* Beginning of the slice */
-  Gnum                height, width, depth; /* We must have height >= width>= depth */
+  Gnum                slicewidth;
+  Gnum                sliceoffset;                /* Beginning of the slice                */
+  Gnum                height, width, depth;       /* We must have height >= width>= depth  */
   Gnum                swap;
 
   if ((rwidth < 1) || (rheight < 1) || (rdepth < 1)) /* At least one vertex */
     return (1);
 
-  width = rwidth ; height = rheight ; depth = rdepth ;
+  width  = rwidth;
+  height = rheight;
+  depth  = rdepth;
 
   if (height < width) {
-    swap = height;
-    height  = width;
-    width   = swap;
+    swap  = height;
+    height = width;
+    width  = swap;
   }
   if (height < depth) {
     swap   = height;
@@ -155,27 +157,25 @@ const int                   distribute)           /* By slices or random */
     depth  = swap;
   }
   if (width < depth) {
-    swap   = width;
-    width  = depth;
-    depth  = swap;
+    swap  = width;
+    width = depth;
+    depth = swap;
   }
 
-  vertglbnbr = width*height*depth;
-  /* Vertices which have 6 neighboors, thus they are in the Box */
-  edgeglbnbr = width * height * depth * 6;
-  /* Vertices which have only 5 neighboors, on the side of the box */
-  edgeglbnbr -= 2*(width * height + width * depth + height * depth);
+  vertglbnbr  = width * height * depth;
+  edgeglbnbr  = width * height * depth * 6;       /* Vertices which have 6 neighboors, thus they are in the box                          */
+  edgeglbnbr -= 2 * (width * height + width * depth + height * depth);  /* Vertices which have only 5 neighboors, on the side of the box */
 
   if (edgeglbnbr > 6 * vertglbnbr) {
-    fprintf (stderr, "edgeglbnbr = %ld\tedgeglbmax = %ld\n", (long)edgeglbnbr, (long)6 * vertglbnbr);
-    errorPrint ("dgraphBuildGrid3D: internal error (2)");
+    errorPrint ("dgraphBuildGrid3D: internal error (1)");
     return     (1);
   }
 
-#ifdef SCOTCH_DEBUG_DGRAPH2
-  fprintf (stderr, "edgeglbnbr = %ld\tvertglbnbr = %ld\n", (long)edgeglbnbr, (long)vertglbnbr);
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-
+  vertlocnum  =
+  vertlocnbr  =
+  edgelocnbr  =
+  slicewidth  =
+  sliceoffset = 0;
   if ((distribute == DGRAPHBUILDRANDOM) || (height < grafptr->procglbnbr)) {
 
     vertlocnbr = DATASIZE (vertglbnbr, grafptr->procglbnbr, grafptr->proclocnum);
@@ -211,29 +211,25 @@ const int                   distribute)           /* By slices or random */
     fprintf (stderr, "(I) vertlocnbr=%ld\t edgelocnbr=%ld\n", (long)vertlocnbr, (long)edgelocnbr);
   }
   else if (distribute == DGRAPHBUILDSLICES) {
-      slicewidth = height / grafptr->procglbnbr;
-      sliceoffset = slicewidth * (grafptr->proclocnum);
+    slicewidth  = height / grafptr->procglbnbr;
+    sliceoffset = slicewidth * (grafptr->proclocnum);
 
-      if (grafptr->proclocnum == grafptr->procglbnbr - 1) {
-        /* if the last proc */
-        slicewidth += height - grafptr->procglbnbr * slicewidth;
-      }
+    if (grafptr->proclocnum == grafptr->procglbnbr - 1) /* If the last proc */
+      slicewidth += height - grafptr->procglbnbr * slicewidth;
 
-      vertlocnbr = slicewidth * width * depth;
+    vertlocnbr  = slicewidth * width * depth;     /* Vertices which have 6 neighboors, thus they are in the box */
+    edgelocnbr  = width * slicewidth * depth * 6;
+    edgelocnbr -= 2 * (width * slicewidth + depth * slicewidth);
 
-      /* Vertices which have 6 neighboors, thus they are in the Box */
-      edgelocnbr = width * slicewidth * depth * 6;
-      edgelocnbr -= 2*(width*slicewidth + depth*slicewidth);
-
-      if (grafptr->proclocnum == 0)
-        edgelocnbr -= width*depth;
-      if(grafptr->proclocnum == grafptr->procglbnbr - 1)
-        edgelocnbr -= width*depth;
+    if (grafptr->proclocnum == 0)
+      edgelocnbr -= width * depth;
+    if (grafptr->proclocnum == grafptr->procglbnbr - 1)
+      edgelocnbr -= width * depth;
   }
 #ifdef SCOTCH_DEBUG_DGRAPH2
   else {
     errorPrint ("dgraphBuildGrid3D: param error");
-    return (1);
+    return     (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -241,22 +237,20 @@ const int                   distribute)           /* By slices or random */
 
   vertlocnnd = vertlocnbr + baseval;
 
-  if (memAllocGroup ((void **)
-		     &vertloctax, (size_t) ((vertlocnbr + 1) * sizeof (Gnum)), /* +1 to indicate end of array */
-		     &vlblloctax, (size_t) (vertlocnbr * sizeof (Gnum)),
-		     NULL) == NULL) {
+  if (memAllocGroup ((void **) (void *)
+                     &vertloctax, (size_t) ((vertlocnbr + 1) * sizeof (Gnum)), /* +1 to indicate end of array */
+                     &vlblloctax, (size_t) (vertlocnbr       * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("dgraphBuildGrid3D: out of memory (1)");
     return     (1);
   }
-  if (memAllocGroup ((void **)
-		     &edgeloctax, (size_t) (edgelocnbr * sizeof (Gnum)),
-		     &edloloctax, (size_t) (edgelocnbr * sizeof (Gnum)),
-		     NULL) == NULL) {
+  if (memAllocGroup ((void **) (void *)
+                     &edgeloctax, (size_t) (edgelocnbr * sizeof (Gnum)),
+                     &edloloctax, (size_t) (edgelocnbr * sizeof (Gnum)), NULL) == NULL) {
     memFree (vertloctax);
     errorPrint ("dgraphBuildGrid3D: out of memory (2)");
     return     (1);
   }
-/*   if (memAllocGroup ((void **) */
+/*   if (memAllocGroup ((void **) (void *) */
 /* 		     &vlblloctax, (size_t) (vertlocnbr * sizeof (Gnum)), */
 /* 		     NULL) == NULL) { */
 /*     memFree (edgeloctax); */
@@ -276,11 +270,11 @@ const int                   distribute)           /* By slices or random */
     fprintf (stderr, "starting construction\n");
 
     for (vertlocptr = vertloctax + baseval,              /* pointer to current vertex */
-	   vertloctnd = vertloctax + baseval + vertlocnbr, /* pointer limit */
-	   vlbllocptr = vlblloctax + baseval,            /* Pointer to current label  */
-	   edgelocptr = edgeloctax + baseval,            /* Pointer to current edge   */
-	   edgelocnum = baseval,
-	   edlolocptr = edloloctax + baseval;            /* Pointer to weight of current edge */
+         vertloctnd = vertloctax + baseval + vertlocnbr, /* pointer limit */
+         vlbllocptr = vlblloctax + baseval,            /* Pointer to current label  */
+         edgelocptr = edgeloctax + baseval,            /* Pointer to current edge   */
+         edgelocnum = baseval,
+         edlolocptr = edloloctax + baseval;            /* Pointer to weight of current edge */
          vertlocptr < vertloctnd;
          vertlocptr ++, vertlocnum ++, vlbllocptr ++) {  /* Take the next element */
       DgraphBuildGrid3DPoint edgecase[6];
@@ -364,7 +358,7 @@ const int                   distribute)           /* By slices or random */
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (edgelocnum != edgelocnbr + baseval) {
     fprintf (stderr, "edgelocnbr = %ld\tedglocmax= %ld\tedgelocnum = %ld\n", (long)edgelocnbr, (long)vertlocnbr * 6, (long)edgelocnum);
-    errorPrint ("dgraphBuildGrid3D: internal error");
+    errorPrint ("dgraphBuildGrid3D: internal error (3)");
     memFree    (vertloctax + baseval);           /* Free memory group leader */
     return     (1);
   }

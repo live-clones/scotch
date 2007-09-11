@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version P0.2 : from : 11 may 1999     **/
 /**                                 to     02 feb 2000     **/
 /**                # Version 5.0  : from : 04 jul 2005     **/
-/**                                 to   : 03 aug 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -327,7 +327,7 @@ const Dgraph * restrict const grafptr)
   }
 
   edlolocsiz = (grafptr->edloloctax != NULL) ? grafptr->edgeglbsmx : 0;
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &vertngbtab[0], (size_t) (grafptr->vertglbmax * sizeof (Gnum)), /* Send vertex and vertex end arrays, even when they are compact */
                      &vertngbtab[1], (size_t) (grafptr->vertglbmax * sizeof (Gnum)),
                      &vendngbtab[0], (size_t) (grafptr->vertglbmax * sizeof (Gnum)),

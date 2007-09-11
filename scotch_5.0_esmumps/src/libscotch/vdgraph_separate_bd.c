@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                separator in the original graph.        **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 04 mar 2006     **/
-/**                                 to   : 04 sep 2006     **/
+/**                                 to   : 12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -133,7 +133,7 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
   }
 
   cheklocval = 0;                                 /* Assume everything is all right */
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &bandvnumgsttax, (size_t) (grafptr->s.vertgstnbr       * sizeof (Gnum)),
                      &mesgptrtab,     (size_t) (grafptr->s.procngbnbr       * sizeof (Gnum *)),
                      &statsndtab,     (size_t) (grafptr->s.procngbnbr       * sizeof (MPI_Status)),
@@ -305,7 +305,7 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
   bandgrafdat.s.baseval = grafptr->s.baseval;
 
   cheklocval = 0;
-  if (memAllocGroup ((void **)                    /* Allocate distributed graph private data */
+  if (memAllocGroup ((void **) (void *)           /* Allocate distributed graph private data */
                      &bandgrafdat.s.procdsptab, (size_t) ((grafptr->s.procglbnbr + 1) * sizeof (int)),
                      &bandgrafdat.s.proccnttab, (size_t) (grafptr->s.procglbnbr       * sizeof (int)),
                      &bandgrafdat.s.procngbtab, (size_t) (grafptr->s.procglbnbr       * sizeof (int)),
@@ -315,7 +315,7 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
     cheklocval = 1;
   }
   else if (bandgrafdat.s.procvrttab = bandgrafdat.s.procdsptab, /* Graph does not have holes */
-           memAllocGroup ((void **)               /* Allocate distributed graph public data  */
+           memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data  */
                           &bandgrafdat.s.vertloctax, (size_t) ((bandvertlocnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
                           &bandgrafdat.s.vnumloctax, (size_t) (bandvertlocnbr       * sizeof (Gnum)),
                           &bandgrafdat.s.veloloctax, (size_t) (bandvertlocnbr       * sizeof (Gnum)), NULL) == NULL) {

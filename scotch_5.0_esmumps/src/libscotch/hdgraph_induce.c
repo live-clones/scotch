@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                graph subgraph-making functions.        **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 19 apr 2006     **/
-/**                                 to   : 03 aug 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -125,7 +125,7 @@ Hdgraph * restrict const    indgrafptr)
 
   cheklocval =
   chekglbval = 0;
-  if (memAllocGroup ((void **)                    /* Allocate distributed graph private data */
+  if (memAllocGroup ((void **) (void *)           /* Allocate distributed graph private data */
                      &indgrafptr->s.procdsptab, (size_t) ((orggrafptr->s.procglbnbr + 1) * sizeof (int)),
                      &indgrafptr->s.proccnttab, (size_t) (orggrafptr->s.procglbnbr       * sizeof (int)),
                      &indgrafptr->s.procngbtab, (size_t) (orggrafptr->s.procglbnbr       * sizeof (int)),
@@ -134,7 +134,7 @@ Hdgraph * restrict const    indgrafptr)
     errorPrint ("hdgraphInduceList: out of memory (1)");
     cheklocval = 1;
   }
-  else if (memAllocGroup ((void **)               /* Allocate distributed graph public data */
+  else if (memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data */
                           &indgrafptr->s.vertloctax, (size_t) ((indlistnbr + 1) * sizeof (Gnum)), /* Compact vertex array for halo vertices */
                           &indgrafptr->s.vendloctax, (size_t) (indlistnbr       * sizeof (Gnum)), /* Vertex end array for non-halo vertices */
                           &indgrafptr->s.vnumloctax, (size_t) (indlistnbr       * sizeof (Gnum)),
@@ -146,7 +146,7 @@ Hdgraph * restrict const    indgrafptr)
            indgrafptr->s.vendloctax -= orggrafptr->s.baseval,
            indgrafptr->s.vnumloctax -= orggrafptr->s.baseval,
            indgrafptr->s.veloloctax  = ((indvelolocnbr != 0) ? indgrafptr->s.veloloctax - orggrafptr->s.baseval : NULL),
-           memAllocGroup ((void **)
+           memAllocGroup ((void **) (void *)
                           &indgrafptr->s.edgeloctax, (size_t) (indedgelocmax            * sizeof (Gnum)), /* Pre-allocate space for edgeloctab              */
                           &orgindxgsttax,            (size_t) (orggrafptr->s.vertgstnbr * sizeof (Gnum)), /* orgindxgsttab and orgindxhaltab are at the end */
                           &orgindxhaltax,            (size_t) (orggrafptr->vhallocnbr   * sizeof (Gnum)), NULL) == NULL) {

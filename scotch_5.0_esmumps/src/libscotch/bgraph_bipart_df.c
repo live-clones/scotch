@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                  anchor of part 1.                     **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
-/**                                 to     08 jun 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -116,7 +116,7 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
   }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &vexxtax, (size_t) (grafptr->s.vertnbr * sizeof (BgraphBipartDfVertex)),
                      &difotax, (size_t) (grafptr->s.vertnbr * sizeof (float)),
                      &difntax, (size_t) (grafptr->s.vertnbr * sizeof (float)), NULL) == NULL) {

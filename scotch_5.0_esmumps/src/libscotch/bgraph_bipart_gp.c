@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,6 +51,8 @@
 /**                                 to     01 jun 2001     **/
 /**                # Version 4.0  : from : 04 nov 2003     **/
 /**                                 to     27 nov 2006     **/
+/**                # Version 5.0  : from : 10 sep 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,7 +104,7 @@ const BgraphBipartGpParam * const paraptr)        /*+ Method parameters +*/
   if (grafptr->compload0 != grafptr->s.velosum)   /* If not all vertices already in part 0 */
     bgraphZero (grafptr);                         /* Move all graph vertices to part 0     */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &queudat.queutab, (size_t) (grafptr->s.vertnbr * sizeof (Gnum)),
                      &vexxtax,         (size_t) (grafptr->s.vertnbr * sizeof (BgraphBipartGpVertex)), NULL) == NULL) {
     errorPrint ("bgraphBipartGp: out of memory");

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 02 oct 1998     **/
 /**                # Version 4.0  : from : 05 nov 2002     **/
 /**                                 to   : 27 jan 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to   : 12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,7 +94,7 @@ const HmeshOrderGpParam * restrict const  paraptr)
   Gnum                          vnodnbr;          /* Number of vertices found yet   */
   Gnum                          ordeval;          /* Current ordering value         */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
         &queue.qtab, (size_t) ((meshptr->vnohnnd - meshptr->m.baseval)   * sizeof (Gnum)),
         &vexxtax,    (size_t) ((meshptr->m.velmnbr + meshptr->m.vnodnbr) * sizeof (HmeshOrderGpVertex)), NULL) == NULL) {
     errorPrint ("hmeshOrderGp: out of memory");

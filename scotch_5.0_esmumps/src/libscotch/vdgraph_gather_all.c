@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                a distributed Vdgraph.                  **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 29 apr 2006     **/
-/**                                 to     11 may 2006     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -145,9 +145,9 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
     return     (0);
   }
 
-  if (memAllocGroup ((void **)                    /* Allocate tempory arrays to gather separator vertices */
-                     &froncnttab, (size_t) dgrfptr->s.procglbnbr * sizeof (int),
-                     &fronvrttab, (size_t) dgrfptr->s.procglbnbr * sizeof (int), NULL) == NULL) {
+  if (memAllocGroup ((void **) (void *)           /* Allocate tempory arrays to gather separator vertices */
+                     &froncnttab, (size_t) (dgrfptr->s.procglbnbr * sizeof (int)),
+                     &fronvrttab, (size_t) (dgrfptr->s.procglbnbr * sizeof (int)), NULL) == NULL) {
     errorPrint ("vdgraphGatherAll: out of memory (3)");
 #ifndef SCOTCH_DEBUG_VDGRAPH1
     vgraphExit (cgrfptr);

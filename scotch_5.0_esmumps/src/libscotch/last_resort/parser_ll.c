@@ -389,7 +389,7 @@ char *yytext;
 #line 1 "parser_ll.l"
 #define INITIAL 0
 #line 2 "parser_ll.l"
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.

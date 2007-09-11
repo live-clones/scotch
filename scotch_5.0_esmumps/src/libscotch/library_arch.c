@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to     01 nov 2001     **/
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     13 jan 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -161,7 +163,7 @@ const SCOTCH_Num            archnbr)
   }
 
   tgtarchptr    = (Arch *) archptr;
-  tgtarchcmpptr = (ArchCmplt *) (&tgtarchptr->data);
+  tgtarchcmpptr = (ArchCmplt *) (void *) (&tgtarchptr->data);
 
   tgtarchptr->class     = archClass ("cmplt");
   tgtarchcmpptr->numnbr = (Gnum) archnbr;
