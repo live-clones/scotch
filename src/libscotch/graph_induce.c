@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 4.0  : from : 28 nov 2001     **/
 /**                                 to     17 apr 2006     **/
 /**                # Version 5.0  : from : 14 dec 2006     **/
-/**                                 to     06 jun 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /**   NOTES      : # Several algorithms, such as the       **/
 /**                  active graph building routine of      **/
@@ -113,7 +113,7 @@ Graph * restrict const          indgrafptr)
   indvertnbr = indlistptr->vnumnbr;
 
   if (orggrafptr->velotax != NULL) {
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
           &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
           &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)),
           &indgrafptr->velotax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
@@ -123,7 +123,7 @@ Graph * restrict const          indgrafptr)
     indgrafptr->velotax -= indgrafptr->baseval;
   }
   else {
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
           &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
           &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("graphInduceList: out of memory (2)");
@@ -206,7 +206,7 @@ Graph * restrict const        indgrafptr)         /* Pointer to induced subgraph
     indedgenbr *= 2;                              /* Account for edge weights  */
 
   if (orggrafptr->velotax != NULL) {
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
           &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
           &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)),
           &indgrafptr->velotax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
@@ -216,7 +216,7 @@ Graph * restrict const        indgrafptr)         /* Pointer to induced subgraph
     indgrafptr->velotax -= indgrafptr->baseval;
   }
   else {
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
           &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
           &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("graphInducePart: out of memory (2)");

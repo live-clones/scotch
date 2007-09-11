@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 02 jan 2002     **/
 /**                                 to     25 feb 2004     **/
 /**                # Version 5.0  : from : 19 dec 2006     **/
-/**                                 to     06 jun 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,7 +103,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
     void *              dataptr;
 
     if (orggrafptr->s.velotax != NULL) {
-      dataptr = memAllocGroup ((void **)
+      dataptr = memAllocGroup ((void **) (void *)
                                &indgrafptr->s.verttax, (size_t) ((indvertnbr + 1)     * sizeof (Gnum)),
                                &indgrafptr->vnhdtax,   (size_t) ( orglistptr->vnumnbr * sizeof (Gnum)), /* Put closest to beginning of array because no padding after */
                                &indgrafptr->s.velotax, (size_t) ( indvertnbr          * sizeof (Gnum)),
@@ -111,7 +111,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
       indgrafptr->s.velotax -= indgrafptr->s.baseval;
     }
     else {
-      dataptr = memAllocGroup ((void **)
+      dataptr = memAllocGroup ((void **) (void *)
                                &indgrafptr->s.verttax, (size_t) ((indvertnbr + 1)     * sizeof (Gnum)),
                                &indgrafptr->vnhdtax,   (size_t) ( orglistptr->vnumnbr * sizeof (Gnum)),
                                &indgrafptr->s.vnumtax, (size_t) ( indvertnbr          * sizeof (Gnum)), NULL);
@@ -133,7 +133,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
                ? (indvertnbr * orggrafptr->s.degrmax) : orggrafptr->s.edgenbr;
   indedgesiz = (orggrafptr->s.edlotax != NULL) ? indedgenbr * 2 : indedgenbr; /* Account for edge load array size if graph has edge weights */
 
-  if (memAllocGroup ((void **)                    /* If cannot allocate edge arrays with approximation */
+  if (memAllocGroup ((void **) (void *)           /* If cannot allocate edge arrays with approximation */
                      &indedgetab, (size_t) (indedgesiz            * sizeof (Gnum)),
                      &orgindxtax, (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL) {
     indedgenbr = hgraphInduce3 (orggrafptr, orglistptr); /* Count real number of edges */
@@ -141,7 +141,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
     indedgesiz = (orggrafptr->s.edlotax != NULL) ? indedgenbr * 2 : indedgenbr; /* Account for edge load array size if graph has edge weights */
 
     if ((indedgenbr < 0) ||                       /* If cannot compute real number of edges          */
-        (memAllocGroup ((void **)                 /* Or cannot allocate edge arrays with real values */
+        (memAllocGroup ((void **) (void *)        /* Or cannot allocate edge arrays with real values */
                        &indedgetab, (size_t) (indedgesiz            * sizeof (Gnum)),
                        &orgindxtax, (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL)) {
       errorPrint ("hgraphInduceList: out of memory (2)");

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,6 +58,8 @@
 /**                                 to     17 may 1999     **/
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     10 mar 2005     **/
+/**                # Version 5.0  : from : 10 sep 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,7 +108,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &archptr->domverttab, (size_t) (termdommax * sizeof (ArchDecoVert)),
                      &archptr->domdisttab, (size_t) ((((termdommax * (termdommax - 1)) / 2) + 1) * sizeof (Anum)), NULL) == NULL) {
     errorPrint ("archDecoArchBuild: out of memory");

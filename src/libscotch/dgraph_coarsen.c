@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                threads each (3 at this time).          **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 27 jul 2005     **/
-/**                                 to   : 25 jul 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,12 +62,12 @@
 #include "dgraph_coarsen.h"
 #include "dgraph_match.h"
 
-#define DGRAPHCOARSENVERTSND(procnum, procglbnbr) (0*(procglbnbr) + (procnum))
-#define DGRAPHCOARSENVERTRCV(procnum, procglbnbr) (1*(procglbnbr) + (procnum))
-#define DGRAPHCOARSENEDGESND(procnum, procglbnbr) (2*(procglbnbr) + (procnum))
-#define DGRAPHCOARSENEDGERCV(procnum, procglbnbr) (3*(procglbnbr) + (procnum))
-#define DGRAPHCOARSENEDLOSND(procnum, procglbnbr) (4*(procglbnbr) + (procnum))
-#define DGRAPHCOARSENEDLORCV(procnum, procglbnbr) (5*(procglbnbr) + (procnum))
+#define DGRAPHCOARSENVERTSND(procnum, procglbnbr) (0 * (procglbnbr) + (procnum))
+#define DGRAPHCOARSENVERTRCV(procnum, procglbnbr) (1 * (procglbnbr) + (procnum))
+#define DGRAPHCOARSENEDGESND(procnum, procglbnbr) (2 * (procglbnbr) + (procnum))
+#define DGRAPHCOARSENEDGERCV(procnum, procglbnbr) (3 * (procglbnbr) + (procnum))
+#define DGRAPHCOARSENEDLOSND(procnum, procglbnbr) (4 * (procglbnbr) + (procnum))
+#define DGRAPHCOARSENEDLORCV(procnum, procglbnbr) (5 * (procglbnbr) + (procnum))
 
 #ifdef TIME_MEASURE
 static double total_time_coarsen=0.0L;
@@ -163,7 +163,7 @@ const unsigned int                    reqsize)    /*+ Sizeof MPI buffer in match
     return     (1);
   }
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &sharedmatch, (size_t) sizeof (DgraphMatchParam),
                      &sharedcoar,  (size_t) sizeof (DgraphCoarsenShared), NULL) == NULL) {
     errorPrint ("dgraphCoarsen: shared out of memory (1)");
@@ -176,8 +176,7 @@ const unsigned int                    reqsize)    /*+ Sizeof MPI buffer in match
   mycoargrafptr = coargrafptr;
 #endif /* PTSCOTCH_FOLD_DUP */
 
-  /* sharedcoar->proccomm = finegrafptr->proccomm; */
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &sharedmatch->coarmulttax, (size_t) (finegrafptr->vertgstnbr * sizeof (DgraphCoarsenMulti)),
                      &sharedmatch->finecoartax, (size_t) (finegrafptr->vertgstnbr * sizeof (Gnum)),
                      &sharedmatch->finefoldtax, (size_t) (finegrafptr->vertgstnbr * sizeof (int)),
@@ -389,11 +388,10 @@ const unsigned int                    reqsize)    /*+ Sizeof MPI buffer in match
       int loop;
       int tmp;
 
-      dgraphFoldDup (mycoargrafptr, coargrafptr, (void *) coarmultsav, (void**)coarmultptr, coarmultype);
+      dgraphFoldDup (mycoargrafptr, coargrafptr, (void *) coarmultsav, (void **) (void *) coarmultptr, coarmultype);
       loop = intRandVal (finegrafptr->proclocnum + intRandVal (finegrafptr->proclocnum * 2 + 1) + 1);
-      while (loop --) {                           /* Desynchronise pseudo-randomizer between process */
+      while (loop --)                             /* Desynchronise pseudo-randomizer between processes */
         tmp = intRandVal (100);
-      }
     }
     dgraphExit    (mycoargrafptr);
     MPI_Type_free (&coarmultype);
@@ -607,11 +605,11 @@ dgraphCoarsenSharedInit (DgraphCoarsenShared * restrict shared,
 {
   Gnum procglbnbr;
 
-  shared->finegrafptr = finegrafptr;
+  shared->finegrafptr = (Dgraph *) finegrafptr;
   shared->coargrafptr = coargrafptr;
 
   procglbnbr = finegrafptr->procglbnbr;
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &shared->coarproctab,  (size_t) (procglbnbr * sizeof (DgraphCoarsenMulti*)),
                      &shared->vertproctab,  (size_t) (procglbnbr * sizeof (DgraphCoarsenVert*)),
                      NULL) == NULL) {
@@ -686,7 +684,7 @@ dgraphCoarsenThreadConstruct (DgraphCoarsenShared * restrict shared)
   coarhashmsk = coarhashmsk * 4 + 3;
   coarhashnbr = coarhashmsk + 1;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &coargrafptr->vertloctax, (size_t) ((coargrafptr->vertlocnbr + 1) * sizeof (Gnum)), /* +1 for compact representation */
                      &coargrafptr->veloloctax, (size_t) (coargrafptr->vertlocnbr * sizeof (Gnum)),
                      &coarhashtab,             (size_t) (coarhashnbr * sizeof (DgraphCoarsenHash)), NULL) == NULL) {
@@ -707,7 +705,7 @@ dgraphCoarsenThreadConstruct (DgraphCoarsenShared * restrict shared)
     return (1);
   }
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &coargrafptr->procdsptab, (size_t) ((coargrafptr->procglbnbr + 1) * sizeof (int)),
                      &coargrafptr->proccnttab, (size_t) (coargrafptr->procglbnbr       * sizeof (int)),
                      &coargrafptr->procngbtab, (size_t) (coargrafptr->procglbnbr       * sizeof (int)),
@@ -747,8 +745,7 @@ dgraphCoarsenThreadConstruct (DgraphCoarsenShared * restrict shared)
   /*
    * Construct coarsened graph
    */
-  finevertfrstnum        = finegrafptr->procdsptab[proclocnum];
-
+  finevertfrstnum = finegrafptr->procdsptab[proclocnum];
 
   memSet (coarhashtab, ~0, coarhashnbr * sizeof (DgraphCoarsenHash));
 
@@ -847,8 +844,8 @@ dgraphCoarsenThreadConstruct (DgraphCoarsenShared * restrict shared)
 
   coargrafptr->flagval = DGRAPHEDGEGROUP | DGRAPHVERTGROUP | DGRAPHFREETABS;
 
-  if ((finegrafptr->procglbnbr > 1) &&  (shared->requesttab = NULL)) {
-    if (finegrafptr->edloloctax == NULL)            /* Make sure sends are done */
+  if ((finegrafptr->procglbnbr > 1) &&  (shared->requesttab != NULL)) {
+    if (finegrafptr->edloloctax == NULL)          /* Make sure sends are done */
       MPI_Waitall (4 * finegrafptr->procglbnbr, shared->requesttab, MPI_STATUSES_IGNORE);
     else
       MPI_Waitall (6 * finegrafptr->procglbnbr, shared->requesttab, MPI_STATUSES_IGNORE);
@@ -937,34 +934,34 @@ dgraphCoarsenThreadMigrate (DgraphCoarsenShared * restrict shared)
 
   if (finegrafptr->edloloctax != NULL) {
     requestsnbr = 6 * procglbnbr;
-    memAllocGroup ((void*)
-                   &vertrcvtab, (size_t) verttorcvnbr * sizeof (DgraphCoarsenVert),
-                   &edgercvtab, (size_t) edgetorcvnbr * sizeof (Gnum),
-                   &edlorcvtab, (size_t) edgetorcvnbr * sizeof (Gnum),
-                   &shared->edgeproctab, (size_t) procglbnbr * sizeof (Gnum *),
-                   &shared->edloproctab, (size_t) procglbnbr * sizeof (Gnum *),
-                   &vertsndtab, (size_t) verttosndnbr * sizeof (DgraphCoarsenVert),
-                   &edgesndtab, (size_t) edgetosndnbr * sizeof (Gnum),
-                   &edlosndtab, (size_t) edgetosndnbr * sizeof (Gnum),
-                   &verttab,    (size_t) procglbnbr * sizeof (DgraphCoarsenVert*),
-                   &edgetab,    (size_t) procglbnbr * sizeof (Gnum*),
-                   &posedgetab, (size_t) procglbnbr * sizeof (Gnum),
-                   &edlotab,    (size_t) procglbnbr * sizeof (Gnum*),
-                   &shared->requesttab,   (size_t) requestsnbr * sizeof (MPI_Request),
+    memAllocGroup ((void **) (void *)
+                   &vertrcvtab,          (size_t) verttorcvnbr * sizeof (DgraphCoarsenVert),
+                   &edgercvtab,          (size_t) edgetorcvnbr * sizeof (Gnum),
+                   &edlorcvtab,          (size_t) edgetorcvnbr * sizeof (Gnum),
+                   &shared->edgeproctab, (size_t) procglbnbr   * sizeof (Gnum *),
+                   &shared->edloproctab, (size_t) procglbnbr   * sizeof (Gnum *),
+                   &vertsndtab,          (size_t) verttosndnbr * sizeof (DgraphCoarsenVert),
+                   &edgesndtab,          (size_t) edgetosndnbr * sizeof (Gnum),
+                   &edlosndtab,          (size_t) edgetosndnbr * sizeof (Gnum),
+                   &verttab,             (size_t) procglbnbr   * sizeof (DgraphCoarsenVert *),
+                   &edgetab,             (size_t) procglbnbr   * sizeof (Gnum *),
+                   &posedgetab,          (size_t) procglbnbr   * sizeof (Gnum),
+                   &edlotab,             (size_t) procglbnbr   * sizeof (Gnum *),
+                   &shared->requesttab,  (size_t) requestsnbr  * sizeof (MPI_Request),
                    NULL);
   }
   else {                                          /* No edge loads */
     requestsnbr = 4 * procglbnbr;
-    memAllocGroup ((void*)
-                   &vertrcvtab, (size_t) verttorcvnbr * sizeof (DgraphCoarsenVert),
-                   &edgercvtab, (size_t) edgetorcvnbr * sizeof (Gnum),
-                   &shared->edgeproctab, (size_t) procglbnbr * sizeof (Gnum *),
-                   &vertsndtab, (size_t) verttosndnbr * sizeof (DgraphCoarsenVert),
-                   &edgesndtab, (size_t) edgetosndnbr * sizeof (Gnum),
-                   &verttab,    (size_t) procglbnbr * sizeof (DgraphCoarsenVert *),
-                   &edgetab,    (size_t) procglbnbr * sizeof (Gnum *),
-                   &posedgetab, (size_t) procglbnbr * sizeof (Gnum),
-                   &shared->requesttab,   (size_t) requestsnbr * sizeof (MPI_Request),
+    memAllocGroup ((void **) (void *)
+                   &vertrcvtab,          (size_t) verttorcvnbr * sizeof (DgraphCoarsenVert),
+                   &edgercvtab,          (size_t) edgetorcvnbr * sizeof (Gnum),
+                   &shared->edgeproctab, (size_t) procglbnbr   * sizeof (Gnum *),
+                   &vertsndtab,          (size_t) verttosndnbr * sizeof (DgraphCoarsenVert),
+                   &edgesndtab,          (size_t) edgetosndnbr * sizeof (Gnum),
+                   &verttab,             (size_t) procglbnbr   * sizeof (DgraphCoarsenVert *),
+                   &edgetab,             (size_t) procglbnbr   * sizeof (Gnum *),
+                   &posedgetab,          (size_t) procglbnbr   * sizeof (Gnum),
+                   &shared->requesttab,  (size_t) requestsnbr  * sizeof (MPI_Request),
                    NULL);
 #ifdef SCOTCH_DEBUG_DGRAPH2
     edlosndtab = NULL;

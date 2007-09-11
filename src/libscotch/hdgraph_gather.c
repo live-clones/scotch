@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                halo graph.                             **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 19 apr 2006     **/
-/**                                 to   : 02 jan 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -138,7 +138,7 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
 
     cgrfptr->s.flagval = GRAPHFREEEDGE | GRAPHEDGEGROUP | GRAPHFREEVERT | GRAPHVERTGROUP; /* In case of premature freeing on error */
     recvcnttab = NULL;
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
                        &cgrfptr->s.verttax, (size_t) ((vertnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
                        &velotax,            (size_t) (velonbr       * sizeof (Gnum)),
                        &vnumtax,            (size_t) (vnumnbr       * sizeof (Gnum)),
@@ -155,7 +155,7 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
       cheklocval = 1;
     }
     else if (cgrfptr->s.edgetax -= dgrfptr->s.baseval,
-             memAllocGroup ((void **)
+             memAllocGroup ((void **) (void *)
                             &recvcnttab, (size_t) (dgrfptr->s.procglbnbr * sizeof (int)),
                             &recvdsptab, (size_t) (dgrfptr->s.procglbnbr * sizeof (int)), NULL) == NULL) {
       errorPrint ("hdgraphGather: out of memory (3)");
@@ -183,7 +183,7 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
     }
   }
   if ((cheklocval == 0) &&
-      (memAllocGroup ((void **)
+      (memAllocGroup ((void **) (void *)
                       &verthaltax, (size_t) (dgrfptr->vhallocnbr * sizeof (Gnum)),
                       &edgehaltax, (size_t) (dgrfptr->ehallocnbr * sizeof (Gnum)), NULL) == NULL)) {
     errorPrint ("hdgraphGather: out of memory (4)");

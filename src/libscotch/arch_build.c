@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to     08 nov 2001     **/
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     10 mar 2005     **/
+/**                # Version 5.0  : from : 10 sep 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -145,11 +147,11 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
   if (termdomnbr == 0)                            /* If nothing to do */
     return (0);
 
-  if ((memAllocGroup ((void **)
+  if ((memAllocGroup ((void **) (void *)
                       &jobtab,     (size_t) (termdomnbr * sizeof (ArchBuildJob)),
                       &actfrontab, (size_t) (termdomnbr * sizeof (Gnum)),
                       &actparttax, (size_t) (termdomnbr * sizeof (GraphPart)), NULL) == NULL) ||
-      (memAllocGroup ((void **)
+      (memAllocGroup ((void **) (void *)
                       &mapdat.domntab, (size_t) (termdomnbr * sizeof (ArchDom)),
                       &mapdat.parttax, (size_t) (termdomnbr * sizeof (ArchDomNum)), NULL) == NULL)) {
     errorPrint ("archBuild: out of memory (1)");
@@ -217,10 +219,10 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
       return           (1);
     }
 
-    archVcmpltDomBipart ((const ArchVcmplt * const) &mapdat.archdat, /* Update mapping domains */
-                         (const ArchVcmpltDom * const) &mapdat.domntab[joborgptr->domnum],
-                         (ArchVcmpltDom * const) &domsub0,
-                         (ArchVcmpltDom * const) &mapdat.domntab[mapdat.domnnbr]);
+    archVcmpltDomBipart ((const ArchVcmplt * const) (void *) &mapdat.archdat, /* Update mapping domains */
+                         (const ArchVcmpltDom * const) (void *) &mapdat.domntab[joborgptr->domnum],
+                         (ArchVcmpltDom * const) (void *) &domsub0,
+                         (ArchVcmpltDom * const) (void *) &mapdat.domntab[mapdat.domnnbr]);
     mapdat.domntab[joborgptr->domnum] = domsub0;
     actpartval = actgrafdat.parttax[actgrafdat.s.baseval]; /* Always keep first vertex in sub0 */
     actpartnbr = (actpartval == 0) ? actgrafdat.compsize0 : (actgrafdat.s.vertnbr - actgrafdat.compsize0);
@@ -262,7 +264,7 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
 
   memFree (jobtab);                               /* Free group leader */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &termverttab, (size_t) (termdomnbr                            * sizeof (ArchDecoTermVert)),
                      &termdisttab, (size_t) (((termdomnbr * (termdomnbr - 1)) / 2) * sizeof (Anum)),
                      &disttab,     (size_t) (tgtgrafptr->vertnbr                   * sizeof (ArchBuildDistElem)), 
@@ -339,7 +341,7 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
         disttab[j].distval;
   }
 
-  archDecoArchBuild ((ArchDeco *) &tgtarchptr->data, termdomnbr, termdommax, termverttab, termdisttab);
+  archDecoArchBuild ((ArchDeco *) (void *) &tgtarchptr->data, termdomnbr, termdommax, termverttab, termdisttab);
 
   memFree (termverttab);                          /* Free group leader */
   mapExit  (&mapdat);

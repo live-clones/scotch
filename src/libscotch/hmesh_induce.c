@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 07 jan 2002     **/
 /**                                 to     11 may 2004     **/
 /**                # Version 5.0  : from : 22 dec 2006     **/
-/**                                 to     06 jun 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -136,7 +136,7 @@ Hmesh * restrict const            indmeshptr)     /* Pointer to induced halo sub
   indvelonbr = (orgmeshptr->m.velotax != NULL) ? indmeshptr->m.velmnbr : 0;
   indvnlonbr = (orgmeshptr->m.vnlotax != NULL) ? indvnodnbr            : 0;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &indmeshptr->m.verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
                      &indmeshptr->vehdtax,   (size_t) ( orgvelmnbr      * sizeof (Gnum)), /* vehdtab is limited to elements */
                      &indmeshptr->m.velotax, (size_t) ( indvelonbr      * sizeof (Gnum)),
@@ -156,7 +156,7 @@ Hmesh * restrict const            indmeshptr)     /* Pointer to induced halo sub
   indmeshptr->vehdtax   -= indmeshptr->m.velmbas;
   indmeshptr->vnhlsum    = orgvnodnbr;            /* Assume no vertex loads */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &indedgetax, (size_t) (indedgenbr                                                 * sizeof (Gnum)),
                      &orgindxtax, (size_t) ((orgmeshptr->m.velmnbr + orgmeshptr->m.vnodnbr)            * sizeof (Gnum)),
                      &indvnuhtax, (size_t) ((orgvnspnbr + orgmeshptr->m.vnodnnd - orgmeshptr->vnohnnd) * sizeof (Gnum)), NULL) == NULL) {

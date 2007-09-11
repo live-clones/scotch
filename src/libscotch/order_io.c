@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                 to     27 aug 1998     **/
 /**                # Version 4.0  : from : 19 dec 2001     **/
 /**                                 to     28 jun 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -195,7 +197,7 @@ FILE * const                  stream)
 
   vlbltax = (vlbltab != NULL) ? (vlbltab - ordeptr->baseval) : NULL;
 
-  if (memAllocGroup ((void **) 
+  if (memAllocGroup ((void **) (void *)
         &rangtab, (size_t) ((ordeptr->vnodnbr + 1) * sizeof (Gnum)),
         &cblktab, (size_t) ( ordeptr->vnodnbr      * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("orderSaveMap: out of memory");
@@ -250,7 +252,7 @@ FILE * const                  stream)
 
   vlbltax = (vlbltab != NULL) ? (vlbltab - ordeptr->baseval) : NULL;
 
-  if (memAllocGroup ((void **) 
+  if (memAllocGroup ((void **) (void *)
         &rangtab, (size_t) ((ordeptr->vnodnbr + 1) * sizeof (Gnum)),
         &treetab, (size_t) ( ordeptr->vnodnbr      * sizeof (Gnum)),
         &cblktab, (size_t) ( ordeptr->vnodnbr      * sizeof (Gnum)), NULL) == NULL) {

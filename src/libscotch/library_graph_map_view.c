@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     30 nov 2006     **/
 /**                # Version 5.0  : from : 04 feb 2007     **/
-/**                                 to     04 feb 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -132,7 +132,7 @@ FILE * const                  stream)
       (grafptr->edgenbr == 0))
     return (0);
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &domtab,  (size_t) ((grafptr->vertnbr + 1) * sizeof (MappingSort)),
                      &ngbtab,  (size_t) ((grafptr->vertnbr + 2) * sizeof (Anum)),
                      &parttax, (size_t) (grafptr->vertnbr       * sizeof (Anum)),
@@ -349,7 +349,7 @@ const Anum                  partval)              /*+ Part value +*/
   const Gnum * restrict         vendtax;          /* Based access to vertex end array       */
   const Gnum * restrict         edgetax;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &queudat.qtab, (size_t) (grafptr->vertnbr * sizeof (Gnum)),
                      &vexxtax,      (size_t) (grafptr->vertnbr * sizeof (GraphMapViewVertex)), NULL) == NULL) {
     errorPrint ("graphMapView2: out of memory");

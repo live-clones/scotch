@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                uncoarsening refinement.                **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 18 oct 2004     **/
-/**                                 to   : 19 dec 2006     **/
+/**                                 to   : 12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,7 +99,7 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
   if (orgdistmax < 1)                             /* To simplify algorithm, always at least one layer of vertices around separator */
     orgdistmax = 1;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &queudat.qtab, (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), /* TRICK: no need of "+ 2" for anchor vertices (see below) */
                      &orgdisttax,   (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("vgraphSeparateBd: out of memory (1)");
@@ -222,7 +222,7 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
   bndgrafdat.s.vertnbr = bndvertnbr + 2;          /* "+ 2" for anchor vertices */
   bndgrafdat.s.vertnnd = bndvertnnd + 2;
 
-  if (memAllocGroup ((void **)                    /* Do not allocate vnumtab but keep queudat.qtab instead */
+  if (memAllocGroup ((void **) (void *)           /* Do not allocate vnumtab but keep queudat.qtab instead */
                      &bndgrafdat.s.verttax, (size_t) ((bndvertnbr + 3) * sizeof (Gnum)),
                      &bndgrafdat.s.velotax, (size_t) ((bndvertnbr + 2) * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("vgraphSeparateBd: out of memory (2)");

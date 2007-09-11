@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 18 dec 2001     **/
 /**                                 to     21 mar 2005     **/
 /**                # Version 5.0  : from : 06 jun 2007     **/
-/**                                 to     06 jun 2007     **/
+/**                                 to     31 aug 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,7 +80,7 @@ const char * const          dataptr)              /* No use           */
   Gnum                          habmattag;        /* Matrix tag number in file       */
   Gnum                          habmatnum;        /* Current matrix number           */
   char                          habmatbuf[4][84]; /* Matrix header line buffers      */
-  char                          habmattype[4];    /* Matrix type                     */
+  char                          habmattype[3];    /* Matrix type                     */
   Gnum                          habcrdnbr;        /* Total number of data lines      */
   Gnum                          habrhsnbr;        /* Number of right hand side lines */
   Gnum                          habrownbr;        /* Number of rows                  */
@@ -108,6 +108,9 @@ const char * const          dataptr)              /* No use           */
     return     (1);
   }
 
+  habmattype[0] =
+  habmattype[1] =
+  habmattype[2] = '\0';
   for (habmatnum = 0; habmatnum <= habmattag; habmatnum ++) { /* Read headers and skip if necessary */
     memSet (habmatbuf[0], ' ', &habmatbuf[3][83] - &habmatbuf[0][0]); /* Initialize header buffers  */
     if ((fgets (habmatbuf[0], 83, filesrcptr) == NULL) || /* Read graph header                      */
@@ -173,7 +176,7 @@ const char * const          dataptr)              /* No use           */
   }
 
   if (((grafptr->verttax = (Gnum *) memAlloc ((habcolnbr + 1) * sizeof (Gnum))) == NULL) ||
-      ((grafptr->edgetax = (Gnum *) memAllocGroup ((void **)
+      ((grafptr->edgetax = (Gnum *) memAllocGroup ((void **) (void *)
                                                    &grafptr->edgetax, (size_t) (habnzrnbr * 2   * sizeof (Gnum)),
                                                    &habcoltab,        (size_t) ((habcolnbr + 1) * sizeof (Gnum)),
                                                    &habnzrtab,        (size_t) (habnzrnbr       * sizeof (Gnum)), NULL)) == NULL)) {
@@ -188,6 +191,7 @@ const char * const          dataptr)              /* No use           */
   grafptr->baseval = 1;                           /* Harwell-Boeing graphs have base 1 */
   grafptr->vertnbr = (Gnum) habcolnbr;
   grafptr->vertnnd = grafptr->vertnbr + 1;
+  grafptr->velosum = grafptr->vertnbr;
   grafptr->vendtax = grafptr->verttax;            /* Use compact representation for array based at 1     */
   grafptr->verttax --;                            /* Base verttab array at 1, with vendtab = verttab + 1 */
   grafptr->edgetax --;
@@ -324,6 +328,7 @@ const char * const          dataptr)              /* No use           */
   grafptr->verttax[vertnum] = edgenum;            /* Set end of vertex array */
 
   grafptr->edgenbr = edgenum - 1;
+  grafptr->edlosum = grafptr->edgenbr;
   grafptr->degrmax = degrmax;
 
   memFree (hashtab);

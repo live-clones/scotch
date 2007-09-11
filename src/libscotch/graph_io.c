@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 4.0  : from : 25 nov 2001     **/
 /**                                 to     21 jan 2004     **/
 /**                # Version 5.0  : from : 13 dec 2006     **/
-/**                                 to     09 may 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -145,11 +145,11 @@ const GraphFlag             flagval)              /* Graph loading flags        
   vlblnbr = (proptab[0] != 0) ? grafptr->vertnbr : 0;
   edlonbr = ((proptab[1] != 0) && ((flagval & GRAPHIONOLOADEDGE) == 0)) ? grafptr->edgenbr : 0;
 
-  if ((memAllocGroup ((void **)
+  if ((memAllocGroup ((void **) (void *)
                       &grafptr->verttax, (size_t) ((grafptr->vertnbr + 1) * sizeof (Gnum)),
                       &grafptr->velotax, (size_t) (velonbr                * sizeof (Gnum)),
                       &grafptr->vlbltax, (size_t) (vlblnbr                * sizeof (Gnum)), NULL) == NULL) ||
-      (memAllocGroup ((void **)
+      (memAllocGroup ((void **) (void *)
                       &grafptr->edgetax, (size_t) (grafptr->edgenbr       * sizeof (Gnum)),
                       &grafptr->edlotax, (size_t) (edlonbr                * sizeof (Gnum)), NULL) == NULL)) {
     if (grafptr->verttax != NULL)

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 30 jan 2004     **/
 /**                                 to     05 may 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /**   NOTES      : # The coarsening process is as follows. **/
 /**                  First, node collapsing is performed,  **/
@@ -140,7 +142,7 @@ const MeshCoarsenType         coartype)           /*+ Matching type             
        coarhashmsk < coarhashsiz; coarhashmsk = coarhashmsk * 2 + 1) ;
   coarhashsiz = coarhashmsk + 1;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
         &coarverttax, (size_t) ((finevertnbr + 1)     * sizeof (Gnum)), /* Upper bound on number of coarse vertices */
         &coarvelotax, (size_t) ( finevertnbr          * sizeof (Gnum)), /* Upper bound on number of coarse vertices */
         &coaredgetax, (size_t) ( finemeshptr->edgenbr * sizeof (Gnum)),
