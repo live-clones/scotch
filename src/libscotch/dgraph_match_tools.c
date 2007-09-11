@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                to validate matching results.           **/
 /**                                                        **/
 /**   DATES      : # Version 0.5  : from : 04 dec 2006     **/
-/**                                 to   : 19 feb 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,11 +91,10 @@ const DgraphMatchParam * restrict const param)    /* Tables concerning the verti
   coarmultnbr = param->coarmultnum;               /* Copy variable to preserve "const" qualifier */
   MPI_Allreduce (&coarmultnbr, &coarmultmax, 1, GNUM_MPI, MPI_MAX, finegraph->proccomm);
 
-  memAllocGroup ((void **)
-                 &accesstax, finegraph->vertlocnbr * sizeof (Gnum),
-                 &othermulttax, coarmultmax * sizeof (DgraphCoarsenMulti),
-                 &sendrequests, finegraph->procngbnbr * sizeof (MPI_Request),
-                 NULL);
+  memAllocGroup ((void **) (void *)
+                 &accesstax,    (size_t) (finegraph->vertlocnbr * sizeof (Gnum)),
+                 &othermulttax, (size_t) (coarmultmax           * sizeof (DgraphCoarsenMulti)),
+                 &sendrequests, (size_t) (finegraph->procngbnbr * sizeof (MPI_Request)), NULL);
   accesstax -= finegraph->baseval;
   othermulttax -= finegraph->baseval;
 
@@ -191,12 +190,12 @@ dgraphMatchConvertInit (const Dgraph * restrict const grafptr,
 /*   convert->coarhashmsk = convert->coarhashmsk * 4 + 3; */
 /*   convert->coarhashnbr = convert->coarhashmsk + 1; */
 
-  if (memAllocGroup ((void**)
-                     &convert->gst2glbtab, (gstnbr * sizeof (Gnum)),
-/*                      &convert->glb2gsttab, (convert->coarhashnbr * sizeof (Gnum)), */
+  if (memAllocGroup ((void **) (void *)
+                     &convert->gst2glbtab, (size_t) (gstnbr * sizeof (Gnum)),
+/*                   &convert->glb2gsttab, (size_t) (convert->coarhashnbr * sizeof (Gnum)), */
                      NULL) == NULL) {
-    errorPrint ("dgraphMatchSyncInitConvert : Allocation Failed");
-    return (1);
+    errorPrint ("dgraphMatchSyncInitConvert: out of memory");
+    return     (1);
   }
   convert->gst2glbtab -= grafptr->vertlocnnd;
 

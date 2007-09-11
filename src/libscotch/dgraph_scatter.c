@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version P0.2 : from : 19 may 1999     **/
 /**                                 to     19 may 1999     **/
 /**                # Version 5.0  : from : 27 apr 2006     **/
-/**                                 to   : 18 jul 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Scatter and    **/
 /**                  MPI_Scatterv indicate that elements   **/
@@ -159,7 +159,7 @@ const Graph * restrict const  cgrfptr)            /* Centralized graph to scatte
       Gnum                edlonbr;
 
       edlonbr = (cgrfptr->edlotax != NULL) ? cgrfptr->edgenbr : 0;
-      if (memAllocGroup ((void **)
+      if (memAllocGroup ((void **) (void *)
                          &verttax, (size_t) ((cgrfptr->vertnbr + 1) * sizeof (Gnum)),
                          &edgetax, (size_t) (cgrfptr->edgenbr       * sizeof (Gnum)),
                          &edlotax, (size_t) (edlonbr                * sizeof (Gnum)), NULL) == NULL) {
@@ -211,7 +211,7 @@ const Graph * restrict const  cgrfptr)            /* Centralized graph to scatte
   vertlocnbr = DATASIZE (reduglbtab[3], grafptr->procglbnbr, grafptr->proclocnum);
   velolocnbr = (reduglbtab[6] != 0) ? vertlocnbr : 0;
   vlbllocnbr = (reduglbtab[7] != 0) ? vertlocnbr : 0;
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &vertloctax, (size_t) ((vertlocnbr + 1) * sizeof (Gnum)),
                      &veloloctax, (size_t) (velolocnbr       * sizeof (Gnum)),
                      &vlblloctax, (size_t) (vlbllocnbr       * sizeof (Gnum)), NULL) == NULL) {
@@ -228,7 +228,7 @@ const Graph * restrict const  cgrfptr)            /* Centralized graph to scatte
   if (cgrfptr != NULL) {                          /* If root process */
     Gnum                procnum;
 
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
                        &attrdattab, (size_t) (grafptr->procglbnbr * sizeof (Gnum)),
                        &attrdsptab, (size_t) (grafptr->procglbnbr * sizeof (int)),
                        &attrcnttab, (size_t) (grafptr->procglbnbr * sizeof (int)), NULL) == NULL) {
@@ -306,7 +306,7 @@ const Graph * restrict const  cgrfptr)            /* Centralized graph to scatte
 
   edgelocnbr = vertloctax[vertlocnnd] - vertloctax[baseval];
   edlolocnbr = (reduglbtab[8] != 0) ? edgelocnbr : 0;
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &edgeloctax, (size_t) (edgelocnbr * sizeof (Gnum)),
                      &edloloctax, (size_t) (edlolocnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("dgraphScatter: out of memory (4)");

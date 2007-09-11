@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -29,28 +29,28 @@
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
-/**********************************************************/
-/*                                                        */
-/*   NAME       : dgraph_ghst.c                           */
-/*                                                        */
-/*   AUTHOR     : Francois PELLEGRINI                     */
-/*                Francois CHATENET (P0.0)                */
-/*                Sebastien FOUCAULT (P0.0)               */
-/*                Nicolas GICQUEL (P0.1)                  */
-/*                Jerome LACOSTE (P0.1)                   */
-/*                                                        */
-/*   FUNCTION   : Part of a parallel static mapper.       */
-/*                This module contains the halo building  */
-/*                routine.                                */
-/*                                                        */
-/*                # Version P0.0 : from : 01 apr 1997     */
-/*                                 to     20 jun 1997     */
-/*                # Version P0.1 : from : 14 apr 1998     */
-/*                                 to     20 jun 1998     */
-/*                # Version 5.0  : from : 28 feb 2006     */
-/*                                 to     03 aug 2007     */
-/*                                                        */
-/**********************************************************/
+/************************************************************/
+/**                                                        **/
+/**   NAME       : dgraph_ghst.c                           **/
+/**                                                        **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Francois CHATENET (P0.0)                **/
+/**                Sebastien FOUCAULT (P0.0)               **/
+/**                Nicolas GICQUEL (P0.1)                  **/
+/**                Jerome LACOSTE (P0.1)                   **/
+/**                                                        **/
+/**   FUNCTION   : Part of a parallel static mapper.       **/
+/**                This module contains the halo building  **/
+/**                routine.                                **/
+/**                                                        **/
+/**                # Version P0.0 : from : 01 apr 1997     **/
+/**                                 to     20 jun 1997     **/
+/**                # Version P0.1 : from : 14 apr 1998     **/
+/**                                 to     20 jun 1998     **/
+/**                # Version 5.0  : from : 28 feb 2006     **/
+/**                                 to     10 sep 2007     **/
+/**                                                        **/
+/************************************************************/
 
 /*
 ** The defines and includes.
@@ -108,7 +108,7 @@ Dgraph * restrict const     grafptr)              /* Graph structure */
     }
   }
   if ((cheklocval == 0) &&
-      (memAllocGroup ((void **)
+      (memAllocGroup ((void **) (void *)
                       &procsidtab, (size_t) ((grafptr->edgelocnbr + grafptr->vertlocnbr) * sizeof (int)),
                       &vertsidtab, (size_t) (grafptr->procglbnbr                         * sizeof (Gnum)),
                       &sortloctab, (size_t) ((grafptr->edgelocnbr + 1)                   * sizeof (DgraphGhstSort)), NULL) == NULL)) {

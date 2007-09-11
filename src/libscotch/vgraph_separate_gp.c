@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 15 may 2004     **/
 /**                                 to     17 may 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,7 +93,7 @@ const VgraphSeparateGpParam * const paraptr)      /*+ Method parameters +*/
   if (grafptr->compload[0] != grafptr->s.velosum) /* If not all vertices already in part 0 */
     vgraphZero (grafptr);                         /* Move all graph vertices to part 0     */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &queudat.queutab, (size_t) (grafptr->s.vertnbr * sizeof (Gnum)),
                      &vexxtax,         (size_t) (grafptr->s.vertnbr * sizeof (VgraphSeparateGpVertex)), NULL) == NULL) {
     errorPrint ("vgraphSeparateGp: out of memory");

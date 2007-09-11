@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 4.0  : from : 13 dec 2001     **/
 /**                                 to     31 aug 2005     **/
 /**                # Version 5.0  : from : 13 dec 2006     **/
-/**                                 to     14 dec 2006     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -170,7 +170,7 @@ const GraphCoarsenType                coartype)   /*+ Edge matching type        
   coarhashmsk = coarhashmsk * 4 + 3;
   coarhashnbr = coarhashmsk + 1;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &coargrafptr->verttax, (size_t) ((coarvertnbr + 1)    * sizeof (Gnum)),
                      &coargrafptr->velotax, (size_t) (coarvertnbr          * sizeof (Gnum)),
                      &coarmulttax,          (size_t) (coarvertnbr          * sizeof (GraphCoarsenMulti)),

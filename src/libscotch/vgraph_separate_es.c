@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 18 aug 2004     **/
 /**                                 to     20 aug 2004     **/
 /**                # Version 5.0  : from : 24 jan 2007     **/
-/**                                 to     24 jan 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /**   NOTES      : # This algorithm comes from:            **/
 /**                  "Computing the Block Triangular form  **/
@@ -62,8 +62,8 @@
 /**                                                        **/
 /**                # The choice of the separator to take,  **/
 /**                  either HR u SC u VC or HR u SR u VC,  **/
-/**                  is made regarding the sizes of the    **/
-/**                  separators only, not of their         **/
+/**                  is made regarding the size of the     **/
+/**                  separator only, irrespective of its   **/
 /**                  balance. This choice is made because  **/
 /**                  else an imbalance ratio should be     **/
 /**                  provided for this method, and because **/
@@ -141,13 +141,13 @@ Gnum * const                  sepaptr)            /* Pointer to size of the arra
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &travtax, (size_t) (grafptr->vertnbr * sizeof (VgraphSeparateEsTrav)),
                      &matetax, (size_t) (grafptr->vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("vgraphSeparateEsCover: out of memory (1)");
     return     (1);
   }
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &queutab, (size_t) (partnbr          * sizeof (Gnum)),
                      &levltax, (size_t) (grafptr->vertnbr * sizeof (Gnum)),
                      &listtab, (size_t) (grafptr->vertnbr * sizeof (Gnum)), NULL) == NULL) {
@@ -548,7 +548,7 @@ const VgraphSeparateEsParam * const paraptr)      /*+ Method parameters +*/
       bipgrafdat.baseval = 0;                     /* Base bipartite graph from 0                   */
       bipgrafdat.vertnbr =
       bipgrafdat.vertnnd = bipvertnbr0 + bipvertnbr1;
-      if (memAllocGroup ((void **)
+      if (memAllocGroup ((void **) (void *)
                          &bipgrafdat.verttax, (size_t) ((bipgrafdat.vertnbr + 1) * sizeof (Gnum)),
                          &bipgrafdat.velotax, (size_t) ((actgrafdat.s.velotax != NULL) ? (bipgrafdat.vertnbr * sizeof (Gnum)) : 0),
                          &bipgrafdat.vnumtax, (size_t) (bipgrafdat.vertnbr * sizeof (Gnum)),

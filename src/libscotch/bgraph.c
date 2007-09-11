@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,7 +58,7 @@
 /**                # Version 4.0  : from : 18 dec 2001     **/
 /**                                 to     31 aug 2004     **/
 /**                # Version 5.0  : from : 17 dec 2006     **/
-/**                                 to     17 dec 2006     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -111,7 +111,7 @@ const ArchDom                   domsubtab[])      /* Subdomains                 
   actgrafptr->s.vlbltax = NULL;                   /* Remove vertex labels    */
   actgrafptr->veextax   = NULL;                   /* No external gains (yet) */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &actgrafptr->frontab, (size_t) (actgrafptr->s.vertnbr * sizeof (Gnum)),
                      &actgrafptr->parttax, (size_t) (actgrafptr->s.vertnbr * sizeof (GraphPart)), NULL) == NULL) {
     errorPrint ("bgraphInit: out of memory");

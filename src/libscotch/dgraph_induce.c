@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                subgraph-making functions.              **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 08 apr 2006     **/
-/**                                 to   : 31 aug 2006     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,7 +119,7 @@ Dgraph * restrict const       indgrafptr)
 
   cheklocval =
   chekglbval = 0;
-  if (memAllocGroup ((void **)                    /* Allocate distributed graph private data */
+  if (memAllocGroup ((void **) (void *)           /* Allocate distributed graph private data */
                      &indgrafptr->procdsptab, (size_t) ((orggrafptr->procglbnbr + 1) * sizeof (int)),
                      &indgrafptr->proccnttab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)),
                      &indgrafptr->procngbtab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)),
@@ -128,7 +128,7 @@ Dgraph * restrict const       indgrafptr)
     errorPrint ("dgraphInduceList: out of memory (1)");
     cheklocval = 1;
   }
-  else if (memAllocGroup ((void **)               /* Allocate distributed graph public data */
+  else if (memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data */
                           &indgrafptr->vertloctax, (size_t) ((indlistnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
                           &indgrafptr->vnumloctax, (size_t) (indlistnbr       * sizeof (Gnum)),
                           &indgrafptr->veloloctax, (size_t) (indvelolocnbr    * sizeof (Gnum)), NULL) == NULL) {
@@ -138,7 +138,7 @@ Dgraph * restrict const       indgrafptr)
   else if (indgrafptr->vertloctax -= orggrafptr->baseval,
            indgrafptr->vnumloctax -= orggrafptr->baseval,
            indgrafptr->veloloctax  = (indvelolocnbr != 0) ? indgrafptr->veloloctax - orggrafptr->baseval : NULL,
-           memAllocGroup ((void **)
+           memAllocGroup ((void **) (void *)
                           &indgrafptr->edgeloctax, (size_t) (indedgelocmax          * sizeof (Gnum)), /* Pre-allocate space for edgetab (and edlotab) */
                           &orgindxgsttax,          (size_t) (orggrafptr->vertgstnbr * sizeof (Gnum)), NULL) == NULL) { /* orgindxgsttab is at the end */
     errorPrint ("dgraphInduceList: out of memory (3)");

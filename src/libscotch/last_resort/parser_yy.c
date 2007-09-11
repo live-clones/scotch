@@ -80,7 +80,7 @@
 /* Copy the first part of user declarations.  */
 #line 1 "parser_yy.y"
 
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.

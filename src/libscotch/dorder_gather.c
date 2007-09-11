@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                orderings.                              **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 19 jul 2007     **/
-/**                                 to     27 jul 2007     **/
+/**                                 to     10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -133,7 +133,7 @@ Order * restrict const        cordptr)
     if (vnodglbnbr < (dordptr->vnodglbnbr - vnodlocnbr)) /* But should receive permutation indices too! */
       vnodglbnbr = dordptr->vnodglbnbr - vnodlocnbr; /* TRICK: root will not receive from itself        */
 
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
                        &recvcnttab, (size_t) (procglbnbr * sizeof (int)),
                        &recvdsptab, (size_t) (procglbnbr * sizeof (int)),
                        &perircvtab, (size_t) (vnodglbnbr * sizeof (Gnum)), NULL) == NULL) {
@@ -188,7 +188,7 @@ Order * restrict const        cordptr)
   }
 
   cheklocval = 0;
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &leafrcvtab, (size_t) (leafrcvnbr * sizeof (DorderGatherLeaf)),
                      &leafsndtab, (size_t) (leafsndnbr * sizeof (DorderGatherLeaf)),
                      &perisndtab, (size_t) (perisndnbr * sizeof (Gnum)), NULL) == NULL) {
@@ -352,7 +352,7 @@ const int                     protnum)
 
   treesndnbr = (dordptr->proclocnum == protnum) ? 0 : treelocnbr; /* TRICK: root will not send nor receive */
   cheklocval = 0;
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &treecnttab, (size_t) (procglbnbr * sizeof (int)),
                      &treedsptab, (size_t) (procglbnbr * sizeof (int)),
                      &treesndtab, (size_t) (treesndnbr * sizeof (DorderGatherNode)), NULL) == NULL) {
@@ -387,7 +387,7 @@ const int                     protnum)
 
     cordptr->treenbr = treeglbnbr;
 
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
                        &treercvtab, (size_t) (treeglbnbr * sizeof (DorderGatherNode)),
                        &cblkglbtab, (size_t) (treeglbnbr * sizeof (DorderGatherCblk)), NULL) == NULL) {
       errorPrint ("dorderGatherTree: out of memory (2)");

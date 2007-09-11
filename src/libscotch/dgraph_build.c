@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version P0.2 : from : 02 feb 2000     **/
 /**                                 to   : 02 feb 2000     **/
 /**                # Version 5.0  : from : 22 jul 2005     **/
-/**                                 to   : 03 aug 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -170,7 +170,7 @@ const Gnum                  degrlocmax)
     int                   procglbnbr;
 
     procglbnbr = grafptr->procglbnbr;
-    if (memAllocGroup ((void **)                  /* Allocate distributed graph private data */
+    if (memAllocGroup ((void **) (void *)         /* Allocate distributed graph private data */
                        &grafptr->procdsptab, (size_t) ((procglbnbr + 1) * sizeof (int)),
                        &grafptr->procvrttab, (size_t) ((procglbnbr + 1) * sizeof (int)),
                        &grafptr->proccnttab, (size_t) (procglbnbr       * sizeof (int)),
@@ -349,13 +349,13 @@ const Gnum                  degrlocmax)
   if (vlblloctax != NULL) {                       /* If vertex labels given */
     procglbnbr = grafptr->procglbnbr;
 
-    if (memAllocGroup ((void **)
+    if (memAllocGroup ((void **) (void *)
                        &vesongbtab[0], (size_t) (grafptr->vertglbmax * sizeof (DgraphLablSortVert)),
                        &vesongbtab[1], (size_t) (grafptr->vertglbmax * sizeof (DgraphLablSortVert)),
                        &edsoloctab,    (size_t) (grafptr->edgeglbmax * sizeof (DgraphLablSortEdge)),
                        NULL) == NULL){
       errorPrint ("dgraphBuild3: out of memory");
-      return (1);
+      return     (1);
     }
 
     for (vertlocnum = 0, vesongbptr = vesongbtab[0], vlbllocptr = vlblloctax + baseval;

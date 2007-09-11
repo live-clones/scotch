@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                source graph folding function.          **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 10 aug 2006     **/
-/**                                 to   : 03 aug 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -138,7 +138,6 @@ MPI_Datatype                  vertinfotype)
   }
 #endif /* SCOTCH_DEBUG_DGRAPH1 */
 
-
   fldprocglbnbr = (orggrafptr->procglbnbr + 1) / 2;
   if (partval == 1) {
     fldproclocnum = orggrafptr->proclocnum - fldprocglbnbr;
@@ -150,7 +149,6 @@ MPI_Datatype                  vertinfotype)
   fldcommtypval = ((fldproclocnum >= 0) && (fldproclocnum < fldprocglbnbr)) ? DGRAPHFOLDCOMMRECV : DGRAPHFOLDCOMMSEND;
   if (vertinfoptrin != NULL)
     MPI_Type_size (vertinfotype, &vertinfosize);
-
 
   cheklocval = 0;
   if (fldcommtypval == DGRAPHFOLDCOMMRECV) {      /* If we are going to receive */
@@ -172,13 +170,13 @@ MPI_Datatype                  vertinfotype)
     fldgrafptr->proclocnum = fldproclocnum;
     fldgrafptr->flagval    = DGRAPHFREETABS | DGRAPHVERTGROUP | DGRAPHEDGEGROUP | DGRAPHFREECOMM; /* For premature freeing on error; do not free vhndloctab as it is grouped with vertloctab */
 
-    if (memAllocGroup ((void **)                  /* Allocate folding structures */
+    if (memAllocGroup ((void **) (void *)         /* Allocate folding structures */
                        &fldvertadjtab, (size_t) (orggrafptr->procglbnbr * DGRAPHFOLDCOMMNBR * sizeof (Gnum)),
                        &fldvertdlttab, (size_t) (orggrafptr->procglbnbr * DGRAPHFOLDCOMMNBR * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("dgraphFold: out of memory (1)");
       cheklocval = 1;
     }
-    else if (memAllocGroup ((void **)             /* Allocate distributed graph private data */
+    else if (memAllocGroup ((void **) (void *)    /* Allocate distributed graph private data */
                        &fldgrafptr->procdsptab, (size_t) ((fldprocglbnbr + 1) * sizeof (int)),
                        &fldgrafptr->proccnttab, (size_t) (fldprocglbnbr       * sizeof (int)),
                        &fldgrafptr->procngbtab, (size_t) (fldprocglbnbr       * sizeof (int)),
@@ -209,7 +207,7 @@ MPI_Datatype                  vertinfotype)
       }
       fldvelolocnbr = (orggrafptr->veloloctax != NULL) ? fldvertlocnbr : 0;
 
-      if (memAllocGroup ((void **)                /* Allocate distributed graph public data */
+      if (memAllocGroup ((void **) (void *)       /* Allocate distributed graph public data */
                          &fldgrafptr->vertloctax, (size_t) ((fldvertlocnbr + DGRAPHFOLDCOMMNBR + 1) * sizeof (Gnum)), /* More slots for received vertex arrays  */
                          &fldgrafptr->vnumloctax, (size_t) (fldvertlocnbr                           * sizeof (Gnum)),
                          &fldgrafptr->veloloctax, (size_t) (fldvelolocnbr                           * sizeof (Gnum)), NULL) == NULL) {
@@ -221,7 +219,7 @@ MPI_Datatype                  vertinfotype)
                fldgrafptr->vendloctax  = fldgrafptr->vertloctax + 1, /* Folded graph is compact */
                fldgrafptr->veloloctax  = ((fldvelolocnbr != 0) ? fldgrafptr->veloloctax - orggrafptr->baseval : NULL),
                fldedlolocsiz = ((orggrafptr->edloloctax != NULL) ? fldedgelocsiz : 0),
-               memAllocGroup ((void **)
+               memAllocGroup ((void **) (void *)
                               &fldgrafptr->edgeloctax, (size_t) (fldedgelocsiz * sizeof (Gnum)),
                               &fldgrafptr->edloloctax, (size_t) (fldedlolocsiz * sizeof (Gnum)), NULL) == NULL) {
         errorPrint ("dgraphFold: out of memory (4)");

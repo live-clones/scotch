@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -38,8 +38,10 @@
 /**   FUNCTION   : This module handles the source graph    **/
 /**                input/output functions.                 **/
 /**                                                        **/
-/**   DATES      : # Version 0.0  : from : 05 nov 2002     **/
+/**   DATES      : # Version 4.0  : from : 05 nov 2002     **/
 /**                                 to     06 may 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -152,7 +154,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
   velonbr = (proptab[2] != 0) ? vertnbr : 0;
   vlblnbr = (proptab[0] != 0) ? vertnbr : 0;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
       &meshptr->verttax, (size_t) ((vertnbr + 1)     * sizeof (Gnum)),
       &meshptr->vlbltax, (size_t) ( vlblnbr          * sizeof (Gnum)),
       &meshptr->velotax, (size_t) ( velonbr          * sizeof (Gnum)), /* Allocate single array for both element and node vertices */

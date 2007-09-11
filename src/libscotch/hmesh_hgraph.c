@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 30 nov 2003     **/
 /**                                 to     05 may 2004     **/
+/**                # Version 5.0  : from : 10 sep 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /**   NOTES      : # From a given halo mesh is created a   **/
 /**                  halo graph, such that all vertices of **/
@@ -122,7 +124,7 @@ Hgraph * restrict const       grafptr)            /*+ Graph to build +*/
        hashsiz < hashnbr; hashsiz <<= 1) ;
   hashmsk = hashsiz - 1;
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &grafptr->s.verttax, (size_t) ((grafptr->s.vertnbr + 1) * sizeof (Gnum)),
                      &grafptr->vnhdtax,   (size_t) ( grafptr->vnohnbr        * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hmeshHgraph: out of memory (1)");

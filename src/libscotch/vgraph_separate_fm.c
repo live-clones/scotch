@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to     31 dec 1998     **/
 /**                # Version 4.0  : from : 07 jan 2002     **/
 /**                                 to     18 aug 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -199,7 +201,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
   hashmax = hashsiz >> 2;                         /* Use hash table at 1/4 of its capacity */
 
   if (((tablptr = gainTablInit (1999999999, VGRAPHSEPAFMGAINBITS)) == NULL) || /* Use logarithmic array only */
-      (memAllocGroup ((void **)
+      (memAllocGroup ((void **) (void *)
                       &hashtab, (size_t) (hashsiz * sizeof (VgraphSeparateFmVertex)),
                       &savetab, (size_t) (hashsiz * sizeof (VgraphSeparateFmSave)), NULL) == NULL)) {
     errorPrint ("vgraphSeparateFm: out of memory (1)");

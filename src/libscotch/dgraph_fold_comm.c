@@ -1,4 +1,4 @@
-/* Copyright 2007 INRIA
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                folding process.                        **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 23 may 2006     **/
-/**                                 to   : 03 aug 2007     **/
+/**                                 to   : 10 sep 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,7 +90,7 @@ Gnum * restrict const               vertdlttab)   /* Pointer to global delta adj
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  if (memAllocGroup ((void **)
+  if (memAllocGroup ((void **) (void *)
                      &procsrttab, (size_t) (grafptr->procglbnbr * sizeof (DgraphFoldCommData)),
 #ifdef SCOTCH_DEBUG_DGRAPH2
                      &procchktab, (size_t) (grafptr->procglbnbr * sizeof (DgraphFoldCommData) * DGRAPHFOLDCOMMNBR),

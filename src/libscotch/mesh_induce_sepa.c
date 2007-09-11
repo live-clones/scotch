@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 INRIA
+/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 26 jan 2003     **/
 /**                                 to     11 may 2004     **/
+/**                # Version 5.0  : from : 12 sep 2007     **/
+/**                                 to     12 sep 2007     **/
 /**                                                        **/
 /**   NOTES      : # This routine differs from the         **/
 /**                  standard mesh induction routine by    **/
@@ -177,7 +179,7 @@ Mesh * restrict const             indmeshptr)     /* Pointer to induced submesh 
 
   indvertnbr = indvelmnbr + orgsepanbr;           /* Upper bound on number of all vertices */
   if (orgmeshptr->velotax != NULL) {
-    p = memAllocGroup ((void **)
+    p = memAllocGroup ((void **) (void *)
           &indmeshptr->verttax, (size_t) (indvertnbr * sizeof (Gnum)), /* verttab is not compact */
           &indmeshptr->vendtax, (size_t) (indvertnbr * sizeof (Gnum)),
           &indmeshptr->vnumtax, (size_t) (orgsepanbr * sizeof (Gnum)), /* vnumtab is of size indnodenbr                */
@@ -185,7 +187,7 @@ Mesh * restrict const             indmeshptr)     /* Pointer to induced submesh 
     indmeshptr->velotax -= indmeshptr->vnodbas;
   }
   else
-    p = memAllocGroup ((void **)
+    p = memAllocGroup ((void **) (void *)
           &indmeshptr->verttax, (size_t) (indvertnbr * sizeof (Gnum)),
           &indmeshptr->vendtax, (size_t) (indvertnbr * sizeof (Gnum)),
           &indmeshptr->vnumtax, (size_t) (orgsepanbr * sizeof (Gnum)), NULL); /* vnumtab is of size indnodenbr */
@@ -195,7 +197,7 @@ Mesh * restrict const             indmeshptr)     /* Pointer to induced submesh 
     indmeshptr->vendtax -= indmeshptr->baseval;
     indmeshptr->vnumtax -= indmeshptr->vnodbas; /* vnumtab is of size indmeshptr->vnodnbr */
 
-    p = memAllocGroup ((void **)
+    p = memAllocGroup ((void **) (void *)
           &indedgetax, (size_t) (indedgenbr    * sizeof (Gnum)),
           &indvneltax, (size_t) (indvelmnbr    * sizeof (Gnum)),
           &orgindxtax, (size_t) (orgvertnbr    * sizeof (Gnum)),
