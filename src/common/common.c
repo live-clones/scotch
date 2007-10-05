@@ -46,6 +46,8 @@
 /**                                 to     14 sep 1998     **/
 /**                # Version 2.0  : from : 27 sep 2004     **/
 /**                                 to     27 sep 2004     **/
+/**                # Version 5.0  : from : 02 oct 2007     **/
+/**                                 to     02 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,20 +70,20 @@
 double
 clockGet (void)
 {
-#ifdef DEAD_CODE                                 /* Old timing routine */
+#ifdef COMMON_TIMING_OLD                          /* Old timing routine */
   struct rusage       data;
 
   getrusage (RUSAGE_SELF, &data);
 
   return (((double) data.ru_utime.tv_sec  + (double) data.ru_stime.tv_sec) +
           ((double) data.ru_utime.tv_usec + (double) data.ru_stime.tv_usec) * 1.0e-6L);
-#else /* DEAD_CODE */
-  struct timespec tp;
+#else /* COMMON_TIMING_OLD */
+  struct timespec     tp;
 
   clock_gettime (CLOCK_REALTIME, &tp);            /* Elapsed time */
 
   return ((double) tp.tv_sec + (double) tp.tv_nsec * 1.0e-9L);
-#endif /* DEAD_CODE */
+#endif /* COMMON_TIMING_OLD */
 }
 #endif /* MPI_INT */
 

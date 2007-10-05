@@ -45,7 +45,7 @@
 /**                # Version 4.0  : from : 06 jan 2002     **/
 /**                                 to     28 mar 2006     **/
 /**                # Version 5.0  : from : 12 sep 2006     **/
-/**                                 to   : 04 aug 2007     **/
+/**                                 to   : 02 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -247,8 +247,7 @@ const Strat * restrict const  strat)              /*+ Separation strategy +*/
     errorPrint ("vgraphSeparateSt: invalid type specification for parser variables");
     return     (1);
   }
-  if ((sizeof (VgraphSeparateArParam) > sizeof (StratNodeMethodData)) ||
-      (sizeof (VgraphSeparateFmParam) > sizeof (StratNodeMethodData)) ||
+  if ((sizeof (VgraphSeparateFmParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (VgraphSeparateGgParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (VgraphSeparateGpParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (VgraphSeparateMlParam) > sizeof (StratNodeMethodData))) {
