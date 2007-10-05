@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 02 jan 2002     **/
 /**                                 to     25 feb 2004     **/
 /**                # Version 5.0  : from : 19 dec 2006     **/
-/**                                 to     10 sep 2007     **/
+/**                                 to     05 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -129,7 +129,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
   indgrafptr->vnohnbr    = orglistptr->vnumnbr;
   indgrafptr->vnohnnd    = orglistptr->vnumnbr + indgrafptr->s.baseval;
 
-  indedgenbr = ((indvertnbr * orggrafptr->s.degrmax) < orggrafptr->s.edgenbr) /* Choose best upper bound on number of edges */
+  indedgenbr = (indvertnbr < (orggrafptr->s.edgenbr / orggrafptr->s.degrmax)) /* Choose best upper bound on number of edges (avoid multiply overflow) */
                ? (indvertnbr * orggrafptr->s.degrmax) : orggrafptr->s.edgenbr;
   indedgesiz = (orggrafptr->s.edlotax != NULL) ? indedgenbr * 2 : indedgenbr; /* Account for edge load array size if graph has edge weights */
 

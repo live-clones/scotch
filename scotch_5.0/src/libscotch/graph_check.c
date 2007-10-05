@@ -55,7 +55,7 @@
 /**                # Version 4.0  : from : 24 nov 2001     **/
 /**                                 to     22 apr 2004     **/
 /**                # Version 5.0  : from : 13 dec 2006     **/
-/**                                 to     13 dec 2006     **/
+/**                                 to     02 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,6 +89,7 @@ const Graph * const         grafptr)
   Gnum                vertnum;                    /* Number of current vertex  */
   Gnum                velosum;                    /* Sum of vertex loads       */
   Gnum                edlosum;                    /* Sum of edge loads         */
+  Gnum                edgenbr;                    /* Number of edges (arcs)    */
   Gnum                edgenum;                    /* Number of current edge    */
   Gnum                degrmax;                    /* Maximum degree            */
 
@@ -97,7 +98,8 @@ const Graph * const         grafptr)
     return     (1);
   }
 
-  degrmax = 0;
+  degrmax =
+  edgenbr = 0;
   velosum = (grafptr->velotax == NULL) ? grafptr->vertnbr : 0;
   edlosum = (grafptr->edlotax == NULL) ? grafptr->edgenbr : 0;
   for (vertnum = grafptr->baseval; vertnum < grafptr->vertnnd; vertnum ++) {
@@ -110,6 +112,7 @@ const Graph * const         grafptr)
     if ((grafptr->vendtax[vertnum] - grafptr->verttax[vertnum]) > degrmax)
       degrmax = grafptr->vendtax[vertnum] - grafptr->verttax[vertnum];
 
+    edgenbr += grafptr->vendtax[vertnum] - grafptr->verttax[vertnum];
     for (edgenum = grafptr->verttax[vertnum]; edgenum < grafptr->vendtax[vertnum]; edgenum ++) {
       Gnum                vertend;                /* Number of end vertex      */
       Gnum                edgeend;                /* Number of end vertex edge */
@@ -149,6 +152,10 @@ const Graph * const         grafptr)
       }
       velosum += grafptr->velotax[vertnum];       /* Accumulate vertex loads */
     }
+  }
+  if (grafptr->edgenbr != edgenbr) {
+    errorPrint ("graphCheck: invalid number of edges");
+    return     (1);
   }
   if (grafptr->velosum != velosum) {
     errorPrint ("graphCheck: invalid vertex load sum");
