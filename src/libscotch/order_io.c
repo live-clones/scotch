@@ -42,7 +42,7 @@
 /**                # Version 4.0  : from : 19 dec 2001     **/
 /**                                 to     28 jun 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to     11 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -190,44 +190,49 @@ const Gnum * restrict const   vlbltab,
 FILE * const                  stream)
 {
   const Gnum * restrict vlbltax;
+  const Gnum * restrict peritax;
   Gnum * restrict       rangtab;
-  Gnum * restrict       cblktab;
-  Gnum                  vertnum;
+  Gnum * restrict       cblktax;
+  Gnum                  vnodnnd;
+  Gnum                  vnodnum;
   Gnum                  cblknum;
-
-  vlbltax = (vlbltab != NULL) ? (vlbltab - ordeptr->baseval) : NULL;
-
-  if (memAllocGroup ((void **) (void *)
-        &rangtab, (size_t) ((ordeptr->vnodnbr + 1) * sizeof (Gnum)),
-        &cblktab, (size_t) ( ordeptr->vnodnbr      * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint ("orderSaveMap: out of memory");
-    return     (1);
-  }
-
-  orderRang (ordeptr, rangtab);
-  for (vertnum = 0, cblknum = 0; vertnum < ordeptr->vnodnbr; vertnum ++) {
-    if (vertnum >= rangtab[cblknum + 1])
-      cblknum ++;
-    cblktab[ordeptr->peritab[vertnum] - ordeptr->baseval] = cblknum;
-  }
+  int                   o;
 
   if (fprintf (stream, "%ld\n", (long) ordeptr->vnodnbr) == EOF) {
     errorPrint ("orderSaveMap: bad output (1)");
-    memFree    (rangtab);                         /* Free memory group leader */
     return     (1);
   }
-  for (vertnum = 0; vertnum < ordeptr->vnodnbr; vertnum ++) {
+
+  if (memAllocGroup ((void **) (void *)
+        &rangtab, (size_t) ((ordeptr->vnodnbr + 1) * sizeof (Gnum)),
+        &cblktax, (size_t) ( ordeptr->vnodnbr      * sizeof (Gnum)), NULL) == NULL) {
+    errorPrint ("orderSaveMap: out of memory");
+    return     (1);
+  }
+  cblktax -= ordeptr->baseval;
+
+  orderRang (ordeptr, rangtab);
+  peritax = ordeptr->peritab - ordeptr->baseval;
+  for (vnodnum = ordeptr->baseval, vnodnnd = vnodnum + ordeptr->vnodnbr, cblknum = 0;
+       vnodnum < vnodnnd; vnodnum ++) {
+    if (vnodnum >= rangtab[cblknum + 1])
+      cblknum ++;
+    cblktax[peritax[vnodnum]] = cblknum;
+  }
+
+  vlbltax = (vlbltab != NULL) ? (vlbltab - ordeptr->baseval) : NULL;
+  for (vnodnum = ordeptr->baseval, o = 0; vnodnum < vnodnnd; vnodnum ++) {
     if (fprintf (stream, "%ld\t%ld\n",
-                 (long) ((vlbltax != NULL) ? vlbltax[vertnum + ordeptr->baseval] : (vertnum + ordeptr->baseval)),
-                 (long) cblktab[vertnum]) == EOF) {
+                 (long) ((vlbltax != NULL) ? vlbltax[vnodnum] : vnodnum),
+                 (long) cblktax[vnodnum]) == EOF) {
       errorPrint ("orderSaveMap: bad output (2)");
-      memFree    (rangtab);                       /* Free memory group leader */
-      return     (1);
+      o = 1;
+      break;
     }
   }
 
   memFree (rangtab);                              /* Free memory group leader */
-  return  (0);
+  return  (o);
 }
 
 /* This routine saves the separator
@@ -244,45 +249,50 @@ const Gnum * restrict const   vlbltab,
 FILE * const                  stream)
 {
   const Gnum * restrict vlbltax;
+  const Gnum * restrict peritax;
   Gnum * restrict       rangtab;
   Gnum * restrict       treetab;
-  Gnum * restrict       cblktab;
-  Gnum                  vertnum;
+  Gnum * restrict       cblktax;
+  Gnum                  vnodnnd;
+  Gnum                  vnodnum;
   Gnum                  cblknum;
+  int                   o;
 
-  vlbltax = (vlbltab != NULL) ? (vlbltab - ordeptr->baseval) : NULL;
+  if (fprintf (stream, "%ld\n", (long) ordeptr->vnodnbr) == EOF) {
+    errorPrint ("orderSaveTree: bad output (1)");
+    return     (1);
+  }
 
   if (memAllocGroup ((void **) (void *)
         &rangtab, (size_t) ((ordeptr->vnodnbr + 1) * sizeof (Gnum)),
         &treetab, (size_t) ( ordeptr->vnodnbr      * sizeof (Gnum)),
-        &cblktab, (size_t) ( ordeptr->vnodnbr      * sizeof (Gnum)), NULL) == NULL) {
+        &cblktax, (size_t) ( ordeptr->vnodnbr      * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("orderSaveTree: out of memory");
     return     (1);
   }
+  cblktax -= ordeptr->baseval;
 
   orderRang (ordeptr, rangtab);
   orderTree (ordeptr, treetab);
-  for (vertnum = 0, cblknum = 0; vertnum < ordeptr->vnodnbr; vertnum ++) {
-    if (vertnum >= rangtab[cblknum + 1])
+  peritax = ordeptr->peritab - ordeptr->baseval;
+  for (vnodnum = ordeptr->baseval, vnodnnd = vnodnum + ordeptr->vnodnbr, cblknum = 0;
+       vnodnum < vnodnnd; vnodnum ++) {
+    if (vnodnum >= rangtab[cblknum + 1])
       cblknum ++;
-    cblktab[ordeptr->peritab[vertnum] - ordeptr->baseval] = treetab[cblknum];
+    cblktax[peritax[vnodnum]] = treetab[cblknum];
   }
 
-  if (fprintf (stream, "%ld\n", (long) ordeptr->vnodnbr) == EOF) {
-    errorPrint ("orderSaveTree: bad output (1)");
-    memFree    (rangtab);                         /* Free memory group leader */
-    return     (1);
-  }
-  for (vertnum = 0; vertnum < ordeptr->vnodnbr; vertnum ++) {
+  vlbltax = (vlbltab != NULL) ? (vlbltab - ordeptr->baseval) : NULL;
+  for (vnodnum = ordeptr->baseval, o = 0; vnodnum < vnodnnd; vnodnum ++) {
     if (fprintf (stream, "%ld\t%ld\n",
-                 (long) ((vlbltax != NULL) ? vlbltax[vertnum + ordeptr->baseval] : (vertnum + ordeptr->baseval)),
-                 (long) cblktab[vertnum]) == EOF) {
-      errorPrint ("orderSaveTree: bad output (2)");
-      memFree    (rangtab);                       /* Free memory group leader */
-      return     (1);
+                 (long) ((vlbltax != NULL) ? vlbltax[vnodnum] : vnodnum),
+                 (long) cblktax[vnodnum]) == EOF) {
+      errorPrint ("orderSaveMap: bad output (2)");
+      o = 1;
+      break;
     }
   }
 
   memFree (rangtab);                              /* Free memory group leader */
-  return  (0);
+  return  (o);
 }
