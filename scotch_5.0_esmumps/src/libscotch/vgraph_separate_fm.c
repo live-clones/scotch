@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 07 jan 2002     **/
 /**                                 to     18 aug 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to     11 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -164,23 +164,15 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
   Gnum                            compsize1add;   /* Number of vertices to add to counters   */
   Gnum                            compsize1sub;
 
-#ifdef SCOTCH_DEBUG_VGRAPH4
-  fprintf (stderr, "vgraphSeparateFm: Entering: %ld=(%ld,%ld,%ld) %ld=(%ld,%ld,%ld)\n",
-           (long) grafptr->s.vertnbr,   (long) grafptr->compsize[0],
-           (long) grafptr->compsize[1], (long) grafptr->compsize[2],
-           (long) grafptr->s.velosum,   (long) grafptr->compload[0],
-           (long) grafptr->compload[1], (long) grafptr->compload[2]);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
-
   comploaddltmat = (paraptr->deltrat > 0.0L)
                    ? MAX ((Gnum) ((grafptr->compload[0] + grafptr->compload[1]) * paraptr->deltrat),
                           ((2 * grafptr->s.velosum) / grafptr->s.vertnbr))
                    : 0;
 
-  if (grafptr->fronnbr == 0) {                    /* If no frontier defined    */
-    if (grafptr->comploaddlt <= comploaddltmat)   /* If balance is achieved    */
-      return (0);                                 /* This algorithm is useless */
-    else {                                        /* Imbalance must be fought  */
+  if (grafptr->fronnbr == 0) {                    /* If no frontier defined     */
+    if (abs (grafptr->comploaddlt) <= comploaddltmat) /* If balance is achieved */
+      return (0);                                 /* This algorithm is useless  */
+    else {                                        /* Imbalance must be fought   */
       VgraphSeparateGgParam paradat;
 
       paradat.passnbr = 4;                        /* Use a standard algorithm */
@@ -296,12 +288,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
   lockdat.next =                                  /* List of locked vertices is empty  */
   lockdat.prev = &lockdat;
   do {                                            /* As long as there is improvement */
-#ifdef SCOTCH_DEBUG_VGRAPH4
-    fprintf (stderr, "vgraphSeparateFm: Backtracking: %ld %ld %ld\n",
-             (long) compload2, (long) comploaddlt, (long) comploaddltmax);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
-
-    while (savenbr -- > 0) {                      /* Delete exceeding moves */
+    while (savenbr -- > 0) {                      /* Delete exceeding moves          */
       Gnum                hashnum;
       int                 partval;
 
@@ -310,11 +297,6 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
       hashtab[hashnum].partval     = partval;     /* Restore vertex data */
       hashtab[hashnum].compgain[0] = savetab[savenbr].compgain[0];
       hashtab[hashnum].compgain[1] = savetab[savenbr].compgain[1];
-#ifdef SCOTCH_DEBUG_VGRAPH4
-      fprintf (stderr, "Backtrack %ld (%ld,%ld)[%ld]\n",
-               (long) hashtab[hashnum].vertnum, (long) hashtab[hashnum].compgain[0],
-               (long) hashtab[hashnum].compgain[1], (long) hashtab[hashnum].partval);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
 
       if (hashtab[hashnum].gainlink0.next >= VGRAPHSEPAFMSTATELINK) { /* If vertex is linked */
         gainTablDel (tablptr, &hashtab[hashnum].gainlink0); /* Unlink it                     */
@@ -360,11 +342,6 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
     }
     lockdat.prev = &lockdat;                      /* Restore backward chaining */
 
-#ifdef SCOTCH_DEBUG_VGRAPH4
-    fprintf (stderr, "vgraphSeparateFm: New pass: %ld %ld %ld\n",
-             (long) compload2, (long) comploaddlt, (long) comploaddltmax);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
-
     moveflag = 0;                                 /* No moves to date                          */
     movenbr  =                                    /* No uneffective moves yet                  */
     savenbr  = 0;                                 /* No recorded moves yet                     */
@@ -393,23 +370,11 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
       lockdat.next->prev      = &vexxptr->gainlink1;
       lockdat.next            = &vexxptr->gainlink1;
 
-#ifdef SCOTCH_DEBUG_VGRAPH4
-      fprintf (stderr, "Chose %ld (%ld,%ld)[%ld]\n",
-               (long) vexxptr->vertnum, (long) vexxptr->compgain[0],
-               (long) vexxptr->compgain[1], (long) partval);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
-
       vertnum      = vexxptr->vertnum;            /* Get vertex number */
       compload2   += vexxptr->compgain[partval];
       comploaddlt -= (2 * partval - 1) * (vexxptr->compgain[partval] - 2 * vexxptr->veloval); /* TRICK: -veloval */
 
       if (vexxptr->mswpnum != mswpnum) {          /* If vertex data not yet recorded */
-#ifdef SCOTCH_DEBUG_VGRAPH4
-        fprintf (stderr, "Record %ld (%ld,%ld)[2]\n",
-                 (long) vexxptr->vertnum,
-                 (long) vexxptr->compgain[0],
-                 (long) vexxptr->compgain[1]);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
         vexxptr->mswpnum = mswpnum;
         savetab[savenbr].hashnum     = vexxptr - hashtab;
         savetab[savenbr].partval     = 2;
@@ -439,10 +404,6 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
               return     (1);
             }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
-#ifdef SCOTCH_DEBUG_VGRAPH4
-            fprintf (stderr, "New neighbor %ld\n",
-                     (long) vertend);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
 
             vexxend->vertnum        = vertend;    /* Set its number (TRICK: mswpnum assumed to be always -1) */
             vexxend->partval        = 1 - partval; /* Vertex will be in separator                            */
@@ -459,12 +420,6 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
           if (vexxend->vertnum == vertend) {      /* If end vertex has been found       */
             if (vexxend->partval == 2) {          /* If already in separator or chained */
               if (vexxend->mswpnum != mswpnum) {  /* If vertex data not yet recorded    */
-#ifdef SCOTCH_DEBUG_VGRAPH4
-                fprintf (stderr, "Record %ld (%ld,%ld)[2]\n",
-                         (long) vexxend->vertnum,
-                         (long) vexxend->compgain[0],
-                         (long) vexxend->compgain[1]);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
                 vexxend->mswpnum = mswpnum;
                 savetab[savenbr].hashnum     = hashnum;
                 savetab[savenbr].partval     = 2;
@@ -491,11 +446,6 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
               Gnum                compgainp;      /* Gain to be added to gain of part partval */
 
               if (vexxend->mswpnum != mswpnum) {  /* If vertex data not yet recorded */
-#ifdef SCOTCH_DEBUG_VGRAPH4
-                fprintf (stderr, "Record %ld (0,0)[%ld]\n",
-                         (long) vexxend->vertnum,
-                         (long) (1 - partval));
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
                 vexxend->mswpnum = mswpnum;
                 savetab[savenbr].hashnum     = hashnum;
                 savetab[savenbr].partval     = 1 - partval;
@@ -537,12 +487,6 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
                     if (vexxent->partval == 2) {  /* If vertex is in separator (or is vexxptr) */
                       if (vexxent->mswpnum != mswpnum) { /* If vertex data not yet recorded    */
-#ifdef SCOTCH_DEBUG_VGRAPH4
-                        fprintf (stderr, "Record %ld (%ld,%ld)[2]\n",
-                                 (long) vexxent->vertnum,
-                                 (long) vexxent->compgain[0],
-                                 (long) vexxent->compgain[1]);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
                         vexxent->mswpnum = mswpnum;
                         savetab[savenbr].hashnum     = hashnum;
                         savetab[savenbr].partval     = 2;
@@ -617,9 +561,6 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
 
       if (hashnbr >= hashmax) {
-#ifdef SCOTCH_DEBUG_VGRAPH4
-        fprintf (stderr, "vgraphSeparateFm: Resizing\n");
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
         if (vgraphSeparateFmResize (&hashtab, &hashmax, &hashmsk, &savetab, savenbr, tablptr, &lockdat) != 0) {
           errorPrint ("vgraphSeparateFm: out of memory (2)");
           return     (1);
@@ -711,14 +652,6 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
-
-#ifdef SCOTCH_DEBUG_VGRAPH4
-  fprintf (stderr, "vgraphSeparateFm: Exiting:  %ld=(%ld,%ld,%ld) %ld=(%ld,%ld,%ld)\n",
-           (long) grafptr->s.vertnbr,   (long) grafptr->compsize[0],
-           (long) grafptr->compsize[1], (long) grafptr->compsize[2],
-           (long) grafptr->s.velosum,   (long) grafptr->compload[0],
-           (long) grafptr->compload[1], (long) grafptr->compload[2]);
-#endif /* SCOTCH_DEBUG_VGRAPH4 */
 
   memFree      (hashtab);                         /* Free group leader */
   gainTablExit (tablptr);
