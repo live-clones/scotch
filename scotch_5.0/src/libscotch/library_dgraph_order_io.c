@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 26 jul 2007     **/
-/**                                 to     26 jul 2007     **/
+/**                                 to     18 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,11 +52,8 @@
 
 #include "module.h"
 #include "common.h"
-#include "graph.h"
 #include "dgraph.h"
-#include "order.h"
 #include "dorder.h"
-#include "library_order.h"
 #include "scotch.h"
 
 /************************************/

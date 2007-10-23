@@ -1,3 +1,14 @@
+/*********************************************************
+**                                                      **
+**  WARNING : THIS IS NOT THE ORIGINAL INCLUDE FILE OF  **
+**  THE ParMeTiS SOFTWARE PACKAGE.                      **
+**  This file is a compatibility include file provided  **
+**  as part of the Scotch software distribution.        **
+**  Preferably use the original ParMeTiS include file   **
+**  to keep definitions of routines not overloaded by   **
+**  the libPTScotchMeTiS library.                       **
+**                                                      **
+*********************************************************/
 /* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
@@ -31,15 +42,15 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : library_dgraph_order_io_f.c             **/
+/**   NAME       : parmetis.h                              **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module is the Fortran API for the  **/
-/**                distributed ordering I/O routines of    **/
-/**                the libSCOTCH library.                  **/
+/**   FUNCTION   : Compatibility declaration file for the  **/
+/**                MeTiS interface routines provided by    **/
+/**                the Scotch project.                     **/
 /**                                                        **/
-/**   DATES      : # Version 5.0  : from : 26 jul 2007     **/
+/**   DATES      : # Version 5.0  : from : 17 oct 2007     **/
 /**                                 to     18 oct 2007     **/
 /**                                                        **/
 /************************************************************/
@@ -48,41 +59,15 @@
 **  The defines and includes.
 */
 
-#define LIBRARY
+#ifndef __parmetis_h__
+#define __parmetis_h__
 
-#include "module.h"
-#include "common.h"
-#include "scotch.h"
+#include <mpi.h>                                  /* Since ParMeTiS does it, do it too */
 
-/**************************************/
-/*                                    */
-/* These routines are the Fortran API */
-/* for the ordering routines.         */
-/*                                    */
-/**************************************/
-
-FORTRAN (                                               \
-SCOTCHFDGRAPHORDERSAVEMAP, scotchfdgraphordersavemap, ( \
-const SCOTCH_Dgraph * const     grafptr,                \
-const SCOTCH_Dordering * const  ordeptr,                \
-FILE * const                    stream,                 \
-int * const                     revaptr),               \
-(grafptr, ordeptr, stream, revaptr))
-{
-  *revaptr = SCOTCH_dgraphOrderSaveMap (grafptr, ordeptr, stream);
-}
+#endif /* __parmetis_h__ */
 
 /*
-**
+**  The function prototypes.
 */
 
-FORTRAN (                                                 \
-SCOTCHFDGRAPHORDERSAVETREE, scotchfdgraphordersavetree, ( \
-const SCOTCH_Dgraph * const     grafptr,                  \
-const SCOTCH_Dordering * const  ordeptr,                  \
-FILE * const                    stream,                   \
-int * const                     revaptr),                 \
-(grafptr, ordeptr, stream, revaptr))
-{
-  *revaptr = SCOTCH_dgraphOrderSaveTree (grafptr, ordeptr, stream);
-}
+void                        ParMETIS_V3_NodeND  (const int * const, int * const, int * const, const int * const, const int * const, int * const, int * const, MPI_Comm * const);
