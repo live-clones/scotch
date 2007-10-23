@@ -31,15 +31,15 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : library_dgraph_order_io_f.c             **/
+/**   NAME       : library_dgraph_order_perm.c             **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module is the Fortran API for the  **/
-/**                distributed ordering I/O routines of    **/
-/**                the libSCOTCH library.                  **/
+/**   FUNCTION   : This module is the API for the distri-  **/
+/**                buted ordering permutation building     **/
+/**                routine of the libSCOTCH library.       **/
 /**                                                        **/
-/**   DATES      : # Version 5.0  : from : 26 jul 2007     **/
+/**   DATES      : # Version 5.0  : from : 18 oct 2007     **/
 /**                                 to     18 oct 2007     **/
 /**                                                        **/
 /************************************************************/
@@ -52,37 +52,31 @@
 
 #include "module.h"
 #include "common.h"
+#include "dgraph.h"
+#include "dorder.h"
 #include "scotch.h"
 
-/**************************************/
-/*                                    */
-/* These routines are the Fortran API */
-/* for the ordering routines.         */
-/*                                    */
-/**************************************/
+/************************************/
+/*                                  */
+/* These routines are the C API for */
+/* the distributed ordering         */
+/* handling routines.               */
+/*                                  */
+/************************************/
 
-FORTRAN (                                               \
-SCOTCHFDGRAPHORDERSAVEMAP, scotchfdgraphordersavemap, ( \
-const SCOTCH_Dgraph * const     grafptr,                \
-const SCOTCH_Dordering * const  ordeptr,                \
-FILE * const                    stream,                 \
-int * const                     revaptr),               \
-(grafptr, ordeptr, stream, revaptr))
+/*+ This routine fills the given distributed
+*** permutation array with the permutation
+*** stored in the given distributed ordering.
+*** It returns:
+*** - 0   : on success.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_dgraphOrderPerm (
+const SCOTCH_Dgraph * const     grafptr,          /*+ Graph to order     +*/
+const SCOTCH_Dordering * const  ordeptr,          /*+ Computed ordering  +*/
+SCOTCH_Num * const              permloctab)       /*+ Direct permutation +*/
 {
-  *revaptr = SCOTCH_dgraphOrderSaveMap (grafptr, ordeptr, stream);
-}
-
-/*
-**
-*/
-
-FORTRAN (                                                 \
-SCOTCHFDGRAPHORDERSAVETREE, scotchfdgraphordersavetree, ( \
-const SCOTCH_Dgraph * const     grafptr,                  \
-const SCOTCH_Dordering * const  ordeptr,                  \
-FILE * const                    stream,                   \
-int * const                     revaptr),                 \
-(grafptr, ordeptr, stream, revaptr))
-{
-  *revaptr = SCOTCH_dgraphOrderSaveTree (grafptr, ordeptr, stream);
+  return (dorderPerm ((Dorder *) ordeptr, (Dgraph *) grafptr, permloctab));
 }

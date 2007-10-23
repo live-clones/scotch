@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2007 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -51,11 +51,14 @@ include ../Makefile.inc
 scotch				:	libscotchmetis$(LIB)
 
 ptscotch			:
+					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC=$(CCP) SCOTCHLIB=ptscotch	\
+					libptscotchparmetis$(LIB)
 
 install				:	scotch
 					-$(CP) libscotchmetis$(LIB) ../../bin
 
-ptinstall			:
+ptinstall			:	ptscotch
+					-$(CP) libptscotchparmetis$(LIB) ../../bin
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB)
@@ -85,6 +88,21 @@ metis_graph_part_f$(OBJ)	:	metis_graph_part_f.c			\
 					../../bin/common.h			\
 					../../bin/scotch.h			\
 					metis.h
+
+parmetis_dgraph_order$(OBJ)	:	parmetis_dgraph_order.c			\
+					../../bin/common.h			\
+					../../bin/ptscotch.h			\
+					parmetis.h
+
+parmetis_dgraph_order_f$(OBJ)	:	parmetis_dgraph_order_f.c		\
+					../../bin/common.h			\
+					../../bin/ptscotch.h			\
+					parmetis.h
+
+libptscotchparmetis$(LIB)	:	parmetis_dgraph_order$(OBJ)		\
+					parmetis_dgraph_order_f$(OBJ)
+					$(AR) $(ARFLAGS) $(@) $(^)
+					-$(RANLIB) $(@)
 
 libscotchmetis$(LIB)		:	metis_graph_order$(OBJ)			\
 					metis_graph_order_f$(OBJ)		\

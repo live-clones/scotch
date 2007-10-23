@@ -31,16 +31,16 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : library_dgraph_order_io_f.c             **/
+/**   NAME       : parmetis_dgraph_order_f.c               **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module is the Fortran API for the  **/
-/**                distributed ordering I/O routines of    **/
-/**                the libSCOTCH library.                  **/
+/**   FUNCTION   : This file contains the Fortran API of   **/
+/**                the compatibility library for the       **/
+/**                ParMeTiS ordering routine.              **/
 /**                                                        **/
-/**   DATES      : # Version 5.0  : from : 26 jul 2007     **/
-/**                                 to     18 oct 2007     **/
+/**   DATES      : # Version 5.0  : from : 17 oct 2007     **/
+/**                                 to     17 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,39 +50,33 @@
 
 #define LIBRARY
 
-#include "module.h"
 #include "common.h"
-#include "scotch.h"
+#include "ptscotch.h"
+#include "parmetis.h"                             /* Our "parmetis.h" file */
 
 /**************************************/
 /*                                    */
 /* These routines are the Fortran API */
-/* for the ordering routines.         */
+/* for the distributed graph ordering */
+/* routines.                          */
 /*                                    */
 /**************************************/
-
-FORTRAN (                                               \
-SCOTCHFDGRAPHORDERSAVEMAP, scotchfdgraphordersavemap, ( \
-const SCOTCH_Dgraph * const     grafptr,                \
-const SCOTCH_Dordering * const  ordeptr,                \
-FILE * const                    stream,                 \
-int * const                     revaptr),               \
-(grafptr, ordeptr, stream, revaptr))
-{
-  *revaptr = SCOTCH_dgraphOrderSaveMap (grafptr, ordeptr, stream);
-}
 
 /*
 **
 */
 
-FORTRAN (                                                 \
-SCOTCHFDGRAPHORDERSAVETREE, scotchfdgraphordersavetree, ( \
-const SCOTCH_Dgraph * const     grafptr,                  \
-const SCOTCH_Dordering * const  ordeptr,                  \
-FILE * const                    stream,                   \
-int * const                     revaptr),                 \
-(grafptr, ordeptr, stream, revaptr))
+FORTRAN (                                       \
+PARMETIS_V3_NODEND, parmetis_v3_nodend, (       \
+const int * const           vtxdist,            \
+int * const                 xadj,               \
+int * const                 adjncy,             \
+const int * const           numflag,            \
+const int * const           options,            \
+int * const                 order,              \
+int * const                 sizes,              \
+MPI_Comm * const            commptr),           \
+(vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr))
 {
-  *revaptr = SCOTCH_dgraphOrderSaveTree (grafptr, ordeptr, stream);
+  ParMETIS_V3_NodeND (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr);
 }

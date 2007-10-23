@@ -40,7 +40,7 @@
 /**                distributed ordering structure.         **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 15 apr 2006     **/
-/**                                 to     27 jul 2007     **/
+/**                                 to     14 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -108,25 +108,25 @@ typedef struct DorderNode_ {
     traversal.                                 +*/
 
 typedef struct DorderCblk_ {
-  DorderLink                        linkdat;      /*+ Link to other blocs. TRICK: FIRST         +*/
-  struct Dorder_ *                  ordelocptr;   /*+ Pointer to local distributed ordering     +*/
-  int                               typeval;      /*+ Distributed type of tree node             +*/
-  DorderIndex                       fathnum;      /*+ Master index of parent column block       +*/
-  DorderIndex                       cblknum;      /*+ Master index of this column block         +*/
-  Gnum                              ordeglbval;   /*+ Starting index of inverse permutation     +*/
-  Gnum                              vnodglbnbr;   /*+ Number of node vertices in subtree        +*/
-  Gnum                              cblkfthnum;   /*+ Rank of node in father column block array +*/
+  DorderLink                        linkdat;      /*+ Link to other blocs. TRICK: FIRST              +*/
+  struct Dorder_ *                  ordelocptr;   /*+ Pointer to local distributed ordering          +*/
+  int                               typeval;      /*+ Distributed type of tree node                  +*/
+  DorderIndex                       fathnum;      /*+ Master index of parent column block            +*/
+  DorderIndex                       cblknum;      /*+ Master index of this column block              +*/
+  Gnum                              ordeglbval;   /*+ Un-based starting index of inverse permutation +*/
+  Gnum                              vnodglbnbr;   /*+ Number of node vertices in subtree             +*/
+  Gnum                              cblkfthnum;   /*+ Rank of node in father column block array      +*/
   union {
-    struct {                                      /*+ Fragment of inverse permutation           +*/
-      Gnum                          ordelocval;   /*+ Starting index of inverse permutation     +*/
-      Gnum                          vnodlocnbr;   /*+ Number of node vertices in fragment       +*/
-      Gnum * restrict               periloctab;   /*+ Pointer to inverse permutation fragment   +*/
-      Gnum                          nodelocnbr;   /*+ Number of local column blocks             +*/
-      DorderNode * restrict         nodeloctab;   /*+ Array of local column blocks              +*/
-      Gnum                          cblklocnum;   /*+ Local number of first local column block  +*/
+    struct {                                      /*+ Fragment of inverse permutation                +*/
+      Gnum                          ordelocval;   /*+ Starting index of inverse permutation          +*/
+      Gnum                          vnodlocnbr;   /*+ Number of node vertices in fragment            +*/
+      Gnum * restrict               periloctab;   /*+ Pointer to inverse permutation fragment        +*/
+      Gnum                          nodelocnbr;   /*+ Number of local column blocks                  +*/
+      DorderNode * restrict         nodeloctab;   /*+ Array of local column blocks                   +*/
+      Gnum                          cblklocnum;   /*+ Local number of first local column block       +*/
     } leaf;
-    struct {                                      /*+ Fragment of inverse permutation           +*/
-      Gnum                          cblkglbnbr;   /*+ Number of descendent nodes (2 or 3)       +*/
+    struct {                                      /*+ Fragment of inverse permutation                +*/
+      Gnum                          cblkglbnbr;   /*+ Number of descendent nodes (2 or 3)            +*/
     } nedi;
   } data;
 } DorderCblk;
@@ -164,6 +164,7 @@ int                         dorderInit          (Dorder * const, const Gnum, con
 void                        dorderExit          (Dorder * const);
 void                        dorderFree          (Dorder * const);
 #ifdef DGRAPH_H
+int                         dorderPerm          (const Dorder * const, const Dgraph * const, Gnum * const);
 int                         dorderSave          (const Dorder * const, const Dgraph * const, FILE * const);
 int                         dorderSaveMap       (const Dorder * const, const Dgraph * const, FILE * const);
 int                         dorderSaveTree      (const Dorder * const, const Dgraph * const, FILE * const);
