@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to     09 dec 2005     **/
 /**                # Version 5.0  : from : 10 sep 2006     **/
-/**                                 to     07 jun 2007     **/
+/**                                 to     02 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -214,7 +214,7 @@ const SCOTCH_Num * const    edlotab)              /* Edge load array            
   srcgrafptr->vertnbr = vertnbr;
   srcgrafptr->vertnnd = vertnbr + baseval;
   srcgrafptr->verttax = (Gnum *) verttab - baseval;
-  srcgrafptr->vendtax = ((vendtab == NULL) || (vendtab == verttab + 1)) ? srcgrafptr->verttax + 1 : (Gnum *) vendtab - baseval;
+  srcgrafptr->vendtax = ((vendtab == NULL) || (vendtab == verttab) || (vendtab == verttab + 1)) ? srcgrafptr->verttax + 1 : (Gnum *) vendtab - baseval;
   srcgrafptr->velotax = ((velotab == NULL) || (velotab == verttab)) ? NULL : (Gnum *) velotab - baseval;
   srcgrafptr->vnumtax = NULL;
   srcgrafptr->vlbltax = ((vlbltab == NULL) || (vlbltab == verttab)) ? NULL : (Gnum *) vlbltab - baseval;
