@@ -446,6 +446,13 @@ dorder_io_tree$(OBJ)		:	dorder_io_tree.c			\
 					dorder.h				\
 					order.h
 
+dorder_perm$(OBJ)		:	dorder_perm.c				\
+					module.h				\
+					common.h				\
+					dgraph.h				\
+					dorder.h				\
+					dorder_perm.h
+
 gain$(OBJ)			:	gain.c					\
 					module.h				\
 					common.h				\
@@ -1069,6 +1076,18 @@ library_dgraph_order_io$(OBJ)	:	library_dgraph_order_io.c		\
 					scotch.h
 
 library_dgraph_order_io_f$(OBJ)	:	library_dgraph_order_io_f.c		\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_dgraph_order_perm$(OBJ)	:	library_dgraph_order_perm.c		\
+					module.h				\
+					common.h				\
+					dgraph.h				\
+					dorder.h				\
+					scotch.h
+
+library_dgraph_order_perm_f$(OBJ):	library_dgraph_order_perm_f.c		\
 					module.h				\
 					common.h				\
 					scotch.h
@@ -1776,6 +1795,7 @@ libptscotch$(LIB)		:	dgraph$(OBJ)				\
 					dorder_gather$(OBJ)			\
 					dorder_io$(OBJ)				\
 					dorder_io_tree$(OBJ)			\
+					dorder_perm$(OBJ)			\
 					hdgraph$(OBJ)				\
 					hdgraph_check$(OBJ)			\
 					hdgraph_fold$(OBJ)			\
@@ -1806,6 +1826,8 @@ libptscotch$(LIB)		:	dgraph$(OBJ)				\
 					library_dgraph_order_gather_f$(OBJ)	\
 					library_dgraph_order_io$(OBJ)		\
 					library_dgraph_order_io_f$(OBJ)		\
+					library_dgraph_order_perm$(OBJ)		\
+					library_dgraph_order_perm_f$(OBJ)	\
 					library_dgraph_scatter$(OBJ)		\
 					library_dgraph_scatter_f$(OBJ)		\
 					library_dgraph_stat$(OBJ)		\
