@@ -49,6 +49,8 @@
 /**                                 to     01 jun 1999     **/
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to     11 dec 2001     **/
+/**                # Version 5.0  : from : 13 dec 2007     **/
+/**                                 to     13 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -136,7 +138,7 @@ typedef struct C_VertSort_ {
     name array entries.        +*/
 
 typedef struct C_ParseCode_ {
-  uint                      code;                 /*+ Code value +*/
+  int                       code;                 /*+ Code value +*/
   char *                    name;                 /*+ Code name  +*/
 } C_ParseCode;
 
@@ -145,7 +147,7 @@ typedef struct C_ParseCode_ {
 
 typedef struct C_ParseArg_ {
   const char *              name;                 /*+ Name of the argument                         +*/
-  uint                      code;                 /*+ Code value                                   +*/
+  int                       code;                 /*+ Code value                                   +*/
   const char *              format;               /*+ scanf-like format; NULL means char, no value +*/
   const void *              ptr;                  /*+ Pointer to the argument location             +*/
   int                    (* func) ();             /*+ Pointer to the argument test function        +*/
@@ -170,4 +172,4 @@ void                        C_mapInit           (C_Mapping * const, const C_Grap
 void                        C_mapExit           (C_Mapping * const);
 int                         C_mapLoad           (C_Mapping * const, FILE * const);
 
-int                         C_parse             (const C_ParseCode * const, const C_ParseArg * const, uint * const, char * const);
+int                         C_parse             (const C_ParseCode * const, const C_ParseArg * const, int * const, char * const);

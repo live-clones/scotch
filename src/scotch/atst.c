@@ -49,6 +49,8 @@
 /**                                 to   : 03 feb 2000     **/
 /**                # Version 4.0  : from : 09 feb 2004     **/
 /**                                 to   : 23 nov 2005     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -197,7 +199,7 @@ char *              argv[];
   fprintf (C_filepntrlogout, "A\tDistance\tmin=%u\tmax=%u\tavg=%g\tdlt=%g\n",
            dstmin, dstmax, dstavg, dstdlt);
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   archExit (&archdat);
 
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
@@ -206,7 +208,7 @@ char *              argv[];
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

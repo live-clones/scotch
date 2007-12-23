@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 11 feb 2002     **/
 /**                                 to   : 18 may 2004     **/
+/**                # Version 5.0  : from : 13 dec 2007     **/
+/**                                 to   : 13 dec 2007     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY,dZ) mesh   **/
 /**                  are numbered as terminals so that     **/
@@ -91,7 +93,7 @@ main (
 int                         argc,
 char *                      argv[])
 {
-  uint                flagval;                    /* Process flags      */
+  int                 flagval;                    /* Process flags      */
   SCOTCH_Num          baseval;                    /* Base value         */
   SCOTCH_Num          d[3] = { 1, 1, 1 };         /* Mesh dimensions    */
   SCOTCH_Num          c[3];                       /* Vertex coordinates */

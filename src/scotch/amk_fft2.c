@@ -50,6 +50,8 @@
 /**                                 to   : 02 oct 1998     **/
 /**                # Version 3.4  : from : 03 feb 2000     **/
 /**                                 to   : 03 feb 2000     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -233,7 +235,7 @@ char *                      argv[])
     }
   }
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   C_queueExit (&C_distaQueue);
   memFree     (C_distaTab);
 
@@ -243,7 +245,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

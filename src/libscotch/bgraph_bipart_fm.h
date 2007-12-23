@@ -87,7 +87,7 @@
 typedef struct BgraphBipartFmParam_ {
   INT                       movenbr;              /*+ Maximum number of uneffective moves that can be done +*/
   INT                       passnbr;              /*+ Number of passes to be performed (-1 : infinite)     +*/
-  double                    deltrat;              /*+ Maximum weight imbalance ratio                       +*/
+  double                    deltval;              /*+ Maximum weight imbalance ratio                       +*/
 } BgraphBipartFmParam;
 
 /*+ The hash vertex structure. For trick

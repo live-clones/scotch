@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 26 sep 2002     **/
 /**                                 to   : 17 feb 2004     **/
+/**                # Version 5.0  : from : 13 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /**   NOTES      : # The nodes and elements of the         **/
 /**                  (dX,dY,dZ) mesh are numbered so that  **/
@@ -95,12 +97,12 @@ char *                      argv[])
   SCOTCH_Num          n[3];                       /* Mesh node dimensions    */
   SCOTCH_Num          c[3];                       /* Vertex coordinates      */
   SCOTCH_Num          velmnbr;                    /* First node number       */
-  uint                flag;                       /* Process flags           */
+  int                 flagval;                    /* Process flags           */
   int                 i;
 
   errorProg ("mmk_m3");
 
-  flag = C_FLAGDEFAULT;                           /* Set default flags */
+  flagval = C_FLAGDEFAULT;                        /* Set default flags */
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
@@ -130,7 +132,7 @@ char *                      argv[])
       switch (argv[i][1]) {
         case 'G' :                                /* Output mesh geometry */
         case 'g' :
-          flag |= C_FLAGGEOOUT;
+          flagval |= C_FLAGGEOOUT;
           if (argv[i][2] != '\0')
             C_filenamegeoout = &argv[i][2];
           break;
@@ -235,7 +237,7 @@ char *                      argv[])
     }
   }
 
-  if (flag & C_FLAGGEOOUT) {                      /* If geometry is wanted       */
+  if (flagval & C_FLAGGEOOUT) {                   /* If geometry is wanted       */
     fprintf (C_filepntrgeoout, "3\n%ld\n",        /* Output geometry file header */
               (long) (velmnbr + n[0] * n[1] * n[2]));
 
@@ -261,14 +263,14 @@ char *                      argv[])
     }
   }
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
     if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
         (C_fileTab[i].name[1] != '\0')) {
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

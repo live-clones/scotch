@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,53 +31,70 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : bgraph_bipart_df.h                      **/
+/**   NAME       : library_dgraph_order_tree_dist.c        **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module contains the function       **/
-/**                declarations for the diffusion scheme   **/
-/**                bipartitioning method.                  **/
+/**   FUNCTION   : This module is the API for the distri-  **/
+/**                buted ordering distributed tree         **/
+/**                building routine of the libSCOTCH       **§
+/**                library.                                **/
 /**                                                        **/
-/**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
-/**                                 to     28 may 2007     **/
-/**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     23 dec 2007     **/
+/**   DATES      : # Version 5.1  : from : 30 nov 2007     **/
+/**                                 to     30 nov 2007     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The defines.
+**  The defines and includes.
 */
 
-/* Small non-zero float value. */
+#define LIBRARY
 
-#define BGRAPHBIPARTDFEPSILON       (1.0F / (float) (GNUMMAX))
+#include "module.h"
+#include "common.h"
+#include "dgraph.h"
+#include "dorder.h"
+#include "scotch.h"
 
-/*+ Sign masking operator. +*/
+/************************************/
+/*                                  */
+/* These routines are the C API for */
+/* the distributed ordering         */
+/* handling routines.               */
+/*                                  */
+/************************************/
 
-#define BGRAPHBIPARTDFGNUMSGNMSK(i) ((Gnum) 0 - (((Gunum) (i)) >> (sizeof (Gnum) * 8 - 1)))
+/*+ This routine returns the number of
+*** distributed column blocks contained
+*** in the given distributed ordering.
+*** It returns:
+*** - >=0  : on success.
+*** - <0   : on error.
++*/
 
-/*
-**  The type and structure definitions.
-*/
+SCOTCH_Num
+SCOTCH_dgraphOrderCblkDist (
+const SCOTCH_Dgraph * const     grafptr,          /*+ Graph to order    +*/
+const SCOTCH_Dordering * const  ordeptr)          /*+ Computed ordering +*/
+{
+  return (dorderCblkDist ((Dorder *) ordeptr));
+}
 
-/** Method parameters. **/
+/*+ This routine fills the given distributed
+*** permutation array with the permutation
+*** stored in the given distributed ordering.
+*** It returns:
+*** - 0   : on success.
+*** - !0  : on error.
++*/
 
-typedef struct BgraphBipartDfParam_ {
-  INT                       passnbr;              /*+ Number of passes to do        +*/
-  double                    cdifval;              /*+ Coefficient of diffused load  +*/
-  double                    cremval;              /*+ Coefficient of remaining load +*/
-} BgraphBipartDfParam;
-
-/*
-**  The function prototypes.
-*/
-
-#ifndef BGRAPH_BIPART_DF
-#define static
-#endif
-
-int                         bgraphBipartDf      (Bgraph * restrict const, const BgraphBipartDfParam * const);
-
-#undef static
+int
+SCOTCH_dgraphOrderTreeDist (
+const SCOTCH_Dgraph * const     grafptr,          /*+ Graph to order    +*/
+const SCOTCH_Dordering * const  ordeptr,          /*+ Computed ordering +*/
+SCOTCH_Num * const              treeglbtab,       /*+ Father array      +*/
+SCOTCH_Num * const              sizeglbtab)       /*+ Size array        +*/
+{
+  return (dorderTreeDist ((Dorder *) ordeptr, (Dgraph *) grafptr, treeglbtab, sizeglbtab));
+}

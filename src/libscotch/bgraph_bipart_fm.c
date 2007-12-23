@@ -176,7 +176,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
   Gnum               domdist;                    /* Distance between the two subdomains     */
   Gnum               fronnum;
 
-  compload0dltmat = (paraptr->deltrat > 0.0L) ? ((Gnum) (paraptr->deltrat * (double) grafptr->s.velosum) + 1) : 0;
+  compload0dltmat = (paraptr->deltval > 0.0L) ? ((Gnum) (paraptr->deltval * (double) grafptr->s.velosum) + 1) : 0;
   compload0dltmax = MAX (compload0dltmat, abs (grafptr->compload0dlt)); /* Set current maximum distance */
 
   if (grafptr->fronnbr == 0) {                    /* If no current frontier      */
@@ -186,7 +186,8 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
       BgraphBipartGgParam   paradat;
 
       paradat.passnbr = 4;                        /* Use a standard algorithm */
-      bgraphBipartGg (grafptr, &paradat);
+      if (bgraphBipartGg (grafptr, &paradat) != 0) /* Return if error         */
+        return (1);
       if (grafptr->fronnbr == 0)                  /* If new partition has no frontier */
         return (0);                               /* This algorithm is still useless  */
       compload0dltmax = MAX (compload0dltmat, abs (grafptr->compload0dlt));

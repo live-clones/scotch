@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 25 feb 2003     **/
 /**                                 to     27 jan 2004     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -167,7 +169,7 @@ char *                      argv[])
   fprintf (C_filepntrdatout, "S\tEdge\tnbr=%ld\n",
            (long) (edgenbr / 2));
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   SCOTCH_meshExit (&meshdat);
 
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
@@ -176,7 +178,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   exit (0);
 }

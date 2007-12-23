@@ -50,6 +50,8 @@
 /**                                 to     12 oct 1999     **/
 /**                # Version 4.0  : from : 10 sep 2003     **/
 /**                                 to   : 10 sep 2003     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -177,7 +179,7 @@ char *                      argv[])
              edlomin, edlomax, edlosum, edloavg, edlodlt);
   }
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   SCOTCH_graphExit (&grafdat);
 
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
@@ -186,7 +188,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   exit (0);
 }

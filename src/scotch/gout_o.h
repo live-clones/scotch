@@ -51,6 +51,8 @@
 /**                                 to     02 jun 1999     **/
 /**                # Version 5.0  : from : 25 may 2007     **/
 /**                                 to     25 may 2007     **/
+/**                # Version 5.1  : from : 25 oct 2007     **/
+/**                                 to     26 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,7 +68,7 @@
 #define O_PSPICTHEIGHT              10.0          /* PostScript picture height (in inches) */
 #define O_PSPICTWIDTH               6.6           /* PostScript picture witdh (in inches)  */
 
-/*+ PostScript Mesh output definitions. +*/
+/*+ PostScript mesh output definitions. +*/
 
 #define O_POSMESHPICTRESOL          10000.0       /* Picture resolution */
 
@@ -75,6 +77,10 @@
 #define O_POSMESHISOREDUC           0.20          /* Z-axis reduction coefficient */
 
 #define O_POSMESHCOLNBR             16            /* Number of colors */
+
+/*+ Tulip graph output definitions. +*/
+
+#define O_TULMESHDISKRATIO          0.1           /* Node disk ratio */
 
 /*
 **  The type and structure definitions.
@@ -92,6 +98,7 @@ typedef enum O_OutType_ {
   O_OUTTYPEINVMESH,                               /*+ Mesh SGI Open Inventor (3D) +*/
   O_OUTTYPEPOSMATR,                               /*+ Matrix PostScript (2D)      +*/
   O_OUTTYPEPOSMESH,                               /*+ Mesh PostScript (2D)        +*/
+  O_OUTTYPETULMESH,                               /*+ Mesh Tulip (3D)             +*/
   O_OUTTYPENBR                                    /*+ Number of output types      +*/
 } O_OutType;
 
@@ -115,6 +122,11 @@ typedef struct O_OutParam_ {
     O_Point                 min;                  /*+ Clipping ratios           +*/
     O_Point                 max;
   } PosMesh;
+  struct {                                        /*+ Tulip graph structure    +*/
+    char                    color;                /*+ 'b' : b/w; 'c' : color   +*/
+    char                    edge;                 /*+ 'r' : remove; 'v' : view +*/
+    char                    disk;                 /*+ 'd' : draw; 'a' : avoid  +*/
+  } TulMesh;
 } O_OutParam;
 
 /*+ The Inventor path array element. +*/
@@ -152,3 +164,4 @@ void                        outDraw             (const C_Graph * const, const C_
 int                         outDrawInvMesh      (const C_Graph * const, const C_Geometry * const, const C_Mapping * const, FILE * const);
 int                         outDrawPosMatr      (const C_Graph * const, const C_Geometry * const, const C_Mapping * const, FILE * const);
 int                         outDrawPosMesh      (const C_Graph * const, const C_Geometry * const, const C_Mapping * const, FILE * const);
+int                         outDrawTulMesh      (const C_Graph * const, const C_Geometry * const, const C_Mapping * const, FILE * const);

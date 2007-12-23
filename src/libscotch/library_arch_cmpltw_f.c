@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,53 +31,49 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : bgraph_bipart_df.h                      **/
+/**   NAME       : library_arch_cmpltw_f.c                 **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module contains the function       **/
-/**                declarations for the diffusion scheme   **/
-/**                bipartitioning method.                  **/
+/**   FUNCTION   : This file contains the Fortran API for  **/
+/**                the weighted complete graph target      **/
+/**                architecture handling routine of the    **/
+/**                libSCOTCH library.                      **/
 /**                                                        **/
-/**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
-/**                                 to     28 may 2007     **/
-/**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     23 dec 2007     **/
+/**   DATES      : # Version 5.1  : from : 16 dec 2007     **/
+/**                                 to     16 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The defines.
+**  The defines and includes.
 */
 
-/* Small non-zero float value. */
+#define LIBRARY
 
-#define BGRAPHBIPARTDFEPSILON       (1.0F / (float) (GNUMMAX))
+#include "module.h"
+#include "common.h"
+#include "scotch.h"
 
-/*+ Sign masking operator. +*/
-
-#define BGRAPHBIPARTDFGNUMSGNMSK(i) ((Gnum) 0 - (((Gunum) (i)) >> (sizeof (Gnum) * 8 - 1)))
+/*************************************/
+/*                                   */
+/* These routines are the Fortran    */
+/* API for the architecture handling */
+/* routines.                         */
+/*                                   */
+/*************************************/
 
 /*
-**  The type and structure definitions.
+**
 */
 
-/** Method parameters. **/
-
-typedef struct BgraphBipartDfParam_ {
-  INT                       passnbr;              /*+ Number of passes to do        +*/
-  double                    cdifval;              /*+ Coefficient of diffused load  +*/
-  double                    cremval;              /*+ Coefficient of remaining load +*/
-} BgraphBipartDfParam;
-
-/*
-**  The function prototypes.
-*/
-
-#ifndef BGRAPH_BIPART_DF
-#define static
-#endif
-
-int                         bgraphBipartDf      (Bgraph * restrict const, const BgraphBipartDfParam * const);
-
-#undef static
+FORTRAN (                                       \
+SCOTCHFARCHCMPLTW, scotchfarchcmpltw, (         \
+SCOTCH_Arch * const         archptr,            \
+const SCOTCH_Num * const    vertnbr,            \
+const SCOTCH_Num * const    velotab,            \
+int * const                 revaptr),           \
+(archptr, vertnbr, velotab, revaptr))
+{
+  *revaptr = SCOTCH_archCmpltw (archptr, *vertnbr, velotab);
+}
