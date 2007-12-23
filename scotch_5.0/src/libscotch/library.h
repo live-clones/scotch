@@ -49,6 +49,8 @@
 /**                                 to     20 dec 2005     **/
 /**                # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to   : 18 oct 2007     **/
+/**                # Version 5.1  : from : 30 nov 2007     **/
+/**                                 to   : 05 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -154,9 +156,11 @@ void                        SCOTCH_dgraphCorderExit (const SCOTCH_Dgraph * const
 int                         SCOTCH_dgraphOrderInit (const SCOTCH_Dgraph * const, SCOTCH_Dordering * const);
 void                        SCOTCH_dgraphOrderExit (const SCOTCH_Dgraph * const, SCOTCH_Dordering * const);
 int                         SCOTCH_dgraphOrderSave (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, FILE * const);
-int                         SCOTCH_dgraphOrderPerm (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, SCOTCH_Num * const);
 int                         SCOTCH_dgraphOrderSaveMap (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, FILE * const);
 int                         SCOTCH_dgraphOrderSaveTree (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, FILE * const);
+int                         SCOTCH_dgraphOrderPerm (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, SCOTCH_Num * const);
+SCOTCH_Num                  SCOTCH_dgraphOrderCblkDist (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const);
+SCOTCH_Num                  SCOTCH_dgraphOrderTreeDist (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         SCOTCH_dgraphOrderCompute (const SCOTCH_Dgraph * const, SCOTCH_Dordering * const, const SCOTCH_Strat * const);
 int                         SCOTCH_dgraphOrderComputeList (const SCOTCH_Dgraph * const, SCOTCH_Dordering * const, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Strat * const);
 int                         SCOTCH_dgraphOrderGather (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, SCOTCH_Ordering * const);

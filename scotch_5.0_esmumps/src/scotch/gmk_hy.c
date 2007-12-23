@@ -48,6 +48,8 @@
 /**                                 to   : 06 oct 1998     **/
 /**                # Version 3.4  : from : 03 feb 2000     **/
 /**                                 to   : 03 feb 2000     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -166,14 +168,14 @@ char *                      argv[])
     fprintf (C_filepntrsrcout, "\n");
   }
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
     if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
         (C_fileTab[i].name[1] != '\0')) {
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   exit (0);
 }

@@ -158,7 +158,7 @@ static StratParamTab        bgraphbipartstparatab[] = { /* Method parameter list
                                 NULL },
                               { BGRAPHBIPARTMETHFM,  STRATPARAMDOUBLE, "bal",
                                 (byte *) &bgraphbipartdefaultfm.param,
-                                (byte *) &bgraphbipartdefaultfm.param.deltrat,
+                                (byte *) &bgraphbipartdefaultfm.param.deltval,
                                 NULL },
                               { BGRAPHBIPARTMETHGG,  STRATPARAMINT,    "pass",
                                 (byte *) &bgraphbipartdefaultgg.param,

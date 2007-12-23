@@ -45,7 +45,7 @@
 /**                separator in the original graph.        **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 04 mar 2006     **/
-/**                                 to   : 12 sep 2007     **/
+/**                                 to   : 07 nov 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,7 +75,7 @@
 ** The distributed graph is not guaranteed to be
 ** balanced at at all.
 ** It returns:
-** - 0   : if the bipartitioning could be computed.
+** - 0   : if the distributed band graph could be computed.
 ** - !0  : on error.
 */
 
@@ -334,7 +334,7 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
     errorPrint ("vdgraphSeparateBd: out of memory (5)");
     cheklocval = 1;
   }
-  else if ((bandgrafdat.partgsttax = memAlloc (bandedgelocnbr * sizeof (GraphPart))) == NULL) { /* Upper bound on number of ghost vertices */
+  else if ((bandgrafdat.partgsttax = memAlloc ((bandvertlocnbr + bandedgelocnbr) * sizeof (GraphPart))) == NULL) { /* Upper bound on number of ghost vertices */
     errorPrint ("vdgraphSeparateBd: out of memory (6)");
     cheklocval = 1;
   }
@@ -424,9 +424,9 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
     if (grafptr->s.veloloctax != NULL) {
       Gnum              veloval;
 
-      veloval  = grafptr->s.veloloctax[vertlocnum];
-      bandvelolocsum  += veloval;                 /* Sum vertex loads                   */
-      bandvelolocsum1 += veloval & (0 - partval1); /* Sum vertex load if (partval == 1) */
+      veloval = grafptr->s.veloloctax[vertlocnum];
+      bandvelolocsum  += veloval;                 /* Sum vertex loads                  */
+      bandvelolocsum1 += veloval & (- partval1);  /* Sum vertex load if (partval == 1) */
       bandgrafdat.s.veloloctax[bandvertlocnum] = veloval;
     }
     else
@@ -462,9 +462,9 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
     if (grafptr->s.veloloctax != NULL) {
       Gnum              veloval;
 
-      veloval  = grafptr->s.veloloctax[vertlocnum];
-      bandvelolocsum  += veloval;                 /* Sum vertex loads                   */
-      bandvelolocsum1 += veloval & (0 - partval1); /* Sum vertex load if (partval == 1) */
+      veloval = grafptr->s.veloloctax[vertlocnum];
+      bandvelolocsum  += veloval;                 /* Sum vertex loads                  */
+      bandvelolocsum1 += veloval & (- partval1);  /* Sum vertex load if (partval == 1) */
       bandgrafdat.s.veloloctax[bandvertlocnum] = veloval;
     }
     else

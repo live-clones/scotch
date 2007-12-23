@@ -54,6 +54,8 @@
 /**                                 to     08 feb 2004     **/
 /**                # Version 5.0  : from : 25 may 2007     **/
 /**                                 to     25 may 2007     **/
+/**                # Version 5.1  : from : 25 oct 2007     **/
+/**                                 to     23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -112,6 +114,13 @@ static const char *         C_usageList[] = {     /* Usage */
   "                          x=<val>  : minimum x clipping ratio",
   "                          Y=<val>  : maximum y clipping ratio",
   "                          y=<val>  : minimum y clipping ratio",
+  "  -Ot[{<arguments>}]  : Tulip graph file :",
+  "                          b        : b/w output",
+  "                          c        : color output",
+  "                          r        : remove cut edges",
+  "                          v        : view cut edges",
+  "                          a        : avoid displaying disks",
+  "                          d        : display disks",
   "  -V                  : Print program version and copyright",
   "",
   "Default option set is : -Oi{c,v}",
@@ -218,7 +227,7 @@ char *                      argv[])
 
   outDraw (&grafdat, &geo, &map, C_filepntrdatout); /* Build and write the output */
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   C_mapExit        (&map);                        /* Free data structures */
   C_geoExit        (&geo);
   SCOTCH_graphExit (&grafdat);
@@ -229,7 +238,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }
@@ -682,17 +691,17 @@ int
 C_parse (
 const C_ParseCode * const   codeptr,             /* Pointer to the code array          */
 const C_ParseArg * const    argptr,              /* Pointer to the code argument array */
-uint * const                codeval,             /* Pointer to the code value to set   */
+int * const                 codeval,             /* Pointer to the code value to set   */
 char * const                string)              /* Pointer to the string to parse     */
 {
-  uint                code;                      /* Code found                       */
-  uint                codelen;                   /* Code name length                 */
+  int                 code;                      /* Code found                       */
+  int                 codelen;                   /* Code name length                 */
   char                argbuf[128];               /* Buffer for argument scanning     */
-  uint                arglen;                    /* Length of the current argument   */
+  int                 arglen;                    /* Length of the current argument   */
   char *              argbeg;                    /* Pointer to beginning of argument */
   char *              argend;                    /* Pointer to end of argument       */
   char *              argequ;                    /* Position of the '=' character    */
-  uint                i, j;
+  int                 i, j;
 
   codelen = 0;                                   /* No code recognized yet              */
   for (i = 0; codeptr[i].name != NULL; i ++) {   /* For all the codes                   */
@@ -716,7 +725,7 @@ char * const                string)              /* Pointer to the string to par
       if (*argend == '\0')                       /* If there is no end delimiter      */
         return (3);                              /* Return the syntax error value     */
 
-      arglen = ((argend - argbeg) < 127)         /* Get argument bounded length   */
+      arglen = ((argend - argbeg) < 127)         /* Get argument bounded length */
                ? (argend - argbeg)
                : 127;
       strncpy (argbuf, argbeg, arglen);          /* Copy the argument to the buffer */
@@ -725,16 +734,14 @@ char * const                string)              /* Pointer to the string to par
       if (argequ != NULL)                        /* If it exists                    */
         *argequ++ = '\0';                        /* Turn it into a separating null  */
 
-      for (i = 0, j = (unsigned int) -1;         /* Scan all the possible arguments */
-           argptr[i].name != NULL;
-           i ++) {
-        if ((argptr[i].code == code) &&          /* If the proper name is found */
+      for (i = 0, j = -1; argptr[i].name != NULL; i ++) { /* Scan all the possible arguments */
+        if ((argptr[i].code == code) &&          /* If the proper name is found              */
             (strcmp (argbuf, argptr[i].name) == 0)) {
           j = i;                                 /* Record the position */
           break;                                 /* Exit the loop       */
         }
       }
-      if (j == (unsigned int) -1)                /* If invalid argument     */
+      if (j == -1)                               /* If invalid argument     */
         return (2);                              /* Return the proper value */
 
       if (argptr[j].format != NULL) {            /* If there is a value to read    */

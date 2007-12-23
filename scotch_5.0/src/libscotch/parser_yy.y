@@ -47,6 +47,8 @@
 /**                                 to     01 oct 1998     **/
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     11 jun 2004     **/
+/**                # Version 5.1  : from : 30 oct 2007     **/
+/**                                 to     30 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -131,51 +133,9 @@ extern unsigned int         parsermethtokentab[]; /* Pre-definition for stupid c
 **  These rules define the strategy grammar.
 */
 
-STRAT         : STRATTEST
+STRAT         : STRATSELECT
               {
                 parserstratcurr = ($1);           /* Save pointer to root of tree */
-              }
-              ;
-
-STRATTEST     :
-              {
-                stratParserSelect (VALTEST);      /* Parse parameter tokens */
-              }
-                '/' TEST
-              {
-                stratParserSelect (VALSTRAT);     /* Parse strategy tokens */
-              }
-                '?' STRATSELECT STRATTESTELSE ';'
-              {
-                Strat *           strat;
-
-                if ((strat = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
-                  errorPrint  ("stratParserParse: out of memory (1)");
-                  stratExit ($6);
-                  if (($7) != NULL)
-                    stratExit ($7);
-                  stratTestExit ($3);
-                  YYABORT;
-                }
-
-                strat->tabl               = parserstrattab;
-                strat->type               = STRATNODECOND;
-                strat->data.cond.test     = ($3);
-                strat->data.cond.strat[0] = ($6);
-                strat->data.cond.strat[1] = ($7);
-
-                ($$) = strat;
-              }
-              | STRATSELECT
-              ;
-
-STRATTESTELSE : ':' STRATSELECT
-              {
-                ($$) = ($2);
-              }
-              |
-              {
-                ($$) = NULL;
               }
               ;
 
@@ -217,7 +177,7 @@ STRATEMPTY    : STRATCONCAT
               }
               ;
 
-STRATCONCAT   : STRATCONCAT STRATGROUP
+STRATCONCAT   : STRATCONCAT STRATTEST
               {
                 Strat *           strat;
 
@@ -235,10 +195,52 @@ STRATCONCAT   : STRATCONCAT STRATGROUP
 
                 ($$) = strat;
               }
+              | STRATTEST
+              ;
+
+STRATTEST     :
+              {
+                stratParserSelect (VALTEST);      /* Parse parameter tokens */
+              }
+                '/' TEST
+              {
+                stratParserSelect (VALSTRAT);     /* Parse strategy tokens */
+              }
+                '?' STRATSELECT STRATTESTELSE ';'
+              {
+                Strat *           strat;
+
+                if ((strat = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
+                  errorPrint  ("stratParserParse: out of memory (1)");
+                  stratExit ($6);
+                  if (($7) != NULL)
+                    stratExit ($7);
+                  stratTestExit ($3);
+                  YYABORT;
+                }
+
+                strat->tabl               = parserstrattab;
+                strat->type               = STRATNODECOND;
+                strat->data.cond.test     = ($3);
+                strat->data.cond.strat[0] = ($6);
+                strat->data.cond.strat[1] = ($7);
+
+                ($$) = strat;
+              }
               | STRATGROUP
               ;
 
-STRATGROUP    : '(' STRATTEST ')'
+STRATTESTELSE : ':' STRATSELECT
+              {
+                ($$) = ($2);
+              }
+              |
+              {
+                ($$) = NULL;
+              }
+              ;
+
+STRATGROUP    : '(' STRATSELECT ')'
               {
                 ($$) = ($2);
               }
@@ -425,7 +427,7 @@ PARAMVAL      : VALCASE
                 parserstratcurr  = NULL;
                 parserparamcurr  = NULL;
               }
-                STRATTEST
+                STRATSELECT
               {
                 parserstratcurr = ($<SAVE>1).strat; /* Restore current method    */
                 parserparamcurr = ($<SAVE>1).param; /* Restore current parameter */

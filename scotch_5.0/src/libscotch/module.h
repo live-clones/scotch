@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 12 dec 2001     **/
 /**                                 to     24 nov 2005     **/
 /**                # Version 5.0  : from : 24 feb 2007     **/
-/**                                 to     24 jul 2007     **/
+/**                                 to     16 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -193,6 +193,19 @@
 #define archCmpltDomLoad            _SCOTCHarchCmpltDomLoad
 #define archCmpltDomSave            _SCOTCHarchCmpltDomSave
 #define archCmpltDomBipart          _SCOTCHarchCmpltDomBipart
+#define archCmpltwArchBuild         _SCOTCHarchCmpltwArchBuild
+#define archCmpltwArchFree          _SCOTCHarchCmpltwArchFree
+#define archCmpltwArchLoad          _SCOTCHarchCmpltwArchLoad
+#define archCmpltwArchSave          _SCOTCHarchCmpltwArchSave
+#define archCmpltwDomNum            _SCOTCHarchCmpltwDomNum
+#define archCmpltwDomTerm           _SCOTCHarchCmpltwDomTerm
+#define archCmpltwDomSize           _SCOTCHarchCmpltwDomSize
+#define archCmpltwDomWght           _SCOTCHarchCmpltwDomWght
+#define archCmpltwDomDist           _SCOTCHarchCmpltwDomDist
+#define archCmpltwDomFrst           _SCOTCHarchCmpltwDomFrst
+#define archCmpltwDomLoad           _SCOTCHarchCmpltwDomLoad
+#define archCmpltwDomSave           _SCOTCHarchCmpltwDomSave
+#define archCmpltwDomBipart         _SCOTCHarchCmpltwDomBipart
 #define archDecoArchBuild           _SCOTCHarchDecoArchBuild
 #define archDecoArchFree            _SCOTCHarchDecoArchFree
 #define archDecoArchLoad            _SCOTCHarchDecoArchLoad
@@ -372,6 +385,7 @@
 #define dorderNew                   _SCOTCHdorderNew
 #define dorderNewSequ               _SCOTCHdorderNewSequ
 #define dorderNewSequIndex          _SCOTCHdorderNewSequIndex
+#define dorderPerm                  _SCOTCHdorderPerm
 #define dorderSave                  _SCOTCHdorderSave
 
 #define gainTablAddLin              _SCOTCHgainTablAddLin

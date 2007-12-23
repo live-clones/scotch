@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 19 jan 2004     **/
 /**                                 to   : 19 jan 2004     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -185,15 +187,15 @@ char *                      argv[])
   SCOTCH_meshInit (&meshdat);
   SCOTCH_geomInit (&geomdat);
   C_inpFormatTab[C_inpFormatType].func (&meshdat, &geomdat, C_filepntrsrcinp, NULL, C_inpFormatData);
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   if (SCOTCH_meshCheck (&meshdat) != 0) {
     errorPrint ("main: bad graph structure");
     return (1);
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
   C_outFormatTab[C_outFormatType].func (&meshdat, &geomdat, C_filepntrsrcout, C_filepntrgeoout, C_outFormatData);
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   SCOTCH_geomExit  (&geomdat);
   SCOTCH_graphExit (&meshdat);
 
@@ -203,7 +205,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

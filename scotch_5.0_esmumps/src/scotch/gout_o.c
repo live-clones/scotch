@@ -52,6 +52,8 @@
 /**                                 to     11 dec 2001     **/
 /**                # Version 5.0  : from : 25 may 2007     **/
 /**                                 to     18 jun 2007     **/
+/**                # Version 5.1  : from : 25 oct 2007     **/
+/**                                 to     15 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,19 +80,21 @@ static O_OutParam           O_outParam = {        /* Parameter structure        
                                 'v', 'd',
                                 's',
                                 { { 0.0, 0.0 } },
-                                { { 1.0, 1.0 } } } };
+                                { { 1.0, 1.0 } } },
+                              { 'c', 'v', 'a' } }; /* Tulip graph defaults */
 
 static C_ParseCode          O_outList[] = {       /* Output code list */
                               { O_OUTTYPEINVMESH, "i"  },
                               { O_OUTTYPEPOSMATR, "m"  },
                               { O_OUTTYPEPOSMESH, "p"  },
+                              { O_OUTTYPETULMESH, "t"  },
                               { O_OUTTYPENBR,     NULL } };
 
 static C_ParseArg           O_outArg[] = {        /* Output type argument list */
                               { "c",  O_OUTTYPEINVMESH, NULL,  &O_outParam.InvMesh.color },
                               { "g",  O_OUTTYPEINVMESH, NULL,  &O_outParam.InvMesh.color },
-                              { "r",  O_OUTTYPEINVMESH, NULL,  &O_outParam.InvMesh.edge },
-                              { "v",  O_OUTTYPEINVMESH, NULL,  &O_outParam.InvMesh.edge },
+                              { "r",  O_OUTTYPEINVMESH, NULL,  &O_outParam.InvMesh.edge  },
+                              { "v",  O_OUTTYPEINVMESH, NULL,  &O_outParam.InvMesh.edge  },
                               { "e",  O_OUTTYPEPOSMATR, NULL,  &O_outParam.PosMatr.type  },
                               { "f",  O_OUTTYPEPOSMATR, NULL,  &O_outParam.PosMatr.type  },
                               { "c",  O_OUTTYPEPOSMESH, NULL,  &O_outParam.PosMesh.color },
@@ -107,6 +111,12 @@ static C_ParseArg           O_outArg[] = {        /* Output type argument list *
                               { "X",  O_OUTTYPEPOSMESH, "%lf", &O_outParam.PosMesh.max.x },
                               { "y",  O_OUTTYPEPOSMESH, "%lf", &O_outParam.PosMesh.min.y },
                               { "Y",  O_OUTTYPEPOSMESH, "%lf", &O_outParam.PosMesh.max.y },
+                              { "b",  O_OUTTYPETULMESH, NULL,  &O_outParam.TulMesh.color },
+                              { "c",  O_OUTTYPETULMESH, NULL,  &O_outParam.TulMesh.color },
+                              { "r",  O_OUTTYPETULMESH, NULL,  &O_outParam.TulMesh.edge  },
+                              { "v",  O_OUTTYPETULMESH, NULL,  &O_outParam.TulMesh.edge  },
+                              { "a",  O_OUTTYPETULMESH, NULL,  &O_outParam.TulMesh.disk  },
+                              { "d",  O_OUTTYPETULMESH, NULL,  &O_outParam.TulMesh.disk  },
                               { NULL, O_OUTTYPENBR,     "",    NULL                      } };
 
 static double               outcolorcoltab[16][3] = { /* Color list */
@@ -196,7 +206,7 @@ int
 outDrawParse (
 char * const                string)
 {
-  return (C_parse (O_outList, O_outArg, (uint * const) &O_outParam.type, string));
+  return (C_parse (O_outList, O_outArg, (int * const) &O_outParam.type, string));
 }
 
 
@@ -222,16 +232,19 @@ FILE * const                stream)               /* Output stream   */
     case O_OUTTYPEPOSMESH :                       /* Mesh PostScript output type */
       outDrawPosMesh (grafptr, geomptr, mapptr, stream);
       break;
+    case O_OUTTYPETULMESH :                       /* Mesh Tulip output type */
+      outDrawTulMesh (grafptr, geomptr, mapptr, stream);
+      break;
     default :
       errorPrint ("outDraw: invalid output method (%d)", O_outParam.type);
   }
 }
 
-/******************************************/
-/**                                      **/
-/** This is the Inventor output routine. **/
-/**                                      **/
-/******************************************/
+/****************************************/
+/*                                      */
+/* This is the Inventor output routine. */
+/*                                      */
+/****************************************/
 
 int
 outDrawInvMesh (
@@ -242,11 +255,11 @@ FILE * const                stream)               /* Output stream              
 {
   void             (* outcolor) (const SCOTCH_Num, double[]); /* Color routine   */
   O_InvMeshPath *     pattab;                     /* Array of path building data */
-  uint *              idxtab;                     /* Array of indexes            */
-  uint                idxnbr;                     /* Number of indexes           */
+  int *               idxtab;                     /* Array of indexes            */
+  int                 idxnbr;                     /* Number of indexes           */
   time_t              pictime;                    /* Creation time               */
   double              color[3];                   /* Vertex color                */
-  uint                i, j, k;
+  int                 i, j, k;
 
   if (geomptr->verttab == NULL) {
     errorPrint ("outDrawInvMesh: geometry not provided");
@@ -257,8 +270,8 @@ FILE * const                stream)               /* Output stream              
 
   outcolor = (O_outParam.InvMesh.color == 'c') ? outColorColor : outColorBlw; /* Select color output routine */
 
-  if (((idxtab = (unsigned int *)  memAlloc ((grafptr->edgenbr / 2) * 3 * sizeof (unsigned int))) == NULL) ||
-      ((pattab = (O_InvMeshPath *) memAlloc (grafptr->vertnbr * sizeof (O_InvMeshPath)))          == NULL)) {
+  if (((idxtab = (int *)           memAlloc ((grafptr->edgenbr / 2) * 3 * sizeof (int))) == NULL) ||
+      ((pattab = (O_InvMeshPath *) memAlloc (grafptr->vertnbr * sizeof (O_InvMeshPath))) == NULL)) {
     errorPrint ("outDrawInvMesh: out of memory");
     if (idxtab != NULL)
       memFree (idxtab);
@@ -491,8 +504,8 @@ const C_Geometry * const    geomptr,              /* Graph geometry, sorted by v
 const C_Mapping * const     mapptr,               /* Result mapping, sorted by vertex label  */
 FILE * const                stream)               /* Output stream                           */
 {
-  uint                idxnbr;                     /* Number of indexes                               */
-  uint *              idxtab;                     /* Array of indexes                                */
+  int                 idxnbr;                     /* Number of indexes                               */
+  int *               idxtab;                     /* Array of indexes                                */
   O_PosMeshPath *     pattab;                     /* Array of path building data                     */
   O_PosMeshVertex *   pictab;                     /* Array of 2D coordinates, sorted by vertex index */
   O_Point             picmin;                     /* Picture minimum and maximum coordinates         */
@@ -502,7 +515,7 @@ FILE * const                stream)               /* Output stream              
   double              picsrad;                    /* Square of circle radius */
   time_t              pictime;                    /* Creation time           */
   double              color[3];                   /* Color values            */
-  uint                i, j, k;
+  int                 i, j, k;
 
   if (geomptr->verttab == NULL) {
     errorPrint ("outDrawPosMesh: geometry not provided");
@@ -511,9 +524,9 @@ FILE * const                stream)               /* Output stream              
 
   time (&pictime);                                /* Get current time */
 
-  if (((pictab = (O_PosMeshVertex *) memAlloc (grafptr->vertnbr * sizeof (O_PosMeshVertex)))        == NULL) ||
-      ((idxtab = (unsigned int *)    memAlloc ((grafptr->edgenbr / 2) * 3 * sizeof (unsigned int))) == NULL) ||
-      ((pattab = (O_PosMeshPath *)   memAlloc (grafptr->vertnbr * sizeof (O_PosMeshPath)))          == NULL)) {
+  if (((pictab = (O_PosMeshVertex *) memAlloc (grafptr->vertnbr * sizeof (O_PosMeshVertex))) == NULL) ||
+      ((idxtab = (int *)             memAlloc ((grafptr->edgenbr / 2) * 3 * sizeof (int)))   == NULL) ||
+      ((pattab = (O_PosMeshPath *)   memAlloc (grafptr->vertnbr * sizeof (O_PosMeshPath)))   == NULL)) {
     errorPrint ("outDrawPosMesh: out of memory");
     if (pictab != NULL) {
       if (idxtab != NULL)
@@ -768,6 +781,154 @@ FILE * const                stream)               /* Output stream              
   memFree (pattab);
   memFree (idxtab);
   memFree (pictab);
+
+  return (0);
+}
+
+/*************************************/
+/*                                   */
+/* This is the Tulip output routine. */
+/*                                   */
+/*************************************/
+
+int
+outDrawTulMesh (
+const C_Graph * const       grafptr,              /* Graph structure, sorted by vertex index */
+const C_Geometry * const    geomptr,              /* Graph geometry, sorted by vertex label  */
+const C_Mapping * const     mapptr,               /* Result mapping, sorted by vertex label  */
+FILE * const                stream)               /* Output stream                           */
+{
+  time_t              pictime;                    /* Creation time */
+  char *              pictimeptr;
+  char                pictimestr[64];
+  double              color[3];                   /* Vertex color  */
+  SCOTCH_Num          vertnum;
+  const SCOTCH_Num *  edgetax;
+  SCOTCH_Num          edgeidx;
+  char                c;
+
+  if (geomptr->verttab == NULL) {
+    errorPrint ("outDrawInvMesh: geometry not provided");
+    return      (1);
+  }
+
+  time (&pictime);                                /* Get current time */
+  pictimeptr = ctime (&pictime);
+  strncpy (pictimestr, pictimeptr, 63);
+  pictimestr[63] = '\0';
+  pictimestr[strlen (pictimestr) - 1] = '\0';
+
+  fprintf (stream, "(tlp \"2.0\"\n(author \"out (F. Pellegrini, LaBRI, Bordeaux)\")\n(date \"%s\")\n(comment \"%s %s %s\")\n", /* Write header */
+           pictimestr,
+           C_filenamesrcinp, C_filenamegeoinp, C_filenamemapinp);
+
+  if (grafptr->vertnbr == 0) {                    /* If nothing to write */
+    fprintf (stream, ")\n");
+    return  (0);
+  }
+
+  fprintf (stream, "(nodes\n");                   /* Write node list */
+  for (vertnum = 0; vertnum < (grafptr->vertnbr - 1); vertnum ++)
+    fprintf (stream, "%ld%c",
+             (long) (vertnum + grafptr->baseval),
+             ((vertnum & 7) == 7) ? '\n' : '\t');
+  fprintf (stream, "%ld)\n",
+           (long) (vertnum + grafptr->baseval));
+
+  edgetax = grafptr->edgetab - grafptr->baseval;
+  for (vertnum = 0, edgeidx = grafptr->baseval; vertnum < grafptr->vertnbr; vertnum ++) {
+    SCOTCH_Num          edgenum;
+    SCOTCH_Num          edgennd;
+
+    for (edgenum = grafptr->verttab[vertnum], edgennd = grafptr->vendtab[vertnum];
+         edgenum < edgennd; edgenum ++) {
+      SCOTCH_Num          vertend;
+
+      vertend = edgetax[edgenum];
+      if (vertend <= vertnum)                     /* True even if baseval=1 and as vertnum unbased */
+        continue;
+
+      fprintf (stream, "(edge %ld\t%ld\t%ld)\n",
+               (long) (edgeidx ++),
+               (long) (vertnum + grafptr->baseval),
+               (long) vertend);
+    }
+  }
+
+  fprintf (stream, "(property 0 layout \"viewLayout\"\n"); /* Write node coordinates */
+  c = '\n';
+  for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) {
+    if (vertnum == (grafptr->vertnbr - 1))
+      c = ')';
+    fprintf (stream, "(node %ld\t\"(%lf,%lf,%lf)\")%c",
+             (long) (vertnum + grafptr->baseval),
+             (double) geomptr->verttab[vertnum].x,
+             (double) geomptr->verttab[vertnum].y,
+             (double) geomptr->verttab[vertnum].z,
+             c);
+  }
+  fprintf (stream, "\n");
+
+  if (O_outParam.TulMesh.color == 'c') {
+    fprintf (stream, "(property 0 color \"viewColor\"\n(default \"(255,255,255,255)\" \"(0,0,0,0)\")\n"); /* Write node color values */
+    c = '\n';
+    for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) {
+      if (vertnum == (grafptr->vertnbr - 1))
+        c = ')';
+      outColorColor (mapptr->labltab[vertnum], color);
+      fprintf (stream, "(node %ld \"(%d,%d,%d,255)\")%c",
+               (long) (vertnum + grafptr->baseval),
+               (int) (color[0] * 255.0),
+               (int) (color[1] * 255.0),
+               (int) (color[2] * 255.0),
+               c);
+    }
+    fprintf (stream, "\n");
+  }
+
+  fprintf (stream, "(property 0 size \"viewSize\"\n(default \"(0,0,0)\" \"(0,0,0)\")"); /* Write default node size */
+  if (O_outParam.TulMesh.disk == 'd') {           /* If disks wanted */
+    const C_GeoVert *   geomtax;
+
+    geomtax = geomptr->verttab - grafptr->baseval;
+    fprintf (stream, "\n");
+    c = '\n';
+    for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) {
+      SCOTCH_Num          edgenum;
+      SCOTCH_Num          edgennd;
+      double              distmin;
+      C_GeoVert           vertpos;
+
+      if (vertnum == (grafptr->vertnbr - 1))
+        c = ')';
+
+      distmin = 1e30;                             /* Huge distance assumed */
+      vertpos.x = geomptr->verttab[vertnum].x;
+      vertpos.y = geomptr->verttab[vertnum].y;
+      vertpos.z = geomptr->verttab[vertnum].z;
+      for (edgenum = grafptr->verttab[vertnum], edgennd = grafptr->vendtab[vertnum];
+           edgenum < edgennd; edgenum ++) {
+        SCOTCH_Num          vertend;
+        double              distval;
+
+        vertend = edgetax[edgenum];
+        distval = (geomtax[vertend].x - vertpos.x) * (geomtax[vertend].x - vertpos.x) +
+                  (geomtax[vertend].y - vertpos.y) * (geomtax[vertend].y - vertpos.y) +
+                  (geomtax[vertend].z - vertpos.z) * (geomtax[vertend].z - vertpos.z);
+        if (distval < distmin)
+          distmin = distval;
+      }
+      distmin = sqrt (distmin) * (0.5 * O_TULMESHDISKRATIO);
+      fprintf (stream, "(node %ld \"(%lf,%lf,%lf)\")%c",
+               (long) (vertnum + grafptr->baseval),
+               distmin, distmin, distmin, c);
+    }
+    fprintf (stream, "\n");
+  }
+  else
+    fprintf (stream, ")\n");
+
+  fprintf (stream, ")\n");
 
   return (0);
 }

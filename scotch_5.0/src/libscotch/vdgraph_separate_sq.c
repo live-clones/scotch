@@ -238,7 +238,7 @@ const VdgraphSeparateSqParam * const  paraptr)    /*+ Method parameters +*/
       Gnum              veloval;
 
       veloval       = dgrfptr->s.veloloctax[vertlocnum];
-      partval2      = (partval & 2) >> 1;
+      partval2      = (partval >> 1) & 1;
       complocload1 += (-partval1) & veloval;      /* Superscalar update */
       complocload2 += (-partval2) & veloval;      /* Superscalar update */
     }

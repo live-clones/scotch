@@ -60,6 +60,8 @@
 /**                                 to     08 nov 2001     **/
 /**                # Version 4.0  : from : 04 nov 2003     **/
 /**                                 to     09 jan 2004     **/
+/**                # Version 5.1  : from : 11 dec 2007     **/
+/**                                 to     11 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,6 +75,7 @@
 #include "common.h"
 #include "arch.h"
 #include "arch_cmplt.h"
+#include "arch_cmpltw.h"
 #include "arch_deco.h"
 #include "arch_hcub.h"
 #include "arch_mesh.h"
@@ -99,6 +102,20 @@ static const ArchClass      archClassTab[] = { { "cmplt",
                                                  archCmpltDomSave,
                                                  archCmpltDomBipart,
                                                  sizeof (ArchCmpltDom) },
+                                               { "cmpltw",
+                                                 archCmpltwArchLoad,
+                                                 archCmpltwArchSave,
+                                                 archCmpltwArchFree,
+                                                 archCmpltwDomNum,
+                                                 archCmpltwDomTerm,
+                                                 archCmpltwDomSize,
+                                                 archCmpltwDomWght,
+                                                 archCmpltwDomDist,
+                                                 archCmpltwDomFrst,
+                                                 archCmpltwDomLoad,
+                                                 archCmpltwDomSave,
+                                                 archCmpltwDomBipart,
+                                                 sizeof (ArchCmpltwDom) },
                                                { "deco",
                                                  archDecoArchLoad,
                                                  archDecoArchSave,

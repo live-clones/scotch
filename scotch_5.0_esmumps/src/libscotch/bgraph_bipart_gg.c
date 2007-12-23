@@ -52,6 +52,8 @@
 /**                                 to     01 sep 2004     **/
 /**                # Version 5.0  : from : 02 jan 2007     **/
 /**                                 to     04 feb 2007     **/
+/**                # Version 5.1  : from : 21 nov 2007     **/
+/**                                 to     21 nov 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -207,8 +209,8 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
         vertnum = vexxptr - vexxtax;              /* Get number of selected vertex   */
         veloval = velobax[vertnum & velomsk];
 
-        if (abs (compload0dlt) < abs (compload0dlt - veloval)) { /* If swapping would cause imbalance */
-          permnum = grafptr->s.vertnbr;           /* Terminate swapping process                       */
+        if (abs (compload0dlt - veloval) >= abs (compload0dlt)) { /* If swapping would cause imbalance */
+          permnum = grafptr->s.vertnbr;           /* Terminate swapping process                        */
           vexxptr = NULL;
           break;
         }

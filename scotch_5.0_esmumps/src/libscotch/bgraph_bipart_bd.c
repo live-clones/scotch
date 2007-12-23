@@ -41,7 +41,7 @@
 /**                uncoarsening refinement.                **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 27 nov 2006     **/
-/**                                 to   : 10 sep 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -249,6 +249,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
                      &bndgrafdat.s.verttax, (size_t) ((bndvertnbr + 3) * sizeof (Gnum)),
                      &bndgrafdat.s.velotax, (size_t) ((bndvertnbr + 2) * sizeof (Gnum)),
                      &bndveextax,           (size_t) (bndveexnbr       * sizeof (Gnum)),
+                     &bndgrafdat.frontab,   (size_t) ((bndvertnbr + 2) * sizeof (Gnum)),
                      &bndgrafdat.parttax,   (size_t) ((bndvertnbr + 2) * sizeof (GraphPart)), NULL) == NULL) {
     errorPrint ("bgraphBipartBd: out of memory (2)");
     memFree    (queudat.qtab);
@@ -449,8 +450,6 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
     bndgrafdat.s.edlotax  = bndgrafdat.s.edgetax + bndedlooftval; /* Use old index into old array as new index */
   }
 
-  bndgrafdat.frontab = queudat.qtab + bndgrafdat.s.vertnbr; /* Recycle end of queue array and part of index array as band frontier array */
-
   for (bndfronnum = 0, bndvertnum = orggrafptr->s.baseval; /* Fill band frontier array with first vertex indices as they make the separator */
        bndfronnum < orggrafptr->fronnbr; bndfronnum ++, bndvertnum ++)
     bndgrafdat.frontab[bndfronnum] = bndvertnum;
@@ -505,7 +504,6 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   if ((graphCheck (&bndgrafdat.s) != 0) ||        /* Check band graph consistency */
       (bgraphCheck (&bndgrafdat)  != 0)) {
     errorPrint ("bgraphBipartBd: inconsistent band graph data");
-    bndgrafdat.frontab = NULL;                    /* Do not free frontab as it is not allocated */
     bgraphExit (&bndgrafdat);
     memFree    (queudat.qtab);
     return     (1);
@@ -514,14 +512,12 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
 
   if (bgraphBipartSt (&bndgrafdat, paraptr->stratbnd) != 0) { /* Apply strategy to band graph */
     errorPrint ("bgraphBipartBd: cannot bipartition band graph");
-    bndgrafdat.frontab = NULL;                    /* Do not free frontab as it is not allocated */
     bgraphExit (&bndgrafdat);
     memFree    (queudat.qtab);
     return     (1);
   }
   if (bndgrafdat.parttax[bndvertnnd] ==           /* If band graph was too small and anchors went to the same part, apply strategy on full graph */
       bndgrafdat.parttax[bndvertnnd + 1]) {
-    bndgrafdat.frontab = NULL;                    /* Do not free frontab as it is not allocated */
     bgraphExit (&bndgrafdat);
     memFree    (queudat.qtab);
     return     (bgraphBipartSt (orggrafptr, paraptr->stratorg));
@@ -591,7 +587,6 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_BGRAPH2
           if (orggrafptr->parttax[orgvertend] != ancpartval) { /* Original vertex should always be in same part as anchor */
             errorPrint ("bgraphBipartBd: internal error (10)");
-            bndgrafdat.frontab = NULL;            /* Do not free frontab as it is not allocated */
             bgraphExit (&bndgrafdat);
             memFree    (queudat.qtab);
             return     (1);
@@ -605,8 +600,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   }
   orggrafptr->fronnbr = orgfronnum;
 
-  bndgrafdat.frontab = NULL;                      /* Do not free frontab as it is not allocated */
-  bgraphExit (&bndgrafdat);                       /* Free band graph structures                 */
+  bgraphExit (&bndgrafdat);                       /* Free band graph structures */
   memFree    (queudat.qtab);
 
 #ifdef SCOTCH_DEBUG_BGRAPH2

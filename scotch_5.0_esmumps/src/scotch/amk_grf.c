@@ -50,6 +50,8 @@
 /**                                 to   : 03 feb 2000     **/
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to   : 17 mar 2005     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -240,7 +242,7 @@ char *                      argv[])
   SCOTCH_archBuild (&archdat, &grafdat, listnbr, listtab, &bipastrat); /* Compute architecture */
   SCOTCH_archSave  (&archdat, C_filepntrtgtout);  /* Write target architecture                 */
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   graphExit (&tgtgraph);                          /* Free target graph        */
   archExit  (&tgtarch);                           /* Free target architecture */
   stratExit (mapstrat);                           /* Free strategy string     */
@@ -252,7 +254,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

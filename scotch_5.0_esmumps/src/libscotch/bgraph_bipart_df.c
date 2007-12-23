@@ -48,6 +48,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
 /**                                 to     10 sep 2007     **/
+/**                # Version 5.1  : from : 29 oct 2007     **/
+/**                                 to     23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,44 +90,44 @@ bgraphBipartDf (
 Bgraph * restrict const           grafptr,        /*+ Active graph      +*/
 const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
 {
-  BgraphBipartDfVertex * restrict vexxtax;        /* Extended vertex array     */
-  float                           cdifval;        /* Diffusion coefficient     */
-  float                           cremval;        /* Remains coefficient       */
-  float * restrict                difotax;        /* Old diffusion value array */
-  float * restrict                difntax;        /* New diffusion value array */
-  Gnum                            fronnum;
-  Gnum                            compload1;
-  Gnum                            compsize1;
-  Gnum                            commloadintn;
-  Gnum                            commloadextn;
-  Gnum                            commgainextn;
-  const Gnum * restrict           veexbax;
-  Gnum                            veexmsk;
-  const Gnum * restrict           velobax;
-  Gnum                            velomsk;
-  Gnum                            vancval0;
-  Gnum                            vancval1;
-  Gnum                            vertnum;
-  unsigned int                    passnum;
+  float * restrict      edlstax;                  /* Edge load sum array       */
+  float * restrict      veextax;                  /* External leaks array      */
+  float * restrict      difotax;                  /* Old diffusion value array */
+  float * restrict      difntax;                  /* New diffusion value array */
+  float                 cdifval;
+  float                 cremval;
+  Gnum                  fronnum;
+  Gnum                  compload1;
+  Gnum                  compsize1;
+  Gnum                  commloadintn;
+  Gnum                  commloadextn;
+  Gnum                  commgainextn;
+  Gnum                  veexnbr;
+  float                 veexval;
+  const Gnum * restrict veexbax;
+  Gnum                  veexmsk;
+  float                 veloval;
+  const Gnum * restrict velobax;
+  Gnum                  velomsk;
+  Gnum                  vancval0;                 /* Initial values for both anchors */
+  Gnum                  vancval1;
+  float                 vanctab[2];               /* Value to add to each anchor */
+  Gnum                  vertnum;
+  INT                   passnum;
 
-#ifdef SCOTCH_DEBUG_BGRAPH2
-  if ((BGRAPHBIPARTDFGNUMSGNMSK ( 4242) !=  0) ||
-      (BGRAPHBIPARTDFGNUMSGNMSK (-4242) != ~0)) {
-    errorPrint ("bgraphBipartDf: internal error");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_BGRAPH2 */
-
+  veexnbr = (grafptr->veextax != NULL) ? grafptr->s.vertnbr : 0;
   if (memAllocGroup ((void **) (void *)
-                     &vexxtax, (size_t) (grafptr->s.vertnbr * sizeof (BgraphBipartDfVertex)),
+                     &edlstax, (size_t) (grafptr->s.vertnbr * sizeof (float)),
+                     &veextax, (size_t) (veexnbr            * sizeof (float)),
                      &difotax, (size_t) (grafptr->s.vertnbr * sizeof (float)),
                      &difntax, (size_t) (grafptr->s.vertnbr * sizeof (float)), NULL) == NULL) {
     errorPrint ("bgraphBipartDf: out of memory (1)");
     return     (1);
   }
-  vexxtax -= grafptr->s.baseval;                  /* Base access to vexxtax and diffusion arrays */
+  edlstax -= grafptr->s.baseval;                  /* Base access to veextax and diffusion arrays */
   difotax -= grafptr->s.baseval;
   difntax -= grafptr->s.baseval;
+  veextax  = (grafptr->veextax != NULL) ? veextax - grafptr->s.baseval : NULL;
 
   vancval0 = (float) - grafptr->compload0avg;     /* Values to be injected to anchor vertices at every iteration */
   vancval1 = (float) (grafptr->s.velosum - grafptr->compload0avg);
@@ -133,9 +135,8 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
     Gnum                vertnum;
 
     for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) {
-      difotax[vertnum]         = 0.0;
-      vexxtax[vertnum].veexval = 0.0;
-      vexxtax[vertnum].ielsval = 1.0F / (float) (grafptr->s.vendtax[vertnum] - grafptr->s.verttax[vertnum]);
+      difotax[vertnum] = 0.0;
+      edlstax[vertnum] = (float) (grafptr->s.vendtax[vertnum] - grafptr->s.verttax[vertnum]);
     }
   }
   else {                                          /* If graph has edge weights */
@@ -143,19 +144,19 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
 
     for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) {
       Gnum                edgenum;
+      Gnum                edgennd;
       Gnum                edlosum;
 
-      for (edgenum = grafptr->s.verttax[vertnum], edlosum = 0;
-           edgenum < grafptr->s.vendtax[vertnum]; edgenum ++)
+      for (edgenum = grafptr->s.verttax[vertnum], edgennd = grafptr->s.vendtax[vertnum], edlosum = 0;
+           edgenum < edgennd; edgenum ++)
         edlosum += grafptr->s.edlotax[edgenum];
 
-      difotax[vertnum]         = 0.0;
-      vexxtax[vertnum].veexval = 0.0;
-      vexxtax[vertnum].ielsval = 1.0 / (float) edlosum;
+      difotax[vertnum] = 0.0;
+      edlstax[vertnum] = (float) edlosum;
     }
   }
 
-  if (grafptr->veextax != NULL) {
+  if (veextax != NULL) {
     Gnum                vertnum;
     Gnum                veexsum;
     Gnum                veexsum0;
@@ -169,67 +170,93 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
       veexval = grafptr->veextax[vertnum];
       veexsum  += veexval;                        /* Sum all external gains, positive and negative           */
       veexsum0 += BGRAPHBIPARTDFGNUMSGNMSK (veexval); /* Sum all negative external gains; superscalar update */
-      vexxtax[vertnum].veexval = (float) veexval / idodist;
-
+      veextax[vertnum] = (float) veexval / idodist;
     }
     vancval0 += (float) veexsum0;
     vancval1 += (float) (veexsum - veexsum0);
   }
   vancval1 -= BGRAPHBIPARTDFEPSILON;              /* Slightly tilt value to add to part 1 */
 
-  vexxtax[grafptr->s.vertnnd - 2].veexval += vancval0; /* Negative value to inject to part 0 at every step */
-  vexxtax[grafptr->s.vertnnd - 1].veexval += vancval1; /* Positive value to add to part 1, tilted          */
+  difotax[grafptr->s.vertnnd - 2] = vancval0 / edlstax[grafptr->s.vertnnd - 2]; /* Load anchor vertices for first pass */
+  difotax[grafptr->s.vertnnd - 1] = vancval1 / edlstax[grafptr->s.vertnnd - 1];
 
-  difotax[grafptr->s.vertnnd - 2] = 10 * vexxtax[grafptr->s.vertnnd - 2].veexval * vexxtax[grafptr->s.vertnnd - 2].ielsval; /* Load anchor vertices for first pass */
-  difotax[grafptr->s.vertnnd - 1] = 10 * vexxtax[grafptr->s.vertnnd - 1].veexval * vexxtax[grafptr->s.vertnnd - 1].ielsval;
-
-  cdifval = (float) paraptr->cdifval;
-  cremval = (float) paraptr->cremval;
+  veexval = 0.0F;                                 /* Assume no external gains */
+  veloval = 1.0F;                                 /* Assume no vertex loads   */
+  cdifval = paraptr->cdifval;
+  cremval = paraptr->cremval;
   for (passnum = 0; passnum < paraptr->passnbr; passnum ++) { /* For all passes */
     Gnum                vertnum;
-    float * restrict    difttax;                  /* Temporary swap value */
-    float               veloval;
+    Gnum                vertnnd;
+    float               vancval;                  /* Value to load vertex with if anchor */
+    float * restrict    difttax;                  /* Temporary swap value                */
 
-    veloval = 1.0F;                               /* Assume no vertex loads */
-    for (vertnum = grafptr->s.baseval ; vertnum < grafptr->s.vertnnd; vertnum ++) {
-      Gnum                edgenum;
-      float               diffval;
+    vanctab[0] = vancval0;                        /* Copy anchor values to injection variables */
+    vanctab[1] = vancval1;
+    vancval    = 0.0F;                            /* At first vertices are not anchors */
+    vertnum    = grafptr->s.baseval;
+    vertnnd    = grafptr->s.vertnnd - 2;
+    while (1) {
+      for ( ; vertnum < vertnnd; vertnum ++) {
+        Gnum                edgenum;
+        Gnum                edgennd;
+        float               diffval;
 
-      diffval = 0.0F;
-      edgenum = grafptr->s.verttax[vertnum];
-      if (grafptr->s.edlotax != NULL)
-        for ( ; edgenum < grafptr->s.vendtax[vertnum]; edgenum ++)
-          diffval += difotax[grafptr->s.edgetax[edgenum]] * (float) grafptr->s.edlotax[edgenum];
-      else
-        for ( ; edgenum < grafptr->s.vendtax[vertnum]; edgenum ++)
-          diffval += difotax[grafptr->s.edgetax[edgenum]];
+        edgenum = grafptr->s.verttax[vertnum];
+        edgennd = grafptr->s.vendtax[vertnum];
+        diffval = 0.0F;
+        if (grafptr->s.edlotax != NULL)
+          for ( ; edgenum < edgennd; edgenum ++)
+            diffval += difotax[grafptr->s.edgetax[edgenum]] * (float) grafptr->s.edlotax[edgenum];
+        else
+          for ( ; edgenum < edgennd; edgenum ++)
+            diffval += difotax[grafptr->s.edgetax[edgenum]];
 
-      diffval *= cdifval;
-      diffval += vexxtax[vertnum].veexval + (difotax[vertnum] * cremval) / vexxtax[vertnum].ielsval;
-      if (grafptr->s.velotax != NULL)
-        veloval = (float) grafptr->s.velotax[vertnum];
-      if (diffval >= 0.0F) {
-        diffval = (diffval - veloval) * vexxtax[vertnum].ielsval;
-        if (diffval <= 0.0F)
-          diffval = +BGRAPHBIPARTDFEPSILON;
+        diffval *= cdifval;
+        diffval += difotax[vertnum] * cremval * edlstax[vertnum];
+        if (grafptr->s.velotax != NULL)
+          veloval = (float) grafptr->s.velotax[vertnum];
+        if (veextax != NULL) {
+          veexval = veextax[vertnum] * diffval;
+          if (veexval >= 0.0F)                    /* If vertex is already in right part */
+            veexval = 0.0F;                       /* Then it will not be impacted       */
+          else {
+            int                 partval;
+
+            partval = (diffval < 0.0F) ? 0 : 1;   /* Load anchor with load removed from vertex */
+            vanctab[partval] += (float) (2 * partval - 1) * veexval;
+          }
+        }
+        if (diffval >= 0.0F) {
+          diffval -= veloval + veexval;
+          if (diffval <= 0.0F)
+            diffval = +BGRAPHBIPARTDFEPSILON;
+        }
+        else {
+          diffval += veloval + veexval;
+          if (diffval >= 0.0F)
+            diffval = -BGRAPHBIPARTDFEPSILON;
+        }
+        if (isnan (diffval))                      /* If overflow occured (because of avalanche process)                        */
+          goto abort;                             /* Exit main loop without swapping arrays so as to keep last valid iteration */
+
+        difntax[vertnum] = diffval / edlstax[vertnum];
       }
-      else {
-        diffval = (diffval + veloval) * vexxtax[vertnum].ielsval;
-        if (diffval >= 0.0F)
-          diffval = -BGRAPHBIPARTDFEPSILON;
-      }
-      difntax[vertnum] = diffval;
+      if (vertnum == grafptr->s.vertnnd)          /* If all vertices processed, exit intermediate infinite loop */
+        break;
+
+      vertnnd ++;                                 /* Prepare to go only for one more run      */
+      vancval = vanctab[vertnum - grafptr->s.vertnnd + 2]; /* Load variable with anchor value */
     }
 
     difttax = difntax;                            /* Swap old and new diffusion arrays */
     difntax = difotax;
     difotax = difttax;
   }
+abort :                                           /* If overflow occured, resume here */
 
-  for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) { /* Set vertices as not flagged */
+  for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) /* Update part according to diffusion state */
     grafptr->parttax[vertnum] = (difotax[vertnum] <= 0.0F) ? 0 : 1;
-    vexxtax[vertnum].veexval  = 0.0F;
-  }
+
   if (grafptr->veextax != NULL) {
     veexbax = grafptr->veextax;
     veexmsk = ~((Gnum) 0);
@@ -282,7 +309,7 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
   grafptr->commload     = commloadextn + (commloadintn / 2) * grafptr->domdist;
   grafptr->commgainextn = commgainextn;
 
-  memFree (vexxtax + grafptr->s.baseval);
+  memFree (edlstax + grafptr->s.baseval);
 
 #ifdef SCOTCH_DEBUG_BGRAPH2
   if (bgraphCheck (grafptr) != 0) {

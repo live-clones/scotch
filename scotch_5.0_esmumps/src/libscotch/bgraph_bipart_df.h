@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
 /**                                 to     28 may 2007     **/
+/**                # Version 5.1  : from : 29 oct 2007     **/
+/**                                 to     23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,15 +69,6 @@ typedef struct BgraphBipartDfParam_ {
   double                    cdifval;              /*+ Coefficient of diffused load  +*/
   double                    cremval;              /*+ Coefficient of remaining load +*/
 } BgraphBipartDfParam;
-
-/*+ The complementary vertex structure. For
-    trick reasons, the gain table data structure
-    must be the first field of the structure.    +*/
-
-typedef struct BgraphBipartDfVertex_ {
-  float                     veexval;              /*+ Veexval, divided by domdist     +*/
-  float                     ielsval;              /*+ Inverse of vertex edge load sum +*/
-} BgraphBipartDfVertex;
 
 /*
 **  The function prototypes.

@@ -61,6 +61,8 @@
 /**                                 to     08 nov 2001     **/
 /**                # Version 4.0  : from : 01 jan 2002     **/
 /**                                 to     07 dec 2004     **/
+/**                # Version 5.1  : from : 11 dec 2007     **/
+/**                                 to     11 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,6 +112,7 @@ typedef struct Arch_ {
     ArchTorus2              torus2;               /*+ 2D-torus architecture                      +*/
     ArchTorus3              torus3;               /*+ 3D-torus architecture                      +*/
     ArchHcub                hcub;                 /*+ Hypercube architecture                     +*/
+    ArchCmpltw              cmpltw;               /*+ Weighted complete graph architecture       +*/
     ArchCmplt               cmplt;                /*+ Complete graph architecture                +*/
     ArchLeaf                leaf;                 /*+ Tree-leaf architecture                     +*/
     ArchVcmplt              vcmplt;               /*+ Variable-sized complete graph architecture +*/
@@ -133,6 +136,7 @@ typedef struct ArchDom_ {
     ArchDomTorus3           torus3;               /*+ 3D-torus domain type                      +*/
     ArchDomHcub             hcub;                 /*+ Hypercube domain type                     +*/
     ArchDomCmplt            cmplt;                /*+ Complete graph domain type                +*/
+    ArchDomCmpltw           cmpltw;               /*+ Weighted complete graph domain type       +*/
     ArchDomLeaf             leaf;                 /*+ Tree-leaf domain type                     +*/
     ArchDomVcmplt           vcmplt;               /*+ Variable-sized complete graph domain type +*/
     ArchDomVhcub            vhcub;                /*+ Variable-sized hypercube domain type      +*/

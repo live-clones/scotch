@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 15 apr 2006     **/
 /**                                 to     14 oct 2007     **/
+/**                # Version 5.1  : from : 28 nov 2007     **/
+/**                                 to     28 nov 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -108,7 +110,7 @@ typedef struct DorderNode_ {
     traversal.                                 +*/
 
 typedef struct DorderCblk_ {
-  DorderLink                        linkdat;      /*+ Link to other blocs. TRICK: FIRST              +*/
+  DorderLink                        linkdat;      /*+ Link to other blocks. TRICK: FIRST             +*/
   struct Dorder_ *                  ordelocptr;   /*+ Pointer to local distributed ordering          +*/
   int                               typeval;      /*+ Distributed type of tree node                  +*/
   DorderIndex                       fathnum;      /*+ Master index of parent column block            +*/
@@ -169,6 +171,8 @@ int                         dorderSave          (const Dorder * const, const Dgr
 int                         dorderSaveMap       (const Dorder * const, const Dgraph * const, FILE * const);
 int                         dorderSaveTree      (const Dorder * const, const Dgraph * const, FILE * const);
 #endif /* DGRAPH_H */
+Gnum                        dorderCblkDist      (const Dorder * restrict const);
+int                         dorderTreeDist      (const Dorder * restrict const, const Dgraph * restrict const, Gnum * restrict const, Gnum * restrict const);
 #ifdef ORDER_H
 int                         dorderGather        (const Dorder * const, Order * const);
 int                         dorderGatherTree    (const Dorder * const, Order * const, const int);

@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 21 jan 2004     **/
 /**                                 to   : 21 jan 2004     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -136,17 +138,17 @@ char *                      argv[])
   SCOTCH_meshLoad  (&meshdat, C_filepntrmshinp, -1);
   SCOTCH_meshCheck (&meshdat);
   SCOTCH_meshGraph (&meshdat, &grafdat);
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   if (SCOTCH_graphCheck (&grafdat) != 0) {
     errorPrint ("main: bad graph structure");
     return (1);
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
   SCOTCH_graphSave (&grafdat, C_filepntrgrfout);
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   SCOTCH_graphExit (&grafdat);
-  SCOTCH_meshExit  (&meshgrafdat);
+  SCOTCH_meshExit  (&meshdat);
 
   for (i = 0; i < C_FILENBR; i ++) {             /* For all file names     */
     if ((C_fileTab[i].name[0] != '-') ||         /* If not standard stream */
@@ -154,7 +156,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

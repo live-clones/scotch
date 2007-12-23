@@ -60,6 +60,8 @@
 /**                                 to   : 03 feb 2000     **/
 /**                # Version 4.0  : from : 16 jan 2004     **/
 /**                                 to   : 27 dec 2004     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -264,11 +266,11 @@ char *                      argv[])
   if (flag & C_FLAGVERBMAP)
     SCOTCH_graphMapView (&grafdat, &mapdat, C_filepntrlogout);
 
-#ifdef SCOTCH_DEBUG_MAIN1
-  SCOTCH_mapExit   (&mapdat);
-  SCOTCH_stratExit (&mapstrat);
-  SCOTCH_archExit  (&archdat);
-  SCOTCH_graphExit (&grafdat);
+#ifdef SCOTCH_DEBUG_ALL
+  SCOTCH_graphMapExit (&grafdat, &mapdat);
+  SCOTCH_graphExit    (&grafdat);
+  SCOTCH_stratExit    (&mapstrat);
+  SCOTCH_archExit     (&archdat);
 
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
     if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
@@ -276,7 +278,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

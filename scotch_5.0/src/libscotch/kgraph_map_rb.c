@@ -62,6 +62,8 @@
 /**                                 to     07 nov 2001     **/
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     06 mar 2005     **/
+/**                # Version 5.1  : from : 22 nov 2007     **/
+/**                                 to     11 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -321,9 +323,9 @@ KgraphMapRbJob * const            jobtab)               /* Job table            
 
         jobnghbptr = &jobtab[mapparttax[*srcedgeptr]]; /* Get pointer to neighboring job */
 
-        if ((jobnghbptr->poolflag != 0)                  && /* If neighbor in active job          */
-            (jobnghbptr->prioval  >  jobnewptr->prioval) && /* Over which we have gained priority */
-            (jobnghbptr->prioval  <= joboldptr->prioval)) {
+        if ((jobnghbptr->poolflag != 0)                 && /* If neighbor in active job          */
+            (jobnghbptr->prioval >  jobnewptr->prioval) && /* Over which we have gained priority */
+            (jobnghbptr->prioval <= joboldptr->prioval)) {
           jobnghbptr->priolvl ++;                 /* Update neighbor priority */
         }
         if ((jobnghbptr->poolflag == 0) ||        /* If neighbor is fully known           */
@@ -446,10 +448,9 @@ const KgraphMapRbParam * restrict const paraptr)
       return     (1);
   }
 
-  cocyflag = 1;                                   /* Assume cocycle data are relevant                            */
-  if ((strcmp (archName (&grafptr->m.archdat), "cmplt")     == 0) || /* If target architecture is complete graph */
-      (strcmp (archName (&grafptr->m.archdat), "varcmplt")  == 0)) /* Or the terminal decomposition architecture */
-    cocyflag = 0;                                 /* Do not account for cocycle data                     */
+  cocyflag = 1;                                   /* Assume cocycle data are relevant                                      */
+  if (strstr (archName (&grafptr->m.archdat), "cmplt") != NULL) /* If target architecture is some flavor of complete graph */
+    cocyflag = 0;                                 /* Do not account for cocycle data                                       */
   varsflag = 0;
   if (strncmp (archName (&grafptr->m.archdat), "var", 3) == 0) /* If target architecture is variable sized */
     varsflag = 1;
@@ -570,6 +571,10 @@ const KgraphMapRbParam * restrict const paraptr)
                 break;
               case 1 :                            /* New domain is terminal */
                 kgraphMapRbPoolRemv (poolptr[1], &grafptr->s, mapptr[1], &joborgdat, actgraph.parttax, (GraphPart) i, jobtab);
+#ifdef SCOTCH_DEBUG_KGRAPH2
+                jobtab[jobsubnum[i]].poollink.prev = /* Prevent Valgrind from yelling when doing kgraphMapRbResize() */
+                jobtab[jobsubnum[i]].poollink.next = NULL;
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
                 break;
 #ifdef SCOTCH_DEBUG_KGRAPH2
               case 2 :                            /* On error */
@@ -606,8 +611,13 @@ const KgraphMapRbParam * restrict const paraptr)
                 return          (1);
             }
           }
-          else                                    /* No use going on further */
+          else {                                  /* No use going on further */
             kgraphMapRbPoolRemv (poolptr[1], &grafptr->s, mapptr[1], &joborgdat, actgraph.parttax, (GraphPart) i, jobtab);
+#ifdef SCOTCH_DEBUG_KGRAPH2
+            jobtab[jobsubnum[i]].poollink.prev = /* Prevent Valgrind from yelling when doing kgraphMapRbResize() */
+            jobtab[jobsubnum[i]].poollink.next = NULL;
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
+          }
         }
       }
 
