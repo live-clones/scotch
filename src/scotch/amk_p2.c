@@ -46,6 +46,8 @@
 /**                                 to   : 02 jun 1997     **/
 /**                # Version 3.4  : from : 03 feb 2000     **/
 /**                                 to   : 03 feb 2000     **/
+/**                # Version 5.1  : from : 16 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -86,8 +88,8 @@ main (
 int                         argc,
 char *                      argv[])
 {
-  unsigned int        wght[2] = {1, 1};           /* Vertex weights */
-  unsigned int        i;
+  int                 wght[2] = {1, 1};           /* Vertex weights */
+  int                 i;
 
   errorProg ("amk_p2");
 
@@ -143,19 +145,16 @@ char *                      argv[])
     }
   }
 
-  fprintf (C_filepntrtgtout, "deco\n0\n2\t3\n");  /* Print file header  */
-  fprintf (C_filepntrtgtout, "0\t%u\t2\n", wght[0]); /* Print terminals */
-  fprintf (C_filepntrtgtout, "1\t%u\t3\n", wght[1]);
-  fprintf (C_filepntrtgtout, "1\n");              /* Print distance table */
+  fprintf (C_filepntrtgtout, "cmpltw\t2\t%ld\t%ld\n", (long) wght[0], (long) wght[1]); /* Print target description */
 
-#ifdef X_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
     if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
         (C_fileTab[i].name[1] != '\0')) {
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* X_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

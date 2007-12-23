@@ -55,9 +55,11 @@ ptscotch			:
 					libptscotchparmetis$(LIB)
 
 install				:	scotch
+					-$(CP) metis.h ../../bin
 					-$(CP) libscotchmetis$(LIB) ../../bin
 
 ptinstall			:	ptscotch
+					-$(CP) parmetis.h ../../bin
 					-$(CP) libptscotchparmetis$(LIB) ../../bin
 
 clean				:

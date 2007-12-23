@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 12 may 2006     **/
 /**                                 to   : 12 may 2006     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -144,7 +146,7 @@ char *                      argv[])
   SCOTCH_graphLoad (&grafdat, C_filepntrsrcinp, (SCOTCH_Num) baseval, 0);
   SCOTCH_graphSave (&grafdat, C_filepntrsrcout);
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   SCOTCH_graphExit (&grafdat);
 
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
@@ -153,7 +155,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   exit (0);
 }

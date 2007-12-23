@@ -110,6 +110,7 @@ arch$(OBJ)			:	arch.c					\
 					common.h				\
 					arch.h					\
 					arch_cmplt.h				\
+					arch_cmpltw.h				\
 					arch_deco.h				\
 					arch_hcub.h				\
 					arch_mesh.h				\
@@ -134,6 +135,12 @@ arch_cmplt$(OBJ)		:	arch_cmplt.c				\
 					common.h				\
 					arch.h					\
 					arch_cmplt.h
+
+arch_cmpltw$(OBJ)		:	arch_cmpltw.c				\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_cmpltw.h
 
 arch_deco$(OBJ)			:	arch_deco.c				\
 					module.h				\
@@ -218,7 +225,8 @@ bgraph_bipart_ex$(OBJ)		:	bgraph_bipart_ex.c			\
 					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_ex.h			\
-					bgraph_bipart_fm.h
+					bgraph_bipart_fm.h			\
+					bgraph_bipart_gg.h
 
 bgraph_bipart_fm$(OBJ)		:	bgraph_bipart_fm.c			\
 					gain.h					\
@@ -452,6 +460,12 @@ dorder_perm$(OBJ)		:	dorder_perm.c				\
 					dgraph.h				\
 					dorder.h				\
 					dorder_perm.h
+
+dorder_tree_dist$(OBJ)		:	dorder_tree_dist.c			\
+					module.h				\
+					common.h				\
+					dgraph.h				\
+					dorder.h
 
 gain$(OBJ)			:	gain.c					\
 					module.h				\
@@ -948,6 +962,19 @@ library_arch_build_f$(OBJ)	:	library_arch_build_f.c			\
 					common.h				\
 					scotch.h
 
+library_arch_cmpltw$(OBJ)	:	library_arch_cmpltw.c			\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch.h					\
+					arch_cmpltw.h				\
+					scotch.h
+
+library_arch_cmpltw_f$(OBJ)	:	library_arch_cmpltw_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
 library_dgraph$(OBJ)		:	library_dgraph.c			\
 					module.h				\
 					common.h				\
@@ -1088,6 +1115,18 @@ library_dgraph_order_perm$(OBJ)	:	library_dgraph_order_perm.c		\
 					scotch.h
 
 library_dgraph_order_perm_f$(OBJ):	library_dgraph_order_perm_f.c		\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_dgraph_order_tree_dist$(OBJ):	library_dgraph_order_tree_dist.c	\
+					module.h				\
+					common.h				\
+					dgraph.h				\
+					dorder.h				\
+					scotch.h
+
+library_dgraph_order_tree_dist_f$(OBJ):	library_dgraph_order_tree_dist_f.c	\
 					module.h				\
 					common.h				\
 					scotch.h
@@ -1764,11 +1803,11 @@ dummysizes$(EXE)		:	dummysizes.c				\
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
-					./dummysizes library.h scotch.h
+					./dummysizes$(EXE) library.h scotch.h
 
 scotchf.h			:	dummysizes$(EXE) 			\
 					libraryf.h
-					./dummysizes libraryf.h scotchf.h
+					./dummysizes$(EXE) libraryf.h scotchf.h
 
 libptscotch$(LIB)		:	dgraph$(OBJ)				\
 					dgraph_allreduce$(OBJ)			\
@@ -1796,6 +1835,7 @@ libptscotch$(LIB)		:	dgraph$(OBJ)				\
 					dorder_io$(OBJ)				\
 					dorder_io_tree$(OBJ)			\
 					dorder_perm$(OBJ)			\
+					dorder_tree_dist$(OBJ)			\
 					hdgraph$(OBJ)				\
 					hdgraph_check$(OBJ)			\
 					hdgraph_fold$(OBJ)			\
@@ -1828,6 +1868,8 @@ libptscotch$(LIB)		:	dgraph$(OBJ)				\
 					library_dgraph_order_io_f$(OBJ)		\
 					library_dgraph_order_perm$(OBJ)		\
 					library_dgraph_order_perm_f$(OBJ)	\
+					library_dgraph_order_tree_dist$(OBJ)	\
+					library_dgraph_order_tree_dist_f$(OBJ)	\
 					library_dgraph_scatter$(OBJ)		\
 					library_dgraph_scatter_f$(OBJ)		\
 					library_dgraph_stat$(OBJ)		\
@@ -1847,6 +1889,7 @@ libptscotch$(LIB)		:	dgraph$(OBJ)				\
 libscotch$(LIB)			:	arch$(OBJ)				\
 					arch_build$(OBJ)			\
 					arch_cmplt$(OBJ)			\
+					arch_cmpltw$(OBJ)			\
 					arch_deco$(OBJ)				\
 					arch_hcub$(OBJ)				\
 					arch_mesh$(OBJ)				\
@@ -1918,6 +1961,9 @@ libscotch$(LIB)			:	arch$(OBJ)				\
 					library_arch_f$(OBJ)			\
 					library_arch_build$(OBJ)		\
 					library_arch_build_f$(OBJ)		\
+					library_arch_cmpltw$(OBJ)		\
+					library_arch_cmpltw_f$(OBJ)		\
+					library_arch_f$(OBJ)			\
 					library_geom$(OBJ)			\
 					library_geom_f$(OBJ)			\
 					library_graph$(OBJ)			\

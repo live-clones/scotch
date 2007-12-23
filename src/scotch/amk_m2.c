@@ -52,6 +52,8 @@
 /**                                 to   : 03 feb 2000     **/
 /**                # Version 4.0  : from : 09 feb 2004     **/
 /**                                 to   : 09 feb 2004     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -118,7 +120,7 @@ char *                      argv[])
   unsigned int     termmax;                       /* Maximum terminal number    */
   unsigned int *   termtab;                       /* Terminal numbers table     */
   unsigned int     x0, y0, x1, y1;
-  unsigned int     i;
+  int              i;
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
@@ -227,7 +229,7 @@ char *                      argv[])
     }
   }
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   memFree (termtab);                              /* Free terminal number array */
 
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
@@ -236,7 +238,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                 /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

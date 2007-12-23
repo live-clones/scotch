@@ -55,6 +55,8 @@
 /**                                 to   : 03 feb 2000     **/
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to   : 19 jan 2004     **/
+/**                # Version 5.0  : from : 23 dec 2007     **/
+/**                                 to   : 23 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,10 +106,7 @@ static const char *         C_usageList[] = {
   "  -i<format>  : Select input file format",
   "                  b  : Boeing-Harwell format (matrices)",
   "                  c  : Chaco v2.0 format (adjacency)",
-  "                  i  : Interface format (finite elements)",
-  "                  h  : Hammond's format (adjacency)",
   "                  s  : Scotch v3.0 format (adjacency)",
-  "                  t  : Simon's simple format (vertices & edges)",
   "  -o<format>  : Select output file format",
   "                  c  : Chaco v2.0 format (adjacency)",
   "                  s  : Scotch v3.0 format (adjacency)",
@@ -209,15 +208,15 @@ char *                      argv[])
   SCOTCH_graphInit (&grafdat);
   SCOTCH_geomInit  (&geomdat);
   C_inpFormatTab[C_inpFormatType].func (&grafdat, &geomdat, C_filepntrsrcinp, NULL, C_inpFormatData);
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   if (SCOTCH_graphCheck (&grafdat) != 0) {
     errorPrint ("main: bad graph structure");
     return (1);
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
   C_outFormatTab[C_outFormatType].func (&grafdat, &geomdat, C_filepntrsrcout, C_filepntrgeoout, C_outFormatData);
 
-#ifdef SCOTCH_DEBUG_MAIN1
+#ifdef SCOTCH_DEBUG_ALL
   SCOTCH_geomExit  (&geomdat);
   SCOTCH_graphExit (&grafdat);
 
@@ -227,7 +226,7 @@ char *                      argv[])
       fclose (C_fileTab[i].pntr);                /* Close the stream */
     }
   }
-#endif /* SCOTCH_DEBUG_MAIN1 */
+#endif /* SCOTCH_DEBUG_ALL */
 
   return (0);
 }

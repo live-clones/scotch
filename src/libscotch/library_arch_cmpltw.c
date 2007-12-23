@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,53 +31,61 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : bgraph_bipart_df.h                      **/
+/**   NAME       : library_arch_cmpltw.c                   **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module contains the function       **/
-/**                declarations for the diffusion scheme   **/
-/**                bipartitioning method.                  **/
+/**   FUNCTION   : This module is the API for the weighted **/
+/**                complete graph target architecture.     **/
 /**                                                        **/
-/**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
-/**                                 to     28 may 2007     **/
-/**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     23 dec 2007     **/
+/**   DATES      : # Version 5.1  : from : 15 dec 2007     **/
+/**                                 to   : 15 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The defines.
+**  The defines and includes.
 */
 
-/* Small non-zero float value. */
+#define LIBRARY
 
-#define BGRAPHBIPARTDFEPSILON       (1.0F / (float) (GNUMMAX))
+#include "module.h"
+#include "common.h"
+#include "graph.h"
+#include "arch.h"
+#include "arch_cmpltw.h"
+#include "scotch.h"
 
-/*+ Sign masking operator. +*/
+/***************************************/
+/*                                     */
+/* These routines are the C API for    */
+/* the architecture handling routines. */
+/*                                     */
+/***************************************/
 
-#define BGRAPHBIPARTDFGNUMSGNMSK(i) ((Gnum) 0 - (((Gunum) (i)) >> (sizeof (Gnum) * 8 - 1)))
+/*+ This routine fills the contents of the given
+*** opaque target structure so as to yield a
+*** complete graph with the given number of vertices.
+*** It returns:
+*** - 0   : if the computation succeeded.
+*** - !0  : on error.
++*/
 
-/*
-**  The type and structure definitions.
-*/
+int
+SCOTCH_archCmpltw (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            vertnbr,
+const SCOTCH_Num * const    velotab)
+{
+  Arch *              tgtarchptr;
 
-/** Method parameters. **/
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archCmpltw: internal error (1)");
+    return     (1);
+  }
 
-typedef struct BgraphBipartDfParam_ {
-  INT                       passnbr;              /*+ Number of passes to do        +*/
-  double                    cdifval;              /*+ Coefficient of diffused load  +*/
-  double                    cremval;              /*+ Coefficient of remaining load +*/
-} BgraphBipartDfParam;
+  tgtarchptr        = (Arch *) archptr;
+  tgtarchptr->class = archClass ("cmpltw");
 
-/*
-**  The function prototypes.
-*/
-
-#ifndef BGRAPH_BIPART_DF
-#define static
-#endif
-
-int                         bgraphBipartDf      (Bgraph * restrict const, const BgraphBipartDfParam * const);
-
-#undef static
+  return (archCmpltwArchBuild ((ArchCmpltw *) (void *) (&tgtarchptr->data), vertnbr, velotab));
+}

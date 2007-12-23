@@ -53,6 +53,8 @@
 /**                                 to     01 jun 2001     **/
 /**                # Version 4.0  : from : 11 dec 2003     **/
 /**                                 to     11 dec 2003     **/
+/**                # Version 5.1  : from : 30 nov 2007     **/
+/**                                 to     30 nov 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,6 +72,7 @@
 #include "bgraph.h"
 #include "bgraph_bipart_ex.h"
 #include "bgraph_bipart_fm.h"
+#include "bgraph_bipart_gg.h"
 
 /*****************************/
 /*                           */
@@ -87,16 +90,25 @@ int
 bgraphBipartEx (
 Bgraph * restrict const     grafptr)
 {
-  BgraphBipartFmParam paradat;                    /* Parameter area for Fiduccia-Mattheyses algorithm */
+  BgraphBipartFmParam parafmdat;                  /* Parameter area for the Fiduccia-Mattheyses algorithm */
 
   if (grafptr->compload0dlt == 0)                 /* Return if nothing to do */
     return (0);
 
-  paradat.movenbr = grafptr->s.vertnbr;
-  paradat.passnbr = ~0;
-  paradat.deltrat = 0.0L;                         /* Exact balance required */
-  if (bgraphBipartFm (grafptr, &paradat) != 0)    /* Return if error        */
+  parafmdat.movenbr = grafptr->s.vertnbr;
+  parafmdat.passnbr = ~0;
+  parafmdat.deltval = 0.0L;                       /* Exact balance required */
+  if (bgraphBipartFm (grafptr, &parafmdat) != 0)  /* Return if error        */
     return (1);
+
+  if ((grafptr->s.vertnbr > 1) &&                 /* If graph has several vertices but is completely imbalanced */
+      ((grafptr->compload0 == 0) || (grafptr->compload0 == grafptr->s.velosum))) {
+    BgraphBipartGgParam paraggdat;                /* Parameter area for the Greedy Graph Growing algorithm */
+
+    paraggdat.passnbr = 4;
+    if (bgraphBipartGg (grafptr, &paraggdat) != 0) /* Return if error */
+      return (1);
+  }
 
 #ifdef SCOTCH_DEBUG_BGRAPH2
   if (bgraphCheck (grafptr) != 0) {
