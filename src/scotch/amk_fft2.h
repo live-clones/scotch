@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 07 may 1997     **/
 /**                # Version 3.3  : from : 02 oct 1998     **/
 /**                                 to   : 02 oct 1998     **/
+/**                # Version 5.0  : from : 01 jan 2008     **/
+/**                                 to   : 01 jan 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,7 +101,7 @@ typedef struct C_Queue_ {
 #define C_vertLabl(v)               (((v)->lvl << fdim) | (v)->pos)
 
 #define C_queueInit(q,n)            ((((q)->tab = (C_QueueElem *) memAlloc ((n) * sizeof (C_QueueElem))) == NULL) ? 1 : 0)
-#define C_queueExit(q)              G_free ((q)->tab)
+#define C_queueExit(q)              memFree ((q)->tab)
 #define C_queueFlush(q)             (q)->min = \
                                     (q)->max = 0
 #define C_queuePut(q,v,d)           ((q)->tab[(q)->max].vert    = *(v),  \

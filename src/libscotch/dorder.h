@@ -143,14 +143,14 @@ typedef struct DorderCblk_ {
     ordering values are based from baseval.         +*/
 
 typedef struct Dorder_ {
-  Gnum                      baseval;              /*+ Base value for structures                           +*/
-  Gnum                      vnodglbnbr;           /*+ Global number of node vertices                      +*/
-  Gnum                      cblklocnbr;           /*+ Local number of unique locally-rooted column blocks +*/
-  DorderLink                linkdat;              /*+ Link to column blocks                               +*/
-  MPI_Comm                  proccomm;             /*+ Ordering global communicator                        +*/
-  int                       proclocnum;           /*+ Rank of this process in the communicator            +*/
+  Gnum                      baseval;              /*+ Base value for structures                                                      +*/
+  Gnum                      vnodglbnbr;           /*+ Global number of node vertices                                                 +*/
+  Gnum                      cblklocnbr;           /*+ Local number of unique locally-rooted distributed and sequential column blocks +*/
+  DorderLink                linkdat;              /*+ Link to column blocks                                                          +*/
+  MPI_Comm                  proccomm;             /*+ Ordering global communicator                                                   +*/
+  int                       proclocnum;           /*+ Rank of this process in the communicator                                       +*/
 #ifdef SCOTCH_PTHREAD
-  pthread_mutex_t           mutelocdat;           /*+ Local mutex for counter and link updates            +*/
+  pthread_mutex_t           mutelocdat;           /*+ Local mutex for counter and link updates                                       +*/
 #endif /* SCOTCH_PTHREAD */
 } Dorder;
 

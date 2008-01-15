@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 19 jan 2004     **/
 /**                                 to   : 19 jan 2004     **/
 /**                # Version 5.0  : from : 23 dec 2007     **/
-/**                                 to   : 23 dec 2007     **/
+/**                                 to   : 01 jan 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -196,8 +196,8 @@ char *                      argv[])
   C_outFormatTab[C_outFormatType].func (&meshdat, &geomdat, C_filepntrsrcout, C_filepntrgeoout, C_outFormatData);
 
 #ifdef SCOTCH_DEBUG_ALL
-  SCOTCH_geomExit  (&geomdat);
-  SCOTCH_graphExit (&meshdat);
+  SCOTCH_geomExit (&geomdat);
+  SCOTCH_meshExit (&meshdat);
 
   for (i = 0; i < C_FILENBR; i ++) {             /* For all file names     */
     if ((C_fileTab[i].name[0] != '-') ||         /* If not standard stream */

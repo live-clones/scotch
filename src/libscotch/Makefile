@@ -308,6 +308,11 @@ dgraph_allreduce$(OBJ)		:	dgraph_allreduce.c			\
 					common.h				\
 					dgraph.h
 
+dgraph_band$(OBJ)		:	dgraph_band.c				\
+					module.h				\
+					common.h				\
+					dgraph.h
+
 dgraph_build$(OBJ)		:	dgraph_build.c				\
 					module.h				\
 					common.h				\
@@ -1811,6 +1816,7 @@ scotchf.h			:	dummysizes$(EXE) 			\
 
 libptscotch$(LIB)		:	dgraph$(OBJ)				\
 					dgraph_allreduce$(OBJ)			\
+					dgraph_band$(OBJ)			\
 					dgraph_build$(OBJ)			\
 					dgraph_build_grid3d$(OBJ)		\
 					dgraph_build_hcub$(OBJ)			\
