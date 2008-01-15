@@ -37,7 +37,7 @@
 /**                                                        **/
 /**   FUNCTION   : This module is the API for the distri-  **/
 /**                buted ordering distributed tree         **/
-/**                building routine of the libSCOTCH       **§
+/**                building routine of the libSCOTCH       **/
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 nov 2007     **/

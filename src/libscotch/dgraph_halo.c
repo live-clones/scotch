@@ -48,7 +48,7 @@
 /**                # Version P0.1 : from : 14 apr 1998     **/
 /**                                 to     20 jun 1998     **/
 /**                # Version 5.0  : from : 28 feb 2006     **/
-/**                                 to     13 sep 2006     **/
+/**                                 to     29 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,6 +61,7 @@
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
+#include "dgraph_halo.h"
 
 /* These routines fill the send arrays used by
 ** all of the halo routines.
@@ -76,6 +77,12 @@
 
 #define DGRAPHHALOFILLNAME          dgraphHaloFillGnum
 #define DGRAPHHALOFILLCOPY(d,s,n)   *((Gnum *) (d)) = *((Gnum *) (s))
+#include "dgraph_halo_fill.c"
+#undef DGRAPHHALOFILLNAME
+#undef DGRAPHHALOFILLCOPY
+
+#define DGRAPHHALOFILLNAME          dgraphHaloFillGraphPart
+#define DGRAPHHALOFILLCOPY(d,s,n)   *((GraphPart *) (d)) = *((GraphPart *) (s))
 #include "dgraph_halo_fill.c"
 #undef DGRAPHHALOFILLNAME
 #undef DGRAPHHALOFILLCOPY
@@ -104,6 +111,8 @@ const int * restrict const    sendcnttab)         /* Count array                
 
   if (attrglbsiz == sizeof (Gnum))
     dgraphHaloFillGnum (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab, sendcnttab);
+  else if (attrglbsiz == sizeof (GraphPart))
+    dgraphHaloFillGraphPart (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab, sendcnttab);
   else if (attrglbsiz == sizeof (int))            /* In case Gnum is not int */
     dgraphHaloFillInt (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab, sendcnttab);
   else                                            /* Generic but slower fallback routine */
@@ -221,4 +230,66 @@ const MPI_Datatype            attrglbtype)        /* Attribute datatype       */
   memFree (attrsndtab);                           /* Free group leader */
 
   return (0);
+}
+
+/* This function performs an asynchronous collective
+** halo diffusion operation on the ghost array given
+** on input. It fills the given request structure with
+** the relevant data.
+** It returns:
+** - 0   : if the halo has been successfully propagated.
+** - !0  : on error.
+*/
+
+static
+void *
+dgraphHaloAsync2 (
+DgraphHaloRequest * restrict  requptr)
+{
+  return ((void *) dgraphHaloSync (requptr->grafptr, requptr->attrgsttab, requptr->attrglbtype));
+}
+
+void
+dgraphHaloAsync (
+Dgraph * restrict const       grafptr,
+byte * restrict const         attrgsttab,         /* Attribute array to share */
+const MPI_Datatype            attrglbtype,        /* Attribute datatype       */
+DgraphHaloRequest * restrict  requptr)
+{
+  requptr->grafptr     = grafptr;
+  requptr->attrgsttab  = attrgsttab;
+  requptr->attrglbtype = attrglbtype;
+#ifdef SCOTCH_PTHREAD
+  requptr->flagval     = -1;
+
+  if (pthread_create (&requptr->thrdval, NULL, (void * (*) (void *)) dgraphHaloAsync2, (void *) requptr) != 0) /* If could not create thread */
+    requptr->flagval = (int) (intptr_t) dgraphHaloAsync2 (requptr);
+#else /* SCOTCH_PTHREAD */
+  requptr->flagval = (int) (intptr_t) dgraphHaloAsync2 (requptr);
+#endif /* SCOTCH_PTHREAD */
+}
+
+/* This function performs an asynchronous collective
+** halo diffusion operation on the ghost array given
+** on input. It fills the given request structure with
+** the relevant data.
+** It returns:
+** - 0   : if the halo has been successfully propagated.
+** - !0  : on error.
+*/
+
+int
+dgraphHaloWait (
+DgraphHaloRequest * restrict  requptr)
+{
+#ifdef SCOTCH_PTHREAD
+  void *                    o;
+
+  if (requptr->flagval == -1) {
+    pthread_join (requptr->thrdval, &o);
+    requptr->flagval = (int) (intptr_t) o;
+  }
+#endif /* SCOTCH_PTHREAD */
+
+  return (requptr->flagval);
 }

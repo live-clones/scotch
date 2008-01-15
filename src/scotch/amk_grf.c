@@ -51,7 +51,7 @@
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to   : 17 mar 2005     **/
 /**                # Version 5.0  : from : 23 dec 2007     **/
-/**                                 to   : 23 dec 2007     **/
+/**                                 to   : 01 jan 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -243,10 +243,10 @@ char *                      argv[])
   SCOTCH_archSave  (&archdat, C_filepntrtgtout);  /* Write target architecture                 */
 
 #ifdef SCOTCH_DEBUG_ALL
-  graphExit (&tgtgraph);                          /* Free target graph        */
-  archExit  (&tgtarch);                           /* Free target architecture */
-  stratExit (mapstrat);                           /* Free strategy string     */
-  listExit  (&tgtlist);                           /* Free vertex list         */
+  SCOTCH_graphExit (&grafdat);                    /* Free target graph        */
+  SCOTCH_archExit  (&archdat);                    /* Free target architecture */
+  SCOTCH_stratExit (&bipastrat);                  /* Free strategy string     */
+  memFree          (listtab);                     /* Free vertex list         */
 
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
     if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */

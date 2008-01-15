@@ -47,6 +47,8 @@
 /**                                 to     08 sep 2006     **/
 /**                # Version 5.0  : from : 19 dec 2006     **/
 /**                                 to     04 aug 2007     **/
+/**                # Version 5.1  : from : 30 oct 2007     **/
+/**                                 to     30 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -267,7 +269,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy         
   const Strat *       ordstratptr;                /* Pointer to ordering strategy    */
 
   if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&hgraphorderststratab, "c{rat=0.7,cpr=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}};,ole=f{cmin=0,cmax=100000,frat=0.0},ose=g},unc=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
+    *((Strat **) stratptr) = stratInit (&hgraphorderststratab, "c{rat=0.7,cpr=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=f{bal=0.2}}};,ole=f{cmin=0,cmax=100000,frat=0.0},ose=g},unc=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hgraphorderststratab) {
     errorPrint ("SCOTCH_graphOrderComputeList: not an ordering strategy");

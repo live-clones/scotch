@@ -304,7 +304,7 @@ DorderCblk * const          cblkptr)              /* One of the column blocks */
 }
 
 /* This routine gives back a new centralized
-** index range inthe same ordering structure
+** index range in the same ordering structure
 ** as the given column block.
 ** It returns:
 ** - !NULL  : new column block.

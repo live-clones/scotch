@@ -106,7 +106,7 @@ typedef struct Arch_ {
   union {                                         /*+ Architecture data                    +*/
     ArchDummy               dummy;                /*+ Dummy data for external size setting +*/
 #if 0
-    ArchDeco                deco;                 /*+ Decomposition-descripted architecture      +*/
+    ArchDeco                deco;                 /*+ Decomposition-described architecture       +*/
     ArchMesh2               mesh2;                /*+ 2D-mesh architecture                       +*/
     ArchMesh3               mesh3;                /*+ 3D-mesh architecture                       +*/
     ArchTorus2              torus2;               /*+ 2D-torus architecture                      +*/

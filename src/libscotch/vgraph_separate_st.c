@@ -86,7 +86,7 @@ static Vgraph               vgraphdummy;          /* Dummy separator graph for o
 static union {
   VgraphSeparateBdParam     param;
   StratNodeMethodData       padding;
-} vgraphseparatedefaultbd = { { 3, &stratdummy } };
+} vgraphseparatedefaultbd = { { 3, &stratdummy, &stratdummy } };
 
 static union {
   VgraphSeparateEsParam     param;
@@ -125,9 +125,13 @@ static StratMethodTab       vgraphseparatestmethtab[] = { /* Graph separation me
                               { -1,                 NULL, NULL,             NULL } };
 
 static StratParamTab        vgraphseparatestparatab[] = { /* Graph separation method parameter list */
-                              { VGRAPHSEPASTMETHBD,  STRATPARAMSTRAT,  "strat",
+                              { VGRAPHSEPASTMETHBD,  STRATPARAMSTRAT,  "bnd",
                                 (byte *) &vgraphseparatedefaultbd.param,
-                                (byte *) &vgraphseparatedefaultbd.param.strat,
+                                (byte *) &vgraphseparatedefaultbd.param.stratbnd,
+                                (void *) &vgraphseparateststratab },
+                              { VGRAPHSEPASTMETHBD,  STRATPARAMSTRAT,  "org",
+                                (byte *) &vgraphseparatedefaultbd.param,
+                                (byte *) &vgraphseparatedefaultbd.param.stratorg,
                                 (void *) &vgraphseparateststratab },
                               { VGRAPHSEPASTMETHBD,  STRATPARAMINT,    "width",
                                 (byte *) &vgraphseparatedefaultbd.param,
