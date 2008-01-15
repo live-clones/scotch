@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,63 +31,54 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : vgraph_separate_gg.h                    **/
+/**   NAME       : dgraph_halo.h                           **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : These lines are the data declarations   **/
-/**                for the greedy graph growing vertex     **/
-/**                separation method.                      **/
+/**   FUNCTION   : This file contains the data declara-    **/
+/**                tions for the asynchronous halo         **/
+/**                exchange routine.                       **/
 /**                                                        **/
-/**   DATES      : # Version 3.2  : from : 14 nov 1997     **/
-/**                                 to     15 jul 1998     **/
-/**                # Version 3.3  : from : 01 oct 1998     **/
-/**                                 to     01 oct 1998     **/
-/**                # Version 4.0  : from : 19 dec 2001     **/
-/**                                 to     09 jan 2004     **/
+/**   DATES      : # Version 5.0  : from : 28 dec 2007     **/
+/**                                 to   : 29 dec 2007     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The defines.
+** The defines.
 */
 
-/*+ System-defined constants. +*/
+/* procsidtab-related values. */
 
-#define VGRAPHSEPAGGSUBBITS         4
-
-#define VGRAPHSEPAGGSTATEPART0      ((GainLink *) 0) /*+ Vertex in part 0 (initial state)  +*/
-#define VGRAPHSEPAGGSTATEPART1      ((GainLink *) 1) /*+ Vertex in part 1                  +*/
-#define VGRAPHSEPAGGSTATEPART2      ((GainLink *) 2) /*+ Vertex in part 2, chained         +*/
-#define VGRAPHSEPAGGSTATELINK       ((GainLink *) 3) /*+ Currently in gain table if higher +*/
+#define DGRAPHGHSTSIDMAX            ((int) ((unsigned int) (1 << (sizeof (int) * 8 - 1)) - 2U)) /* Maximum leap value for procsidtab entries */
 
 /*
-**  The type and structure definitions.
+** The type and structure definitions.
 */
 
-/*+ Method parameters. +*/
+/* Sort structure for ghost edges. */
 
-typedef struct VgraphSeparateGgParam_ {
-  INT                       passnbr;              /*+ Number of passes to do +*/
-} VgraphSeparateGgParam;
-
-/*+ The complementary vertex structure. For
-    trick reasons, the gain table data structure
-    must be the first field of the structure.    +*/
-
-typedef struct VgraphSeparateGgVertex_ {
-  GainLink                  gainlink;             /*+ Gain link: FIRST              +*/
-  Gnum                      compgain2;            /*+ Computation gain in separator +*/
-} VgraphSeparateGgVertex;
+typedef struct DgraphHaloRequest_ {
+  Dgraph * restrict grafptr;
+  byte * restrict   attrgsttab;                   /* Attribute array to share    */
+  MPI_Datatype      attrglbtype;                  /* Attribute datatype          */
+  int               flagval;
+#ifdef SCOTCH_PTHREAD
+  pthread_t         thrdval;                      /* Data of asynchronous thread */
+#endif /* SCOTCH_PTHREAD */
+} DgraphHaloRequest;
 
 /*
-**  The function prototypes.
+** The function prototypes.
 */
 
-#ifndef VGRAPH_SEPARATE_GG
+#ifndef DGRAPH_HALO
 #define static
 #endif
 
-int                         vgraphSeparateGg    (Vgraph * restrict const, const VgraphSeparateGgParam * restrict const);
+static void *               dgraphHaloAsync2    (DgraphHaloRequest * restrict);
+
+void                        dgraphHaloAsync     (Dgraph * restrict const, byte * restrict const, const MPI_Datatype, DgraphHaloRequest * restrict);
+int                         dgraphHaloWait      (DgraphHaloRequest * restrict);
 
 #undef static

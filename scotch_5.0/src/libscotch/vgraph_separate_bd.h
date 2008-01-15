@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      :   Version 5.0  : from : 18 oct 2004     **/
 /**                                 to   : 16 sep 2006     **/
+/**                  Version 5.1  : from : 30 oct 2007     **/
+/**                                 to   : 30 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,7 +55,8 @@
 
 typedef struct VgraphSeparateBdParam_ {
   Gnum                      distmax;              /*+ Maximum distance to separator +*/
-  Strat *                   strat;                /*+ Strategy for band graph       +*/
+  Strat *                   stratbnd;             /*+ Strategy for band graph       +*/
+  Strat *                   stratorg;             /*+ Strategy for original graph   +*/
 } VgraphSeparateBdParam;
 
 /*+ Neighbor queue. +*/

@@ -43,6 +43,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 18 oct 2004     **/
 /**                                 to   : 12 sep 2007     **/
+/**                # Version 5.1  : from : 30 oct 2007     **/
+/**                                 to   : 30 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,7 +95,7 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
   Gnum                      fronnum;
 
   if (orggrafptr->fronnbr == 0)                   /* If no separator vertices, apply strategy to full graph */
-    return (vgraphSeparateSt (orggrafptr, paraptr->strat));
+    return (vgraphSeparateSt (orggrafptr, paraptr->stratorg));
 
   orgdistmax = (Gnum) paraptr->distmax;
   if (orgdistmax < 1)                             /* To simplify algorithm, always at least one layer of vertices around separator */
@@ -199,7 +201,7 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
   if ((bndcompsize1 >= orggrafptr->compsize[1]) || /* If either part has all of its vertices in band, use plain graph instead */
       ((bndvertnbr - bndcompsize1 - orggrafptr->fronnbr) >= orggrafptr->compsize[0])) {
     memFree (queudat.qtab);                       /* Free group leader */
-    return  (vgraphSeparateSt (orggrafptr, paraptr->strat));
+    return  (vgraphSeparateSt (orggrafptr, paraptr->stratorg));
   }                                               /* TRICK: since always at least one missing vertex per part, there is room for anchor vertices */
 
   bndvertnnd = bndvertnbr + orggrafptr->s.baseval;
@@ -385,7 +387,7 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
   }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
 
-  if (vgraphSeparateSt (&bndgrafdat, paraptr->strat) != 0) { /* Apply strategy to band graph */
+  if (vgraphSeparateSt (&bndgrafdat, paraptr->stratbnd) != 0) { /* Apply strategy to band graph */
     errorPrint ("vgraphSeparateBd: cannot separate band graph");
     bndgrafdat.frontab = NULL;                    /* Do not free frontab as it is not allocated */
     vgraphExit (&bndgrafdat);
@@ -397,7 +399,7 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
     bndgrafdat.frontab = NULL;                    /* Do not free frontab as it is not allocated */
     vgraphExit (&bndgrafdat);
     memFree    (queudat.qtab);
-    return     (vgraphSeparateSt (orggrafptr, paraptr->strat));
+    return     (vgraphSeparateSt (orggrafptr, paraptr->stratorg));
   }
 
   orggrafptr->compload[0] = bndgrafdat.compload[0];

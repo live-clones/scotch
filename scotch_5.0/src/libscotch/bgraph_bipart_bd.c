@@ -539,12 +539,8 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   else
     orggrafptr->compsize0 = orggrafptr->compsize0 - (bndvertnbr - bndcompsize1) + bndgrafdat.compsize0 - 1; /* "- 1" for anchor 0 */
 
-  for (bndvertnum = bndgrafdat.s.baseval; bndvertnum < bndvertnnd; bndvertnum ++) { /* Update part array of full graph */
-    GraphPart           bndpartval;
-
-    bndpartval = bndgrafdat.parttax[bndvertnum];
-    orggrafptr->parttax[bndvnumtax[bndvertnum]] = bndpartval;
-  }
+  for (bndvertnum = bndgrafdat.s.baseval; bndvertnum < bndvertnnd; bndvertnum ++) /* Update part array of full graph */
+    orggrafptr->parttax[bndvnumtax[bndvertnum]] = bndgrafdat.parttax[bndvertnum];
 
   for (bndfronnum = orgfronnum = ancfronnum = 0;  /* Update frontier array of full graph */
        bndfronnum < bndgrafdat.fronnbr; bndfronnum ++) {

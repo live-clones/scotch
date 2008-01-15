@@ -39,8 +39,10 @@
 /**                tions for distributed vertex separation **/
 /**                routines.                               **/
 /**                                                        **/
-/**   DATES      : # Version 0.5  : from : 06 feb 2006     **/
+/**   DATES      : # Version 5.0  : from : 06 feb 2006     **/
 /**                                 to   : 29 apr 2006     **/
+/**                # Version 5.1  : from : 07 nov 2007     **/
+/**                                 to   : 07 nov 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -48,26 +50,20 @@
 **  The type and structure definitions.
 */
 
-/*+ The vertex part type, in compressed form. From graph.h +*/
-
-#ifndef GRAPH_H
-typedef byte GraphPart;
-#endif /* GRAPH_H */
-
 /*+ Active graph structure. +*/
 
 typedef struct Vdgraph_ {
-  Dgraph                    s;                    /*+ Source distributed graph                                  +*/
-  GraphPart * restrict      partgsttax;           /*+ Based local part array: 0,1: part; 2: separator           +*/
-  Gnum                      compglbload[3];       /*+ Global loads of both parts and of separator               +*/
-  Gnum                      compglbloaddlt;       /*+ Load difference between both parts                        +*/
-  Gnum                      compglbsize[2];       /*+ Number of vertices in parts (separator is fronglbnbr)     +*/
-  Gnum                      fronglbnbr;           /*+ Number of global frontier vertices; TRICK: compglbsize[2] +*/
-  Gnum                      complocload[3];       /*+ Local loads of both parts and of separator                +*/
-  Gnum                      complocsize[2];       /*+ Number of vertices in parts (separator is fronlocnbr)     +*/
-  Gnum                      fronlocnbr;           /*+ Number of local frontier vertices; TRICK: complocsize[2]  +*/
-  Gnum * restrict           fronloctab;           /*+ Array of local frontier vertex numbers                    +*/
-  Gnum                      levlnum;              /*+ Nested dissection or coarsening level                     +*/
+  Dgraph                    s;                    /*+ Source distributed graph                                                 +*/
+  GraphPart * restrict      partgsttax;           /*+ Based local part array: 0,1: part; 2: separator                          +*/
+  Gnum                      compglbloaddlt;       /*+ Load difference between both parts                                       +*/
+  Gnum                      compglbload[3];       /*+ Global loads of both parts and of separator; TRICK: before compglbsize[] +*/
+  Gnum                      compglbsize[2];       /*+ Number of vertices in parts (separator is fronglbnbr)                    +*/
+  Gnum                      fronglbnbr;           /*+ Number of global frontier vertices; TRICK: compglbsize[2]                +*/
+  Gnum                      complocload[3];       /*+ Local loads of both parts and of separator; TRICK: before complocsize[]  +*/
+  Gnum                      complocsize[2];       /*+ Number of vertices in parts (separator is fronlocnbr)                    +*/
+  Gnum                      fronlocnbr;           /*+ Number of local frontier vertices; TRICK: complocsize[2]                 +*/
+  Gnum * restrict           fronloctab;           /*+ Array of local frontier vertex numbers                                   +*/
+  Gnum                      levlnum;              /*+ Nested dissection or coarsening level                                    +*/
 } Vdgraph;
 
 /*+ The graph separator storing structure. +*/

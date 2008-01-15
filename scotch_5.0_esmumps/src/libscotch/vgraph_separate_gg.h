@@ -36,8 +36,8 @@
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the data declarations   **/
-/**                for the the greedy graph growing        **/
-/**                vertex separation method.               **/
+/**                for the greedy graph growing vertex     **/
+/**                separation method.                      **/
 /**                                                        **/
 /**   DATES      : # Version 3.2  : from : 14 nov 1997     **/
 /**                                 to     15 jul 1998     **/

@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,10 +54,14 @@
 /**                                 to   : 16 jun 2005     **/
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 03 aug 2007     **/
+/**                # Version 5.1  : from : 11 nov 2007     **/
+/**                                 to   : 10 jan 2008     **/
 /**                                                        **/
 /************************************************************/
 
 #define DGRAPH_H
+
+#define PTSCOTCH_FOLD_DUP                         /* Activate folding on coarsening */
 
 /*
 ** The defines.
@@ -76,6 +80,9 @@
 #define DGRAPHHASEDGEGST            0x0040        /* Edge ghost array computed         */
 #define DGRAPHFREEALL               (DGRAPHFREETABS | DGRAPHFREEEDGEGST | DGRAPHFREECOMM | DGRAPHFREEEXIT)
 
+#define DGRAPHBITSUSED              0x007F        /* Significant bits for plain distributed graph routines               */
+#define DGRAPHBITSNOTUSED           0x0080        /* Value above which bits not used by plain distributed graph routines */
+
 /* Used in algorithms */
 
 #define COARPERTPRIME               31            /* Prime number */
@@ -84,8 +91,6 @@
 #define DGRAPHBUILDRANDOM           1             /* Distribute the grid randomly  */
 #define DGRAPHBUILDSLICES           2             /* Distribute the grid by slices */
 
-#define PTSCOTCH_FOLD_DUP                         /* Activate folding on coarsening */
-/* #undef PTSCOTCH_FOLD_DUP */
 
 /*
 ** The type and structure definitions.
@@ -124,6 +129,12 @@ typedef enum DgraphTag_ {
 /*+ The graph flag type. +*/
 
 typedef int DgraphFlag;                           /*+ Graph property flags +*/
+
+/*+ The vertex part type, in compressed form. From graph.h +*/
+
+#ifndef GRAPH_H
+typedef byte GraphPart;
+#endif /* GRAPH_H */
 
 /* The distributed graph structure. */
 
@@ -187,6 +198,7 @@ int                         dgraphBuildGrid3D   (Dgraph * const, const Gnum, con
 int                         dgraphCheck         (const Dgraph * const);
 int                         dgraphView          (const Dgraph * const, FILE * const);
 int                         dgraphGhst          (Dgraph * const);
+int                         dgraphBand          (Dgraph * restrict const, const Gnum, Gnum * restrict const, const GraphPart * restrict const, const Gnum, const Gnum, Gnum, Dgraph * restrict const, Gnum * restrict * const, GraphPart * restrict * const, Gnum * const, Gnum * const, Gnum * const);
 int                         dgraphFold          (const Dgraph * restrict const, const int, Dgraph * restrict const, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFold2         (const Dgraph * restrict const, const int, Dgraph * restrict const, MPI_Comm, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFoldDup       (const Dgraph * restrict const, Dgraph * restrict const, void * restrict const, void ** restrict const, MPI_Datatype);

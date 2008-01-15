@@ -227,7 +227,5 @@ const VgraphSeparateGpParam * const paraptr)      /*+ Method parameters +*/
   }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
 
-printf ("GP Sepa\tsize=%ld\tload=%ld\tbal=%ld\n", (long) grafptr->fronnbr, (long) grafptr->compload[2], (long) grafptr->comploaddlt);
-
   return (0);
 }

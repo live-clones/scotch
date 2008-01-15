@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                This module contains the main function. **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 17 may 2007     **/
-/**                                 to   : 23 jun 2007     **/
+/**                                 to   : 04 jan 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,14 +84,15 @@ main (
 int                 argc,
 char *              argv[])
 {
-  int                 thrdlvlreqval;
-  int                 thrdlvlproval;
   SCOTCH_Dgraph       grafdat;
   int                 procglbnbr;
   int                 proclocnum;
   int                 protglbnum;                 /* Root process */
   int                 flagval;
   int                 i;
+#ifdef SCOTCH_PTHREAD
+  int                 thrdlvlreqval;
+  int                 thrdlvlproval;
 
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
   if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS) {
@@ -99,9 +100,15 @@ char *              argv[])
     exit       (1);
   }
   if (thrdlvlreqval > thrdlvlproval) {
+    errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
+    exit       (1);
+  }
+#else /* SCOTCH_PTHREAD */
+  if (MPI_Init (&argc, &argv) != MPI_SUCCESS) {
     errorPrint ("main: Cannot initialize (2)");
     exit       (1);
   }
+#endif /* SCOTCH_PTHREAD */
 
   MPI_Comm_size (MPI_COMM_WORLD, &procglbnbr);    /* Get communicator data */
   MPI_Comm_rank (MPI_COMM_WORLD, &proclocnum);

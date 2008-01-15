@@ -46,6 +46,8 @@
 /**                                 to     01 nov 2001     **/
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     13 nov 2005     **/
+/**                # Version 5.1  : from : 29 oct 2007     **/
+/**                                 to     29 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -189,7 +191,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Mapping strategy   +*/
   int                 o;
 
   if (*((Strat **) stratptr) == NULL)             /* Set default mapping strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&kgraphmapststratab, "b{job=t,map=t,poli=S,strat=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=f{bal=0.005,move=80}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=f{bal=0.005,move=80}}}");
+    *((Strat **) stratptr) = stratInit (&kgraphmapststratab, "b{job=t,map=t,poli=S,strat=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{pass=100}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}");
   mapstratptr = *((Strat **) stratptr);
   if (mapstratptr->tabl != &kgraphmapststratab) {
     errorPrint ("SCOTCH_graphMapCompute: not a graph mapping strategy");
