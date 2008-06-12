@@ -46,7 +46,7 @@
 /**                # Version 2.0  : from : 28 feb 2004     **/
 /**                                 to     04 jan 2005     **/
 /**                # Version 2.1  : from : 21 jun 2007     **/
-/**                                 to     21 jun 2007     **/
+/**                                 to     12 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,7 +100,7 @@ const INT                     listnbr,            /*+ Number of vertices in list
 const INT * restrict const    listtab)              /*+ Vertex list array          +*/
 {
   return (orderGraphListStrat (ordeptr, grafptr, listnbr, listtab,
-                               "c{rat=0.7,cpr=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}};,ole=f{cmin=0,cmax=100000,frat=0.0},ose=g},unc=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}"));
+                               "c{rat=0.7,cpr=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}};,ole=f{cmin=0,cmax=100000,frat=0.0},ose=g},unc=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}"));
 }
 
 /*+ This routine orders the given
