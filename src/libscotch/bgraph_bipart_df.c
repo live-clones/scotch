@@ -49,7 +49,7 @@
 /**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
 /**                                 to     10 sep 2007     **/
 /**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     23 dec 2007     **/
+/**                                 to     24 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -212,7 +212,7 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
             diffval += difotax[grafptr->s.edgetax[edgenum]];
 
         diffval *= cdifval;
-        diffval += difotax[vertnum] * cremval * edlstax[vertnum];
+        diffval += difotax[vertnum] * cremval * edlstax[vertnum] + vancval;
         if (grafptr->s.velotax != NULL)
           veloval = (float) grafptr->s.velotax[vertnum];
         if (veextax != NULL) {

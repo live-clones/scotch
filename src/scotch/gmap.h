@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,6 +57,8 @@
 /**                                 to   : 31 may 1999     **/
 /**                # Version 4.0  : from : 16 jan 2004     **/
 /**                                 to   : 16 jan 2004     **/
+/**                # Version 5.0  : from : 12 jun 2008     **/
+/**                                 to   : 18 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,8 +68,7 @@
 
 /*+ File name aliases. +*/
 
-#define C_FILENBR                   4             /* Number of files in list                */
-#define C_FILEARGNBR                4             /* Number of files which can be arguments */
+#define C_FILENBR                   4             /* Number of files in list */
 
 #define C_filenamesrcinp            C_fileTab[0].name /* Source graph input file name        */
 #define C_filenametgtinp            C_fileTab[1].name /* Target architecture input file name */
@@ -82,6 +83,7 @@
 /*+ Process flags. +*/
 
 #define C_FLAGNONE                  0x0000        /* No flags      */
-#define C_FLAGVERBSTR               0x0001        /* Verbose flags */
-#define C_FLAGVERBTIM               0x0002        /* Verbose flags */
-#define C_FLAGVERBMAP               0x0004
+#define C_FLAGPART                  0x0001        /* Partitioning  */
+#define C_FLAGVERBSTR               0x0002        /* Verbose flags */
+#define C_FLAGVERBTIM               0x0004
+#define C_FLAGVERBMAP               0x0008

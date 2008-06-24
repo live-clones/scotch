@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -36,7 +36,7 @@ VERSION	= 5.0
 
 default				:	scotch
 
-required			:	Makefile.inc
+required			:	Makefile.inc	../bin	../include	../lib
 
 Makefile.inc			:
 					@echo "#####################################################################"
@@ -53,31 +53,54 @@ Makefile.inc			:
 
 include Makefile.inc
 
+prefix		?= /usr/local
+bindir		?= $(prefix)/bin
+includedir	?= $(prefix)/include
+libdir		?= $(prefix)/lib
+datarootdir	?= $(prefix)/share
+mandir		?= $(datarootdir)/man
+
+../bin				:
+					-$(MKDIR) ../bin
+
+../include			:
+					-$(MKDIR) ../include
+
+../lib				:
+					-$(MKDIR) ../lib
+
+$(bindir)			:
+					-$(MKDIR) "$(bindir)"
+
+$(includedir)			:
+					-$(MKDIR) "$(includedir)"
+
+$(libdir)			:
+					-$(MKDIR) "$(libdir)"
+
 scotch				:	required
-					(cd common ;         $(MAKE)                        scotch && $(MAKE) install)
 					(cd libscotch ;      $(MAKE) VERSION=\"$(VERSION)\" scotch && $(MAKE) install)
 					(cd scotch ;         $(MAKE) VERSION=\"$(VERSION)\" scotch && $(MAKE) install)
 					(cd libscotchmetis ; $(MAKE)                        scotch && $(MAKE) install)
 
 ptscotch			:	required
-					(cd common ;         $(MAKE)                        ptscotch && $(MAKE) ptinstall)
 					(cd libscotch ;      $(MAKE) VERSION=\"$(VERSION)\" ptscotch && $(MAKE) ptinstall)
 					(cd scotch ;         $(MAKE) VERSION=\"$(VERSION)\" ptscotch && $(MAKE) ptinstall)
 					(cd libscotchmetis ; $(MAKE)                        ptscotch && $(MAKE) ptinstall)
 
-install				:	required
-					-$(CP) -f ../bin/*scotch*.h $(prefix)/include
-					-$(CP) -f ../bin/*scotc*[^m]$(LIB) $(prefix)/lib
+install				:	required	$(bindir)	$(includedir)	$(libdir)
+					-$(CP) -f ../bin/[agm]*$(EXE) $(bindir)
+					-$(CP) -f ../include/*scotch*.h $(includedir)
+					-$(CP) -f ../lib/*scotc*[^m]$(LIB) $(libdir)
+#					-$(CP) -Rf ../man/* $(mandir)
 
 clean				:	required
-					(cd common ;         $(MAKE) clean)
 					(cd libscotch ;      $(MAKE) clean)
 					(cd scotch ;         $(MAKE) clean)
 					(cd libscotchmetis ; $(MAKE) clean)
 
 realclean			:	required
-					(cd common ;         $(MAKE) realclean)
 					(cd libscotch ;      $(MAKE) realclean)
 					(cd scotch ;         $(MAKE) realclean)
 					(cd libscotchmetis ; $(MAKE) realclean)
-					-$(RM) ../bin/*
+					-$(RM) ../bin/* ../include/* ../lib/*

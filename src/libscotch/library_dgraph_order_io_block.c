@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,23 +31,17 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : common.c                                **/
+/**   NAME       : library_dgraph_order_io_block.c         **/
 /**                                                        **/
-/**   AUTHORS    : David GOUDIN                            **/
-/**                Pascal HENON                            **/
-/**                Francois PELLEGRINI                     **/
-/**                Pierre RAMET                            **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : Part of a parallel direct block solver. **/
-/**                These lines are common routines used    **/
-/**                by all modules.                         **/
+/**   FUNCTION   : This module is the API for the distri-  **/
+/**                buted ordering distributed tree         **/
+/**                building routine of the libSCOTCH       **/
+/**                library.                                **/
 /**                                                        **/
-/**   DATES      : # Version 0.0  : from : 08 may 1998     **/
-/**                                 to     14 sep 1998     **/
-/**                # Version 2.0  : from : 27 sep 2004     **/
-/**                                 to     27 sep 2004     **/
-/**                # Version 5.0  : from : 02 oct 2007     **/
-/**                                 to     02 oct 2007     **/
+/**   DATES      : # Version 5.1  : from : 28 may 2008     **/
+/**                                 to     28 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,52 +49,35 @@
 **  The defines and includes.
 */
 
-#define COMMON
+#define LIBRARY
 
-#include <time.h>
+#include "module.h"
 #include "common.h"
+#include "dgraph.h"
+#include "dorder.h"
+#include "scotch.h"
 
-/*******************/
-/*                 */
-/* Timing routine. */
-/*                 */
-/*******************/
+/************************************/
+/*                                  */
+/* These routines are the C API for */
+/* the distributed ordering         */
+/* handling routines.               */
+/*                                  */
+/************************************/
 
-#ifndef MPI_INT
-double
-clockGet (void)
+/*+ This routine saves the contents of
+*** the given ordering to the given stream
+*** on the form of a block ordering.
+*** It returns:
+*** - 0   : on success.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_dgraphOrderSaveBlock (
+const SCOTCH_Dgraph * const     grafptr,          /*+ Graph to order   +*/
+const SCOTCH_Dordering * const  ordeptr,          /*+ Ordering to save +*/
+FILE * const                    stream)           /*+ Output stream    +*/
 {
-#ifdef COMMON_TIMING_OLD                          /* Old timing routine */
-  struct rusage       data;
-
-  getrusage (RUSAGE_SELF, &data);
-
-  return (((double) data.ru_utime.tv_sec  + (double) data.ru_stime.tv_sec) +
-          ((double) data.ru_utime.tv_usec + (double) data.ru_stime.tv_usec) * 1.0e-6L);
-#else /* COMMON_TIMING_OLD */
-  struct timespec     tp;
-
-  clock_gettime (CLOCK_REALTIME, &tp);            /* Elapsed time */
-
-  return ((double) tp.tv_sec + (double) tp.tv_nsec * 1.0e-9L);
-#endif /* COMMON_TIMING_OLD */
-}
-#endif /* MPI_INT */
-
-/***************************/
-/*                         */
-/* Usage printing routine. */
-/*                         */
-/***************************/
-
-void
-usagePrint (
-FILE * const                stream,
-const char ** const         data)
-{
-  const char **       cptr;
-
-  fprintf (stream, "Usage is:\n");
-  for (cptr = data; *cptr != NULL; cptr ++)
-    fprintf (stream, "  %s\n", *cptr);
+  return (dorderSaveBlock ((Dorder *) ordeptr, (Dgraph *) grafptr, stream));
 }

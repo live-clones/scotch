@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 07 jan 2002     **/
 /**                                 to     11 may 2004     **/
 /**                # Version 5.0  : from : 22 dec 2006     **/
-/**                                 to     05 oct 2007     **/
+/**                                 to     11 jun 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +121,7 @@ Hmesh * restrict const            indmeshptr)     /* Pointer to induced halo sub
   indvnodnbr = orgvnodnbr + orgvnspnbr + orgmeshptr->m.vnodnnd - orgmeshptr->vnohnnd; /* Compute upper bound on number of node vertices */
   indvertnbr = indvnodnbr + indvelmnbr;
 
-  indedgenbr = (indvertnbr < (orgmeshptr->m.edgenbr / orgmeshptr->m.degrmax)) /* Choose best upper bound on number of edges (avoid multiply overflow) */
+  indedgenbr = ((orgmeshptr->m.degrmax > 0) && (indvertnbr < (orgmeshptr->m.edgenbr / orgmeshptr->m.degrmax))) /* Choose best upper bound on number of edges (avoid multiply overflow) */
                ? (indvertnbr * orgmeshptr->m.degrmax) : orgmeshptr->m.edgenbr;
 
   memSet (indmeshptr, 0, sizeof (Hmesh));         /* Initialize halo mesh fields */

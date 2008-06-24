@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,9 +30,14 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
+includedir	= ../../include
+libdir		= ../../lib
+
 ##
 ##  General inference rules.
 ##
+
+include ../Makefile.inc
 
 %$(OBJ)	:	%.c
 				$(CC) $(CFLAGS) -c $(<) -o $(@)
@@ -44,17 +49,15 @@
 ##  Project rules.
 ##
 
-include ../Makefile.inc
-
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:	clean
-					$(MAKE) SCOTCHLIB=scotch					\
-					scotch.h							\
-					scotchf.h							\
-					libscotch$(LIB)							\
-					libscotcherr$(LIB)						\
-					libscotcherrcom$(LIB)
+					$(MAKE) SCOTCHLIB=scotch		\
+					scotch.h				\
+					scotchf.h				\
+					libscotch$(LIB)				\
+					libscotcherr$(LIB)			\
+					libscotcherrexit$(LIB)
 
 ptscotch			:	clean
 					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC=$(CCP) SCOTCHLIB=ptscotch	\
@@ -63,15 +66,16 @@ ptscotch			:	clean
 					libptscotch$(LIB)								\
 					libscotch$(LIB)									\
 					libptscotcherr$(LIB)								\
-					libscotcherrcom$(LIB)
+					libptscotcherrexit$(LIB)
 
 install				:
-					-$(CP) scotch.h scotchf.h libscotch$(LIB) libscotcherr$(LIB) libscotcherrcom$(LIB) ../../bin
+					-$(CP) scotch.h scotchf.h $(includedir)
+					-$(CP) libscotch$(LIB) libscotcherr*$(LIB) $(libdir)
 
 ptinstall			:
-					-$(CP) scotch.h ../../bin/ptscotch.h
-					-$(CP) scotchf.h ../../bin/ptscotchf.h
-					-$(CP) libptscotch*$(LIB) libscotcherrcom$(LIB) ../../bin
+					-$(CP) scotch.h $(includedir)/ptscotch.h
+					-$(CP) scotchf.h $(includedir)/ptscotchf.h
+					-$(CP) libptscotch*$(LIB) $(libdir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB) common2* parser_yy.c parser_ly.h parser_ll.c *scotch.h *scotchf.h y.output dummysizes$(EXE)
@@ -89,6 +93,32 @@ common$(OBJ)			:	common.c				\
 					$(CC) $(CFLAGS) -c common2.c -DSCOTCH_COMMON_RENAME -o $(@)
 					$(RM) common2.c
 
+common_file$(OBJ)		:	common_file.c				\
+					module.h				\
+					common.h				\
+					common_file.h
+					$(CAT) module.h common_file.c > common2_file.c
+					$(CC) $(CFLAGS) -c common2_file.c -DSCOTCH_COMMON_RENAME -o $(@)
+					$(RM) common2_file.c
+
+common_file_compress$(OBJ)	:	common_file_compress.c			\
+					module.h				\
+					common.h				\
+					common_file.h				\
+					common_file_compress.h
+					$(CAT) module.h common_file_compress.c > common2_file_compress.c
+					$(CC) $(CFLAGS) -c common2_file_compress.c -DSCOTCH_COMMON_RENAME -o $(@)
+					$(RM) common2_file_compress.c
+
+common_file_uncompress$(OBJ)	:	common_file_uncompress.c		\
+					module.h				\
+					common.h				\
+					common_file.h				\
+					common_file_compress.h
+					$(CAT) module.h common_file_uncompress.c > common2_file_uncompress.c
+					$(CC) $(CFLAGS) -c common2_file_uncompress.c -DSCOTCH_COMMON_RENAME -o $(@)
+					$(RM) common2_file_uncompress.c
+
 common_integer$(OBJ)		:	common_integer.c			\
 					module.h				\
 					common.h				\
@@ -104,6 +134,13 @@ common_memory$(OBJ)		:	common_memory.c				\
 					$(CAT) module.h common_memory.c > common2_memory.c
 					$(CC) $(CFLAGS) -c common2_memory.c -DSCOTCH_COMMON_RENAME -o $(@)
 					$(RM) common2_memory.c
+
+common_stub$(OBJ)		:	common_stub.c				\
+					module.h				\
+					common.h
+					$(CAT) module.h common_stub.c > common_stub2.c
+					$(CC) $(CFLAGS) -c common_stub2.c -DSCOTCH_COMMON_RENAME -o $(@)
+					$(RM) common_stub2.c
 
 arch$(OBJ)			:	arch.c					\
 					module.h				\
@@ -382,7 +419,8 @@ dgraph_halo$(OBJ)		:	dgraph_halo.c				\
 					dgraph_halo_fill.c			\
 					module.h				\
 					common.h				\
-					dgraph.h
+					dgraph.h				\
+					dgraph_halo.h
 
 dgraph_induce$(OBJ)		:	dgraph_induce.c				\
 					module.h				\
@@ -446,6 +484,13 @@ dorder_gather$(OBJ)		:	dorder_gather.c				\
 					order.h
 
 dorder_io$(OBJ)			:	dorder_io.c				\
+					module.h				\
+					common.h				\
+					dgraph.h				\
+					dorder.h				\
+					order.h
+
+dorder_io_block$(OBJ)		:	dorder_io_block.c			\
 					module.h				\
 					common.h				\
 					dgraph.h				\
@@ -527,6 +572,12 @@ graph_io_habo$(OBJ)		:	graph_io_habo.c				\
 					geom.h					\
 					graph.h					\
 					graph_io_habo.h
+
+graph_io_mmkt$(OBJ)		:	graph_io_mmkt.c				\
+					module.h				\
+					common.h				\
+					geom.h					\
+					graph.h
 
 graph_io_scot$(OBJ)		:	graph_io_scot.c				\
 					module.h				\
@@ -983,6 +1034,7 @@ library_arch_cmpltw_f$(OBJ)	:	library_arch_cmpltw_f.c			\
 library_dgraph$(OBJ)		:	library_dgraph.c			\
 					module.h				\
 					common.h				\
+					graph.h					\
 					dgraph.h				\
 					scotch.h
 
@@ -1112,6 +1164,18 @@ library_dgraph_order_io_f$(OBJ)	:	library_dgraph_order_io_f.c		\
 					common.h				\
 					scotch.h
 
+library_dgraph_order_io_block$(OBJ):	library_dgraph_order_io_block.c		\
+					module.h				\
+					common.h				\
+					dgraph.h				\
+					dorder.h				\
+					scotch.h
+
+library_dgraph_order_io_block_f$(OBJ):	library_dgraph_order_io_block_f.c	\
+					module.h				\
+					common.h				\
+					scotch.h
+
 library_dgraph_order_perm$(OBJ)	:	library_dgraph_order_perm.c		\
 					module.h				\
 					common.h				\
@@ -1159,12 +1223,12 @@ library_dgraph_stat_f$(OBJ)	:	library_dgraph_stat_f.c			\
 					common.h				\
 					scotch.h
 
-library_errcom$(OBJ)		:	library_errcom.c			\
+library_error$(OBJ)		:	library_error.c				\
 					module.h				\
 					common.h				\
 					scotch.h
 
-library_error$(OBJ)		:	library_error.c				\
+library_error_exit$(OBJ)	:	library_error_exit.c			\
 					module.h				\
 					common.h				\
 					scotch.h
@@ -1235,6 +1299,18 @@ library_graph_io_habo$(OBJ)	:	library_graph_io_habo.c			\
 					scotch.h
 
 library_graph_io_habo_f$(OBJ)	:	library_graph_io_habo_f.c		\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_graph_io_mmkt$(OBJ)	:	library_graph_io_mmkt.c			\
+					module.h				\
+					common.h				\
+					geom.h					\
+					graph.h					\
+					scotch.h
+
+library_graph_io_mmkt_f$(OBJ)	:	library_graph_io_mmkt_f.c		\
 					module.h				\
 					common.h				\
 					scotch.h
@@ -1839,6 +1915,7 @@ libptscotch$(LIB)		:	dgraph$(OBJ)				\
 					dorder$(OBJ)				\
 					dorder_gather$(OBJ)			\
 					dorder_io$(OBJ)				\
+					dorder_io_block$(OBJ)			\
 					dorder_io_tree$(OBJ)			\
 					dorder_perm$(OBJ)			\
 					dorder_tree_dist$(OBJ)			\
@@ -1872,6 +1949,8 @@ libptscotch$(LIB)		:	dgraph$(OBJ)				\
 					library_dgraph_order_gather_f$(OBJ)	\
 					library_dgraph_order_io$(OBJ)		\
 					library_dgraph_order_io_f$(OBJ)		\
+					library_dgraph_order_io_block$(OBJ)	\
+					library_dgraph_order_io_block_f$(OBJ)	\
 					library_dgraph_order_perm$(OBJ)		\
 					library_dgraph_order_perm_f$(OBJ)	\
 					library_dgraph_order_tree_dist$(OBJ)	\
@@ -1916,8 +1995,12 @@ libscotch$(LIB)			:	arch$(OBJ)				\
 					bgraph_check$(OBJ)			\
 					bgraph_store$(OBJ)			\
 					common$(OBJ)				\
+					common_file$(OBJ)			\
+					common_file_compress$(OBJ)		\
+					common_file_uncompress$(OBJ)		\
 					common_integer$(OBJ)			\
 					common_memory$(OBJ)			\
+					common_stub$(OBJ)			\
 					gain$(OBJ)				\
 					geom$(OBJ)				\
 					graph$(OBJ)				\
@@ -1928,6 +2011,7 @@ libscotch$(LIB)			:	arch$(OBJ)				\
 					graph_io$(OBJ)				\
 					graph_io_chac$(OBJ)			\
 					graph_io_habo$(OBJ)			\
+					graph_io_mmkt$(OBJ)			\
 					graph_io_scot$(OBJ)			\
 					graph_list$(OBJ)			\
 					hall_order_hd$(OBJ)			\
@@ -1969,7 +2053,6 @@ libscotch$(LIB)			:	arch$(OBJ)				\
 					library_arch_build_f$(OBJ)		\
 					library_arch_cmpltw$(OBJ)		\
 					library_arch_cmpltw_f$(OBJ)		\
-					library_arch_f$(OBJ)			\
 					library_geom$(OBJ)			\
 					library_geom_f$(OBJ)			\
 					library_graph$(OBJ)			\
@@ -1982,6 +2065,8 @@ libscotch$(LIB)			:	arch$(OBJ)				\
 					library_graph_io_chac_f$(OBJ)		\
 					library_graph_io_habo$(OBJ)		\
 					library_graph_io_habo_f$(OBJ)		\
+					library_graph_io_mmkt$(OBJ)		\
+					library_graph_io_mmkt_f$(OBJ)		\
 					library_graph_io_scot$(OBJ)		\
 					library_graph_io_scot_f$(OBJ)		\
 					library_graph_map$(OBJ)			\
@@ -2049,10 +2134,14 @@ libptscotcherr$(LIB)		:	library_error$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(?)
 					-$(RANLIB) $(@)
 
+libptscotcherrexit$(LIB)	:	library_error_exit$(OBJ)
+					$(AR) $(ARFLAGS) $(@) $(?)
+					-$(RANLIB) $(@)
+
 libscotcherr$(LIB)		:	library_error$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(?)
 					-$(RANLIB) $(@)
 
-libscotcherrcom$(LIB)		:	library_errcom$(OBJ)
+libscotcherrexit$(LIB)		:	library_error_exit$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(?)
 					-$(RANLIB) $(@)

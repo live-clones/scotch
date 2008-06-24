@@ -47,6 +47,8 @@
 /**                                                        **/
 /************************************************************/
 
+#define VGRAPH_H
+
 /*
 **  The type and structure definitions.
 */

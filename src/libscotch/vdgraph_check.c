@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routine.                                **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 07 feb 2006     **/
-/**                                 to     31 dec 2006     **/
+/**                                 to     01 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,18 +104,18 @@ const Vdgraph * const       grafptr)
     cheklocval |= 2;
   }
 
-  if ((grafptr->compglbsize[0] + grafptr->compglbsize[1] + grafptr->fronglbnbr) != grafptr->s.vertglbnbr) {
+  if ((grafptr->compglbsize[0] + grafptr->compglbsize[1] + grafptr->compglbsize[2]) != grafptr->s.vertglbnbr) {
     errorPrint ("vdgraphCheck: invalid global size sum");
     cheklocval |= 4;
   }
 
-  if ((grafptr->complocsize[0] + grafptr->complocsize[1] + grafptr->fronlocnbr) != grafptr->s.vertlocnbr) {
+  if ((grafptr->complocsize[0] + grafptr->complocsize[1] + grafptr->complocsize[2]) != grafptr->s.vertlocnbr) {
     errorPrint ("vdgraphCheck: invalid local size sum");
     cheklocval |= 8;
   }
 
-  if ((grafptr->fronlocnbr < 0) ||
-      (grafptr->fronlocnbr > grafptr->s.vertlocnbr)) {
+  if ((grafptr->complocsize[2] < 0) ||
+      (grafptr->complocsize[2] > grafptr->s.vertlocnbr)) {
     errorPrint ("vdgraphCheck: invalid number of local frontier vertices");
     cheklocval |= 16;
   }
@@ -128,7 +128,7 @@ const Vdgraph * const       grafptr)
     }
   }
 
-  for (fronnum = 0; fronnum < grafptr->fronlocnbr; fronnum ++) {
+  for (fronnum = 0; fronnum < grafptr->complocsize[2]; fronnum ++) {
     Gnum                vertnum;
 
     vertnum = grafptr->fronloctab[fronnum];
@@ -161,8 +161,8 @@ const Vdgraph * const       grafptr)
   reduloctab[3]  = - grafptr->compglbload[1];
   reduloctab[4]  =   grafptr->compglbload[2];
   reduloctab[5]  = - grafptr->compglbload[2];
-  reduloctab[6]  =   grafptr->fronglbnbr;
-  reduloctab[7]  = - grafptr->fronglbnbr;
+  reduloctab[6]  =   grafptr->compglbsize[2];
+  reduloctab[7]  = - grafptr->compglbsize[2];
   reduloctab[8]  =   grafptr->levlnum;
   reduloctab[9]  = - grafptr->levlnum;
   reduloctab[10] =   cheklocval;
@@ -230,7 +230,7 @@ const Vdgraph * const       grafptr)
   if ((cheklocval == 0) &&
       ((complocsize[0] != grafptr->complocsize[0]) ||
        (complocsize[1] != grafptr->complocsize[1]) ||
-       (complocsize[2] != grafptr->fronlocnbr))) {
+       (complocsize[2] != grafptr->complocsize[2]))) {
     errorPrint ("vgraphCheck: invalid local part sizes");
     cheklocval = 1;
   }

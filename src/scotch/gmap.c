@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,7 +61,7 @@
 /**                # Version 4.0  : from : 16 jan 2004     **/
 /**                                 to   : 27 dec 2004     **/
 /**                # Version 5.0  : from : 23 dec 2007     **/
-/**                                 to   : 23 dec 2007     **/
+/**                                 to   : 18 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,6 +71,7 @@
 
 #define GMAP
 
+#include "module.h"
 #include "common.h"
 #include "scotch.h"
 #include "gmap.h"
@@ -79,18 +80,22 @@
 **  The static variables.
 */
 
-static int                  C_fileNum = 0;        /* Number of file in arg list */
-static File                 C_fileTab[C_FILENBR] = { /* File array              */
+static int                  C_partNbr = 2;        /* Default number of parts     */
+static int                  C_paraNum = 0;        /* Number of parameters        */
+static int                  C_paraNbr = 0;        /* No parameters for mapping   */
+static int                  C_fileNum = 0;        /* Number of file in arg list  */
+static int                  C_fileNbr = 4;        /* Number of files for mapping */
+static File                 C_fileTab[C_FILENBR] = { /* File array               */
                               { "-", NULL, "r" },
                               { "-", NULL, "r" },
                               { "-", NULL, "w" },
                               { "-", NULL, "w" } };
 
 static const char *         C_usageList[] = {     /* Usage */
-  "map [<input source file> [<input target file> [<output mapping file> [<output log file>]]]] <options>",
+  "gmap [<input source file> [<input target file> [<output mapping file> [<output log file>]]]] <options>",
+  "gpart [<nparts>] [<input source file> [<output mapping file> [<output log file>]]] <options>",
   "  -h         : Display this help",
-  "  -m<strat>  : Apply mapping strategy <strat>, made of methods:",
-  "                 b  : Dual Recursive Bipartitioning",
+  "  -m<strat>  : Set mapping strategy (see user's manual)",
   "  -s<obj>    : Force unity weights on <obj>:",
   "                 e  : edges",
   "                 v  : vertices",
@@ -116,15 +121,23 @@ char *                      argv[])
 {
   SCOTCH_Graph        grafdat;                    /* Source graph            */
   SCOTCH_Num          grafflag;                   /* Source graph properties */
-  SCOTCH_Num          vertnbr;                    /* Source graph size       */
   SCOTCH_Arch         archdat;                    /* Target architecture     */
-  SCOTCH_Strat        mapstrat;                   /* Mapping strategy        */
+  SCOTCH_Strat        stradat;                    /* Mapping strategy        */
   SCOTCH_Mapping      mapdat;                     /* Mapping data            */
   Clock               runtime[2];                 /* Timing variables        */
-  int                 flag;
+  int                 flagval;
   int                 i, j;
 
-  errorProg ("gmap");
+  flagval = C_FLAGNONE;                           /* Default behavior */
+  i = strlen (argv[0]);
+  if ((i >= 5) && (strncmp (argv[0] + i - 5, "gpart", 5) == 0)) {
+    flagval |= C_FLAGPART;
+    C_paraNbr = 1;                                /* One more parameter       */
+    C_fileNbr = 3;                                /* One less file to provide */
+    errorProg ("gpart");
+  }
+  else
+    errorProg ("gmap");
 
   intRandInit ();
 
@@ -133,16 +146,22 @@ char *                      argv[])
     return     (0);
   }
 
-  flag     = C_FLAGNONE;                          /* Default behavior             */
   grafflag = 0;                                   /* Use vertex and edge weights  */
-  SCOTCH_stratInit (&mapstrat);                   /* Set default mapping strategy */
+  SCOTCH_stratInit (&stradat);                    /* Set default mapping strategy */
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
-  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes */
-    if ((argv[i][0] != '+') &&                    /* If found a file name      */
-        ((argv[i][0] != '-') || (argv[i][1] == '\0'))) {
-      if (C_fileNum < C_FILEARGNBR)               /* File name has been given */
+  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
+    if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
+      if (C_paraNum < C_paraNbr) {                /* If number of parameters not reached              */
+        if ((C_partNbr = atoi (argv[i])) < 1) {   /* Get the number of parts                          */
+          errorPrint ("main: invalid number of parts (\"%s\")", argv[i]);
+          exit       (1);
+        }
+        C_paraNum ++;
+        continue;                                 /* Process the other parameters */
+      }
+      if (C_fileNum < C_fileNbr)                  /* A file name has been given */
         C_fileTab[C_fileNum ++].name = argv[i];
       else {
         errorPrint ("main: too many file names given");
@@ -157,9 +176,9 @@ char *                      argv[])
           return     (0);
         case 'M' :
         case 'm' :
-          SCOTCH_stratExit (&mapstrat);
-          SCOTCH_stratInit (&mapstrat);
-          if ((SCOTCH_stratGraphMap (&mapstrat, &argv[i][2])) != 0) {
+          SCOTCH_stratExit (&stradat);
+          SCOTCH_stratInit (&stradat);
+          if ((SCOTCH_stratGraphMap (&stradat, &argv[i][2])) != 0) {
             errorPrint ("main: invalid mapping strategy");
             return     (1);
           }
@@ -184,8 +203,8 @@ char *                      argv[])
           }
           break;
         case 'V' :
-          fprintf (stderr, "gmap, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2004,2007 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "gmap/gpart, version %s - F. Pellegrini\n", SCOTCH_VERSION);
+          fprintf (stderr, "Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                                /* Output control info */
@@ -193,19 +212,19 @@ char *                      argv[])
             switch (argv[i][j]) {
               case 'M' :
               case 'm' :
-                flag |= C_FLAGVERBMAP;
+                flagval |= C_FLAGVERBMAP;
                 break;
               case 'S' :
               case 's' :
-                flag |= C_FLAGVERBSTR;
+                flagval |= C_FLAGVERBSTR;
                 break;
               case 'T' :
               case 't' :
-                flag |= C_FLAGVERBTIM;
+                flagval |= C_FLAGVERBTIM;
                 break;
               default :
                 errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"",
-                             argv[i][j], argv[i]);
+                            argv[i][j], argv[i]);
                 return (1);
             }
           }
@@ -216,69 +235,64 @@ char *                      argv[])
       }
     }
   }
-
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      if ((C_fileTab[i].pntr = fopen (C_fileTab[i].name, C_fileTab[i].mode)) == NULL) { /* Open the file */
-        errorPrint ("main: cannot open file (%d)", i);
-        return     (1);
-      }
-    }
+  if ((flagval & C_FLAGPART) != 0) {              /* If program run as the partitioner            */
+    C_fileTab[3].name = C_fileTab[2].name;        /* Put provided file names at their right place */
+    C_fileTab[2].name = C_fileTab[1].name;
+    C_fileTab[1].name = "-";
   }
+
+  fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
   clockInit  (&runtime[0]);
   clockStart (&runtime[0]);
 
   SCOTCH_graphInit (&grafdat);                    /* Create graph structure         */
   SCOTCH_graphLoad (&grafdat, C_filepntrsrcinp, -1, grafflag); /* Read source graph */
-  SCOTCH_graphSize (&grafdat, &vertnbr, NULL);    /* Get graph characteristics      */
 
-  SCOTCH_archInit (&archdat);                     /* Create architecture structure */
-  SCOTCH_archLoad (&archdat, C_filepntrtgtinp);   /* Read target architecture      */
+  SCOTCH_archInit (&archdat);                     /* Create architecture structure          */
+  if ((flagval & C_FLAGPART) != 0)                /* If program run as the partitioner      */
+    SCOTCH_archCmplt (&archdat, C_partNbr);       /* Create a complete graph of proper size */
+  else
+    SCOTCH_archLoad (&archdat, C_filepntrtgtinp); /* Read target architecture */
 
   clockStop  (&runtime[0]);                       /* Get input time */
   clockInit  (&runtime[1]);
   clockStart (&runtime[1]);
 
   SCOTCH_graphMapInit    (&grafdat, &mapdat, &archdat, NULL);
-  SCOTCH_graphMapCompute (&grafdat, &mapdat, &mapstrat); /* Perform mapping */
+  SCOTCH_graphMapCompute (&grafdat, &mapdat, &stradat); /* Perform mapping */
 
   clockStop  (&runtime[1]);                       /* Get computation time */
   clockStart (&runtime[0]);
 
   SCOTCH_graphMapSave (&grafdat, &mapdat, C_filepntrmapout); /* Write mapping */
 
-  clockStop  (&runtime[0]);                       /* Get output time */
+  clockStop (&runtime[0]);                        /* Get output time */
 
-  if (flag & C_FLAGVERBSTR) {
+  if (flagval & C_FLAGVERBSTR) {
     fprintf (C_filepntrlogout, "S\tStrat=");
-    SCOTCH_stratSave (&mapstrat, C_filepntrlogout);
+    SCOTCH_stratSave (&stradat, C_filepntrlogout);
     putc ('\n', C_filepntrlogout);
   }
-  if (flag & C_FLAGVERBTIM) {
-    fprintf (C_filepntrlogout, "T\tTimeTotal=%g\nT\tTimeIO=%g\nT\tTimeComput=%g\n",
-             (double) clockVal (&runtime[0]) +
+  if (flagval & C_FLAGVERBTIM) {
+    fprintf (C_filepntrlogout, "T\tMapping\t\t%g\nT\tI/O\t\t%g\nT\tTotal\t\t%g\n",
              (double) clockVal (&runtime[1]),
              (double) clockVal (&runtime[0]),
+             (double) clockVal (&runtime[0]) +
              (double) clockVal (&runtime[1]));
   }
-  if (flag & C_FLAGVERBMAP)
+  if (flagval & C_FLAGVERBMAP)
     SCOTCH_graphMapView (&grafdat, &mapdat, C_filepntrlogout);
 
-#ifdef SCOTCH_DEBUG_ALL
+  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
+
   SCOTCH_graphMapExit (&grafdat, &mapdat);
   SCOTCH_graphExit    (&grafdat);
-  SCOTCH_stratExit    (&mapstrat);
+  SCOTCH_stratExit    (&stradat);
   SCOTCH_archExit     (&archdat);
 
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      fclose (C_fileTab[i].pntr);                 /* Close the stream */
-    }
-  }
-#endif /* SCOTCH_DEBUG_ALL */
-
+#ifdef COMMON_PTHREAD
+  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
+#endif /* COMMON_PTHREAD */
   return (0);
 }

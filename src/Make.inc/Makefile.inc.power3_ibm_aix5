@@ -8,10 +8,12 @@ ARFLAGS	= -X64 -ruv
 CAT	= cat
 CC	= xlc
 CCP	= mpcc_r
-CFLAGS	= -ma -q64 -qarch=pwr3 -O3 -qstrict -qtune=pwr3 -qlanglvl=extc99 -s -I. -I../../bin -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME -DSCOTCH_PTHREAD
-LDFLAGS	= -bmaxdata:0x80000000 -L../../bin -lm
+CFLAGS	= -ma -q64 -qarch=pwr3 -O3 -qstrict -qtune=pwr3 -qlanglvl=extc99 -s -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_PTHREAD -DSCOTCH_RENAME
+LDFLAGS	= -bmaxdata:0x80000000 -lm
 CP	= cp
 LEX	= lex
+LN	= ln
+MKDIR	= mkdir
 MV	= mv
 RANLIB	= ranlib
 YACC	= yacc

@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -38,8 +38,8 @@
 /**   FUNCTION   : This module handles files and file      **/
 /**                names.                                  **/
 /**                                                        **/
-/**   DATES      : # Version P0.5 : from : 21 may 2007     **/
-/**                                 to   : 08 jun 2007     **/
+/**   DATES      : # Version 5.0  : from : 21 may 2007     **/
+/**                                 to   : 16 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,7 +96,7 @@ const int                   protnum)              /*+ Root process number       
 
   for (namenum = naexnum = flagval = 0; namenum < namemax; ) {
     char                charval;
-    int                 dataval;
+    int                 dataval = 0;
     int                 datasiz;
 
     charval = (*nameptr)[namenum ++];             /* Get current characted                */
@@ -155,4 +155,146 @@ const int                   protnum)              /*+ Root process number       
   }
 
   return (0);
+}
+
+/* This routine opens a block of file
+** descriptor structures.
+** It returns:
+** - 0  : on success.
+** - !0 : on error.
+*/
+
+int
+fileBlockOpen (
+File * const                filetab,
+const int                   filenbr)
+{
+  int                i, j;
+
+  for (i = 0; i < filenbr; i ++) {                /* For all file names             */
+    if (filetab[i].pntr == NULL)                  /* If unwanted stream, do nothing */
+      continue;
+
+    for (j = 0; j < i; j ++) {
+      if ((filetab[i].mode[0] == filetab[j].mode[0]) && /* If very same name with same opening mode */
+          (filetab[j].name != NULL)                  &&
+          (strcmp (filetab[i].name, filetab[j].name) == 0)) {
+        filetab[i].pntr = filetab[j].pntr;        /* Share pointer to already processed stream */
+        filetab[i].name = NULL;                   /* Do not close this stream multiple times   */
+        break;
+      }
+    }
+    if (j == i) {                                 /* If original stream                */
+      int                 compval;                /* Compression type                  */
+      FILE *              compptr;                /* Processed ((un)compressed) stream */
+
+      if (filetab[i].name[0] != '-') {            /* If not standard stream, open it                 */
+        if ((filetab[i].pntr = fopen (filetab[i].name, filetab[i].mode)) == NULL) { /* Open the file */
+          errorPrint ("fileBlockOpen: cannot open file (%d)", i);
+          return     (1);
+        }
+      }
+      compval = (filetab[i].mode[0] == 'r') ? fileUncompressType (filetab[i].name) : fileCompressType (filetab[i].name);
+      if (compval < 0) {
+        errorPrint ("fileBlockOpen: (un)compression type not implemented");
+        return     (1);
+      }
+      compptr = (filetab[i].mode[0] == 'r') ? fileUncompress (filetab[i].pntr, compval) : fileCompress (filetab[i].pntr, compval);
+      if (compptr == NULL) {
+        errorPrint ("fileBlockOpen: cannot create (un)compression subprocess");
+        return     (1);
+      }
+      filetab[i].pntr = compptr;                  /* Use processed stream instead of original stream */
+    }
+  }
+
+  return (0);
+}
+
+/* This routine opens a block of eventually
+** distributed file descriptor structures.
+** It returns:
+** - 0  : on success.
+** - !0 : on error.
+*/
+
+int
+fileBlockOpenDist (
+File * const                filetab,
+const int                   filenbr,
+const int                   procglbnbr,
+const int                   proclocnum,
+const int                   protglbnum)
+{
+  int                i, j;
+
+  for (i = 0; i < filenbr; i ++) {                /* For all file names */
+    if (fileNameDistExpand (&filetab[i].name, procglbnbr, proclocnum, protglbnum) != 0) { /* If cannot allocate new name */
+      errorPrint ("fileBlockOpenDist: cannot create file name (%d)", i);
+      return     (1);
+    }
+    if (filetab[i].name == NULL)                  /* If inexisting stream because not root process and centralized stream */
+      filetab[i].pntr = NULL;
+    if (filetab[i].pntr == NULL)                  /* If unwanted stream, do nothing */
+      continue;
+
+    for (j = 0; j < i; j ++) {
+      if ((filetab[i].mode[0] == filetab[j].mode[0]) && /* If very same name with same opening mode */
+          (filetab[j].name != NULL)                  &&
+          (strcmp (filetab[i].name, filetab[j].name) == 0)) {
+        filetab[i].pntr = filetab[j].pntr;        /* Share pointer to already processed stream */
+        filetab[i].name = NULL;                   /* Do not close this stream multiple times   */
+        break;
+      }
+    }
+    if (j == i) {                                 /* If original stream                */
+      int                 compval;                /* Compression type                  */
+      FILE *              compptr;                /* Processed ((un)compressed) stream */
+
+      if (filetab[i].name[0] != '-') {            /* If not standard stream, open it                 */
+        if ((filetab[i].pntr = fopen (filetab[i].name, filetab[i].mode)) == NULL) { /* Open the file */
+          errorPrint ("fileBlockOpenDist: cannot open file (%d)", i);
+          return     (1);
+        }
+      }
+      compval = (filetab[i].mode[0] == 'r') ? fileUncompressType (filetab[i].name) : fileCompressType (filetab[i].name);
+      if (compval < 0) {
+        errorPrint ("fileBlockOpenDist: (un)compression type not implemented");
+        return     (1);
+      }
+      compptr = (filetab[i].mode[0] == 'r') ? fileUncompress (filetab[i].pntr, compval) : fileCompress (filetab[i].pntr, compval);
+      if (compptr == NULL) {
+        errorPrint ("fileBlockOpenDist: cannot create (un)compression subprocess");
+        return     (1);
+      }
+      filetab[i].pntr = compptr;                  /* Use processed stream instead of original stream */
+    }
+  }
+
+  return (0);
+}
+
+/* This routine opens a block of file
+** descriptor structures.
+** It returns:
+** - 0  : on success.
+** - !0 : on error.
+*/
+
+void
+fileBlockClose (
+File * const                filetab,
+const int                   filenbr)
+{
+  int                i;
+
+  for (i = 0; i < filenbr; i ++) {                /* For all file names             */
+    if (filetab[i].pntr == NULL)                  /* If unwanted stream, do nothing */
+      continue;
+
+    if ((filetab[i].name != NULL) &&              /* If existing stream */
+        (filetab[i].name[0] != '-')) {
+      fclose (filetab[i].pntr);                   /* Close the stream */
+    }
+  }
 }

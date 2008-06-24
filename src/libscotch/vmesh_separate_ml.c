@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 19 feb 2003     **/
 /**                                 to     31 aug 2005     **/
+/**                # Version 5.0  : from : 30 jan 2008     **/
+/**                                 to     30 jan 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -211,6 +213,7 @@ const VmeshSeparateMlParam * restrict const paraptr) /* Method parameters       
   Gnum * restrict     finecoartax;
   int                 o;
 
+  o = 1;                                          /* Assume an error if "switch...case" returns a strange value in debug mode */
   switch (vmeshSeparateMlCoarsen (finemeshptr, &coarmeshdat, &finecoartax, paraptr)) {
     case 0 :
       if (((o = vmeshSeparateMl2         (&coarmeshdat, paraptr))                  == 0) &&
@@ -221,20 +224,17 @@ const VmeshSeparateMlParam * restrict const paraptr) /* Method parameters       
       vmeshExit (&coarmeshdat);
       memFree (finecoartax + finemeshptr->m.baseval); /* Free finecoartab as not part of coarse mesh vertex group (unlike for graphCoarsen) */
       break;
+#ifdef SCOTCH_DEBUG_VMESH2
     case 1 :
     case 2 :                                      /* Cannot coarsen due to lack of memory */
-#ifdef SCOTCH_DEBUG_VMESH2
       finecoartax = NULL;                         /* Prevent Valgrind from yelling */
+#else /* SCOTCH_DEBUG_VMESH2 */
+    default :
 #endif /* SCOTCH_DEBUG_VMESH2 */
       if (((o = vmeshSeparateMlUncoarsen (finemeshptr, NULL, finecoartax)) == 0) && /* Finalize mesh    */
           ((o = vmeshSeparateSt          (finemeshptr, paraptr->stratlow)) != 0)) /* Apply low strategy */
         errorPrint ("vmeshSeparateMl2: cannot apply low strategy");
       break;
-#ifdef SCOTCH_DEBUG_VMESH2
-    default :
-      o = 1;
-      break;
-#endif /* SCOTCH_DEBUG_VMESH2 */
   }
 
   return (o);

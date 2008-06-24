@@ -335,6 +335,14 @@ const char * const          dataptr)              /* No use           */
 
   grafptr->edgetax = ((Gnum *) memRealloc (grafptr->edgetax + 1, grafptr->edgenbr * sizeof (Gnum))) - 1;
 
+#ifdef SCOTCH_DEBUG_GRAPH2
+  if (graphCheck (grafptr) != 0) {                /* Check graph consistency */
+    errorPrint ("graphGeomLoadHabo: internal error");
+    graphFree  (grafptr);
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_GRAPH2 */
+
   return (0);
 }
 

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 05 nov 2002     **/
 /**                                 to     06 may 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to     27 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -111,18 +111,18 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
     return     (1);
   }
 
-  if ((intLoad (stream, &velmnbr)          +      /* Read rest of header */
-       intLoad (stream, &vnodnbr)          +
-       intLoad (stream, &meshptr->edgenbr) +
-       intLoad (stream, &velmbas)          +
-       intLoad (stream, &vnodbas)          +
-       intLoad (stream, &propval) != 6) ||
-      (velmnbr < 0)                     ||
-      (vnodnbr < 0)                     ||
-      (velmbas < 0)                     ||
-      (vnodbas < 0)                     ||
-      (propval < 0)                     ||
-      (propval > 111)                   ||
+  if ((intLoad (stream, &velmnbr)          != 1) || /* Read rest of header */
+      (intLoad (stream, &vnodnbr)          != 1) ||
+      (intLoad (stream, &meshptr->edgenbr) != 1) ||
+      (intLoad (stream, &velmbas)          != 1) ||
+      (intLoad (stream, &vnodbas)          != 1) ||
+      (intLoad (stream, &propval)          != 1) ||
+      (velmnbr < 0)                              ||
+      (vnodnbr < 0)                              ||
+      (velmbas < 0)                              ||
+      (vnodbas < 0)                              ||
+      (propval < 0)                              ||
+      (propval > 111)                            ||
       (((velmbas + velmnbr) != vnodbas) &&
        ((vnodbas + vnodnbr) != velmbas))) {
     errorPrint ("meshLoad: bad input (2)");

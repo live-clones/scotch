@@ -39,7 +39,7 @@
 /**                graph from the given frontier array.    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 09 jan 2008     **/
+/**                                 to   : 24 feb 2008     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version 5.0. **/
@@ -118,8 +118,10 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
   Gnum                    degrval;
   Gnum                    distval;
   Gnum                    veloval;
+#ifdef SCOTCH_DEBUG_DGRAPH1
   Gnum                    reduloctab[3];
   Gnum                    reduglbtab[3];
+#endif /* SCOTCH_DEBUG_DGRAPH1 */
   Gnum                    fronlocnum;
   int                     cheklocval;
   int                     procngbnum;

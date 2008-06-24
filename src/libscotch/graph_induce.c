@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 4.0  : from : 28 nov 2001     **/
 /**                                 to     17 apr 2006     **/
 /**                # Version 5.0  : from : 14 dec 2006     **/
-/**                                 to     05 oct 2007     **/
+/**                                 to     11 jun 2008     **/
 /**                                                        **/
 /**   NOTES      : # Several algorithms, such as the       **/
 /**                  active graph building routine of      **/
@@ -135,7 +135,7 @@ Graph * restrict const          indgrafptr)
   indgrafptr->vertnbr  = indvertnbr;
   indgrafptr->vertnnd  = indvertnbr + indgrafptr->baseval;
 
-  indedgenbr = (indvertnbr < (orggrafptr->edgenbr / orggrafptr->degrmax)) /* Choose best upper bound on number of edges (avoid multiply overflow) */
+  indedgenbr = ((orggrafptr->degrmax > 0) && (indvertnbr < (orggrafptr->edgenbr / orggrafptr->degrmax))) /* Choose best upper bound on number of edges (avoid multiply overflow) */
                ? (indvertnbr * orggrafptr->degrmax) : orggrafptr->edgenbr;
   if (orggrafptr->edlotax != NULL)                /* If graph has edge weights */
     indedgenbr *= 2;                              /* Account for edge weights  */
@@ -200,7 +200,7 @@ Graph * restrict const        indgrafptr)         /* Pointer to induced subgraph
   indgrafptr->flagval = GRAPHFREETABS | GRAPHVERTGROUP | GRAPHEDGEGROUP;
   indgrafptr->baseval = orggrafptr->baseval;
 
-  indedgenbr = (indvertnbr < (orggrafptr->edgenbr / orggrafptr->degrmax)) /* Choose best upper bound on number of edges (avoid multiply overflow) */
+  indedgenbr = ((orggrafptr->degrmax > 0) && (indvertnbr < (orggrafptr->edgenbr / orggrafptr->degrmax))) /* Choose best upper bound on number of edges (avoid multiply overflow) */
                ? (indvertnbr * orggrafptr->degrmax) : orggrafptr->edgenbr;
   if (orggrafptr->edlotax != NULL)                /* If graph has edge weights */
     indedgenbr *= 2;                              /* Account for edge weights  */

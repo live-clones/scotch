@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                separation strategy.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 07 mar 2006     **/
-/**                                 to   : 10 sep 2007     **/
+/**                                 to   : 01 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,11 +103,11 @@ const VdgraphSeparateMlParam * const  paraptr)    /*+ Method parameters         
   if (coargrafptr->s.procglbnbr == 0) {           /* Not a owner graph */
     coargrafptr->fronloctab = NULL;
     coargrafptr->partgsttax = NULL;
-    coargrafptr->fronglbnbr = -1;                 /* Mark frontab as invalid */
+    coargrafptr->compglbsize[2] = -1;             /* Mark frontab as invalid */
     return (0);
   }
   else
-    coargrafptr->fronglbnbr = 0;                  /* Mark as non-invalid */
+    coargrafptr->compglbsize[2] = 0;              /* Mark as non-invalid */
 
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   if (dgraphCheck (&coargrafptr->s) != 0) {
@@ -189,7 +189,7 @@ const int                       proclocnum)
   int               bestassoc;
 
 
-  if (coargrafptr->fronglbnbr < 0) {              /* Processors own coargrafptr */
+  if (coargrafptr->compglbsize[2] < 0) {          /* Processors own coargrafptr      */
     MPI_Comm_size (parentcomm, &myassoc);         /* Mark higher than other vertices */
     ++myassoc;
     reduloctab[0] = 0;
@@ -203,10 +203,10 @@ const int                       proclocnum)
       errorPrint ("vdgraphHaveBestPart: communication error (1)");
       return     (1);
     }
-    reduloctab[0] = coargrafptr->fronglbnbr;        /* Frontier size  */
-    reduloctab[1] = coargrafptr->compglbloaddlt;    /* Load imbalance */
+    reduloctab[0] = coargrafptr->compglbsize[2];  /* Frontier size  */
+    reduloctab[1] = coargrafptr->compglbloaddlt;  /* Load imbalance */
     reduloctab[2] = myassoc;
-    reduloctab[3] = (coargrafptr->fronglbnbr <= 0) ? 1 : 0;
+    reduloctab[3] = (coargrafptr->compglbsize[2] <= 0) ? 1 : 0;
   }
 
   if ((MPI_Type_contiguous (4, GNUM_MPI, &besttypedat)                                != MPI_SUCCESS) ||
@@ -361,7 +361,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     finevertadj = finegrafptr->s.procvrttab[finegrafptr->s.proclocnum] - finegrafptr->s.baseval;
 
     /* Initialize fields of finer Vgraph */
-    finegrafptr->fronlocnbr = 0;
+    finegrafptr->complocsize[2] = 0;
     finesize1 = 0;
     memSet (finegrafptr->complocsize, 0, 3 * sizeof (Gnum));
     memSet (finegrafptr->complocload, 0, 3 * sizeof (Gnum));
@@ -396,7 +396,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
               finegrafptr->complocload[coarpartval] += finegrafptr->s.veloloctax[finevertnum - finevertadj];
             finegrafptr->partgsttax[finevertnum - finevertadj] = coarpartval;
             if (coarpartval == 2)
-              finegrafptr->fronloctab[finegrafptr->fronlocnbr ++] = finevertnum - finevertadj;
+              finegrafptr->fronloctab[finegrafptr->complocsize[2] ++] = finevertnum - finevertadj;
           }
           else {                                  /* Non local vertex */
             partglbptr->vertnum = finevertnum;
@@ -530,7 +530,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
         finegrafptr->complocload[partglbptr->partval] +=
           finegrafptr->s.veloloctax[partglbptr->vertnum - finevertadj];
       if (partglbptr->partval == 2)
-        finegrafptr->fronloctab[finegrafptr->fronlocnbr ++] = partglbptr->vertnum - finevertadj;
+        finegrafptr->fronloctab[finegrafptr->complocsize[2] ++] = partglbptr->vertnum - finevertadj;
     }
 
 #ifdef SCOTCH_DEBUG_VDGRAPH2
@@ -554,7 +554,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     }
 
     /* Now compute Vdgraph fields */
-    finegrafptr->complocsize[0] = finegrafptr->s.vertlocnbr - finegrafptr->fronlocnbr - finesize1;
+    finegrafptr->complocsize[0] = finegrafptr->s.vertlocnbr - finegrafptr->complocsize[2] - finesize1;
     finegrafptr->complocsize[1] = finesize1;
 
     if (finegrafptr->s.veloloctax == NULL)
@@ -614,7 +614,7 @@ const VdgraphSeparateMlParam * const paraptr)     /* Method parameters       */
   }
 
   if (vdgraphSeparateMlCoarsen (grafptr, &coargrafdat, &coarmulttax, paraptr) == 0) {
-    if (coargrafdat.fronglbnbr == -1)             /* Mark frontab as invalid */
+    if (coargrafdat.compglbsize[2] == -1)         /* Mark frontab as invalid */
       o = 0;
     else
       o = vdgraphSeparateMl2 (&coargrafdat, paraptr);

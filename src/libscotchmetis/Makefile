@@ -1,4 +1,4 @@
-## Copyright 2007 ENSEIRB, INRIA & CNRS
+## Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,21 +30,25 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
+bindir		= ../../bin
+includedir	= ../../include
+libdir		= ../../lib
+
 ##
 ##  General inference rules.
 ##
 
+include ../Makefile.inc
+
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -c $(<) -I../bin -o $(@)
+				$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) $(<) -o $(@) $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(<) -o $(@) -L$(libdir) $(LDFLAGS)
 
 ##
 ##  Project rules.
 ##
-
-include ../Makefile.inc
 
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
@@ -55,12 +59,12 @@ ptscotch			:
 					libptscotchparmetis$(LIB)
 
 install				:	scotch
-					-$(CP) metis.h ../../bin
-					-$(CP) libscotchmetis$(LIB) ../../bin
+					-$(CP) metis.h $(includedir)
+					-$(CP) libscotchmetis$(LIB) $(libdir)
 
 ptinstall			:	ptscotch
-					-$(CP) parmetis.h ../../bin
-					-$(CP) libptscotchparmetis$(LIB) ../../bin
+					-$(CP) parmetis.h $(includedir)
+					-$(CP) libptscotchparmetis$(LIB) $(libdir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB)
@@ -72,33 +76,39 @@ realclean			:	clean
 ##
 
 metis_graph_order$(OBJ)		:	metis_graph_order.c			\
-					../../bin/common.h			\
-					../../bin/scotch.h			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
 					metis.h
 
 metis_graph_order_f$(OBJ)	:	metis_graph_order_f.c			\
-					../../bin/common.h			\
-					../../bin/scotch.h			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
 					metis.h
 
 metis_graph_part$(OBJ)		:	metis_graph_part.c			\
-					../../bin/common.h			\
-					../../bin/scotch.h			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
 					metis.h
 
 metis_graph_part_f$(OBJ)	:	metis_graph_part_f.c			\
-					../../bin/common.h			\
-					../../bin/scotch.h			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
 					metis.h
 
 parmetis_dgraph_order$(OBJ)	:	parmetis_dgraph_order.c			\
-					../../bin/common.h			\
-					../../bin/ptscotch.h			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/ptscotch.h		\
 					parmetis.h
 
 parmetis_dgraph_order_f$(OBJ)	:	parmetis_dgraph_order_f.c		\
-					../../bin/common.h			\
-					../../bin/ptscotch.h			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/ptscotch.h		\
 					parmetis.h
 
 libptscotchparmetis$(LIB)	:	parmetis_dgraph_order$(OBJ)		\

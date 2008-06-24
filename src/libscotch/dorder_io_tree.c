@@ -67,7 +67,6 @@
 ** - !0  : on error.
 */
 
-static
 int
 dorderSaveTree2 (
 const Dorder * restrict const ordeptr,

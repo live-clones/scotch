@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,7 @@
 
 #define LIBRARY
 
+#include "module.h"
 #include "common.h"
 #include "scotch.h"
 #include "metis.h"                                /* Our "metis.h" file */

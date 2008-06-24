@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to   : 17 mar 2005     **/
 /**                # Version 5.0  : from : 23 dec 2007     **/
-/**                                 to   : 01 jan 2008     **/
+/**                                 to   : 16 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,6 +61,7 @@
 
 #define AMK_GRF
 
+#include "module.h"
 #include "common.h"
 #include "scotch.h"
 #include "amk_grf.h"
@@ -124,10 +125,9 @@ char *                      argv[])
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
-  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes */
-    if ((argv[i][0] != '+') &&                    /* If found a file name      */
-        ((argv[i][0] != '-') || (argv[i][1] == '\0'))) {
-      if (C_fileNum < C_FILEARGNBR)               /* File name has been given */
+  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
+    if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
+      if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         C_fileTab[C_fileNum ++].name = argv[i];
       else {
         errorPrint ("main: too many file names given");
@@ -157,7 +157,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "amk_grf, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2004,2007 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -167,15 +167,7 @@ char *                      argv[])
     }
   }
 
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      if ((C_fileTab[i].pntr = fopen (C_fileTab[i].name, C_fileTab[i].mode)) == NULL) { /* Open the file */
-        errorPrint ("main: cannot open file (%d)", i);
-        return     (1);
-      }
-    }
-  }
+  fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
   SCOTCH_graphInit (&grafdat);                    /* Create graph structure            */
   SCOTCH_graphLoad (&grafdat, C_filepntrgrfinp, -1, 0); /* Load source graph           */
@@ -242,19 +234,15 @@ char *                      argv[])
   SCOTCH_archBuild (&archdat, &grafdat, listnbr, listtab, &bipastrat); /* Compute architecture */
   SCOTCH_archSave  (&archdat, C_filepntrtgtout);  /* Write target architecture                 */
 
-#ifdef SCOTCH_DEBUG_ALL
+  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
+
   SCOTCH_graphExit (&grafdat);                    /* Free target graph        */
   SCOTCH_archExit  (&archdat);                    /* Free target architecture */
   SCOTCH_stratExit (&bipastrat);                  /* Free strategy string     */
   memFree          (listtab);                     /* Free vertex list         */
 
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      fclose (C_fileTab[i].pntr);                 /* Close the stream */
-    }
-  }
-#endif /* SCOTCH_DEBUG_ALL */
-
+#ifdef COMMON_PTHREAD
+  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
+#endif /* COMMON_PTHREAD */
   return (0);
 }

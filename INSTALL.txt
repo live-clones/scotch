@@ -78,7 +78,8 @@ Go to the "src/" directory.
 
 Look in the "Make.inc/" subdirectory for a configuration
 file which matches your system configuration. If there
-is none, build a proper one in the "Make.inc/" subdirectory.
+is none, build a proper one in the "Make.inc/" subdirectory,
+basing on the structure of existing ones.
 
 Create a symbolic link from the configuration file to the
 current "src/" working directory, renaming it as "Makefile.inc":
@@ -91,18 +92,86 @@ current "src/" working directory:
 
 %prompt% cp Make.inc/Makefile.inc.xxxx_xxx_xxx Makefile.inc
 
+Some additional scripts, designed to ease the installation of Scotch
+on specific platforms, are also present in subdirectories of the
+Make.inc directory. This is for instance the case for the mingw32
+platform.
+
+
+By default, all integers used in Scotch and PT-Scotch are based on
+the "int" C type, corresponding to the "INTEGER" type in Fortran. To
+coerce the length of the integer type to 32 or 64 bits, add the
+INTSIZE32 or INTSIZE64 flags, respectively, to the C compiler flags in
+the Makefile.inc configuration file. If you do so, make sure to use
+integer types of equivalent length to declare variables passed to Scotch
+routines from caller C and Fortran procedures. It is usually safer and
+cleaner to tune your C and Fortran compilers to make them interpret
+"int" and "INTEGER" types as 32 or 64 bit values than to use the
+aforementioned flags and hard-code type lengths in your own code.
+
+
+The binaries of the Scotch distribution can handle compressed
+graphs in input or output. Three compressed graph formats are
+currently supported: bzip2, gzip and lzma. In order for them to be
+actually activated, the proper libraries must be available on your
+system. On a Linux platform, they are called "zlib" for the gzip
+format, "libbz2" for the bzip2 format, and "liblzma" for the lzma
+format. Note that it is the "development" version (also called
+"devel", for short, within package names) of each of these libraries
+which is required for the compilation to succeed.
+According to the libraries installed on your system, you may set
+flags COMMON_FILE_COMPRESS_BZ2, COMMON_FILE_COMPRESS_GZ and/or
+COMMON_FILE_COMPRESS_LZMA in the CFLAGS variable of your Makefile.inc
+configuration file, to have these formats and their respective
+extensions ".bz2", ".gz" and ".lzma", recognized and handled by
+Scotch.
+
+
+Scotch can also take advantage of Posix threads when they are
+available. They are used in two places:
+
+- to compress and uncompress file data. This can be done either
+  by launching a service thread, or else by creating a separate
+  process by means of a Posix fork() system call. This choice is
+  controlled by the -DCOMMON_PTHREAD flag : if it is set, threads
+  will be used, else fork() calls will be performed. For systems
+  which do not support the fork() system call, such as the MinGW32
+  platform, one can set the -DCOMMON_STUB_FORK flag, which creates
+  a stub fork() routine which always return an error. Therefore,
+  without both fork() and threads, one must set the COMMON_STUB_FORK
+  flag without setting COMMON_PTHREAD, so that compilation will
+  successfully complete; however, in this case, compressed graphs
+  shall not be handled in practice.
+
+- to create distributed graphs in parallel. Since this taks involves
+  concurrent MPI communications, the MPI library must support the
+  MPI_THREAD_MULTIPLE level. The use of threads within Scotch itself
+  is controlled by the SCOTCH_PTHREAD flag, which is completely
+  independent from the COMMON_PTHREAD flag. Any of them can be set
+  without setting the other. If you have doubts on the stability
+  of your MPI implementation, it is better not to set -DSCOTCH_PTHREAD.
+  For instance, on Linux platforms, concurrency problems have been
+  experienced with MPICH2 versions prior to 1.0.7 using TCP;
+  consequently, if the MPI implementation on your platform is based on
+  an older MPICH2 version, do not set the SCOTCH_PTHREAD flag.
+
 
 Then, compile the Scotch distribution by typing "make scotch", or
 just "make", in the current "src/" working directory. To compile
 the PT-Scotch distribution, type "make ptscotch" in the same "src/"
-directory.
+directory. This can be done in any order.
 
-If no error occurs, all of the relevant header, library and
-executable files will be created and copied to the "../bin/"
-directory, relatively to your current "src/" working
-directory. Since binaries of Scotch and PT-Scotch can coexist
-in the "../bin" directory, you can compile both in sequence,
-in any order, without any further action.
+If no error occurs, all of the relevant header, library and executable
+files will be created and copied to the "../include/", "../lib/" and
+"../bin/" directories, relatively to your current "src/" working
+directory. Since headers, libraries and binaries of Scotch and
+PT-Scotch can coexist in these directories, you can compile both in
+sequence, in any order.
+
+Further typing "make install" will perform a GNU-like installation,
+with header, library, binary and man files copied to the "include",
+"lib", "bin" and "man" subdirectories of the path specified in the
+"prefix" variable, which is set by default to "/usr/local".
 
 
 3) Documentation and use

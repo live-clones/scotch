@@ -189,7 +189,7 @@ const HgraphOrderNdParam * restrict const paraptr)
   if ((cblkptr->cblktab = (OrderCblk *) memAlloc (3 * sizeof (OrderCblk))) == NULL) {
     errorPrint ("hgraphOrderNd: out of memory (2)");
     memFree    (vspgrafdat.frontab);              /* Free remaining space */
-    return      (1);
+    return     (1);
   }
   cblkptr->cblktab[0].typeval = ORDERCBLKOTHR;    /* Build column blocks */
   cblkptr->cblktab[0].vnodnbr = vsplisttab[0].vnumnbr;

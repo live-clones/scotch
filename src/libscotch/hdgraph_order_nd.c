@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                using the nested dissection algorithm.  **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 16 apr 2006     **/
-/**                                 to     29 jul 2007     **/
+/**                                 to     01 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -420,7 +420,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
     return (0);                                   /* Leaf has been processed    */
   }
 
-  vspvnumtab[0] = vspgrafdat.fronloctab + vspgrafdat.fronlocnbr; /* Build vertex lists within frontier array */
+  vspvnumtab[0] = vspgrafdat.fronloctab + vspgrafdat.complocsize[2]; /* Build vertex lists within frontier array */
   vspvnumtab[1] = vspvnumtab[0] + vspgrafdat.complocsize[0];
   vspvnumptr0   = vspvnumtab[0];
   vspvnumptr1   = vspvnumtab[1];
@@ -448,18 +448,18 @@ const HdgraphOrderNdParam * restrict const  paraptr)
   cblkptr->typeval = DORDERCBLKNEDI;              /* Node becomes a nested dissection node */
 
   o = 0;
-  if (vspgrafdat.fronglbnbr != 0) {               /* If separator not empty */
+  if (vspgrafdat.compglbsize[2] != 0) {           /* If separator not empty */
     DorderCblk *        cblkptr2;
     Hdgraph             indgrafdat2;
 
     cblkptr2 = dorderNew (cblkptr, grafptr->s.proccomm); /* Create separator node */
-    cblkptr2->ordeglbval = cblkptr->ordeglbval + grafptr->s.vertglbnbr - vspgrafdat.fronglbnbr;
-    cblkptr2->vnodglbnbr = vspgrafdat.fronglbnbr;
+    cblkptr2->ordeglbval = cblkptr->ordeglbval + grafptr->s.vertglbnbr - vspgrafdat.compglbsize[2];
+    cblkptr2->vnodglbnbr = vspgrafdat.compglbsize[2];
     cblkptr2->cblkfthnum = 2;
 
     cblkptr->data.nedi.cblkglbnbr = 3;            /* It is a three-cell node */
 
-    if (dgraphInduceList (&grafptr->s, vspgrafdat.fronlocnbr, /* Perform non-halo induction for separator, as it will get highest numbers */
+    if (dgraphInduceList (&grafptr->s, vspgrafdat.complocsize[2], /* Perform non-halo induction for separator, as it will get highest numbers */
                           vspgrafdat.fronloctab, &indgrafdat2.s) != 0) {
       errorPrint ("hdgraphOrderNd: cannot build induced subgraph (1)");
       memFree    (vspgrafdat.fronloctab);         /* Free remaining space */
