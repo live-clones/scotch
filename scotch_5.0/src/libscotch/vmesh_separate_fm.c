@@ -43,7 +43,7 @@
 /**   DATES      : # Version 4.0  : from : 26 feb 2003     **/
 /**                                 to     06 may 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to     22 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -174,10 +174,10 @@ const Gnum                                hashold) /*+ Maximum number of vertice
       if (helmtab[helmnew].velmnum != helmtab[helmold].velmnum) /* If element not found */
         continue;                                 /* Go on searching                    */
     }
-    if (helmtab[helmold].gainlink.next >= VMESHSEPAFMSTATELINK) /* If element was linked  */
-      gainTablAdd (tablptr, &helmtab[helmnew], helmtab[helmnew].ncmpgain2); /* Re-link it */
-    else {                                        /* Element may be chained in some list  */
-      helmtab[helmnew].gainlink.next = helmtab[helmold].gainlink.next; /* Save it         */
+    if (helmtab[helmold].gainlink.next >= VMESHSEPAFMSTATELINK) /* If element was linked               */
+      gainTablAdd (tablptr, (GainLink *) &helmtab[helmnew], helmtab[helmnew].ncmpgain2); /* Re-link it */
+    else {                                        /* Element may be chained in some list               */
+      helmtab[helmnew].gainlink.next = helmtab[helmold].gainlink.next; /* Save it                      */
       helmtab[helmnew].gainlink.prev = (GainLink *) ((byte *) helmtab[helmold].gainlink.prev + addradj);
     }
   }
@@ -576,9 +576,9 @@ printf ("FM Mbal=%ld\n", (long) ncmploaddltmat);
       velmptr = lockptr;                          /* Unlink element from list */
       lockptr = (VmeshSeparateFmElement *) velmptr->gainlink.prev;
 
-      velmptr->gainlink.next = VMESHSEPAFMSTATEFREE;/* Set it free anyway              */
-      if (velmptr->ncmpcut2 > 0)                  /* If element has nodes in separator */
-        gainTablAdd (tablptr, velmptr, velmptr->ncmpgain2); /* Put it in table         */
+      velmptr->gainlink.next = VMESHSEPAFMSTATEFREE;/* Set it free anyway                   */
+      if (velmptr->ncmpcut2 > 0)                  /* If element has nodes in separator      */
+        gainTablAdd (tablptr, (GainLink *) velmptr, velmptr->ncmpgain2); /* Put it in table */
     }
 
 /* fprintf (stderr, "LOOP %ld\t(%ld,\t%ld)\n", (long) passnbr, (long) ncmpload2bst, (long) ncmploaddltbst); */
@@ -879,8 +879,8 @@ printf ("FM Mbal=%ld\n", (long) ncmploaddltmat);
         velmptr = sepaptr;                        /* Get element to re-link */
         sepaptr = (VmeshSeparateFmElement *) velmptr->gainlink.prev;
         velmptr->gainlink.next = VMESHSEPAFMSTATEFREE;
-        if (velmptr->ncmpcut2 != 0)               /* If element belongs to frontier */
-          gainTablAdd (tablptr, velmptr, velmptr->ncmpgain2); /* Re-link it         */
+        if (velmptr->ncmpcut2 != 0)               /* If element belongs to frontier      */
+          gainTablAdd (tablptr, (GainLink *) velmptr, velmptr->ncmpgain2); /* Re-link it */
       }
 
 #ifdef SCOTCH_DEBUG_VMESH3
@@ -960,8 +960,8 @@ printf ("FM Mbal=%ld\n", (long) ncmploaddltmat);
       return     (1);
     }
 #endif /* SCOTCH_DEBUG_VMESH3 */
-  } while ((moveflag != 0) &&                     /* As long as vertices are moved */
-           (-- passnbr > 0));                     /* And we are allowed to loop    */
+  } while ((moveflag != 0) &&                     /* As long as vertices are moved                          */
+           (-- passnbr != 0));                    /* And we are allowed to loop (TRICK for negative values) */
 
   ecmpload1 = 0;                                  /* Assume no change in elements */
   for (helmnum = 0; helmnum < hashsiz; helmnum ++) {

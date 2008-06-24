@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,32 +31,70 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : common_integer.h                        **/
+/**   NAME       : library_graph_io_mmkt.c                 **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER                        **/
 /**                                                        **/
-/**   FUNCTION   : These lines are the data declarations   **/
-/**                for the generic integer type handling   **/
-/**                routines.                               **/
+/**   FUNCTION   : This module is the API for the Matrix   **/
+/**                Market geometry and graph handling      **/
+/**                routines of the libSCOTCH library.      **/
 /**                                                        **/
-/**   DATES      : # Version 0.0  : from : 07 sep 1998     **/
-/**                                 to     14 sep 1998     **/
-/**                # Version 1.0  : from : 23 aug 2005     **/
-/**                                 to   : 26 Aug 2005     **/
+/**   DATES      : # Version 5.0  : from : 13 mar 2008     **/
+/**                                 to     13 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
-#define COMMON_INTEGER_H
-
 /*
-**  The function prototypes.
+**  The defines and includes.
 */
 
-#ifndef COMMON_INTEGER
-#define static
-#endif
+#define LIBRARY
 
-static void                 intSearchDicho_2    (const INT * const, INT *, INT *, INT);
+#include "module.h"
+#include "common.h"
+#include "geom.h"
+#include "graph.h"
+#include "scotch.h"
 
-#undef static
+/*************************************/
+/*                                   */
+/* These routines are the C API for  */
+/* the Matrix Market graph and       */
+/* geometry handling routines.       */
+/*                                   */
+/*************************************/
+
+/*+ This routine loads the given opaque geom
+*** structure with the data of the given stream.
+*** - 0   : if loading succeeded.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_graphGeomLoadMmkt (
+SCOTCH_Graph * restrict const grafptr,
+SCOTCH_Geom * restrict const  geomptr,
+FILE * const                  filegrfptr,
+FILE * const                  filegeoptr,
+const char * const            dataptr)            /* No use */
+{
+  return (graphGeomLoadMmkt ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, NULL));
+}
+
+/*+ This routine saves the contents of the given
+*** opaque graph structure to the given stream.
+*** It returns:
+*** - 0   : if the saving succeeded.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_graphGeomSaveMmkt (
+const SCOTCH_Graph * restrict const grafptr,
+const SCOTCH_Geom * restrict const  geomptr,
+FILE * const                        filegrfptr,
+FILE * const                        filegeoptr,
+const char * const                  dataptr)      /* No use */
+{
+  return (graphGeomSaveMmkt ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, NULL));
+}

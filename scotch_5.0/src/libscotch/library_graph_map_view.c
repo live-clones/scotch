@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     30 nov 2006     **/
 /**                # Version 5.0  : from : 04 feb 2007     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to     03 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -171,7 +171,7 @@ FILE * const                  stream)
   mapavg = (mapnbr == 0) ? 0.0L : (double) mapsum / (double) mapnbr;
 
   mapsum = 0;
-  mapmin = INT_MAX;
+  mapmin = GNUMMAX;
   mapmax = 0;
   mapdlt = 0.0L;
   for (vertnum = 0; domtab[vertnum].labl != ARCHDOMNOTTERM; vertnum ++) {
@@ -215,11 +215,11 @@ FILE * const                  stream)
   labltax = labltab - grafptr->baseval;
 
   ngbnbr = 0;
-  ngbmin = INT_MAX;
+  ngbmin = ANUMMAX;
   ngbmax = 0;
   ngbsum = 0;
   ngbnum = 0;
-  ngbtab[0] = INT_MAX;
+  ngbtab[0] = ANUMMAX;
   for (vertnum = 0; domtab[vertnum].labl != ARCHDOMNOTTERM; vertnum ++) {
     Gnum                edgenum;
 
@@ -232,7 +232,7 @@ FILE * const                  stream)
     }
     if (domtab[vertnum].labl != domtab[vertnum + 1].labl) { /* TRICK: if new (or end) domain label  */
       intSort1asc1 (ngbtab, ngbnum + 1);          /* Sort neighbor label array by increasing labels */
-      for (i = 0, ngbnbr = 0; ngbtab[i] != INT_MAX; i ++) {
+      for (i = 0, ngbnbr = 0; ngbtab[i] != ANUMMAX; i ++) {
         if (ngbtab[i] != ngbtab[i + 1])
           ngbnbr ++;
       }
@@ -243,7 +243,7 @@ FILE * const                  stream)
       ngbsum += ngbnbr;
 
       ngbnum = 0;
-      ngbtab[0] = INT_MAX;
+      ngbtab[0] = ANUMMAX;
     }
   }
 
@@ -277,17 +277,17 @@ FILE * const                  stream)
     }
   }
 
-  fprintf (stream, "M\tCommDilat=%f\t(%u)\n",     /* Print expansion parameters */
+  fprintf (stream, "M\tCommDilat=%f\t(%ld)\n",    /* Print expansion parameters */
            (double) commdilat / grafptr->edgenbr,
-           commdilat / 2);
-  fprintf (stream, "M\tCommExpan=%f\t(%u)\n",
+           (long) (commdilat / 2));
+  fprintf (stream, "M\tCommExpan=%f\t(%ld)\n",
            ((commload == 0) ? (double) 0.0L
                             : (double) commexpan / (double) commload),
-           commexpan / 2);
-  fprintf (stream, "M\tCommCutSz=%f\t(%u)\n",
+           (long) (commexpan / 2));
+  fprintf (stream, "M\tCommCutSz=%f\t(%ld)\n",
            ((commload == 0) ? (double) 0.0L
                             : (double) (commload - commdist[0]) / (double) commload),
-           (commload - commdist[0]) / 2);
+           (long) ((commload - commdist[0]) / 2));
   fprintf (stream, "M\tCommDelta=%f\n",
            (((double) commload  * (double) commdilat) == 0.0L)
            ? (double) 0.0L
@@ -301,7 +301,7 @@ FILE * const                  stream)
     fprintf (stream, "M\tCommLoad[%ld]=%f\n",
              (long) distval, (double) commdist[distval] / (double) commload);
 
-  diammin = INT_MAX;
+  diammin = GNUMMAX;
   diammax = 0;
   diamsum = 0;
   for (mapnum = 0; mapnum < mapnbr; mapnum ++) {

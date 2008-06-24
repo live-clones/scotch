@@ -1,0 +1,19 @@
+EXE	=
+LIB	= .a
+OBJ	= .o
+
+MAKE	= gmake
+AR	= ar
+ARFLAGS	= -ruv
+CAT	= cat
+CC	= cc
+CCP     = cc
+CFLAGS	= -O3 -c99 -fast -fastsse -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_PTHREAD -DSCOTCH_RENAME
+LDFLAGS	= -lm -lrt
+CP	= cp
+LEX	= flex
+LN	= ln
+MKDIR	= mkdir
+MV	= mv
+RANLIB	= ranlib
+YACC	= bison -y

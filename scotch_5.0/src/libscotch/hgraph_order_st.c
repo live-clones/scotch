@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to     07 sep 2001     **/
 /**                # Version 4.0  : from : 27 dec 2001     **/
 /**                                 to     05 jan 2005     **/
+/**                # Version 5.0  : from : 31 may 2008     **/
+/**                                 to     31 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -200,7 +202,7 @@ static StratParamTab        hgraphorderstcondtab[] = { /* Graph condition parame
                                 NULL },
                               { STRATNODECOND,        STRATPARAMINT,    "vert",
                                 (byte *) &hgraphorderstgraphdummy,
-                                (byte *) &hgraphorderstgraphdummy.s.vertnbr,
+                                (byte *) &hgraphorderstgraphdummy.vnohnbr, /* Only consider non-halo vertices */
                                 NULL },
                               { STRATNODENBR,         STRATPARAMINT,    NULL,
                                 NULL, NULL, NULL } };

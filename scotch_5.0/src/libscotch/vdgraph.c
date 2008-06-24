@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -121,17 +121,17 @@ Vdgraph * const             grafptr)
 {
   memSet (grafptr->partgsttax + grafptr->s.baseval, 0, grafptr->s.vertgstnbr * sizeof (GraphPart)); /* Set all local and ghost vertices to part 0 */
 
+  grafptr->compglbloaddlt = grafptr->s.veloglbsum;
   grafptr->compglbload[0] = grafptr->s.veloglbsum; /* No frontier vertices */
   grafptr->compglbload[1] =
   grafptr->compglbload[2] = 0;
-  grafptr->compglbloaddlt = grafptr->s.veloglbsum;
   grafptr->compglbsize[0] = grafptr->s.vertglbnbr;
   grafptr->compglbsize[1] =
-  grafptr->fronglbnbr     = 0;
+  grafptr->compglbsize[2] = 0;
   grafptr->complocload[0] = grafptr->s.velolocsum;
   grafptr->complocload[1] =
   grafptr->complocload[2] = 0;
   grafptr->complocsize[0] = grafptr->s.vertlocnbr;
   grafptr->complocsize[1] =
-  grafptr->fronlocnbr     = 0;
+  grafptr->complocsize[2] = 0;
 }

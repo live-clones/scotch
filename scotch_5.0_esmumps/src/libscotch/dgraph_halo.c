@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version P0.1 : from : 14 apr 1998     **/
 /**                                 to     20 jun 1998     **/
 /**                # Version 5.0  : from : 28 feb 2006     **/
-/**                                 to     29 dec 2007     **/
+/**                                 to     05 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,20 +110,20 @@ const int * restrict const    sendcnttab)         /* Count array                
     senddsptab[procnum] = senddsptab[procnum - 1] + sendcnttab[procnum - 1];
 
   if (attrglbsiz == sizeof (Gnum))
-    dgraphHaloFillGnum (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab, sendcnttab);
+    dgraphHaloFillGnum (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab);
   else if (attrglbsiz == sizeof (GraphPart))
-    dgraphHaloFillGraphPart (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab, sendcnttab);
+    dgraphHaloFillGraphPart (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab);
   else if (attrglbsiz == sizeof (int))            /* In case Gnum is not int */
-    dgraphHaloFillInt (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab, sendcnttab);
+    dgraphHaloFillInt (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab);
   else                                            /* Generic but slower fallback routine */
-    dgraphHaloFillGeneric (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab, sendcnttab);
+    dgraphHaloFillGeneric (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab);
 
   senddsptab[0] = 0;                              /* Pre-set send arrays for data sending routines */
   for (procnum = 1; procnum < grafptr->procglbnbr; procnum ++)
     senddsptab[procnum] = senddsptab[procnum - 1] + sendcnttab[procnum - 1];
 }
 
-/* This function verifies that the datas of proc{snd,rcv}tab
+/* This function checks that the data of proc{snd,rcv}tab
 ** are consistent.
 */
 
@@ -172,7 +172,7 @@ const Dgraph * restrict const grafptr)
 }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-/* This function performs a synchronous collective
+/* These functions perform a synchronous collective
 ** halo diffusion operation on the ghost array given
 ** on input.
 ** It returns:
@@ -180,56 +180,74 @@ const Dgraph * restrict const grafptr)
 ** - !0  : on error.
 */
 
+static
+int
+dgraphHaloSync2 (
+Dgraph * restrict const       grafptr,
+byte * restrict const         attrgsttab,         /* Attribute array to share                      */
+const MPI_Datatype            attrglbtype,        /* Attribute datatype                            */
+byte ** const                 attrsndptr,         /* Pointer to array for packing data to send     */
+int ** const                  senddspptr,         /* Pointers to communication displacement arrays */
+int ** const                  recvdspptr)
+{
+  MPI_Aint            attrglbsiz;                 /* Extent of attribute datatype */
+  int                 procngbnum;
+
+  if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
+    errorPrint ("dgraphHaloSync2: cannot compute ghost edge array");
+    return     (1);
+  }
+
+  MPI_Type_extent (attrglbtype, &attrglbsiz);     /* Get type extent */
+  if (memAllocGroup ((void **) (void *)
+                     attrsndptr, (size_t) (grafptr->procsndnbr * attrglbsiz),
+                     senddspptr, (size_t) (grafptr->procglbnbr * sizeof (int)),
+                     recvdspptr, (size_t) (grafptr->procglbnbr * sizeof (int)), NULL) == NULL) {
+    errorPrint ("dgraphHaloSync2: out of memory");
+    return     (1);
+  }
+
+  dgraphHaloFill (grafptr, attrgsttab, attrglbsiz, *attrsndptr, *senddspptr, grafptr->procsndtab); /* Fill data arrays */
+
+  (*recvdspptr)[0] = grafptr->vertlocnbr;
+  for (procngbnum = 1; procngbnum < grafptr->procglbnbr; procngbnum ++)
+    (*recvdspptr)[procngbnum] = (*recvdspptr)[procngbnum - 1] + grafptr->procrcvtab[procngbnum - 1];
+
+#ifdef SCOTCH_DEBUG_DGRAPH2
+  if (dgraphHaloCheck (grafptr) != 0) {
+    errorPrint ("dgraphHaloSync2: invalid communication data");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+
+  return (0);
+}
+
 int
 dgraphHaloSync (
 Dgraph * restrict const       grafptr,
 byte * restrict const         attrgsttab,         /* Attribute array to share */
 const MPI_Datatype            attrglbtype)        /* Attribute datatype       */
 {
-  MPI_Aint            attrglbsiz;                 /* Extent of attribute datatype   */
   byte *              attrsndtab;                 /* Array for packing data to send */
   int *               senddsptab;
   int *               recvdsptab;
-  int                 procngbnum;
+  int                 o;
 
-  if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
-    errorPrint ("dgraphHaloSync: cannot compute ghost edge array");
-    return     (1);
-  }
+  if (dgraphHaloSync2 (grafptr, attrgsttab, attrglbtype, &attrsndtab, &senddsptab, &recvdsptab) != 0) /* Prepare communication arrays */
+    return (1);
 
-  MPI_Type_extent (attrglbtype, &attrglbsiz);     /* Get type extent */
-  if (memAllocGroup ((void **)
-                     &attrsndtab, (size_t) (grafptr->procsndnbr * attrglbsiz),
-                     &senddsptab, (size_t) (grafptr->procglbnbr * sizeof (int)),
-                     &recvdsptab, (size_t) (grafptr->procglbnbr * sizeof (int)), NULL) == NULL) {
-    errorPrint ("dgraphHaloSync: out of memory");
-    return     (1);
-  }
-
-  dgraphHaloFill (grafptr, attrgsttab, attrglbsiz, attrsndtab, senddsptab, grafptr->procsndtab); /* Fill data arrays */
-
-  recvdsptab[0] = grafptr->vertlocnbr;
-  for (procngbnum = 1; procngbnum < grafptr->procglbnbr; procngbnum ++)
-    recvdsptab[procngbnum] = recvdsptab[procngbnum - 1] + grafptr->procrcvtab[procngbnum - 1];
-
-#ifdef SCOTCH_DEBUG_DGRAPH2
-  if (dgraphHaloCheck (grafptr) != 0) {
-    errorPrint ("dgraphHaloSync: invalid communication datas");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-
+  o = 0;                                          /* Assume success */
   if (MPI_Alltoallv (attrsndtab, grafptr->procsndtab, senddsptab, attrglbtype, /* Perform diffusion */
                      attrgsttab, grafptr->procrcvtab, recvdsptab, attrglbtype,
                      grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("dgraphHaloS: communication error");
-    memFree    (attrsndtab);                      /* Free group leader */
-    return     (1);
+    errorPrint ("dgraphHaloSync: communication error");
+    o = 1;
   }
 
   memFree (attrsndtab);                           /* Free group leader */
 
-  return (0);
+  return (o);
 }
 
 /* This function performs an asynchronous collective
@@ -241,6 +259,7 @@ const MPI_Datatype            attrglbtype)        /* Attribute datatype       */
 ** - !0  : on error.
 */
 
+#ifdef SCOTCH_PTHREAD
 static
 void *
 dgraphHaloAsync2 (
@@ -248,6 +267,7 @@ DgraphHaloRequest * restrict  requptr)
 {
   return ((void *) dgraphHaloSync (requptr->grafptr, requptr->attrgsttab, requptr->attrglbtype));
 }
+#endif /* SCOTCH_PTHREAD */
 
 void
 dgraphHaloAsync (
@@ -256,16 +276,39 @@ byte * restrict const         attrgsttab,         /* Attribute array to share */
 const MPI_Datatype            attrglbtype,        /* Attribute datatype       */
 DgraphHaloRequest * restrict  requptr)
 {
+#ifndef SCOTCH_PTHREAD
+#ifdef SCOTCH_MPI_ASYNC_COLL
+  int *               senddsptab;
+  int *               recvdsptab;
+#endif /* SCOTCH_MPI_ASYNC_COLL */
+#endif /* SCOTCH_PTHREAD */
+
+#ifdef SCOTCH_PTHREAD
+  requptr->flagval     = -1;                      /* Assume thread will be successfully launched */
   requptr->grafptr     = grafptr;
   requptr->attrgsttab  = attrgsttab;
   requptr->attrglbtype = attrglbtype;
-#ifdef SCOTCH_PTHREAD
-  requptr->flagval     = -1;
 
   if (pthread_create (&requptr->thrdval, NULL, (void * (*) (void *)) dgraphHaloAsync2, (void *) requptr) != 0) /* If could not create thread */
-    requptr->flagval = (int) (intptr_t) dgraphHaloAsync2 (requptr);
+    requptr->flagval = (int) (intptr_t) dgraphHaloAsync2 (requptr); /* Call function synchronously */
 #else /* SCOTCH_PTHREAD */
-  requptr->flagval = (int) (intptr_t) dgraphHaloAsync2 (requptr);
+#ifdef SCOTCH_MPI_ASYNC_COLL
+  requptr->flagval    = 1;                        /* Assume error */
+  requptr->attrsndtab = NULL;                     /* No memory    */
+
+  if (dgraphHaloSync2 (grafptr, attrgsttab, attrglbtype, &requptr->attrsndtab, &senddsptab, &recvdsptab) != 0) /* Prepare communication arrays */
+    return;
+
+  if (MPE_Ialltoallv (requptr->attrsndtab, grafptr->procsndtab, senddsptab, attrglbtype, /* Perform asynchronous collective communication */
+                      attrgsttab, grafptr->procrcvtab, recvdsptab, attrglbtype,
+                      grafptr->proccomm, &requptr->requval) != MPI_SUCCESS) {
+    errorPrint ("dgraphHaloAsync: communication error"); /* Group leader will be freed on wait routine */
+    return;
+  }
+  requptr->flagval = -1;                          /* Communication successfully launched */
+#else /* SCOTCH_MPI_ASYNC_COLL */
+  requptr->flagval = dgraphHaloSync (grafptr, attrgsttab, attrglbtype); /* Last resort is synchronous communication */
+#endif /* SCOTCH_MPI_ASYNC_COLL */
 #endif /* SCOTCH_PTHREAD */
 }
 
@@ -285,11 +328,22 @@ DgraphHaloRequest * restrict  requptr)
 #ifdef SCOTCH_PTHREAD
   void *                    o;
 
-  if (requptr->flagval == -1) {
-    pthread_join (requptr->thrdval, &o);
-    requptr->flagval = (int) (intptr_t) o;
+  if (requptr->flagval == -1) {                   /* If thread launched              */
+    pthread_join (requptr->thrdval, &o);          /* Wait for its completion         */
+    requptr->flagval = (int) (intptr_t) o;        /* Get thread return value         */
+  }                                               /* Else return value already known */
+#else /* SCOTCH_PTHREAD */
+#ifdef SCOTCH_MPI_ASYNC_COLL
+  MPI_Status                statval;
+
+  if (requptr->flagval == -1) {                   /* If communication launched                                    */
+    MPI_Wait (&requptr->requval, &statval);       /* Wait for completion of asynchronous collective communication */
+    requptr->flagval = (statval.MPI_ERROR == MPI_SUCCESS) ? 0 : 1; /* Set return value accordingly                */
   }
+  if (requptr->attrsndtab != NULL)                /* Free group leader if it was successfully allocated before */
+    memFree (requptr->attrsndtab);
+#endif /* SCOTCH_MPI_ASYNC_COLL */
 #endif /* SCOTCH_PTHREAD */
 
-  return (requptr->flagval);
+  return (requptr->flagval);                      /* Return asynchronous or synchronous error code */
 }

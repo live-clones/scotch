@@ -40,7 +40,7 @@
 /**                the libSCOTCH library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 26 apr 2006     **/
-/**                                 to     05 aug 2007     **/
+/**                                 to     14 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +52,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "graph.h"                                /* For graphPtscotch() */
 #include "dgraph.h"
 #include "scotch.h"
 
@@ -76,6 +77,10 @@ SCOTCH_dgraphInit (
 SCOTCH_Dgraph * const       grafptr,
 MPI_Comm                    proccomm)             /* Communicator to be used for all communications */
 {
+  if (graphPtscotch () != 1) {
+    errorPrint ("SCOTCH_dgraphInit: linking with both libScotch and libPTScotch is not allowed");
+    return     (1);
+  }
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint ("SCOTCH_dgraphInit: internal error (1)");
     return     (1);

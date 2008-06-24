@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**   DATES      : # Version 5.0  : from : 04 mar 2006     **/
 /**                                 to   : 07 nov 2007     **/
 /**                # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 12 nov 2007     **/
+/**                                 to   : 01 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,14 +99,14 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
   Gnum * restrict         edloloctax;             /* Save value for edge loads while we pretend we don't have them */
   Gnum                    fronlocnum;
 
-  if (grafptr->fronglbnbr == 0)                   /* If no frontier to base on  */
+  if (grafptr->compglbsize[2] == 0)               /* If no frontier to base on  */
     return (0);                                   /* Then do nothing            */
   if (paraptr->distmax < 1)                       /* If distance is 0 (or less) */
     return (0);                                   /* Then do nothing            */
 
   edloloctax = grafptr->s.edloloctax;             /* Fake no edge loads on original graph as we do not need them */
   grafptr->s.edloloctax = NULL;
-  if (dgraphBand (&grafptr->s, grafptr->fronlocnbr, grafptr->fronloctab, grafptr->partgsttax,
+  if (dgraphBand (&grafptr->s, grafptr->complocsize[2], grafptr->fronloctab, grafptr->partgsttax,
                   grafptr->complocload[0] + grafptr->complocload[2], grafptr->complocload[1], paraptr->distmax,
                   &bandgrafdat.s, &bandgrafdat.fronloctab, &bandgrafdat.partgsttax,
                   NULL, &bandvertlocnbr1, &bandvertlocancadj) != 0) {
@@ -116,7 +116,7 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
   }
   grafptr->s.edloloctax = edloloctax;             /* Restore edge loads, if any */
 
-  bandgrafdat.complocsize[0] = bandgrafdat.s.vertlocnbr - (bandvertlocnbr1 + 1) - grafptr->fronlocnbr; /* Add 1 for anchor vertex 1 */
+  bandgrafdat.complocsize[0] = bandgrafdat.s.vertlocnbr - (bandvertlocnbr1 + 1) - grafptr->complocsize[2]; /* Add 1 for anchor vertex 1 */
   bandgrafdat.complocsize[1] = bandvertlocnbr1 + 1; /* Add 1 for anchor vertex 1 */
   complocsizeadj0 = grafptr->complocsize[0] - bandgrafdat.complocsize[0];
   complocsizeadj1 = grafptr->complocsize[1] - bandgrafdat.complocsize[1];
@@ -132,13 +132,13 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
   bandgrafdat.compglbload[1] = grafptr->compglbload[1] + bandvertglbancadj;
   bandgrafdat.compglbload[2] = grafptr->compglbload[2];
   bandgrafdat.compglbloaddlt = grafptr->compglbloaddlt; /* Balance is not changed by anchor vertices */
-  bandgrafdat.fronglbnbr     = grafptr->fronglbnbr; /* All separator vertices are kept in band graph */
   bandgrafdat.complocload[0] = grafptr->complocload[0] + bandvertlocancadj;
   bandgrafdat.complocload[1] = grafptr->complocload[1] + bandvertlocancadj;
   bandgrafdat.complocload[2] = grafptr->complocload[2];
   bandgrafdat.compglbsize[0] = reduglbtab[0];
   bandgrafdat.compglbsize[1] = reduglbtab[1];
-  bandgrafdat.fronlocnbr     = grafptr->fronlocnbr;
+  bandgrafdat.compglbsize[2] = grafptr->compglbsize[2]; /* All separator vertices are kept in band graph */
+  bandgrafdat.complocsize[2] = grafptr->complocsize[2];
   bandgrafdat.levlnum        = grafptr->levlnum;
 
 #ifdef SCOTCH_DEBUG_VDGRAPH2
@@ -174,14 +174,14 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
   grafptr->compglbloaddlt = bandgrafdat.compglbloaddlt;
   grafptr->compglbsize[0] = reduglbtab[1];
   grafptr->compglbsize[1] = reduglbtab[2];
-  grafptr->fronglbnbr     = bandgrafdat.fronglbnbr;
+  grafptr->compglbsize[2] = bandgrafdat.compglbsize[2];
   grafptr->complocload[0] = bandgrafdat.complocload[0] - bandvertlocancadj;
   grafptr->complocload[1] = bandgrafdat.complocload[1] - bandvertlocancadj;
   grafptr->complocload[2] = bandgrafdat.complocload[2];
   grafptr->complocsize[0] = reduloctab[1];
   grafptr->complocsize[1] = reduloctab[2];
-  grafptr->fronlocnbr     = bandgrafdat.fronlocnbr;
-  for (fronlocnum = 0; fronlocnum < bandgrafdat.fronlocnbr; fronlocnum ++) /* Project back separator */
+  grafptr->complocsize[2] = bandgrafdat.complocsize[2];
+  for (fronlocnum = 0; fronlocnum < bandgrafdat.complocsize[2]; fronlocnum ++) /* Project back separator */
     grafptr->fronloctab[fronlocnum] = bandgrafdat.s.vnumloctax[bandgrafdat.fronloctab[fronlocnum]];
   for (bandvertlocnum = bandgrafdat.s.baseval; bandvertlocnum < bandvertancnnd; bandvertlocnum ++) /* For all vertices except anchors */
     grafptr->partgsttax[bandgrafdat.s.vnumloctax[bandvertlocnum]] = bandgrafdat.partgsttax[bandvertlocnum];

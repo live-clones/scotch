@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,7 +59,7 @@
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.0  : from : 10 sep 2007     **/
-/**                                 to     10 sep 2007     **/
+/**                                 to     27 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,15 +74,15 @@
 #include "arch.h"
 #include "arch_deco.h"
 
-/*****************************************/
-/*                                       */
-/* These are the decomposition-described */
-/* architecture routines.                */
-/*                                       */
-/*****************************************/
+/***************************************/
+/*                                     */
+/* These are the decomposition-defined */
+/* architecture routines.              */
+/*                                     */
+/***************************************/
 
 /* This routine builds a compiled
-** decomposition-described architecture
+** decomposition-defined architecture
 ** from the raw terminal tables that are
 ** passed to it.
 ** It returns:
@@ -199,7 +199,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
 }
 
 /* This routine loads and computes the
-** decomposition-descripted architecture
+** decomposition-defined architecture
 ** tables.
 ** It returns:
 ** - 0   : if the decomposition has been successfully read.
@@ -226,9 +226,9 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((intLoad (stream, &decotype)   +            /* Read header */
-       intLoad (stream, &termdomnbr) +
-       intLoad (stream, &termdommax) != 3) ||
+  if ((intLoad (stream, &decotype)   != 1) ||     /* Read header */
+      (intLoad (stream, &termdomnbr) != 1) ||
+      (intLoad (stream, &termdommax) != 1) ||
       (decotype   < 0)                     ||
       (decotype   > 1)                     ||
       (termdommax < termdomnbr)            ||
@@ -247,11 +247,11 @@ FILE * restrict const       stream)
       return           (1);
     }
 
-    for (i = 0; i < termdomnbr; i ++) {           /* For all declared terminals */
-      if ((intLoad (stream, &termverttab[i].labl) + /* Read terminal data       */
-           intLoad (stream, &termverttab[i].wght) +
-           intLoad (stream, &termverttab[i].num) != 3) ||
-          (termverttab[i].num < 1)                     ||
+    for (i = 0; i < termdomnbr; i ++) {           /* For all declared terminals  */
+      if ((intLoad (stream, &termverttab[i].labl) != 1) || /* Read terminal data */
+	  (intLoad (stream, &termverttab[i].wght) != 1) ||
+	  (intLoad (stream, &termverttab[i].num)  != 1) ||
+          (termverttab[i].num < 1)                      ||
           (termverttab[i].num > termdommax)) {
         errorPrint       ("archDecoArchLoad: bad input (2)");
         memFree          (termdisttab);
@@ -288,9 +288,9 @@ FILE * restrict const       stream)
     archptr->domvertnbr = termdommax;
 
     for (i = 0; i < termdommax; i ++) {           /* Read domain array */
-      if (intLoad (stream, &archptr->domverttab[i].labl) +
-          intLoad (stream, &archptr->domverttab[i].size) +
-          intLoad (stream, &archptr->domverttab[i].wght) != 3) {
+      if ((intLoad (stream, &archptr->domverttab[i].labl) != 1) ||
+	  (intLoad (stream, &archptr->domverttab[i].size) != 1) ||
+	  (intLoad (stream, &archptr->domverttab[i].wght) != 1)) {
         errorPrint       ("archDecoArchLoad: bad input (4)");
         archDecoArchFree (archptr);
         return           (1);

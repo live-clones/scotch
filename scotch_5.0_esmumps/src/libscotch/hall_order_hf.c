@@ -45,7 +45,7 @@
 /**   DATES      : # Version 3.4  : from : 15 may 2001     **/
 /**                                 to   : 23 nov 2001     **/
 /**                # Version 4.0  : from : 10 jan 2003     **/
-/**                                 to   : 02 apr 2004     **/
+/**                                 to   : 29 aug 2007     **/
 /**                                                        **/
 /**   NOTES      : # This module contains pieces of code   **/
 /**                  that belong to other people; see      **/
@@ -163,7 +163,7 @@ Gnum * restrict     head /* [] */)                /* Linked list structure      
 {
   Gnum                hash, pend, hmod, lenj, dmax, wflg, dext, psrc, pdst, 
                       wnvi, e, i, j, k, p, degme, x, nelme, nreal, lastd, nleft, 
-                      ilast, jlast, inext, jnext, n2, p1, nvpiv, p2, p3, me, nbflag, ln,
+                      ilast, jlast, inext, jnext, n2, p1, nvpiv, p2, p3, me = 0, nbflag, ln,
                       we, pj, pn, mindeg, elenme, slenme, maxmem, newmem, wf3, wf4, 
                       deg, eln, mem, nel, pme, pas, nvi, nvj, pme1, pme2, knt1, knt2, knt3;
   float               rmf, rmf1;

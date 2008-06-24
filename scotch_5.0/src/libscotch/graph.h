@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 4.0  : from : 24 nov 2001     **/
 /**                                 to     03 mar 2006     **/
 /**                # Version 5.0  : from : 03 mar 2006     **/
-/**                                 to     23 jan 2007     **/
+/**                                 to     01 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,8 +91,8 @@
 
 #ifndef GNUMMAX                                   /* If dgraph.h not included    */
 typedef INT                   Gnum;               /* Vertex and edge numbers     */
-typedef unsigned INT          Gunum;              /* Unsigned type of same width */
-#define GNUMMAX                     (INT_MAX)     /* Maximum signed Gnum value   */
+typedef UINT                  Gunum;              /* Unsigned type of same width */
+#define GNUMMAX                     (INTVALMAX)   /* Maximum signed Gnum value   */
 #endif /* GNUMMAX */
 
 /*+ The vertex part type, in compressed form. +*/
@@ -166,11 +166,14 @@ Gnum                        graphBase           (Graph * const, const Gnum);
 int                         graphInduceList     (const Graph * const, const VertList * const, Graph * const);
 int                         graphInducePart     (const Graph * const, const GraphPart *, const Gnum, const GraphPart, Graph * const);
 int                         graphCheck          (const Graph *);
+int                         graphPtscotch       ();
 
 #ifdef GEOM_H
 int                         graphGeomLoadChac   (Graph * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         graphGeomSaveChac   (const Graph * restrict const, const Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         graphGeomLoadHabo   (Graph * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
+int                         graphGeomLoadMmkt   (Graph * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
+int                         graphGeomSaveMmkt   (const Graph * restrict const, const Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         graphGeomLoadScot   (Graph * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         graphGeomSaveScot   (const Graph * restrict const, const Geom * restrict const, FILE * const, FILE * const, const char * const);
 #endif /* GEOM_H */

@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     11 jun 2004     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to     30 oct 2007     **/
+/**                                 to     20 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -250,11 +250,12 @@ STRATGROUP    : '(' STRATSELECT ')'
 STRATMETHOD   : METHODNAME
               {
                 Strat *           strat;
-                unsigned int      meth;
-                unsigned int      methlen;
+                int               meth;
+                int               methlen;
                 StratMethodTab *  methtab;
-                unsigned int      i, j;
+                int               i, j;
 
+                meth    =
                 methlen = 0;                      /* No method recognized yet   */
                 methtab = parserstrattab->methtab; /* Point to the method table */
                 for (i = 0; methtab[i].name != NULL; i ++) {
@@ -311,11 +312,12 @@ PARAMLIST     : PARAMLIST ',' PARAMPARAM
 
 PARAMPARAM    : PARAMNAME
               {
-                unsigned int      para;
-                unsigned int      paralen;
+                int               para;
+                int               paralen;
                 StratParamTab *   paratab;
-                unsigned int      i, j;
+                int               i, j;
 
+                para    =
                 paralen = 0;                      /* No parameter recognized yet   */
                 paratab = parserstrattab->paratab; /* Point to the parameter table */
                 for (i = 0; paratab[i].name != NULL; i ++) {
@@ -351,14 +353,14 @@ PARAMVAL      : VALCASE
               {
                 char              c;              /* Character read             */
                 char *            p;              /* Pointer to selector string */
-                unsigned int      i;              /* Index in selector string   */
+                int               i;              /* Index in selector string   */
 
                 c = ($1);                         /* First, use char as is */
                 for (p = (char *) parserparamcurr->datasltr, i = 0;
                      (*p != '\0') && (*p != c);
                      p ++, i ++) ;
                 if (*p == '\0') {                 /* Char was not found         */
-                  c = tolower ($1);               /* Convert char to lower case */
+                  c = tolower (c);                /* Convert char to lower case */
                   for (p = (char *) parserparamcurr->datasltr, i = 0;
                        (*p != '\0') && (*p != c);
                        p ++, i ++) ;
@@ -370,7 +372,7 @@ PARAMVAL      : VALCASE
                 }
 
 #ifdef SCOTCH_DEBUG_PARSER2
-                if ((parserparamcurr->dataofft -  parserparamcurr->database + sizeof (int)) > sizeof (StratNodeMethodData)) {
+                if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (int)) > sizeof (StratNodeMethodData)) {
                   errorPrint ("stratParserParse: internal error (1)");
                   YYABORT;
                 }
@@ -383,20 +385,20 @@ PARAMVAL      : VALCASE
               | VALDOUBLE
               {
 #ifdef SCOTCH_DEBUG_PARSER2
-                if ((parserparamcurr->dataofft -  parserparamcurr->database + sizeof (double)) > sizeof (StratNodeMethodData)) {
+                if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (double)) > sizeof (StratNodeMethodData)) {
                   errorPrint ("stratParserParse: internal error (2)");
                   YYABORT;
                 }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                *((double *) ((byte *) &parserstratcurr->data .method.data +
+                *((double *) ((byte *) &parserstratcurr->data.method.data +
                               (parserparamcurr->dataofft -
                                parserparamcurr->database))) = ($1);
               }
               | VALINT
               {
 #ifdef SCOTCH_DEBUG_PARSER2
-                if ((parserparamcurr->dataofft -  parserparamcurr->database + sizeof (INT)) > sizeof (StratNodeMethodData)) {
+                if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (INT)) > sizeof (StratNodeMethodData)) {
                   errorPrint ("stratParserParse: internal error (3)");
                   YYABORT;
                 }
@@ -409,7 +411,7 @@ PARAMVAL      : VALCASE
               | VALSTRING
               {
 #ifdef SCOTCH_DEBUG_PARSER2
-                if ((parserparamcurr->dataofft -  parserparamcurr->database + strlen ($1) + 1) > sizeof (StratNodeMethodData)) {
+                if ((parserparamcurr->dataofft - parserparamcurr->database + strlen ($1) + 1) > sizeof (StratNodeMethodData)) {
                   errorPrint ("stratParserParse: internal error (4)");
                   YYABORT;
                 }
@@ -433,7 +435,7 @@ PARAMVAL      : VALCASE
                 parserparamcurr = ($<SAVE>1).param; /* Restore current parameter */
 
 #ifdef SCOTCH_DEBUG_PARSER2
-                if ((parserparamcurr->dataofft -  parserparamcurr->database + sizeof (Strat *)) > sizeof (StratNodeMethodData)) {
+                if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (Strat *)) > sizeof (StratNodeMethodData)) {
                   errorPrint ("stratParserParse: internal error (5)");
                   YYABORT;
                 }
@@ -675,10 +677,11 @@ TESTVAR       : PARAMNAME
               {
                 StratTest *       test;
                 StratParamTab *   condtab;
-                unsigned int      para;
-                unsigned int      paralen;
-                unsigned int      i, j;
+                int               para;
+                int               paralen;
+                int               i, j;
 
+                para    =
                 paralen = 0;                      /* No parameter recognized yet */
                 condtab = parserstrattab->condtab; /* Point to parameter table   */
                 for (i = 0; condtab[i].name != NULL; i ++) {

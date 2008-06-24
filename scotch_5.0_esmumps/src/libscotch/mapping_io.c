@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,7 +62,7 @@
 /**                # Version 4.0  : from : 16 jan 2004     **/
 /**                                 to     14 nov 2005     **/
 /**                # Version 5.0  : from : 13 sep 2006     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to     27 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -143,8 +143,8 @@ FILE * restrict const           stream)
   }
 
   for (mappnum = 0; mappnum < mappnbr; mappnum ++) { /* Load mapping array */
-    if ((intLoad (stream, &mapptab[mappnum].slblnum) +
-         intLoad (stream, &mapptab[mappnum].tlblnum)) != 2) {
+    if ((intLoad (stream, &mapptab[mappnum].slblnum) != 1) ||
+        (intLoad (stream, &mapptab[mappnum].tlblnum) != 1)) {
       errorPrint ("mapLoad: bad input (2)");
       return     (1);
     }

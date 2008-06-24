@@ -40,10 +40,12 @@
 /**                                                        **/
 /**   DATES      : # Version 0.0  : from : 26 oct 1996     **/
 /**                                 to     30 nov 1996     **/
-/**              : # Version 0.1  : from : 10 may 1999     **/
+/**                # Version 0.1  : from : 10 may 1999     **/
 /**                                 to     10 may 1999     **/
-/**              : # Version 4.0  : from : 10 jan 2004     **/
+/**                # Version 4.0  : from : 10 jan 2004     **/
 /**                                 to     18 mar 2005     **/
+/**                # Version 5.0  : from : 24 mar 2008     **/
+/**                                 to     24 mar 2008     **/
 /**                                                        **/
 /**   NOTES      : # Most of the contents of this module   **/
 /**                  comes from "map_b_fm" of the SCOTCH   **/
@@ -91,12 +93,12 @@ const INT                   subbits)
   INT                 totsize;
 
   if (gainmax >= GAIN_LINMAX) {                   /* If logarithmic indexing           */
-    totsize = ((sizeof (int) << 3) - subbits) << (subbits + 1); /* Allocate gain table */
+    totsize = ((sizeof (INT) << 3) - subbits) << (subbits + 1); /* Allocate gain table */
 
     if ((tablptr = (GainTabl *) memAlloc (sizeof (GainTabl) + (totsize - 1) * sizeof (GainEntr))) == NULL)
       return (NULL);
 
-    tablptr->tablAdd = &gainTablAddLog;
+    tablptr->tablAdd = gainTablAddLog;
 
     tablptr->subbits = subbits;                   /* Fill gain table fields                    */
     tablptr->submask = (1 << (subbits + 1)) - 1;  /* Mask with all subbits, plus one, set to 1 */
@@ -107,7 +109,7 @@ const INT                   subbits)
     if ((tablptr = (GainTabl *) memAlloc (sizeof (GainTabl) + (totsize - 1) * sizeof (GainEntr))) == NULL)
       return (NULL);
 
-    tablptr->tablAdd = &gainTablAddLin;
+    tablptr->tablAdd = gainTablAddLin;
     tablptr->subbits = 0;                         /* Fill gain table fields */
     tablptr->submask = 0;
   }

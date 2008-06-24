@@ -39,7 +39,7 @@
 /**                orderings.                              **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 27 apr 2006     **/
-/**                                 to     10 sep 2007     **/
+/**                                 to     13 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -109,6 +109,7 @@ FILE * restrict const         stream)
   protnum = (int) reduglbtab[1];                  /* Get rank of root process */
 
   reduloctab[0] = 0;
+  permtab       = NULL;
   if (protnum == ordeptr->proclocnum) {
     Gnum                  vlblnbr;
 
@@ -128,10 +129,11 @@ FILE * restrict const         stream)
 #ifdef SCOTCH_DEBUG_DORDER1                       /* This communication cannot be covered by a useful one */
   if (MPI_Bcast (&reduloctab[0], 1, MPI_INT, protnum, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderSave: communication error (2)");
-    memFree    (permtab);                         /* Free group leader */
-    return     (1);
+    if (permtab != NULL);
+      memFree (permtab);                          /* Free group leader */
+    return (1);
   }
-  if (reduloctab[0] !=0)
+  if (reduloctab[0] != 0)
     return (1);
 #endif /* SCOTCH_DEBUG_DORDER1 */
 

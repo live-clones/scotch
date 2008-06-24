@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 25 nov 2001     **/
 /**                                 to   : 06 jan 2006     **/
 /**                # Version 5.0  : from : 26 apr 2006     **/
-/**                                 to   : 30 jun 2007     **/
+/**                                 to   : 03 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -162,7 +162,7 @@ char *                      argv[])
           exit       (0);
         case 'V' :
           fprintf (stderr, "dummysizes, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2004,2007 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -197,7 +197,7 @@ char *                      argv[])
   substab[2][0] = "DUMMYINT";
   substab[2][1] = EXPAND(INT);
   substab[3][0] = "DUMMYMAXINT";
-  substab[3][1] = EXPAND(INT_MAX);
+  substab[3][1] = EXPAND(INTVALMAX);
   substab[4][0] = "DUMMYPTFLAG";
 #ifdef SCOTCH_PTSCOTCH
   substab[4][1] = "PTSCOTCH";

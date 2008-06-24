@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,28 +30,33 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
+includedir	= ../../include
+libdir		= ../../lib
+
 ##
 ##  General inference rules.
 ##
 
+include ../Makefile.inc
+
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) -I$(includedir) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) $(<) -o $(@) $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -I$(includedir) $(<) -o $(@) -L$(libdir) $(LDFLAGS)
+
 
 ##
 ##  Project rules.
 ##
-
-include ../Makefile.inc
 
 .PHONY				:	all
 
 all				:	liborder$(LIB)
 
 install				:	all
-					-$(CP) order.h liborder$(LIB) ../../bin
+					-$(CP) order.h $(includedir)
+					-$(CP) liborder$(LIB) $(libdir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB)
@@ -64,45 +69,45 @@ realclean			:	clean
 
 order$(OBJ)			:	order.c					\
 					order.h					\
-					../../bin/common.h			\
-					../../bin/graph.h
+					../libscotch/common.h			\
+					$(includedir)/graph.h
 
 order_base$(OBJ)		:	order_base.c				\
 					order.h					\
-					../../bin/common.h
+					../libscotch/common.h
 
 order_check$(OBJ)		:	order_check.c				\
 					order.h					\
-					../../bin/common.h
+					../libscotch/common.h
 
 order_grid$(OBJ)		:	order_grid.c				\
 					order_grid.h				\
 					order.h					\
-					../../bin/common.h
+					../libscotch/common.h
 
 order_io$(OBJ)			:	order_io.c				\
 					order.h					\
-					../../bin/common.h
+					../libscotch/common.h
 
 order_scotch$(OBJ)		:	order_scotch.c				\
 					order.h					\
-					../../bin/common.h			\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)
 
 order_scotch_graph$(OBJ)	:	order_scotch_graph.c			\
 					order.h					\
-					../../bin/common.h			\
-					../../bin/graph.h			\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)
+					../libscotch/common.h			\
+					$(includedir)/graph.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)
 
 order_scotch_mesh$(OBJ)		:	order_scotch_mesh.c			\
 					order.h					\
-					../../bin/common.h			\
-					../../bin/mesh.h			\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)
+					../libscotch/common.h			\
+					$(includedir)/mesh.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)
 
 liborder$(LIB)			:	order$(OBJ)				\
 					order_base$(OBJ)			\

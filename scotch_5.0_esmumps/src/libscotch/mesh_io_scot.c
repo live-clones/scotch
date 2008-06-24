@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 19 jan 2004     **/
 /**                                 to     19 jan 2004     **/
 /**                # Version 5.0  : from : 13 sep 2006     **/
-/**                                 to     13 sep 2006     **/
+/**                                 to     27 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,11 +92,11 @@ const char * const          dataptr)              /* No use           */
   if (filegeoptr == NULL)
     return (0);
 
-  if (((intLoad (filegeoptr, &dimnnbr) +          /* Read type and number of geometry items */
-        intLoad (filegeoptr, &coornbr)) != 2) ||
-       (dimnnbr < 1)                          ||
-       (dimnnbr > 3)                          ||
-       (dimnnbr < 1)) {
+  if ((intLoad (filegeoptr, &dimnnbr) != 1) ||    /* Read type and number of geometry items */
+      (intLoad (filegeoptr, &coornbr) != 1) ||
+      (dimnnbr < 1)                         ||
+      (dimnnbr > 3)                         ||
+      (dimnnbr < 1)) {
     errorPrint ("meshGeomLoadScot: bad input (1)");
     return     (1);
   }

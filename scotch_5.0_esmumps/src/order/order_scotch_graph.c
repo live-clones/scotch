@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,9 @@
 /**                # Version 2.0  : from : 28 feb 2004     **/
 /**                                 to     04 jan 2005     **/
 /**                # Version 2.1  : from : 21 jun 2007     **/
-/**                                 to     12 jun 2008     **/
+/**                                 to     21 jun 2007     **/
+/**                # Version 5.0  : from : 08 feb 2008     **/
+/**                                 to     01 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,7 +82,10 @@ orderGraph (
 Order * restrict const        ordeptr,            /*+ Ordering to compute   +*/
 const Graph * restrict const  grafptr)            /*+ Graph matrix to order +*/
 {
-  return (orderGraphList (ordeptr, grafptr, 0, NULL));
+  INT                 vertnbr;
+
+  SCOTCH_graphSize (grafptr, &vertnbr, NULL);
+  return (orderGraphList (ordeptr, grafptr, vertnbr, NULL));
 }
 
 /*+ This routine orders the subgraph of
@@ -117,7 +122,10 @@ Order * restrict const        ordeptr,            /*+ Ordering to compute   +*/
 const Graph * restrict const  grafptr,            /*+ Graph matrix to order +*/
 const char * restrict const   stratptr)           /*+ Ordering strategy     +*/
 {
-  return (orderGraphListStrat (ordeptr, grafptr, 0, NULL, stratptr));
+  INT                 vertnbr;
+
+  SCOTCH_graphSize (grafptr, &vertnbr, NULL);
+  return (orderGraphListStrat (ordeptr, grafptr, vertnbr, NULL, stratptr));
 }
 
 /*+ This routine orders the subgraph of
@@ -168,7 +176,6 @@ const char * restrict const   stratptr)           /*+ Ordering strategy         
                                (SCOTCH_Num *) ordeptr->permtab,  (SCOTCH_Num *) ordeptr->peritab,
                                (SCOTCH_Num *) &ordeptr->cblknbr, (SCOTCH_Num *) ordeptr->rangtab, NULL);
 
-
   SCOTCH_stratExit (&scotstrat);
 
   if (o != 0) {                                   /* If something failed in Scotch */
@@ -184,7 +191,7 @@ const char * restrict const   stratptr)           /*+ Ordering strategy         
   }
 #endif /* ORDER_DEBUG */
 
-  ordeptr->rangtab = memRealloc (ordeptr->rangtab, (ordeptr->cblknbr + 1) * sizeof (INT));
+  ordeptr->rangtab = (INT *) memRealloc (ordeptr->rangtab, (ordeptr->cblknbr + 1) * sizeof (INT));
 
   return (0);
 }

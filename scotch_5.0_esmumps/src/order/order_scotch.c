@@ -76,7 +76,7 @@
 */
 
 void
-SCOTCHerrorPrint (
+SCOTCH_errorPrint (
 const char * const          errstr,               /*+ printf-like variable argument list +*/
 ...)
 {
@@ -106,7 +106,7 @@ const char * const          errstr,               /*+ printf-like variable argum
 */
 
 void
-SCOTCHerrorPrintW (
+SCOTCH_errorPrintW (
 const char * const          errstr,               /*+ printf-like variable argument list +*/
 ...)
 {

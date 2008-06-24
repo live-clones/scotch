@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 17 jan 2002     **/
 /**                                 to     01 dec 2003     **/
 /**                # Version 5.0  : from : 19 dec 2006     **/
-/**                                 to     19 dec 2006     **/
+/**                                 to     30 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -101,7 +101,7 @@ Hgraph * restrict const     grafptr)
 {
   if ((grafptr->vnhdtax != NULL)               && /* Free end vertex array for non-halo vertices */
       (grafptr->vnhdtax != grafptr->s.vendtax) &&
-      ((grafptr->s.flagval & HGRAPHFREEVHND) != 0))
+      ((grafptr->s.flagval & HGRAPHFREEVNHD) != 0))
     memFree (grafptr->vnhdtax);
 
   graphFree (&grafptr->s);                        /* Free graph data */

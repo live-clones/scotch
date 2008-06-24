@@ -62,7 +62,7 @@
 /**                # Version 4.0  : from : 01 jan 2002     **/
 /**                                 to     07 dec 2004     **/
 /**                # Version 5.1  : from : 11 dec 2007     **/
-/**                                 to     11 dec 2007     **/
+/**                                 to     03 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,6 +71,8 @@
 */
 
 typedef INT Anum;                                 /*+ Generic integer +*/
+
+#define ANUMMAX                     INTVALMAX
 
 /** The domain number type. **/
 

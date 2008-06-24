@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 18 dec 2001     **/
 /**                                 to     19 jan 2004     **/
 /**                # Version 5.0  : from : 04 feb 2007     **/
-/**                                 to     31 aug 2007     **/
+/**                                 to     21 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -101,7 +101,7 @@ const char * const          dataptr)              /* No use           */
   ungetc (chabuffcar, filesrcptr);
 
   chaflagval = 0;
-  if ((fscanf (filesrcptr, "%79[^\n]%*[^\n]", &chalinetab) != 1) || /* Read graph header */
+  if ((fscanf (filesrcptr, "%79[^\n]%*[^\n]", chalinetab) != 1) || /* Read graph header */
       (sscanf (chalinetab, "%ld%ld%ld",
                &chavertnbr,
                &chaedgenbr,
@@ -246,7 +246,7 @@ const char * const          dataptr)              /* No use           */
 
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (graphCheck (grafptr) != 0) {                /* Check graph consistency */
-    errorPrint ("graphGeomLoadChac: inconsistent graph data");
+    errorPrint ("graphGeomLoadChac: internal error");
     graphFree  (grafptr);
     return     (1);
   }
@@ -283,19 +283,19 @@ const char * const            dataptr)            /* No use           */
                 (long) (grafptr->edgenbr / 2),
                 ((grafptr->vlbltax != NULL) ? '1' : '0'),
                 ((grafptr->velotax != NULL) ? '1' : '0'),
-                ((grafptr->edlotax != NULL) ? '1' : '0')) == EOF);
+                ((grafptr->edlotax != NULL) ? '1' : '0')) < 0);
 
   for (vertnum = grafptr->baseval; (o == 0) && (vertnum < grafptr->vertnnd); vertnum ++) {
     sepaptr = "";                                 /* Start lines as is */
 
     if (grafptr->vlbltax != NULL) {
-      o |= (fprintf (filesrcptr, "%ld", (long) (grafptr->vlbltax[vertnum] + baseadj)) == EOF);
+      o |= (fprintf (filesrcptr, "%ld", (long) (grafptr->vlbltax[vertnum] + baseadj)) < 0);
       sepaptr = "\t";
     }
     if (grafptr->velotax != NULL) {
       o |= (fprintf (filesrcptr, "%s%ld",
                      sepaptr,
-                     (long) grafptr->velotax[vertnum]) == EOF);
+                     (long) grafptr->velotax[vertnum]) < 0);
       sepaptr = "\t";
     }
 
@@ -304,18 +304,18 @@ const char * const            dataptr)            /* No use           */
       if (grafptr->vlbltax != NULL)
         o |= (fprintf (filesrcptr, "%s%ld",
                        sepaptr,
-                       (long) (grafptr->vlbltax[grafptr->edgetax[edgenum]] + baseadj)) == EOF);
+                       (long) (grafptr->vlbltax[grafptr->edgetax[edgenum]] + baseadj)) < 0);
       else
         o |= (fprintf (filesrcptr, "%s%ld",
                        sepaptr,
-                       (long) (grafptr->edgetax[edgenum] + baseadj)) == EOF);
+                       (long) (grafptr->edgetax[edgenum] + baseadj)) < 0);
 
       if (grafptr->edlotax != NULL)
-        o |= fprintf (filesrcptr, " %ld", (long) grafptr->edlotax[edgenum]);
+        o |= (fprintf (filesrcptr, " %ld", (long) grafptr->edlotax[edgenum]) < 0);
 
       sepaptr = "\t";
     }
-    o |= (fprintf (filesrcptr, "\n") == EOF);
+    o |= (fprintf (filesrcptr, "\n") < 0);
   }
   if (o != 0)
     errorPrint ("graphGeomSaveChac: bad output");

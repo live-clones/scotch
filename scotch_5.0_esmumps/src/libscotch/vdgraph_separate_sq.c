@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                best result obtained.                   **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 15 feb 2006     **/
-/**                                 to     11 may 2006     **/
+/**                                 to     01 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -211,7 +211,7 @@ const VdgraphSeparateSqParam * const  paraptr)    /*+ Method parameters +*/
   dgrfptr->compglbloaddlt = reduloctab[3];
   dgrfptr->compglbsize[0] = reduloctab[4];
   dgrfptr->compglbsize[1] = reduloctab[5];
-  dgrfptr->fronglbnbr     = reduloctab[6];
+  dgrfptr->compglbsize[2] = reduloctab[6];
 
   if (MPI_Scatterv (cgrfdat.parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, /* No base for sending as procdsptab holds based values */
                     dgrfptr->partgsttax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GRAPHPART_MPI,
@@ -245,7 +245,7 @@ const VdgraphSeparateSqParam * const  paraptr)    /*+ Method parameters +*/
   }
   dgrfptr->complocsize[0] = dgrfptr->s.vertlocnbr - fronlocnbr - complocsize1;
   dgrfptr->complocsize[1] = complocsize1;
-  dgrfptr->fronlocnbr     = fronlocnbr;
+  dgrfptr->complocsize[2] = fronlocnbr;
   if (dgrfptr->s.veloloctax != NULL) {
     dgrfptr->complocload[0] = dgrfptr->s.velolocsum - complocload1 - complocload2;
     dgrfptr->complocload[1] = complocload1;

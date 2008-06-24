@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,24 +30,28 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
+bindir		= ../../bin
+includedir	= ../../include
+libdir		= ../../lib
+
 ##
 ##  General inference rules.
 ##
 
+include ../Makefile.inc
+
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -I../libscotch -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) $(LDFLAGS) -l$(SCOTCHLIB) -lscotcherrcom -lcommon
+		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
 %$(EXE)	:	%.$(OBJ)
-		 		$(CC) $(CFLAGS) -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) $(LDFLAGS) -lscotch -lscotcherrcom -lcommon
+		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
 ##
 ##  Project rules.
 ##
-
-include ../Makefile.inc
 
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
@@ -73,6 +77,7 @@ scotch				:	clean
 					gord$(EXE)				\
 					gotst$(EXE)				\
 					gout$(EXE)				\
+					gpart$(EXE)				\
 					gtst$(EXE)				\
 					mcv$(EXE)				\
 					mmk_m2$(EXE)				\
@@ -87,13 +92,15 @@ ptscotch			:	clean
 					dgtst$(EXE)
 
 install				:
-					-$(CP) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) gord$(EXE) gotst$(EXE) gout$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE) ../../bin
+					-$(CP) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) gord$(EXE) gotst$(EXE) gout$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE) $(bindir)
+					-$(RM) $(bindir)/gpart$(EXE)
+					-$(LN) $(bindir)/gmap$(EXE) $(bindir)/gpart$(EXE)
 
 ptinstall			:
-					-$(CP) dgord$(EXE) dgscat$(EXE) dgtst$(EXE) ../../bin
+					-$(CP) dgord$(EXE) dgscat$(EXE) dgtst$(EXE) $(bindir)
 
 clean				:
-					-$(RM) *~ *$(OBJ) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) dgscat$(EXE) gbase$(EXE) gcv$(EXE) gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) *gord$(EXE) gotst$(EXE) gout$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE)
+					-$(RM) *~ *$(OBJ) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) dgscat$(EXE) gbase$(EXE) gcv$(EXE) gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) *gord$(EXE) gotst$(EXE) gout$(EXE) gpart$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE)
 
 realclean			:	clean
 
@@ -102,231 +109,234 @@ realclean			:	clean
 ##
 
 acpl$(EXE)			:	acpl.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					acpl.h
 
 amk_ccc$(EXE)			:	amk_ccc.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					amk_ccc.h
 
 amk_fft2$(EXE)			:	amk_fft2.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					amk_fft2.h
 
 amk_grf$(EXE)			:	amk_grf.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					amk_grf.h
 
 amk_hy$(EXE)			:	amk_hy.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					amk_hy.h
 
 amk_m2$(EXE)			:	amk_m2.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					amk_m2.h
 
 amk_p2$(EXE)			:	amk_p2.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					amk_p2.h
 
 atst$(EXE)			:	atst.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					atst.h
 
 dgord$(EXE)			:	dgord.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/ptscotch.h			\
-					../../bin/libptscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/ptscotch.h		\
+					$(libdir)/libptscotch$(LIB)		\
+					$(libdir)/libptscotcherrexit$(LIB)	\
 					dgord.h
 
 dgscat$(EXE)			:	dgscat.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/ptscotch.h			\
-					../../bin/libptscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/ptscotch.h		\
+					$(libdir)/libptscotch$(LIB)		\
+					$(libdir)/libptscotcherrexit$(LIB)	\
 					dgscat.h
 
 dgtst$(EXE)			:	dgtst.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/ptscotch.h			\
-					../../bin/libptscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/ptscotch.h		\
+					$(libdir)/libptscotch$(LIB)		\
+					$(libdir)/libptscotcherrexit$(LIB)	\
 					dgtst.h
 
 gbase$(EXE)			:	gbase.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gbase.h
 
 gcv$(EXE)			:	gcv.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gcv.h
 
 gmap$(EXE)			:	gmap.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gmap.h
 
 gmk_hy$(EXE)			:	gmk_hy.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gmk_hy.h
 
 gmk_m2$(EXE)			:	gmk_m2.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gmk_m2.h
 
 gmk_m3$(EXE)			:	gmk_m3.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gmk_m3.h
 
 gmk_msh$(EXE)			:	gmk_msh.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gmk_msh.h
 
 gmk_ub2$(EXE)			:	gmk_ub2.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gmk_ub2.h
 
 gmtst$(EXE)			:	gmtst.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gmtst.h
 
 gord$(EXE)			:	gord.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gord.h
 
 gotst$(EXE)			:	gotst.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gotst.h
 
 gout$(EXE)			:	gout_c.c				\
 					gout_o.c				\
-					../../bin/libcommon$(LIB)		\
-					../../bin/libscotch$(LIB)
-					$(CC) $(CFLAGS) -I../libscotch -DSCOTCH_VERSION=5.0 gout_c.c gout_o.c -o $(@) $(LDFLAGS)  -lscotch -lscotcherrcom -lcommon
+					$(libdir)/libscotch$(LIB)
+					$(CC) $(CFLAGS) -I../libscotch -I$(includedir) -DSCOTCH_VERSION=\"$(VERSION)\" gout_c.c gout_o.c -o $(@) -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
+
+gpart$(EXE)			:	gmap$(EXE)
+					-$(RM) gpart$(EXE)
+					-$(LN) gmap$(EXE) gpart$(EXE)
 
 gtst$(EXE)			:	gtst.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					gtst.h
 
 mcv$(EXE)			:	mcv.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					mcv.h
 
 mmk_m2$(EXE)			:	mmk_m2.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					mmk_m2.h
 
 mmk_m3$(EXE)			:	mmk_m3.c				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					mmk_m3.h
 
 mord$(EXE)			:	mord.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					mord.h
 
 mtst$(EXE)			:	mtst.c					\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/scotch.h			\
-					../../bin/libscotch$(LIB)		\
-					../../bin/libscotcherrcom$(LIB)		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
 					mtst.h

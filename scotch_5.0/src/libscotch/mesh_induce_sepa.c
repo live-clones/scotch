@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 4.0  : from : 26 jan 2003     **/
 /**                                 to     11 may 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to     03 apr 2008     **/
 /**                                                        **/
 /**   NOTES      : # This routine differs from the         **/
 /**                  standard mesh induction routine by    **/
@@ -136,7 +136,7 @@ Mesh * restrict const             indmeshptr)     /* Pointer to induced submesh 
   Gnum                          hashmsk;          /* Mask for hash array                                        */
   void * restrict               p;
 
-  orgbitssiz = (orgmeshptr->velmnbr + (INT_BITS - 1)) / INT_BITS; /* Compute size of element bit array */
+  orgbitssiz = (orgmeshptr->velmnbr + (INTSIZEBITS - 1)) / INTSIZEBITS; /* Compute size of element bit array */
   if ((orgbitstab = (unsigned int *) memAlloc (orgbitssiz * sizeof (unsigned int))) == NULL) {
     errorPrint ("meshInduceSepa: out of memory (1)");
     return     (1);
@@ -156,8 +156,8 @@ Mesh * restrict const             indmeshptr)     /* Pointer to induced submesh 
       Gnum                orgvelmbit;             /* Bit to update in element bit array     */
 
       orgvelmidx  = orgmeshptr->edgetax[orgenodnum] - orgmeshptr->velmbas;
-      orgvelmbit  = orgvelmidx & (INT_BITS - 1);
-      orgvelmidx /= INT_BITS;
+      orgvelmbit  = orgvelmidx & (INTSIZEBITS - 1);
+      orgvelmidx /= INTSIZEBITS;
       indvelmnbr += (orgbitstab[orgvelmidx] >> orgvelmbit) & 1; /* Count element vertex if not yet accounted for */
       orgbitstab[orgvelmidx] &= ~(1 << orgvelmbit);
     }

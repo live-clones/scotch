@@ -53,8 +53,8 @@
 
 /*+ Graph option flags. +*/
 
-#define HGRAPHFREEVHND              0x0400        /* Free vnhdtab array */
-#define HGRAPHFREETABS              (GRAPHFREETABS | HGRAPHFREEVHND)
+#define HGRAPHFREEVNHD              0x0400        /* Free vnhdtab array */
+#define HGRAPHFREETABS              (GRAPHFREETABS | HGRAPHFREEVNHD)
 
 /*
 **  The type and structure definitions.

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,8 +40,10 @@
 /**                                                        **/
 /**   DATES      : # Version 0.0  : from : 26 oct 1996     **/
 /**                                 to     17 nov 1997     **/
-/**              : # Version 0.1  : from : 10 may 1999     **/
+/**                # Version 0.1  : from : 10 may 1999     **/
 /**                                 to     18 mar 2005     **/
+/**                # Version 5.0  : from : 24 mar 2008     **/
+/**                                 to     01 jun 2008     **/
 /**                                                        **/
 /**   NOTES      : # Most of the contents of this module   **/
 /**                  comes from "map_b_fm" of the SCOTCH   **/
@@ -53,7 +55,7 @@
 **  The defines.
 */
 
-#define GAINMAX                  ((int) (((unsigned int) 1 << ((sizeof (int) << 3) - 1)) - 2))
+#define GAINMAX                  ((INT) (((UINT) 1 << ((sizeof (INT) << 3) - 1)) - 2))
 
 #define GAIN_LINMAX              1024
 
@@ -82,15 +84,15 @@ typedef struct GainEntr_ {
    must be the first field of the structure.           */
 
 typedef struct GainTabl_ {
-  void                   (* tablAdd)  ();         /*+ Add method                                +*/
-  INT                       subbits;              /*+ Number of subbits                         +*/
-  INT                       submask;              /*+ Subbit mask                               +*/
-  INT                       totsize;              /*+ Total table size                          +*/
-  GainEntr *                tmin;                 /*+ Non-empty entry of minimum gain in table  +*/
-  GainEntr *                tmax;                 /*+ Non-empty entry of maximum gain in table  +*/
-  GainEntr *                tend;                 /*+ Point after last valid gain entry         +*/
-  GainEntr *                tabl;                 /*+ Gain table structure is...   [SIZE - ADJ] +*/
-  GainEntr                  tabk[1];              /*+ Split in two for relative access    [ADJ] +*/
+  void                   (* tablAdd)  (struct GainTabl_ * const, GainLink * const, const INT); /*+ Add method +*/
+  INT                       subbits;              /*+ Number of subbits                      +*/
+  INT                       submask;              /*+ Subbit mask                            +*/
+  INT                       totsize;              /*+ Total table size                       +*/
+  GainEntr *                tmin;                 /*+ Non-empty entry of minimum gain        +*/
+  GainEntr *                tmax;                 /*+ Non-empty entry of maximum gain        +*/
+  GainEntr *                tend;                 /*+ Point after last valid gain entry      +*/
+  GainEntr *                tabl;                 /*+ Gain table structure is.. [SIZE - ADJ] +*/
+  GainEntr                  tabk[1];              /*+ Split in two for relative access [ADJ] +*/
 } GainTabl;
 
 /*
@@ -104,8 +106,8 @@ typedef struct GainTabl_ {
 GainTabl *                  gainTablInit        (const INT, const INT);
 void                        gainTablExit        (GainTabl * const);
 void                        gainTablFree        (GainTabl * const);
-void                        gainTablAddLin      (GainTabl * const, GainLink * const, const INT gain);
-void                        gainTablAddLog      (GainTabl * const, GainLink * const, const INT gain);
+void                        gainTablAddLin      (GainTabl * const, GainLink * const, const INT);
+void                        gainTablAddLog      (GainTabl * const, GainLink * const, const INT);
 void                        gainTablDel         (GainTabl * const, GainLink * const);
 GainLink *                  gainTablFrst        (GainTabl * const);
 GainLink *                  gainTablNext        (GainTabl * const, const GainLink * const);

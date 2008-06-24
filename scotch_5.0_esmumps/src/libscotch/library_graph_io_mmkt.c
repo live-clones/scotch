@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,23 +31,16 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : common.c                                **/
+/**   NAME       : library_graph_io_mmkt.c                 **/
 /**                                                        **/
-/**   AUTHORS    : David GOUDIN                            **/
-/**                Pascal HENON                            **/
-/**                Francois PELLEGRINI                     **/
-/**                Pierre RAMET                            **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : Part of a parallel direct block solver. **/
-/**                These lines are common routines used    **/
-/**                by all modules.                         **/
+/**   FUNCTION   : This module is the API for the Matrix   **/
+/**                Market geometry and graph handling      **/
+/**                routines of the libSCOTCH library.      **/
 /**                                                        **/
-/**   DATES      : # Version 0.0  : from : 08 may 1998     **/
-/**                                 to     14 sep 1998     **/
-/**                # Version 2.0  : from : 27 sep 2004     **/
-/**                                 to     27 sep 2004     **/
-/**                # Version 5.0  : from : 02 oct 2007     **/
-/**                                 to     02 oct 2007     **/
+/**   DATES      : # Version 5.0  : from : 13 mar 2008     **/
+/**                                 to     13 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,52 +48,53 @@
 **  The defines and includes.
 */
 
-#define COMMON
+#define LIBRARY
 
-#include <time.h>
+#include "module.h"
 #include "common.h"
+#include "geom.h"
+#include "graph.h"
+#include "scotch.h"
 
-/*******************/
-/*                 */
-/* Timing routine. */
-/*                 */
-/*******************/
+/*************************************/
+/*                                   */
+/* These routines are the C API for  */
+/* the Matrix Market graph and       */
+/* geometry handling routines.       */
+/*                                   */
+/*************************************/
 
-#ifndef MPI_INT
-double
-clockGet (void)
+/*+ This routine loads the given opaque geom
+*** structure with the data of the given stream.
+*** - 0   : if loading succeeded.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_graphGeomLoadMmkt (
+SCOTCH_Graph * restrict const grafptr,
+SCOTCH_Geom * restrict const  geomptr,
+FILE * const                  filegrfptr,
+FILE * const                  filegeoptr,
+const char * const            dataptr)            /* No use */
 {
-#ifdef COMMON_TIMING_OLD                          /* Old timing routine */
-  struct rusage       data;
-
-  getrusage (RUSAGE_SELF, &data);
-
-  return (((double) data.ru_utime.tv_sec  + (double) data.ru_stime.tv_sec) +
-          ((double) data.ru_utime.tv_usec + (double) data.ru_stime.tv_usec) * 1.0e-6L);
-#else /* COMMON_TIMING_OLD */
-  struct timespec     tp;
-
-  clock_gettime (CLOCK_REALTIME, &tp);            /* Elapsed time */
-
-  return ((double) tp.tv_sec + (double) tp.tv_nsec * 1.0e-9L);
-#endif /* COMMON_TIMING_OLD */
+  return (graphGeomLoadMmkt ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, NULL));
 }
-#endif /* MPI_INT */
 
-/***************************/
-/*                         */
-/* Usage printing routine. */
-/*                         */
-/***************************/
+/*+ This routine saves the contents of the given
+*** opaque graph structure to the given stream.
+*** It returns:
+*** - 0   : if the saving succeeded.
+*** - !0  : on error.
++*/
 
-void
-usagePrint (
-FILE * const                stream,
-const char ** const         data)
+int
+SCOTCH_graphGeomSaveMmkt (
+const SCOTCH_Graph * restrict const grafptr,
+const SCOTCH_Geom * restrict const  geomptr,
+FILE * const                        filegrfptr,
+FILE * const                        filegeoptr,
+const char * const                  dataptr)      /* No use */
 {
-  const char **       cptr;
-
-  fprintf (stream, "Usage is:\n");
-  for (cptr = data; *cptr != NULL; cptr ++)
-    fprintf (stream, "  %s\n", *cptr);
+  return (graphGeomSaveMmkt ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, NULL));
 }

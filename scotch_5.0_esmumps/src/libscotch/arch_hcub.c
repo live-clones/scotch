@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,6 +56,8 @@
 /**                                 to     14 may 1998     **/
 /**                # Version 4.0  : from : 11 nov 2003     **/
 /**                                 to     10 mar 2005     **/
+/**                # Version 5.0  : from : 27 feb 2007     **/
+/**                                 to     27 feb 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -245,8 +247,8 @@ const ArchHcub * const        archptr,
 ArchHcubDom * restrict const  domptr,
 FILE * restrict const         stream)
 {
-  if ((intLoad (stream, &domptr->dimcur) +
-       intLoad (stream, &domptr->bitset) != 2) ||
+  if ((intLoad (stream, &domptr->dimcur) != 1) ||
+      (intLoad (stream, &domptr->bitset) != 1) ||
       (domptr->dimcur > archptr->dimmax)) {
     errorPrint ("archHcubDomLoad: bad input");
     return     (1);

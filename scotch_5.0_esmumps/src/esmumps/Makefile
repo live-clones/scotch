@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,21 +30,25 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
+bindir		= ../../bin
+includedir	= ../../include
+libdir		= ../../lib
+
 ##
 ##  General inference rules.
 ##
 
+include ../Makefile.inc
+
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) -I$(includedir) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) $(<) -o $(@) $(LDFLAGS) -L. -lesmumps -lfax -lsymbol -ldof -lorder -lgraph -lscotch -lscotcherrcom -lcommon
+		 		$(CC) $(CFLAGS) -I$(includedir) $(<) -o $(@) -L$(libdir) $(LDFLAGS) -L. -lesmumps -lfax -lsymbol -ldof -lorder -lgraph -lscotch -lorder -lcommon
 
 ##
 ##  Project rules.
 ##
-
-include ../Makefile.inc
 
 .PHONY				:	all
 
@@ -52,7 +56,9 @@ all				:	libesmumps$(LIB)			\
 					main_esmumps$(EXE)
 
 install				:	all
-					-$(CP) esmumps.h lib*$(LIB) main_esmumps$(EXE) ../../bin
+					-$(CP) esmumps.h $(includedir)
+					-$(CP) lib*$(LIB) $(libdir)
+					-$(CP) main_esmumps$(EXE) $(bindir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB) main_esmumps$(EXE)
@@ -64,19 +70,19 @@ realclean			:	clean
 ##
 
 esmumps$(OBJ)			:	esmumps.c				\
-					../../bin/common.h			\
-					../../bin/graph.h			\
-					../../bin/symbol.h			\
-					../../bin/order.h			\
-					../../bin/fax.h				\
+					../libscotch/common.h			\
+					$(includedir)/graph.h			\
+					$(includedir)/symbol.h			\
+					$(includedir)/order.h			\
+					$(includedir)/fax.h			\
 					esmumps.h
 
 esmumps_f$(OBJ)			:	esmumps_f.c				\
-					../../bin/common.h			\
+					../libscotch/common.h			\
 					esmumps.h
 
 esmumps_strats$(OBJ)		:	esmumps_strats.c			\
-					../../bin/common.h			\
+					../libscotch/common.h			\
 					esmumps.h
 
 libesmumps$(LIB)		:	esmumps$(OBJ)				\
@@ -88,14 +94,14 @@ libesmumps$(LIB)		:	esmumps$(OBJ)				\
 main_esmumps$(EXE)		:	main_esmumps.c				\
 					esmumps.h				\
 					libesmumps$(LIB)			\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/graph.h			\
-					../../bin/libgraph$(LIB)		\
-					../../bin/dof.h				\
-					../../bin/libdof$(LIB)			\
-					../../bin/symbol.h			\
-					../../bin/libsymbol$(LIB)		\
-					../../bin/order.h			\
-					../../bin/liborder$(LIB)		\
-					../../bin/libscotch$(LIB)
+					../libscotch/common.h			\
+					$(libdir)/libcommon$(LIB)		\
+					$(includedir)/graph.h			\
+					$(libdir)/libgraph$(LIB)		\
+					$(includedir)/dof.h			\
+					$(libdir)/libdof$(LIB)			\
+					$(includedir)/symbol.h			\
+					$(libdir)/libsymbol$(LIB)		\
+					$(includedir)/order.h			\
+					$(libdir)/liborder$(LIB)		\
+					$(libdir)/libscotch$(LIB)

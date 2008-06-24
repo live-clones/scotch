@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 25 may 2007     **/
 /**                                 to     18 jun 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     15 dec 2007     **/
+/**                                 to     01 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,6 +63,7 @@
 
 #define GOUT
 
+#include "module.h"
 #include "common.h"
 #include "scotch.h"
 #include "gout_c.h"
@@ -206,7 +207,7 @@ int
 outDrawParse (
 char * const                string)
 {
-  return (C_parse (O_outList, O_outArg, (int * const) &O_outParam.type, string));
+  return (C_parse (O_outList, O_outArg, (int * const) (void *) &O_outParam.type, string));
 }
 
 
@@ -401,9 +402,9 @@ const C_Geometry * const    geomptr,              /* Graph geometry, sorted by v
 const C_Mapping * const     mapptr,               /* Result mapping, sorted by vertex label  */
 FILE * const                stream)               /* Output stream                           */
 {
-  unsigned int *      nonztab;                    /* Array of non-zero entries              */
-  unsigned int        nonzfrst;                   /* First non-zero entry of area           */
-  unsigned int        nonzlast;                   /* Last non-zero entry of area            */
+  SCOTCH_Num *        nonztab;                    /* Array of non-zero entries              */
+  SCOTCH_Num          nonzfrst;                   /* First non-zero entry of area           */
+  SCOTCH_Num          nonzlast;                   /* Last non-zero entry of area            */
   double              pictsize;                   /* Number of distinct coordinates         */
   double              pictdisp;                   /* Size of the matrix display (in inches) */
   time_t              picttime;                   /* Creation time                          */
@@ -411,7 +412,7 @@ FILE * const                stream)               /* Output stream              
   SCOTCH_Num          vertnum;
   SCOTCH_Num *        edgeptr;
 
-  if ((nonztab = (unsigned int *) memAlloc ((grafptr->vertnbr + 1) * sizeof (unsigned int))) == NULL) {
+  if ((nonztab = memAlloc ((grafptr->vertnbr + 1) * sizeof (SCOTCH_Num))) == NULL) {
     errorPrint ("outDrawPosMatr: out of memory");
     return      (1);
   }
@@ -461,8 +462,8 @@ FILE * const                stream)               /* Output stream              
   for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) {
     colnum = (mapptr->labltab[vertnum] == ~0) ? vertnum : mapptr->labltab[vertnum];
 
-    fprintf (stream, "%u\n", colnum);             /* Set column value */
-    memset (nonztab, 0, (colnum + 2) * sizeof (unsigned int));
+    fprintf (stream, "%ld\n", (long) colnum);     /* Set column value */
+    memset (nonztab, 0, (colnum + 2) * sizeof (SCOTCH_Num));
     for (edgeptr = grafptr->edgetab + grafptr->verttab[colnum];
          edgeptr < grafptr->edgetab + grafptr->vendtab[colnum]; edgeptr ++) {
       if (*edgeptr < colnum)
@@ -473,9 +474,9 @@ FILE * const                stream)               /* Output stream              
       if (nonztab[nonzfrst] != 0) {               /* A non-zero has been found */
         for (nonzlast = nonzfrst; nonztab[nonzlast] != 0; nonzlast ++) ;
         if ((nonzlast - nonzfrst) > 1)            /* Draw row block coefficient */
-          fprintf (stream, "%u %u b\n", nonzfrst, nonzlast - nonzfrst);
+          fprintf (stream, "%ld %ld b\n", (long) nonzfrst, (long) (nonzlast - nonzfrst));
         else
-          fprintf (stream, "%u c\n", nonzfrst);
+          fprintf (stream, "%ld c\n", (long) nonzfrst);
         nonzfrst = nonzlast - 1;
       }
     }

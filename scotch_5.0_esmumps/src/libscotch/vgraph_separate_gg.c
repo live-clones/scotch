@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 19 dec 2001     **/
 /**                                 to     22 jan 2004     **/
 /**                # Version 5.0  : from : 02 jan 2007     **/
-/**                                 to     02 jan 2007     **/
+/**                                 to     24 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -220,7 +220,7 @@ const VgraphSeparateGgParam * const paraptr)      /*+ Method parameters +*/
         while (sepaptr != NULL) {                 /* For all vertices in chain list */
           vexxptr = sepaptr;                      /* Unlink vertex from list        */
           sepaptr = (VgraphSeparateGgVertex *) vexxptr->gainlink.prev;
-          gainTablAdd (tablptr, vexxptr, vexxptr->compgain2); /* Relink it */
+          gainTablAdd (tablptr, (GainLink *) vexxptr, vexxptr->compgain2); /* Relink it */
         }
       } while ((vexxptr = (VgraphSeparateGgVertex *) gainTablFrst (tablptr)) != NULL);
 

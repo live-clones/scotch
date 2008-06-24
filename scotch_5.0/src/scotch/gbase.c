@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 12 may 2006     **/
 /**                                 to   : 12 may 2006     **/
 /**                # Version 5.0  : from : 23 dec 2007     **/
-/**                                 to   : 23 dec 2007     **/
+/**                                 to   : 16 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,6 +51,7 @@
 
 #define GBASE
 
+#include "module.h"
 #include "common.h"
 #include "scotch.h"
 #include "gbase.h"
@@ -95,12 +96,11 @@ char *                      argv[])
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
-  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes */
-    if ((argv[i][0] != '+') &&                    /* If found a file name      */
-        ((argv[i][0] != '-') || (argv[i][1] == '\0'))) {
-      if (C_paraNum < 1) {                        /* If number of parameters not reached */
-        C_paraNum ++;                             /* One more parameter                  */
-        baseval = atoi (argv[i]);                 /* Get the base value                  */
+  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
+    if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
+      if (C_paraNum < 1) {                        /* If number of parameters not reached              */
+        C_paraNum ++;                             /* One more parameter                               */
+        baseval = atoi (argv[i]);                 /* Get the base value                               */
         if ((baseval < 0) || (baseval > 1)) {
           errorPrint ("main: invalid base value (\"%s\")", argv[i]);
           return     (1);
@@ -132,30 +132,18 @@ char *                      argv[])
     }
   }
 
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      if ((C_fileTab[i].pntr = fopen (C_fileTab[i].name, C_fileTab[i].mode)) == NULL) { /* Open the file */
-        errorPrint ("main: cannot open file (%d)", i);
-        exit       (1);
-      }
-    }
-  }
+  fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
   SCOTCH_graphInit (&grafdat);
   SCOTCH_graphLoad (&grafdat, C_filepntrsrcinp, (SCOTCH_Num) baseval, 0);
   SCOTCH_graphSave (&grafdat, C_filepntrsrcout);
 
-#ifdef SCOTCH_DEBUG_ALL
+  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
+
   SCOTCH_graphExit (&grafdat);
 
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      fclose (C_fileTab[i].pntr);                 /* Close the stream */
-    }
-  }
-#endif /* SCOTCH_DEBUG_ALL */
-
-  exit (0);
+#ifdef COMMON_PTHREAD
+  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
+#endif /* COMMON_PTHREAD */
+  return (0);
 }

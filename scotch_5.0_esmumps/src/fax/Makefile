@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,21 +30,25 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
+bindir		= ../../bin
+includedir	= ../../include
+libdir		= ../../lib
+
 ##
 ##  General inference rules.
 ##
 
+include ../Makefile.inc
+
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) -I$(includedir) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) $(<) -o $(@) $(LDFLAGS) -L. -lfax -lsymbol -ldof -lorder -lgraph -lscotch -lscotcherrcom -lcommon
+		 		$(CC) $(CFLAGS) -I$(includedir) $(<) -o $(@) -L$(libdir) $(LDFLAGS) -L. -lfax -lsymbol -ldof -lorder -lgraph -lscotch -lorder -lcommon
 
 ##
 ##  Project rules.
 ##
-
-include ../Makefile.inc
 
 .PHONY				:	all
 
@@ -54,7 +58,9 @@ all				:	libfax$(LIB)				\
 
 
 install				:	all
-					-$(CP) fax.h lib*$(LIB) main_fax_graph$(EXE) main_fax_mesh$(EXE) ../../bin
+					-$(CP) fax.h $(includedir)
+					-$(CP) lib*$(LIB) $(libdir)
+					-$(CP) main_fax_graph$(EXE) main_fax_mesh$(EXE) $(bindir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB) main_fax_graph$(EXE) main_fax_mesh$(EXE)
@@ -66,38 +72,38 @@ realclean			:	clean
 ##
 
 symbol_compact$(OBJ)		:	symbol_compact.c			\
-					../../bin/common.h			\
-					../../bin/graph.h			\
-					../../bin/symbol.h			\
-					../../bin/order.h			\
+					../libscotch/common.h			\
+					$(includedir)/graph.h			\
+					$(includedir)/symbol.h			\
+					$(includedir)/order.h			\
 					fax.h
 
 symbol_costi$(OBJ)		:	symbol_costi.c				\
-					../../bin/symbol.h			\
+					$(includedir)/symbol.h			\
 					symbol_costi.h				\
-					../../bin/common.h			\
-					../../bin/dof.h
+					../libscotch/common.h			\
+					$(includedir)/dof.h
 
 symbol_fax$(OBJ)		:	symbol_fax.c				\
-					../../bin/common.h			\
-					../../bin/graph.h			\
-					../../bin/symbol.h			\
-					../../bin/order.h			\
+					../libscotch/common.h			\
+					$(includedir)/graph.h			\
+					$(includedir)/symbol.h			\
+					$(includedir)/order.h			\
 					fax.h
 
 symbol_fax_graph$(OBJ)		:	symbol_fax_graph.c			\
 					symbol_fax.c				\
-					../../bin/common.h			\
-					../../bin/graph.h			\
-					../../bin/symbol.h			\
-					../../bin/order.h			\
+					../libscotch/common.h			\
+					$(includedir)/graph.h			\
+					$(includedir)/symbol.h			\
+					$(includedir)/order.h			\
 					fax.h
 
 symbol_fax_mesh$(OBJ)		:	symbol_fax_mesh.c			\
-					../../bin/common.h			\
-					../../bin/mesh.h			\
-					../../bin/symbol.h			\
-					../../bin/order.h			\
+					../libscotch/common.h			\
+					$(includedir)/mesh.h			\
+					$(includedir)/symbol.h			\
+					$(includedir)/order.h			\
 					fax.h					\
 					symbol_fax_mesh.h
 
@@ -112,28 +118,28 @@ libfax$(LIB)			:	symbol_compact$(OBJ)			\
 main_fax_graph$(EXE)		:	main_fax_graph.c			\
 					fax.h					\
 					libfax$(LIB)				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/graph.h			\
-					../../bin/libgraph$(LIB)		\
-					../../bin/dof.h				\
-					../../bin/libdof$(LIB)			\
-					../../bin/symbol.h			\
-					../../bin/libsymbol$(LIB)		\
-					../../bin/order.h			\
-					../../bin/liborder$(LIB)		\
-					../../bin/libscotch$(LIB)
+					../libscotch/common.h			\
+					$(libdir)/libcommon$(LIB)		\
+					$(includedir)/graph.h			\
+					$(libdir)/libgraph$(LIB)		\
+					$(includedir)/dof.h			\
+					$(libdir)/libdof$(LIB)			\
+					$(includedir)/symbol.h			\
+					$(libdir)/libsymbol$(LIB)		\
+					$(includedir)/order.h			\
+					$(libdir)/liborder$(LIB)		\
+					$(libdir)/libscotch$(LIB)
 
 main_fax_mesh$(EXE)		:	main_fax_mesh.c				\
 					fax.h					\
 					libfax$(LIB)				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
-					../../bin/mesh.h			\
-					../../bin/dof.h				\
-					../../bin/libdof$(LIB)			\
-					../../bin/symbol.h			\
-					../../bin/libsymbol$(LIB)		\
-					../../bin/order.h			\
-					../../bin/liborder$(LIB)		\
-					../../bin/libscotch$(LIB)
+					../libscotch/common.h			\
+					$(libdir)/libcommon$(LIB)		\
+					$(includedir)/mesh.h			\
+					$(includedir)/dof.h			\
+					$(libdir)/libdof$(LIB)			\
+					$(includedir)/symbol.h			\
+					$(libdir)/libsymbol$(LIB)		\
+					$(includedir)/order.h			\
+					$(libdir)/liborder$(LIB)		\
+					$(libdir)/libscotch$(LIB)

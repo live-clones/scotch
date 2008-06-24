@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                exchange routine.                       **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 28 dec 2007     **/
-/**                                 to   : 29 dec 2007     **/
+/**                                 to   : 05 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,12 +59,17 @@
 /* Sort structure for ghost edges. */
 
 typedef struct DgraphHaloRequest_ {
-  Dgraph * restrict grafptr;
-  byte * restrict   attrgsttab;                   /* Attribute array to share    */
-  MPI_Datatype      attrglbtype;                  /* Attribute datatype          */
-  int               flagval;
+  int                       flagval;
 #ifdef SCOTCH_PTHREAD
-  pthread_t         thrdval;                      /* Data of asynchronous thread */
+  Dgraph * restrict         grafptr;              /* Pointer to graph data       */
+  byte * restrict           attrgsttab;           /* Attribute array to share    */
+  MPI_Datatype              attrglbtype;          /* Attribute datatype          */
+  pthread_t                 thrdval;              /* Data of asynchronous thread */
+#else /* SCOTCH_PTHREAD */
+#ifdef SCOTCH_MPI_ASYNC_COLL
+  byte *                    attrsndtab;           /* Group leader for memory freeing        */
+  MPI_Request               requval;              /* MPI asynchronous communication request */
+#endif /* SCOTCH_MPI_ASYNC_COLL */
 #endif /* SCOTCH_PTHREAD */
 } DgraphHaloRequest;
 

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.0  : from : 10 sep 2007     **/
-/**                                 to     10 sep 2007     **/
+/**                                 to     03 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -296,7 +296,7 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
   for (i = 1; i < termdomnbr; i ++) {             /* For all active vertices except the first */
     for (j = 0; j < tgtgrafptr->vertnbr; j ++) {
       disttab[j].queued  = 0;                     /* Vertex not queued       */
-      disttab[j].distval = INT_MAX;               /* Assume maximum distance */
+      disttab[j].distval = INTVALMAX;             /* Assume maximum distance */
     }
 
     queuhead =                                    /* Reset the queue */

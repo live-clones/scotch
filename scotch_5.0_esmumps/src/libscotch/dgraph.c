@@ -49,7 +49,7 @@
 /**                # Version P0.1 : from : 12 apr 1998     **/
 /**                                 to     20 jun 1998     **/
 /**                # Version 5.0  : from : 16 feb 2005     **/
-/**                                 to   : 31 dec 2006     **/
+/**                                 to   : 17 jul 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -164,13 +164,13 @@ Dgraph * restrict const     grafptr)
       if (grafptr->edloloctax != NULL)
 	memFree (grafptr->edloloctax + grafptr->baseval);
     }
-    if ((grafptr->flagval & DGRAPHFREEEDGEGST) != 0) { /* If ghost array must be freed */
-      if (grafptr->edgegsttax != NULL)
-        memFree (grafptr->edgegsttax + grafptr->baseval);
-    }
-    if (grafptr->procsidtab != NULL)              /* procsidtab is built on demand */
-      memFree (grafptr->procsidtab);
   }
+  if ((grafptr->flagval & DGRAPHFREEEDGEGST) != 0) { /* If ghost array must be freed */
+    if (grafptr->edgegsttax != NULL)
+      memFree (grafptr->edgegsttax + grafptr->baseval);
+  }
+  if (grafptr->procsidtab != NULL)                /* procsidtab is built on demand */
+    memFree (grafptr->procsidtab);
 
   if ((grafptr->flagval & DGRAPHFREEEXIT) != 0)   /* If we are exiting, no use to go any further */
     return;

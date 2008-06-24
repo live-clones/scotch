@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,9 +48,9 @@
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to     20 dec 2005     **/
 /**                # Version 5.0  : from : 26 apr 2006     **/
-/**                                 to   : 18 oct 2007     **/
+/**                                 to   : 20 feb 2008     **/
 /**                # Version 5.1  : from : 30 nov 2007     **/
-/**                                 to   : 05 dec 2007     **/
+/**                                 to   : 31 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -132,6 +132,7 @@ int                         SCOTCH_archLoad     (SCOTCH_Arch * const, FILE * con
 int                         SCOTCH_archSave     (const SCOTCH_Arch * const, FILE * const);
 int                         SCOTCH_archBuild    (SCOTCH_Arch * const, const SCOTCH_Graph * const, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Strat * const);
 int                         SCOTCH_archCmplt    (SCOTCH_Arch * const, const SCOTCH_Num);
+int                         SCOTCH_archCmpltw   (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num * const);
 char *                      SCOTCH_archName     (const SCOTCH_Arch * const);
 SCOTCH_Num                  SCOTCH_archSize     (const SCOTCH_Arch * const);
 
@@ -156,11 +157,12 @@ void                        SCOTCH_dgraphCorderExit (const SCOTCH_Dgraph * const
 int                         SCOTCH_dgraphOrderInit (const SCOTCH_Dgraph * const, SCOTCH_Dordering * const);
 void                        SCOTCH_dgraphOrderExit (const SCOTCH_Dgraph * const, SCOTCH_Dordering * const);
 int                         SCOTCH_dgraphOrderSave (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, FILE * const);
+int                         SCOTCH_dgraphOrderSaveBlock (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, FILE * const);
 int                         SCOTCH_dgraphOrderSaveMap (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, FILE * const);
 int                         SCOTCH_dgraphOrderSaveTree (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, FILE * const);
 int                         SCOTCH_dgraphOrderPerm (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, SCOTCH_Num * const);
 SCOTCH_Num                  SCOTCH_dgraphOrderCblkDist (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const);
-SCOTCH_Num                  SCOTCH_dgraphOrderTreeDist (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCH_dgraphOrderTreeDist (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         SCOTCH_dgraphOrderCompute (const SCOTCH_Dgraph * const, SCOTCH_Dordering * const, const SCOTCH_Strat * const);
 int                         SCOTCH_dgraphOrderComputeList (const SCOTCH_Dgraph * const, SCOTCH_Dordering * const, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Strat * const);
 int                         SCOTCH_dgraphOrderGather (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, SCOTCH_Ordering * const);
@@ -184,6 +186,8 @@ void                        SCOTCH_graphStat    (const SCOTCH_Graph * const, SCO
 int                         SCOTCH_graphGeomLoadChac (SCOTCH_Graph * const, SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
 int                         SCOTCH_graphGeomSaveChac (const SCOTCH_Graph * const, const SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
 int                         SCOTCH_graphGeomLoadHabo (SCOTCH_Graph * const, SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
+int                         SCOTCH_graphGeomLoadMmkt (SCOTCH_Graph * const, SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
+int                         SCOTCH_graphGeomSaveMmkt (const SCOTCH_Graph * const, const SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
 int                         SCOTCH_graphGeomLoadScot (SCOTCH_Graph * const, SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
 int                         SCOTCH_graphGeomSaveScot (const SCOTCH_Graph * const, const SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
 

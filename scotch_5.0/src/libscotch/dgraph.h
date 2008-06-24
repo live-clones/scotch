@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 03 aug 2007     **/
 /**                # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 10 jan 2008     **/
+/**                                 to   : 03 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,7 +100,7 @@
 
 #ifndef GNUMMAX                                   /* If graph.h not included */
 typedef INT                 Gnum;                 /* Vertex or edge number   */
-#define GNUMMAX                     (INT_MAX)     /* Maximum Gnum value      */
+#define GNUMMAX                     (INTVALMAX)   /* Maximum Gnum value      */
 #endif /* GNUMMAX */
 
 #define GNUM_MPI                    COMM_INT      /* MPI type for Gnum is MPI type for INT */
@@ -203,6 +203,7 @@ int                         dgraphFold          (const Dgraph * restrict const, 
 int                         dgraphFold2         (const Dgraph * restrict const, const int, Dgraph * restrict const, MPI_Comm, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFoldDup       (const Dgraph * restrict const, Dgraph * restrict const, void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphInduceList    (Dgraph * const, const Gnum, const Gnum * const, Dgraph * const);
+int                         dgraphInducePart    (Dgraph * const, GraphPart * restrict const, const Gnum, const GraphPart, Dgraph * const);
 #ifdef GRAPH_H
 int                         dgraphGather        (const Dgraph * restrict const, Graph * restrict);
 int                         dgraphGather2       (const Dgraph * restrict const, Graph * restrict, const int, const Gnum);

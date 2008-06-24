@@ -42,15 +42,11 @@
 /**                threads each (3 at this time).          **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 27 jul 2005     **/
-/**                                 to   : 10 sep 2007     **/
+/**                                 to   : 15 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
 #define DGRAPH_COARSEN_C
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <pthread.h>
 
 #include "module.h"
 #include "common.h"
@@ -624,7 +620,7 @@ dgraphCoarsenSharedInit (DgraphCoarsenShared * restrict shared,
 void
 dgraphCoarsenSharedExit (DgraphCoarsenShared * shared)
 {
-  memFree (shared->coarproctab);
+  memFree ((void *) shared->coarproctab);
 }
 
 Gnum

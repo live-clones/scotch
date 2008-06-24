@@ -190,10 +190,7 @@ dgraphMatchConvertInit (const Dgraph * restrict const grafptr,
 /*   convert->coarhashmsk = convert->coarhashmsk * 4 + 3; */
 /*   convert->coarhashnbr = convert->coarhashmsk + 1; */
 
-  if (memAllocGroup ((void **) (void *)
-                     &convert->gst2glbtab, (size_t) (gstnbr * sizeof (Gnum)),
-/*                   &convert->glb2gsttab, (size_t) (convert->coarhashnbr * sizeof (Gnum)), */
-                     NULL) == NULL) {
+  if ((convert->gst2glbtab = (Gnum *) memAlloc (gstnbr * sizeof (Gnum))) == NULL) {
     errorPrint ("dgraphMatchSyncInitConvert: out of memory");
     return     (1);
   }

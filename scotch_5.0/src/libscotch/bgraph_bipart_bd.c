@@ -35,10 +35,10 @@
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module construct a band graph      **/
-/**                around the frontier in order to         **/
-/**                decrease problem size during            **/
-/**                uncoarsening refinement.                **/
+/**   FUNCTION   : This module builds a band graph around  **/
+/**                the frontier in order to decrease       **/
+/**                problem size for the strategy to be     **/
+/**                applied.                                **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 27 nov 2006     **/
 /**                                 to   : 23 dec 2007     **/
@@ -260,7 +260,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   bndgrafdat.s.vendtax  = bndgrafdat.s.verttax + 1; /* Band graph is compact */
   bndgrafdat.s.velotax -= orggrafptr->s.baseval;
   bndgrafdat.s.vnumtax  = bndvnumtax;             /* Will not be freed as graph vertex arrays are said to be grouped          */
-  bndgrafdat.s.velosum  = orggrafptr->s.velosum;  /* From now on we should free a Vgraph and not a Graph                      */
+  bndgrafdat.s.velosum  = orggrafptr->s.velosum;  /* From now on we should free a Bgraph and not a Graph                      */
   bndgrafdat.s.velotax[bndvertnnd]     = orggrafptr->compload0 - (bndvelosum - bndcompload1); /* Set loads of anchor vertices */
   bndgrafdat.s.velotax[bndvertnnd + 1] = orggrafptr->s.velosum - orggrafptr->compload0 - bndcompload1;
   if (bndveexnbr != 0) {

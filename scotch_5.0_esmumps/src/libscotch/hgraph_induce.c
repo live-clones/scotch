@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 02 jan 2002     **/
 /**                                 to     25 feb 2004     **/
 /**                # Version 5.0  : from : 19 dec 2006     **/
-/**                                 to     05 oct 2007     **/
+/**                                 to     11 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -129,7 +129,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
   indgrafptr->vnohnbr    = orglistptr->vnumnbr;
   indgrafptr->vnohnnd    = orglistptr->vnumnbr + indgrafptr->s.baseval;
 
-  indedgenbr = (indvertnbr < (orggrafptr->s.edgenbr / orggrafptr->s.degrmax)) /* Choose best upper bound on number of edges (avoid multiply overflow) */
+  indedgenbr = ((orggrafptr->s.degrmax > 0) && (indvertnbr < (orggrafptr->s.edgenbr / orggrafptr->s.degrmax))) /* Choose best upper bound on number of edges (avoid multiply overflow) */
                ? (indvertnbr * orggrafptr->s.degrmax) : orggrafptr->s.edgenbr;
   indedgesiz = (orggrafptr->s.edlotax != NULL) ? indedgenbr * 2 : indedgenbr; /* Account for edge load array size if graph has edge weights */
 

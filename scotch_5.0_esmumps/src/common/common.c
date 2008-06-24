@@ -46,8 +46,6 @@
 /**                                 to     14 sep 1998     **/
 /**                # Version 2.0  : from : 27 sep 2004     **/
 /**                                 to     27 sep 2004     **/
-/**                # Version 5.0  : from : 02 oct 2007     **/
-/**                                 to     02 oct 2007     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,10 +64,12 @@
 /*                 */
 /*******************/
 
-#ifndef MPI_INT
 double
 clockGet (void)
 {
+#ifdef MPI_INT
+  return (MPI_Wtime ());
+#else /* MPI_INT */
 #ifdef COMMON_TIMING_OLD                          /* Old timing routine */
   struct rusage       data;
 
@@ -84,8 +84,8 @@ clockGet (void)
 
   return ((double) tp.tv_sec + (double) tp.tv_nsec * 1.0e-9L);
 #endif /* COMMON_TIMING_OLD */
-}
 #endif /* MPI_INT */
+}
 
 /***************************/
 /*                         */

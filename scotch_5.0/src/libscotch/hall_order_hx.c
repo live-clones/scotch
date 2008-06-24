@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 4.0  : from : 13 jan 2003     **/
 /**                                 to   : 28 dec 2004     **/
 /**                # Version 5.0  : from : 25 jul 2007     **/
-/**                                 to   : 25 jul 2007     **/
+/**                                 to   : 29 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -261,7 +261,6 @@ const float                 fillrat)
     return     (1);
   }
 
-
   memSet (permtax + baseval, ~0, vnohnbr * sizeof (Gnum));
 
   for (i = 0; i < vnohnbr; i ++) {
@@ -283,26 +282,28 @@ const float                 fillrat)
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
 
-  if ((cblkptr->cblktab = (OrderCblk *) memAlloc (cblknbr * sizeof (OrderCblk))) == NULL) {
-    errorPrint ("hallOrderHxBuild: out of memory");
-    return     (1);
-  }
-  cblkptr->cblknbr  = cblknbr;
-  ordeptr->cblknbr += cblknbr - 1;                /* These more column blocks created */
-  ordeptr->treenbr += cblknbr;                    /* These more tree nodes created    */
+  if (cblknbr != 1) {                             /* If more than one column block in the end, create subtree */
+    if ((cblkptr->cblktab = (OrderCblk *) memAlloc (cblknbr * sizeof (OrderCblk))) == NULL) {
+      errorPrint ("hallOrderHxBuild: out of memory");
+      return     (1);
+    }
+    cblkptr->cblknbr  = cblknbr;
+    ordeptr->cblknbr += cblknbr - 1;              /* These more column blocks created */
+    ordeptr->treenbr += cblknbr;                  /* These more tree nodes created    */
 
-  for (i = 0, cblknum = 0; i < vnohnbr; i ++) {
-    if (nvartax[peritab[i]] == 0)                 /* If secondary variable    */
-      continue;                                   /* Skip to next vertex      */
-    cblkptr->cblktab[cblknum].typeval = ORDERCBLKOTHR; /* Build column blocks */
-    cblkptr->cblktab[cblknum].vnodnbr = sizetax[peritab[i]];
-    cblkptr->cblktab[cblknum].cblknbr = 0;
-    cblkptr->cblktab[cblknum].cblktab = NULL;
-    cblknum ++;                                   /* One more column block created */
+    for (i = 0, cblknum = 0; i < vnohnbr; i ++) {
+      if (nvartax[peritab[i]] == 0)               /* If secondary variable      */
+        continue;                                 /* Skip to next vertex        */
+      cblkptr->cblktab[cblknum].typeval = ORDERCBLKOTHR; /* Build column blocks */
+      cblkptr->cblktab[cblknum].vnodnbr = sizetax[peritab[i]];
+      cblkptr->cblktab[cblknum].cblknbr = 0;
+      cblkptr->cblktab[cblknum].cblktab = NULL;
+      cblknum ++;                                 /* One more column block created */
+    }
   }
 
-  if (vnumtax != NULL) {               /* If graph is not original graph */
-    for (i = 0; i < vnohnbr; i ++)     /* Finalize inverse permutation   */
+  if (vnumtax != NULL) {                          /* If graph is not original graph */
+    for (i = 0; i < vnohnbr; i ++)                /* Finalize inverse permutation   */
       peritab[i] = vnumtax[peritab[i]];
   }
 

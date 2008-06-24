@@ -42,8 +42,8 @@
 /**                                                        **/
 /**                # Version P0.2 : from : 11 may 1999     **/
 /**                                 to     12 may 1999     **/
-/**                # Version  0.5 : from : 22 jul 2005     **/
-/**                                 to   : 22 may 2007     **/
+/**                # Version 5.0  : from : 22 jul 2005     **/
+/**                                 to   : 22 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,15 +99,15 @@ FILE * const                stream)
     return     (1);
   }
 
-  vlblgsttax = NULL;                              /* Ghost label array free yet                  */
-  if ((grafptr->vlblloctax != NULL) ||            /* If graph has vertex labels or               */
-      (grafptr->edgeloctax == NULL) ||            /* If no global index edge array present or    */
-      (grafptr->procvrttab != grafptr->procdsptab)){ /* If graph may have holes in its numbering */
-    if (dgraphGhst (grafptr) != 0) {              /* Compute ghost edge array                    */
+  vlblgsttax = NULL;                              /* Ghost label array free yet               */
+  if ((grafptr->vlblloctax != NULL) ||            /* If graph has vertex labels or            */
+      (grafptr->edgeloctax == NULL) ||            /* If no global index edge array present or */
+      (grafptr->procvrttab[grafptr->procglbnbr] != grafptr->procdsptab[grafptr->procglbnbr])){ /* If graph may have holes in its numbering */
+    if (dgraphGhst (grafptr) != 0) {              /* Compute ghost edge array */
       errorPrint ("dgraphSave: cannot compute ghost edge array");
       return     (1);
     }
-    if ((vlblgsttax = (Gnum *) memAlloc (grafptr->vertgstnbr * sizeof (Gnum) + 1)) == NULL) {
+    if ((vlblgsttax = (Gnum *) memAlloc (grafptr->vertgstnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("dgraphSave: out of memory");
       return     (1);
     }
@@ -154,7 +154,7 @@ FILE * const                stream)
     errorPrint ("dgraphSave: bad output (2)");
 
   if (vlblgsttax != NULL)                         /* Free ghost label array if used */
-    memFree (vlblgsttax);
+    memFree (vlblgsttax + grafptr->baseval);
 
   return (o);
 }

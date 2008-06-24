@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 25 apr 2006     **/
-/**                                 to     25 jul 2007     **/
+/**                                 to     31 may 2008     **/
 /**                                                        **/
 /************************************************************/
 

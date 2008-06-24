@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -36,7 +36,7 @@ VERSION	= 5.0
 
 default				:	scotch
 
-required			:	Makefile.inc
+required			:	Makefile.inc	../bin	../include	../lib
 
 Makefile.inc			:
 					@echo "#####################################################################"
@@ -53,8 +53,24 @@ Makefile.inc			:
 
 include Makefile.inc
 
+prefix		?= "/usr/local"
+bindir		?= "$(prefix)/bin"
+includedir	?= "$(prefix)/include"
+libdir		?= "$(prefix)/lib"
+datarootdir	?= "$(prefix)/share"
+mandir		?= "$(datarootdir)/man"
+
+../bin				:
+					-$(MKDIR) ../bin
+
+../include			:
+					-$(MKDIR) ../include
+
+../lib				:
+					-$(MKDIR) ../lib
+
 scotch				:	required
-					(cd common ;         $(MAKE)                        scotch && $(MAKE) install)
+					(cd common ;         $(MAKE)                        all    && $(MAKE) install)
 					(cd libscotch ;      $(MAKE) VERSION=\"$(VERSION)\" scotch && $(MAKE) install)
 					(cd scotch ;         $(MAKE) VERSION=\"$(VERSION)\" scotch && $(MAKE) install)
 					(cd libscotchmetis ; $(MAKE)                        scotch && $(MAKE) install)
@@ -65,7 +81,7 @@ scotch				:	required
 					(cd esmumps ;        $(MAKE)                        all    && $(MAKE) install)
 
 ptscotch			:	required
-					(cd common ;         $(MAKE)                        ptscotch && $(MAKE) ptinstall)
+					(cd common ;         $(MAKE)                        all      && $(MAKE) install)
 					(cd libscotch ;      $(MAKE) VERSION=\"$(VERSION)\" ptscotch && $(MAKE) ptinstall)
 					(cd scotch ;         $(MAKE) VERSION=\"$(VERSION)\" ptscotch && $(MAKE) ptinstall)
 					(cd libscotchmetis ; $(MAKE)                        ptscotch && $(MAKE) ptinstall)
@@ -76,8 +92,8 @@ ptscotch			:	required
 					(cd esmumps ;        $(MAKE)                        all      && $(MAKE) install)
 
 install				:	required
-					-$(CP) -f ../bin/*scotch*.h $(prefix)/include
-					-$(CP) -f ../bin/*scotc*[^m]$(LIB) $(prefix)/lib
+					-$(CP) -f ../include/*scotch*.h $(includedir)
+					-$(CP) -f ../lib/*scotc*[^m]$(LIB) $(libdir)
 
 clean				:	required
 					(cd common ;         $(MAKE) clean)
@@ -100,4 +116,4 @@ realclean			:	required
 					(cd symbol ;         $(MAKE) realclean)
 					(cd fax ;            $(MAKE) realclean)
 					(cd esmumps ;        $(MAKE) realclean)
-					-$(RM) ../bin/*
+					-$(RM) ../bin/* ../include/* ../lib/*

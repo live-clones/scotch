@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,7 @@
 
 #define LIBRARY
 
+#include "module.h"
 #include "common.h"
 #include "ptscotch.h"
 #include "parmetis.h"                             /* Our "parmetis.h" file */
@@ -124,7 +125,8 @@ MPI_Comm *                  comm)
   vertlocnbr = vtxdist[proclocnum + 1] - vtxdist[proclocnum];
   edgelocnbr = xadj[vertlocnbr] - baseval;
 
-  memSet (sizes, ~0, (2 * procglbnbr - 1) * sizeof (int)); /* Array not used if procglbnbr is not a power of 2 */
+  if (sizes != NULL)
+    memSet (sizes, ~0, (2 * procglbnbr - 1) * sizeof (int)); /* Array not used if procglbnbr is not a power of 2 */
 
   if (SCOTCH_dgraphBuild (&grafdat, baseval,
                           vertlocnbr, vertlocnbr, xadj, xadj + 1, NULL, NULL,

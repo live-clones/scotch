@@ -42,7 +42,7 @@
 /**   DATES      : # Version 4.0  : from : 16 sep 2002     **/
 /**                                 to     18 aug 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to     24 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,7 +103,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
   }
 
   velssiz = (meshptr->m.vnlotax == NULL) ? 0 : meshptr->m.velmnbr; /*  Compute size of vetex load sum array */
-  if (((tablptr = gainTablInit (1999999999, VMESHSEPAGGSUBBITS)) == NULL) || /* Use logarithmic array only  */
+  if (((tablptr = gainTablInit (GAINMAX, VMESHSEPAGGSUBBITS)) == NULL) || /* Use logarithmic array only     */
       ((vexxtab = (byte *) memAllocGroup ((void **) (void *)
                              &velxtax, (size_t) (meshptr->m.velmnbr * sizeof (VmeshSeparateGgElem)),
                              &vnoxtax, (size_t) (meshptr->m.vnodnbr * sizeof (VmeshSeparateGgNode)),
@@ -336,7 +336,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
         while (sepaptr != NULL) {                 /* For all vertices in chain list */
           velxptr = sepaptr;                      /* Unlink vertex from list        */
           sepaptr = (VmeshSeparateGgElem *) velxptr->gainlink.prev;
-          gainTablAdd (tablptr, velxptr, velxptr->ncmpgain2); /* Relink it */
+          gainTablAdd (tablptr, (GainLink *) velxptr, velxptr->ncmpgain2); /* Relink it */
         }
 
 #ifdef SCOTCH_DEBUG_VMESH3

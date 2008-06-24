@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                # Version 4.0  : from : 19 dec 2001     **/
 /**                                 to     28 jun 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
-/**                                 to     11 oct 2007     **/
+/**                                 to     27 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,8 +98,8 @@ FILE * restrict const       stream)
     for (vertnum = 0; vertnum < ordeptr->vnodnbr; vertnum ++) {
       Gnum                vertval;
 
-      if (intLoad (stream, &vertval) +            /* Read item data */
-          intLoad (stream, &permtab[vertnum]) != 2) {
+      if ((intLoad (stream, &vertval)          != 1) || /* Read item data */
+          (intLoad (stream, &permtab[vertnum]) != 1)) {
         errorPrint ("orderLoad: bad input (2)");
         memFree    (permtab);
         return     (1);

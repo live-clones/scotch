@@ -53,7 +53,7 @@
 /**                # Version 4.0  : from : 13 dec 2001     **/
 /**                                 to     31 aug 2005     **/
 /**                # Version 5.0  : from : 13 dec 2006     **/
-/**                                 to     10 sep 2007     **/
+/**                                 to     24 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,7 +72,7 @@
 **  The static variables.
 */
 
-static Gnum              (* graphCoarsenFuncTab[GRAPHCOARNBR]) () = { /* Tables of edge-matching routines */
+static Gnum              (* graphCoarsenFuncTab[GRAPHCOARNBR]) (const Graph * const, Gnum *, const Gnum, const Gnum) = { /* Tables of edge-matching routines */
                               graphCoarsenMatchHy,
                               graphCoarsenMatchSc,
                               graphCoarsenMatchCs,

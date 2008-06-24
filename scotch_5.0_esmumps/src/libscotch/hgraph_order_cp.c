@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 01 jan 2003     **/
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.0  : from : 29 dec 2006     **/
-/**                                 to     10 sep 2007     **/
+/**                                 to     22 may 2008     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -138,7 +138,7 @@ const HgraphOrderCpParam * const  paraptr)
 
   finehasptab = (int *) finecoartax;              /* Use finecoartab as temporary pre-hash table */
   for (finehaspmsk = 1;                           /* Get pre-hash mask that fits in finecoartab  */
-       finehaspmsk <= finegrafptr->s.vertnbr;     /* Smallest (2^i)-1 value > vertnbr            */
+       finehaspmsk < finegrafptr->s.vertnbr;      /* Smallest (2^i)-1 value >= vertnbr           */
        finehaspmsk = finehaspmsk * 2 + 1) ;
   finehaspmsk >>= 1;                              /* Ensure masked data will always fit into finecoartab array */
   finehaspmsk = (finehaspmsk * (sizeof (Gnum) / sizeof (int))) + ((sizeof (Gnum) / sizeof (int)) - 1);

@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                a distributed graph.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 07 feb 2006     **/
-/**                                 to     10 sep 2007     **/
+/**                                 to     01 mar 2008     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -68,26 +68,6 @@
 
 /* This function gathers on all processes
 ** the pieces of a distributed graph to
-** build a centralized graph.
-** Since the resulting centralized graphs are
-** supposed to be small in the general case,
-** edlosum is computed without communication
-** on each of the processors.
-** It returns:
-** - 0   : if graph data are consistent.
-** - !0  : on error.
-*/
-
-int
-dgraphGatherAll (
-const Dgraph * restrict const dgrfptr,            /* Distributed graph */
-Graph * restrict              cgrfptr)            /* Centralized graph */
-{
-  return (dgraphGatherAll2 (dgrfptr, cgrfptr, -1, -1));
-}
-
-/* This function gathers on all processes
-** the pieces of a distributed graph to
 ** build a centralized graph. This function
 ** does not compute edlosum on the centralized
 ** graphs when it is already given in the passed
@@ -103,8 +83,8 @@ dgraphGatherAll3 (
 Gnum * const                sendbuf,
 const Gnum                  sendcount,
 Gnum * const                recvbuf,
-Gnum * const                recvcounts,
-Gnum * const                recvdispls,
+int * const                 recvcounts,           /* These should be Gnums but MPI handles ints only */
+int * const                 recvdispls,
 const int                   root,
 MPI_Comm                    comm)
 {
@@ -489,4 +469,24 @@ const int                     protnum)            /* -1 means allgather */
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   return (0);
+}
+
+/* This function gathers on all processes
+** the pieces of a distributed graph to
+** build a centralized graph.
+** Since the resulting centralized graphs are
+** supposed to be small in the general case,
+** edlosum is computed without communication
+** on each of the processors.
+** It returns:
+** - 0   : if graph data are consistent.
+** - !0  : on error.
+*/
+
+int
+dgraphGatherAll (
+const Dgraph * restrict const dgrfptr,            /* Distributed graph */
+Graph * restrict              cgrfptr)            /* Centralized graph */
+{
+  return (dgraphGatherAll2 (dgrfptr, cgrfptr, -1, -1));
 }

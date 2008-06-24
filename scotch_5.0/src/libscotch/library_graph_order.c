@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 5.0  : from : 19 dec 2006     **/
 /**                                 to     04 aug 2007     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to     30 oct 2007     **/
+/**                                 to     01 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -242,7 +242,7 @@ const SCOTCH_Graph * const  grafptr,              /*+ Graph to order      +*/
 SCOTCH_Ordering * const     ordeptr,              /*+ Ordering to compute +*/
 const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy   +*/
 {
-  return (SCOTCH_graphOrderComputeList (grafptr, ordeptr, 0, NULL, stratptr));
+  return (SCOTCH_graphOrderComputeList (grafptr, ordeptr, ((Graph *) grafptr)->vertnbr, NULL, stratptr));
 }
 
 /*+ This routine computes a partial ordering
@@ -262,40 +262,117 @@ const SCOTCH_Num            listnbr,              /*+ Number of vertices in list
 const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order +*/
 const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy               +*/
 {
+  Graph * restrict    srcgrafptr;
   LibOrder *          libordeptr;                 /* Pointer to ordering             */
-  Hgraph              srcgrafdat;                 /* Halo source graph structure     */
-  VertList            srclistdat;                 /* Subgraph vertex list            */
-  VertList *          srclistptr;                 /* Pointer to subgraph vertex list */
+  Hgraph              halgrafdat;                 /* Halo source graph structure     */
+  Hgraph              halgraftmp;                 /* Halo source graph structure     */
+  Hgraph *            halgrafptr;                 /* Pointer to halo graph structure */
   const Strat *       ordstratptr;                /* Pointer to ordering strategy    */
+  OrderCblk *         cblkptr;
+
+  srcgrafptr = (Graph *) grafptr;
+  libordeptr = (LibOrder *) ordeptr;              /* Get ordering */
+
+#ifdef SCOTCH_DEBUG_LIBRARY1
+  if ((listnbr < 0) || (listnbr > srcgrafptr->vertnbr)) {
+    errorPrint ("SCOTCH_graphOrderComputeList: invalid parameters (1)");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_LIBRARY1 */
+  if (listnbr == 0) {                             /* If empty list, return identity peremutation */
+    Gnum                vertnum;
+
+    for (vertnum = 0; vertnum < srcgrafptr->vertnbr; vertnum ++)
+      libordeptr->o.peritab[vertnum] = vertnum + srcgrafptr->baseval;
+    return (0);
+  }
 
   if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&hgraphorderststratab, "c{rat=0.7,cpr=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=f{bal=0.2}}};,ole=f{cmin=0,cmax=100000,frat=0.0},ose=g},unc=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
+    *((Strat **) stratptr) = stratInit (&hgraphorderststratab, "c{rat=0.7,cpr=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}};,ole=f{cmin=0,cmax=100000,frat=0.0},ose=g},unc=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hgraphorderststratab) {
     errorPrint ("SCOTCH_graphOrderComputeList: not an ordering strategy");
     return     (1);
   }
 
-  memCpy (&srcgrafdat.s, grafptr, sizeof (Graph)); /* Copy non-halo graph data   */
-  srcgrafdat.s.flagval &= ~GRAPHFREETABS;         /* Do not allow to free arrays */
-  srcgrafdat.s.edlotax  = NULL;                   /* Never mind about edge loads */
-  srcgrafdat.vnohnbr    = srcgrafdat.s.vertnbr;   /* All vertices are non-halo   */
-  srcgrafdat.vnohnnd    = srcgrafdat.s.vertnnd;   /* No halo present             */
-  srcgrafdat.vnhdtax    = srcgrafdat.s.vendtax;   /* End of non-halo vertices    */
-  srcgrafdat.vnlosum    = srcgrafdat.s.velosum;   /* Sum of node vertex weights  */
-  srcgrafdat.enohnbr    = srcgrafdat.s.edgenbr;   /* No halo present             */
-  srcgrafdat.enohsum    = srcgrafdat.s.edlosum;
-  srcgrafdat.levlnum    = 0;                      /* No nested dissection yet */
+  memCpy (&halgrafdat.s, grafptr, sizeof (Graph)); /* Copy non-halo graph data   */
+  halgrafdat.s.flagval &= ~GRAPHFREETABS;         /* Do not allow to free arrays */
+  halgrafdat.s.edlotax  = NULL;                   /* Don't mind about edge loads */
+  halgrafdat.vnohnbr    = halgrafdat.s.vertnbr;   /* All vertices are non-halo   */
+  halgrafdat.vnohnnd    = halgrafdat.s.vertnnd;   /* No halo present             */
+  halgrafdat.vnhdtax    = halgrafdat.s.vendtax;   /* End of non-halo vertices    */
+  halgrafdat.vnlosum    = halgrafdat.s.velosum;   /* Sum of node vertex weights  */
+  halgrafdat.enohnbr    = halgrafdat.s.edgenbr;   /* No halo present             */
+  halgrafdat.enohsum    = halgrafdat.s.edlosum;
+  halgrafdat.levlnum    = 0;                      /* No nested dissection yet */
 
-  libordeptr         = (LibOrder *) ordeptr;      /* Get ordering      */
-  srclistdat.vnumnbr = (Gnum)   listnbr;          /* Build vertex list */
-  srclistdat.vnumtab = (Gnum *) listtab;
-  srclistptr = ((srclistdat.vnumnbr == 0) ||
-                (srclistdat.vnumnbr == ((Graph *) grafptr)->vertnbr))
-               ? NULL : &srclistdat;              /* Is the list really necessary */
+  if (listnbr == srcgrafptr->vertnbr) {           /* If work on full graph */
+    halgrafptr = &halgrafdat;
+    cblkptr    = &libordeptr->o.cblktre;
+  }
+  else {
+    VertList              listdat;
+    Gnum * restrict       peritax;
+    Gnum                  listnum;
+    Gnum                  vertnum;
+    Gnum                  halonum;
 
-/* TODO: Take list into account */
-  hgraphOrderSt (&srcgrafdat, &libordeptr->o, 0, &libordeptr->o.cblktre, ordstratptr);
+    if ((cblkptr = (OrderCblk *) memAlloc (2 * sizeof (OrderCblk))) == NULL) {
+      errorPrint ("SCOTCH_graphOrderComputeList: out of memory");
+      return     (1);
+    }
+    libordeptr->o.treenbr = 3;
+    libordeptr->o.cblknbr = 2;
+    libordeptr->o.cblktre.typeval = ORDERCBLKNEDI; /* Node becomes a (fake) nested dissection node */
+    libordeptr->o.cblktre.vnodnbr = srcgrafptr->vertnbr;
+    libordeptr->o.cblktre.cblknbr = 2;
+    libordeptr->o.cblktre.cblktab = cblkptr;
+
+    cblkptr[0].typeval = ORDERCBLKOTHR;           /* Build column blocks */
+    cblkptr[0].vnodnbr = listnbr;
+    cblkptr[0].cblknbr = 0;
+    cblkptr[0].cblktab = NULL;
+    cblkptr[1].typeval = ORDERCBLKOTHR;
+    cblkptr[1].vnodnbr = srcgrafptr->vertnbr - listnbr;
+    cblkptr[1].cblknbr = 0;
+    cblkptr[1].cblktab = NULL;
+
+    memSet (libordeptr->o.peritab, 0, srcgrafptr->vertnbr * sizeof (Gnum)); /* Fill inverse permutation with dummy values */
+    for (listnum = 0, peritax = libordeptr->o.peritab - srcgrafptr->baseval;
+         listnum < listnbr; listnum ++) {
+#ifdef SCOTCH_DEBUG_LIBRARY2
+      if ((listtab[listnum] <  srcgrafptr->baseval) ||
+          (listtab[listnum] >= srcgrafptr->vertnnd)) {
+        errorPrint ("SCOTCH_graphOrderComputeList: invalid parameters (2)");
+        return     (1);
+      }
+#endif /* SCOTCH_DEBUG_LIBRARY2 */
+      peritax[listtab[listnum]] = ~0;             /* TRICK: use peritab as flag array to mark used vertices */
+    }
+    for (vertnum = halonum = srcgrafptr->vertnnd - 1; vertnum >= srcgrafptr->baseval; vertnum --) {
+      if (peritax[vertnum] == 0)
+        peritax[halonum --] = vertnum;
+    }
+#ifdef SCOTCH_DEBUG_LIBRARY2
+    if (halonum != (listnbr + srcgrafptr->baseval - 1)) { 
+      errorPrint ("SCOTCH_graphOrderComputeList: internal error");
+      return     (1);
+    }
+#endif /* SCOTCH_DEBUG_LIBRARY2 */
+
+    listdat.vnumnbr = listnbr;
+    listdat.vnumtab = (Gnum * const) listtab;
+    if (hgraphInduceList (&halgrafdat, &listdat, srcgrafptr->vertnbr - listnbr, &halgraftmp) != 0) {
+      errorPrint ("SCOTCH_graphOrderComputeList: cannot create induced subgraph");
+      return     (1);
+    }
+    halgrafptr = &halgraftmp;
+  }
+
+  hgraphOrderSt (halgrafptr, &libordeptr->o, 0, cblkptr, ordstratptr);
+
+  if (halgrafptr != &halgrafdat)                  /* If induced subgraph created */
+    hgraphExit (halgrafptr);                      /* Free it                     */
 
 #ifdef SCOTCH_DEBUG_LIBRARY2
   if (orderCheck (&libordeptr->o) != 0)
@@ -303,7 +380,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy         
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
   if (libordeptr->permtab != NULL)                /* Build direct permutation if wanted */
-    orderPeri (libordeptr->o.peritab, srcgrafdat.s.baseval, libordeptr->o.vnodnbr, libordeptr->permtab, srcgrafdat.s.baseval);
+    orderPeri (libordeptr->o.peritab, srcgrafptr->baseval, libordeptr->o.vnodnbr, libordeptr->permtab, srcgrafptr->baseval);
   if (libordeptr->rangtab != NULL)                /* Build range array if column block data wanted */
     orderRang (&libordeptr->o, libordeptr->rangtab);
   if (libordeptr->treetab != NULL)                /* Build separator tree array if wanted */

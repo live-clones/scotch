@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,8 +39,8 @@
 /**                for the input/output routines for       **/
 /**                distributed graphs.                     **/
 /**                                                        **/
-/**                # Version  0.5 : from : 28 apr 2007     **/
-/**                                 to   : 18 jul 2007     **/
+/**                # Version  5.0 : from : 28 apr 2007     **/
+/**                                 to   : 24 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,8 +78,8 @@ FILE * const                stream,               /* One single centralized stre
 const Gnum                  baseval,              /* Base value (-1 means keep file base)              */
 const DgraphFlag            flagval)              /* Graph loading flags                               */
 {
-  Gnum                reduloctab[9];
-  Gnum                reduglbtab[9];
+  Gnum                reduloctab[12];
+  Gnum                reduglbtab[12];
   Gnum                versval;
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
@@ -210,10 +210,10 @@ const int                   protnum)              /* Root process number        
 
   reduglbtab[0] = 0;                              /* Assume everything will be fine */
   if (stream != NULL) {
-    if ((intLoad (stream, &reduglbtab[1]) +       /* Read rest of header */
-         intLoad (stream, &reduglbtab[2]) +
-         intLoad (stream, &reduglbtab[3]) +
-         intLoad (stream, &reduglbtab[4]) != 4) ||
+    if ((intLoad (stream, &reduglbtab[1]) != 1) || /* Read rest of header */
+        (intLoad (stream, &reduglbtab[2]) != 1) ||
+        (intLoad (stream, &reduglbtab[3]) != 1) ||
+        (intLoad (stream, &reduglbtab[4]) != 1) ||
         (reduglbtab[4] < 0)                     ||
         (reduglbtab[4] > 111)) {
       errorPrint ("dgraphLoadCent: bad input (1)");
@@ -246,8 +246,11 @@ const int                   protnum)              /* Root process number        
 
   velolocnbr = ((proptab[2] != 0) && ((flagval & GRAPHIONOLOADVERT) == 0)) ? vertglbmax : 0;
   vlbllocnbr = (proptab[0] != 0) ? vertglbmax : 0;
+  vlblloctax =
+  veloloctax =
   vertloctax =
-  edgeloctax = NULL;                              /* Send arrays not allocated yet for root process */
+  edgeloctax =                                    /* Send arrays not allocated yet for root process */
+  edgeredtax = NULL;                              /* No read edge array yet                         */
   cheklocval = 0;
   if ((vertlocptr = memAlloc ((vertglbmax + 2 + velolocnbr + vlbllocnbr) * sizeof (Gnum))) == NULL) { /* TRICK: "+2" for space for velolocsum */
     errorPrint ("dgraphLoadCent: out of memory (1)");
@@ -257,18 +260,15 @@ const int                   protnum)              /* Root process number        
     vertloctax  =
     vertlocptr -= baseval;
     vertlocptr += vertglbmax + 2;                 /* TRICK: "+2" for space for velolocsum */
-    veloloctax  = NULL;
     if (proptab[2] != 0) {
       veloloctax  = vertlocptr;
       vertlocptr += vertglbmax;
     }
-    vlblloctax = NULL;
     if (proptab[0] != 0) {
       vlblloctax = vertlocptr;
       baseadj    = 0;                             /* No vertex adjustments if vertex labels */
     }
 
-    edgeredtax = NULL;                            /* No read edge array (yet) */
     if (stream != NULL) {                         /* Allocate read edge array */
       Gnum                edgeredmax;
       Gnum                edloredmax;
@@ -742,6 +742,9 @@ const DgraphFlag            flagval)              /* Graph loading flags        
 
   velolocnbr = ((proptab[2] != 0) && ((flagval & GRAPHIONOLOADVERT) == 0)) ? vertlocnbr : 0;
   vlbllocnbr = (proptab[0] != 0) ? vertlocnbr : 0;
+  vlblloctax =
+  veloloctax =
+  vertloctax =
   edgeloctax = NULL;
   cheklocval = 0;
   if ((vertlocptr = memAlloc ((vertlocnbr + 1 + velolocnbr + vlbllocnbr) * sizeof (Gnum))) == NULL) {
@@ -754,12 +757,10 @@ const DgraphFlag            flagval)              /* Graph loading flags        
     vertloctax  =
     vertlocptr -= baseval;
     vertlocptr += vertlocnbr + 1;
-    veloloctax  = NULL;
     if (proptab[2] != 0) {
       veloloctax  = vertlocptr;
       vertlocptr += vertlocnbr;
     }
-    vlblloctax = NULL;
     if (proptab[0] != 0) {
       vlblloctax = vertlocptr;
       baseadj    = 0;                             /* No vertex adjustments if vertex labels */

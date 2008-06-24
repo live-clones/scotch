@@ -41,7 +41,7 @@
 /**                This module contains the main function. **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 17 may 2007     **/
-/**                                 to   : 04 jan 2008     **/
+/**                                 to   : 16 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +52,7 @@
 #define DGSCAT
 #define SCOTCH_PTSCOTCH
 
+#include "module.h"
 #include "common.h"
 #include "ptscotch.h"
 #include "dgscat.h"
@@ -93,7 +94,11 @@ char *              argv[])
 #ifdef SCOTCH_PTHREAD
   int                 thrdlvlreqval;
   int                 thrdlvlproval;
+#endif /* SCOTCH_PTHREAD */
 
+  errorProg ("dgscat");
+
+#ifdef SCOTCH_PTHREAD
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
   if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS) {
     errorPrint ("main: Cannot initialize (1)");
@@ -114,8 +119,6 @@ char *              argv[])
   MPI_Comm_rank (MPI_COMM_WORLD, &proclocnum);
   protglbnum = 0;                                 /* Assume root process is process 0 */
 
-  errorProg ("dgscat");
-
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
     return     (0);
@@ -126,10 +129,9 @@ char *              argv[])
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
 
-  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes */
-    if ((argv[i][0] != '+') &&                    /* If found a file name      */
-        ((argv[i][0] != '-') || (argv[i][1] == '\0'))) {
-      if (C_fileNum < C_FILEARGNBR)               /* A file name has been given */
+  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
+    if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
+      if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         C_fileTab[C_fileNum ++].name = argv[i];
       else {
         errorPrint ("main: too many file names given");
@@ -165,7 +167,7 @@ char *              argv[])
         case 'V' :
         case 'v' :
           fprintf (stderr, "dgscat, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2007 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2007,2008 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -188,23 +190,7 @@ char *              argv[])
   }
 #endif /* SCOTCH_DEBUG_ALL */
 
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names */
-    if (fileNameDistExpand (&C_fileTab[i].name, procglbnbr, proclocnum, protglbnum) != 0) { /* If cannot allocate new name */
-      errorPrint ("main: cannot create file name (%d)", i);
-      return     (1);
-    }
-    if (C_fileTab[i].name == NULL)                /* If inexisting stream because not root process and centralized stream */
-      C_fileTab[i].pntr = NULL;
-    else {
-      if ((C_fileTab[i].name[0] != '-') ||        /* If not standard stream, open it */
-          (C_fileTab[i].name[1] != '\0')) {
-        if ((C_fileTab[i].pntr = fopen (C_fileTab[i].name, C_fileTab[i].mode)) == NULL) { /* Open the file */
-          errorPrint ("main: cannot open file (%d)", i);
-          return     (1);
-        }
-      }
-    }
-  }
+  fileBlockOpenDist (C_fileTab, C_FILENBR, procglbnbr, proclocnum, protglbnum); /* Open all files */
 
   SCOTCH_dgraphInit (&grafdat, MPI_COMM_WORLD);
   SCOTCH_dgraphLoad (&grafdat, C_filepntrsrcinp, -1, 0);
@@ -214,18 +200,13 @@ char *              argv[])
 
   SCOTCH_dgraphSave (&grafdat, C_filepntrsrcout);
 
-#ifdef SCOTCH_DEBUG_ALL
+  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
+
   SCOTCH_dgraphExit (&grafdat);
 
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name != NULL) &&            /* If existing stream     */
-        ((C_fileTab[i].name[0] != '-') ||         /* If not standard stream */
-         (C_fileTab[i].name[1] != '\0'))) {
-      fclose (C_fileTab[i].pntr);                 /* Close the stream */
-    }
-  }
-#endif /* SCOTCH_DEBUG_ALL */
-
   MPI_Finalize ();
-  exit         (0);
+#ifdef COMMON_PTHREAD
+  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
+#endif /* COMMON_PTHREAD */
+  return (0);
 }

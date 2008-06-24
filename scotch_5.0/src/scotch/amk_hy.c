@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 3.4  : from : 03 feb 2000     **/
 /**                                 to   : 03 feb 2000     **/
 /**                # Version 5.0  : from : 23 dec 2007     **/
-/**                                 to   : 23 dec 2007     **/
+/**                                 to   : 16 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,6 +61,7 @@
 
 #define AMK_HY
 
+#include "module.h"
 #include "common.h"
 #include "scotch.h"
 #include "amk_hy.h"
@@ -109,11 +110,10 @@ char *                      argv[])
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
-  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes */
-    if ((argv[i][0] != '+') &&                    /* If found a file name      */
-        ((argv[i][0] != '-') || (argv[i][1] == '\0'))) {
-      if (C_paraNum < 1) {                        /* If number of parameters not reached */
-        if ((hdim = atoi (argv[i])) < 1) {        /* Get the dimension                   */
+  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
+    if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
+      if (C_paraNum < 1) {                        /* If number of parameters not reached              */
+        if ((hdim = atoi (argv[i])) < 1) {        /* Get the dimension                                */
           errorPrint ("main: invalid dimension (\"%s\")", argv[i]);
           return     (1);
         }
@@ -135,7 +135,7 @@ char *                      argv[])
           return     (0);
         case 'V' :
           fprintf (stderr, "amk_hy, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2004,2007 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -145,46 +145,34 @@ char *                      argv[])
     }
   }
 
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      if ((C_fileTab[i].pntr = fopen (C_fileTab[i].name, C_fileTab[i].mode)) == NULL) { /* Open the file */
-        errorPrint ("main: cannot open file (%d)", i);
-        return     (1);
-      }
-    }
-  }
+  fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
   hnbr =  1 << hdim;                              /* Compute number of terminals */
   hmax = (1 << (hdim + 1)) - 1;                   /* Maximum terminal value      */
 
-  fprintf (C_filepntrtgtout, "deco\n0\n%u\t%u\n", /* Print the file header:           */
-           hnbr,                                  /* Print number of terminal domains */
-           hmax);                                 /* Print the biggest terminal value */
+  fprintf (C_filepntrtgtout, "deco\n0\n%ld\t%ld\n", /* Print the file header:         */
+           (long) hnbr,                           /* Print number of terminal domains */
+           (long) hmax);                          /* Print the biggest terminal value */
 
   for (i = 0; i < hnbr; i ++)                     /* For all vertices */
-    fprintf (C_filepntrtgtout, "%u\t1\t%u\n",
-             i,                                   /* Print terminal label  */
-             hnbr + i);                           /* Print terminal number */
+    fprintf (C_filepntrtgtout, "%ld\t1\t%ld\n",
+             (long) i,                            /* Print terminal label  */
+             (long) (hnbr + i));                  /* Print terminal number */
 
   for (hv0 = 1; hv0 < hnbr; hv0 ++) {             /* For all vertices */
     for (hv1 = 0; hv1 < hv0; hv1 ++) {
       for (i = hv0 ^ hv1, j = 0; i > 0; i >>=1)
         j += (i & 1);
       fprintf (C_filepntrtgtout,
-               (hv1 == 0) ? "%u" : " %u", j);
+               (hv1 == 0) ? "%ld" : " %ld", (long) j);
     }
     fprintf (C_filepntrtgtout, "\n");
   }
 
-#ifdef SCOTCH_DEBUG_ALL
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      fclose (C_fileTab[i].pntr);                 /* Close the stream */
-    }
-  }
-#endif /* SCOTCH_DEBUG_ALL */
+  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
+#ifdef COMMON_PTHREAD
+  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
+#endif /* COMMON_PTHREAD */
   return (0);
 }
