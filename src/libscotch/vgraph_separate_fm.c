@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 07 jan 2002     **/
 /**                                 to     18 aug 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
-/**                                 to     11 oct 2007     **/
+/**                                 to     22 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,6 +65,12 @@
 #include "vgraph.h"
 #include "vgraph_separate_gg.h"
 #include "vgraph_separate_fm.h"
+
+/*
+**  The static definitions.
+*/
+
+static VgraphSeparateFmVertex vexxdat;            /* Dummy structure for computing offsets */
 
 /*********************************/
 /*                               */
@@ -192,7 +198,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
   hashmsk = hashsiz - 1;
   hashmax = hashsiz >> 2;                         /* Use hash table at 1/4 of its capacity */
 
-  if (((tablptr = gainTablInit (1999999999, VGRAPHSEPAFMGAINBITS)) == NULL) || /* Use logarithmic array only */
+  if (((tablptr = gainTablInit (GAINMAX, VGRAPHSEPAFMGAINBITS)) == NULL) || /* Use logarithmic array only */
       (memAllocGroup ((void **) (void *)
                       &hashtab, (size_t) (hashsiz * sizeof (VgraphSeparateFmVertex)),
                       &savetab, (size_t) (hashsiz * sizeof (VgraphSeparateFmSave)), NULL) == NULL)) {
@@ -324,7 +330,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
     while (lockdat.next != &lockdat) {            /* For all vertices in locked list */
       VgraphSeparateFmVertex *  vexxptr;
 
-      vexxptr      = (VgraphSeparateFmVertex *) ((byte *) lockdat.next - ((byte *) &vexxptr->gainlink1 - (byte *) vexxptr));
+      vexxptr      = (VgraphSeparateFmVertex *) ((byte *) lockdat.next - ((byte *) &vexxdat.gainlink1 - (byte *) &vexxdat));
       lockdat.next = (GainLink *) vexxptr->gainlink1.next; /* Unlink vertex from list */
 
       if (vexxptr->partval == 2) {                /* If vertex belongs to separator  */
@@ -603,8 +609,8 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
         }
       }
     }
-  } while ((moveflag != 0) &&                     /* As long as vertices are moved */
-           (-- passnbr > 0));                     /* And we are allowed to loop    */
+  } while ((moveflag != 0) &&                     /* As long as vertices are moved                          */
+           (-- passnbr != 0));                    /* And we are allowed to loop (TRICK for negative values) */
 
   while (savenbr -- > 0) {                        /* Delete exceeding moves */
     Gnum                hashnum;

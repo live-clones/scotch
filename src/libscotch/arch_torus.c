@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,6 +58,8 @@
 /**                                 to     01 oct 1998     **/
 /**                # Version 4.0  : from : 05 nov 2003     **/
 /**                                 to     10 mar 2005     **/
+/**                # Version 5.0  : from : 27 feb 2008     **/
+/**                                 to     27 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,8 +100,8 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((intLoad (stream, &archptr->c[0]) +
-       intLoad (stream, &archptr->c[1]) != 2) ||
+  if ((intLoad (stream, &archptr->c[0]) != 1) ||
+      (intLoad (stream, &archptr->c[1]) != 1) ||
       (archptr->c[0] < 1) || (archptr->c[1] < 1)) {
     errorPrint ("archTorus2ArchLoad: bad input");
     return     (1);
@@ -253,10 +255,10 @@ const ArchTorus2 * const        archptr,
 ArchTorus2Dom * restrict const  domptr,
 FILE * restrict const           stream)
 {
-  if (intLoad (stream, &domptr->c[0][0]) +
-      intLoad (stream, &domptr->c[1][0]) +
-      intLoad (stream, &domptr->c[0][1]) +
-      intLoad (stream, &domptr->c[1][1]) != 4) {
+  if ((intLoad (stream, &domptr->c[0][0]) != 1) ||
+      (intLoad (stream, &domptr->c[1][0]) != 1) ||
+      (intLoad (stream, &domptr->c[0][1]) != 1) ||
+      (intLoad (stream, &domptr->c[1][1]) != 1)) {
     errorPrint ("archTorus2DomLoad: bad input");
     return     (1);
   }
@@ -352,9 +354,9 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((intLoad (stream, &archptr->c[0]) +
-       intLoad (stream, &archptr->c[1]) +
-       intLoad (stream, &archptr->c[2]) != 3) ||
+  if ((intLoad (stream, &archptr->c[0]) != 1) ||
+      (intLoad (stream, &archptr->c[1]) != 1) ||
+      (intLoad (stream, &archptr->c[2]) != 1) ||
       (archptr->c[0] < 1) || (archptr->c[1] < 1) || (archptr->c[2] < 1)) {
     errorPrint ("archTorus3ArchLoad: bad input");
     return     (1);
@@ -519,12 +521,12 @@ const ArchTorus3 * const        archptr,
 ArchTorus3Dom * restrict const  domptr,
 FILE * restrict const           stream)
 {
-  if (intLoad (stream, &domptr->c[0][0]) +
-      intLoad (stream, &domptr->c[1][0]) +
-      intLoad (stream, &domptr->c[2][0]) +
-      intLoad (stream, &domptr->c[0][1]) +
-      intLoad (stream, &domptr->c[1][1]) +
-      intLoad (stream, &domptr->c[2][1]) != 6) {
+  if ((intLoad (stream, &domptr->c[0][0]) != 1) ||
+      (intLoad (stream, &domptr->c[1][0]) != 1) ||
+      (intLoad (stream, &domptr->c[2][0]) != 1) ||
+      (intLoad (stream, &domptr->c[0][1]) != 1) ||
+      (intLoad (stream, &domptr->c[1][1]) != 1) ||
+      (intLoad (stream, &domptr->c[2][1]) != 1)) {
     errorPrint ("archTorus3DomLoad: bad input");
     return     (1);
   }

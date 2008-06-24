@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,7 +63,7 @@
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     06 mar 2005     **/
 /**                # Version 5.1  : from : 22 nov 2007     **/
-/**                                 to     11 dec 2007     **/
+/**                                 to     03 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -215,7 +215,7 @@ KgraphMapRbJob * const      jobptr)               /* Job to be added */
   switch (poolptr->polival) {                     /* Set job priority value */
     case KGRAPHMAPRBPOLIRANDOM :
       jobptr->prioval =
-      jobptr->priolvl = intRandVal (INT_MAX);
+      jobptr->priolvl = intRandVal (INTVALMAX);
       break;
     case KGRAPHMAPRBPOLILEVEL   :
     case KGRAPHMAPRBPOLINGLEVEL :
@@ -271,7 +271,7 @@ KgraphMapRbJob * const            jobtab)               /* Job table            
   switch (poolptr->polival) {                     /* Set job priority value */
     case KGRAPHMAPRBPOLIRANDOM :
       jobnewptr->prioval =
-      jobnewptr->priolvl = intRandVal (INT_MAX);
+      jobnewptr->priolvl = intRandVal (INTVALMAX);
       break;
     case KGRAPHMAPRBPOLILEVEL :
       jobnewptr->priolvl = joboldptr->priolvl + 1;

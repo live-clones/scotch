@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     19 nov 2003     **/
 /**                # Version 2.0  : from : 28 feb 2004     **/
 /**                                 to     04 jan 2005     **/
+/**                # Version 5.0  : from : 01 jun 2008     **/
+/**                                 to     01 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,7 +78,10 @@ orderMesh (
 Order * restrict const        ordeptr,            /*+ Ordering to compute  +*/
 const Mesh * restrict const   meshptr)            /*+ Mesh matrix to order +*/
 {
-  return (orderMeshList (ordeptr, meshptr, 0, NULL));
+  INT                 vnodnbr;
+
+  SCOTCH_meshSize (meshptr, NULL, &vnodnbr, NULL);
+  return (orderMeshList (ordeptr, meshptr, vnodnbr, NULL));
 }
 
 /*+ This routine orders the submesh of
@@ -114,7 +119,10 @@ Order * restrict const      ordeptr,              /*+ Ordering to compute  +*/
 const Mesh * const          meshptr,              /*+ Mesh matrix to order +*/
 const char * const          stratptr)             /*+ Ordering strategy    +*/
 {
-  return (orderMeshListStrat (ordeptr, meshptr, 0, NULL, stratptr));
+  INT                 vnodnbr;
+
+  SCOTCH_meshSize (meshptr, NULL, &vnodnbr, NULL);
+  return (orderMeshListStrat (ordeptr, meshptr, vnodnbr, NULL, stratptr));
 }
 
 /*+ This routine orders the submesh of
@@ -187,7 +195,7 @@ const char * restrict const   stratptr)           /*+ Ordering strategy         
   }
 #endif /* ORDER_DEBUG */
 
-  ordeptr->rangtab = memRealloc (ordeptr->rangtab, (ordeptr->cblknbr + 1) * sizeof (INT));
+  ordeptr->rangtab = (INT *) memRealloc (ordeptr->rangtab, (ordeptr->cblknbr + 1) * sizeof (INT));
 
   return (0);
 }

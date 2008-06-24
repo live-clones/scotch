@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,21 +30,25 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
+bindir		= ../../bin
+includedir	= ../../include
+libdir		= ../../lib
+
 ##
 ##  General inference rules.
 ##
 
+include ../Makefile.inc
+
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) -I$(includedir) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) $(<) -o $(@) $(LDFLAGS) -L. -lsymbol -ldof -lcommon
+		 		$(CC) $(CFLAGS) -I$(includedir) $(<) -o $(@) -L$(libdir) $(LDFLAGS) -L. -lsymbol -ldof -lcommon
 
 ##
 ##  Project rules.
 ##
-
-include ../Makefile.inc
 
 .PHONY				:	all
 
@@ -53,7 +57,9 @@ all				:	libdof$(LIB)				\
 					symboltops$(EXE)
 
 install				:	all
-					-$(CP) dof.h symbol.h lib*$(LIB) symboltops$(EXE) ../../bin
+					-$(CP) dof.h symbol.h $(includedir)
+					-$(CP) lib*$(LIB) $(libdir)
+					-$(CP) symboltops$(EXE) $(bindir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB) symboltops$(EXE)
@@ -66,13 +72,13 @@ realclean			:	clean
 
 dof$(OBJ)			:	dof.c					\
 					dof.h					\
-					../../bin/common.h			\
-					../../bin/graph.h
+					../libscotch/common.h			\
+					$(includedir)/graph.h
 
 dof_io$(OBJ)			:	dof_io.c				\
 					dof.h					\
-					../../bin/common.h			\
-					../../bin/graph.h
+					../libscotch/common.h			\
+					$(includedir)/graph.h
 
 libdof$(LIB)			:	dof$(OBJ)				\
 					dof_io$(OBJ)
@@ -81,47 +87,47 @@ libdof$(LIB)			:	dof$(OBJ)				\
 
 symbol$(OBJ)			:	symbol.c				\
 					symbol.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 symbol_base$(OBJ)		:	symbol_base.c				\
 					symbol.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 symbol_check$(OBJ)		:	symbol_check.c				\
 					symbol.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 symbol_cost$(OBJ)		:	symbol_cost.c				\
 					dof.h					\
 					symbol.h				\
 					symbol_cost.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 symbol_draw$(OBJ)		:	symbol_draw.c				\
 					symbol.h				\
 					symbol_draw.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 symbol_io$(OBJ)			:	symbol_io.c				\
 					symbol.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 symbol_keep$(OBJ)		:	symbol_keep.c				\
 					symbol.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 symbol_levf$(OBJ)		:	symbol_levf.c				\
 					symbol.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 symbol_nonzeros$(OBJ)		:	symbol_nonzeros.c			\
 					symbol.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 
 symbol_tree$(OBJ)		:	symbol_tree.c				\
 					symbol.h				\
-					../../bin/common.h
+					../libscotch/common.h
 
 libsymbol$(LIB)			:	symbol$(OBJ)				\
 					symbol_base$(OBJ)			\
@@ -138,6 +144,6 @@ libsymbol$(LIB)			:	symbol$(OBJ)				\
 
 symboltops$(EXE)		:	symboltops.c				\
 					symbol.h				\
-					../../bin/common.h			\
-					../../bin/libcommon$(LIB)		\
+					../libscotch/common.h			\
+					$(libdir)/libcommon$(LIB)		\
 					libsymbol$(LIB)

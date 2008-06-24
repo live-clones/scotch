@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to     09 dec 2005     **/
 /**                # Version 5.0  : from : 10 sep 2006     **/
-/**                                 to     02 oct 2007     **/
+/**                                 to     03 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -471,7 +471,7 @@ double *                    edlodltptr)
   edlodlt = 0.0L;
   if (srcgrafptr->edgenbr > 0) {
     if (srcgrafptr->edlotax != NULL) {            /* If graph has edge loads */
-      edlomin = INT_MAX;
+      edlomin = GNUMMAX;
       edlomax = 0;
       edlosum = 0;
 

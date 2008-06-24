@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                distributed separation graphs.          **/
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 08 mar 2006     **/
-/**                                 to   : 08 mar 2006     **/
+/**                                 to   : 01 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -114,18 +114,18 @@ VdgraphStore * const        storptr)
   byte *              partloctab;                 /* Pointer to part data save area     */
   byte *              fronloctab;                 /* Pointer to frontier data save area */
 
-  storptr->fronglbnbr     = grafptr->fronglbnbr;  /* Save partition parameters */
+  storptr->fronglbnbr     = grafptr->compglbsize[2]; /* Save partition parameters */
   storptr->compglbloaddlt = grafptr->compglbloaddlt;
   storptr->compglbload[0] = grafptr->compglbload[0];
   storptr->compglbload[1] = grafptr->compglbload[1];
   storptr->compglbsize0   = grafptr->compglbsize[0];
   storptr->complocsize0   = grafptr->complocsize[0];
-  storptr->fronlocnbr     = grafptr->fronlocnbr;
+  storptr->fronlocnbr     = grafptr->complocsize[2];
 
   fronloctab = storptr->datatab;                  /* Compute data offsets within save structure */
-  partloctab = fronloctab + grafptr->fronlocnbr * sizeof (Gnum);
+  partloctab = fronloctab + grafptr->complocsize[2] * sizeof (Gnum);
 
-  memCpy (fronloctab, grafptr->fronloctab, grafptr->fronlocnbr * sizeof (Gnum));
+  memCpy (fronloctab, grafptr->fronloctab, grafptr->complocsize[2] * sizeof (Gnum));
   memCpy (partloctab, grafptr->partgsttax + grafptr->s.baseval, grafptr->s.vertlocnbr * sizeof (GraphPart));
 }
 
@@ -149,15 +149,15 @@ const VdgraphStore * const  storptr)
   grafptr->compglbloaddlt = storptr->compglbloaddlt;
   grafptr->compglbsize[0] = storptr->compglbsize0;
   grafptr->compglbsize[1] = grafptr->s.vertglbnbr - (storptr->compglbsize0 + storptr->fronglbnbr);
-  grafptr->fronglbnbr     = storptr->fronglbnbr;
+  grafptr->compglbsize[2] = storptr->fronglbnbr;
   grafptr->complocsize[0] = storptr->complocsize0;
   grafptr->complocsize[1] = grafptr->s.vertlocnbr - (storptr->complocsize0 + storptr->fronlocnbr);
-  grafptr->fronlocnbr     = storptr->fronlocnbr;
+  grafptr->complocsize[2] = storptr->fronlocnbr;
 
   fronloctab = storptr->datatab;                  /* Compute data offsets within save structure */
-  partloctab = fronloctab + grafptr->fronlocnbr * sizeof (Gnum);
+  partloctab = fronloctab + grafptr->complocsize[2] * sizeof (Gnum);
 
-  memCpy (grafptr->fronloctab, fronloctab, grafptr->fronlocnbr * sizeof (Gnum));
+  memCpy (grafptr->fronloctab, fronloctab, grafptr->complocsize[2] * sizeof (Gnum));
   memCpy (grafptr->partgsttax + grafptr->s.baseval, partloctab, grafptr->s.vertlocnbr * sizeof (GraphPart));
 
 #ifdef SCOTCH_DEBUG_VDGRAPH2

@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,6 +30,9 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
+includedir	= ../../include
+libdir		= ../../lib
+
 ##
 ##  General inference rules.
 ##
@@ -46,14 +49,17 @@
 
 include ../Makefile.inc
 
-.PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
+.PHONY				:	all	ptscotch	scotch	ptinstall	install	clean	realclean
+
+all				:	scotch
 
 scotch				:	libcommon$(LIB)
 
 ptscotch			:	scotch
 
 install				:	scotch
-					-$(CP) common.h libcommon$(LIB) ../../bin
+					-$(CP) common.h $(includedir)
+					-$(CP) libcommon$(LIB) $(libdir)
 
 ptinstall			:	install
 
@@ -76,6 +82,16 @@ common_file$(OBJ)		:	common_file.c				\
 					common.h				\
 					common_file.h
 
+common_file_compress$(OBJ)	:	common_file_compress.c			\
+					common.h				\
+					common_file.h				\
+					common_file_compress.h
+
+common_file_uncompress$(OBJ)	:	common_file_uncompress.c		\
+					common.h				\
+					common_file.h				\
+					common_file_compress.h
+
 common_integer$(OBJ)		:	common_integer.c			\
 					common.h				\
 					common_integer.h
@@ -83,10 +99,16 @@ common_integer$(OBJ)		:	common_integer.c			\
 common_memory$(OBJ)		:	common_memory.c				\
 					common.h
 
+common_stub$(OBJ)		:	common_stub.c				\
+					common.h
+
 libcommon$(LIB)			:	common$(OBJ)				\
 					common_error$(OBJ)			\
 					common_file$(OBJ)			\
+					common_file_compress$(OBJ)		\
+					common_file_uncompress$(OBJ)		\
 					common_integer$(OBJ)			\
-					common_memory$(OBJ)
+					common_memory$(OBJ)			\
+					common_stub$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(^)
 					-$(RANLIB) $(@)

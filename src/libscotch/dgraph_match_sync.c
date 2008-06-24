@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,8 +41,8 @@
 /**                paradigme in order to limit amount of   **/
 /**                communications needed.                  **/
 /**                                                        **/
-/**   DATES      : # Version 0.5  : from : 14 sep 2006     **/
-/**                                 to   : 10 sep 2007     **/
+/**   DATES      : # Version 5.0  : from : 14 sep 2006     **/
+/**                                 to   : 17 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -723,6 +723,7 @@ DgraphMatchSyncComm * restrict commptr) {
   if ((commptr->method != SIMPLE_SYNC))
     memFree (commptr->colortab);
   memFree (commptr->comsndtab);               /* Free memory group leader */
+  MPI_Type_free (&commptr->datatype);
 }
 
 int
@@ -1053,7 +1054,7 @@ DgraphMatchSyncQueue * restrict nonmatequeue)
   Gnum                      finevertlastnum;       /* Shortcut to finegraph->procvrttab[proclocnum + 1] */
   Gnum                      baseval;
   DgraphMatchSyncMessage  * message;
-  int            * restrict ordertab;              /* In which order our neighbors must be treated */
+  Gnum           * restrict ordertab;              /* In which order our neighbors must be treated; (Gnum) because of intPerm(INT) */
   MPI_Status     * restrict statustab;
   DgraphMatchSyncCommProc * comsndtab;            /* Shortcut to commptr->com*tab to do in place answer */
   DgraphMatchSyncCommProc * comrcvtab;
@@ -1064,16 +1065,16 @@ DgraphMatchSyncQueue * restrict nonmatequeue)
   baseval = finegraph->baseval;
 
   if (memAllocGroup ((void **) (void *)
-                     &ordertab,  (size_t) (finegraph->procngbnbr     * sizeof (int)),
+                     &ordertab,  (size_t) (finegraph->procngbnbr     * sizeof (Gnum)),
                      &statustab, (size_t) (finegraph->procngbnbr * 2 * sizeof (MPI_Status)), NULL) == NULL) {
     errorPrint ("dgraphMatchSyncSimpleExchange: out of memory (1)");
     return     (1);
   }
 
   for (procngbnum = 0 ; procngbnum < finegraph->procngbnbr ; ++ procngbnum)
-    ordertab[procngbnum] = procngbnum;
+    ordertab[procngbnum] = (Gnum) procngbnum;
 
-  intPerm (ordertab, finegraph->procngbnbr);
+  intPerm (ordertab, (Gnum) finegraph->procngbnbr);
 
   for (finevertlocnum = finegraph->vertlocnnd, procngbnum = 0;
        finevertlocnum < finegraph->vertgstnnd; finevertlocnum ++) {
@@ -1148,7 +1149,7 @@ DgraphMatchSyncQueue * restrict nonmatequeue)
     int count;
     int procnum;
 
-    procngbnum = ordertab[i];
+    procngbnum = (int) ordertab[i];
     if (MPI_Get_count(&statustab[procngbnum + finegraph->procngbnbr], commptr->datatype, &count) !=  MPI_SUCCESS) {
       errorPrint ("dgraphMatchSyncSimpleExchange: internal error (5)");
       return     (1);

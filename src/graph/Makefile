@@ -1,4 +1,4 @@
-## Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,28 +30,32 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
+includedir	= ../../include
+libdir		= ../../lib
+
 ##
 ##  General inference rules.
 ##
 
+include ../Makefile.inc
+
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) -I$(includedir) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) $(<) -o $(@) $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -I$(includedir) $(<) -o $(@) -L$(libdir) $(LDFLAGS)
 
 ##
 ##  Project rules.
 ##
-
-include ../Makefile.inc
 
 .PHONY				:	all
 
 all				:	libgraph$(LIB)
 
 install				:	all
-					-$(CP) graph.h mesh.h libgraph$(LIB) ../../bin
+					-$(CP) graph.h mesh.h $(includedir)
+					-$(CP) libgraph$(LIB) $(libdir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB)
@@ -63,18 +67,18 @@ realclean			:	clean
 ##
 
 graph_build$(OBJ)		:	graph_build.c				\
-					../../bin/common.h			\
-					../../bin/scotch.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
 					graph.h
 
 graph_graph$(OBJ)		:	graph_graph.c				\
-					../../bin/common.h			\
-					../../bin/scotch.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
 					graph.h
 
 graph_grid$(OBJ)		:	graph_grid.c				\
-					../../bin/common.h			\
-					../../bin/scotch.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
 					graph.h					\
 					graph_grid.h
 

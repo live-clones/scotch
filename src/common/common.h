@@ -48,7 +48,7 @@
 /**                # Version 1.0  : from : 06 jun 2002     **/
 /**                                 to   : 06 jun 2002     **/
 /**                # Version 2.0  : from : 13 jun 2005     **/
-/**                                 to   : 07 jun 2007     **/
+/**                                 to   : 12 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,7 +63,6 @@
 #define X_C_RESTRICT
 
 #if (defined X_ARCHpower_ibm_aix)
-#define X_INCLUDE_ESSL
 #undef  X_C_RESTRICT
 #endif /* (defined X_ARCHpower_ibm_aix) */
 
@@ -105,13 +104,9 @@
 #include            <mpi.h>
 #endif /* SCOTCH_PTSCOTCH */
 
-#ifdef SCOTCH_PTHREAD
+#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
 #include            <pthread.h>
-#endif /* SCOTCH_PTHREAD */
-
-#ifdef X_INCLUDE_ESSL
-#include            <essl.h>
-#endif /* X_INCLUDE_ESSL */
+#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
 
 /*
 **  Working definitions.
@@ -269,6 +264,13 @@ void *                      memOffset           (void *, ...);
 
 void                        usagePrint          (FILE * const, const char (* []));
 
+int                         fileBlockOpen       (File * const, const int);
+int                         fileBlockOpenDist   (File * const, const int, const int, const int, const int);
+void                        fileBlockClose      (File * const, const int);
+FILE *                      fileCompress        (FILE * const, const int);
+int                         fileCompressType    (const char * const);
+FILE *                      fileUncompress      (FILE * const, const int);
+int                         fileUncompressType  (const char * const);
 int                         fileNameDistExpand  (char ** const, const int, const int, const int);
 
 void                        errorProg           (const char * const);

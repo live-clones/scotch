@@ -59,8 +59,12 @@
 /**                                 to     05 may 2006     **/
 /**                # Version 5.0  : from : 30 nov 2006     **/
 /**                                 to     30 nov 2006     **/
+/**                # Version 5.1  : from : 08 jan 2008     **/
+/**                                 to     08 jan 2008     **/
 /**                                                        **/
 /************************************************************/
+
+#define BGRAPH_H
 
 /*
 **  The type and structure definitions.

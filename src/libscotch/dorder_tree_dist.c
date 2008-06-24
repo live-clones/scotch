@@ -39,7 +39,7 @@
 /**                orderings.                              **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 28 nov 2007     **/
-/**                                 to     15 jan 2008     **/
+/**                                 to     09 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -140,7 +140,7 @@ Gnum * restrict const         sizeglbtab)
 
       cblklocnum = cblklocptr->cblknum.cblklocnum;
       if ((cblklocnum < 0) || (cblklocnum >= ordeptr->cblklocnbr)) {
-        errorPrint ("dorderTreeDist: internal error");
+        errorPrint ("dorderTreeDist: internal error (1)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_DORDER2 */
@@ -256,12 +256,12 @@ Gnum * restrict const         sizeglbtab)
   intSort2asc2 (srt2glbtab, dblkglbnbr);          /* Sort father indices by ascending column block indices */
 #ifdef SCOTCH_DEBUG_DORDER2
   if (srt2glbtab[0] != -1) {                      /* If tree has no root */
-    errorPrint ("dorderTreeDist: internal error (1)");
+    errorPrint ("dorderTreeDist: internal error (2)");
     memFree    (dblkcnttab);                      /* Free group leader */
     return     (1);
   }
   if ((dblkglbnbr > 1) && (srt2glbtab[2] == -1)) { /* If tree has multiple roots */
-    errorPrint ("dorderTreeDist: internal error (2)");
+    errorPrint ("dorderTreeDist: internal error (3)");
     memFree    (dblkcnttab);                      /* Free group leader */
     return     (1);
   }
@@ -271,9 +271,9 @@ Gnum * restrict const         sizeglbtab)
       dataglbtab[4 * srt2glbtab[2 * (dblkglbnum ++) + 1] + 2] = srt1glbtab[2 * dblkglbtmp + 1];
     else {
 #ifdef SCOTCH_DEBUG_DORDER2
-      if ((srt2glbtab[2 * dblkglbnum] > srt1glbtab[2 * dblkglbtmp]) || /* If column block index not found in table */
+      if ((srt2glbtab[2 * dblkglbnum] < srt1glbtab[2 * dblkglbtmp]) || /* If column block index not found in table */
           (dblkglbtmp >= (dblkglbnbr - 1))) {
-        errorPrint ("dorderTreeDist: internal error (3)");
+        errorPrint ("dorderTreeDist: internal error (4)");
         memFree    (dblkcnttab);                  /* Free group leader */
         return     (1);
       }
@@ -290,7 +290,7 @@ Gnum * restrict const         sizeglbtab)
   for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
 #ifdef SCOTCH_DEBUG_DORDER2
     if (srt1glbtab[2 * dblkglbnum] != srt2glbtab[2 * dblkglbnum]) {
-      errorPrint ("dorderTreeDist: internal error (4)");
+      errorPrint ("dorderTreeDist: internal error (5)");
       memFree    (dblkcnttab);                    /* Free group leader */
       return     (1);
     }

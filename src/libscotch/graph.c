@@ -146,3 +146,21 @@ Graph * const               grafptr)
   memSet (grafptr, ~0, sizeof (Graph));           /* Purge graph fields */
 #endif /* SCOTCH_DEBUG_GRAPH2 */
 }
+
+/* This routine returns the SCOTCH_PTSCOTCH
+** flag. It is used to detect discrepancies
+** resulting from a mixed use of the libscotch
+** and libptscotch libraries.
+** It returns:
+** - int  : in all cases.
+*/
+
+int
+graphPtscotch ()
+{
+#ifdef SCOTCH_PTSCOTCH
+  return (1);
+#else /* SCOTCH_PTSCOTCH */
+  return (0);
+#endif /* SCOTCH_PTSCOTCH */
+}

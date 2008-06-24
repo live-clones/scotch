@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 11 feb 2002     **/
 /**                                 to   : 18 may 2004     **/
 /**                # Version 5.0  : from : 13 dec 2007     **/
-/**                                 to   : 13 dec 2007     **/
+/**                                 to   : 16 mar 2008     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY,dZ) mesh   **/
 /**                  are numbered as terminals so that     **/
@@ -58,6 +58,7 @@
 
 #define GMK_M3
 
+#include "module.h"
 #include "common.h"
 #include "scotch.h"
 #include "gmk_m3.h"
@@ -111,11 +112,10 @@ char *                      argv[])
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
-  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes */
-    if ((argv[i][0] != '+') &&                    /* If found a file name      */
-        ((argv[i][0] != '-') || (argv[i][1] == '\0'))) {
-      if (C_paraNum < 3) {                        /* If number of parameters not reached */
-        if ((d[C_paraNum ++] = atoi (argv[i])) < 1) { /* Get the dimension               */
+  for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
+    if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
+      if (C_paraNum < 3) {                        /* If number of parameters not reached              */
+        if ((d[C_paraNum ++] = atoi (argv[i])) < 1) { /* Get the dimension                            */
           errorPrint ("main: invalid dimension (\"%s\")", argv[i]);
           return     (1);
         }
@@ -153,7 +153,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "gmk_m3, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2004,2007 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -163,15 +163,7 @@ char *                      argv[])
     }
   }
 
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      if ((C_fileTab[i].pntr = fopen (C_fileTab[i].name, C_fileTab[i].mode)) == NULL) { /* Open the file */
-        errorPrint ("main: cannot open file (%d)", i);
-        return     (1);
-      }
-    }
-  }
+  fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
   if (flagval & C_FLAGTORUS) {                    /* Build a torus */
     fprintf (C_filepntrsrcout, "0\n%ld\t%ld\n%ld\t000\n",
@@ -268,14 +260,10 @@ char *                      argv[])
     }
   }
 
-#ifdef SCOTCH_DEBUG_ALL
-  for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
-    if ((C_fileTab[i].name[0] != '-') ||          /* If not standard stream */
-        (C_fileTab[i].name[1] != '\0')) {
-      fclose (C_fileTab[i].pntr);                 /* Close the stream */
-    }
-  }
-#endif /* SCOTCH_DEBUG_ALL */
+  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
+#ifdef COMMON_PTHREAD
+  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
+#endif /* COMMON_PTHREAD */
   return (0);
 }

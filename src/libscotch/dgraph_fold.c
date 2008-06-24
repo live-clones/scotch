@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                source graph folding function.          **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 10 aug 2006     **/
-/**                                 to   : 10 sep 2007     **/
+/**                                 to   : 17 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -227,12 +227,12 @@ MPI_Datatype                  vertinfotype)
       }
       else {
         if (vertinfoptrin != NULL) {
-          if ((*vertinfoptrout = (byte*) memAlloc (fldvertlocnbr * vertinfosize)) == NULL) {
+          if ((*vertinfoptrout = (byte *) memAlloc (fldvertlocnbr * vertinfosize)) == NULL) {
             errorPrint ("dgraphFold: out of memory (5)");
             cheklocval = 1;
           }
           else {
-            *vertinfoptrout -= (vertinfosize * orggrafptr->baseval);
+            *((byte **) vertinfoptrout) -= (vertinfosize * orggrafptr->baseval);
           }
         }
         fldgrafptr->edgeloctax -= orggrafptr->baseval;
@@ -562,11 +562,6 @@ MPI_Datatype                  vertinfotype)
     if (orggrafptr->vnumloctax != NULL)           /* If original graph has vertex numbers             */
       memCpy (fldgrafptr->vnumloctax + orggrafptr->baseval, /* Copy local part of vertex number array */
               orggrafptr->vnumloctax + orggrafptr->baseval, orgvertlocnbr * sizeof (Gnum));
-    if (vertinfoptrin != NULL) {                      /* If vertinfo exists                   */
-      memCpy ((byte *) (*vertinfoptrout) + orggrafptr->baseval * vertinfosize, /* Copy local part */
-              (byte *) (vertinfoptrin) + orggrafptr->baseval * vertinfosize, orgvertlocnbr * vertinfosize);
-    }
-
     else {                                        /* Build local part of vertex number array */
       Gnum              fldvertlocnum;
       Gnum              fldvertlocadj;
@@ -579,6 +574,11 @@ MPI_Datatype                  vertinfotype)
 
     memCpy (fldgrafptr->vertloctax + orggrafptr->baseval, /* Copy local part of vertex array (since it is compact) */
             orggrafptr->vertloctax + orggrafptr->baseval, (orgvertlocnbr + 1) * sizeof (Gnum));
+
+    if (vertinfoptrin != NULL) {                  /* If vertinfo exists */
+      memCpy ((byte *) (*vertinfoptrout) + orggrafptr->baseval * vertinfosize, /* Copy local part */
+              (byte *) (vertinfoptrin) + orggrafptr->baseval * vertinfosize, orgvertlocnbr * vertinfosize);
+    }
 
     for (i = 0, fldvertlocnum = orggrafptr->vertlocnnd + 1;
          (i < DGRAPHFOLDCOMMNBR) && (fldcommdattab[i].procnum != -1); i ++) {

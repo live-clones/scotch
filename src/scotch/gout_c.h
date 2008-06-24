@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to     11 dec 2001     **/
 /**                # Version 5.0  : from : 13 dec 2007     **/
-/**                                 to     13 dec 2007     **/
+/**                                 to     15 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,6 +72,8 @@
 #define C_filepntrgeoinp            C_fileTab[1].pntr /* Source graph geometry file */
 #define C_filepntrmapinp            C_fileTab[2].pntr /* Mapping result input file  */
 #define C_filepntrdatout            C_fileTab[3].pntr /* Data output file           */
+
+#define C_filemodemapinp            C_fileTab[2].mode /* Mapping result mode */
 
 /*+ Dimension definitions. +*/
 

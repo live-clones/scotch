@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 12 dec 2001     **/
 /**                                 to     24 nov 2005     **/
 /**                # Version 5.0  : from : 24 feb 2007     **/
-/**                                 to     16 dec 2007     **/
+/**                                 to     23 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,13 +57,38 @@
 ** Debug values.
 */
 
+#ifdef SCOTCH_DEBUG_ALL
+#ifndef SCOTCH_DEBUG
+#define SCOTCH_DEBUG
+#endif /* SCOTCH_DEBUG */
+#define SCOTCH_DEBUG_ARCH2
+#define SCOTCH_DEBUG_BGRAPH2
+#define SCOTCH_DEBUG_DGRAPH2
+#define SCOTCH_DEBUG_DORDER2
+#define SCOTCH_DEBUG_GAIN2
+#define SCOTCH_DEBUG_GEOM2
+#define SCOTCH_DEBUG_GRAPH2
+#define SCOTCH_DEBUG_HDGRAPH2
+#define SCOTCH_DEBUG_HGRAPH2
+#define SCOTCH_DEBUG_HMESH2
+#define SCOTCH_DEBUG_KGRAPH2
+#define SCOTCH_DEBUG_LIBRARY2
+#define SCOTCH_DEBUG_MAIN2
+#define SCOTCH_DEBUG_MAP2
+#define SCOTCH_DEBUG_MESH2
+#define SCOTCH_DEBUG_ORDER2
+#define SCOTCH_DEBUG_PARSER2
+#define SCOTCH_DEBUG_VDGRAPH2
+#define SCOTCH_DEBUG_VGRAPH2
+#define SCOTCH_DEBUG_VMESH2
+#endif /* SCOTCH_DEBUG_ALL */
+
 #ifdef SCOTCH_DEBUG
 #define SCOTCH_DEBUG_ARCH1
-#define SCOTCH_DEBUG_GAIN1
-#define SCOTCH_DEBUG_PARSER1
 #define SCOTCH_DEBUG_BGRAPH1
 #define SCOTCH_DEBUG_DGRAPH1
 #define SCOTCH_DEBUG_DORDER1
+#define SCOTCH_DEBUG_GAIN1
 #define SCOTCH_DEBUG_GEOM1
 #define SCOTCH_DEBUG_GRAPH1
 #define SCOTCH_DEBUG_HDGRAPH1
@@ -81,68 +106,20 @@
 #define SCOTCH_DEBUG_VMESH1
 #endif /* SCOTCH_DEBUG */
 
-#ifdef SCOTCH_DEBUG_ALL
-#define SCOTCH_DEBUG_ARCH1
-#define SCOTCH_DEBUG_ARCH2
-#define SCOTCH_DEBUG_GAIN1
-#define SCOTCH_DEBUG_GAIN2
-#define SCOTCH_DEBUG_PARSER1
-#define SCOTCH_DEBUG_PARSER2
-#define SCOTCH_DEBUG_BGRAPH1
-#define SCOTCH_DEBUG_BGRAPH2
-#define SCOTCH_DEBUG_DGRAPH1
-#define SCOTCH_DEBUG_DGRAPH2
-#define SCOTCH_DEBUG_DORDER1
-#define SCOTCH_DEBUG_DORDER2
-#define SCOTCH_DEBUG_GEOM1
-#define SCOTCH_DEBUG_GEOM2
-#define SCOTCH_DEBUG_GRAPH1
-#define SCOTCH_DEBUG_GRAPH2
-#define SCOTCH_DEBUG_HDGRAPH1
-#define SCOTCH_DEBUG_HDGRAPH2
-#define SCOTCH_DEBUG_HGRAPH1
-#define SCOTCH_DEBUG_HGRAPH2
-#define SCOTCH_DEBUG_HMESH1
-#define SCOTCH_DEBUG_HMESH2
-#define SCOTCH_DEBUG_KGRAPH1
-#define SCOTCH_DEBUG_KGRAPH2
-#define SCOTCH_DEBUG_LIBRARY1
-#define SCOTCH_DEBUG_LIBRARY2
-#define SCOTCH_DEBUG_MAIN1
-#define SCOTCH_DEBUG_MAIN2
-#define SCOTCH_DEBUG_MAP1
-#define SCOTCH_DEBUG_MAP2
-#define SCOTCH_DEBUG_MESH1
-#define SCOTCH_DEBUG_MESH2
-#define SCOTCH_DEBUG_ORDER1
-#define SCOTCH_DEBUG_ORDER2
-#define SCOTCH_DEBUG_PARSER1
-#define SCOTCH_DEBUG_PARSER2
-#define SCOTCH_DEBUG_VDGRAPH1
-#define SCOTCH_DEBUG_VDGRAPH2
-#define SCOTCH_DEBUG_VGRAPH1
-#define SCOTCH_DEBUG_VGRAPH2
-#define SCOTCH_DEBUG_VMESH1
-#define SCOTCH_DEBUG_VMESH2
-#endif /* SCOTCH_DEBUG_ALL */
-
-#ifdef PTSCOTCH_THREAD
-/* #define PTSCOTCH_COARSEN_THREAD */
-#endif /* PTSCOTCH_THREAD */
-
 /*
 ** Function renaming.
 */
 
 #if ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME))
-#ifndef SCOTCH_PTSCOTCH
 #define clockGet                    _SCOTCHclockGet
-#endif /* SCOTCH_PTSCOTCH */
+
+#define fileNameDistExpand          _SCOTCHfileNameDistExpand 
 
 #define usagePrint                  _SCOTCHusagePrint
 
 #define errorPrint                  SCOTCH_errorPrint
 #define errorPrintW                 SCOTCH_errorPrintW
+#define errorProg                   SCOTCH_errorProg
 
 #define intLoad                     _SCOTCHintLoad
 #define intSave                     _SCOTCHintSave
@@ -155,6 +132,7 @@
 #define intSort1asc1                _SCOTCHintSort1asc1
 #define intSort2asc1                _SCOTCHintSort2asc1
 #define intSort2asc2                _SCOTCHintSort2asc2
+#define intSort3asc1                _SCOTCHintSort3asc1
 
 #define memAllocGroup               _SCOTCHmemAllocGroup
 #define memReallocGroup             _SCOTCHmemReallocGroup
@@ -419,6 +397,7 @@
 #define graphGeomLoadScot           _SCOTCHgraphGeomLoadScot
 #define graphGeomSaveChac           _SCOTCHgraphGeomSaveChac
 #define graphGeomSaveScot           _SCOTCHgraphGeomSaveScot
+#define graphPtscotch               _SCOTCHgraphPtscotch
 
 #define hallOrderHdHalmd            _SCOTCHhallOrderHdHalmd
 #define hallOrderHfR2hamdf4         _SCOTCHhallOrderHfR2hamdf4

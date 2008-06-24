@@ -479,7 +479,7 @@ const int                     protnum)
 
       cblkfthnum = treercvtab[treeglbnum].fathnum;
 #ifdef SCOTCH_DEBUG_DORDER2
-      if ((cblkfthnum < 0) ||                     /* Fater of non-root node cannot be -1                  */
+      if ((cblkfthnum < 0) ||                     /* Father of non-root node cannot be -1                 */
           (cblkfthnum >= treeglbnum)) {           /* Father should always have smaller global node number */
         errorPrint ("dorderGatherTree: internal error (2)");
         return     (1);

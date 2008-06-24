@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to     10 sep 2001     **/
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     02 feb 2004     **/
+/**                # Version 5.0  : from : 20 feb 2008     **/
+/**                                 to     20 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -299,6 +301,7 @@ const void * restrict const       data)           /*+ Pointer to data structure 
   }
 #endif /* SCOTCH_DEBUG_PARSER1 */
 
+  o = 0;                                          /* Assume no error */
   switch (test->typetest) {
     case STRATTESTNOT :                           /* Not operator */
       o = stratTestEval (test->data.test[0], eval, data);
@@ -354,6 +357,7 @@ const void * restrict const       data)           /*+ Pointer to data structure 
       o |= stratTestEvalCast (&val[0], &val[1]);
       if (o != 0)
         break;
+      sign = 0;                                   /* In case of error */
       switch (val[0].typenode) {
         case STRATPARAMDOUBLE :
           sign = (val[0].data.val.valdbl < val[1].data.val.valdbl) ? STRATTESTLT : ((val[0].data.val.valdbl > val[1].data.val.valdbl) ? STRATTESTGT : STRATTESTEQ);
@@ -421,7 +425,6 @@ const void * restrict const       data)           /*+ Pointer to data structure 
       break;
     case STRATTESTVAL :                           /* Constant value */
       *eval = *test;                              /* Copy value     */
-      o = 0;
       break;
     case STRATTESTVAR :                           /* Variable */
       switch (test->typenode) {
@@ -439,7 +442,6 @@ const void * restrict const       data)           /*+ Pointer to data structure 
 #endif /* SCOTCH_DEBUG_PARSER1 */
       }
       eval->typenode = test->typenode;
-      o = 0;
       break;
 #ifdef SCOTCH_DEBUG_PARSER1
     default :
@@ -565,6 +567,7 @@ FILE * const                stream)
   }
 #endif /* SCOTCH_DEBUG_PARSER1 */
 
+  o = 0;                                          /* Assume no error */
   switch (test->typetest) {
     case STRATTESTNOT :                           /* Not operator */
       if ((fprintf (stream, "!(") == EOF) ||
@@ -604,7 +607,7 @@ FILE * const                stream)
 #ifdef SCOTCH_DEBUG_PARSER2
         default :
           errorPrint ("stratTestSave: invalid value type");
-          return     (1);
+          o = 1;
 #endif /* SCOTCH_DEBUG_PARSER2 */
       }
       break;
@@ -623,7 +626,7 @@ FILE * const                stream)
 #ifdef SCOTCH_DEBUG_PARSER2
     default :
       errorPrint ("stratTestSave: invalid condition type (%u)", test->typetest);
-      return     (1);
+      o = 1;
 #endif /* SCOTCH_DEBUG_PARSER2 */
   }
 

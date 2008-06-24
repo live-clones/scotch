@@ -59,6 +59,8 @@
 /**                                 to     01 jun 2001     **/
 /**                # Version 4.0  : from : 20 dec 2003     **/
 /**                                 to     05 may 2006     **/
+/**                # Version 5.0  : from : 24 mar 2008     **/
+/**                                 to   : 22 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -266,7 +268,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
     hashtab[hashnum].commgain = (grafptr->veextax == NULL) ? commgain : (commgain - partdlt * grafptr->veextax[vertnum]);
     hashtab[hashnum].commcut  = commcut;
     hashtab[hashnum].mswpnum  = 0;                /* Implicitely set slot as used */
-    gainTablAdd (tablptr, &hashtab[hashnum], hashtab[hashnum].commgain);
+    gainTablAdd (tablptr, (GainLink *) &hashtab[hashnum], hashtab[hashnum].commgain);
   }
 
   compload0dltbst = grafptr->compload0dlt;
@@ -330,8 +332,8 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
       vexxptr = lockptr;                          /* Unlink vertex from list */
       lockptr = (BgraphBipartFmVertex *) vexxptr->gainlink.prev;
 
-      if (vexxptr->commcut > 0)                   /* If vertex has cut edges  */
-        gainTablAdd (tablptr, vexxptr, vexxptr->commgain); /* Put it in table */
+      if (vexxptr->commcut > 0)                   /* If vertex has cut edges               */
+        gainTablAdd (tablptr, (GainLink *) vexxptr, vexxptr->commgain); /* Put it in table */
       else
         vexxptr->gainlink.next = BGRAPHBIPARTFMSTATEFREE; /* Set it free anyway */
     }
@@ -475,7 +477,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
             hashtab[hashnum].mswpnum  = mswpnum;  /* Vertex has just been saved    */
             hashnbr ++;                           /* One more vertex in hash table */
 
-            gainTablAdd (tablptr, &hashtab[hashnum], hashtab[hashnum].commgain);
+            gainTablAdd (tablptr, (GainLink *) &hashtab[hashnum], hashtab[hashnum].commgain);
             break;
           }
         }
@@ -606,8 +608,8 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
         }
       }
     }
-  } while ((moveflag != 0) &&                     /* As long as vertices are moved */
-           (-- passnbr > 0));                     /* And we are allowed to loop    */
+  } while ((moveflag != 0) &&                     /* As long as vertices are moved                          */
+           (-- passnbr != 0));                    /* And we are allowed to loop (TRICK for negative values) */
 
 #ifdef SCOTCH_DEBUG_BGRAPH2
 #ifdef SCOTCH_DEBUG_BGRAPH3

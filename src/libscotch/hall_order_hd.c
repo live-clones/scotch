@@ -47,7 +47,7 @@
 /**                # Version 3.3  : from : 02 oct 1998     **/
 /**                                 to   : 05 jan 1999     **/
 /**                # Version 4.0  : from : 14 jan 2003     **/
-/**                                 to   : 02 apr 2004     **/
+/**                                 to   : 29 aug 2007     **/
 /**                                                        **/
 /**   NOTES      : # This module contains pieces of code   **/
 /**                  that belong to other people; see      **/
@@ -138,7 +138,7 @@ Gnum * restrict     w)                            /* Flag array                 
 {
   Gnum                deg, degme, dext, dmax, e, elenme, eln, hash, hmod, i,
                       ilast, inext, j, jlast, jnext, k, knt1, knt2, knt3,
-                      lenj, ln, me, mem, mindeg, nel, newmem,
+                      lenj, ln, me = 0, mem, mindeg, nel, newmem,
                       nleft, nvi, nvj, nvpiv, slenme, we, wflg, wnvi, x,
                       nbflag, nreal, lastd, nelme;
   Gnum                p, p1, p2, p3, pdst, pend, pj, pme, pme1, pme2, pn, psrc;
@@ -850,7 +850,7 @@ L240:
     nelme  = - (nel + 1);
     for (x = 1; x <= n; x ++) {
       if ((pe[x] > 0) && (elen[x] < 0))
-        pe[x] = -me;
+        pe[x] = - me;
       else if (degree[x] == (n + 1)) {
         nel    += nv[x];
         pe[x]   = - me;

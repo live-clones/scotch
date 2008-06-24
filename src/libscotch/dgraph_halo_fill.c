@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /*                routines.                               */
 /*                                                        */
 /*                # Version 5.0  : from : 31 dec 2006     */
-/*                                 to     01 jan 2007     */
+/*                                 to     05 feb 2008     */
 /*                                                        */
 /**********************************************************/
 
@@ -57,8 +57,7 @@ const Dgraph * restrict const grafptr,
 const byte * restrict const   attrgsttab,         /* Attribute array to diffuse     */
 int                           attrglbsiz,         /* Type extent of attribute       */
 byte * restrict const         attrsndtab,         /* Array for packing data to send */
-int * restrict const          senddsptab,         /* Temporary displacement array   */
-const int * restrict const    sendcnttab)         /* Count array                    */
+int * restrict const          senddsptab)         /* Temporary displacement array   */
 {
   Gnum                  vertlocnum;
   const int * restrict  procsidtab;

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to     01 oct 1998     **/
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     11 jun 2004     **/
+/**                # Version 5.1  : from : 20 feb 2008     **/
+/**                                 to     20 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -105,7 +107,7 @@ typedef enum StratTestType_ {
 /*+ Method characteristics. +*/
 
 typedef struct StratMethodTab_ {
-  unsigned int              meth;                 /*+ Method number in method table    +*/
+  int                       meth;                 /*+ Method number in method table    +*/
   char *                    name;                 /*+ Method name                      +*/
   int                    (* func) ();             /*+ Pointer to bipartitioning method +*/
   void *                    data;                 /*+ Pointer to default parameters    +*/
@@ -114,7 +116,7 @@ typedef struct StratMethodTab_ {
 /*+ Method parameter characteristics. +*/
 
 typedef struct StratParamTab_ {
-  unsigned int              meth;                 /*+ Method number in method table    +*/
+  int                       meth;                 /*+ Method number in method table    +*/
   StratParamType            type;                 /*+ Parameter type                   +*/
   char *                    name;                 /*+ Parameter name                   +*/
   byte *                    database;             /*+ Pointer to data base in method   +*/
@@ -146,7 +148,7 @@ typedef union StratTestVal_ {                     /*+ Constant value +*/
 
 typedef struct StratTestVar_ {                    /*+ Condition variable                     +*/
   const StratTab *          datatab;              /*+ Pointer to data parameter table        +*/
-  unsigned int              datadisp;             /*+ Displacement with respect to beginning +*/
+  int                       datadisp;             /*+ Displacement with respect to beginning +*/
 } StratTestVar;
 
 typedef struct StratTest_ {                       /*+ Test node +*/
@@ -175,7 +177,7 @@ typedef struct StratNodeEmpty_ {                  /*+ Empty node +*/
 typedef double StratNodeMethodData[10];           /*+ Reserved padded space for method data */
 
 typedef struct StratNodeMethod_ {                 /*+ Method node           +*/
-  unsigned int              meth;                 /*+ Index in method table +*/
+  int                       meth;                 /*+ Index in method table +*/
   StratNodeMethodData       data;                 /*+ Method data           +*/
 } StratNodeMethod;
 

@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                tions for the main routine.             **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 30 apr 2006     **/
-/**                                 to   : 28 jul 2007     **/
+/**                                 to   : 27 may 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,7 +74,8 @@
 #define C_FLAGTREOUT                0x0002        /* Output separator tree data */
 #define C_FLAGVERBSTR               0x0004        /* Output strategy string     */
 #define C_FLAGVERBTIM               0x0008        /* Output timing information  */
-#define C_FLAGDEBUG                 0x0010        /* Debugging                  */
+#define C_FLAGBLOCK                 0x0010        /* Output block ordering      */
+#define C_FLAGDEBUG                 0x0020        /* Debugging                  */
 
 /*
 **  The function prototypes.

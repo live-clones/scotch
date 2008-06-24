@@ -186,6 +186,9 @@ const INT                   permnbr)              /*+ Number of entries in array
 /*                  */
 /********************/
 
+static int          intrandflag = 0;              /*+ Flag set if generator already initialized +*/
+static unsigned int intrandseed = 1;              /*+ Random seed                               +*/
+
 /* This routine initializes the pseudo-random
 ** generator if necessary. In order for multi-sequential
 ** programs to have exactly the same behavior on any
@@ -198,16 +201,37 @@ const INT                   permnbr)              /*+ Number of entries in array
 void
 intRandInit (void)
 {
-  static int          randflag = 0;               /*+ Flag set if generator already initialized +*/
-
-  if (randflag == 0) {                            /* If generator not yet initialized */
-#if ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED))
-    srandom (1);                                  /* Non-random seed */
-#else
-    srandom (time (NULL));                        /* Random seed */
+  if (intrandflag == 0) {                         /* If generator not yet initialized */
+#if ! ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED))
+    intrandseed = time (NULL);                    /* Set random seed if needed */
 #endif /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED)) */
-    randflag = 1;                                 /* Generator has been initialized */
+#ifdef COMMON_RANDOM_RAND
+    srand (intrandseed);
+#else /* COMMON_RANDOM_RAND */
+    srandom (intrandseed);                        /* Initialize random generator    */
+#endif /* COMMON_RANDOM_RAND */
+    intrandflag = 1;                              /* Generator has been initialized */
   }
+}
+
+/* This routine reinitializes the pseudo-random
+** generator to its initial value.
+** It returns:
+** - VOID  : in all cases.
+*/
+
+void
+intRandReset (void)
+{
+  if (intrandflag != 0) {                         /* If random generator already initialized */
+#ifdef COMMON_RANDOM_RAND
+    srand (intrandseed);
+#else /* COMMON_RANDOM_RAND */
+    srandom (intrandseed);                        /* Initialize random generator    */
+#endif /* COMMON_RANDOM_RAND */
+  }
+  else
+    intRandInit ();
 }
 
 /*********************/
@@ -327,8 +351,8 @@ intSearchDicho      (const INT * const tab,
   }
 
   while ((tab[stop] == element) && (stop < last)
-         && (tab[stop] == tab[stop + 1]))         /* Avoid return empty interval */
-    stop++;                                       /* this can occurs when processors set are empty */
+         && (tab[stop] == tab[stop + 1]))         /* Avoid return empty interval                  */
+    stop ++;                                      /* This can occur when processor sets are empty */
 
   return (stop);
 }

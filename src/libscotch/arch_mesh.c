@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,6 +58,8 @@
 /**                                 to     01 oct 1998     **/
 /**                # Version 4.0  : from : 09 jan 2004     **/
 /**                                 to     10 mar 2005     **/
+/**                # Version 5.0  : from : 27 feb 2008     **/
+/**                                 to     27 feb 2008     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -104,8 +106,8 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((intLoad (stream, &archptr->c[0]) +
-       intLoad (stream, &archptr->c[1]) != 2) ||
+  if ((intLoad (stream, &archptr->c[0]) != 1) ||
+      (intLoad (stream, &archptr->c[1]) != 1) ||
       (archptr->c[0] < 1) || (archptr->c[1] < 1)) {
     errorPrint ("archMesh2ArchLoad: bad input");
     return     (1);
@@ -248,10 +250,10 @@ const ArchMesh2 * const       archptr,
 ArchMesh2Dom * restrict const domptr,
 FILE * restrict const         stream)
 {
-  if (intLoad (stream, &domptr->c[0][0]) +
-      intLoad (stream, &domptr->c[1][0]) +
-      intLoad (stream, &domptr->c[0][1]) +
-      intLoad (stream, &domptr->c[1][1]) != 4) {
+  if ((intLoad (stream, &domptr->c[0][0]) != 1) ||
+      (intLoad (stream, &domptr->c[1][0]) != 1) ||
+      (intLoad (stream, &domptr->c[0][1]) != 1) ||
+      (intLoad (stream, &domptr->c[1][1]) != 1)) {
     errorPrint ("archMesh2DomLoad: bad input");
     return     (1);
   }
@@ -410,9 +412,9 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((intLoad (stream, &archptr->c[0]) +
-       intLoad (stream, &archptr->c[1]) +
-       intLoad (stream, &archptr->c[2]) != 3) ||
+  if ((intLoad (stream, &archptr->c[0]) != 1) ||
+      (intLoad (stream, &archptr->c[1]) != 1) ||
+      (intLoad (stream, &archptr->c[2]) != 1) ||
       (archptr->c[0] < 1) || (archptr->c[1] < 1) || (archptr->c[2] < 1)) {
     errorPrint ("archMesh3ArchLoad: bad input");
     return     (1);
@@ -562,12 +564,12 @@ const ArchMesh3 * const       archptr,
 ArchMesh3Dom * restrict const domptr,
 FILE * restrict const         stream)
 {
-  if (intLoad (stream, &domptr->c[0][0]) +
-      intLoad (stream, &domptr->c[1][0]) +
-      intLoad (stream, &domptr->c[2][0]) +
-      intLoad (stream, &domptr->c[0][1]) +
-      intLoad (stream, &domptr->c[1][1]) +
-      intLoad (stream, &domptr->c[2][1]) != 6) {
+  if ((intLoad (stream, &domptr->c[0][0]) != 1) ||
+      (intLoad (stream, &domptr->c[1][0]) != 1) ||
+      (intLoad (stream, &domptr->c[2][0]) != 1) ||
+      (intLoad (stream, &domptr->c[0][1]) != 1) ||
+      (intLoad (stream, &domptr->c[1][1]) != 1) ||
+      (intLoad (stream, &domptr->c[2][1]) != 1)) {
     errorPrint ("archMesh3DomLoad: bad input");
     return     (1);
   }

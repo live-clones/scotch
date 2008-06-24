@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                method tables.                          **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 16 feb 2006     **/
-/**                                 to     01 aug 2007     **/
+/**                                 to     01 mar 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -278,8 +278,8 @@ const Strat * restrict const  strat)              /*+ Separation strategy       
       if (vdgraphSeparateSt (grafptr, strat->data.select.strat[1]) != 0) /* If second strategy didn't work */
         vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition as its result             */
 
-      if ( (savetab[0].fronglbnbr <  grafptr->fronglbnbr) || /* If first strategy is better */
-          ((savetab[0].fronglbnbr == grafptr->fronglbnbr) &&
+      if ( (savetab[0].fronglbnbr <  grafptr->compglbsize[2]) || /* If first strategy is better */
+          ((savetab[0].fronglbnbr == grafptr->compglbsize[2]) &&
            (abs (savetab[0].compglbloaddlt) < abs (grafptr->compglbloaddlt))))
         vdgraphStoreUpdt (grafptr, &savetab[0]);  /* Restore its result */
 

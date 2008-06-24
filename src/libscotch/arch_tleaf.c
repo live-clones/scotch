@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,6 +60,8 @@
 /**                                 to     07 jun 2001     **/
 /**                # Version 4.0  : from : 10 dec 2003     **/
 /**                                 to     10 mar 2005     **/
+/**                # Version 5.0  : from : 28 feb 2008     **/
+/**                                 to     28 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,9 +102,9 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((intLoad (stream, &archptr->leafdep) +
-       intLoad (stream, &archptr->clusdep) +
-       intLoad (stream, &archptr->linkval) != 3) ||
+  if ((intLoad (stream, &archptr->leafdep) != 1) ||
+      (intLoad (stream, &archptr->clusdep) != 1) ||
+      (intLoad (stream, &archptr->linkval) != 1) ||
       (archptr->leafdep < 1)                     ||
       (archptr->clusdep < 0)                     ||
       (archptr->clusdep > archptr->leafdep)      ||

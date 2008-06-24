@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 23 jun 2007     **/
-/**                                 to     24 jun 2007     **/
+/**                                 to     03 apr 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -217,7 +217,7 @@ double *                    edlodltptr)
       Gnum                edlolocmax;
       Gnum                edlolocsum;
 
-      edlolocmin = INT_MAX;
+      edlolocmin = GNUMMAX;
       edlolocmax = 0;
       edlolocsum = 0;
 

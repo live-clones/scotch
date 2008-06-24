@@ -115,11 +115,11 @@ const GraphFlag             flagval)              /* Graph loading flags        
     return     (1);
   }
 
-  if ((intLoad (stream, &grafptr->vertnbr) +      /* Read rest of header */
-       intLoad (stream, &grafptr->edgenbr) +
-       intLoad (stream, &baseadj)          +
-       intLoad (stream, &propval) != 4) ||
-      (propval < 0)                     ||
+  if ((intLoad (stream, &grafptr->vertnbr) != 1) || /* Read rest of header */
+      (intLoad (stream, &grafptr->edgenbr) != 1) ||
+      (intLoad (stream, &baseadj)          != 1) ||
+      (intLoad (stream, &propval)          != 1) ||
+      (propval < 0)                              ||
       (propval > 111)) {
     errorPrint ("graphLoad: bad input (2)");
     return     (1);

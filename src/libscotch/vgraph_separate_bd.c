@@ -36,10 +36,10 @@
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Cedric CHEVALIER                        **/
 /**                                                        **/
-/**   FUNCTION   : This module construct a band graph      **/
-/**                around the separator in order to        **/
-/**                decrease problem size during            **/
-/**                uncoarsening refinement.                **/
+/**   FUNCTION   : This module builds a band graph around  **/
+/**                the frontier in order to decrease       **/
+/**                problem size for the strategy to be     **/
+/**                applied.                                **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 18 oct 2004     **/
 /**                                 to   : 12 sep 2007     **/

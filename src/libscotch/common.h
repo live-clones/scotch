@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 1.0  : from : 06 jun 2002     **/
 /**                                 to   : 06 jun 2002     **/
 /**                # Version 2.0  : from : 13 jun 2005     **/
-/**                                 to   : 07 jun 2007     **/
+/**                                 to   : 12 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,7 +63,6 @@
 #define X_C_RESTRICT
 
 #if (defined X_ARCHpower_ibm_aix)
-#define X_INCLUDE_ESSL
 #undef  X_C_RESTRICT
 #endif /* (defined X_ARCHpower_ibm_aix) */
 
@@ -98,20 +97,18 @@
 #include            <float.h>
 #include            <sys/types.h>
 #include            <sys/time.h>
+#ifdef COMMON_TIMING_OLD
 #include            <sys/resource.h>
+#endif /* COMMON_TIMING_OLD */
 #include            <unistd.h>
 
 #ifdef SCOTCH_PTSCOTCH
 #include            <mpi.h>
 #endif /* SCOTCH_PTSCOTCH */
 
-#ifdef SCOTCH_PTHREAD
+#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
 #include            <pthread.h>
-#endif /* SCOTCH_PTHREAD */
-
-#ifdef X_INCLUDE_ESSL
-#include            <essl.h>
-#endif /* X_INCLUDE_ESSL */
+#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
 
 /*
 **  Working definitions.
@@ -135,59 +132,44 @@
 **  Handling of generic types.
 */
 
-#ifdef DOUBLE                                     /*+ If double data type wanted      +*/
-#ifndef FLOAT                                     /*+ If type not overriden           +*/
-#define FLOAT double                              /*+ Generic floating-point type     +*/
-#define FLOAT_MAX MAXDOUBLE
-#define BLAS_DOUBLE                               /*+ Sets double BLAS calls          +*/
-#define COMM_FLOAT MPI_DOUBLE                     /*+ Generic MPI floating-point type +*/
-#endif /* FLOAT */
-#else /* DOUBLE */
-#ifndef FLOAT                                     /*+ If type not overriden           +*/
-#define FLOAT float                               /*+ Generic floating-point type     +*/
-#define FLOAT_MAX MAXFLOAT
-#define BLAS_FLOAT                                /*+ Sets float BLAS calls           +*/
-#define COMM_FLOAT MPI_FLOAT                      /*+ Generic MPI floating-point type +*/
-#endif /* FLOAT */
-#endif /* DOUBLE */
-
-#ifndef INT                                       /* If type not overriden        */
-#ifdef LONG                                       /* If long ints not wanted      */
-#define INT long                                  /* Generic integer type to long */
+#ifndef INT                                       /* If type not externally overriden */
+#ifdef INTSIZE32
+#define INT                         int32_t
+#define UINT                        u_int32_t
+#define COMM_INT                    MPI_INTEGER4
+#else /* INTSIZE32 */
+#ifdef INTSIZE64
+#define INT                         int64_t
+#define UINT                        u_int64_t
+#define COMM_INT                    MPI_INTEGER8
+#else /* INTSIZE64 */
+#ifdef LONG                                       /* Better not use it */
+#define INT                         long          /* Long integer type */
+#define UINT                        unsigned long
+#define COMM_INT                    MPI_LONG
 #else /* LONG */
-#define INT int                                   /* Generic integer type to int */
-#endif /* LONG */
-#endif /* INT */
-#define INT_TYPE_VAL_int            1
-#define INT_TYPE_VAL_long           2
-#define INT_TYPE_EXPAND(t)          (INT_TYPE_EXPAND_TWO(t))
-#define INT_TYPE_EXPAND_TWO(t)      (INT_TYPE_VAL_##t)
-#define INT_TYPE                    (INT_TYPE_EXPAND (INT))
-#ifndef COMM_INT
-#if (INT_TYPE == INT_TYPE_VAL_long)
-#define COMM_INT MPI_LONG                         /* Generic MPI integer type */
-#ifndef INT_MAX
-#define INT_MAX MAXLONG                           /* Hmm, it is an existing macro */
-#endif /* INT_MAX */
-#else /* (INT_TYPE == INT_TYPE_VAL_long) */
-#define COMM_INT MPI_INT                          /*+ Generic MPI integer type +*/
-#ifndef INT_MAX
-#define INT_MAX MAXINT
-#endif /* INT_MAX */
-#endif /* (INT_TYPE == INT_TYPE_VAL_long) */
-#endif /* COMM_INT */
-#ifndef INT_BITS
-#define INT_BITS (sizeof (INT) * 8)
-#endif /* INT_BITS */
+#define INT                         int           /* Default integer type */
+#define UINT                        unsigned int
+#define COMM_INT                    MPI_INT       /* Generic MPI integer type */
+#endif /* LONG      */
+#endif /* INTSIZE64 */
+#endif /* INTSIZE32 */
+#endif /* INT       */
+
+#ifndef INTSIZEBITS
+#define INTSIZEBITS                 (sizeof (INT) << 3)
+#endif /* INTSIZEBITS */
+
+#define INTVALMAX                   ((INT) (((UINT) 1 << (INTSIZEBITS - 1)) - 1))
 
 #define byte unsigned char                        /* Byte type */
 #ifndef BYTE
-#define BYTE byte
+#define BYTE                        byte
 #endif /* BYTE */
 #ifndef COMM_BYTE
-#define COMM_BYTE MPI_BYTE
+#define COMM_BYTE                   MPI_BYTE
 #endif /* COMM_BYTE */
-#define COMM_PART COMM_BYTE
+#define COMM_PART                   COMM_BYTE
 
 /*
 **  Handling of timers.
@@ -269,6 +251,13 @@ void *                      memOffset           (void *, ...);
 
 void                        usagePrint          (FILE * const, const char (* []));
 
+int                         fileBlockOpen       (File * const, const int);
+int                         fileBlockOpenDist   (File * const, const int, const int, const int, const int);
+void                        fileBlockClose      (File * const, const int);
+FILE *                      fileCompress        (FILE * const, const int);
+int                         fileCompressType    (const char * const);
+FILE *                      fileUncompress      (FILE * const, const int);
+int                         fileUncompressType  (const char * const);
 int                         fileNameDistExpand  (char ** const, const int, const int, const int);
 
 void                        errorProg           (const char * const);
@@ -301,11 +290,12 @@ double                      clockGet            (void);
 #define clockStart(clk)             ((clk)->time[0]  = clockGet ())
 #define clockStop(clk)              ((clk)->time[1] += (clockGet () - (clk)->time[0]))
 #define clockVal(clk)               ((clk)->time[1])
-#ifdef MPI_INT
-#define clockGet()                  (MPI_Wtime ())
-#endif /* MPI_INT */
 
-#define intRandVal(ival)            ((INT) (((unsigned INT) random ()) % ((unsigned INT) (ival))))
+#ifdef COMMON_RANDOM_RAND
+#define intRandVal(ival)            ((INT) (((UINT) rand ()) % ((UINT) (ival))))
+#else /* COMMON_RANDOM_RAND */
+#define intRandVal(ival)            ((INT) (((UINT) random ()) % ((UINT) (ival))))
+#endif /* COMMON_RANDOM_RAND */
 
 #define DATASIZE(n,p,i)             ((INT) (((n) + ((p) - 1 - (i))) / (p)))
 

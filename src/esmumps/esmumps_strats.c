@@ -43,6 +43,8 @@
 /**                                 to     08 dec 2003     **/
 /**                # Version 1.1  : from : 21 jun 2007     **/
 /**                                 to     21 jun 2007     **/
+/**                # Version 5.0  : from : 08 feb 2008     **/
+/**                                 to     08 feb 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -115,7 +117,7 @@ char * const                straptr)
     fprintf (stream, "- Separators are not split and are ordered in natural order\n");
   }
 
-  sprintf (straptr, "c{rat=0.7,cpr=n{sep=/((levl<%ld)|(vert>%ld))?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}};,ole=%c{cmin=%ld,cmax=%ld,frat=%lf},ose=s},unc=n{sep=/(levl<%ld)?(m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}})|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,strat=f{bal=0.2}}};,ole=%c{cmin=%ld,cmax=%ld,frat=%lf},ose=s}}",
+  sprintf (straptr, "c{rat=0.7,cpr=n{sep=/((levl<%ld)|(vert>%ld))?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}};,ole=%c{cmin=%ld,cmax=%ld,frat=%lf},ose=s},unc=n{sep=/(levl<%ld)?(m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}})|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}};,ole=%c{cmin=%ld,cmax=%ld,frat=%lf},ose=s}}",
            (long) levlval,
            (long) leafsiz,
            (char) hamxval,

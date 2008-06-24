@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                a distributed Vdgraph.                  **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 29 apr 2006     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to     01 mar 2008     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -60,8 +60,6 @@
 */
 
 #define VDGRAPH
-#define VDGRAPH_H
-#define VDGRAPH_GATHER_ALL_C
 
 #include "module.h"
 #include "common.h"
@@ -87,7 +85,9 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
   int * restrict     fronvrttab;                   /* Displacement array for gather operations */
   int                fronlocnbr;                   /* Also int to enforce MPI standard         */
   int                cheklocval;
+#ifdef SCOTCH_DEBUG_VDGRAPH1
   int                chekglbval;
+#endif /* SCOTCH_DEBUG_VDGRAPH1 */
   int                procnum;
 
   cheklocval = 0;
@@ -177,17 +177,17 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
     return     (1);
   }
 
-  fronlocnbr = (int) dgrfptr->fronlocnbr;
+  fronlocnbr = (int) dgrfptr->complocsize[2];
   if (MPI_Allgather (&fronlocnbr, 1, MPI_INT,     /* Compute how separator vertices are distributed */
                      froncnttab, 1, MPI_INT, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (5)");
     return     (1);
   }
-  fronvrttab[0] = 0;                             /* Offset 0 for first process                                                     */
+  fronvrttab[0] = 0;                              /* Offset 0 for first process                                                     */
   for (procnum = 1; procnum < dgrfptr->s.procglbnbr; procnum ++) /* Adjust index sub-arrays for all processors except the first one */
     fronvrttab[procnum] = fronvrttab[procnum - 1] + froncnttab[procnum - 1];
 
-  if (MPI_Allgatherv (dgrfptr->fronloctab, (int) dgrfptr->fronlocnbr, GNUM_MPI, /* Gather separator vertices */
+  if (MPI_Allgatherv (dgrfptr->fronloctab, fronlocnbr, GNUM_MPI, /* Gather separator vertices */
                       cgrfptr->frontab, froncnttab, fronvrttab, GNUM_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (6)");
     return     (1);
@@ -205,8 +205,8 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
   memFree (froncnttab);                           /* Free group leader */
 
   for (procnum = 0; procnum < dgrfptr->s.proclocnum; procnum ++) /* Desynchronize random generators across processes */
-    intRandVal (2);
-  intPerm (cgrfptr->frontab, dgrfptr->fronglbnbr); /* Compute permutation of frontier array to have different solutions on every process */
+    cheklocval = intRandVal (2);
+  intPerm (cgrfptr->frontab, dgrfptr->compglbsize[2]); /* Compute permutation of frontier array to have different solutions on every process */
 
   cgrfptr->compload[0] = dgrfptr->compglbload[0]; /* Update other fields */
   cgrfptr->compload[1] = dgrfptr->compglbload[1];
@@ -214,7 +214,7 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
   cgrfptr->comploaddlt = dgrfptr->compglbloaddlt;
   cgrfptr->compsize[0] = dgrfptr->compglbsize[0];
   cgrfptr->compsize[1] = dgrfptr->compglbsize[1];
-  cgrfptr->fronnbr     = dgrfptr->fronglbnbr;
+  cgrfptr->fronnbr     = dgrfptr->compglbsize[2];
 
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   if (vgraphCheck (cgrfptr) != 0) {
