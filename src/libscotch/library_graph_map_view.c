@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : library_graph_map-view.c                **/
+/**   NAME       : library_graph_map_view.c                **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
