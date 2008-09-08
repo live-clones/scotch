@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                complete graph target architecture.     **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 dec 2007     **/
-/**                                 to     15 dec 2007     **/
+/**                                 to     27 aug 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -331,7 +331,7 @@ archCmpltwDomNum (
 const ArchCmpltw * const    archptr,
 const ArchCmpltwDom * const domptr)
 {
-  return (domptr->vertmin);                       /* Return vertex number */
+  return (archptr->velotab[domptr->vertmin].vertnum); /* Return vertex number */
 }
 
 /* This function returns the terminal domain associated
@@ -537,3 +537,22 @@ ArchCmpltwDom * restrict const  dom1ptr)
 
   return (0);
 }
+
+/* This function creates the MPI_Datatype for
+** weighted complete graph domains.
+** It returns:
+** - 0  : if type could be created.
+** - 1  : on error.
+*/
+
+#ifdef SCOTCH_PTSCOTCH
+int
+archCmpltwDomMpiType (
+const ArchCmpltw * const      archptr,
+MPI_Datatype * const          typeptr)
+{
+  MPI_Type_contiguous (3, ANUM_MPI, typeptr);
+
+  return (0);
+}
+#endif /* SCOTCH_PTSCOTCH */
