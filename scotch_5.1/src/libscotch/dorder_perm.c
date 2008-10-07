@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 13 oct 2007     **/
 /**                                 to     21 oct 2007     **/
+/**                # Version 5.1  : from : 26 sep 2008     **/
+/**                                 to     26 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -213,7 +215,7 @@ Gnum * restrict const         permloctab)
     vnodsndnbr += sendcnttab[procnum];
   }
 
-  if (MPI_Alltoallv (sortsndtab, sendcnttab, senddsptab, MPI_INT, sortrcvtab, recvcnttab, recvdsptab, MPI_INT, ordeptr->proccomm) != MPI_SUCCESS) {
+  if (MPI_Alltoallv (sortsndtab, sendcnttab, senddsptab, GNUM_MPI, sortrcvtab, recvcnttab, recvdsptab, GNUM_MPI, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderPerm: communication error (3)");
     return     (1);
   }

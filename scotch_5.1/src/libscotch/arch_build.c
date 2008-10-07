@@ -48,6 +48,8 @@
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.0  : from : 10 sep 2007     **/
 /**                                 to     03 apr 2008     **/
+/**                # Version 5.1  : from : 28 sep 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -151,17 +153,18 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
                       &jobtab,     (size_t) (termdomnbr * sizeof (ArchBuildJob)),
                       &actfrontab, (size_t) (termdomnbr * sizeof (Gnum)),
                       &actparttax, (size_t) (termdomnbr * sizeof (GraphPart)), NULL) == NULL) ||
-      (memAllocGroup ((void **) (void *)
-                      &mapdat.domntab, (size_t) (termdomnbr * sizeof (ArchDom)),
-                      &mapdat.parttax, (size_t) (termdomnbr * sizeof (ArchDomNum)), NULL) == NULL)) {
+      ((mapdat.parttax = memAlloc (termdomnbr * sizeof (ArchDomNum))) == NULL) ||
+      ((mapdat.domntab = memAlloc (termdomnbr * sizeof (ArchDom)))    == NULL)) {
     errorPrint ("archBuild: out of memory (1)");
-    if (jobtab != NULL)
+    if (jobtab != NULL) {
       memFree (jobtab);
+      if (mapdat.parttax == NULL)
+        memFree (mapdat.parttax);
+    }
     return (1);
   }
-  actparttax -= tgtgrafptr->baseval;
   memSet (mapdat.parttax, 0, termdomnbr * sizeof (ArchDomNum));
-  mapdat.flagval  = MAPNONE;                      /* mapdat.domntab is the group leader */
+  actparttax     -= tgtgrafptr->baseval;
   mapdat.baseval  = tgtgrafptr->baseval;
   mapdat.vertnbr  = termdomnbr;
   mapdat.parttax -= tgtgrafptr->baseval;

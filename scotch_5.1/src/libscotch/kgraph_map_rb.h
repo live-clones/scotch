@@ -59,6 +59,8 @@
 /**                                 to     06 nov 2001     **/
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     05 may 2006     **/
+/**                # Version 5.1  : from : 07 oct 2008     **/
+/**                                 to     07 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,33 +89,6 @@ typedef struct KgraphMapRbParam_ {
   Strat *                   strat;                /*+ Bipartitioning strategy used   +*/
 } KgraphMapRbParam;
 
-/*+ Job pool structures. +*/
-
-typedef struct KgraphMapRbPoolLink_ {
-  struct KgraphMapRbPoolLink_ * prev;             /*+ Pointer to previous link +*/
-  struct KgraphMapRbPoolLink_ * next;             /*+ Pointer to next link     +*/
-} KgraphMapRbPoolLink;
-
-typedef struct KgraphMapRbPool_ {
-  KgraphMapRbPoolLink       poollink;             /*+ List of jobs in pool; TRICK: FIRST +*/
-  KgraphMapRbPolicy         polival;              /*+ Job selection policy               +*/
-} KgraphMapRbPool;
-
-/*+ This structure defines a job to be
-    performed with respect to a partial
-    mapping of a source graph.          +*/
-
-typedef struct KgraphMapRbJob_ {
-  KgraphMapRbPoolLink       poollink;             /*+ Link to job pool ; TRICK : FIRST         +*/
-  KgraphMapRbPool *         poolptr;              /*+ Pointer to last/current job pool         +*/
-  int                       poolflag;             /*+ Flag set if job in pool                  +*/
-  Gnum                      prioval;              /*+ Job priority value by policy             +*/
-  Gnum                      priolvl;              /*+ Priority level computed for this job     +*/
-  ArchDom                   domorg;               /*+ Domain to which the vertices belong      +*/
-  ArchDom                   domsub[2];            /*+ Subdomains of the domain                 +*/
-  Graph                     grafdat;              /*+ Job graph data (may be clone of another) +*/
-} KgraphMapRbJob;
-
 /*
 **  The function prototypes.
 */
@@ -122,24 +97,6 @@ typedef struct KgraphMapRbJob_ {
 #define static
 #endif
 
-static void                 kgraphMapRbPoolInit (KgraphMapRbPool * restrict const, const KgraphMapRbPolicy);
-static void                 kgraphMapRbPoolExit (KgraphMapRbPool * restrict const);
-static void                 kgraphMapRbPoolAdd  (KgraphMapRbPool * const, KgraphMapRbJob * const);
-static void                 kgraphMapRbPoolDel  (KgraphMapRbPool * const, KgraphMapRbJob * const);
-static KgraphMapRbJob *     kgraphMapRbPoolGet  (KgraphMapRbPool * const);
-static void                 kgraphMapRbPoolNew  (KgraphMapRbPool * const, KgraphMapRbJob * const);
-static void                 kgraphMapRbPoolUpdt (KgraphMapRbPool * const, const Graph * restrict const, const Mapping * const, KgraphMapRbJob * const, KgraphMapRbJob * const, KgraphMapRbJob * const);
-static void                 kgraphMapRbPoolRemv (KgraphMapRbPool * const, const Graph * restrict const, Mapping * const, KgraphMapRbJob * const, GraphPart * const, GraphPart, KgraphMapRbJob * const);
-
 int                         kgraphMapRb         (Kgraph * const, const KgraphMapRbParam * const);
 
-static void                 kgraphMapRbExit     (const Anum, KgraphMapRbJob * const, KgraphMapRbPool ** const, Mapping ** const, Kgraph * const);
-static int                  kgraphMapRbResize   (Anum * const, KgraphMapRbJob ** const, KgraphMapRbPool ** const, Mapping * restrict * const);
-
 #undef static
-
-/*
-**  The macro definitions.
-*/
-
-#define kgraphMapRbPoolEmpty(poolptr) ((poolptr)->poollink.next == &kgraphmaprbpooldummy)

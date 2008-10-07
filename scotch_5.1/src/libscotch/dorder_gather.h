@@ -63,7 +63,10 @@ typedef struct DorderGatherLeaf_ {
   Gnum                      vnodlocnbr;           /*+ Number of node vertices in fragment   +*/
 } DorderGatherLeaf;
 
-/*+ This structure holds the separator tree structure. +*/
+/*+ This structure holds the separator tree structure.
+    Because arrays of this structure is to be sent as
+    a single contiguous array, all its fields must be
+    of the same type.                                  +*/
 
 typedef struct DorderGatherNode_ {
   Gnum                      fathnum;              /*+ Global number of father node              +*/

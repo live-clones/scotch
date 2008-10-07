@@ -196,7 +196,7 @@ dgraphMatchConvertInit (const Dgraph * restrict const grafptr,
   }
   convert->gst2glbtab -= grafptr->vertlocnnd;
 
-  for (procsidnum = 0, vertlocnum = grafptr->baseval;    /* Only browse frontier vertices */
+  for (procsidnum = 0, vertlocnum = grafptr->baseval; /* Only browse frontier vertices */
        procsidnum < grafptr->procsidnbr; ) {
 
     while ((procsidnum < grafptr->procsidnbr) && (grafptr->procsidtab[procsidnum] < 0)) {
@@ -206,7 +206,7 @@ dgraphMatchConvertInit (const Dgraph * restrict const grafptr,
     if (procsidnum >= grafptr->procsidnbr)
       break;
     for (edgenum = grafptr->vertloctax[vertlocnum]; edgenum < grafptr->vendloctax[vertlocnum] ; ++ edgenum) {
-      if (!dgraphVertexLocal (grafptr, grafptr->edgeloctax[edgenum])) {   /* Vertex is non-local */
+      if (! dgraphVertexLocal (grafptr, grafptr->edgeloctax[edgenum])) { /* Vertex is non-local */
 	convert->gst2glbtab[grafptr->edgegsttax[edgenum]] = grafptr->edgeloctax[edgenum];
       }
     }

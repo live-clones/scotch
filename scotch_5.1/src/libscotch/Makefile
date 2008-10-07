@@ -1169,7 +1169,35 @@ kgraph_map_rb$(OBJ)		:	kgraph_map_rb.c				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
 					kgraph.h				\
-					kgraph_map_rb.h
+					kgraph_map_rb.h				\
+					kgraph_map_rb_map.h			\
+					kgraph_map_rb_part.h
+
+kgraph_map_rb_map$(OBJ)		:	kgraph_map_rb_map.c			\
+					module.h				\
+					common.h				\
+					parser.h				\
+					graph.h					\
+					arch.h					\
+					mapping.h				\
+					bgraph.h				\
+					bgraph_bipart_st.h			\
+					kgraph.h				\
+					kgraph_map_rb.h				\
+					kgraph_map_rb_map.h
+
+kgraph_map_rb_part$(OBJ)	:	kgraph_map_rb_part.c			\
+					module.h				\
+					common.h				\
+					parser.h				\
+					graph.h					\
+					arch.h					\
+					mapping.h				\
+					bgraph.h				\
+					bgraph_bipart_st.h			\
+					kgraph.h				\
+					kgraph_map_rb.h				\
+					kgraph_map_rb_part.h
 
 kgraph_map_st$(OBJ)		:	kgraph_map_st.c				\
 					module.h				\
@@ -2305,6 +2333,8 @@ libscotch$(LIB)			:	arch$(OBJ)				\
 					hmesh_order_st$(OBJ)			\
 					kgraph$(OBJ)				\
 					kgraph_map_rb$(OBJ)			\
+					kgraph_map_rb_map$(OBJ)			\
+					kgraph_map_rb_part$(OBJ)		\
 					kgraph_map_st$(OBJ)			\
 					library_arch$(OBJ)			\
 					library_arch_f$(OBJ)			\

@@ -45,6 +45,8 @@
 /**                                 to     01 nov 2001     **/
 /**                # Version 5.0  : from : 06 mar 2008     **/
 /**                                 to     24 may 2008     **/
+/**                # Version 5.1  : from : 27 sep 2008     **/
+/**                                 to     27 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,7 +121,7 @@ const char * const          errstr,               /*+ printf-like variable argum
       (MPI_Comm_rank (MPI_COMM_WORLD, &proclocnum) == MPI_SUCCESS))
     fprintf (stderr, "(%d): ", proclocnum);
 #else /* SCOTCH_PTSCOTCH */
-  if (_SCOTCHerrorProgName[0] == '\0')
+  if (_SCOTCHerrorProgName[0] != '\0')
     fprintf  (stderr, ": ");
 #endif /* SCOTCH_PTSCOTCH */
   fprintf  (stderr, "ERROR: ");
@@ -156,7 +158,7 @@ const char * const          errstr,               /*+ printf-like variable argum
       (MPI_Comm_rank (MPI_COMM_WORLD, &proclocnum) == MPI_SUCCESS))
     fprintf (stderr, "(%d): ", proclocnum);
 #else /* SCOTCH_PTSCOTCH */
-  if (_SCOTCHerrorProgName[0] = '\0')
+  if (_SCOTCHerrorProgName[0] != '\0')
     fprintf  (stderr, ": ");
 #endif /* SCOTCH_PTSCOTCH */
   fprintf  (stderr, "WARNING: ");

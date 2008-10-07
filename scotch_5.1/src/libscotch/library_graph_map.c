@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     13 nov 2005     **/
 /**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     24 jun 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -123,8 +123,9 @@ SCOTCH_Num * const          parttab)              /*+ Mapping array             
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   srcmappptr = (LibMapping *) mappptr;
-  return (mapInit (&srcmappptr->m, ((Graph *) grafptr)->baseval, ((Graph *) grafptr)->vertnbr, (Arch *) archptr, (Gnum *) parttab));
-  srcmappptr->parttab = parttab;
+  srcmappptr->parttax = (parttab != NULL) ? (parttab - ((Graph *) grafptr)->baseval) : parttab;
+
+  return (mapInit (&srcmappptr->m, ((Graph *) grafptr)->baseval, ((Graph *) grafptr)->vertnbr, (Arch *) archptr));
 }
 
 /*+ This routine frees an API mapping.
@@ -153,7 +154,23 @@ const SCOTCH_Graph * const    grafptr,            /*+ Graph to order  +*/
 const SCOTCH_Mapping * const  mappptr,            /*+ Mapping to save +*/
 FILE * const                  stream)             /*+ Output stream   +*/
 {
-  return (mapLoad (&((LibMapping *) mappptr)->m, ((Graph *) grafptr)->vlbltax, stream));
+  LibMapping * restrict lmapptr;
+  int                   o;
+
+  lmapptr = (LibMapping *) mappptr;
+  if ((o = mapLoad (&lmapptr->m, ((Graph *) grafptr)->vlbltax, stream)) != 0)
+    return (o);
+
+  if (lmapptr->parttax != NULL) {                 /* Propagate mapping data to user partition array */
+    Gnum                vertnum;
+    Gnum                vertnnd;
+
+    for (vertnum = lmapptr->m.baseval, vertnnd = vertnum + lmapptr->m.vertnbr;
+         vertnum < vertnnd; vertnum ++)
+      lmapptr->parttax[vertnum] = archDomNum (&lmapptr->m.archdat, &lmapptr->m.domntab[lmapptr->m.parttax[vertnum]]);
+  }
+
+  return (0);
 }
 
 /*+ This routine saves the contents of
@@ -186,10 +203,12 @@ const SCOTCH_Graph * const  grafptr,              /*+ Graph to order     +*/
 SCOTCH_Mapping * const      mappptr,              /*+ Mapping to compute +*/
 const SCOTCH_Strat * const  stratptr)             /*+ Mapping strategy   +*/
 {
-  Kgraph              mapgrafdat;                 /* Effective mapping graph     */
-  const Strat *       mapstratptr;                /* Pointer to mapping strategy */
-  int                 o;
+  Kgraph                mapgrafdat;               /* Effective mapping graph     */
+  const Strat *         mapstratptr;              /* Pointer to mapping strategy */
+  LibMapping * restrict lmapptr;
+  int                   o;
 
+  lmapptr = (LibMapping *) mappptr;
   if (*((Strat **) stratptr) == NULL)             /* Set default mapping strategy if necessary */
     *((Strat **) stratptr) = stratInit (&kgraphmapststratab, "b{job=t,map=t,poli=S,sep=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}");
   mapstratptr = *((Strat **) stratptr);
@@ -198,10 +217,19 @@ const SCOTCH_Strat * const  stratptr)             /*+ Mapping strategy   +*/
     return     (1);
   }
 
-  if (kgraphInit (&mapgrafdat, (Graph *) grafptr, &((LibMapping *) mappptr)->m) != 0)
+  if (kgraphInit (&mapgrafdat, (Graph *) grafptr, &lmapptr->m) != 0)
     return (1);
   o = kgraphMapSt (&mapgrafdat, mapstratptr);     /* Perform mapping */
-  kgraphExit (&mapgrafdat, &((LibMapping *) mappptr)->m);
+  kgraphExit (&mapgrafdat, &lmapptr->m);
+
+  if (lmapptr->parttax != NULL) {                 /* Propagate mapping data to user partition array */
+    Gnum                vertnum;
+    Gnum                vertnnd;
+
+    for (vertnum = lmapptr->m.baseval, vertnnd = vertnum + lmapptr->m.vertnbr;
+         vertnum < vertnnd; vertnum ++)
+      lmapptr->parttax[vertnum] = archDomNum (&lmapptr->m.archdat, &lmapptr->m.domntab[lmapptr->m.parttax[vertnum]]);
+  }
 
   return (o);
 }

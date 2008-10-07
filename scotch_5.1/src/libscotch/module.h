@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 24 feb 2007     **/
 /**                                 to     24 jul 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     22 jul 2008     **/
+/**                                 to     27 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,13 +122,22 @@
 #if ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME))
 #define clockGet                    _SCOTCHclockGet
 
-#define fileNameDistExpand          _SCOTCHfileNameDistExpand 
+#define commonStubDummy             _SCOTCHcommonStubDummy
 
 #define usagePrint                  _SCOTCHusagePrint
 
 #define errorPrint                  SCOTCH_errorPrint
 #define errorPrintW                 SCOTCH_errorPrintW
 #define errorProg                   SCOTCH_errorProg
+
+#define fileBlockClose              _SCOTCHfileBlockClose
+#define fileBlockOpen               _SCOTCHfileBlockOpen
+#define fileBlockOpenDist           _SCOTCHfileBlockOpenDist
+#define fileCompress                _SCOTCHfileCompress
+#define fileCompressType            _SCOTCHfileCompressType
+#define fileUncompress              _SCOTCHfileUncompress
+#define fileUncompressType          _SCOTCHfileUncompressType
+#define fileNameDistExpand          _SCOTCHfileNameDistExpand 
 
 #define intLoad                     _SCOTCHintLoad
 #define intSave                     _SCOTCHintSave
@@ -421,9 +430,11 @@
 #define graphInducePart             _SCOTCHgraphInducePart
 #define graphGeomLoadChac           _SCOTCHgraphGeomLoadChac
 #define graphGeomLoadHabo           _SCOTCHgraphGeomLoadHabo
+#define graphGeomLoadMmkt           _SCOTCHgraphGeomLoadMmkt
 #define graphGeomLoadScot           _SCOTCHgraphGeomLoadScot
 #define graphGeomSaveChac           _SCOTCHgraphGeomSaveChac
 #define graphGeomSaveScot           _SCOTCHgraphGeomSaveScot
+#define graphGeomSaveMmkt           _SCOTCHgraphGeomSaveMmkt
 #define graphPtscotch               _SCOTCHgraphPtscotch
 
 #define hallOrderHdHalmd            _SCOTCHhallOrderHdHalmd

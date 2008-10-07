@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,16 +31,16 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : library_mapping.h                       **/
+/**   NAME       : kgraph_map_rb_part.h                    **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module contains the data declara-  **/
-/**                tions for the library ordering          **/
-/**                structure.                              **/
+/**   FUNCTION   : These lines are the data declaration    **/
+/**                for the Dual Recursive Bipartitioning   **/
+/**                mapping algorithm.                      **/
 /**                                                        **/
-/**   DATES      : # Version 4.0  : from : 28 jun 2004     **/
-/**                                 to     28 jun 2004     **/
+/**   DATES      : # Version 5.2  : from : 22 sep 2008     **/
+/**                                 to     22 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -48,9 +48,22 @@
 **  The type and structure definitions.
 */
 
-/*+ Ordering. +*/
+typedef struct KgraphMapRbPartData_ {
+  const Graph * restrict            topgrafptr;   /*+ Pointer to top-level graph          +*/
+  Gnum * restrict                   topfrontab;   /*+ Pointer to top-level frontier array +*/
+  Gnum                              topfronnbr;   /*+ Current number of frontier vertices +*/
+  Mapping * restrict                mappptr;
+  const KgraphMapRbParam * restrict paraptr;
+} KgraphMapRbPartData;
 
-typedef struct LibMapping_ {
-  Mapping                   m;                    /*+ Mapping data    +*/
-  Gnum * restrict           parttax;              /*+ Partition array +*/
-} LibMapping;
+/*
+**  The function prototypes.
+*/
+
+#ifndef KGRAPH_MAP_RB_PART
+#define static
+#endif
+
+int                         kgraphMapRbPart     (Kgraph * const, const KgraphMapRbParam * const);
+
+#undef static

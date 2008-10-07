@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 26 jul 2008     **/
-/**                                 to     26 aug 2008     **/
+/**                                 to     07 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,8 +85,8 @@ FILE * const                  stream)
   Dgraph * restrict             grafptr;
   const LibDmapping * restrict  mappptr;
   ArchDom                       domnfrst;         /* Largest domain in architecture          */
-  int * restrict                nmskloctab;       /* Local neighbor bitfield                 */
-  int * restrict                nmskglbtab;       /* Local neighbor bitfield                 */
+  unsigned int * restrict       nmskloctab;       /* Local neighbor bitfield                 */
+  unsigned int * restrict       nmskglbtab;       /* Local neighbor bitfield                 */
   int                           nmskidxnbr;       /* Size of bitfield; int since sent by MPI */
   Gnum * restrict               tgloloctab;       /* Local array of terminal domain loads    */
   Gnum * restrict               tgloglbtab;       /* Global array of terminal domain loads   */
@@ -141,8 +141,8 @@ FILE * const                  stream)
 
   cheklocval = 0;
   if (memAllocGroup ((void **) (void *)
-                     &nmskloctab, (size_t) (nmskidxnbr          * sizeof (int)),
-                     &nmskglbtab, (size_t) (nmskidxnbr          * sizeof (int)),
+                     &nmskloctab, (size_t) (nmskidxnbr          * sizeof (unsigned int)),
+                     &nmskglbtab, (size_t) (nmskidxnbr          * sizeof (unsigned int)),
                      &tgloloctab, (size_t) ((tgtnbr + 1)        * sizeof (Gnum)), /* TRICK: "+1" to have a "-1" cell for unmapped vertices */
                      &tgloglbtab, (size_t) (tgtnbr              * sizeof (Gnum)),
                      &termgsttax, (size_t) (grafptr->vertgstnbr * sizeof (Gnum)), NULL) == NULL) {
@@ -286,7 +286,7 @@ FILE * const                  stream)
     }
 
     for (nmskidxnum = 0, ngbnbr = 0; nmskidxnum < nmskidxnbr; nmskidxnum ++) {
-      int                 nmskbitval;
+      unsigned int        nmskbitval;
 
       for (nmskbitval = nmskglbtab[nmskidxnum]; nmskbitval != 0; nmskbitval >>= 1)
         ngbnbr += nmskbitval & 1;

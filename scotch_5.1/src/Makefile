@@ -72,11 +72,20 @@ mandir		?= $(datarootdir)/man
 $(bindir)			:
 					-$(MKDIR) $(bindir)
 
+$(datarootdir)			:
+					-$(MKDIR) $(datarootdir)
+
 $(includedir)			:
 					-$(MKDIR) $(includedir)
 
 $(libdir)			:
 					-$(MKDIR) $(libdir)
+
+$(mandir)			:	$(datarootdir)
+					-$(MKDIR) $(mandir)
+
+$(mandir)/man1			:	$(mandir)
+					-$(MKDIR) $(mandir)/man1
 
 scotch				:	required
 					(cd libscotch ;      $(MAKE) VERSION=\"$(VERSION)\" scotch && $(MAKE) install)
@@ -88,7 +97,7 @@ ptscotch			:	required
 					(cd scotch ;         $(MAKE) VERSION=\"$(VERSION)\" ptscotch && $(MAKE) ptinstall)
 					(cd libscotchmetis ; $(MAKE)                        ptscotch && $(MAKE) ptinstall)
 
-install				:	required	$(bindir)	$(includedir)	$(libdir)
+install				:	required	$(bindir)	$(includedir)	$(libdir)	$(mandir)/man1
 					-$(CP) -f ../bin/[agm]*$(EXE) $(bindir)
 					-$(CP) -f ../include/*scotch*.h $(includedir)
 					-$(CP) -f ../lib/*scotc*[^m]$(LIB) $(libdir)

@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 04 feb 2007     **/
 /**                                 to     03 apr 2008     **/
 /**                # Version 5.1  : from : 27 jul 2008     **/
-/**                                 to     30 jul 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -415,6 +415,8 @@ const Anum                  partval)              /*+ Part value +*/
       } while (! graphMapViewQueueEmpty (&queudat)); /* As long as queue is not empty */
     }
   }
+
+  memFree (queudat.qtab);                         /* Free group leader */
 
   return (diamdist);
 }

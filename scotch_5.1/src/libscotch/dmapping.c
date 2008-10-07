@@ -39,7 +39,7 @@
 /**   FUNCTION   : This module handles (partial) mappings. **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 31 mar 2008     **/
-/**                                 to     21 jun 2008     **/
+/**                                 to     27 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -270,7 +270,7 @@ Gnum * restrict const           termloctab)
     vertsndnbr += sendcnttab[procnum];
   }
 
-  if (MPI_Alltoallv (sortsndtab, sendcnttab, senddsptab, MPI_INT, sortrcvtab, recvcnttab, recvdsptab, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
+  if (MPI_Alltoallv (sortsndtab, sendcnttab, senddsptab, GNUM_MPI, sortrcvtab, recvcnttab, recvdsptab, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dmapTerm: communication error (3)");
     return     (1);
   }

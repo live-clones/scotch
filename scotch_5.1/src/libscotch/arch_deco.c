@@ -61,7 +61,7 @@
 /**                # Version 5.0  : from : 10 sep 2007     **/
 /**                                 to     28 feb 2008     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
-/**                                 to     28 feb 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -213,12 +213,12 @@ archDecoArchLoad (
 ArchDeco * restrict const   archptr,
 FILE * restrict const       stream)
 {
-  Anum                        decotype;           /* Type of decomposition                            */
-  Anum                        termdomnbr;         /* Number of terminal domains (ie processors)       */
-  Anum                        termdommax;         /* Maximum domain number given to a terminal domain */
+  INT                         decotype;           /* Type of decomposition                            */
+  INT                         termdomnbr;         /* Number of terminal domains (ie processors)       */
+  INT                         termdommax;         /* Maximum domain number given to a terminal domain */
   ArchDecoTermVert * restrict termverttab;        /* Table of terminal vertex data                    */
   Anum * restrict             termdisttab;        /* Table of terminal-to-terminal distances          */
-  Anum                        i, j;
+  INT                         i, j;
 
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchDeco)    > sizeof (ArchDummy)) ||
@@ -240,71 +240,85 @@ FILE * restrict const       stream)
   }
 
   if (decotype == 0) {                            /* If raw decomposition */
-    if (((termverttab = (ArchDecoTermVert *) memAlloc (termdomnbr * sizeof (ArchDecoTermVert)))                      == NULL) ||
-        ((termdisttab = (Anum *)             memAlloc ((((termdommax * (termdommax - 1)) / 2) + 1) * sizeof (Anum))) == NULL)) {
+    if (memAllocGroup ((void **) (void *)
+                       &termverttab, (size_t) (termdomnbr * sizeof (ArchDecoTermVert)),
+                       &termdisttab, (size_t) ((((termdommax * (termdommax - 1)) / 2) + 1) * sizeof (Anum)), NULL) == NULL) {
       errorPrint ("archDecoArchLoad: out of memory (1)");
-      if (termverttab != NULL)
-        memFree (termverttab);
-      archDecoArchFree (archptr);
-      return           (1);
+      return     (1);
     }
 
     for (i = 0; i < termdomnbr; i ++) {           /* For all declared terminals  */
-      if ((intLoad (stream, &termverttab[i].labl) != 1) || /* Read terminal data */
-	  (intLoad (stream, &termverttab[i].wght) != 1) ||
-	  (intLoad (stream, &termverttab[i].num)  != 1) ||
-          (termverttab[i].num < 1)                      ||
-          (termverttab[i].num > termdommax)) {
+      INT                 termvertlabl;
+      INT                 termvertwght;
+      INT                 termvertnum;
+
+      if ((intLoad (stream, &termvertlabl) != 1) || /* Read terminal data */
+          (intLoad (stream, &termvertwght) != 1) ||
+          (intLoad (stream, &termvertnum)  != 1) ||
+          (termvertnum < 1)                      ||
+          (termvertnum > termdommax)) {
         errorPrint       ("archDecoArchLoad: bad input (2)");
-        memFree          (termdisttab);
-        memFree          (termverttab);
-        archDecoArchFree (archptr);
+        memFree          (termverttab);           /* Free group leader */
         return           (1);
       }
+      termverttab[i].labl = (ArchDomNum) termvertlabl;
+      termverttab[i].wght = (Anum)       termvertwght;
+      termverttab[i].num  = (Anum)       termvertnum;
     }
 
     for (i = 0, j = (termdomnbr * (termdomnbr - 1)) / 2; i < j; i ++) { /* Read terminal distance map */
-      if ((intLoad (stream, &termdisttab[i]) != 1) ||
-          (termdisttab[i] < 1)) {
+      INT                 termdistval;
+
+      if ((intLoad (stream, &termdistval) != 1) ||
+          (termdistval < 1)) {
         errorPrint       ("archDecoArchLoad: bad input (3)");
-        memFree          (termdisttab);
-        memFree          (termverttab);
-        archDecoArchFree (archptr);
+        memFree          (termverttab);           /* Free group leader */
         return           (1);
       }
+      termdisttab[i] = (Anum) termdistval;
     }
 
     archDecoArchBuild (archptr, termdomnbr, termdommax, termverttab, termdisttab);
 
-    memFree (termdisttab);
-    memFree (termverttab);
+    memFree (termverttab);                        /* Free group leader */
   }
-  else {                                          /* If it is a compiled decomposition      */
-    if (((archptr->domverttab = (ArchDecoVert *) memAlloc (termdommax * sizeof (ArchDecoVert)))                      == NULL) ||
-        ((archptr->domdisttab = (Anum *)         memAlloc ((termdommax * (termdommax - 1) / 2 + 1) * sizeof (Anum))) == NULL)) {
+  else {                                          /* If it is a compiled decomposition */
+    if (memAllocGroup ((void **) (void *)
+                       &archptr->domverttab, (size_t) (termdommax * sizeof (ArchDecoVert)),
+                       &archptr->domdisttab, (size_t) ((((termdommax * (termdommax - 1)) / 2) + 1) * sizeof (Anum)), NULL) == NULL) {
       errorPrint       ("archDecoArchLoad: out of memory (2)");
-      archDecoArchFree (archptr);
       return           (1);
     }
-    archptr->domtermnbr = termdomnbr;
-    archptr->domvertnbr = termdommax;
+    archptr->flagval    = ARCHDECOFREE;
+    archptr->domtermnbr = (Anum) termdomnbr;
+    archptr->domvertnbr = (Anum) termdommax;
 
     for (i = 0; i < termdommax; i ++) {           /* Read domain array */
-      if ((intLoad (stream, &archptr->domverttab[i].labl) != 1) ||
-	  (intLoad (stream, &archptr->domverttab[i].size) != 1) ||
-	  (intLoad (stream, &archptr->domverttab[i].wght) != 1)) {
+      INT                 domvertlabl;
+      INT                 domvertsize;
+      INT                 domvertwght;
+
+      if ((intLoad (stream, &domvertlabl) != 1) ||
+	  (intLoad (stream, &domvertsize) != 1) ||
+	  (intLoad (stream, &domvertwght) != 1)) {
         errorPrint       ("archDecoArchLoad: bad input (4)");
         archDecoArchFree (archptr);
         return           (1);
       }
+      archptr->domverttab[i].labl = (ArchDomNum) domvertlabl;
+      archptr->domverttab[i].size = (Anum)       domvertsize;
+      archptr->domverttab[i].wght = (Anum)       domvertwght;
     }
 
     for (i = 0; i < (termdommax * (termdommax - 1)) / 2; i ++) { /* Read distance array */
-      if (intLoad (stream, &archptr->domdisttab[i]) != 1) {
+      INT                 domdistval;
+
+      if (intLoad (stream, &domdistval) != 1) {
         errorPrint       ("archDecoArchLoad: bad input (5)");
         archDecoArchFree (archptr);
         return           (1);
       }
+      archptr->domdisttab[i] = domdistval;
     }
   }
 

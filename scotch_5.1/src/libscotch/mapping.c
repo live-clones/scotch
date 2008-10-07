@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,7 +62,7 @@
 /**                # Version 4.0  : from : 16 jan 2004     **/
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.1  : from : 25 jun 2008     **/
-/**                                 to     25 jun 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,17 +96,16 @@ Mapping * restrict const        mappptr,
 const Gnum                      baseval,
 const Gnum                      vertnbr,
 const Arch * restrict const     archptr,
-const ArchDom * restrict const  domnptr,
-Gnum * restrict const           parttab)
+const ArchDom * restrict const  domnptr)
 {
   Anum                domnmax;                    /* Maximum number of domains       */
-  Gnum * restrict     parttmp;                    /* Temporary pointer to part array */
+  Gnum * restrict     parttab;                    /* Temporary pointer to part array */
 
   if (archVar (archptr))                          /* If target architecture is variable-sized */
     domnmax = (vertnbr > 1024) ? 1024 : vertnbr;  /* Pre-set number of domains                */
-  else {                                          /* Else if fixed architecture               */
+  else                                            /* Else if fixed architecture               */
     domnmax = archDomSize (archptr, domnptr);     /* Get architecture size                    */
-  }
+
 #ifdef SCOTCH_DEBUG_MAP2
   if (domnmax <= 0) {
     errorPrint ("mapInit2: target architecture must have at least one domain");
@@ -114,7 +113,6 @@ Gnum * restrict const           parttab)
   }
 #endif /* SCOTCH_DEBUG_MAP2 */
 
-  mappptr->flagval = MAPNONE;
   mappptr->baseval = baseval;
   mappptr->vertnbr = vertnbr;
   mappptr->domnmax = domnmax + 1;                 /* +1 for empty domain in mapLoad */
@@ -122,22 +120,18 @@ Gnum * restrict const           parttab)
   mappptr->archdat = *archptr;
   mappptr->domnorg = *domnptr;
 
-  if ((mappptr->domntab = (ArchDom *) memAlloc ((domnmax + 1) * sizeof (ArchDom))) == NULL) {
+  if ((parttab = (Gnum *) memAlloc (vertnbr * sizeof (Gnum))) == NULL) { /* Allocate part array first as it will never move */
     errorPrint ("mapInit: out of memory (1)");
+    return     (1);
+  }
+  mappptr->parttax = parttab - baseval;
+  memSet (parttab, 0, vertnbr * sizeof (Anum));   /* All vertices mapped to first domain */
+
+  if ((mappptr->domntab = (ArchDom *) memAlloc ((domnmax + 1) * sizeof (ArchDom))) == NULL) { /* Allocate possibly variable-sized domain array */
+    errorPrint ("mapInit: out of memory (2)");
     return (1);
   }
   mappptr->domntab[0] = *domnptr;                 /* Set first domain */
-
-  parttmp = parttab;
-  if (parttab == NULL) {
-    mappptr->flagval |= MAPFREEPART;
-    if ((parttmp = (Gnum *) memAlloc (vertnbr * sizeof (Gnum))) == NULL) {
-      errorPrint ("mapInit: out of memory (2)");
-      return     (1);
-    }
-  }
-  mappptr->parttax = parttmp - baseval;
-  memSet (parttmp, 0, vertnbr * sizeof (Anum));   /* All vertices mapped to first domain */
 
   return (0);
 }
@@ -147,13 +141,12 @@ mapInit (
 Mapping * restrict const      mappptr,
 const Gnum                    baseval,
 const Gnum                    vertnbr,
-const Arch * restrict const   archptr,
-Gnum * restrict const         parttab)
+const Arch * restrict const   archptr)
 {
   ArchDom             domnorg;                    /* First, largest, domain */
 
   archDomFrst (archptr, &domnorg);                /* Get first domain of target architecture */
-  return (mapInit2 (mappptr, baseval, vertnbr, archptr, &domnorg, parttab));
+  return (mapInit2 (mappptr, baseval, vertnbr, archptr, &domnorg));
 }
 
 /* This routine frees the contents
@@ -166,10 +159,10 @@ void
 mapExit (
 Mapping * const             mappptr)
 {
-  if ((mappptr->parttax != NULL) && ((mappptr->flagval & MAPFREEPART) != 0))
-    memFree (mappptr->parttax + mappptr->baseval);
   if (mappptr->domntab != NULL)
     memFree (mappptr->domntab);
+  if (mappptr->parttax != NULL)
+    memFree (mappptr->parttax + mappptr->baseval);
 
 #ifdef SCOTCH_DEBUG_MAP2
   memSet (mappptr, ~0, sizeof (Mapping));
