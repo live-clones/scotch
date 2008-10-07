@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to     30 oct 2001     **/
 /**                # Version 4.0  : from : 24 jun 2004     **/
 /**                                 to     16 feb 2005     **/
+/**                # Version 5.1  : from : 28 sep 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -127,13 +129,11 @@ kgraphExit (
 Kgraph * restrict const     actgrafptr,           /* Active graph      */
 Mapping * restrict const    mappptr)              /* Mapping to update */
 {
-  mappptr->domnmax = actgrafptr->m.domnmax;
+  mappptr->domnmax = actgrafptr->m.domnmax;      /* Do not free the mapping, as it has been cloned */
   mappptr->domnnbr = actgrafptr->m.domnnbr;
   mappptr->domntab = actgrafptr->m.domntab;       /* Update pointer to domntab in case it has changed */
 
   memFree (actgrafptr->comploadavg);              /* Free load structures       */
-  if (actgrafptr->frontab != NULL) {              /* Free frontier if it exists */
+  if (actgrafptr->frontab != NULL)                /* Free frontier if it exists */
     memFree (actgrafptr->frontab);
-    actgrafptr->frontab = NULL;
-  }                                               /* Do not free the mapping, as it has been cloned */
 }

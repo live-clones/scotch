@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,6 +59,8 @@
 /**                                 to     31 aug 2004     **/
 /**                # Version 5.0  : from : 17 dec 2006     **/
 /**                                 to     10 sep 2007     **/
+/**                # Version 5.1  : from : 08 oct 2008     **/
+/**                                 to     08 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -107,15 +109,16 @@ const ArchDom                   domsubtab[])      /* Subdomains                 
   domwght1 = archDomWght (&mapptr->archdat, &domsubtab[1]);
 
   actgrafptr->s         = *indgrafptr;            /* Get source graph data */
-  actgrafptr->s.flagval = (indgrafptr->flagval & ~GRAPHFREETABS) | BGRAPHFREEFRON; /* Graph is a clone with own grouped bipartitioning arrays */
+  actgrafptr->s.flagval = (indgrafptr->flagval & ~GRAPHFREETABS) | BGRAPHFREEFRON | BGRAPHFREEPART; /* Graph is a clone with own grouped bipartitioning arrays */
   actgrafptr->s.vlbltax = NULL;                   /* Remove vertex labels    */
   actgrafptr->veextax   = NULL;                   /* No external gains (yet) */
 
-  if (memAllocGroup ((void **) (void *)
-                     &actgrafptr->frontab, (size_t) (actgrafptr->s.vertnbr * sizeof (Gnum)),
-                     &actgrafptr->parttax, (size_t) (actgrafptr->s.vertnbr * sizeof (GraphPart)), NULL) == NULL) {
+  if (((actgrafptr->parttax = memAlloc (actgrafptr->s.vertnbr * sizeof (GraphPart))) == NULL) ||
+      ((actgrafptr->frontab = memAlloc (actgrafptr->s.vertnbr * sizeof (Gnum)))      == NULL)) {
     errorPrint ("bgraphInit: out of memory");
-    return     (1);
+    if (actgrafptr->parttax != NULL)
+      memFree (actgrafptr->parttax);
+    return (1);
   }
   actgrafptr->parttax -= actgrafptr->s.baseval;
 

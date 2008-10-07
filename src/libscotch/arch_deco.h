@@ -58,7 +58,7 @@
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     14 jun 2004     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
-/**                                 to     21 jan 2008     **/
+/**                                 to     27 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,9 +68,9 @@
 
 /*+ Decomposition architecture flags. +*/
 
-#define ARCHDECONONE                0x0000        /* No options set */
+#define ARCHDECONONE                0x0000        /*+ No options set +*/
 
-#define ARCHDECOFREE                0x0001        /* Free arrays    */
+#define ARCHDECOFREE                0x0001        /*+ Free arrays    +*/
 
 /*
 **  The type and structure definitions.
@@ -84,7 +84,7 @@ typedef struct ArchDecoTermVert_ {
   Anum                      num;                  /*+ Number of the terminal                  +*/
 } ArchDecoTermVert;
 
-/** The decomposition-described architecture definitions. **/
+/*+ The decomposition-described architecture definitions. +*/
 
 typedef struct ArchDecoVert_ {
   ArchDomNum                labl;                 /*+ Smallest number of included terminal  +*/
@@ -97,7 +97,7 @@ typedef struct ArchDeco_ {
   Anum                      domtermnbr;           /*+ Number of terminal domains +*/
   Anum                      domvertnbr;           /*+ Number of domains          +*/
   ArchDecoVert *            domverttab;           /*+ Table of domain "vertices" +*/
-  Anum  *                   domdisttab;           /*+ Table of domain distances  +*/
+  Anum *                    domdisttab;           /*+ Table of domain distances  +*/
 } ArchDeco;
 
 typedef struct ArchDecoDom_ {

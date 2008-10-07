@@ -120,11 +120,9 @@ typedef struct {
 **  The function prototypes.
 */
 
-#ifdef X_ARCHalpha_compaq_osf1
-#ifndef USE_CXX
+#ifdef __cplusplus
 extern "C" {
-#endif /* USE_CXX */
-#endif /* X_ARCHalpha_compaq_osf1 */
+#endif /* __cplusplus */
 
 void                        SCOTCH_errorProg    (const char * const);
 void                        SCOTCH_errorPrint   (const char * const, ...);
@@ -271,8 +269,6 @@ void                        SCOTCH_memoryUntrace (void);
 void                        SCOTCH_memoryTraceReset (void);
 unsigned long               SCOTCH_memoryTraceGet (void);
 
-#ifdef X_ARCHalpha_compaq_osf1
-#ifndef USE_CXX
+#ifdef __cplusplus
 }
-#endif /* USE_CXX */
-#endif /* X_ARCHalpha_compaq_osf1 */
+#endif /* __cplusplus */

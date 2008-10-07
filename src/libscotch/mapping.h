@@ -61,20 +61,11 @@
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to     13 nov 2005     **/
 /**                # Version 5.1  : from : 25 jun 2008     **/
-/**                                 to     25 jun 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
 #define MAPPING_H
-
-/*
-**  The defines.
-*/
-
-/*+ Ordering option flags. +*/
-
-#define MAPNONE                     0x0000        /* No options set       */
-#define MAPFREEPART                 0x0001        /* Free partition array */
 
 /*
 **  The type definitions.
@@ -85,7 +76,6 @@
     a target architecture.                +*/
 
 typedef struct Mapping_ {
-  int                       flagval;              /*+ Flag value                    +*/
   Gnum                      baseval;              /*+ Base value for structures     +*/
   Gnum                      vertnbr;              /*+ Number of vertices in mapping +*/
   Anum * restrict           parttax;              /*+ Mapping array [vertnbr]       +*/
@@ -112,8 +102,8 @@ typedef struct MappingSort_ {
 #define static
 #endif
 
-int                         mapInit             (Mapping * restrict const, const Gnum, const Gnum, const Arch * restrict const, Gnum * restrict const);
-int                         mapInit2            (Mapping * restrict const, const Gnum, const Gnum, const Arch * restrict const, const ArchDom * restrict const, Gnum * restrict const);
+int                         mapInit             (Mapping * restrict const, const Gnum, const Gnum, const Arch * restrict const);
+int                         mapInit2            (Mapping * restrict const, const Gnum, const Gnum, const Arch * restrict const, const ArchDom * restrict const);
 void                        mapExit             (Mapping * const);
 int                         mapLoad             (Mapping * restrict const, const Gnum * restrict const, FILE * restrict const);
 int                         mapSave             (const Mapping * restrict const, const Gnum * restrict const, FILE * restrict const);

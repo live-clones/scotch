@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 19 jul 2007     **/
 /**                                 to     10 sep 2007     **/
+/**                # Version 5.1  : from : 28 sep 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,12 +81,12 @@ const Dorder * restrict const dordptr,
 Order * restrict const        cordptr)
 {
   Gnum                        leaflocnbr;
-  Gnum                        leafrcvnbr;
+  int                         leafrcvnbr;
   DorderGatherLeaf * restrict leafrcvtab;
-  Gnum                        leafsndnbr;
+  int                         leafsndnbr;         /* "int" since used as count in MPI_Gatherv */
   DorderGatherLeaf * restrict leafsndtab;
   Gnum * restrict             perircvtab;
-  Gnum                        perisndnbr;
+  int                         perisndnbr;         /* "int" since used as count in MPI_Gatherv */
   Gnum * restrict             perisndtab;
   int * restrict              recvcnttab;
   int * restrict              recvdsptab;
@@ -174,7 +176,7 @@ Order * restrict const        cordptr)
     perircvtab[2 * protnum] = 0;                  /* TRICK: root will not send to nor receive from itself to avoid unnecessary memory copy */
     for (procnum = 0, leafrcvnbr = 0; procnum < procglbnbr; procnum ++) {
       recvdsptab[procnum] = leafrcvnbr;
-      recvcnttab[procnum] = perircvtab[2 * procnum] * 2; /* TRICK: DorderGatherLeaf structures are made of 2 GNUM_MPI fields */
+      recvcnttab[procnum] = (int) (perircvtab[2 * procnum] * 2); /* TRICK: DorderGatherLeaf structures are made of 2 GNUM_MPI fields */
       leafrcvnbr         += recvcnttab[procnum];
     }
     leafrcvnbr /= 2;                              /* TRICK: restore real number of leaf structures to be received */
@@ -183,8 +185,8 @@ Order * restrict const        cordptr)
   }
   else {
     leafrcvnbr = 0;
-    leafsndnbr = leaflocnbr;
-    perisndnbr = vnodlocnbr;
+    leafsndnbr = (int) leaflocnbr;
+    perisndnbr = (int) vnodlocnbr;
   }
 
   cheklocval = 0;
@@ -248,17 +250,17 @@ Order * restrict const        cordptr)
   }
 
   if (dordptr->proclocnum == protnum) {
-    Gnum                  vnodglbnbr;
+    int                   vnodglbnbr;
     int                   procnum;
 
     perircvtab[2 * protnum + 1] = 0;              /* TRICK: root will not send to nor receive from itself to avoid unnecessary memory copy */
     for (procnum = 0, vnodglbnbr = 0; procnum < procglbnbr; procnum ++) {
       recvdsptab[procnum] = vnodglbnbr;
-      recvcnttab[procnum] = perircvtab[2 * procnum + 1];
+      recvcnttab[procnum] = (int) perircvtab[2 * procnum + 1];
       vnodglbnbr         += recvcnttab[procnum];
     }
 #ifdef SCOTCH_DEBUG_DORDER2
-    if ((vnodglbnbr + vnodlocnbr) != dordptr->vnodglbnbr) {
+    if (((Gnum) vnodglbnbr + vnodlocnbr) != dordptr->vnodglbnbr) {
       errorPrint ("dorderGather: internal error (2)");
       return     (1);
     }
@@ -271,8 +273,8 @@ Order * restrict const        cordptr)
   }
 
   if (dordptr->proclocnum == protnum) {           /* If root process */
-    Gnum                  leafglbnum;
-    Gnum                  vnodglbnum;
+    int                   leafglbnum;
+    int                   vnodglbnum;
 
     for (leafglbnum = vnodglbnum = 0; leafglbnum < leafrcvnbr; leafglbnum ++) {
       memCpy (cordptr->peritab + leafrcvtab[leafglbnum].ordelocval, perircvtab + vnodglbnum, leafrcvtab[leafglbnum].vnodlocnbr * sizeof (Gnum));
@@ -312,10 +314,10 @@ const Dorder * restrict const dordptr,
 Order * restrict const        cordptr,
 const int                     protnum)
 {
-  Gnum                        treelocnbr;
+  int                         treelocnbr;         /* "int" since used as way to fill count array in MPI_Allgather */
   Gnum                        treeglbnbr;
   DorderGatherNode * restrict treercvtab;
-  Gnum                        treesndnbr;
+  int                         treesndnbr;         /* "int" since used as count in MPI_Gatherv */
   DorderGatherNode * restrict treesndtab;
   DorderGatherNode * restrict treesndptr;
   int * restrict              treecnttab;
@@ -344,7 +346,7 @@ const int                     protnum)
     if (cblklocptr->cblknum.proclocnum == dordptr->proclocnum) {
       treelocnbr ++;
       if ((cblklocptr->typeval & DORDERCBLKLEAF) != 0)
-        treelocnbr += cblklocptr->data.leaf.nodelocnbr;
+        treelocnbr += (int) cblklocptr->data.leaf.nodelocnbr;
     }
   }
 
@@ -373,7 +375,7 @@ const int                     protnum)
     return (1);
   }
 
-  if (MPI_Allgather (&treelocnbr, 1, GNUM_MPI, treecnttab, 1, GNUM_MPI, dordptr->proccomm) != MPI_SUCCESS) {
+  if (MPI_Allgather (&treelocnbr, 1, MPI_INT, treecnttab, 1, MPI_INT, dordptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderGatherTree: communication error (2)");
     return     (1);
   }

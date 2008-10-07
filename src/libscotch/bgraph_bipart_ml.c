@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to     01 jun 2001     **/
 /**                # Version 4.0  : from : 12 dec 2003     **/
 /**                                 to     20 mar 2005     **/
+/**                # Version 5.1  : from : 28 sep 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,8 +108,9 @@ const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters         
       return     (1);
     }
     coarveextax -= coargrafptr->s.baseval;
-    coargrafptr->veextax = coarveextax;
     coarmulttax  = *coarmultptr;
+    coargrafptr->s.flagval |= BGRAPHFREEVEEX;
+    coargrafptr->veextax    = coarveextax;
 
     for (coarvertnum = coargrafptr->s.baseval; coarvertnum < coargrafptr->s.vertnnd; coarvertnum ++) {
       Gnum                finevertnum0;           /* First multinode vertex  */

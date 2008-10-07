@@ -44,7 +44,7 @@
 /**                processes are doing.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 21 jun 2008     **/
-/**                                 to     01 jul 2008     **/
+/**                                 to     28 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -105,7 +105,7 @@ const Strat * restrict const            stratptr)
   int                       o;
 
   cgrfptr = &grafptr->data.cgrfdat;
-  if (mapInit2 (&cmapdat, cgrfptr->baseval, cgrfptr->vertnbr, &mappptr->archdat, &grafptr->domnorg, NULL) != 0) {
+  if (mapInit2 (&cmapdat, cgrfptr->baseval, cgrfptr->vertnbr, &mappptr->archdat, &grafptr->domnorg) != 0) {
     errorPrint ("kdgraphMapRbPartSequ: cannot initialize centralized mapping");
     return     (1);
   }
@@ -363,7 +363,7 @@ const KdgraphMapRbParam * restrict const paraptr)
     return     (1);
   }
 
-  if (dgraphGhstReplace (&grafptr->data.dgrfdat) != 0) { /* Compute ghost edge array if not already present, to have vertgstnbr (and procsidtab) */
+  if (dgraphGhst(&grafptr->data.dgrfdat) != 0) { /* Compute ghost edge array if not already present, to have vertgstnbr (and procsidtab) */
     errorPrint ("kdgraphMapRbPart2: cannot compute ghost edge array");
     return     (1);
   }

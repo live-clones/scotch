@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 16 apr 2006     **/
 /**                                 to     01 mar 2008     **/
+/**                # Version 5.1  : from : 27 sep 2008     **/
+/**                                 to     27 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -365,6 +367,18 @@ const HdgraphOrderNdParam * restrict const  paraptr)
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
+
+  if (grafptr->s.procglbnbr == 1) {               /* If we are running on a single process */
+    Hgraph                    cgrfdat;
+
+    if (hdgraphGather (grafptr, &cgrfdat) != 0) { /* Turn Gather centralized subgraph from all other processes    */
+      errorPrint ("hdgraphOrderNd: cannot create centralized graph");
+      return     (1);
+    }
+    o = hdgraphOrderNdSequ (&cgrfdat, cblkptr, paraptr->ordstratseq);
+    hgraphFree (&cgrfdat);
+    return (o);
+  }
 
   if (dgraphGhst (&grafptr->s) != 0) {            /* Compute ghost edge array if not already present, to have vertgstnbr (and procsidtab) */
     errorPrint ("hdgraphOrderNd: cannot compute ghost edge array");

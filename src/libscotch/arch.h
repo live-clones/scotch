@@ -62,7 +62,7 @@
 /**                # Version 4.0  : from : 01 jan 2002     **/
 /**                                 to     07 dec 2004     **/
 /**                # Version 5.1  : from : 11 dec 2007     **/
-/**                                 to     23 jun 2008     **/
+/**                                 to     27 sep 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,11 +70,11 @@
 ** The defines.
 */
 
-/* Architecture flags. */
+/*+ Architecture flags. +*/
 
-#define ARCHNONE                    0x0000        /* No options set                      */
-#define ARCHPART                    0x0001        /* Architecture without external gains */
-#define ARCHVAR                     0x0002        /* Variable-sized architecture         */
+#define ARCHNONE                    0x0000        /*+ No options set                      +*/
+#define ARCHPART                    0x0001        /*+ Architecture without external gains +*/
+#define ARCHVAR                     0x0002        /*+ Variable-sized architecture         +*/
 
 /*
 **  The type and structure definitions.
@@ -84,15 +84,15 @@ typedef INT Anum;                                 /*+ Generic integer +*/
 
 #define ANUMMAX                     INTVALMAX
 
-#define ANUM_MPI                    COMM_INT      /* MPI type for Gnum is MPI type for INT */
+#define ANUM_MPI                    COMM_INT      /*+ MPI type for Gnum is MPI type for INT +*/
 
-/** The domain number type. **/
+/*+ The domain number type. +*/
 
 typedef Anum ArchDomNum;                          /*+ Domain number +*/
 
 #define ARCHDOMNOTTERM              ((ArchDomNum) ~0) /*+ Not-terminal number +*/
 
-/** The architecture class type. **/
+/*+ The architecture class type. +*/
 
 typedef struct ArchClass_ {
   char *                    archname;             /*+ Architecture name                 +*/
@@ -115,14 +115,14 @@ typedef struct ArchClass_ {
   int                       domsizeof;            /*+ Size in bytes of domain data      +*/
 } ArchClass;
 
-/** The architecture type. **/
+/*+ The architecture type. +*/
 
-typedef double ArchDummy[3];                      /*+ Size of the dummy space that can hold any architecture +*/
+typedef Anum ArchDummy[8];                        /*+ Size of the dummy space that can hold any architecture +*/
 
 typedef struct Arch_ {
-  const ArchClass *         class;                /*+ Pointer to architecture class        +*/
-  union {                                         /*+ Architecture data                    +*/
-    ArchDummy               dummy;                /*+ Dummy data for external size setting +*/
+  const ArchClass *         class;                /*+ Pointer to architecture class              +*/
+  union {                                         /*+ Architecture data                          +*/
+    ArchDummy               dummy;                /*+ Dummy data for external size setting       +*/
 #if 0
     ArchDeco                deco;                 /*+ Decomposition-described architecture       +*/
     ArchMesh2               mesh2;                /*+ 2D-mesh architecture                       +*/
@@ -139,13 +139,13 @@ typedef struct Arch_ {
   } data;
 } Arch;
 
-/** The domain structure type. **/
+/*+ The domain structure type. +*/
 
 typedef Anum ArchDomDummy[6];                     /*+ Size of the dummy space that can hold any domain +*/
 
 typedef struct ArchDom_ {
-  union {                                         /*+ The domain data                       +*/
-    ArchDomDummy            dummy;                /*+ Dummy data for external space setting +*/
+  union {                                         /*+ The domain data                           +*/
+    ArchDomDummy            dummy;                /*+ Dummy data for external space setting     +*/
 #if 0
     ArchDomDeco             deco;                 /*+ Decomposition-descripted domain type      +*/
     ArchDomMesh2            mesh2;                /*+ 2D-mesh domain type                       +*/
