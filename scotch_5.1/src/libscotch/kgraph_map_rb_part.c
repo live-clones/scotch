@@ -41,7 +41,7 @@
 /**                target architectures.                   **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 sep 2008     **/
-/**                                 to     07 oct 2008     **/
+/**                                 to     25 oct 2008     **/
 /**                                                        **/
 /**   NOTES      : # This is a rewrite of kgraphMapRb()    **/
 /**                  for complete-graph target topologies. **/
@@ -246,8 +246,8 @@ const KgraphMapRbParam * restrict const paraptr)
   topdatadat.mappptr    = &grafptr->m;
   topdatadat.paraptr    = paraptr;
 
-  grafptr->m.domnnbr = 1;
-  archDomFrst (&grafptr->m.archdat, &grafptr->m.domntab[0]);
+  grafptr->m.domnnbr    = 1;                      /* Reset mapping to original (sub)domain */
+  grafptr->m.domntab[0] = grafptr->m.domnorg;
 
   return (kgraphMapRbPart2 (&topdatadat, &grafptr->s, NULL, 0, grafptr->s.vertnbr, 0));
 }

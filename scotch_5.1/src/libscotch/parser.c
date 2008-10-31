@@ -49,6 +49,8 @@
 /**                                 to     02 feb 2004     **/
 /**                # Version 5.0  : from : 20 feb 2008     **/
 /**                                 to     20 feb 2008     **/
+/**                # Version 5.1  : from : 22 oct 2008     **/
+/**                                 to     22 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -118,6 +120,9 @@ Strat * const               strat)
   unsigned int      i;
   int               o;
 
+  if (strat == NULL)                              /* If node does not exist, abort */
+    return (0);
+
   o = 0;                                          /* Assume everything will be all right */
   switch (strat->type) {                          /* Recursively free sub-strategies     */
     case STRATNODECONCAT :
@@ -141,9 +146,9 @@ Strat * const               strat)
     case STRATNODEMETHOD :                        /* Method strategy node       */
       paratab = strat->tabl->paratab;             /* Free the method parameters */
       for (i = 0; paratab[i].name != NULL; i ++) {
-        if ((paratab[i].meth == strat->data.method.meth) && /* For all parameters of that method  */
-            (paratab[i].type == STRATPARAMSTRAT)) { /* Which are strategy parameters              */
-          paraofft = (byte*) &strat->data.method.data + /* Compute parameter offset within method */
+        if ((paratab[i].meth == strat->data.method.meth) && /* For all parameters of that method   */
+            (paratab[i].type == STRATPARAMSTRAT)) { /* Which are strategy parameters               */
+          paraofft = (byte *) &strat->data.method.data + /* Compute parameter offset within method */
                       (paratab[i].dataofft -
                        paratab[i].database);
           o |= stratExit (*((Strat **) paraofft)); /* Perform recursion */

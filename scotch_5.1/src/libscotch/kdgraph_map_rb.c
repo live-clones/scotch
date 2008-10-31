@@ -109,8 +109,8 @@ int
 kdgraphMapRbAddBoth (
 const Dgraph * restrict const     grafptr,
 Dmapping * restrict const         mappptr,
-const ArchDom * restrict const    domnptr,        /*+ Pointer to both subdomains +*/
-const GraphPart * restrict const  parttab)
+const ArchDom * restrict const    domnptr,        /*+ Pointer to both subdomains   +*/
+const GraphPart * restrict const  parttab)        /*+ Bipartition graph part array +*/
 {
   DmappingFrag * restrict fragptr;
   Gnum                    vertlocnum;
@@ -120,8 +120,12 @@ const GraphPart * restrict const  parttab)
 
   fragptr->domntab[0] = domnptr[0];
   fragptr->domntab[1] = domnptr[1];
-  for (vertlocnum = 0; vertlocnum < grafptr->vertlocnbr; vertlocnum ++)
-    fragptr->parttab[vertlocnum] = (Anum) parttab[vertlocnum];
+  if (parttab == NULL)                            /* If bipartition part array not set */
+    memSet (fragptr->parttab, 0, grafptr->vertlocnbr * sizeof (Anum));
+  else {
+    for (vertlocnum = 0; vertlocnum < grafptr->vertlocnbr; vertlocnum ++)
+      fragptr->parttab[vertlocnum] = (Anum) parttab[vertlocnum];
+  }
 
   if (grafptr->vnumloctax != NULL)
     memCpy (fragptr->vnumtab, grafptr->vnumloctax + grafptr->baseval, fragptr->vertnbr * sizeof (Gnum));

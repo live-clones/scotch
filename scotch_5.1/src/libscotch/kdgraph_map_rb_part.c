@@ -44,7 +44,7 @@
 /**                processes are doing.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 21 jun 2008     **/
-/**                                 to     28 sep 2008     **/
+/**                                 to     27 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,59 +98,62 @@ Dmapping * restrict const               mappptr,
 const Strat * restrict const            stratptr)
 {
   Graph * restrict          cgrfptr;
-  Mapping                   cmapdat;              /* Centralized mapping structure */
-  Kgraph                    kgrfdat;              /* Centralized mapping graph     */
-  Gnum * restrict           vnumtax;
+  Kgraph                    kgrfdat;              /* Centralized mapping graph */
   DmappingFrag * restrict   fragptr;
+  Anum                      domnsiz;
   int                       o;
 
   cgrfptr = &grafptr->data.cgrfdat;
-  if (mapInit2 (&cmapdat, cgrfptr->baseval, cgrfptr->vertnbr, &mappptr->archdat, &grafptr->domnorg) != 0) {
+  if (mapInit2 (&kgrfdat.m, cgrfptr->baseval, cgrfptr->vertnbr, &mappptr->archdat, &grafptr->domnorg) != 0) {
     errorPrint ("kdgraphMapRbPartSequ: cannot initialize centralized mapping");
     return     (1);
   }
 
-  vnumtax = cgrfptr->vnumtax;                     /* Save number array of subgraph to map                 */
-  cgrfptr->vnumtax = NULL;                        /* Assume graph does not have one (fake original graph) */
+  kgrfdat.s          = *cgrfptr;                  /* Clone source graph        */
+  kgrfdat.s.flagval &= ~GRAPHFREETABS;            /* Do not allow freeing      */
+  kgrfdat.s.vnumtax  = NULL;                      /* Remove index array if any */
 
-  o = kgraphInit (&kgrfdat, cgrfptr, &cmapdat);
-
-  cgrfptr->vnumtax = vnumtax;                     /* Restore graph vertex index if present */
-
-  if (o != 0) {
-    errorPrint ("kdgraphMapRbPartSequ: cannot initialize centralized mapping graph");
-    mapExit    (&cmapdat);
+  domnsiz = archDomSize (&mappptr->archdat, &grafptr->domnorg);
+  if ((kgrfdat.comploadavg = (Gnum *) memAlloc (domnsiz * sizeof (Gnum) * 2)) == NULL) {
+    errorPrint ("kdgraphMapRbPartSequ: out of memory (1)");
+    mapExit    (&kgrfdat.m);
     return     (1);
   }
+  kgrfdat.comploaddlt    = kgrfdat.comploadavg + domnsiz;
+  kgrfdat.comploadavg[0] = kgrfdat.s.velosum;
+  kgrfdat.comploaddlt[0] = 0;
+  kgrfdat.fronnbr        = 0;                     /* Frontier handling not implemented yet */
+  kgrfdat.frontab        = NULL;
+  kgrfdat.commload       = 0;
 
   o = kgraphMapSt (&kgrfdat, stratptr);           /* Compute sequential mapping */
 
-  kgraphExit (&kgrfdat, &cmapdat);
+  kgraphExit (&kgrfdat, &kgrfdat.m);
 
   if (o != 0) {
-    mapExit (&cmapdat);
+    mapExit (&kgrfdat.m);
     return  (1);
   }
 
   if (((fragptr = memAlloc (sizeof (DmappingFrag))) == NULL) ||
       ((fragptr->vnumtab = memAlloc (cgrfptr->vertnbr * sizeof (Gnum))) == NULL)) {
-    errorPrint ("kdgraphMapRbPartSequ: out of memory");
+    errorPrint ("kdgraphMapRbPartSequ: out of memory (2)");
     if (fragptr != NULL)
       memFree (fragptr);
-    mapExit (&cmapdat);
+    mapExit (&kgrfdat.m);
     return  (1);
   }
 
   fragptr->vertnbr = cgrfptr->vertnbr;
-  fragptr->parttab = cmapdat.parttax + cmapdat.baseval;
-  fragptr->domnnbr = cmapdat.domnnbr;
-  fragptr->domntab = cmapdat.domntab;
-  if (cmapdat.domnmax > cmapdat.domnnbr);
-    fragptr->domntab = memRealloc (fragptr->domntab, cmapdat.domnnbr * sizeof (ArchDom)); /* Reallocate mapping array */
+  fragptr->parttab = kgrfdat.m.parttax + kgrfdat.m.baseval;
+  fragptr->domnnbr = kgrfdat.m.domnnbr;
+  fragptr->domntab = kgrfdat.m.domntab;
+  if (kgrfdat.m.domnmax > kgrfdat.m.domnnbr)
+    fragptr->domntab = memRealloc (fragptr->domntab, kgrfdat.m.domnnbr * sizeof (ArchDom)); /* Reallocate mapping array */
 
-  cmapdat.parttax  = NULL;                        /* Keep sequential mapping arrays for distributed mapping fragment */
-  cmapdat.domntab  = NULL;
-  mapExit (&cmapdat);                             /* Free mapping without some of its arrays */
+  kgrfdat.m.parttax = NULL;                       /* Keep sequential mapping arrays for distributed mapping fragment */
+  kgrfdat.m.domntab = NULL;
+  mapExit (&kgrfdat.m);                           /* Free mapping without some of its arrays */
 
   if (cgrfptr->vnumtax != NULL)
     memCpy (fragptr->vnumtab, cgrfptr->vnumtax + cgrfptr->baseval, cgrfptr->vertnbr * sizeof (Gnum));

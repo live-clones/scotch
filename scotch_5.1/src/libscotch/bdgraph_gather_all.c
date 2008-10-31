@@ -42,7 +42,7 @@
 /**                a distributed Bdgraph.                  **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 21 dec 2007     **/
-/**                                 to     24 feb 2008     **/
+/**                                 to     25 oct 2008     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -170,7 +170,7 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
   }
   if (chekglbval != 0) {
     if (froncnttab != NULL)
-      memFree (froncnttab);
+      memFree (froncnttab);                       /* Free group leader */
     bgraphExit (cgrfptr);
     return     (1);
   }
@@ -178,6 +178,7 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
 
   cgrfptr->compload0avg  = dgrfptr->compglbload0avg; /* Set constant fields of the centralized graph as those of the distibuted graph */
   cgrfptr->commloadextn0 = dgrfptr->commglbloadextn0; 
+  cgrfptr->commgainextn0 = dgrfptr->commglbgainextn0;
   cgrfptr->domdist       = dgrfptr->domdist; 
   cgrfptr->domwght[0]    = dgrfptr->domwght[0]; 
   cgrfptr->domwght[1]    = dgrfptr->domwght[1]; 
@@ -185,6 +186,7 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
 
   if (dgrfptr->partgsttax == NULL) {              /* If distributed graph does not have a part array yet */
     bgraphZero (cgrfptr);
+    memFree    (froncnttab);                      /* Free group leader */
     return     (0);
   }
 
