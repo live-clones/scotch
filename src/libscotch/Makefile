@@ -1694,7 +1694,7 @@ library_mesh_order$(OBJ)	:	library_mesh_order.c			\
 					scotch.h				\
 					library_order.h
 
-library_mesh_order$(OBJ)_f	:	library_mesh_order_f.c			\
+library_mesh_order_f$(OBJ)	:	library_mesh_order_f.c			\
 					module.h				\
 					common.h				\
 					scotch.h

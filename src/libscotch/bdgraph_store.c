@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                tributed bipartition graphs.            **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 10 sep 2007     **/
-/**                                 to     12 nov 2007     **/
+/**                                 to     22 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -129,8 +129,21 @@ BdgraphStore * const        storptr)
   fronloctab = storptr->datatab;                  /* Compute data offsets within save structure */
   partloctab = fronloctab + grafptr->fronlocnbr * sizeof (Gnum);
 
-  memCpy (fronloctab, grafptr->fronloctab, grafptr->fronlocnbr * sizeof (Gnum));
-  memCpy (partloctab, grafptr->partgsttax + grafptr->s.baseval, grafptr->s.vertlocnbr * sizeof (GraphPart));
+  if (grafptr->fronloctab != NULL)                /* If frontier array allocated */
+    memCpy (fronloctab, grafptr->fronloctab, grafptr->fronlocnbr * sizeof (Gnum));
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+  else if (grafptr->fronglbnbr != 0)
+    errorPrint ("bdgraphStoreSave: inconsistent graph data (1)");
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
+  if (grafptr->partgsttax != NULL)
+    memCpy (partloctab, grafptr->partgsttax + grafptr->s.baseval, grafptr->s.vertlocnbr * sizeof (GraphPart));
+  else {
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+    if (grafptr->compglbload0 != grafptr->s.veloglbsum)
+      errorPrint ("bdgraphStoreSave: inconsistent graph data (2)");
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
+    memSet (partloctab, 0, grafptr->s.vertlocnbr * sizeof (GraphPart)); /* In case part array is allocated before update */
+  }
 }
 
 /* This routine updates partition data of the
@@ -160,11 +173,22 @@ const BdgraphStore * const  storptr)
   fronloctab = storptr->datatab;                  /* Compute data offsets within save structure */
   partloctab = fronloctab + grafptr->fronlocnbr * sizeof (Gnum);
 
-  memCpy (grafptr->fronloctab, fronloctab, grafptr->fronlocnbr * sizeof (Gnum));
-  memCpy (grafptr->partgsttax + grafptr->s.baseval, partloctab, grafptr->s.vertlocnbr * sizeof (GraphPart));
+  if (grafptr->fronloctab != NULL)
+    memCpy (grafptr->fronloctab, fronloctab, grafptr->fronlocnbr * sizeof (Gnum));
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+  else if (grafptr->fronglbnbr != 0)
+    errorPrint ("bdgraphStoreUpdt: inconsistent graph data (1)");
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
+
+  if (grafptr->partgsttax != NULL)
+    memCpy (grafptr->partgsttax + grafptr->s.baseval, partloctab, grafptr->s.vertlocnbr * sizeof (GraphPart));
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+  else if (grafptr->compglbload0 != grafptr->s.veloglbsum)
+    errorPrint ("bdgraphStoreUpdt: inconsistent graph data (2)");
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
 
 #ifdef SCOTCH_DEBUG_BDGRAPH2
   if (bdgraphCheck (grafptr) != 0)
-    errorPrint ("bdgraphStoreUpdt: inconsistent graph data");
+    errorPrint ("bdgraphStoreUpdt: inconsistent graph data (3)");
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
 }

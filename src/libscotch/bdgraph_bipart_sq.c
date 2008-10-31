@@ -44,7 +44,7 @@
 /**                result obtained.                        **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 27 dec 2007     **/
-/**                                 to     29 dec 2007     **/
+/**                                 to     25 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -86,7 +86,10 @@ Gnum * const                inout,                /* Second and output operand  
 const int * const           len,                  /* Number of instances; should be 1, not used */
 const MPI_Datatype * const  typedat)              /* MPI datatype; not used                     */
 {
-  if (inout[3] == 1) {                            /* Handle cases when at least one of them is erroneous */
+  inout[5] |= in[5];                              /* Propagate errors */
+
+  inout[4] += in[4];                              /* Count cases for which a bipartitioning error occured */
+  if (inout[3] == 1) {                            /* Handle cases when at least one of them is erroneous  */
     if (in[3] == 1)
       return;
 
@@ -122,12 +125,12 @@ const MPI_Datatype * const  typedat)              /* MPI datatype; not used     
 
 int
 bdgraphBipartSq (
-Bdgraph * const                       dgrfptr,    /*+ Distributed graph +*/
+Bdgraph * const                     dgrfptr,      /*+ Distributed graph +*/
 const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
 {
   Bgraph            cgrfdat;                      /* Centralized bipartitioned graph structure           */
   Gnum              reduloctab[9];                /* Local array for best bipartition data (7 for Bcast) */
-  Gnum              reduglbtab[4];                /* Global array for best bipartition data              */
+  Gnum              reduglbtab[6];                /* Global array for best bipartition data              */
   MPI_Datatype      besttypedat;                  /* Data type for finding best bipartition              */
   MPI_Op            bestoperdat;                  /* Handle of MPI operator for finding best bipartition */
   int               bestprocnum;                  /* Rank of process holding best partition              */
@@ -136,7 +139,7 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
   Gnum              complocload1;
   Gnum              fronlocnbr;
 
-  if ((MPI_Type_contiguous (4, GNUM_MPI, &besttypedat)                              != MPI_SUCCESS) ||
+  if ((MPI_Type_contiguous (6, GNUM_MPI, &besttypedat)                              != MPI_SUCCESS) ||
       (MPI_Type_commit (&besttypedat)                                               != MPI_SUCCESS) ||
       (MPI_Op_create ((MPI_User_function *) bdgraphBipartSqOpBest, 1, &bestoperdat) != MPI_SUCCESS)) {
     errorPrint ("bdgraphBipartSq: communication error (1)");
@@ -144,9 +147,11 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
   }
 
   reduloctab[0] =                                 /* In case of error, maximum communication load */
-  reduloctab[1] = GNUMMAX;                        /* And maximum load imbalance               */
+  reduloctab[1] = GNUMMAX;                        /* And maximum load imbalance                   */
   reduloctab[2] = dgrfptr->s.proclocnum;
-  reduloctab[3] = 0;                              /* Assume sequential bipartioning went fine */
+  reduloctab[3] =                                 /* Assume sequential bipartioning went fine */
+  reduloctab[4] = 0;
+  reduloctab[5] = 0;                              /* Assume no errors */
 
   if (bdgraphGatherAll (dgrfptr, &cgrfdat) != 0) {
     errorPrint ("bdgraphBipartSq: cannot build centralized graph");
@@ -155,7 +160,8 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
 
   if (bgraphBipartSt (&cgrfdat, paraptr->strat) != 0) { /* Bipartition centralized graph */
     errorPrint ("bdgraphBipartSq: cannot bipartition centralized graph");
-    reduloctab[3] = 1;
+    reduloctab[3] =
+    reduloctab[4] = 1;
   }
   else {                                          /* Fill local array with local bipartition data */
     reduloctab[0] = ((cgrfdat.fronnbr != 0) || ((cgrfdat.compload0 != 0) && ((cgrfdat.s.velosum - cgrfdat.compload0) != 0)))
@@ -164,24 +170,36 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
     reduloctab[1] = cgrfdat.compload0dlt;
   }
 
+  if (dgrfptr->partgsttax == NULL) {
+    if (dgraphGhst (&dgrfptr->s) != 0) {          /* Compute ghost edge array if not already present, before copying graph fields */
+      errorPrint ("bdgraphBipartSq: cannot compute ghost edge array");
+      reduloctab[5] = 1;
+    }
+    else {
+      if ((dgrfptr->partgsttax = (GraphPart *) memAlloc (dgrfptr->s.vertgstnbr * sizeof (GraphPart))) == NULL) {
+        errorPrint ("bdgraphBipartSq: out of memory (1)");
+        reduloctab[5] = 1;                        /* Allocated data will be freed along with graph structure */
+      }
+      dgrfptr->partgsttax -= dgrfptr->s.baseval;
+    }
+    if ((dgrfptr->fronloctab = (Gnum *) memAlloc (dgrfptr->s.vertlocnbr * sizeof (Gnum))) == NULL) {
+      errorPrint ("bdgraphBipartSq: out of memory (2)");
+      reduloctab[5] = 1;
+    }
+  }
+
   if (MPI_Allreduce (reduloctab, reduglbtab, 1, besttypedat, bestoperdat, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("bdgraphBipartSq: communication error (2)");
     return     (1);
   }
-#ifdef SCOTCH_DEBUG_BDGRAPH2
-  if (MPI_Allreduce (&reduglbtab[3], &reduloctab[3], 1, GNUM_MPI, MPI_SUM, dgrfptr->s.proccomm) != MPI_SUCCESS) {
-    errorPrint ("bdgraphBipartSq: communication error (3)");
+  if ((reduloctab[4] != 0) && (reduloctab[4] != dgrfptr->s.procglbnbr)) {
+    errorPrint ("bdgraphBipartSq: internal error");
     return     (1);
   }
-  if ((reduloctab[3] != 0) && (reduloctab[3] != dgrfptr->s.procglbnbr)) {
-    errorPrint ("bdgraphBipartSq: internal error (1)");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_BDGRAPH2 */
 
   if ((MPI_Op_free   (&bestoperdat) != MPI_SUCCESS) ||
       (MPI_Type_free (&besttypedat) != MPI_SUCCESS)) {
-    errorPrint ("bdgraphBipartSq: communication error (4)");
+    errorPrint ("bdgraphBipartSq: communication error (3)");
     return     (1);
   }
 
@@ -192,7 +210,7 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
 
   bestprocnum = (int) reduglbtab[2];
   if (dgrfptr->s.proclocnum == bestprocnum) {     /* If process holds best partition */
-    reduloctab[0] = cgrfdat.compload0;          /* Global values to share          */
+    reduloctab[0] = cgrfdat.compload0;            /* Global values to share          */
     reduloctab[1] = cgrfdat.compload0avg;
     reduloctab[2] = cgrfdat.compload0dlt;
     reduloctab[3] = cgrfdat.compsize0;
@@ -203,7 +221,7 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
     reduloctab[8] = cgrfdat.fronnbr;
   }
   if (MPI_Bcast (reduloctab, 9, GNUM_MPI, bestprocnum, dgrfptr->s.proccomm) != MPI_SUCCESS) {
-    errorPrint ("bdgraphBipartSq: communication error (5)");
+    errorPrint ("bdgraphBipartSq: communication error (4)");
     return     (1);
   }
   dgrfptr->compglbload0     = reduloctab[0];
@@ -219,7 +237,7 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
   if (MPI_Scatterv (cgrfdat.parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, /* No base for sending as procdsptab holds based values */
                     dgrfptr->partgsttax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GRAPHPART_MPI,
                     bestprocnum, dgrfptr->s.proccomm) != MPI_SUCCESS) {
-    errorPrint ("bdgraphBipartSq: communication error (6)");
+    errorPrint ("bdgraphBipartSq: communication error (5)");
     return     (1);
   }
 

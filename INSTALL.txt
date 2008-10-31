@@ -98,6 +98,18 @@ Make.inc directory. This is for instance the case for the mingw32
 platform.
 
 
+By default, all integers used in Scotch and PT-Scotch are based on
+the "int" C type, corresponding to the "INTEGER" type in Fortran. To
+coerce the length of the integer type to 32 or 64 bits, add the
+INTSIZE32 or INTSIZE64 flags, respectively, to the C compiler flags in
+the Makefile.inc configuration file. If you do so, make sure to use
+integer types of equivalent length to declare variables passed to Scotch
+routines from caller C and Fortran procedures. It is usually safer and
+cleaner to tune your C and Fortran compilers to make them interpret
+"int" and "INTEGER" types as 32 or 64 bit values than to use the
+aforementioned flags and hard-code type lengths in your own code.
+
+
 The binaries of the Scotch distribution can handle compressed
 graphs in input or output. Three compressed graph formats are
 currently supported: bzip2, gzip and lzma. In order for them to be
@@ -139,9 +151,9 @@ available. They are used in two places:
   without setting the other. If you have doubts on the stability
   of your MPI implementation, it is better not to set -DSCOTCH_PTHREAD.
   For instance, on Linux platforms, concurrency problems have been
-  experienced with MPICH2 versions prior to 1.0.7 ; consequently, if
-  the MPI implementation on your platform is based on an older MPICH2
-  version, do not set the SCOTCH_PTHREAD flag.
+  experienced with MPICH2 versions prior to 1.0.7 using TCP;
+  consequently, if the MPI implementation on your platform is based on
+  an older MPICH2 version, do not set the SCOTCH_PTHREAD flag.
 
 
 Then, compile the Scotch distribution by typing "make scotch", or

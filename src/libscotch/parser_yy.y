@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     11 jun 2004     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to     20 feb 2008     **/
+/**                                 to     22 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -268,7 +268,7 @@ STRATMETHOD   : METHODNAME
                   }
                 }
                 if (methlen == 0) {               /* If method name not known */
-                  errorPrint ("stratParserParse: invalid method name (\"%s\", before \"%s\")",
+                  errorPrint ("stratParserParse: invalid method name \"%s\", before \"%s\"",
                               ($1), stratParserRemain ());
                   YYABORT;
                 }
@@ -289,6 +289,20 @@ STRATMETHOD   : METHODNAME
               }
                 METHODPARAM
               {
+                StratParamTab *   paratab;
+                int               i;
+
+                paratab = parserstrattab->paratab; /* Point to the parameter table */
+                for (i = 0; paratab[i].name != NULL; i ++) {
+                  if ((paratab[i].meth == parserstratcurr->data.method.meth) && /* If a strategy parameter found for this method */
+                      (paratab[i].type == STRATPARAMSTRAT)) {
+                    if (*((Strat **) ((byte *) &parserstratcurr->data.method.data + /* And this parameter has not been set */
+                        (paratab[i].dataofft - paratab[i].database))) == NULL)
+                      errorPrintW ("stratParserParse: strategy parameter \"%s\" of method \"%s\" not set, before \"%s\"",
+                                   paratab[i].name, parserstrattab->methtab[parserstratcurr->data.method.meth].name, stratParserRemain ());
+                  }
+                }
+
                 ($$) = parserstratcurr;           /* Return current structure */
                 parserstratcurr = NULL;           /* No current structure     */
               }
@@ -331,7 +345,7 @@ PARAMPARAM    : PARAMNAME
                   }
                 }
                 if (paralen == 0) {
-                  errorPrint ("stratParserParse: invalid method parameter name (\"%s\", before \"%s\")",
+                  errorPrint ("stratParserParse: invalid method parameter name \"%s\", before \"%s\"",
                               ($1), stratParserRemain ());
                   YYABORT;
                 }
@@ -365,7 +379,7 @@ PARAMVAL      : VALCASE
                        (*p != '\0') && (*p != c);
                        p ++, i ++) ;
                   if (*p == '\0') {
-                    errorPrint ("stratParserParse: invalid method parameter switch (\"%s=%c\", before \"%s\")",
+                    errorPrint ("stratParserParse: invalid method parameter switch \"%s=%c\", before \"%s\"",
                                 parserparamcurr->name, ($1), stratParserRemain ());
                     YYABORT;
                   }
@@ -447,7 +461,7 @@ PARAMVAL      : VALCASE
               }
               | error
               {
-                errorPrint ("stratParserParse: invalid value for parameter \"%s\" of method \"%s\" (before \"%s\")",
+                errorPrint ("stratParserParse: invalid value for parameter \"%s\" of method \"%s\", before \"%s\"",
                             parserparamcurr->name, parserstratcurr->tabl->methtab[parserstratcurr->data.method.meth].name, stratParserRemain ());
                 YYABORT;
               }
@@ -694,7 +708,7 @@ TESTVAR       : PARAMNAME
                   }
                 }
                 if (paralen == 0) {
-                  errorPrint ("stratParserParse: invalid graph parameter name (\"%s\", before \"%s\")",
+                  errorPrint ("stratParserParse: invalid graph parameter name \"%s\", before \"%s\"",
                               ($1), stratParserRemain ());
                   YYABORT;
                 }
@@ -780,6 +794,6 @@ int
 stratParserError (
 const char * const          errstr)
 {
-  errorPrint ("stratParserParse: invalid strategy string (before \"%s\")", stratParserRemain ());
+  errorPrint ("stratParserParse: invalid strategy string, before \"%s\"", stratParserRemain ());
   return     (1);
 }

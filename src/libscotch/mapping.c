@@ -92,11 +92,11 @@
 
 int
 mapInit2 (
-Mapping * restrict const        mappptr,
-const Gnum                      baseval,
+Mapping * restrict const        mappptr,          /*+ Mapping structure to fill      +*/
+const Gnum                      baseval,          /*+ Base value                     +*/
 const Gnum                      vertnbr,
 const Arch * restrict const     archptr,
-const ArchDom * restrict const  domnptr)
+const ArchDom * restrict const  domnptr)          /*+ Pointer to initial (sub)domain +*/
 {
   Anum                domnmax;                    /* Maximum number of domains       */
   Gnum * restrict     parttab;                    /* Temporary pointer to part array */

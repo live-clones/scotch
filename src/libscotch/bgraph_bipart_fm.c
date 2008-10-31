@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,6 +61,8 @@
 /**                                 to     05 may 2006     **/
 /**                # Version 5.0  : from : 24 mar 2008     **/
 /**                                 to   : 22 may 2008     **/
+/**                # Version 5.1  : from : 30 oct 2008     **/
+/**                                 to   : 30 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -697,14 +699,16 @@ const Gnum                        savenbr,        /*+ Number of moves recorded  
 GainTabl * const                  tablptr,        /*+ Gain table                 +*/
 BgraphBipartFmVertex ** const     lockptr)        /*+ Pointer to locked list     +*/
 {
-  BgraphBipartFmVertex * restrict hashtab;        /* Extended vertex array                */
-  BgraphBipartFmSave * restrict   savetab;        /* Move backtracking array              */
-  BgraphBipartFmSave * restrict   saveold;        /* Pointer to translated old save array */
+  BgraphBipartFmVertex * restrict hashtab;        /* Extended vertex array                        */
+  BgraphBipartFmSave * restrict   savetab;        /* Move backtracking array                      */
+  BgraphBipartFmSave * restrict   saveold;        /* Pointer to translated old save array         */
   Gnum                            savenum;
-  Gnum                            hashold;        /* Size of old hash table (half of new) */
+  Gnum                            hashold;        /* Size of old hash table (half of new)         */
   Gnum                            hashsiz;
   Gnum                            hashmax;
   Gnum                            hashmsk;
+  Gnum                            hashsta;        /* Start index of range of hash indices to move */
+  Gnum                            hashend;        /* End index of range of hash indices to move   */
   Gnum                            hashnum;
 
   hashmax = *hashmaxptr << 1;                     /* Compute new sizes */
@@ -745,54 +749,45 @@ BgraphBipartFmVertex ** const     lockptr)        /*+ Pointer to locked list    
   gainTablFree (tablptr);                         /* Reset gain table  */
   *lockptr = NULL;                                /* Rebuild lock list */
 
-  if (hashtab[0].vertnum != ~0) {                 /* If vertex overflowing may have occured in old hash table */
-    Gnum                        hashtmp;
-    Gnum                        hashnew;
+  for (hashsta = hashold - 1; hashtab[hashsta].vertnum != ~0; hashsta --) ; /* Start index of first segment to reconsider is last empty slot */
+  hashend = hashold;                              /* First segment to reconsider ends at the end of the old array                            */
+  while (hashend != hashsta) {                    /* For each of the two segments to consider                                                */
+    for (hashnum = hashsta; hashnum < hashend; hashnum ++) { /* Re-compute position of vertices in new table                                 */
+      Gnum                        vertnum;
 
-    for (hashtmp = hashold - 1, hashnew = 0;      /* Temporarily move vertices away from end of old table to prevent overflowing */
-         hashtab[hashtmp].vertnum != ~0; hashtmp --) {
-      while (hashtab[++ hashnew].vertnum != ~0) ; /* Find an empty slot to receive moved vertex */
+      vertnum = hashtab[hashnum].vertnum;
+      if (vertnum != ~0) {                        /* If hash slot used */
+        Gnum                        hashnew;
+
+        for (hashnew = (vertnum * BGRAPHBIPARTFMHASHPRIME) & hashmsk; ; hashnew = (hashnew + 1) & hashmsk) {
+          if (hashnew == hashnum)                 /* If hash slot is the same */
+            break;                                /* There is nothing to do   */
+          if (hashtab[hashnew].vertnum == ~0) {   /* If new slot is empty     */
 #ifdef SCOTCH_DEBUG_BGRAPH2
-      if (hashnew >= hashtmp) {
-        errorPrint ("bgraphBipartFmResize: internal error (2)");
-        return     (1);
-      }
+            if ((hashnew > hashnum) && (hashnew < hashend)) { /* If vertex is not moved either before its old position or after the end of the segment */
+              errorPrint ("bgraphBipartFmResize: internal error (2)");
+              return     (1);
+            }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
+            hashtab[hashnew] = hashtab[hashnum];  /* Copy data to new slot         */
+            hashtab[hashnum].mswpnum = ~0;        /* TRICK: not tested at creation */
+            hashtab[hashnum].vertnum = ~0;        /* Make old slot empty           */
+            break;
+          }
+        }
 
-      hashtab[hashnew] = hashtab[hashtmp];        /* Move vertex from end of table */
-      hashtab[hashtmp].mswpnum = ~0;              /* TRICK: not tested at creation */
-      hashtab[hashtmp].vertnum = ~0;              /* Set old slot as free          */
-    }
-  }
-
-  for (hashnum = 0; hashnum < hashold; hashnum ++) { /* Re-compute position of vertices in new table */
-    Gnum                        vertnum;
-
-    vertnum = hashtab[hashnum].vertnum;
-    if (vertnum != ~0) {                          /* If hash slot used */
-      Gnum                        hashnew;
-
-      for (hashnew = (vertnum * BGRAPHBIPARTFMHASHPRIME) & hashmsk; ; hashnew = (hashnew + 1) & hashmsk) {
-        if (hashnew == hashnum)                   /* If hash slot is the same      */
-          break;                                  /* There is nothing to do        */
-        if (hashtab[hashnew].vertnum == ~0) {     /* If new slot is empty          */
-          hashtab[hashnew] = hashtab[hashnum];    /* Copy data to new slot         */
-          hashtab[hashnum].mswpnum = ~0;          /* TRICK: not tested at creation */
-          hashtab[hashnum].vertnum = ~0;          /* Make old slot empty           */
-          break;
+        if (hashtab[hashnew].gainlink.next >= BGRAPHBIPARTFMSTATELINK) /* If vertex was linked, re-link it */
+          gainTablAdd (tablptr, &hashtab[hashnew].gainlink, hashtab[hashnew].compgain);
+        else if (hashtab[hashnew].gainlink.next == BGRAPHBIPARTFMSTATEUSED) { /* Re-lock used vertices */
+          hashtab[hashnew].gainlink.prev = (GainLink *) *lockptr; /* Lock it */
+          *lockptr = &hashtab[hashnew];
         }
       }
-      if ((hashnew > hashnum) && (hashnew < hashold)) /* If vertex was an overflowed vertex which will be replaced at end of old table */
-        continue;                                 /* It will be re-processed again and re-linked once for good at the end of the loop  */
-
-      if (hashtab[hashnew].gainlink.next >= BGRAPHBIPARTFMSTATELINK) /* If vertex was linked, re-link it */
-        gainTablAdd (tablptr, &hashtab[hashnew].gainlink, hashtab[hashnew].compgain);
-      else if (hashtab[hashnew].gainlink.next == BGRAPHBIPARTFMSTATEUSED) { /* Re-lock used vertices */
-        hashtab[hashnew].gainlink.prev = (GainLink *) *lockptr; /* Lock it */
-        *lockptr = &hashtab[hashnew];
-      }
     }
-  }
+
+    hashend = hashsta;                            /* End of second segment to consider is start of first one    */
+    hashsta = 0;                                  /* Start of second segment is beginning of array              */
+  }                                               /* After second segment, hashsta = hashend = 0 and loop stops */
 
   for (savenum = 0; savenum < savenbr; savenum ++) {
     Gnum                  vertnum;

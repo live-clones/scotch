@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 24 feb 2007     **/
 /**                                 to     24 jul 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     27 sep 2008     **/
+/**                                 to     25 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -321,6 +321,7 @@
 
 #define bdgraphbipartststratab      _SCOTCHbdgraphbipartststratab
 #define bdgraphCheck                _SCOTCHbdgraphCheck
+#define bdgraphGatherAll            _SCOTCHbdgraphGatherAll
 #define bdgraphBipartBd             _SCOTCHbdgraphBipartBd
 #define bdgraphBipartDf             _SCOTCHbdgraphBipartDf
 #define bdgraphBipartMl             _SCOTCHbdgraphBipartMl

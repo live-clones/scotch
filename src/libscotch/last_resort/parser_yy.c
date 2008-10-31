@@ -143,7 +143,7 @@
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     11 jun 2004     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to     20 feb 2008     **/
+/**                                 to     22 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -541,12 +541,12 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint16 yyrline[] =
 {
        0,   136,   136,   142,   160,   163,   165,   180,   198,   202,
-     206,   202,   230,   233,   238,   243,   247,   251,   250,   298,
-     302,   298,   306,   309,   310,   314,   313,   352,   385,   398,
-     411,   426,   426,   448,   456,   459,   477,   480,   498,   501,
-     517,   521,   524,   543,   547,   551,   557,   573,   576,   580,
-     586,   602,   605,   611,   627,   630,   636,   640,   641,   644,
-     659,   676
+     206,   202,   230,   233,   238,   243,   247,   251,   250,   312,
+     316,   312,   320,   323,   324,   328,   327,   366,   399,   412,
+     425,   440,   440,   462,   470,   473,   491,   494,   512,   515,
+     531,   535,   538,   557,   561,   565,   571,   587,   590,   594,
+     600,   616,   619,   625,   641,   644,   650,   654,   655,   658,
+     673,   690
 };
 #endif
 
@@ -1682,27 +1682,41 @@ yyreduce:
   case 18:
 #line 291 "parser_yy.y"
     {
+                StratParamTab *   paratab;
+                int               i;
+
+                paratab = parserstrattab->paratab; /* Point to the parameter table */
+                for (i = 0; paratab[i].name != NULL; i ++) {
+                  if ((paratab[i].meth == parserstratcurr->data.method.meth) && /* If a strategy parameter found for this method */
+                      (paratab[i].type == STRATPARAMSTRAT)) {
+                    if (*((Strat **) ((byte *) &parserstratcurr->data.method.data + /* And this parameter has not been set */
+                        (paratab[i].dataofft - paratab[i].database))) == NULL)
+                      errorPrintW ("stratParserParse: strategy parameter \"%s\" of method \"%s\" not set, before \"%s\"",
+                                   paratab[i].name, parserstrattab->methtab[parserstratcurr->data.method.meth].name, stratParserRemain ());
+                  }
+                }
+
                 ((yyval.STRAT)) = parserstratcurr;           /* Return current structure */
                 parserstratcurr = NULL;           /* No current structure     */
               }
     break;
 
   case 19:
-#line 298 "parser_yy.y"
+#line 312 "parser_yy.y"
     {
                 stratParserSelect (VALPARAM);     /* Parse parameter tokens */
               }
     break;
 
   case 20:
-#line 302 "parser_yy.y"
+#line 316 "parser_yy.y"
     {
                 stratParserSelect (VALSTRAT);     /* Parse strategy tokens */
               }
     break;
 
   case 25:
-#line 314 "parser_yy.y"
+#line 328 "parser_yy.y"
     {
                 int               para;
                 int               paralen;
@@ -1737,7 +1751,7 @@ yyreduce:
     break;
 
   case 26:
-#line 346 "parser_yy.y"
+#line 360 "parser_yy.y"
     {
                 stratParserSelect (VALPARAM);     /* Go-on reading parameters        */
                 parserstrattab = ((yyvsp[(2) - (4)].SAVE)).tabl; /* Restore current strategy tables */
@@ -1745,7 +1759,7 @@ yyreduce:
     break;
 
   case 27:
-#line 353 "parser_yy.y"
+#line 367 "parser_yy.y"
     {
                 char              c;              /* Character read             */
                 char *            p;              /* Pointer to selector string */
@@ -1781,7 +1795,7 @@ yyreduce:
     break;
 
   case 28:
-#line 386 "parser_yy.y"
+#line 400 "parser_yy.y"
     {
 #ifdef SCOTCH_DEBUG_PARSER2
                 if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (double)) > sizeof (StratNodeMethodData)) {
@@ -1797,7 +1811,7 @@ yyreduce:
     break;
 
   case 29:
-#line 399 "parser_yy.y"
+#line 413 "parser_yy.y"
     {
 #ifdef SCOTCH_DEBUG_PARSER2
                 if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (INT)) > sizeof (StratNodeMethodData)) {
@@ -1813,7 +1827,7 @@ yyreduce:
     break;
 
   case 30:
-#line 412 "parser_yy.y"
+#line 426 "parser_yy.y"
     {
 #ifdef SCOTCH_DEBUG_PARSER2
                 if ((parserparamcurr->dataofft - parserparamcurr->database + strlen ((yyvsp[(1) - (1)].STRING)) + 1) > sizeof (StratNodeMethodData)) {
@@ -1830,7 +1844,7 @@ yyreduce:
     break;
 
   case 31:
-#line 426 "parser_yy.y"
+#line 440 "parser_yy.y"
     {
                 ((yyval.SAVE)).strat = parserstratcurr;
                 ((yyval.SAVE)).param = parserparamcurr;
@@ -1840,7 +1854,7 @@ yyreduce:
     break;
 
   case 32:
-#line 433 "parser_yy.y"
+#line 447 "parser_yy.y"
     {
                 parserstratcurr = ((yyvsp[(1) - (2)].SAVE)).strat; /* Restore current method    */
                 parserparamcurr = ((yyvsp[(1) - (2)].SAVE)).param; /* Restore current parameter */
@@ -1859,7 +1873,7 @@ yyreduce:
     break;
 
   case 33:
-#line 449 "parser_yy.y"
+#line 463 "parser_yy.y"
     {
                 errorPrint ("stratParserParse: invalid value for parameter \"%s\" of method \"%s\" (before \"%s\")",
                             parserparamcurr->name, parserstratcurr->tabl->methtab[parserstratcurr->data.method.meth].name, stratParserRemain ());
@@ -1868,7 +1882,7 @@ yyreduce:
     break;
 
   case 35:
-#line 460 "parser_yy.y"
+#line 474 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -1889,7 +1903,7 @@ yyreduce:
     break;
 
   case 37:
-#line 481 "parser_yy.y"
+#line 495 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -1910,7 +1924,7 @@ yyreduce:
     break;
 
   case 39:
-#line 502 "parser_yy.y"
+#line 516 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -1929,14 +1943,14 @@ yyreduce:
     break;
 
   case 40:
-#line 518 "parser_yy.y"
+#line 532 "parser_yy.y"
     {
                 ((yyval.TEST)) = ((yyvsp[(2) - (3)].TEST));
               }
     break;
 
   case 42:
-#line 525 "parser_yy.y"
+#line 539 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -1956,28 +1970,28 @@ yyreduce:
     break;
 
   case 43:
-#line 544 "parser_yy.y"
+#line 558 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTLT;
               }
     break;
 
   case 44:
-#line 548 "parser_yy.y"
+#line 562 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTEQ;
               }
     break;
 
   case 45:
-#line 552 "parser_yy.y"
+#line 566 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTGT;
               }
     break;
 
   case 46:
-#line 558 "parser_yy.y"
+#line 572 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -1996,21 +2010,21 @@ yyreduce:
     break;
 
   case 48:
-#line 577 "parser_yy.y"
+#line 591 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTADD;
               }
     break;
 
   case 49:
-#line 581 "parser_yy.y"
+#line 595 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTSUB;
               }
     break;
 
   case 50:
-#line 587 "parser_yy.y"
+#line 601 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -2029,14 +2043,14 @@ yyreduce:
     break;
 
   case 52:
-#line 606 "parser_yy.y"
+#line 620 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTMUL;
               }
     break;
 
   case 53:
-#line 612 "parser_yy.y"
+#line 626 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -2055,21 +2069,21 @@ yyreduce:
     break;
 
   case 55:
-#line 631 "parser_yy.y"
+#line 645 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTMOD;
               }
     break;
 
   case 56:
-#line 637 "parser_yy.y"
+#line 651 "parser_yy.y"
     {
                 ((yyval.TEST)) = ((yyvsp[(2) - (3)].TEST));
               }
     break;
 
   case 59:
-#line 645 "parser_yy.y"
+#line 659 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -2087,7 +2101,7 @@ yyreduce:
     break;
 
   case 60:
-#line 660 "parser_yy.y"
+#line 674 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -2105,7 +2119,7 @@ yyreduce:
     break;
 
   case 61:
-#line 677 "parser_yy.y"
+#line 691 "parser_yy.y"
     {
                 StratTest *       test;
                 StratParamTab *   condtab;
@@ -2148,7 +2162,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 2152 "y.tab.c"
+#line 2166 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2362,7 +2376,7 @@ yyreturn:
 }
 
 
-#line 717 "parser_yy.y"
+#line 731 "parser_yy.y"
 
 
 /*

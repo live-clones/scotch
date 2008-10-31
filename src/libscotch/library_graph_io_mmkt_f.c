@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 14 mar 2008     **/
 /**                                 to     14 mar 2008     **/
+/**                # Version 5.1  : from : 11 oct 2008     **/
+/**                                 to     11 oct 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +123,7 @@ const int                   datanbr),                 \
 */
 
 FORTRAN (                                             \
-SCOTCHFGRAPHGEOMSAVEMMKT, scotchfgraphgeomsavechac, ( \
+SCOTCHFGRAPHGEOMSAVEMMKT, scotchfgraphgeomsavemmkt, ( \
 const SCOTCH_Graph * const  grafptr,                  \
 const SCOTCH_Geom * const   geomptr,                  \
 const int * const           filegrfptr,               \

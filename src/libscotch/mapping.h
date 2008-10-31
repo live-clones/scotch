@@ -79,11 +79,11 @@ typedef struct Mapping_ {
   Gnum                      baseval;              /*+ Base value for structures     +*/
   Gnum                      vertnbr;              /*+ Number of vertices in mapping +*/
   Anum * restrict           parttax;              /*+ Mapping array [vertnbr]       +*/
-  Anum                      domnmax;              /*+ Maximum number of domains     +*/
-  Anum                      domnnbr;              /*+ Current number of domains     +*/
   ArchDom * restrict        domntab;              /*+ Array of domains [termmax]    +*/
+  Anum                      domnnbr;              /*+ Current number of domains     +*/
+  Anum                      domnmax;              /*+ Maximum number of domains     +*/
   Arch                      archdat;              /*+ Architecture data             +*/
-  ArchDom                   domnorg;              /*+ Initial domain                +*/
+  ArchDom                   domnorg;              /*+ Initial (sub)domain           +*/
 } Mapping;
 
 /*+ The target architecture sort structure, used
