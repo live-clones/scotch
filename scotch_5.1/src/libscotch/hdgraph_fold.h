@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -29,20 +29,22 @@
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
-/**********************************************************/
-/*                                                        */
-/*   NAME       : hdgraph_fold.h                          */
-/*                                                        */
-/*   AUTHOR     : Francois PELLEGRINI                     */
-/*                                                        */
-/*   FUNCTION   : These lines are the data declarations   */
-/*                for the distributed source graph        */
-/*                folding routines.                       */
-/*                                                        */
-/*                # Version 5.0  : from : 06 sep 2006     */
-/*                                 to     06 sep 2006     */
-/*                                                        */
-/**********************************************************/
+/************************************************************/
+/**                                                        **/
+/**   NAME       : hdgraph_fold.h                          **/
+/**                                                        **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                                                        **/
+/**   FUNCTION   : These lines are the data declarations   **/
+/**                for the distributed source graph        **/
+/**                folding routines.                       **/
+/**                                                        **/
+/**                # Version 5.0  : from : 06 sep 2006     **/
+/**                                 to     06 sep 2006     **/
+/**                # Version 5.1  : from : 03 jan 2009     **/
+/**                                 to     03 jan 2009     **/
+/**                                                        **/
+/************************************************************/
 
 /*
 **  The defines.
@@ -55,9 +57,10 @@
    vnumloctab.                                  */
 
 typedef enum HdgraphFoldTag_ {
-  HDGRAPHFOLDTAGVERTLOCTAB = 1,                   /*+ vertloctab message +*/
-  HDGRAPHFOLDTAGVENDLOCTAB,                       /*+ vendloctab message +*/
-  HDGRAPHFOLDTAGEDGELOCTAB,                       /*+ edgeloctab message +*/
-  HDGRAPHFOLDTAGVELOLOCTAB,                       /*+ veloloctab message +*/
+  HDGRAPHFOLDTAGENBR = 1,                         /*+ Edge size message  +*/
+  HDGRAPHFOLDTAGVERT,                             /*+ vertloctab message +*/
+  HDGRAPHFOLDTAGVEND,                             /*+ vendloctab message +*/
+  HDGRAPHFOLDTAGVELO,                             /*+ veloloctab message +*/
+  HDGRAPHFOLDTAGEDGE,                             /*+ edgeloctab message +*/
   HDGRAPHFOLDTAGNBR                               /*+ Number of tags     +*/
 } HdgraphFoldTag;

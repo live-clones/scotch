@@ -274,7 +274,7 @@ fprintf (stderr, "finenodenbr=%ld, fineelemnbr=%ld, fineedgenbr=%ld, finedegrmax
 
         for (coarhnodtmp = (coarvnodtmp * MESHCOARSENHASHPRIME) & coarhashmsk; ; coarhnodtmp = (coarhnodtmp + 1) & coarhashmsk) {
           if (coarhngbtab[coarhnodtmp].coarvelmnum != coarvelmnum) { /* If node neighbor not yet considered */
-            coarhngbtab[coarhnodtmp].coarvelmnum = coarvelmnum; /* Add it to element neighbor list */
+            coarhngbtab[coarhnodtmp].coarvelmnum = coarvelmnum; /* Add it to element neighbor list          */
             coarhngbtab[coarhnodtmp].coarvnodnum = coarvnodtmp;
             coaredgetax[coaredgenum ++]          = coarvnodtmp;
             coarverttax[coarvnodtmp] ++;          /* One more edge referencing the node */

@@ -44,7 +44,7 @@
 /**                best result obtained.                   **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 15 feb 2006     **/
-/**                                 to     01 mar 2008     **/
+/**                                 to     26 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -131,11 +131,13 @@ const VdgraphSeparateSqParam * const  paraptr)    /*+ Method parameters +*/
   MPI_Datatype      besttypedat;                  /* Data type for finding best separator              */
   MPI_Op            bestoperdat;                  /* Handle of MPI operator for finding best separator */
   int               bestprocnum;                  /* Rank of process holding best partition            */
+  Gnum * restrict   vnumloctax;
   Gnum              vertlocnum;
   Gnum              complocsize1;
   Gnum              complocload1;
   Gnum              complocload2;
   Gnum              fronlocnbr;
+  int               o;
 
   if ((MPI_Type_contiguous (4, GNUM_MPI, &besttypedat)                                != MPI_SUCCESS) ||
       (MPI_Type_commit (&besttypedat)                                                 != MPI_SUCCESS) ||
@@ -149,7 +151,11 @@ const VdgraphSeparateSqParam * const  paraptr)    /*+ Method parameters +*/
   reduloctab[2] = dgrfptr->s.proclocnum;
   reduloctab[3] = 0;                              /* Assume sequential separation went fine */
 
-  if (vdgraphGatherAll (dgrfptr, &cgrfdat) != 0) {
+  vnumloctax = dgrfptr->s.vnumloctax;             /* No need for vertex number array when centralizing graph */
+  dgrfptr->s.vnumloctax = NULL;
+  o = vdgraphGatherAll (dgrfptr, &cgrfdat);
+  dgrfptr->s.vnumloctax = vnumloctax;             /* Restore vertex number array */
+  if (o != 0) {
     errorPrint ("vdgraphSeparateSq: cannot build centralized graph");
     return     (1);
   }

@@ -41,7 +41,7 @@
 /**                assumed to be a distributed band graph. **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 05 nov 2007     **/
-/**                                 to   : 01 mar 2008     **/
+/**                                 to   : 09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -197,7 +197,7 @@ const VdgraphSeparateDfParam * const  paraptr)    /*+ Method parameters +*/
   for (passnum = 0; ; ) {                         /* For all passes         */
     if (ovflval == 0) {                           /* If no overflow occured */
       Gnum                vertlocnum;
-      float * restrict    diftgsttax;             /* Temporary swap value */
+      float *             diftgsttax;             /* Temporary swap value */
       float               veloval;
 
       veloval = 1.0F;                             /* Assume no vertex loads */
@@ -265,9 +265,9 @@ const VdgraphSeparateDfParam * const  paraptr)    /*+ Method parameters +*/
         difngsttax[vertlocnum] = diffval;
       }
 
-      diftgsttax = difngsttax;                    /* Swap old and new diffusion arrays */
-      difngsttax = difogsttax;
-      difogsttax = diftgsttax;
+      diftgsttax = (float *) difngsttax;          /* Swap old and new diffusion arrays          */
+      difngsttax = (float *) difogsttax;          /* Casts to prevent IBM compiler from yelling */
+      difogsttax = (float *) diftgsttax;
     }
 abort :                                           /* If overflow occured, resume here    */
     if (++ passnum >= paraptr->passnbr)           /* If maximum number of passes reached */

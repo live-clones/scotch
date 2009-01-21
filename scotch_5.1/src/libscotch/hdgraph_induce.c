@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 19 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 27 jun 2008     **/
-/**                                 to   : 27 jun 2008     **/
+/**                                 to   : 11 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -147,7 +147,7 @@ Hdgraph * restrict const    indgrafptr)
   else if (indgrafptr->s.vertloctax -= orggrafptr->s.baseval,
            indgrafptr->s.vendloctax -= orggrafptr->s.baseval,
            indgrafptr->s.vnumloctax -= orggrafptr->s.baseval,
-           indgrafptr->s.veloloctax  = ((indvelolocnbr != 0) ? indgrafptr->s.veloloctax - orggrafptr->s.baseval : NULL),
+           indgrafptr->s.veloloctax  = ((orggrafptr->s.veloloctax != NULL) ? indgrafptr->s.veloloctax - orggrafptr->s.baseval : NULL),
            memAllocGroup ((void **) (void *)
                           &indgrafptr->s.edgeloctax, (size_t) (indedgelocmax            * sizeof (Gnum)), /* Pre-allocate space for edgeloctab              */
                           &orgindxgsttax,            (size_t) (orggrafptr->s.vertgstnbr * sizeof (Gnum)), /* orgindxgsttab and orgindxhaltab are at the end */

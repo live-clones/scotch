@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 27 nov 2006     **/
 /**                                 to   : 23 dec 2007     **/
+/**                # Version 5.1  : from : 09 nov 2008     **/
+/**                                 to   : 09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,32 +73,40 @@ bgraphBipartBd (
 Bgraph * restrict const           orggrafptr,     /*+ Active graph      +*/
 const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
 {
-  BgraphBipartBdQueue       queudat;              /* Neighbor queue                                               */
-  Gnum * restrict           orgdisttax;           /* Based access to distance array for original graph            */
-  Gnum                      orgdistmax;           /* Maximum distance allowed                                     */
-#define orgindxtax          orgdisttax            /* Recycle distance array as number indexing array              */
-  Gnum                      orgfronnum;
-  Gnum                      ancfronnum;
-  Gnum                      bndfronnum;
-  Bgraph                    bndgrafdat;           /* Band graph structure                                         */
-  Gnum                      bndvertnbr;           /* Number of regular vertices in band graph (without anchors)   */
-  Gnum                      bndvertnnd;
-  Gnum * restrict           bndvnumtax;           /* Band vertex number array, recycling queudat.qtab             */
-  Gnum * restrict           bndveextax;           /* External gain array of band graph, if present                */
-  Gnum                      bndveexnbr;           /* Number of external array vertices                            */
-  Gnum                      bndvelosum;           /* Load of regular vertices in band graph                       */
-  Gnum                      bndedlosum;           /* Sum of edge loads                                            */
-  Gnum                      bndcompsize1;         /* Number of regular vertices in part 1 of band graph           */
-  Gnum                      bndcompload1;         /* Load of regular vertices in part 1                           */
-  Gnum                      bndvlvlnum;           /* Index of first band graph vertex to belong to the last layer */
-  Gnum                      bndvertnum;
-  Gnum                      bndedgenbr;           /* Upper bound on the number of edges, including anchor edges   */
-  Gnum                      bndeancnbr;           /* Number of anchor edges                                       */
-  Gnum                      bndedgenum;
-  Gnum                      bndedgetmp;
-  Gnum                      bnddegrmax;
-  Gnum                      bndcommgainextn;      /* Sum of all external gains in band graph                      */
-  Gnum                      bndcommgainextn1;     /* Sum of external gains accounted for in load, since in part 1 */
+  BgraphBipartBdQueue         queudat;            /* Neighbor queue                                               */
+  Gnum * restrict             orgdisttax;         /* Based access to distance array for original graph            */
+  Gnum                        orgdistmax;         /* Maximum distance allowed                                     */
+#define orgindxtax            orgdisttax          /* Recycle distance array as number indexing array              */
+  Gnum                        orgfronnum;
+  Gnum                        ancfronnum;
+  Gnum                        bndfronnum;
+  Bgraph                      bndgrafdat;         /* Band graph structure                                         */
+  Gnum                        bndvertnbr;         /* Number of regular vertices in band graph (without anchors)   */
+  Gnum                        bndvertnnd;
+  Gnum * restrict             bndvnumtax;         /* Band vertex number array, recycling queudat.qtab             */
+  Gnum * restrict             bndveextax;         /* External gain array of band graph, if present                */
+  Gnum                        bndveexnbr;         /* Number of external array vertices                            */
+  Gnum                        bndvelosum;         /* Load of regular vertices in band graph                       */
+  Gnum                        bndedlosum;         /* Sum of edge loads                                            */
+  Gnum                        bndcompsize1;       /* Number of regular vertices in part 1 of band graph           */
+  Gnum                        bndcompload1;       /* Load of regular vertices in part 1                           */
+  Gnum                        bndvlvlnum;         /* Index of first band graph vertex to belong to the last layer */
+  Gnum                        bndvertnum;
+  Gnum                        bndeancnbr;         /* Number of anchor edges                                       */
+  Gnum                        bndedgenbr;         /* Upper bound on the number of edges, including anchor edges   */
+  Gnum                        bndedgenum;
+  Gnum * restrict             bndedgetax;
+  Gnum * restrict             bndedlotax;
+  Gnum                        bndedgetmp;
+  Gnum                        bnddegrmax;
+  Gnum                        bndcommgainextn;    /* Sum of all external gains in band graph                      */
+  Gnum                        bndcommgainextn1;   /* Sum of external gains accounted for in load, since in part 1 */
+  size_t                      bndedlooftval;      /* Offset of edge load array with respect to edge array         */
+  const Gnum * restrict const orgverttax = orggrafptr->s.verttax; /* Fast accesses                                */
+  const Gnum * restrict const orgvendtax = orggrafptr->s.vendtax;
+  const Gnum * restrict const orgvelotax = orggrafptr->s.velotax;
+  const Gnum * restrict const orgedgetax = orggrafptr->s.edgetax;
+  const Gnum * restrict const orgedlotax = orggrafptr->s.edlotax;
 
   if (orggrafptr->fronnbr == 0)                   /* If no separator vertices, apply strategy to full (original) graph */
     return (bgraphBipartSt (orggrafptr, paraptr->stratorg));
@@ -147,10 +157,10 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
     bndcompsize1 += orgpartval;                   /* Count vertices in part 1 */
     orgdisttax[orgvertnum] = 0;
     bgraphBipartBdQueuePut (&queudat, orgvertnum);
-    if (orggrafptr->s.velotax != NULL) {
+    if (orgvelotax != NULL) {
       Gnum                orgveloval;
 
-      orgveloval    = orggrafptr->s.velotax[orgvertnum];
+      orgveloval    = orgvelotax[orgvertnum];
       bndvelosum   += orgveloval;
       bndcompload1 += orgveloval * orgpartval;
     }
@@ -170,7 +180,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
     }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
 
-    bndedgenbr += orggrafptr->s.vendtax[orgvertnum] - orggrafptr->s.verttax[orgvertnum]; /* Exact or upper bound on number of edges, including anchor edge(s) */
+    bndedgenbr += orgvendtax[orgvertnum] - orgverttax[orgvertnum]; /* Exact or upper bound on number of edges, including anchor edge(s) */
 
     orgdistval = orgdisttax[orgvertnum];          /* Get vertex distance                    */
     if (orgdistval >= orgdistmax) {               /* If we belong to the farthest layer     */
@@ -179,11 +189,11 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
     }
 
     orgdistval ++;                                /* Distance of neighbors */
-    for (orgedgenum = orggrafptr->s.verttax[orgvertnum];
-         orgedgenum < orggrafptr->s.vendtax[orgvertnum]; orgedgenum ++) {
+    for (orgedgenum = orgverttax[orgvertnum];
+         orgedgenum < orgvendtax[orgvertnum]; orgedgenum ++) {
       Gnum                orgvertend;
 
-      orgvertend = orggrafptr->s.edgetax[orgedgenum];
+      orgvertend = orgedgetax[orgedgenum];
       if (orgdisttax[orgvertend] == ~0) {         /* If vertex not visited yet */
         Gnum                orgpartval;
 
@@ -198,10 +208,10 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
         orgdisttax[orgvertend] = orgdistval;      /* Enqueue vertex */
         bgraphBipartBdQueuePut (&queudat, orgvertend);
         bndcompsize1 += orgpartval;               /* Count vertices in part 1 */
-        if (orggrafptr->s.velotax != NULL) {
+        if (orgvelotax != NULL) {
           Gnum                orgveloval;
 
-          orgveloval    = orggrafptr->s.velotax[orgvertend];
+          orgveloval    = orgvelotax[orgvertend];
           bndvelosum   += orgveloval;
           bndcompload1 += orgveloval * orgpartval;
         }
@@ -211,7 +221,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
 
   bndvertnbr = queudat.head - queudat.qtab;       /* Number of regular band graph vertices (withour anchors) is number of enqueued vertices */
 
-  if (orggrafptr->s.velotax == NULL) {
+  if (orgvelotax == NULL) {
     bndvelosum   = bndvertnbr;
     bndcompload1 = bndcompsize1;
   }
@@ -280,6 +290,8 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   }
   bndgrafdat.s.edgetax -= orggrafptr->s.baseval;
   bndgrafdat.s.edlotax -= orggrafptr->s.baseval;
+  bndedgetax = bndgrafdat.s.edgetax;
+  bndedlotax = bndgrafdat.s.edlotax;
 
   for (bndvertnum = bndedgenum = orggrafptr->s.baseval, bnddegrmax = bndedlosum = bndcommgainextn = bndcommgainextn1 = 0;
        bndvertnum < bndvlvlnum; bndvertnum ++) {  /* Fill index array for vertices not belonging to last level */
@@ -291,7 +303,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
     orgvertnum = bndvnumtax[bndvertnum];
     orgpartval = orggrafptr->parttax[orgvertnum];
     bndgrafdat.s.verttax[bndvertnum] = bndedgenum;
-    bndgrafdat.s.velotax[bndvertnum] = (orggrafptr->s.velotax != NULL) ? orggrafptr->s.velotax[orgvertnum] : 1;
+    bndgrafdat.s.velotax[bndvertnum] = (orgvelotax != NULL) ? orgvelotax[orgvertnum] : 1;
     bndgrafdat.parttax[bndvertnum] = orgpartval;
     if (bndveextax != NULL) {
       Gnum                orgveexval;
@@ -301,24 +313,24 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
       bndcommgainextn       += orgveexval;
       bndcommgainextn1      += orgveexval * (Gnum) orgpartval;
     }
-    orgedloval = 1;                               /* Assume unity edge loads if not present    */
-    for (orgedgenum = orggrafptr->s.verttax[orgvertnum]; /* All edges of first levels are kept */
-         orgedgenum < orggrafptr->s.vendtax[orgvertnum]; orgedgenum ++, bndedgenum ++) {
+    orgedloval = 1;                               /* Assume unity edge loads if not present */
+    for (orgedgenum = orgverttax[orgvertnum];     /* All edges of first levels are kept     */
+         orgedgenum < orgvendtax[orgvertnum]; orgedgenum ++, bndedgenum ++) {
 
 #ifdef SCOTCH_DEBUG_BGRAPH2
       if ((bndedgenum >= (bndedgenbr + orggrafptr->s.baseval)) ||
-          (orgindxtax[orggrafptr->s.edgetax[orgedgenum]] < 0)) {
+          (orgindxtax[orgedgetax[orgedgenum]] < 0)) {
         errorPrint ("bgraphBipartBd: internal error (6)");
         bgraphExit (&bndgrafdat);
         memFree    (queudat.qtab);
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
-      if (orggrafptr->s.edlotax != NULL)
-        orgedloval = orggrafptr->s.edlotax[orgedgenum];
+      if (orgedlotax != NULL)
+        orgedloval = orgedlotax[orgedgenum];
       bndedlosum += orgedloval;
-      bndgrafdat.s.edgetax[bndedgenum] = orgindxtax[orggrafptr->s.edgetax[orgedgenum]];
-      bndgrafdat.s.edlotax[bndedgenum] = orgedloval;
+      bndedgetax[bndedgenum] = orgindxtax[orgedgetax[orgedgenum]];
+      bndedlotax[bndedgenum] = orgedloval;
     }
 
     if (bnddegrmax < (bndedgenum - bndgrafdat.s.verttax[bndvertnum]))
@@ -336,7 +348,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
     orgvertnum = bndvnumtax[bndvertnum];
     orgpartval = orggrafptr->parttax[orgvertnum];
     bndgrafdat.s.verttax[bndvertnum] = bndedgenum;
-    bndgrafdat.s.velotax[bndvertnum] = (orggrafptr->s.velotax != NULL) ? orggrafptr->s.velotax[orgvertnum] : 1;
+    bndgrafdat.s.velotax[bndvertnum] = (orgvelotax != NULL) ? orgvelotax[orgvertnum] : 1;
     bndgrafdat.parttax[bndvertnum] = orgpartval;  /* Record part for vertices of last level */
     if (bndveextax != NULL) {
       Gnum                orgveexval;
@@ -349,8 +361,8 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
 
     ancedloval = 0;
     orgedloval = 1;                               /* Assume unity edge loads if not present */
-    for (orgedgenum = orggrafptr->s.verttax[orgvertnum]; /* Keep only band edges            */
-         orgedgenum < orggrafptr->s.vendtax[orgvertnum]; orgedgenum ++) {
+    for (orgedgenum = orgverttax[orgvertnum];     /* Keep only band edges                   */
+         orgedgenum < orgvendtax[orgvertnum]; orgedgenum ++) {
       Gnum                bndvertend;
 
 #ifdef SCOTCH_DEBUG_BGRAPH2
@@ -361,13 +373,13 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
-      if (orggrafptr->s.edlotax != NULL)
-        orgedloval = orggrafptr->s.edlotax[orgedgenum];
+      if (orgedlotax != NULL)
+        orgedloval = orgedlotax[orgedgenum];
       bndedlosum += orgedloval;                   /* Normal arcs are accounted for twice; anchor arcs only once */
-      bndvertend  = orgindxtax[orggrafptr->s.edgetax[orgedgenum]];
+      bndvertend  = orgindxtax[orgedgetax[orgedgenum]];
       if (bndvertend != ~0) {
-        bndgrafdat.s.edgetax[bndedgenum]    = bndvertend;
-        bndgrafdat.s.edlotax[bndedgenum ++] = orgedloval;
+        bndedgetax[bndedgenum]    = bndvertend;
+        bndedlotax[bndedgenum ++] = orgedloval;
       }
       else
         ancedloval += orgedloval;                 /* Accumulate loads of edges linking to anchor vertex */
@@ -375,8 +387,8 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
 
     bndedlosum += ancedloval;                     /* Account for anchor edges a second time */
     if (ancedloval > 0) {                         /* If vertex is connected to rest of part */
-      bndgrafdat.s.edlotax[bndedgenum]    = ancedloval;
-      bndgrafdat.s.edgetax[bndedgenum ++] = bndvertnnd + (Gnum) orgpartval; /* Add anchor edge to proper anchor vertex */
+      bndedlotax[bndedgenum]    = ancedloval;
+      bndedgetax[bndedgenum ++] = bndvertnnd + (Gnum) orgpartval; /* Add anchor edge to proper anchor vertex */
       bndeancnbr ++;
     }
     bnddegrval = bndedgenum - bndgrafdat.s.verttax[bndvertnum];
@@ -408,19 +420,19 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
       Gnum                bndvertend;
 
       bndedgelst = bndgrafdat.s.verttax[bndvertnum + 1] - 1;
-      bndvertend = bndgrafdat.s.edgetax[bndedgelst]; /* Get last neighbor of its edge sub-array */
+      bndvertend = bndedgetax[bndedgelst];        /* Get last neighbor of its edge sub-array */
       if (bndvertend >= bndvertnnd) {             /* If it is an anchor                         */
         Gnum                bndedloval;
 
-        bndedloval  = bndgrafdat.s.edlotax[bndedgelst];
+        bndedloval  = bndedlotax[bndedgelst];
         bndedlosum += bndedloval;
         if (bndvertend == bndvertnnd) {           /* Add edge from proper anchor */
-          bndgrafdat.s.edgetax[bndedgenum]    = bndvertnum;
-          bndgrafdat.s.edlotax[bndedgenum ++] = bndedloval;
+          bndedgetax[bndedgenum]    = bndvertnum;
+          bndedlotax[bndedgenum ++] = bndedloval;
         }
         else {
-          bndgrafdat.s.edgetax[-- bndedgetmp] = bndvertnum;
-          bndgrafdat.s.edlotax[bndedgetmp]    = bndedloval;
+          bndedgetax[-- bndedgetmp] = bndvertnum;
+          bndedlotax[bndedgetmp]    = bndedloval;
         }
       }
     }
@@ -439,16 +451,12 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   if (bnddegrmax < (bndgrafdat.s.verttax[bndvertnnd + 2] - bndgrafdat.s.verttax[bndvertnnd + 1]))
     bnddegrmax = (bndgrafdat.s.verttax[bndvertnnd + 2] - bndgrafdat.s.verttax[bndvertnnd + 1]);
   bndgrafdat.s.degrmax = bnddegrmax;
-  if (bndgrafdat.s.edlotax == NULL)
-    bndgrafdat.s.edgetax = (Gnum *) memRealloc ((void *) (bndgrafdat.s.edgetax + orggrafptr->s.baseval), bndgrafdat.s.edgenbr * sizeof (Gnum)) - orggrafptr->s.baseval;
-  else {
-    size_t              bndedlooftval;            /* Offset of edge load array with respect to edge array */
 
-    bndedlooftval = bndgrafdat.s.edlotax - bndgrafdat.s.edgetax;
-    bndgrafdat.s.edgetax  = memRealloc (bndgrafdat.s.edgetax + bndgrafdat.s.baseval, (bndedlooftval + bndgrafdat.s.edgenbr) * sizeof (Gnum));
-    bndgrafdat.s.edgetax -= bndgrafdat.s.baseval;
-    bndgrafdat.s.edlotax  = bndgrafdat.s.edgetax + bndedlooftval; /* Use old index into old array as new index */
-  }
+  bndedlooftval = bndedlotax - bndedgetax;
+  bndgrafdat.s.edgetax = (Gnum *) memRealloc (bndedgetax + bndgrafdat.s.baseval, (bndedlooftval + bndgrafdat.s.edgenbr) * sizeof (Gnum)) - bndgrafdat.s.baseval;
+  bndgrafdat.s.edlotax = bndgrafdat.s.edgetax + bndedlooftval; /* Use old index into old array as new index */
+  bndedgetax = bndgrafdat.s.edgetax;
+  bndedlotax = bndgrafdat.s.edlotax;
 
   for (bndfronnum = 0, bndvertnum = orggrafptr->s.baseval; /* Fill band frontier array with first vertex indices as they make the separator */
        bndfronnum < orggrafptr->fronnbr; bndfronnum ++, bndvertnum ++)
@@ -474,9 +482,8 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
       for (bndedgenum = bndgrafdat.s.verttax[bndvertnum]; bndedgenum < bndgrafdat.s.vendtax[bndvertnum]; bndedgenum ++) {
         Gnum                bndpartend;
 
-        bndpartend = (Gnum) bndgrafdat.parttax[bndgrafdat.s.edgetax[bndedgenum]];
-        if (bndgrafdat.s.edlotax != NULL)
-          bndedloval = bndgrafdat.s.edlotax[bndedgenum];
+        bndpartend = (Gnum) bndgrafdat.parttax[bndedgetax[bndedgenum]];
+        bndedloval = bndedlotax[bndedgenum];
         bndcommloadintn += bndedloval * bndpartend;
       }
     }
@@ -568,18 +575,18 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
       Gnum                orgvertnum;             /* Index of neighbor of anchor vertex in original graph */
       Gnum                orgedgenum;
 
-      bndvertend = bndgrafdat.s.edgetax[bndedgenum];
+      bndvertend = bndedgetax[bndedgenum];
       if (bndgrafdat.parttax[bndvertend] == ancpartval) /* If neighbor is in same part as anchor, skip to next */
         continue;
 
       orgvertnum = bndvnumtax[bndvertend];
 
-      for (orgedgenum = orggrafptr->s.verttax[orgvertnum]; /* For all neighbors of neighbor */
-           orgedgenum < orggrafptr->s.vendtax[orgvertnum]; orgedgenum ++) {
+      for (orgedgenum = orgverttax[orgvertnum];   /* For all neighbors of neighbor */
+           orgedgenum < orgvendtax[orgvertnum]; orgedgenum ++) {
         Gnum                orgvertend;
 
-        orgvertend = orggrafptr->s.edgetax[orgedgenum]; /* Get end vertex in original graph */
-        if (orgindxtax[orgvertend] == ~0) {       /* If vertex never considered before      */
+        orgvertend = orgedgetax[orgedgenum];      /* Get end vertex in original graph  */
+        if (orgindxtax[orgvertend] == ~0) {       /* If vertex never considered before */
 #ifdef SCOTCH_DEBUG_BGRAPH2
           if (orggrafptr->parttax[orgvertend] != ancpartval) { /* Original vertex should always be in same part as anchor */
             errorPrint ("bgraphBipartBd: internal error (10)");

@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 23 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 27 jun 2008     **/
-/**                                 to   : 27 jun 2008     **/
+/**                                 to   : 03 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,27 +110,34 @@ const int                       partval,          /* 0 for first half, 1 for sec
 Hdgraph * restrict const        fldgrafptr,
 MPI_Comm                        fldproccomm)      /* Pre-computed communicator */
 {
-  int                   fldcommtypval;            /* Type of communication for this process                 */
-  DgraphFoldCommData    fldcommdattab[DGRAPHFOLDCOMMNBR]; /* Array of two communication data                */
-  Gnum                  fldcommvrttab[DGRAPHFOLDCOMMNBR]; /* Starting global send indices of communications */
-  Gnum                  fldvertidxtab[DGRAPHFOLDCOMMNBR]; /* Start indices of remote vertex arrays          */
-  Gnum                  fldvertlocnbr;            /* Number of vertices in local folded part                */
-  Gnum                  fldedgelocsiz;            /* (Upper bound of) number of edges in folded graph       */
-  int                   fldprocglbnbr;
-  int                   fldproclocnum;            /* Index of local process in folded communicator          */
-  int                   fldvertadjnbr;
-  Gnum * restrict       fldvertadjtab;            /* Array of index adjustments for original vertices       */
-  Gnum * restrict       fldvertdlttab;            /* Array of index adjustments for original vertices       */
-  Gnum * restrict       fldvhalloctax;            /* Index array for remote halo vertex renumbering         */
-  int                   cheklocval;
-  int                   chekglbval;
-  int                   requnbr;
-  MPI_Request           requtab[HDGRAPHFOLDTAGNBR * DGRAPHFOLDCOMMNBR];
-  MPI_Status            stattab[HDGRAPHFOLDTAGNBR * DGRAPHFOLDCOMMNBR];
+  int                 fldcommtypval;              /* Type of communication for this process                    */
+  DgraphFoldCommData  fldcommdattab[DGRAPHFOLDCOMMNBR]; /* Array of two communication data                     */
+  Gnum                fldcommvrttab[DGRAPHFOLDCOMMNBR]; /* Starting global send indices of communications      */
+  Gnum                fldvertidxtab[DGRAPHFOLDCOMMNBR]; /* Start indices of vertex arrays                      */
+  Gnum                fldvendidxtab[DGRAPHFOLDCOMMNBR]; /* Adjustment value for end vertex arrays              */
+  Gnum                fldedgeidxtab[DGRAPHFOLDCOMMNBR]; /* Start indices of edge arrays                        */
+  Gnum                fldedgecnttab[DGRAPHFOLDCOMMNBR]; /* Number of edges exchanged during each communication */
+  Gnum                fldvertlocnbr;              /* Number of vertices in local folded part                   */
+  Gnum                fldedgelocsiz;              /* (Upper bound of) number of edges in folded graph          */
+  int                 fldprocglbnbr;
+  int                 fldproclocnum;              /* Index of local process in folded communicator             */
+  int                 fldvertadjnbr;
+  Gnum * restrict     fldvertadjtab;              /* Array of index adjustments for original vertices          */
+  Gnum * restrict     fldvertdlttab;              /* Array of index adjustments for original vertices          */
+  Gnum * restrict     fldvhalloctax;              /* Index array for remote halo vertex renumbering            */
+  int                 cheklocval;
+  int                 chekglbval;
+  int                 commnbr;
+  int                 requnbr;
+  MPI_Request         requtab[HDGRAPHFOLDTAGNBR * DGRAPHFOLDCOMMNBR];
 
 #ifdef SCOTCH_DEBUG_HDGRAPH1
   if (orggrafptr->vhndloctax != (orggrafptr->s.vertloctax + 1)) {
     errorPrint ("hdgraphFold2: halo graph must be compact");
+    return     (1);
+  }
+  if (orggrafptr->s.vendloctax == (orggrafptr->s.vertloctax + 1)) { /* MPI_Isend calls should not overlap */
+    errorPrint ("hdgraphFold2: halo graph must have distinct arrays");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_HDGRAPH1 */
@@ -165,7 +172,7 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
     fldgrafptr->s.proclocnum = fldproclocnum;
     fldgrafptr->s.flagval    = DGRAPHFREEALL | DGRAPHVERTGROUP | DGRAPHEDGEGROUP; /* For premature freeing on error; do not free vhndloctab as it is grouped with vertloctab */
 
-    if (memAllocGroup ((void **) (void *)         /* Allocate distributed graph private data */
+    if (memAllocGroup ((void **) (void *)         /* Allocate folding structures */
                        &fldvertadjtab, (size_t) (orggrafptr->s.procglbnbr * DGRAPHFOLDCOMMNBR * sizeof (Gnum)),
                        &fldvertdlttab, (size_t) (orggrafptr->s.procglbnbr * DGRAPHFOLDCOMMNBR * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("hdgraphFold2: out of memory (1)");
@@ -191,29 +198,32 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
       if ((fldcommtypval & DGRAPHFOLDCOMMSEND) == 0) { /* If process is a normal receiver */
         int               i;
 
-        for (i = 0, fldvertlocnbr = orggrafptr->s.proccnttab[orggrafptr->s.proclocnum];
-             (i < DGRAPHFOLDCOMMNBR) && (fldcommdattab[i].procnum != -1); i ++)
+        for (i = 0, fldvertlocnbr = orggrafptr->s.vertlocnbr; (i < DGRAPHFOLDCOMMNBR) && (fldcommdattab[i].procnum != -1); i ++)
           fldvertlocnbr += fldcommdattab[i].vertnbr;
-        fldedgelocsiz = orggrafptr->s.edgelocsiz + orggrafptr->s.edgeglbsmx * i; /* Upper bound */
+        commnbr = i;
+
+        fldedgelocsiz = orggrafptr->s.edgelocsiz + orggrafptr->s.edgeglbsmx * i; /* Upper bound on local edges (degree useless since only for non-halo vertices) */
       }
       else {                                      /* Process is a sender receiver */
-        fldvertlocnbr = fldcommvrttab[0] - orggrafptr->s.procvrttab[orggrafptr->s.proclocnum]; /* Communications will remove vertices */
-        fldedgelocsiz = orggrafptr->s.vertloctax[fldvertlocnbr + orggrafptr->s.baseval] - orggrafptr->s.baseval;
+        fldvertlocnbr = fldcommvrttab[0] - orggrafptr->s.procvrttab[orggrafptr->s.proclocnum]; /* Communications will remove vertices     */
+        fldedgelocsiz = orggrafptr->s.vertloctax[fldvertlocnbr + orggrafptr->s.baseval] - orggrafptr->s.baseval; /* Exact number of edges */
+
+        fldgrafptr->s.edgelocsiz = fldedgelocsiz;
       }
       fldvelolocnbr = (orggrafptr->s.veloloctax != NULL) ? fldvertlocnbr : 0;
 
       if (memAllocGroup ((void **) (void *)       /* Allocate distributed graph public data */
-                         &fldgrafptr->s.vertloctax, (size_t) ((fldvertlocnbr + DGRAPHFOLDCOMMNBR + 1) * sizeof (Gnum)), /* More slots for received vertex arrays  */
-                         &fldgrafptr->s.vendloctax, (size_t) (fldvertlocnbr                           * sizeof (Gnum)), /* Vertex end array for non-halo vertices */
-                         &fldgrafptr->s.vnumloctax, (size_t) (fldvertlocnbr                           * sizeof (Gnum)),
-                         &fldgrafptr->s.veloloctax, (size_t) (fldvelolocnbr                           * sizeof (Gnum)), NULL) == NULL) {
+                         &fldgrafptr->s.vertloctax, (size_t) ((fldvertlocnbr + 1) * sizeof (Gnum)),
+                         &fldgrafptr->s.vendloctax, (size_t) ( fldvertlocnbr      * sizeof (Gnum)), /* Vertex end array for non-halo vertices */
+                         &fldgrafptr->s.vnumloctax, (size_t) ( fldvertlocnbr      * sizeof (Gnum)),
+                         &fldgrafptr->s.veloloctax, (size_t) ( fldvelolocnbr      * sizeof (Gnum)), NULL) == NULL) {
         errorPrint ("hdgraphFold2: out of memory (3)");
         cheklocval = 1;
       }
       else if (fldgrafptr->s.vertloctax -= orggrafptr->s.baseval,
                fldgrafptr->s.vendloctax -= orggrafptr->s.baseval,
                fldgrafptr->s.vnumloctax -= orggrafptr->s.baseval,
-               fldgrafptr->s.veloloctax = ((fldvelolocnbr != 0) ? fldgrafptr->s.veloloctax - orggrafptr->s.baseval : NULL),
+               fldgrafptr->s.veloloctax = ((orggrafptr->s.veloloctax != NULL) ? fldgrafptr->s.veloloctax - orggrafptr->s.baseval : NULL),
                memAllocGroup ((void **) (void *)
                               &fldgrafptr->s.edgeloctax, (size_t) (fldedgelocsiz            * sizeof (Gnum)),
                               &fldvhalloctax,            (size_t) (orggrafptr->s.edgeglbsmx * sizeof (Gnum)), NULL) == NULL) {
@@ -242,7 +252,7 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
 
 #ifdef SCOTCH_DEBUG_HDGRAPH1                      /* Communication cannot be merged with a useful one */
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, orggrafptr->s.proccomm) != MPI_SUCCESS) {
-    errorPrint ("hdgraphFold2: communication error (3)");
+    errorPrint ("hdgraphFold2: communication error (1)");
     chekglbval = 1;
   }
 #else /* SCOTCH_DEBUG_HDGRAPH1 */
@@ -256,6 +266,8 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
     return (1);
   }
 
+  requnbr = 0;                                    /* Communications without further processing are placed at beginning of array */
+
   if ((fldcommtypval & DGRAPHFOLDCOMMSEND) != 0) { /* If process is (also) a sender */
     Gnum              vertsndbas;
     Gnum              vertsndnbr;
@@ -265,53 +277,62 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
 
     for (i = 0, requnbr = 0, vertsndbas = orggrafptr->s.baseval; /* For all send communications to perform */
          (i < DGRAPHFOLDCOMMNBR) && (fldcommdattab[i].procnum != -1); i ++) {
-      Gnum              edgelocbas;
       Gnum              edgelocsiz;
-      int               procsndnum;               /* Rank of process to send to */
 
       vertsndbas += vertsndnbr;
       vertsndnbr  = fldcommdattab[i].vertnbr;
-      edgelocbas  = orggrafptr->s.vertloctax[vertsndbas];
-      edgelocsiz  = orggrafptr->s.vertloctax[vertsndbas + vertsndnbr] - edgelocbas;
-      procsndnum  = fldcommdattab[i].procnum;
+      edgelocsiz  = orggrafptr->s.vertloctax[vertsndbas + vertsndnbr] - orggrafptr->s.vertloctax[vertsndbas]; /* Graph is compact */
 
-      if (MPI_Isend (orggrafptr->s.vertloctax + vertsndbas, vertsndnbr + 1, GNUM_MPI, /* Send one more vertex to have end value */
-                     procsndnum, TAGVERTLOCTAB * orggrafptr->s.procglbnbr + orggrafptr->s.proclocnum,
-                     orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
-        errorPrint ("hdgraphFold2: communication error (4,%d)", i);
-        cheklocval = 1;
-      }
-      else if (MPI_Isend (orggrafptr->s.vendloctax + vertsndbas, vertsndnbr, GNUM_MPI,
-                          procsndnum, TAGVENDLOCTAB * orggrafptr->s.procglbnbr + orggrafptr->s.proclocnum,
-                          orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
-        errorPrint ("hdgraphFold2: communication error (5,%d)", i);
-        cheklocval = 1;
-      }
-      else if (MPI_Isend (orggrafptr->s.edgeloctax + edgelocbas, edgelocsiz, GNUM_MPI,
-                          procsndnum, TAGEDGELOCTAB * orggrafptr->s.procglbnbr + orggrafptr->s.proclocnum,
-                          orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
-        errorPrint ("hdgraphFold2: communication error (6,%d)", i);
-        cheklocval = 1;
-      }
-      else if ((orggrafptr->s.veloloctax != NULL) &&
-               (MPI_Isend (orggrafptr->s.veloloctax + vertsndbas, vertsndnbr, GNUM_MPI,
-                           procsndnum, TAGVELOLOCTAB * orggrafptr->s.procglbnbr + orggrafptr->s.proclocnum,
-                           orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS)) {
-        errorPrint ("hdgraphFold2: communication error (7,%d)", i);
-        cheklocval = 1;
-      }
-      else if ((orggrafptr->s.vnumloctax != NULL) &&
-               (MPI_Isend (orggrafptr->s.vnumloctax + vertsndbas, vertsndnbr, GNUM_MPI,
-                           procsndnum, TAGVNUMLOCTAB * orggrafptr->s.procglbnbr + orggrafptr->s.proclocnum,
-                           orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS)) {
-        errorPrint ("hdgraphFold2: communication error (8,%d)", i);
+      fldvertidxtab[i] = vertsndbas;
+      fldedgeidxtab[i] = orggrafptr->s.vertloctax[vertsndbas];
+      fldedgecnttab[i] = edgelocsiz;
+      if (MPI_Isend (&edgelocsiz, 1, GNUM_MPI, fldcommdattab[i].procnum,
+                     TAGFOLD + TAGVLBLLOCTAB, orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
+        errorPrint ("hdgraphFold2: communication error (2)");
         cheklocval = 1;
       }
     }
+    commnbr = i;
 
-    if ((fldcommtypval & DGRAPHFOLDCOMMRECV) == 0) { /* If process is a normal sender   */
-      if (MPI_Waitall (requnbr, requtab, stattab) != MPI_SUCCESS) { /* Wait for all now */
-        errorPrint  ("hdgraphFold2: communication error (9");
+    for (i = 0; (i < commnbr) && (cheklocval == 0); i ++) {
+      if (MPI_Isend (orggrafptr->s.vertloctax + fldvertidxtab[i], fldcommdattab[i].vertnbr, GNUM_MPI, fldcommdattab[i].procnum,
+                     TAGFOLD + TAGVERTLOCTAB, orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
+        errorPrint ("hdgraphFold2: communication error (3)");
+        cheklocval = 1;
+      }
+    }
+    for (i = 0; (i < commnbr) && (cheklocval == 0); i ++) {
+      if (MPI_Isend (orggrafptr->s.vendloctax + fldvertidxtab[i], fldcommdattab[i].vertnbr, GNUM_MPI, fldcommdattab[i].procnum,
+                     TAGFOLD + TAGVENDLOCTAB, orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
+        errorPrint ("hdgraphFold2: communication error (4)");
+        cheklocval = 1;
+      }
+    }
+    for (i = 0; (i < commnbr) && (cheklocval == 0); i ++) {
+      if (MPI_Isend (orggrafptr->s.edgeloctax + fldedgeidxtab[i], fldedgecnttab[i], GNUM_MPI, fldcommdattab[i].procnum,
+                     TAGFOLD + TAGEDGELOCTAB, orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
+        errorPrint ("hdgraphFold2: communication error (5)");
+        cheklocval = 1;
+      }
+    }
+    for (i = 0; (i < commnbr) && (cheklocval == 0); i ++) {
+      Gnum              vertsndbas;
+      int               vertsndnbr;
+      int               procsndnum;               /* Rank of process to send to */
+
+      vertsndbas = fldvertidxtab[i];
+      vertsndnbr = (int) fldcommdattab[i].vertnbr;
+      procsndnum = (int) fldcommdattab[i].procnum;
+      if ((orggrafptr->s.veloloctax != NULL) &&
+          (MPI_Isend (orggrafptr->s.veloloctax + vertsndbas, vertsndnbr, GNUM_MPI, procsndnum,
+                      TAGFOLD + TAGVELOLOCTAB, orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS)) {
+        errorPrint ("hdgraphFold2: communication error (6)");
+        cheklocval = 1;
+      }
+      else if ((orggrafptr->s.vnumloctax != NULL) &&
+               (MPI_Isend (orggrafptr->s.vnumloctax + vertsndbas, vertsndnbr, GNUM_MPI, procsndnum,
+                           TAGFOLD + TAGVNUMLOCTAB, orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS)) {
+        errorPrint ("hdgraphFold2: communication error (7)");
         cheklocval = 1;
       }
     }                                             /* Communications of sender-receivers will be completed in the receiving phase */
@@ -320,123 +341,144 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
   if ((fldcommtypval & DGRAPHFOLDCOMMRECV) != 0) { /* If process is (also) a receiver */
     Gnum                orgvertlocnbr;
     Gnum                orgvertlocnnd;
-    Gnum                fldvertlocnum;
-    Gnum                fldedgelocnum;
+    Gnum                fldvertlocadj;
     Gnum                fldvelolocsum;
+    Gnum                fldedgelocnum;
     Gnum                fldvhallocnum;
     Gnum                fldehallocnbr;
-    Gnum                fldvertrcvbas;
-    Gnum                fldvertrcvnnd;
     int                 fldprocnum;
     int                 i;
+
+    const Gnum * restrict const orgvertloctax = orggrafptr->s.vertloctax;
+    const Gnum * restrict const orgvendloctax = orggrafptr->s.vendloctax;
+    const Gnum * restrict const orgedgeloctax = orggrafptr->s.edgeloctax;
+    Gnum * restrict const       fldvertloctax = fldgrafptr->s.vertloctax;
+    Gnum * restrict const       fldvendloctax = fldgrafptr->s.vendloctax;
+    Gnum * restrict const       fldedgeloctax = fldgrafptr->s.edgeloctax;
 
     fldgrafptr->s.procvrttab = fldgrafptr->s.procdsptab; /* Graph does not have holes                           */
     fldgrafptr->s.procdsptab[0] = orggrafptr->s.baseval; /* Build private data of folded graph and array        */
     for (fldprocnum = 0; fldprocnum < fldprocglbnbr; fldprocnum ++) /* New subdomain indices start from baseval */
       fldgrafptr->s.procdsptab[fldprocnum + 1] = fldgrafptr->s.procdsptab[fldprocnum] + fldgrafptr->s.proccnttab[fldprocnum];
 
-    requnbr = 0;                                  /* Optional communications without further processing at beginning of array */
-
-    if ((fldcommtypval & DGRAPHFOLDCOMMSEND) == 0) { /* If process is a full receiver */
-      Gnum                vertrcvbas;
-      int                 vertrcvnbr;
+    if ((fldcommtypval & DGRAPHFOLDCOMMSEND) == 0) { /* If process is a normal receiver */
       Gnum                orgvertlocmin;
       Gnum                orgvertlocmax;
-      Gnum                fldvertlocadj;
+      Gnum                fldvertlocnum;
+      Gnum                fldedgelocbas;
+      Gnum                fldvertrcvbas;
+      Gnum                fldvertrcvnbr;
       int                 procngbmin;
       int                 procngbmax;
 
-      for (i = 0, vertrcvbas = orggrafptr->s.vertlocnnd, vertrcvnbr = 0; /* For all receive communications to perform */
-           (i < DGRAPHFOLDCOMMNBR) && (fldcommdattab[i].procnum != -1); i ++) {
-        Gnum                procrcvnum;
+      for (i = 0, fldvertrcvbas = orggrafptr->s.vertlocnnd, fldvertrcvnbr = 0; /* For all receive communications to perform */
+           (i < commnbr) && (cheklocval == 0); i ++) {
+        fldvertrcvbas += fldvertrcvnbr;
+        fldvertrcvnbr  = fldcommdattab[i].vertnbr;
 
-        vertrcvbas += (Gnum) vertrcvnbr;
-        vertrcvnbr  = (int) fldcommdattab[i].vertnbr;
-        procrcvnum  = fldcommdattab[i].procnum;
+        fldvertidxtab[i] = fldvertrcvbas;
+        if (MPI_Irecv (&fldedgecnttab[i], 1, GNUM_MPI, fldcommdattab[i].procnum,
+                       TAGFOLD + TAGVLBLLOCTAB, orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGENBR * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
+          errorPrint ("hdgraphFold2: communication error (8)");
+          cheklocval = 1;
+        }
+      }
 
-        if (MPI_Irecv (fldgrafptr->s.vertloctax + vertrcvbas + 1 + i, vertrcvnbr + 1, GNUM_MPI, /* Receive one more, after the end of previous array */
-                       procrcvnum, TAGVERTLOCTAB * orggrafptr->s.procglbnbr + procrcvnum,
-                       orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGVERTLOCTAB * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
-          errorPrint ("hdgraphFold2: communication error (10,%d)", i);
+      for (i = 0; (i < commnbr) && (cheklocval == 0); i ++) { /* Let these communications progress while we process the edge size messages */
+        if (MPI_Irecv (fldgrafptr->s.vertloctax + fldvertidxtab[i], fldcommdattab[i].vertnbr, GNUM_MPI, fldcommdattab[i].procnum,
+                       TAGFOLD + TAGVERTLOCTAB, orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGVERT * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
+          errorPrint ("hdgraphFold2: communication error (9)");
           cheklocval = 1;
         }
-        else if (MPI_Irecv (fldgrafptr->s.vendloctax + vertrcvbas, vertrcvnbr, GNUM_MPI,
-                            procrcvnum, TAGVENDLOCTAB * orggrafptr->s.procglbnbr + procrcvnum,
-                            orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGVENDLOCTAB * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
-          errorPrint ("hdgraphFold2: communication error (11,%d)", i);
+      }
+      for (i = 0; (i < commnbr) && (cheklocval == 0); i ++) {
+        if (MPI_Irecv (fldgrafptr->s.vendloctax + fldvertidxtab[i], fldcommdattab[i].vertnbr, GNUM_MPI, fldcommdattab[i].procnum,
+                       TAGFOLD + TAGVENDLOCTAB, orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGVEND * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
+          errorPrint ("hdgraphFold2: communication error (10)");
           cheklocval = 1;
         }
-        else if (MPI_Irecv (fldgrafptr->s.edgeloctax + orggrafptr->s.edgelocsiz + orggrafptr->s.baseval + orggrafptr->s.edgeglbsmx * i,
-                            orggrafptr->s.edgeglbsmx, GNUM_MPI,
-                            procrcvnum, TAGEDGELOCTAB * orggrafptr->s.procglbnbr + procrcvnum,
-                            orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGEDGELOCTAB * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
-          errorPrint ("hdgraphFold2: communication error (12,%d)", i);
+      }
+
+      MPI_Waitall (commnbr, &requtab[HDGRAPHFOLDTAGENBR * DGRAPHFOLDCOMMNBR], MPI_STATUSES_IGNORE);
+
+      for (i = 0, fldedgelocbas = orggrafptr->s.vertloctax[orggrafptr->s.vertlocnnd]; (i < commnbr) && (cheklocval == 0); i ++) {
+        fldedgeidxtab[i] = fldedgelocbas;
+        fldedgelocbas += fldedgecnttab[i];
+
+        if (MPI_Irecv (fldgrafptr->s.edgeloctax + fldedgeidxtab[i], fldedgecnttab[i], GNUM_MPI, fldcommdattab[i].procnum,
+                       TAGFOLD + TAGEDGELOCTAB, orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGEDGE * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
+          errorPrint ("hdgraphFold2: communication error (11)");
           cheklocval = 1;
         }
-        else if ((orggrafptr->s.veloloctax != NULL) &&
-                 (MPI_Irecv (fldgrafptr->s.veloloctax + vertrcvbas, vertrcvnbr, GNUM_MPI,
-                             procrcvnum, TAGVELOLOCTAB * orggrafptr->s.procglbnbr + procrcvnum,
-                             orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGVELOLOCTAB * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS)) {
-          errorPrint ("hdgraphFold2: communication error (13,%d)", i);
-          cheklocval = 1;
+      }
+      fldgrafptr->s.edgelocsiz = fldedgelocbas - orggrafptr->s.baseval; /* Get number of local and halo edges */
+
+      if (orggrafptr->s.veloloctax != NULL) {
+        for (i = 0; (i < commnbr) && (cheklocval == 0); i ++) {
+          if (MPI_Irecv (fldgrafptr->s.veloloctax + fldvertidxtab[i], fldcommdattab[i].vertnbr, GNUM_MPI, fldcommdattab[i].procnum,
+                         TAGFOLD + TAGVELOLOCTAB, orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGVELO * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
+            errorPrint ("hdgraphFold2: communication error (12)");
+            cheklocval = 1;
+          }
         }
-        else if ((orggrafptr->s.vnumloctax != NULL) &&
-                 (MPI_Irecv (fldgrafptr->s.vnumloctax + vertrcvbas, vertrcvnbr, GNUM_MPI,
-                             procrcvnum, TAGVNUMLOCTAB * orggrafptr->s.procglbnbr + procrcvnum,
-                             orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS)) {
-          errorPrint ("hdgraphFold2: communication error (14,%d)", i);
-          cheklocval = 1;
+      }
+      if (orggrafptr->s.vnumloctax != NULL) {
+        for (i = 0; (i < commnbr) && (cheklocval == 0); i ++) {
+          if (MPI_Irecv (fldgrafptr->s.vnumloctax + fldvertidxtab[i], fldcommdattab[i].vertnbr, GNUM_MPI, fldcommdattab[i].procnum,
+                         TAGFOLD + TAGVNUMLOCTAB, orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
+            errorPrint ("hdgraphFold2: communication error (13)");
+            cheklocval = 1;
+          }
         }
       }
 
       orgvertlocnbr = orggrafptr->s.vertlocnbr;   /* Process all local vertices */
       orgvertlocnnd = orggrafptr->s.vertlocnnd;
 
-      if (orggrafptr->s.vnumloctax == NULL) {     /* If original graph noes not have vertex numbers, create remote parts of vertex number array */
+      if (orggrafptr->s.vnumloctax == NULL) {     /* If original graph does not have vertex numbers, create remote parts of vertex number array */
         Gnum              fldvertlocnum;
         Gnum              fldvertlocadj;
         int               i;
 
-        fldvertlocnum = orgvertlocnnd;
-        for (i = 0; (i < DGRAPHFOLDCOMMNBR) && (fldcommdattab[i].procnum != -1); i ++) {
-          Gnum              fldverttmpnnd;
+        for (i = 0, fldvertlocnum = orgvertlocnnd; i < commnbr; i ++) {
+          Gnum              fldvertlocnnd;
 
-          for (fldverttmpnnd = fldvertlocnum + fldcommdattab[i].vertnbr, fldvertlocadj = fldcommvrttab[i];
-               fldvertlocnum < fldverttmpnnd; fldvertlocnum ++)
+          for (fldvertlocnnd = fldvertlocnum + fldcommdattab[i].vertnbr, fldvertlocadj = fldcommvrttab[i];
+               fldvertlocnum < fldvertlocnnd; fldvertlocnum ++)
             fldgrafptr->s.vnumloctax[fldvertlocnum] = fldvertlocadj ++;
         }
       }
 
       for (procngbmin = 0, procngbmax = fldvertadjnbr; /* Initialize search accelerator */
            procngbmax - procngbmin > 1; ) {
-        int               procngbnum;
+        int               procngbmed;
 
-        procngbnum = (procngbmax + procngbmin) / 2;
-        if (fldvertadjtab[procngbnum] <= orggrafptr->s.procvrttab[orggrafptr->s.proclocnum])
-          procngbmin = procngbnum;
+        procngbmed = (procngbmax + procngbmin) / 2;
+        if (fldvertadjtab[procngbmed] <= orggrafptr->s.procvrttab[orggrafptr->s.proclocnum])
+          procngbmin = procngbmed;
         else
-          procngbmax = procngbnum;
+          procngbmax = procngbmed;
       }
       orgvertlocmin = fldvertadjtab[procngbmin];
       orgvertlocmax = fldvertadjtab[procngbmax];
       fldvertlocadj = fldvertdlttab[procngbmin];
       for (fldvertlocnum = fldedgelocnum = orggrafptr->s.baseval; /* Adjust local part of edge array */
-           fldvertlocnum < orggrafptr->s.vertlocnnd; ) {
-        for ( ; fldedgelocnum < orggrafptr->s.vendloctax[fldvertlocnum]; fldedgelocnum ++) { /* Reorder end vertices */
+           fldvertlocnum < orgvertlocnnd; ) {
+        for ( ; fldedgelocnum < orgvendloctax[fldvertlocnum]; fldedgelocnum ++) { /* Reorder end vertices */
           Gnum              orgvertlocend;
 
 #ifdef SCOTCH_DEBUG_HDGRAPH2
-          if (fldedgelocnum >= (fldedgelocsiz + orggrafptr->s.baseval)) {
+          if (fldedgelocnum >= (fldgrafptr->s.edgelocsiz + orggrafptr->s.baseval)) {
             errorPrint  ("hdgraphFold2: internal error (1)");
             return      (1);
           }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
 
-          orgvertlocend = orggrafptr->s.edgeloctax[fldedgelocnum];
+          orgvertlocend = orgedgeloctax[fldedgelocnum];
 
           if ((orgvertlocend >= orgvertlocmin) && /* If end vertex is local */
               (orgvertlocend <  orgvertlocmax))
-            fldgrafptr->s.edgeloctax[fldedgelocnum] = orgvertlocend + fldvertlocadj;
+            fldedgeloctax[fldedgelocnum] = orgvertlocend + fldvertlocadj;
           else {                                  /* End vertex is not local */
             int               procngbmin;
             int               procngbmax;
@@ -451,33 +493,34 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
               else
                 procngbmax = procngbnum;
             }
-            fldgrafptr->s.edgeloctax[fldedgelocnum] = orgvertlocend + fldvertdlttab[procngbmin];
+            fldedgeloctax[fldedgelocnum] = orgvertlocend + fldvertdlttab[procngbmin];
           }
         }
         fldvertlocnum ++;
-        for ( ; fldedgelocnum < orggrafptr->s.vertloctax[fldvertlocnum]; fldedgelocnum ++) { /* Copy halo part as is */
+        for ( ; fldedgelocnum < orgvertloctax[fldvertlocnum]; fldedgelocnum ++) { /* Copy halo part as is */
 #ifdef SCOTCH_DEBUG_HDGRAPH2
           if ((orggrafptr->s.edgeloctax[fldedgelocnum] < orggrafptr->s.baseval) ||
               (orggrafptr->s.edgeloctax[fldedgelocnum] >= (orggrafptr->vhallocnbr + orggrafptr->s.baseval))) {
             errorPrint  ("hdgraphFold2: internal error (2)");
             return      (1);
           }
-          if (fldedgelocnum >= (fldedgelocsiz + orggrafptr->s.baseval)) {
+          if (fldedgelocnum >= (fldgrafptr->s.edgelocsiz + orggrafptr->s.baseval)) {
             errorPrint  ("hdgraphFold2: internal error (3)");
             return      (1);
           }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
-          fldgrafptr->s.edgeloctax[fldedgelocnum] = orggrafptr->s.edgeloctax[fldedgelocnum];
+          fldedgeloctax[fldedgelocnum] = orgedgeloctax[fldedgelocnum];
         }
       }
 
+      fldvelolocsum = orggrafptr->s.velolocsum;   /* In case there are vertex loads, we keep all of existing load    */
       fldehallocnbr = orggrafptr->ehallocnbr;     /* Normal receivers have at least all of their local halo vertices */
       fldvhallocnum = orggrafptr->vhallocnbr + orggrafptr->s.baseval; /* Index of next halo vertex number to assign  */
-      fldvelolocsum = orggrafptr->s.velolocsum;   /* In case there are vertex loads: we keep at least existing load  */
     }
     else {                                        /* Receiver process is also a sender */
       Gnum              orgvertlocmin;
       Gnum              orgvertlocmax;
+      Gnum              fldvertlocnum;
       Gnum              fldvertlocadj;
       Gnum              fldvhallocmax;            /* Maximum current size of halo vertex array */
       int               procngbmin;
@@ -488,13 +531,13 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
 
       for (procngbmin = 0, procngbmax = fldvertadjnbr; /* Initialize search accelerator */
            procngbmax - procngbmin > 1; ) {
-        int               procngbnum;
+        int               procngbmed;
 
-        procngbnum = (procngbmax + procngbmin) / 2;
-        if (fldvertadjtab[procngbnum] <= orggrafptr->s.procvrttab[orggrafptr->s.proclocnum])
-          procngbmin = procngbnum;
+        procngbmed = (procngbmax + procngbmin) / 2;
+        if (fldvertadjtab[procngbmed] <= orggrafptr->s.procvrttab[orggrafptr->s.proclocnum])
+          procngbmin = procngbmed;
         else
-          procngbmax = procngbnum;
+          procngbmax = procngbmed;
       }
       orgvertlocmin = fldvertadjtab[procngbmin];
       orgvertlocmax = fldvertadjtab[procngbmax];
@@ -504,49 +547,49 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
       fldvhallocnum = orggrafptr->s.baseval;
       for (fldvertlocnum = fldedgelocnum = orggrafptr->s.baseval; /* Copy remaining local part of edge array */
            fldvertlocnum < orgvertlocnnd; ) {
-        for ( ; fldedgelocnum < orggrafptr->s.vendloctax[fldvertlocnum]; fldedgelocnum ++) { /* Reorder end vertices */
+        for ( ; fldedgelocnum < orgvendloctax[fldvertlocnum]; fldedgelocnum ++) { /* Reorder end vertices */
           Gnum              orgvertlocend;
 
 #ifdef SCOTCH_DEBUG_HDGRAPH2
-          if (fldedgelocnum >= (fldedgelocsiz + orggrafptr->s.baseval)) {
+          if (fldedgelocnum >= (fldgrafptr->s.edgelocsiz + orggrafptr->s.baseval)) {
             errorPrint  ("hdgraphFold2: internal error (4)");
             return      (1);
           }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
 
-          orgvertlocend = orggrafptr->s.edgeloctax[fldedgelocnum];
+          orgvertlocend = orgedgeloctax[fldedgelocnum];
 
           if ((orgvertlocend >= orgvertlocmin) && /* If end vertex is local */
               (orgvertlocend <  orgvertlocmax))
-            fldgrafptr->s.edgeloctax[fldedgelocnum] = orgvertlocend + fldvertlocadj;
-          else {
-            int               procngbmin;
+            fldedgeloctax[fldedgelocnum] = orgvertlocend + fldvertlocadj;
+          else {                                  /* End vertex is not local */
+            int               procngbnum;
             int               procngbmax;
 
-            for (procngbmin = 0, procngbmax = fldvertadjnbr;
-                 procngbmax - procngbmin > 1; ) {
-              int               procngbnum;
+            for (procngbnum = 0, procngbmax = fldvertadjnbr;
+                 procngbmax - procngbnum > 1; ) {
+              int               procngbmed;
 
-              procngbnum = (procngbmax + procngbmin) / 2;
-              if (fldvertadjtab[procngbnum] <= orgvertlocend)
-                procngbmin = procngbnum;
+              procngbmed = (procngbmax + procngbnum) / 2;
+              if (fldvertadjtab[procngbmed] <= orgvertlocend)
+                procngbnum = procngbmed;
               else
-                procngbmax = procngbnum;
+                procngbmax = procngbmed;
             }
-            fldgrafptr->s.edgeloctax[fldedgelocnum] = orgvertlocend + fldvertdlttab[procngbmin];
+            fldedgeloctax[fldedgelocnum] = orgvertlocend + fldvertdlttab[procngbnum];
           }
         }
         fldvertlocnum ++;
-        fldehallocnbr += orggrafptr->s.vertloctax[fldvertlocnum] - fldedgelocnum;
-        for ( ; fldedgelocnum < orggrafptr->s.vertloctax[fldvertlocnum]; fldedgelocnum ++) { /* Copy halo part as is */
+        fldehallocnbr += orgvertloctax[fldvertlocnum] - fldedgelocnum;
+        for ( ; fldedgelocnum < orgvertloctax[fldvertlocnum]; fldedgelocnum ++) { /* Renumber halo part */
           Gnum              orgverthalend;
           Gnum              fldvhallocend;
 
-          orgverthalend = orggrafptr->s.edgeloctax[fldedgelocnum];
+          orgverthalend = orgedgeloctax[fldedgelocnum];
 #ifdef SCOTCH_DEBUG_HDGRAPH2
-          if ((orgverthalend < orggrafptr->s.baseval)                             ||
-              (orgverthalend >= (orggrafptr->vhallocnbr + orggrafptr->s.baseval)) ||
-              (fldedgelocnum >= (fldedgelocsiz + orggrafptr->s.baseval))) {
+          if ((orgverthalend < orggrafptr->s.baseval)                               ||
+              (orgverthalend >= (orggrafptr->vhallocnbr   + orggrafptr->s.baseval)) ||
+              (fldedgelocnum >= (fldgrafptr->s.edgelocsiz + orggrafptr->s.baseval))) {
             errorPrint ("hdgraphFold2: internal error (5)");
             return     (1);
           }
@@ -559,16 +602,19 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
             fldvhallocend                =        /* Allocate it                      */
             fldvhalloctax[orgverthalend] = fldvhallocnum ++;
           }
-          fldgrafptr->s.edgeloctax[fldedgelocnum] = fldvhallocend;
+          fldedgeloctax[fldedgelocnum] = fldvhallocend;
         }
       }
 
-      if (orggrafptr->s.veloloctax != NULL)       /* If original graph has vertex loads                         */
+      if (orggrafptr->s.veloloctax != NULL) {     /* If original graph has vertex loads */
+        Gnum                fldvertlocnum;
+
         for (fldvertlocnum = orggrafptr->s.baseval, fldvelolocsum = 0; /* Accumulate load sum of remaining part */
              fldvertlocnum < orgvertlocnnd; fldvertlocnum ++)
           fldvelolocsum += orggrafptr->s.veloloctax[fldvertlocnum];
+      }
 
-      fldcommdattab[0].procnum = -1;              /* Turn sender-receiver into normal receiver without any communications to perform */
+      commnbr = 0;                                /* Turn sender-receiver into normal receiver without any communications to perform */
     }
 
     if (orggrafptr->s.veloloctax != NULL)         /* If original graph has vertex loads                 */
@@ -588,130 +634,141 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
         fldgrafptr->s.vnumloctax[fldvertlocnum] = fldvertlocadj ++;
     }
 
-    memCpy (fldgrafptr->s.vertloctax + orggrafptr->s.baseval, /* Copy local part of vertex arrays */
-            orggrafptr->s.vertloctax + orggrafptr->s.baseval, (orgvertlocnbr + 1) * sizeof (Gnum));
+    memCpy (fldgrafptr->s.vertloctax + orggrafptr->s.baseval, /* Copy local part of vertex arrays, since they are compact */
+            orggrafptr->s.vertloctax + orggrafptr->s.baseval, orgvertlocnbr * sizeof (Gnum)); /* Last value not copied    */
+    fldgrafptr->s.vertloctax[fldvertlocnbr + orggrafptr->s.baseval] = fldgrafptr->s.edgelocsiz + orggrafptr->s.baseval;
     memCpy (fldgrafptr->s.vendloctax + orggrafptr->s.baseval,
             orggrafptr->s.vendloctax + orggrafptr->s.baseval, orgvertlocnbr * sizeof (Gnum));
 
-    for (i = 0, fldvertlocnum = orggrafptr->s.vertlocnnd + 1;
-         (i < DGRAPHFOLDCOMMNBR) && (fldcommdattab[i].procnum != -1); i ++) {
-      if (MPI_Wait (&requtab[HDGRAPHFOLDTAGVERTLOCTAB * DGRAPHFOLDCOMMNBR + i],
-                    &stattab[HDGRAPHFOLDTAGVERTLOCTAB * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
+    for (i = 0; i < commnbr; i ++) {
+      int               j;
+
+      if (MPI_Waitany (commnbr, &requtab[HDGRAPHFOLDTAGVERT * DGRAPHFOLDCOMMNBR], &j, MPI_STATUS_IGNORE) != MPI_SUCCESS) {
+        errorPrint ("hdgraphFold2: communication error (14)");
+        cheklocval = 1;
+      }
+      else {                                      /* Adjust first remote part of vertex array */
+        Gnum              fldvertlocnum;
+        Gnum              fldvertlocnnd;
+        Gnum              fldvertlocadj;
+
+        fldvertlocnum = fldvertidxtab[j];
+        fldvertlocadj = fldedgeidxtab[j] - fldgrafptr->s.vertloctax[fldvertlocnum];
+        fldvendidxtab[j] = fldvertlocadj;         /* Record updated adjust value for vendloctab pass */
+
+        for (fldvertlocnnd = fldvertlocnum + fldcommdattab[j].vertnbr; fldvertlocnum < fldvertlocnnd; fldvertlocnum ++)
+          fldgrafptr->s.vertloctax[fldvertlocnum] += fldvertlocadj;
+      }
+    }
+
+    for (i = 0; i < commnbr; i ++) {
+      int               j;
+
+      if (MPI_Waitany (commnbr, &requtab[HDGRAPHFOLDTAGVEND * DGRAPHFOLDCOMMNBR], &j, MPI_STATUS_IGNORE) != MPI_SUCCESS) {
         errorPrint ("hdgraphFold2: communication error (15)");
         cheklocval = 1;
       }
       else {                                      /* Adjust first remote part of vertex array */
-        Gnum              fldvertlocadj;
-        Gnum              fldverttmpnnd;
+        Gnum              fldvendlocnum;
+        Gnum              fldvendlocnnd;
+        Gnum              fldvendlocadj;
 
-        fldvertlocadj = fldgrafptr->s.vertloctax[fldvertlocnum - 1] - fldgrafptr->s.vertloctax[fldvertlocnum + i];
-        fldvertidxtab[i] = fldgrafptr->s.vertloctax[fldvertlocnum + i];
+        fldvendlocnum = fldvertidxtab[j];
+        fldvendlocadj = fldvendidxtab[j];         /* Get updated adjust from above vertloctab pass */
 
-        for (fldverttmpnnd = fldvertlocnum + fldcommdattab[i].vertnbr; fldvertlocnum < fldverttmpnnd; fldvertlocnum ++)
-          fldgrafptr->s.vertloctax[fldvertlocnum] = fldgrafptr->s.vertloctax[fldvertlocnum + i + 1] + fldvertlocadj;
+        for (fldvendlocnnd = fldvendlocnum + fldcommdattab[j].vertnbr; fldvendlocnum < fldvendlocnnd; fldvendlocnum ++)
+          fldgrafptr->s.vendloctax[fldvendlocnum] += fldvendlocadj;
       }
     }
 
-    for (i = 0, fldvertrcvbas = orggrafptr->s.vertlocnnd;
-         (i < DGRAPHFOLDCOMMNBR) && (fldcommdattab[i].procnum != -1); i ++, fldvertrcvbas = fldvertrcvnnd) {
-      fldvertrcvnnd = fldvertrcvbas + fldcommdattab[i].vertnbr;
+    for (i = 0; i < commnbr; i ++) {
+      MPI_Status        statdat;
+      int               j;
 
-      if (MPI_Wait (&requtab[HDGRAPHFOLDTAGVENDLOCTAB * DGRAPHFOLDCOMMNBR + i],
-                    &stattab[HDGRAPHFOLDTAGVENDLOCTAB * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
-        errorPrint ("hdgraphFold2: communication error (16,%d)", i);
-        cheklocval = 1;
-      }
-      else {                                      /* Adjust remote part(s) of vertex end array */
-        Gnum              fldvertlocadj;
-
-        for (fldvertlocnum = fldvertrcvbas, fldvertlocadj = fldgrafptr->s.vertloctax[fldvertlocnum] - fldvertidxtab[i];
-             fldvertlocnum < fldvertrcvnnd; fldvertlocnum ++)
-          fldgrafptr->s.vendloctax[fldvertlocnum] += fldvertlocadj;
-      }
-
-      if (MPI_Wait (&requtab[HDGRAPHFOLDTAGEDGELOCTAB * DGRAPHFOLDCOMMNBR + i],
-                    &stattab[HDGRAPHFOLDTAGEDGELOCTAB * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
-        errorPrint ("hdgraphFold2: communication error (17)");
+      if (MPI_Waitany (commnbr, &requtab[HDGRAPHFOLDTAGEDGE * DGRAPHFOLDCOMMNBR], &j, &statdat) != MPI_SUCCESS) {
+        errorPrint ("hdgraphFold2: communication error (16)");
         cheklocval = 1;
       }
       else if (cheklocval == 0) {                 /* Adjust remote part(s) of edge array */
         Gnum              orgvertlocmin;
         Gnum              orgvertlocmax;
+        Gnum              fldvertlocnum;
+        Gnum              fldvertlocnnd;
         Gnum              fldvertlocadj;
         Gnum              fldvhallocmax;          /* Maximum current size of halo vertex array */
-        Gnum              fldedgercvnum;
         int               procngbmin;
         int               procngbmax;
+
 #ifdef SCOTCH_DEBUG_HDGRAPH2
         int               fldedgercvnbr;
 
-        MPI_Get_count (&stattab[HDGRAPHFOLDTAGEDGELOCTAB * DGRAPHFOLDCOMMNBR + i], GNUM_MPI, &fldedgercvnbr); /* Can test this because halo graphs are compact */
-        if (fldedgercvnbr != (fldgrafptr->s.vertloctax[fldvertrcvnnd] - fldgrafptr->s.vertloctax[fldvertrcvbas])) {
-          errorPrint ("hdgraphFold2: internal error (6)");
-          return     (1);
+        MPI_Get_count (&statdat, GNUM_MPI, &fldedgercvnbr);
+        if (fldedgercvnbr != fldedgecnttab[j]) {
+          errorPrint  ("hdgraphFold2: internal error (6)");
+          return      (1);
         }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
 
         for (procngbmin = 0, procngbmax = fldvertadjnbr; /* Initialize search accelerator */
              procngbmax - procngbmin > 1; ) {
-          int               procngbnum;
+          int               procngbmed;
 
-          procngbnum = (procngbmax + procngbmin) / 2;
-          if (fldvertadjtab[procngbnum] <= fldcommvrttab[i])
-            procngbmin = procngbnum;
+          procngbmed = (procngbmax + procngbmin) / 2;
+          if (fldvertadjtab[procngbmed] <= fldcommvrttab[j])
+            procngbmin = procngbmed;
           else
-            procngbmax = procngbnum;
+            procngbmax = procngbmed;
         }
         orgvertlocmin = fldvertadjtab[procngbmin];
         orgvertlocmax = fldvertadjtab[procngbmax];
         fldvertlocadj = fldvertdlttab[procngbmin];
-        fldvhallocmax = orggrafptr->s.baseval - 1; /* Reset halo vertex array for each remote part                                    */
-        for (fldvertlocnum = fldvertrcvbas, fldedgelocnum = fldgrafptr->s.vertloctax[fldvertlocnum], /* Copy local part of edge array */
-             fldedgercvnum = orggrafptr->s.edgelocsiz + orggrafptr->s.baseval + orggrafptr->s.edgeglbsmx * i;
-             fldvertlocnum < fldvertrcvnnd; ) {
-          for ( ; fldedgelocnum < fldgrafptr->s.vendloctax[fldvertlocnum]; fldedgelocnum ++) { /* Reorder end vertices */
+        fldvhallocmax = orggrafptr->s.baseval - 1; /* Reset halo vertex array for each remote part                     */
+        for (fldvertlocnum = fldvertidxtab[j], fldedgelocnum = fldedgeidxtab[j], /* Update received part of edge array */
+             fldvertlocnnd = fldvertlocnum + fldcommdattab[j].vertnbr;
+             fldvertlocnum < fldvertlocnnd; ) {
+          for ( ; fldedgelocnum < fldvendloctax[fldvertlocnum]; fldedgelocnum ++) { /* Reorder end vertices */
             Gnum              orgvertlocend;
 
 #ifdef SCOTCH_DEBUG_HDGRAPH2
-            if (fldedgelocnum >= (fldedgelocsiz + orggrafptr->s.baseval)) {
+            if (fldedgelocnum >= (fldgrafptr->s.edgelocsiz + orggrafptr->s.baseval)) {
               errorPrint  ("hdgraphFold2: internal error (7)");
               return      (1);
             }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
 
-            orgvertlocend = fldgrafptr->s.edgeloctax[fldedgercvnum ++];
+            orgvertlocend = fldedgeloctax[fldedgelocnum];
 
             if ((orgvertlocend >= orgvertlocmin) && /* If end vertex is local */
                 (orgvertlocend <  orgvertlocmax))
-              fldgrafptr->s.edgeloctax[fldedgelocnum] = orgvertlocend + fldvertlocadj;
+              fldedgeloctax[fldedgelocnum] = orgvertlocend + fldvertlocadj;
             else {
-              int               procngbmin;
+              int               procngbnum;
               int               procngbmax;
 
-              for (procngbmin = 0, procngbmax = fldvertadjnbr;
-                   procngbmax - procngbmin > 1; ) {
-                int               procngbnum;
+              for (procngbnum = 0, procngbmax = fldvertadjnbr;
+                   procngbmax - procngbnum > 1; ) {
+                int               procngbmed;
 
-                procngbnum = (procngbmax + procngbmin) / 2;
-                if (fldvertadjtab[procngbnum] <= orgvertlocend)
-                  procngbmin = procngbnum;
+                procngbmed = (procngbmax + procngbnum) / 2;
+                if (fldvertadjtab[procngbmed] <= orgvertlocend)
+                  procngbnum = procngbmed;
                 else
-                  procngbmax = procngbnum;
+                  procngbmax = procngbmed;
               }
-              fldgrafptr->s.edgeloctax[fldedgelocnum] = orgvertlocend + fldvertdlttab[procngbmin];
+              fldedgeloctax[fldedgelocnum] = orgvertlocend + fldvertdlttab[procngbnum];
             }
           }
           fldvertlocnum ++;
-          fldehallocnbr += fldgrafptr->s.vertloctax[fldvertlocnum] - fldedgelocnum;
-          for ( ; fldedgelocnum < fldgrafptr->s.vertloctax[fldvertlocnum]; fldedgelocnum ++) { /* Copy halo part as is */
+          fldehallocnbr += fldvertloctax[fldvertlocnum] - fldedgelocnum;
+          for ( ; fldedgelocnum < fldvertloctax[fldvertlocnum]; fldedgelocnum ++) { /* Renumber halo part */
             Gnum              orgverthalend;
             Gnum              fldvhallocend;
 
-            orgverthalend = fldgrafptr->s.edgeloctax[fldedgercvnum ++];
+            orgverthalend = fldedgeloctax[fldedgelocnum];
 #ifdef SCOTCH_DEBUG_HDGRAPH2
             if ((orgverthalend < orggrafptr->s.baseval) ||
                 (orgverthalend >= (orggrafptr->s.edgeglbsmx + orggrafptr->s.baseval)) ||
-                (fldedgelocnum >= (fldedgelocsiz + orggrafptr->s.baseval))) {
+                (fldedgelocnum >= (fldgrafptr->s.edgelocsiz + orggrafptr->s.baseval))) {
               errorPrint ("hdgraphFold2: internal error (8)");
               return     (1);
             }
@@ -724,23 +781,18 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
               fldvhallocend                =      /* Allocate it                        */
               fldvhalloctax[orgverthalend] = fldvhallocnum ++;
             }
-            fldgrafptr->s.edgeloctax[fldedgelocnum] = fldvhallocend;
+            fldedgeloctax[fldedgelocnum] = fldvhallocend;
           }
         }
       }
     }
-#ifdef SCOTCH_DEBUG_HDGRAPH2
-    if (fldedgelocnum != fldgrafptr->s.vertloctax[fldvertlocnbr + orggrafptr->s.baseval]) {
-      errorPrint ("hdgraphFold2: internal error (9)");
-      return     (1);
-    }
-#endif /* SCOTCH_DEBUG_HDGRAPH2 */
 
     memFree (fldvertadjtab);                      /* Free group leader */
 
-    fldedgelocsiz = fldedgelocnum - orggrafptr->s.baseval;
-    fldgrafptr->s.edgeloctax  = memRealloc (fldgrafptr->s.edgeloctax + orggrafptr->s.baseval,  (fldedgelocsiz * sizeof (Gnum)));
-    fldgrafptr->s.edgeloctax -= orggrafptr->s.baseval;
+    if ((fldcommtypval & DGRAPHFOLDCOMMSEND) == 0) { /* If process is a normal receiver, edge arrays may have been oversized */
+      fldgrafptr->s.edgeloctax  = memRealloc (fldgrafptr->s.edgeloctax + orggrafptr->s.baseval, fldgrafptr->s.edgelocsiz * sizeof (Gnum));
+      fldgrafptr->s.edgeloctax -= orggrafptr->s.baseval;
+    }
 
     fldgrafptr->vhallocnbr = fldvhallocnum - orggrafptr->s.baseval;
     fldgrafptr->vhndloctax = fldgrafptr->s.vertloctax + 1; /* Compact edge array with halo vertices */
@@ -750,55 +802,53 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
     if (orggrafptr->s.veloloctax == NULL)         /* If no vertex loads, reset graph vertex load to number of vertices */
       fldvelolocsum = fldvertlocnbr;
     else {                                        /* Graph has vertex loads and load of local part has already been computed */
-      Gnum                vertrcvbas;
-      Gnum                vertrcvnnd;
+      for (i = 0; i < commnbr; i ++) {
+        int               j;
 
-      for (i = 0, vertrcvnnd = orggrafptr->s.vertlocnnd; /* For all receive communications to perform */
-           (i < DGRAPHFOLDCOMMNBR) && (fldcommdattab[i].procnum != -1); i ++) {
-        vertrcvbas  = vertrcvnnd;
-        vertrcvnnd += fldcommdattab[i].vertnbr;
-
-        if (MPI_Wait (&requtab[HDGRAPHFOLDTAGVELOLOCTAB * DGRAPHFOLDCOMMNBR + i],
-                      &stattab[HDGRAPHFOLDTAGVELOLOCTAB * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
-          errorPrint ("dgraphFold: communication error (18)");
+        if (MPI_Waitany (commnbr, &requtab[HDGRAPHFOLDTAGVELO * DGRAPHFOLDCOMMNBR], &j, MPI_STATUS_IGNORE) != MPI_SUCCESS) {
+          errorPrint ("hdgraphFold2: communication error (17)");
           cheklocval = 1;
         }
-        else {                                    /* Accumulate vertex loads for received vertex load array */
-          for (fldvertlocnum = vertrcvbas; fldvertlocnum < vertrcvnnd; fldvertlocnum ++)
+        else if (cheklocval == 0) {               /* Accumulate vertex loads for received vertex load array */
+          Gnum              fldvertlocnum;
+          Gnum              fldvertlocnnd;
+
+          for (fldvertlocnum = fldvertidxtab[j], fldvertlocnnd = fldvertlocnum + fldcommdattab[j].vertnbr;
+               fldvertlocnum < fldvertlocnnd; fldvertlocnum ++)
             fldvelolocsum += fldgrafptr->s.veloloctax[fldvertlocnum];
         }
       }
-    }
-
-    if (MPI_Waitall (requnbr, requtab, stattab) != MPI_SUCCESS) { /* Make sure graph data is safe because graph could be freed after routine completes */
-      errorPrint  ("hdgraphFold2: communication error (19)");
-      cheklocval = 1;
     }
 
     fldgrafptr->s.baseval    = orggrafptr->s.baseval;
     fldgrafptr->s.vertlocnbr = fldvertlocnbr;
     fldgrafptr->s.vertlocnnd = fldvertlocnbr + orggrafptr->s.baseval;
     fldgrafptr->s.velolocsum = fldvelolocsum;
-    fldgrafptr->s.edgelocnbr = fldedgelocsiz - fldehallocnbr;
-    fldgrafptr->s.edgelocsiz = fldedgelocsiz;
+    fldgrafptr->s.edgelocnbr = fldgrafptr->s.edgelocsiz - fldehallocnbr;
     fldgrafptr->s.degrglbmax = orggrafptr->s.degrglbmax;
     if (dgraphBuild4 (&fldgrafptr->s) != 0) {
       errorPrint  ("hdgraphFold2: cannot build folded graph");
       hdgraphExit (fldgrafptr);
       return      (1);
     }
+
 #ifdef SCOTCH_DEBUG_HDGRAPH2
-    if (hdgraphCheck (fldgrafptr) != 0) {         /* Check graph consistency */
-      errorPrint  ("hdgraphFold2: internal error (10)");
+    if (hdgraphCheck (fldgrafptr) != 0) {         /* Check graph consistency; vnumloctab is not checked so no need to wait for it */
+      errorPrint  ("hdgraphFold2: internal error (9)");
       hdgraphExit (fldgrafptr);
       return      (1);
     }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
   }
 
+  if (MPI_Waitall (requnbr, requtab, MPI_STATUSES_IGNORE) != MPI_SUCCESS) { /* Wait for all graph data to arrive because graph could be freed afterwards */
+    errorPrint ("hdgraphFold2: communication error (18)");
+    cheklocval = 1;
+  }
+
 #ifdef SCOTCH_DEBUG_HDGRAPH1                      /* Communication cannot be merged with a useful one */
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, orggrafptr->s.proccomm) != MPI_SUCCESS) {
-    errorPrint ("hdgraphFold2: communication error (20)");
+    errorPrint ("hdgraphFold2: communication error (19)");
     chekglbval = 1;
   }
 #else /* SCOTCH_DEBUG_HDGRAPH1 */

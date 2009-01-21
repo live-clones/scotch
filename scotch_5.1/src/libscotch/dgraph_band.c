@@ -39,7 +39,7 @@
 /**                graph from the given frontier array.    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 27 jun 2008     **/
+/**                                 to   : 26 nov 2008     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version 5.0. **/
@@ -112,7 +112,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
 #define mesgsndtab(i)               (mesgbuftab + (grafptr->procgstmax * (grafptr->procngbnbr + (i))))
 #define requrcvtab                  requbuftab
 #define requsndtab                  (requbuftab + grafptr->procngbnbr)
-  Gnum * restrict         queuloctab;             /* Queue array holding all of the selected local vertices    */
+#define queuloctab                  fronloctab    /* Queue array holding all of the selected local vertices    */
   Gnum                    queuheadidx;            /* Index of head of queue                                    */
   Gnum                    queutailidx;            /* Index of tail of queue                                    */
   Gnum                    degrval;
@@ -165,7 +165,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
 #endif /* SCOTCH_DEBUG_DGRAPH1 */
 
   for (procngbidx = 0; procngbidx < grafptr->procngbnbr; procngbidx ++) { /* Create receive requests */
-    if (MPI_Recv_init (mesgrcvtab (procngbidx), grafptr->procgstmax * sizeof (Gnum), GNUM_MPI,
+    if (MPI_Recv_init (mesgrcvtab (procngbidx), grafptr->procgstmax, GNUM_MPI,
                        grafptr->procngbtab[procngbidx], MPI_ANY_TAG,
                        grafptr->proccomm, requrcvtab + procngbidx) != MPI_SUCCESS) {
       errorPrint ("dgraphBand: communication error (2)");
@@ -186,7 +186,6 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     bandvnumgsttax[vertlocnum] = bandvertlocnnd ++; /* Keep frontier vertex in band */
     bandedgelocnbr += grafptr->vendloctax[vertlocnum] - grafptr->vertloctax[vertlocnum]; /* Account for its edges */
   }
-  queuloctab  = fronloctab;                       /* Use frontier array as queue array          */
   queuheadidx = 0;                                /* No queued vertex read yet                  */
   queutailidx = fronlocnbr;                       /* All frontier vertices are already in queue */
 
@@ -228,7 +227,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
           int               procngbidx;
           int               procngbnum;
 
-          bandvnumgsttax[vertlocend]  = 0;        /* Label ghost vertex as enqueued        */
+          bandvnumgsttax[vertlocend] = 0;         /* Label ghost vertex as enqueued        */
           vertglbend = grafptr->edgeloctax[edgelocnum]; /* Get global number of end vertex */
           for (procngbidx = 0; procngbidx < grafptr->procngbnbr; procngbidx ++) {
             procngbnum = grafptr->procngbtab[procngbidx]; /* Search for neighbor hosting this vertex */
@@ -299,7 +298,8 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
       return     (1);
     }
   }
-  bandvnumgsttax  = memRealloc (bandvnumgsttax + grafptr->baseval, MAX (grafptr->vertgstnbr, grafptr->procglbnbr) * sizeof (Gnum)); /* TRICK: re-use array for further error collective communications */
+  bandvnumgsttax  = memRealloc (bandvnumgsttax + grafptr->baseval, /* TRICK: re-use array for further error collective communications */
+                                MAX ((grafptr->vertgstnbr * sizeof (Gnum)), (grafptr->procglbnbr * sizeof (int))));
   bandvnumgsttax -= grafptr->baseval;
   bandvertlocnbr  = bandvertlocnnd - grafptr->baseval + 2; /* Un-base number of vertices and add anchor vertices          */
   bandedgelocnbr += 2 * ((bandvertlocnnd - bandvertlvlnum) + (grafptr->procglbnbr - 1)); /* Add edges to and from anchors */
@@ -319,8 +319,8 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     errorPrint ("dgraphBand: out of memory (2)");
     cheklocval = 1;
   }
-  else if (bandgrafptr->procvrttab = bandgrafptr->procdsptab, /* Graph does not have holes */
-           memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data  */
+  else if (bandgrafptr->procvrttab = bandgrafptr->procdsptab, /* Graph does not have holes  */
+           memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data */
                           &bandgrafptr->vertloctax, (size_t) ((bandvertlocnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
                           &bandgrafptr->vnumloctax, (size_t) (bandvertlocnbr       * sizeof (Gnum)),
                           &bandgrafptr->veloloctax, (size_t) (bandvertlocnbr       * sizeof (Gnum)), NULL) == NULL) {
@@ -410,6 +410,8 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     bandgrafptr->vnumloctax[bandvertlocnum] = vertlocnum;
     bandvnumgsttax[vertlocnum] += bandvertlocadj; /* Turn local indices in band graph into global indices */
   }
+  bandgrafptr->vnumloctax[bandvertlocnnd]     =   /* Prevent Valgrind from yelling when centralizing band graphs */
+  bandgrafptr->vnumloctax[bandvertlocnnd + 1] = -1;
 
   if (dgraphHaloSync (grafptr, (byte *) (bandvnumgsttax + bandgrafptr->baseval), GNUM_MPI) != 0) { /* Share global indexing of halo vertices */
     errorPrint ("dgraphBand: cannot perform halo exchange");

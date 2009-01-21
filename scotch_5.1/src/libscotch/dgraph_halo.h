@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 28 dec 2007     **/
 /**                                 to   : 05 feb 2008     **/
 /**                # Version 5.1  : from : 28 aug 2008     **/
-/**                                 to   : 28 aug 2008     **/
+/**                                 to   : 19 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,5 +87,7 @@ static void *               dgraphHaloAsync2    (DgraphHaloRequest * restrict);
 
 void                        dgraphHaloAsync     (Dgraph * restrict const, void * restrict const, const MPI_Datatype, DgraphHaloRequest * restrict);
 int                         dgraphHaloWait      (DgraphHaloRequest * restrict);
+
+int                         dgraphHaloCheck     (const Dgraph * restrict const);
 
 #undef static

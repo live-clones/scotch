@@ -42,7 +42,7 @@
 /**                graph.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 nov 2007     **/
-/**                                 to   : 12 jan 2008     **/
+/**                                 to   : 09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -225,8 +225,8 @@ const BdgraphBipartDfParam * const  paraptr)      /*+ Method parameters +*/
   edgegsttax = grafptr->s.edgegsttax;
   for (passnum = 0; ; ) {                         /* For all passes         */
     if (ovflval == 0) {                           /* If no overflow occured */
+      float *             diftgsttax;             /* Temporary swap value   */
       Gnum                vertlocnum;
-      float * restrict    diftgsttax;             /* Temporary swap value */
       float               veloval;
 
       veloval = 1.0F;                             /* Assume no vertex loads */
@@ -299,9 +299,9 @@ const BdgraphBipartDfParam * const  paraptr)      /*+ Method parameters +*/
         difngsttax[vertlocnum] = diffval;
       }
 
-      diftgsttax = difngsttax;                    /* Swap old and new diffusion arrays */
-      difngsttax = difogsttax;
-      difogsttax = diftgsttax;
+      diftgsttax = (float *) difngsttax;          /* Swap old and new diffusion arrays          */
+      difngsttax = (float *) difogsttax;          /* Casts to prevent IBM compiler from yelling */
+      difogsttax = (float *) diftgsttax;
     }
 abort :                                           /* If overflow occured, resume here    */
     if (++ passnum >= paraptr->passnbr)           /* If maximum number of passes reached */

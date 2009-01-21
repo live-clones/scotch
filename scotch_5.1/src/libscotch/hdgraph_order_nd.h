@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 16 apr 2006     **/
 /**                                 to     16 jun 2007     **/
+/**                # Version 5.1  : from : 11 nov 2008     **/
+/**                                 to     11 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,6 +96,9 @@ typedef struct HdgraphOrderNdData_ {
 #ifndef HDGRAPH_ORDER_ND
 #define static
 #endif
+
+static void *               hdgraphOrderNdFold2 (void * const);
+static int                  hdgraphOrderNdFold  (Hdgraph * restrict const, const Gnum, const Gnum * restrict const, const Gnum, const Gnum * restrict const, HdgraphOrderNdGraph * restrict const);
 
 int                         hdgraphOrderNd      (Hdgraph * const, DorderCblk * const, const HdgraphOrderNdParam * const);
 

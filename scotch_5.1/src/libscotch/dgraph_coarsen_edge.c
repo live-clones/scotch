@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,44 +31,83 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : graph_coarsen_edge.c                    **/
+/**   NAME       : dgraph_coarsen_edge.c                   **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This commodity file contains the edge   **/
 /**                arrays building subroutine which is     **/
 /**                duplicated, with minor modifications,   **/
-/**                into graph_coarsen.c.                   **/
+/**                into dgraph_coarsen.c.                  **/
 /**                                                        **/
-/**   DATES      : # Version 4.0  : from : 17 dec 2001     **/
-/**                                 to     25 feb 2004     **/
-/**                # Version 5.0  : from : 13 dec 2006     **/
-/**                                 to     14 dec 2006     **/
+/**   DATES      : # Version 5.2  : from : 11 dec 2008     **/
+/**                                 to   : 11 dec 2008     **/
 /**                                                        **/
 /************************************************************/
 
-static
+/* This routine performs the coarsening of edges
+** with respect to the data structures filled to
+** date:
+** - the coarmulttax array, which contains the
+**   coarse index of each local or ghost vertex,
+** - the edgercvtab array, which contains compacted
+**   edge data for all of the remote vertices which
+**   have been sent to us,
+** - the vertloctax array, which contains, for
+**   multinodes which have a remote vertex, the
+**   index of the degree and coarse end vertex
+**   data of the coarse remote vertex.
+*/
+
 void
-GRAPHCOARSENEDGENAME (
-const Graph * restrict const              finegrafptr, /*+ Graph to coarsen      +*/
-const Gnum * restrict const               finecoartax, /*+ Fine to coarse array  +*/
-const GraphCoarsenMulti * restrict const  coarmulttax, /*+ Multinode array       +*/
-Graph * restrict const                    coargrafptr, /*+ Coarse graph to build +*/
-GraphCoarsenHash * restrict const         coarhashtab, /*+ End vertex hash table +*/
-const Gnum                                coarhashmsk) /*+ Hash table mask       +*/
+DGRAPHCOARSENEDGENAME (
+DgraphCoarsenData * restrict const  coarptr)
 {
-  Gnum                coarvertnum;
-  Gnum                coaredgenum;
-  Gnum                coardegrmax;
-  Gnum                coaredlosum;
 
-  coaredlosum = 0;
-  for (coarvertnum = coaredgenum = coargrafptr->baseval, coardegrmax = 0;
-       coarvertnum < coargrafptr->vertnnd; coarvertnum ++) {
-    Gnum                finevertnum;
-    int                 i;
 
-    coargrafptr->verttax[coarvertnum] = coaredgenum; /* Set vertex edge index */
+  for (coarvertlocnum = coaredgelocnum = coargrafptr->baseval; /* For all coarse vertices (that is, multinodes) */
+       coarvertlocnum < coarvertlocnnd; coarvertlocnum ++) {
+
+    if (multloctax[multlocnum].vertglbnum[1] < 0) { /* If second multinode vertex is remote    */
+      edgedatidx = coarvertloctax[coarvertlocnum]; /* Get index of vertex in remote edge array */
+      coarvertloctax[coarvertlocnum] = coaredgelocnum; /* Set beginning of coarse vertex array */
+      multloctax[multlocnum].vertglbnum[1] = fineedgeloctax[-2 - multloctax[multlocnum].vertglbnum[1]]; /* Finalize multinode */
+
+      for (fineedgegstnum = edgedataidx + 1, fineedgegstnnd = fineedgegstnum + edgercvtab[edgedataidx];
+           fineedgegstnum < fineedgegstnnd; ) {
+        Gnum                coarvertglbend;       /* Number of coarse vertex which is end of fine edge */
+        Gnum                h;
+
+        coarvertglbend = edgercvtab[fineedgegstnum ++];
+        fineedlogstval = edgercvtab[fineedgegstnum ++];
+
+        if (coarvertglbend != coarvertlocnum + coarvertlocadj) { /* If not end of collapsed edge */
+          for (h = (coarvertglbend * DGRAPHCOARHASHPRIME) & coarhashmsk; ; h = (h + 1) & coarhashmsk) {
+            if (coarhashtab[h].vertorgnum != coarverloctnum) { /* If old slot           */
+              coarhashtab[h].vertorgnum = coarvertlocnum; /* Mark it in reference array */
+              coarhashtab[h].vertendnum = coarvertglbend;
+              coarhashtab[h].edgelocnum = coaredgelocnum;
+              coaredgeloctax[coaredgelocnum] = coarvertglbend; /* One more edge created */
+              DGRAPHCOARSENEDGEEDLOINIT;          /* Initialize edge load entry         */
+              coaredgelocnum ++;
+              break;                              /* Give up hashing */
+            }
+            if (coarhashtab[h].vertendnum == coarvertglbend) { /* If coarse edge already exists */
+              DGRAPHCOARSENEDGEEDLOADD;           /* Accumulate edge load                       */
+              break;                              /* Give up hashing                            */
+            }
+          }
+        }
+        else
+          DGRAPHCOARSENEDGEEDLOSUB;
+      }
+      j = 0;                                      /* Will not explore vertglbnum[1] again */
+    }
+    else {
+      coarvertloctax[coarvertlocnum] = coaredgelocnum;
+      j = 1;
+    }
+
     i = 0;
     do {                                          /* For all fine edges of multinode vertices */
       Gnum                fineedgenum;
@@ -105,8 +144,4 @@ const Gnum                                coarhashmsk) /*+ Hash table mask      
     if (coardegrmax < (coaredgenum - coargrafptr->verttax[coarvertnum]))
       coardegrmax = coaredgenum - coargrafptr->verttax[coarvertnum];
   }
-  coargrafptr->verttax[coarvertnum] = coaredgenum; /* Mark end of edge array */
-
-  coargrafptr->edlosum = finegrafptr->edlosum + coaredlosum; /* Subtract all matched edges */
-  coargrafptr->degrmax = coardegrmax;
 }

@@ -41,7 +41,7 @@
 /**                target architectures.                   **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 sep 2008     **/
-/**                                 to     25 oct 2008     **/
+/**                                 to     09 nov 2008     **/
 /**                                                        **/
 /**   NOTES      : # This is a rewrite of kgraphMapRb()    **/
 /**                  for complete-graph target topologies. **/
@@ -134,7 +134,7 @@ const int                             indvertnbr, /* Number of vertices in part 
 const int                             domnnum)    /* Index of domain onto which map the part  */
 {
   Graph                  indgrafdat;
-  Graph * restrict       indgrafptr;
+  Graph *                indgrafptr;
   Bgraph                 actgrafdat;
   Anum                   domnsubidx;
   Anum                   domnsubdlt;

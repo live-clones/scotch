@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 15 apr 2006     **/
 /**                                 to     21 aug 2006     **/
+/**                # Version 5.1  : from : 11 nov 2008     **/
+/**                                 to     11 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,6 +64,7 @@
 #include "hdgraph.h"
 #include "hdgraph_order_nd.h"
 #include "hdgraph_order_si.h"
+#include "hdgraph_order_sq.h"
 #include "hdgraph_order_st.h"
 #include "vdgraph.h"
 #include "vdgraph_separate_st.h"
@@ -77,9 +80,15 @@ static union {                                    /* Default parameters for nest
   StratNodeMethodData       padding;
 } hdgraphorderstdefaultnd = { { &stratdummy, &stratdummy, &stratdummy } };
 
+static union {                                    /* Default parameters for sequential method */
+  HdgraphOrderSqParam       param;
+  StratNodeMethodData       padding;
+} hdgraphorderstdefaultsq = { { &stratdummy } };
+
 static StratMethodTab       hdgraphorderstmethtab[] = { /* Graph ordering methods array */
                               { HDGRAPHORDERSTMETHND, "n",  hdgraphOrderNd, &hdgraphorderstdefaultnd },
                               { HDGRAPHORDERSTMETHSI, "s",  hdgraphOrderSi, NULL },
+                              { HDGRAPHORDERSTMETHSQ, "q",  hdgraphOrderSq, &hdgraphorderstdefaultsq },
                               { -1,                   NULL, NULL,           NULL } };
 
 static StratParamTab        hdgraphorderstparatab[] = { /* The method parameter list */
@@ -99,39 +108,43 @@ static StratParamTab        hdgraphorderstparatab[] = { /* The method parameter 
                                 (byte *) &hdgraphorderstdefaultnd.param,
                                 (byte *) &hdgraphorderstdefaultnd.param.ordstratseq,
                                 (void *) &hgraphorderststratab },
+                              { HDGRAPHORDERSTMETHSQ,  STRATPARAMSTRAT,  "strat",
+                                (byte *) &hdgraphorderstdefaultsq.param,
+                                (byte *) &hdgraphorderstdefaultsq.param.ordstratseq,
+                                (void *) &hgraphorderststratab },
                               { HDGRAPHORDERSTMETHNBR, STRATPARAMINT,    NULL,
                                 NULL, NULL, NULL } };
 
 static StratParamTab        hdgraphorderstcondtab[] = { /* Graph condition parameter table */
-                              { STRATNODECOND,        STRATPARAMINT,    "edge",
+                              { STRATNODECOND,         STRATPARAMINT,    "edge",
                                 (byte *) &hdgraphorderstgraphdummy,
                                 (byte *) &hdgraphorderstgraphdummy.s.edgeglbnbr,
                                 NULL },
-                              { STRATNODECOND,       STRATPARAMINT,     "levl",
+                              { STRATNODECOND,         STRATPARAMINT,    "levl",
                                 (byte *) &hdgraphorderstgraphdummy,
                                 (byte *) &hdgraphorderstgraphdummy.levlnum,
                                 NULL },
-                              { STRATNODECOND,        STRATPARAMINT,    "load",
+                              { STRATNODECOND,         STRATPARAMINT,    "load",
                                 (byte *) &hdgraphorderstgraphdummy,
                                 (byte *) &hdgraphorderstgraphdummy.s.veloglbsum,
                                 NULL },
-                              { STRATNODECOND,        STRATPARAMDOUBLE, "mdeg",
+                              { STRATNODECOND,         STRATPARAMDOUBLE, "mdeg",
                                 (byte *) &hdgraphorderstgraphdummy,
                                 (byte *) &hdgraphorderstgraphdummy.s.degrglbmax,
                                 NULL },
-                              { STRATNODECOND,       STRATPARAMINT,    "proc",
+                              { STRATNODECOND,         STRATPARAMINT,    "proc",
                                 (byte *) &hdgraphorderstgraphdummy,
                                 (byte *) &hdgraphorderstgraphdummy.s.procglbnbr,
                                 NULL },
-                              { STRATNODECOND,       STRATPARAMINT,    "rank",
+                              { STRATNODECOND,         STRATPARAMINT,    "rank",
                                 (byte *) &hdgraphorderstgraphdummy,
                                 (byte *) &hdgraphorderstgraphdummy.s.proclocnum,
                                 NULL },
-                              { STRATNODECOND,        STRATPARAMINT,    "vert",
+                              { STRATNODECOND,         STRATPARAMINT,    "vert",
                                 (byte *) &hdgraphorderstgraphdummy,
                                 (byte *) &hdgraphorderstgraphdummy.s.vertglbnbr,
                                 NULL },
-                              { STRATNODENBR,         STRATPARAMINT,    NULL,
+                              { STRATNODENBR,          STRATPARAMINT,    NULL,
                                 NULL, NULL, NULL } };
 
 StratTab                    hdgraphorderststratab = { /* Strategy tables for graph ordering methods */

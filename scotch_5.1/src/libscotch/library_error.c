@@ -101,7 +101,7 @@ const char * const          progstr)              /*+ Program name +*/
 ** a variable number of arguments, as printf ()
 ** does, and exits.
 ** It returns:
-** - EXIT  : in all cases.
+** - void  : in all cases.
 */
 
 void

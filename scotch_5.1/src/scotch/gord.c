@@ -127,10 +127,8 @@ char *                      argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         C_fileTab[C_fileNum ++].name = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (1);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -148,10 +146,7 @@ char *                      argv[])
         case 'o' :
           SCOTCH_stratExit (&ordestrat);
           SCOTCH_stratInit (&ordestrat);
-          if ((SCOTCH_stratGraphOrder (&ordestrat, &argv[i][2])) != 0) {
-            errorPrint ("main: invalid ordering strategy");
-            return     (1);
-          }
+          SCOTCH_stratGraphOrder (&ordestrat, &argv[i][2]);
           break;
         case 'T' :                                /* Output separator tree */
         case 't' :
@@ -176,15 +171,12 @@ char *                      argv[])
                 flagval |= C_FLAGVERBTIM;
                 break;
               default :
-                errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"",
-                            argv[i][j], argv[i]);
-                return     (1);
+                errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"", argv[i][j], argv[i]);
             }
           }
           break;
         default :
           errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
-          return     (1);
       }
     }
   }

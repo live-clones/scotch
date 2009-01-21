@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 10 aug 2006     **/
 /**                                 to   : 20 jun 2007     **/
+/**                # Version 5.1  : from : 14 nov 2008     **/
+/**                                 to   : 14 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,9 +83,9 @@ void * const                    dataptr)          /* Pointer to thread data */
 
   fldthrdptr = (DgraphFoldDupData *) dataptr;
 
-  return ((void *) dgraphFold2 (fldthrdptr->orggrafptr, fldthrdptr->partval, fldthrdptr->fldgrafptr,
-                                fldthrdptr->fldproccomm, fldthrdptr->vertinfoptrin,
-				fldthrdptr->vertinfoptrout, fldthrdptr->vertinfotype));
+  return ((void *) (intptr_t) dgraphFold2 (fldthrdptr->orggrafptr, fldthrdptr->partval, fldthrdptr->fldgrafptr,
+                                           fldthrdptr->fldproccomm, fldthrdptr->vertinfoptrin,
+                                           fldthrdptr->vertinfoptrout, fldthrdptr->vertinfotype));
 }
 #endif /* SCOTCH_PTHREAD */
 
@@ -91,8 +93,8 @@ int
 dgraphFoldDup (
 const Dgraph * restrict const orggrafptr,
 Dgraph * restrict const       fldgrafptr,
-void * restrict const         vertinfoptrin,      /* Pointer to array of informations which must be kept, like coarmulttax */
-void ** restrict const        vertinfoptrout,     /* Pointer to array of informations which must be kept, like coarmulttax */
+void * restrict const         vertinfoptrin,      /* Based array of informations which must be kept, like coarmulttax */
+void ** restrict const        vertinfoptrout,     /* Based to array of informations which must be kept, like coarmulttax */
 MPI_Datatype                  vertinfotype)
 {
   int                       fldprocnbr;

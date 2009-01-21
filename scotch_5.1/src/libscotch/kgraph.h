@@ -62,7 +62,7 @@
 typedef struct Kgraph_ {
   Graph                     s;                    /*+ Source graph                      +*/
   Mapping                   m;                    /*+ Current mapping of graph vertices +*/
-  int                       fronnbr;              /*+ Number of frontier vertices       +*/
+  INT                       fronnbr;              /*+ Number of frontier vertices       +*/
   Gnum * restrict           frontab;              /*+ Array of frontier vertex numbers  +*/
   Gnum * restrict           comploadavg;          /*+ Array of target average loads     +*/
   Gnum * restrict           comploaddlt;          /*+ Array of target imbalances        +*/

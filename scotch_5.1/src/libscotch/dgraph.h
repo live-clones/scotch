@@ -38,7 +38,7 @@
 /**                Sebastien FOUCAULT (P0.0)               **/
 /**                Nicolas GICQUEL (P0.1)                  **/
 /**                Jerome LACOSTE (P0.1)                   **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (5.0)                  **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the data declarations   **/
 /**                for the distributed source graph        **/
@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 03 aug 2007     **/
 /**                # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 28 aug 2008     **/
+/**                                 to   : 31 dec 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,7 +92,6 @@
 #define DGRAPHBUILDRANDOM           1             /* Distribute the grid randomly  */
 #define DGRAPHBUILDSLICES           2             /* Distribute the grid by slices */
 
-
 /*
 ** The type and structure definitions.
 */
@@ -111,21 +110,20 @@ typedef INT                 Gnum;                 /* Vertex or edge number   */
 /* Tags used for point-to-point communications. */
 
 typedef enum DgraphTag_ {
-  TAGHALO = 0,                                    /*+ Halo message         +*/
-  TAGPROCVRTTAB,                                  /*+ procvrttab message   +*/
-  TAGVERTLOCTAB,                                  /*+ vertloctab message   +*/
-  TAGVENDLOCTAB,                                  /*+ vendloctab message   +*/
-  TAGPARTLOCTAB,                                  /*+ vendloctab message   +*/
-  TAGVELOLOCTAB,                                  /*+ veloloctab message   +*/
-  TAGVNUMLOCTAB,                                  /*+ vnumloctab message   +*/
-  TAGVLBLLOCTAB,                                  /*+ vlblloctab message   +*/
-  TAGEDGELOCTAB,                                  /*+ edgeloctab message   +*/
-  TAGEDLOLOCTAB,                                  /*+ edloloctab message   +*/
-  TAGVELOLOCSUM,                                  /*+ velolocsum message   +*/
-  TAGDATALOCTAB,                                  /*+ Generic data message +*/
-  TAGOK,                                          /*+ Positive answer      +*/
-  TAGBAD,                                         /*+ Negative answer      +*/
-  TAGNBR                                          /*+ Number of tags       +*/
+  TAGPROCVRTTAB = 0,                              /*+ procvrttab message       +*/
+  TAGVERTLOCTAB,                                  /*+ vertloctab message       +*/
+  TAGVENDLOCTAB,                                  /*+ vendloctab message       +*/
+  TAGVELOLOCTAB,                                  /*+ veloloctab message       +*/
+  TAGVNUMLOCTAB,                                  /*+ vnumloctab message       +*/
+  TAGVLBLLOCTAB,                                  /*+ vlblloctab message       +*/
+  TAGEDGELOCTAB,                                  /*+ edgeloctab message       +*/
+  TAGEDLOLOCTAB,                                  /*+ edloloctab message       +*/
+  TAGDATALOCTAB,                                  /*+ Generic data message     +*/
+  TAGOK,                                          /*+ Positive answer          +*/
+  TAGBAD,                                         /*+ Negative answer          +*/
+  TAGCOARSEN = 100,                               /*+ Tag class for coarsening +*/
+  TAGMATCH   = 200,                               /*+ Tag class for matching   +*/
+  TAGFOLD    = 300                                /*+ Tag class for folding    +*/
 } DgraphTag;
 
 /*+ The graph flag type. +*/
@@ -175,9 +173,9 @@ typedef struct Dgraph_ {
   int                       procngbmax;           /*+ Maximum number of neighboring processes                  +*/
   int * restrict            procngbtab;           /*+ Array of neighbor process numbers [sorted]               +*/
   int                       procgstmax;           /*+ Maximum number of ghost vertices per neighbor            +*/
-  int * restrict            procrcvtab;           /*+ Indices to receive ghost vertex sub-arrays               +*/
+  int * restrict            procrcvtab;           /*+ Number of vertices to receive in ghost vertex sub-arrays +*/
   int                       procsndnbr;           /*+ Overall size of local send array                         +*/
-  int * restrict            procsndtab;           /*+ Indices to send ghost vertex sub-arrays [+1]             +*/
+  int * restrict            procsndtab;           /*+ Number of vertices to send in ghost vertex sub-arrays    +*/
   int * restrict            procsidtab;           /*+ Array of indices to build communication vectors (send)   +*/
   int                       procsidnbr;           /*+ Size of the send index array                             +*/
 } Dgraph;

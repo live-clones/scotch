@@ -41,7 +41,7 @@
 /**                bipartitioning methods.                 **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 10 sep 2007     **/
-/**                                 to     01 jul 2008     **/
+/**                                 to     14 dec 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,7 +88,7 @@ static union {
 static union {
   BdgraphBipartMlParam      param;
   StratNodeMethodData       padding;
-} bdgraphbipartdefaultml = { { 1000, 100, 0, 0.8L, 1000, &stratdummy, &stratdummy, &stratdummy} };
+} bdgraphbipartdefaultml = { { 1000, 100, 0, 0.8L, &stratdummy, &stratdummy, &stratdummy} };
 
 static union {
   BdgraphBipartSqParam      param;
@@ -143,10 +143,6 @@ static StratParamTab        bdgraphbipartstparatab[] = { /* Method parameter lis
                               { BDGRAPHBIPARTMETHML,  STRATPARAMINT,    "vert",
                                 (byte *) &bdgraphbipartdefaultml.param,
                                 (byte *) &bdgraphbipartdefaultml.param.coarnbr,
-                                NULL },
-                              { BDGRAPHBIPARTMETHML,  STRATPARAMINT,    "reqsize",
-                                (byte *) &bdgraphbipartdefaultml.param,
-                                (byte *) &bdgraphbipartdefaultml.param.reqsize,
                                 NULL },
                               { BDGRAPHBIPARTMETHML,  STRATPARAMDOUBLE, "rat",
                                 (byte *) &bdgraphbipartdefaultml.param,

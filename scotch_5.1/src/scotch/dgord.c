@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 30 apr 2006     **/
 /**                                 to   : 16 jun 2008     **/
+/**                # Version 5.1  : from : 26 oct 2008     **/
+/**                                 to   : 22 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,6 +83,7 @@ static const char *         C_usageList[] = {
   "  -t<file>   : Save partitioning tree data to <file>",
   "  -V         : Print program version and copyright",
   "  -v<verb>   : Set verbose mode to <verb> :",
+  "                 a  : memory allocation information",
   "                 s  : strategy information",
   "                 t  : timing information",
   "",
@@ -105,8 +108,8 @@ char *              argv[])
   int                 proclocnum;
   int                 protglbnum;                 /* Root process        */
   Clock               runtime[2];                 /* Timing variables    */
-  double              reduloctab[9];              /* 3 * (min, max, sum) */
-  double              reduglbtab[9];
+  double              reduloctab[12];             /* 3 * (min, max, sum) */
+  double              reduglbtab[12];
   MPI_Datatype        redutype;
   MPI_Op              reduop;
   int                 flagval;
@@ -120,19 +123,13 @@ char *              argv[])
 
 #ifdef SCOTCH_PTHREAD
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
-  if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS) {
+  if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (1)");
-    exit       (1);
-  }
-  if (thrdlvlreqval > thrdlvlproval) {
+  if (thrdlvlreqval > thrdlvlproval)
     errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
-    exit       (1);
-  }
 #else /* SCOTCH_PTHREAD */
-  if (MPI_Init (&argc, &argv) != MPI_SUCCESS) {
+  if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (2)");
-    exit       (1);
-  }
 #endif /* SCOTCH_PTHREAD */
 
   MPI_Comm_size (MPI_COMM_WORLD, &procglbnbr);    /* Get communicator data */
@@ -147,10 +144,7 @@ char *              argv[])
   }
 
   flagval = C_FLAGNONE;
-  if (SCOTCH_stratInit (&stradat) != 0) {
-    errorPrint ("main: cannot initialize strategy");
-    return     (1);
-  }
+  SCOTCH_stratInit (&stradat);
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
@@ -158,10 +152,8 @@ char *              argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         C_fileTab[C_fileNum ++].name = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (1);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -189,20 +181,15 @@ char *              argv[])
         case 'o' :
           SCOTCH_stratExit (&stradat);
           SCOTCH_stratInit (&stradat);
-          if ((SCOTCH_stratDgraphOrder (&stradat, &argv[i][2])) != 0) {
-            errorPrint ("main: invalid parallel ordering strategy");
-            return     (1);
-          }
+          SCOTCH_stratDgraphOrder (&stradat, &argv[i][2]);
           break;
         case 'R' :                                /* Root process (if necessary) */
         case 'r' :
           protglbnum = atoi (&argv[i][2]);
           if ((protglbnum < 0)           ||
               (protglbnum >= procglbnbr) ||
-              ((protglbnum == 0) && (argv[i][2] != '0'))) {
+              ((protglbnum == 0) && (argv[i][2] != '0')))
             errorPrint ("main: invalid root process number");
-            return     (1);
-          }
           break;
         case 'T' :                                /* Output separator tree */
         case 't' :
@@ -218,6 +205,14 @@ char *              argv[])
         case 'v' :                                /* Output control info */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
+              case 'A' :
+              case 'a' :
+#ifdef COMMON_MEMORY_TRACE
+                flagval |= C_FLAGVERBMEM;
+#else /* COMMON_MEMORY_TRACE */
+                errorPrint ("main: not compiled with COMMON_MEMORY_TRACE");
+#endif /* COMMON_MEMORY_TRACE */
+                break;
               case 'S' :
               case 's' :
                 flagval |= C_FLAGVERBSTR;
@@ -227,15 +222,12 @@ char *              argv[])
                 flagval |= C_FLAGVERBTIM;
                 break;
               default :
-                errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"",
-                            argv[i][j], argv[i]);
-                return     (1);
+                errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"", argv[i][j], argv[i]);
             }
           }
           break;
         default :
           errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
-          return     (1);
       }
     }
   }
@@ -258,14 +250,8 @@ char *              argv[])
   clockInit  (&runtime[0]);
   clockStart (&runtime[0]);
 
-  if (SCOTCH_dgraphInit (&grafdat, MPI_COMM_WORLD) != 0) { /* Initialize distributed source graph */
-    errorPrint ("main: cannot initialize distributed graph");
-    return     (1);
-  }
-  if (SCOTCH_dgraphLoad (&grafdat, C_filepntrsrcinp, -1, 0) != 0) {
-    errorPrint ("main: cannot load distributed graph");
-    return     (1);
-  }
+  SCOTCH_dgraphInit (&grafdat, MPI_COMM_WORLD);
+  SCOTCH_dgraphLoad (&grafdat, C_filepntrsrcinp, -1, 0);
 
   clockStop (&runtime[0]);                        /* Get input time */
   clockInit (&runtime[1]);
@@ -277,15 +263,8 @@ char *              argv[])
 
   clockStart (&runtime[1]);
 
-  if (SCOTCH_dgraphOrderInit (&grafdat, &ordedat) != 0) { /* Initialize source graph */
-    errorPrint ("main: cannot initialize distributed ordering");
-    return     (1);
-  }
-
-  if (SCOTCH_dgraphOrderCompute (&grafdat, &ordedat, &stradat) != 0) { /* Initialize source graph */
-    errorPrint ("main: cannot compute ordering");
-    return     (1);
-  }
+  SCOTCH_dgraphOrderInit (&grafdat, &ordedat);
+  SCOTCH_dgraphOrderCompute (&grafdat, &ordedat, &stradat);
 
   clockStop (&runtime[1]);                        /* Get ordering time */
 
@@ -324,11 +303,11 @@ char *              argv[])
     MPI_Barrier (MPI_COMM_WORLD);
 #endif /* SCOTCH_DEBUG_ALL */
 
-  if ((flagval & C_FLAGVERBTIM) != 0) {
-    MPI_Type_contiguous (3, MPI_DOUBLE, &redutype);
-    MPI_Type_commit     (&redutype);
-    MPI_Op_create       ((MPI_User_function *) dgordStatReduceOp, 1, &reduop);
+  MPI_Type_contiguous (3, MPI_DOUBLE, &redutype);
+  MPI_Type_commit     (&redutype);
+  MPI_Op_create       ((MPI_User_function *) dgordStatReduceOp, 1, &reduop);
 
+  if ((flagval & C_FLAGVERBTIM) != 0) {
     reduloctab[0] =
     reduloctab[1] =
     reduloctab[2] = (double) clockVal (&runtime[1]);
@@ -338,11 +317,19 @@ char *              argv[])
     reduloctab[6] =
     reduloctab[7] =
     reduloctab[8] = reduloctab[0] + reduloctab[3];
-
-    MPI_Reduce    (reduloctab, reduglbtab, 3, redutype, reduop, protglbnum, MPI_COMM_WORLD);
-    MPI_Op_free   (&reduop);
-    MPI_Type_free (&redutype);
+    MPI_Allreduce (&reduloctab[0], &reduglbtab[0], 3, redutype, reduop, MPI_COMM_WORLD);
   }
+#ifdef COMMON_MEMORY_TRACE
+  if ((flagval & C_FLAGVERBMEM) != 0) {
+    reduloctab[9]  =
+    reduloctab[10] =
+    reduloctab[11] = (double) memMax ();
+    MPI_Allreduce (&reduloctab[9], &reduglbtab[9], 1, redutype, reduop, MPI_COMM_WORLD);
+  }
+#endif /* COMMON_MEMORY_TRACE */
+
+  MPI_Op_free   (&reduop);
+  MPI_Type_free (&redutype);
 
   if (C_filepntrlogout != NULL) {
     if ((flagval & C_FLAGVERBSTR) != 0) {
@@ -356,6 +343,11 @@ char *              argv[])
                reduglbtab[3], reduglbtab[4], reduglbtab[5] / (double) procglbnbr,
                reduglbtab[6], reduglbtab[7], reduglbtab[8] / (double) procglbnbr);
     }
+#ifdef COMMON_MEMORY_TRACE
+    if ((flagval & C_FLAGVERBMEM) != 0)
+      fprintf (C_filepntrlogout, "A\tMemory\tmin=%g\tmax=%g\tavg=%g\n",
+               reduglbtab[9], reduglbtab[10], reduglbtab[11] / (double) procglbnbr);
+#endif /* COMMON_MEMORY_TRACE */
   }
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */

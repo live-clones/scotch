@@ -49,6 +49,8 @@
 /**                                 to     18 aug 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to     22 may 2008     **/
+/**                # Version 5.1  : from : 10 nov 2008     **/
+/**                                 to     12 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -113,7 +115,7 @@ const int                   partval)              /* Current preferred */
     vexxptr  = (VgraphSeparateFmVertex *) linkptr; /* TRICK: gainlink0 is at beginning */
     if (vexxptr->veloval >= 0) {                  /* If in fact we point to gainlink1  */
       vertpart = 1;                               /* Then point to vertex structure    */
-      vexxptr  = (VgraphSeparateFmVertex *) ((byte *) vexxptr - ((byte *) &vexxptr->gainlink1 - (byte *) vexxptr));
+      vexxptr  = (VgraphSeparateFmVertex *) ((byte *) vexxptr - ((byte *) &vexxdat.gainlink1 - (byte *) &vexxdat));
     }
     gaincur = vexxptr->compgain[vertpart];        /* Get separator gain and vertex balance */
 
@@ -169,6 +171,10 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
   Gnum                            mswpnum;        /* Number of current move sweep            */
   Gnum                            compsize1add;   /* Number of vertices to add to counters   */
   Gnum                            compsize1sub;
+  const Gnum * restrict const     verttax = grafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const     vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const     velotax = grafptr->s.velotax;
+  const Gnum * restrict const     edgetax = grafptr->s.edgetax;
 
   comploaddltmat = (paraptr->deltrat > 0.0L)
                    ? MAX ((Gnum) ((grafptr->compload[0] + grafptr->compload[1]) * paraptr->deltrat),
@@ -224,26 +230,26 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 
     for (hashnum = (vertnum * VGRAPHSEPAFMHASHPRIME) & hashmsk; hashtab[hashnum].vertnum != ~0; hashnum = (hashnum + 1) & hashmsk) ;
 
-    if (grafptr->s.velotax != NULL) {             /* If vertex loads present */
+    if (velotax != NULL) {                        /* If vertex loads present */
       Gnum                edgenum;
       Gnum                veloval;
       Gnum                compgain0;
       Gnum                compgain01;
 
-      for (edgenum = grafptr->s.verttax[vertnum], compgain0 = compgain01 = 0;
-           edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
+      for (edgenum = verttax[vertnum], compgain0 = compgain01 = 0;
+           edgenum < vendtax[vertnum]; edgenum ++) {
         Gnum                vertend;
         Gnum                partend;
         Gnum                veloend;
 
-        vertend = grafptr->s.edgetax[edgenum];
+        vertend = edgetax[edgenum];
         partend = (Gnum) grafptr->parttax[vertend];
-        veloend = grafptr->s.velotax[vertend];
+        veloend = velotax[vertend];
 
         compgain0  += (partend & 1)       * veloend;
         compgain01 += (2 - (partend & 2)) * veloend;
       }
-      veloval = grafptr->s.velotax[vertnum];
+      veloval = velotax[vertnum];
       hashtab[hashnum].veloval     = - veloval;   /* TRICK: -veloval: stored value is opposite of load */
       hashtab[hashnum].compgain[0] = compgain0 - veloval;
       hashtab[hashnum].compgain[1] = (compgain01 >> 1) - compgain0 - veloval;
@@ -253,12 +259,12 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
       Gnum                compgain0;
       Gnum                compgain2;
 
-      for (edgenum = grafptr->s.verttax[vertnum], compgain0 = compgain2 = 0;
-           edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
+      for (edgenum = verttax[vertnum], compgain0 = compgain2 = 0;
+           edgenum < vendtax[vertnum]; edgenum ++) {
         Gnum                vertend;
         Gnum                partend;
 
-        vertend = grafptr->s.edgetax[edgenum];
+        vertend = edgetax[edgenum];
         partend = (Gnum) grafptr->parttax[vertend];
 
         compgain0 += (partend & 1);
@@ -266,7 +272,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
       }
       hashtab[hashnum].veloval     = -1;          /* TRICK: -veloval */
       hashtab[hashnum].compgain[0] = compgain0 - 1;
-      hashtab[hashnum].compgain[1] = grafptr->s.vendtax[vertnum] - grafptr->s.verttax[vertnum] - (compgain2 >> 1) - compgain0 - 1;
+      hashtab[hashnum].compgain[1] = vendtax[vertnum] - verttax[vertnum] - (compgain2 >> 1) - compgain0 - 1;
     }
     hashtab[hashnum].partval = 2;
     hashtab[hashnum].vertnum = vertnum;
@@ -391,12 +397,12 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
       movenbr ++;                                 /* One more move done */
 
       sepaptr = NULL;                             /* No separator vertices to relink yet */
-      for (edgenum = grafptr->s.verttax[vertnum]; /* Update neighbors                    */
-           edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
+      for (edgenum = verttax[vertnum];            /* Update neighbors                    */
+           edgenum < vendtax[vertnum]; edgenum ++) {
         Gnum                vertend;
         Gnum                hashnum;
 
-        vertend = grafptr->s.edgetax[edgenum];
+        vertend = edgetax[edgenum];
         for (hashnum = (vertend * VGRAPHSEPAFMHASHPRIME) & hashmsk; ; hashnum = (hashnum + 1) & hashmsk) {
           VgraphSeparateFmVertex *            vexxend; /* Pointer to neighbor of current vertex */
 
@@ -413,7 +419,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 
             vexxend->vertnum        = vertend;    /* Set its number (TRICK: mswpnum assumed to be always -1) */
             vexxend->partval        = 1 - partval; /* Vertex will be in separator                            */
-            vexxend->veloval        = - ((grafptr->s.velotax != NULL) ? grafptr->s.velotax[vertend] : 1);
+            vexxend->veloval        = - ((velotax != NULL) ? velotax[vertend] : 1);
             vexxend->gainlink0.next = VGRAPHSEPAFMSTATEFREE; /* Vertex will be linked */
             hashnbr ++;                           /* One more vertex in hash table    */
 #ifdef SCOTCH_DEBUG_VGRAPH2
@@ -464,12 +470,12 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
               vexxend->compgain[partval]     = vexxend->veloval; /* Moved vertex still in separator */
               vexxend->compgain[1 - partval] = vexxend->veloval - vexxptr->veloval;
 
-              for (edgeend = grafptr->s.verttax[vertend], compgainp = 0;
-                   edgeend < grafptr->s.vendtax[vertend]; edgeend ++) {
+              for (edgeend = verttax[vertend], compgainp = 0;
+                   edgeend < vendtax[vertend]; edgeend ++) {
                 Gnum                vertent;
                 Gnum                hashnum;
 
-                vertent = grafptr->s.edgetax[edgeend];
+                vertent = edgetax[edgeend];
                 for (hashnum = (vertent * VGRAPHSEPAFMHASHPRIME) & hashmsk; ; hashnum = (hashnum + 1) & hashmsk) {
                   VgraphSeparateFmVertex *    vexxent; /* Pointer to neighbor of neighbor of current vertex */
 
@@ -481,7 +487,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
                       return     (1);
                     }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
-                    compgainp += (grafptr->s.velotax != NULL) ? grafptr->s.velotax[vertent] : 1;
+                    compgainp += (velotax != NULL) ? velotax[vertent] : 1;
                     break;                        /* Skip to next vertex */
                   }
                   if (vexxent->vertnum == vertent) { /* If end vertex found */
@@ -684,14 +690,16 @@ const Gnum                          savenbr,      /*+ Current number of active s
 GainTabl * const                    tablptr,      /*+ Gain table                                     +*/
 GainLink * const                    lockptr)
 {
-  VgraphSeparateFmVertex * restrict hashtab;      /* Pointer to new hash table            */
-  VgraphSeparateFmSave * restrict   savetab;      /* Pointer to new save array            */
-  VgraphSeparateFmSave * restrict   saveold;      /* Pointer to translated old save array */
+  VgraphSeparateFmVertex * restrict hashtab;      /* Pointer to new hash table                    */
+  VgraphSeparateFmSave *            savetab;      /* Pointer to new save array                    */
+  VgraphSeparateFmSave *            saveold;      /* Pointer to translated old save array         */
   Gnum                              savenum;
-  Gnum                              hashold;      /* Size of old hash table (half of new) */
+  Gnum                              hashold;      /* Size of old hash table (half of new)         */
   Gnum                              hashsiz;
   Gnum                              hashmax;
   Gnum                              hashmsk;
+  Gnum                              hashsta;      /* Start index of range of hash indices to move */
+  Gnum                              hashend;      /* End index of range of hash indices to move   */
   Gnum                              hashnum;
 
   hashmax = *hashmaxptr << 1;                     /* Compute new sizes */
@@ -725,58 +733,49 @@ GainLink * const                    lockptr)
   lockptr->next =                                 /* Rebuild lock list */
   lockptr->prev = lockptr;
 
-  if (hashtab[0].vertnum != ~0) {                 /* If vertex overflowing may have occured in old hash table */
-    Gnum                        hashtmp;
-    Gnum                        hashnew;
+  for (hashsta = hashold - 1; hashtab[hashsta].vertnum != ~0; hashsta --) ; /* Start index of first segment to reconsider is last empty slot */
+  hashend = hashold;                              /* First segment to reconsider ends at the end of the old array                            */
+  while (hashend != hashsta) {                    /* For each of the two segments to consider                                                */
+    for (hashnum = hashsta; hashnum < hashend; hashnum ++) { /* Re-compute position of vertices in new table                                 */
+      Gnum                        vertnum;
 
-    for (hashtmp = hashold - 1, hashnew = 0;      /* Temporarily move vertices away from end of old table to prevent overflowing */
-         hashtab[hashtmp].vertnum != ~0; hashtmp --) {
-      while (hashtab[++ hashnew].vertnum != ~0) ; /* Find an empty slot to receive moved vertex */
+      vertnum = hashtab[hashnum].vertnum;
+      if (vertnum != ~0) {                        /* If hash slot used */
+        Gnum                        hashnew;
+
+        for (hashnew = (vertnum * VGRAPHSEPAFMHASHPRIME) & hashmsk; ; hashnew = (hashnew + 1) & hashmsk) {
+          if (hashnew == hashnum)                 /* If hash slot is the same */
+            break;                                /* There is nothing to do   */
+          if (hashtab[hashnew].vertnum == ~0) {   /* If new slot is empty     */
 #ifdef SCOTCH_DEBUG_VGRAPH2
-      if (hashnew >= hashtmp) {
-        errorPrint ("vgraphSeparateFmResize: internal error (1)");
-        return     (1);
-      }
+            if ((hashnew > hashnum) && (hashnew < hashend)) { /* If vertex is not moved either before its old position or after the end of the segment */
+              errorPrint ("vgraphSeparateFmResize: internal error (1)");
+              return     (1);
+            }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
+            hashtab[hashnew] = hashtab[hashnum];  /* Copy data to new slot         */
+            hashtab[hashnum].mswpnum = ~0;        /* TRICK: not tested at creation */
+            hashtab[hashnum].vertnum = ~0;        /* Make old slot empty           */
+            break;
+          }
+        }
 
-      hashtab[hashnew] = hashtab[hashtmp];        /* Move vertex from end of table */
-      hashtab[hashtmp].mswpnum = ~0;              /* TRICK: not tested at creation */
-      hashtab[hashtmp].vertnum = ~0;              /* Set old slot as free          */
-    }
-  }
-
-  for (hashnum = 0; hashnum < hashold; hashnum ++) { /* Re-compute position of vertices in new table */
-    Gnum                        vertnum;
-
-    vertnum = hashtab[hashnum].vertnum;
-    if (vertnum != ~0) {                          /* If hash slot used */
-      Gnum                        hashnew;
-
-      for (hashnew = (vertnum * VGRAPHSEPAFMHASHPRIME) & hashmsk; ; hashnew = (hashnew + 1) & hashmsk) {
-        if (hashnew == hashnum)                   /* If hash slot is the same      */
-          break;                                  /* There is nothing to do        */
-        if (hashtab[hashnew].vertnum == ~0) {     /* If new slot is empty          */
-          hashtab[hashnew] = hashtab[hashnum];    /* Copy data to new slot         */
-          hashtab[hashnum].mswpnum = ~0;          /* TRICK: not tested at creation */
-          hashtab[hashnum].vertnum = ~0;          /* Make old slot empty           */
-          break;
+        if (hashtab[hashnew].gainlink0.next >= VGRAPHSEPAFMSTATELINK) { /* If vertex was linked, re-link it */
+          gainTablAdd (tablptr, &hashtab[hashnew].gainlink0, hashtab[hashnew].compgain[0]);
+          gainTablAdd (tablptr, &hashtab[hashnew].gainlink1, hashtab[hashnew].compgain[1]);
+        }
+        else if (hashtab[hashnew].gainlink0.next == VGRAPHSEPAFMSTATEUSED) { /* Re-lock used vertices */
+          hashtab[hashnew].gainlink1.prev = lockptr; /* Lock it */
+          hashtab[hashnew].gainlink1.next = lockptr->next;
+          lockptr->next->prev = &hashtab[hashnew].gainlink1;
+          lockptr->next       = &hashtab[hashnew].gainlink1;
         }
       }
-      if ((hashnew > hashnum) && (hashnew < hashold)) /* If vertex was an overflowed vertex which will be replaced at end of old table */
-        continue;                                 /* It will be re-processed again and re-linked once for good at the end of the loop  */
-
-      if (hashtab[hashnew].gainlink0.next >= VGRAPHSEPAFMSTATELINK) { /* If vertex was linked, re-link it */
-        gainTablAdd (tablptr, &hashtab[hashnew].gainlink0, hashtab[hashnew].compgain[0]);
-        gainTablAdd (tablptr, &hashtab[hashnew].gainlink1, hashtab[hashnew].compgain[1]);
-      }
-      else if (hashtab[hashnew].gainlink0.next == VGRAPHSEPAFMSTATEUSED) { /* Re-lock used vertices */
-        hashtab[hashnew].gainlink1.prev = lockptr; /* Lock it */
-        hashtab[hashnew].gainlink1.next = lockptr->next;
-        lockptr->next->prev = &hashtab[hashnew].gainlink1;
-        lockptr->next       = &hashtab[hashnew].gainlink1;
-      }
     }
-  }
+
+    hashend = hashsta;                            /* End of second segment to consider is start of first one    */
+    hashsta = 0;                                  /* Start of second segment is beginning of array              */
+  }                                               /* After second segment, hashsta = hashend = 0 and loop stops */
 
   for (savenum = 0; savenum < savenbr; savenum ++) {
     Gnum                  vertnum;
@@ -828,7 +827,7 @@ const Gnum                                    comploaddlt)
     if (vertnum == ~0)                            /* If unallocated slot */
       continue;                                   /* Skip to next slot   */
 
-    if (hashtab[hashnum].veloval != - ((grafptr->s.velotax == NULL) ? 1 : grafptr->s.velotax[vertnum])) {
+    if (hashtab[hashnum].veloval != - ((velotax == NULL) ? 1 : velotax[vertnum])) {
       errorPrint ("vgraphSeparateFmCheck: invalid vertex load (1)");
       return     (1);
     }
@@ -861,20 +860,20 @@ const Gnum                                    comploaddlt)
       compload[0] =
       compload[1] =
       compload[2] = 0;
-      for (edgenum = grafptr->s.verttax[vertnum]; /* For all element neighbors */
-           edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
+      for (edgenum = verttax[vertnum];            /* For all element neighbors */
+           edgenum < vendtax[vertnum]; edgenum ++) {
         Gnum                vertend;
         Gnum                hashnum;
         int                 partend;
         Gnum                veloend;
 
-        vertend = grafptr->s.edgetax[edgenum];
+        vertend = edgetax[edgenum];
         for (hashnum = (vertend * VGRAPHSEPAFMHASHPRIME) & hashmsk; ; hashnum = (hashnum + 1) & hashmsk) {
           if (hashtab[hashnum].vertnum == vertend) { /* If end vertex found */
             partend = hashtab[hashnum].partval;
             veloend = hashtab[hashnum].veloval;
 
-            if (veloend != - ((grafptr->s.velotax == NULL) ? 1 : grafptr->s.velotax[vertend])) {
+            if (veloend != - ((velotax == NULL) ? 1 : velotax[vertend])) {
               errorPrint ("vgraphSeparateFmCheck: invalid vertex load (2)");
               return     (1);
             }
@@ -882,7 +881,7 @@ const Gnum                                    comploaddlt)
           }
           if (hashtab[hashnum].vertnum == ~0) {     /* If element not present */
             partend = grafptr->parttax[vertend];
-            veloend = - ((grafptr->s.velotax == NULL) ? 1 : grafptr->s.velotax[vertend]);
+            veloend = - ((velotax == NULL) ? 1 : velotax[vertend]);
             break;
           }
         }

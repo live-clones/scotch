@@ -127,7 +127,7 @@ const HgraphOrderNdParam * restrict const paraptr)
   vspgrafdat.comploaddlt = vspgrafdat.s.velosum;
   vspgrafdat.compsize[0] = vspgrafdat.s.vertnbr;
   vspgrafdat.compsize[1] = 0;
-  vspgrafdat.compsize[2] = 0;
+  vspgrafdat.fronnbr     = 0;
   vspgrafdat.levlnum     = grafptr->levlnum;      /* Set level of separation graph as level of halo graph */
 
   if (vgraphSeparateSt (&vspgrafdat, paraptr->sepstrat) != 0) { /* Separate vertex-separation graph */

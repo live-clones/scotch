@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 02 feb 2000     **/
 /**                # Version 5.0  : from : 20 jul 2005     **/
 /**                                 to   : 10 sep 2007     **/
+/**                # Version 5.1  : from : 12 nov 2008     **/
+/**                                 to   : 12 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,9 +97,9 @@ const Gnum                  flagval)              /* Flags               */
 
   vertglbnbr = 1 << hcubdim;
   vertlocnbr = DATASIZE (vertglbnbr, grafptr->procglbnbr, grafptr->proclocnum);
-  velolocnbr = (flagval & 1) ? vertlocnbr : 0;
+  velolocnbr = ((flagval & 1) != 0) ? vertlocnbr : 0;
   edgelocnbr = vertlocnbr * hcubdim;              /* Set local number of arcs */
-  edlolocnbr = (flagval & 2) ? edgelocnbr : 0;
+  edlolocnbr = ((flagval & 2) != 0) ? edgelocnbr : 0;
 
   for (procngbnum = 0, vertglbnum = 0;            /* Compute index of first local vertex */
        procngbnum < grafptr->proclocnum; procngbnum ++)
@@ -148,9 +150,9 @@ const Gnum                  flagval)              /* Flags               */
     return     (1);
   }
   vertloctax -= baseval;
-  veloloctax  = (velolocnbr != 0) ? (veloloctax - baseval) : NULL;
+  veloloctax  = ((flagval & 1) != 0) ? (veloloctax - baseval) : NULL;
   edgeloctax -= baseval;
-  edloloctax  = (edlolocnbr != 0) ? (edloloctax - baseval) : NULL;
+  edloloctax  = ((flagval & 2) != 0) ? (edloloctax - baseval) : NULL;
 #ifdef SCOTCH_DEBUG_DGRAPH3
   vlblloctax -= baseval;
 #endif /* SCOTCH_DEBUG_DGRAPH3 */

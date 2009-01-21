@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 07 mar 2006     **/
 /**                                 to   : 01 mar 2008     **/
+/**                # Version 5.1  : from : 14 dec 2008     **/
+/**                                 to   : 14 dec 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -97,7 +99,7 @@ const VdgraphSeparateMlParam * const  paraptr)    /*+ Method parameters         
   }
 
   if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->coarnbr,
-                     dofolddup, paraptr->dupmax * finegrafptr->s.procglbnbr, paraptr->coarrat, paraptr->reqsize) != 0)
+                     dofolddup, paraptr->dupmax, paraptr->coarrat) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   if (coargrafptr->s.procglbnbr == 0) {           /* Not a owner graph */
@@ -327,13 +329,11 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
     if (memAllocGroup ((void **) (void *)
                        &partglbtab, (size_t) (2 * coargrafptr->s.vertlocnbr * sizeof (VdgraphSeparateMlPart)),
-                       /* Max nbr communications */
-                       &requests,   (size_t) (3 * finegrafptr->s.procglbnbr * sizeof (MPI_Request)),
+                       &requests,   (size_t) (3 * finegrafptr->s.procglbnbr * sizeof (MPI_Request)), /* Max nbr communications */
                        &statuses,   (size_t) (3 * finegrafptr->s.procglbnbr * sizeof (MPI_Status)),
                        &sendsize,   (size_t) (finegrafptr->s.procglbnbr * sizeof (Gnum)),
                        &sendoffset, (size_t) ((finegrafptr->s.procglbnbr + 1) * sizeof (VdgraphSeparateMlPart*)),
-                       &recvsize,   (size_t) (finegrafptr->s.procglbnbr * sizeof (Gnum)),
-                       NULL) == NULL) {
+                       &recvsize,   (size_t) (finegrafptr->s.procglbnbr * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("vdgraphSeparateMlUncoarsen: out of memory (2)");
       cheklocval = 1;
       memFree (finegrafptr->partgsttax + finegrafptr->s.baseval);
@@ -383,7 +383,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
 
         for (i = 0; i < 2; i ++) {
-          finevertnum = coarmulttax[coarvertnum].vertnum[i];
+          finevertnum = coarmulttax[coarvertnum].vertglbnum[i];
           if (dgraphVertexLocal (&finegrafptr->s, finevertnum)) { /* Vertex is a local one */
 #ifdef SCOTCH_DEBUG_VDGRAPH2
             if (finegrafptr->partgsttax[finevertnum - finevertadj] != 3) {
@@ -403,7 +403,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
             partglbptr->partval = (Gnum) coarpartval;
             partglbptr ++;
           }
-          if (coarmulttax[coarvertnum].vertnum[0] == coarmulttax[coarvertnum].vertnum[1]) /* In fact no contraction */
+          if (coarmulttax[coarvertnum].vertglbnum[0] == coarmulttax[coarvertnum].vertglbnum[1]) /* In fact no contraction */
             break;
         }
       }
@@ -510,8 +510,8 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 #ifdef SCOTCH_DEBUG_VDGRAPH2
         if (sendmode) {
           for (procnum = coargrafptr->s.baseval ; procnum < coargrafptr->s.vertlocnnd ; ++ procnum) {
-            if ((coarmulttax[procnum].vertnum[0] == partglbptr->vertnum) ||
-                (coarmulttax[procnum].vertnum[1] == partglbptr->vertnum))
+            if ((coarmulttax[procnum].vertglbnum[0] == partglbptr->vertnum) ||
+                (coarmulttax[procnum].vertglbnum[1] == partglbptr->vertnum))
               break;
           }
         }

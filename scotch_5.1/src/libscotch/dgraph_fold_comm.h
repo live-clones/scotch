@@ -29,20 +29,20 @@
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
-/**********************************************************/
-/*                                                        */
-/*   NAME       : dgraph_fold_comm.h                      */
-/*                                                        */
-/*   AUTHOR     : Francois PELLEGRINI                     */
-/*                                                        */
-/*   FUNCTION   : These lines are the data declarations   */
-/*                for the distributed source graph        */
-/*                building routines.                      */
-/*                                                        */
-/*                # Version 5.0  : from : 23 may 2006     */
-/*                                 to     19 aug 2006     */
-/*                                                        */
-/**********************************************************/
+/************************************************************/
+/**                                                        **/
+/**   NAME       : dgraph_fold_comm.h                      **/
+/**                                                        **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                                                        **/
+/**   FUNCTION   : These lines are the data declarations   **/
+/**                for the distributed source graph        **/
+/**                building routines.                      **/
+/**                                                        **/
+/**                # Version 5.0  : from : 23 may 2006     **/
+/**                                 to     19 aug 2006     **/
+/**                                                        **/
+/************************************************************/
 
 /*
 **  The defines.
@@ -69,7 +69,7 @@ typedef enum DgraphFoldCommType_ {
 /* Sort structure for processors. */
 
 typedef struct DgraphFoldCommData_ {
-  Gnum             vertnbr;                       /* Number of vertices                 */
+  Gnum             vertnbr;                       /* Number of vertices; TRICK: FIRST   */
   Gnum             procnum;                       /* Processor index (Gnum for sorting) */
 } DgraphFoldCommData;
 

@@ -43,6 +43,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 30 apr 2006     **/
 /**                                 to   : 27 may 2008     **/
+/**                # Version 5.1  : from : 22 nov 2008     **/
+/**                                 to   : 22 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,8 +76,9 @@
 #define C_FLAGTREOUT                0x0002        /* Output separator tree data */
 #define C_FLAGVERBSTR               0x0004        /* Output strategy string     */
 #define C_FLAGVERBTIM               0x0008        /* Output timing information  */
-#define C_FLAGBLOCK                 0x0010        /* Output block ordering      */
-#define C_FLAGDEBUG                 0x0020        /* Debugging                  */
+#define C_FLAGVERBMEM               0x0010        /* Output memory information  */
+#define C_FLAGBLOCK                 0x0020        /* Output block ordering      */
+#define C_FLAGDEBUG                 0x0040        /* Debugging                  */
 
 /*
 **  The function prototypes.

@@ -62,7 +62,7 @@
 /**                # Version 5.0  : from : 24 mar 2008     **/
 /**                                 to   : 22 may 2008     **/
 /**                # Version 5.1  : from : 30 oct 2008     **/
-/**                                 to   : 30 oct 2008     **/
+/**                                 to   : 12 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -101,11 +101,11 @@ GainTabl * restrict const   tablptr,              /*+ Gain table        +*/
 const Gnum                  deltcur,              /*+ Current imbalance +*/
 const Gnum                  deltmax)              /*+ Maximum imbalance +*/
 {
-  BgraphBipartFmVertex * restrict vexxptr;
-  BgraphBipartFmVertex * restrict vertbest;
-  Gnum                            gainbest;
-  const GainEntr * restrict       tablbest;
-  Gnum                            deltbest;
+  BgraphBipartFmVertex *  vexxptr;
+  BgraphBipartFmVertex *  vertbest;
+  Gnum                    gainbest;
+  const GainEntr *        tablbest;
+  Gnum                    deltbest;
 
   tablbest = tablptr->tend;                       /* Assume no candidate vertex found yet */
   gainbest = GAINMAX;
@@ -150,35 +150,39 @@ bgraphBipartFm (
 Bgraph * restrict const           grafptr,        /*+ Active graph      +*/
 const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
 {
-  GainTabl * restrict             tablptr;        /* Pointer to gain table                 */
-  INT                             passnbr;        /* Maximum number of passes to go        */
-  BgraphBipartFmSave * restrict   savetab;        /* Pointer to move array                 */
-  Gnum                            movenbr;        /* Number of uneffective moves done      */
-  Gnum                            savenbr;        /* Number of recorded backtrack moves    */
-  Gnum                            mswpnum;        /* Current number of recording sweep     */
-  int                             moveflag;       /* Flag set if useful moves made         */
-  int                             swapval;        /* Flag set if global swap performed     */
-  int                             swapvalbst;     /* Recorded swap value for best position */
-  Gnum                            hashsiz;        /* Size of hash table                    */
-  Gnum                            hashmsk;        /* Mask for access to hash table         */
-  Gnum                            hashnum;        /* Hash value                            */
-  BgraphBipartFmVertex *          lockptr;        /* Linked list of locked vertices        */
-  BgraphBipartFmVertex * restrict hashtab;        /* Extended vertex array                 */
+  GainTabl * restrict             tablptr;        /* Pointer to gain table                    */
+  INT                             passnbr;        /* Maximum number of passes to go           */
+  BgraphBipartFmSave * restrict   savetab;        /* Pointer to move array                    */
+  Gnum                            movenbr;        /* Number of uneffective moves done         */
+  Gnum                            savenbr;        /* Number of recorded backtrack moves       */
+  Gnum                            mswpnum;        /* Current number of recording sweep        */
+  int                             moveflag;       /* Flag set if useful moves made            */
+  int                             swapval;        /* Flag set if global swap performed        */
+  int                             swapvalbst;     /* Recorded swap value for best position    */
+  Gnum                            hashsiz;        /* Size of hash table                       */
+  Gnum                            hashmsk;        /* Mask for access to hash table            */
+  Gnum                            hashnum;        /* Hash value                               */
+  BgraphBipartFmVertex *          lockptr;        /* Linked list of locked vertices           */
+  BgraphBipartFmVertex * restrict hashtab;        /* Extended vertex array                    */
   Gnum                            hashmax;
   Gnum                            hashnbr;
-
-  Gnum               fronnbr;
-  Gnum               compload0dltmat;            /* Theoretical latgest unbalance allowed   */
-  Gnum               compload0dltmax;            /* Largest unbalance allowed               */
-  Gnum               compload0dltbst;            /* Best unbalance value found to date      */
-  Gnum               compload0dlt;               /* Current imbalance                       */
-  Gnum               compsize0dlt;               /* Update of size of part 0                */
-  Gnum               commgainextn;               /* Current external communication gain     */
-  Gnum               commgainextnbst;            /* External gain of best recorded position */
-  Gnum               commload;                   /* Communication load of current position  */
-  Gnum               commloadbst;                /* Best communication load to date         */
-  Gnum               domdist;                    /* Distance between the two subdomains     */
-  Gnum               fronnum;
+  Gnum                            compload0dltmat; /* Theoretical latgest unbalance allowed   */
+  Gnum                            compload0dltmax; /* Largest unbalance allowed               */
+  Gnum                            compload0dltbst; /* Best unbalance value found to date      */
+  Gnum                            compload0dlt;   /* Current imbalance                        */
+  Gnum                            compsize0dlt;   /* Update of size of part 0                 */
+  Gnum                            commgainextn;   /* Current external communication gain      */
+  Gnum                            commgainextnbst; /* External gain of best recorded position */
+  Gnum                            commload;       /* Communication load of current position   */
+  Gnum                            commloadbst;    /* Best communication load to date          */
+  Gnum                            domdist;        /* Distance between the two subdomains      */
+  Gnum                            fronnbr;
+  Gnum                            fronnum;
+  const Gnum * restrict const     verttax = grafptr->s.verttax; /* Fast accesses              */
+  const Gnum * restrict const     vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const     velotax = grafptr->s.velotax;
+  const Gnum * restrict const     edgetax = grafptr->s.edgetax;
+  const Gnum * restrict const     edlotax = grafptr->s.edlotax;
 
   compload0dltmat = (paraptr->deltval > 0.0L) ? ((Gnum) (paraptr->deltval * (double) grafptr->s.velosum) + 1) : 0;
   compload0dltmax = MAX (compload0dltmat, abs (grafptr->compload0dlt)); /* Set current maximum distance */
@@ -243,16 +247,16 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
     vertnum = grafptr->frontab[fronnum];
     partval = grafptr->parttax[vertnum];
 
-    for (edgenum = grafptr->s.verttax[vertnum], commcut = commgain = 0, edloval = 1;
-         edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
+    for (edgenum = verttax[vertnum], commcut = commgain = 0, edloval = 1;
+         edgenum < vendtax[vertnum]; edgenum ++) {
       Gnum                vertend;
       int                 partend;
       int                 partdlt;
 
-      vertend = grafptr->s.edgetax[edgenum];
+      vertend = edgetax[edgenum];
       partend = grafptr->parttax[vertend];
-      if (grafptr->s.edlotax != NULL)
-        edloval = grafptr->s.edlotax[edgenum];
+      if (edlotax != NULL)
+        edloval = edlotax[edgenum];
 
       partdlt   = partval ^ partend;
       commcut  += partdlt;
@@ -260,7 +264,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
     }
     commgain *= domdist;                          /* Adjust internal gains with respect to external gains */
     partdlt   = 2 * partval - 1;
-    veloval   = (grafptr->s.velotax != NULL) ? grafptr->s.velotax[vertnum] : 1;
+    veloval   = (velotax != NULL) ? velotax[vertnum] : 1;
 
     for (hashnum = (vertnum * BGRAPHBIPARTFMHASHPRIME) & hashmsk; hashtab[hashnum].vertnum != ~0; hashnum = (hashnum + 1) & hashmsk) ;
 
@@ -378,17 +382,17 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
       vexxptr->partval  = partval ^ 1;            /* Swap vertex first in case neighbors are added */
       vexxptr->compgain = - vexxptr->compgain;
       vexxptr->commgain = - vexxptr->commgain;
-      vexxptr->commcut  = grafptr->s.vendtax[vertnum] - grafptr->s.verttax[vertnum] - vexxptr->commcut;
+      vexxptr->commcut  = vendtax[vertnum] - verttax[vertnum] - vexxptr->commcut;
 
       edloval = 1;
-      for (edgenum = grafptr->s.verttax[vertnum]; /* (Re-)link neighbors */
-           edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
+      for (edgenum = verttax[vertnum];            /* (Re-)link neighbors */
+           edgenum < vendtax[vertnum]; edgenum ++) {
         Gnum                vertend;              /* Number of current end neighbor vertex */
         Gnum                hashnum;
 
-        vertend = grafptr->s.edgetax[edgenum];
-        if (grafptr->s.edlotax != NULL)
-          edloval = grafptr->s.edlotax[edgenum];
+        vertend = edgetax[edgenum];
+        if (edlotax != NULL)
+          edloval = edlotax[edgenum];
 
         for (hashnum = (vertend * BGRAPHBIPARTFMHASHPRIME) & hashmsk; ; hashnum = (hashnum + 1) & hashmsk) {
           if (hashtab[hashnum].vertnum == vertend) { /* If hash slot found */
@@ -435,22 +439,22 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
               for (hashnum = (vertend * BGRAPHBIPARTFMHASHPRIME) & hashmsk; hashtab[hashnum].vertnum != ~0; hashnum = (hashnum + 1) & hashmsk) ; /* Search for new first free slot */
             }
 
-            if (grafptr->s.edlotax != NULL) {     /* If graph edges are weighted */
+            if (edlotax != NULL) {                /* If graph edges are weighted */
               Gnum               edgeend;
 
-              for (edgeend = grafptr->s.verttax[vertend], commgainold = 0; /* Compute neighbor edge load sum */
-                   edgeend < grafptr->s.vendtax[vertend]; edgeend ++)
-                commgainold += grafptr->s.edlotax[edgeend];
+              for (edgeend = verttax[vertend], commgainold = 0; /* Compute neighbor edge load sum */
+                   edgeend < vendtax[vertend]; edgeend ++)
+                commgainold += edlotax[edgeend];
               commgain = commgainold - 2 * edloval;
             }
             else {                                /* Graph edges are not weighted */
-              commgainold = grafptr->s.vendtax[vertend] - grafptr->s.verttax[vertend];
+              commgainold = vendtax[vertend] - verttax[vertend];
               commgain    = commgainold - 2;
             }
 
             veloval = 1;
-            if (grafptr->s.velotax != NULL)
-              veloval = grafptr->s.velotax[vertend];
+            if (velotax != NULL)
+              veloval = velotax[vertend];
             veexval = 0;
             if (grafptr->veextax != NULL)
               veexval = grafptr->veextax[vertend];
@@ -700,8 +704,8 @@ GainTabl * const                  tablptr,        /*+ Gain table                
 BgraphBipartFmVertex ** const     lockptr)        /*+ Pointer to locked list     +*/
 {
   BgraphBipartFmVertex * restrict hashtab;        /* Extended vertex array                        */
-  BgraphBipartFmSave * restrict   savetab;        /* Move backtracking array                      */
-  BgraphBipartFmSave * restrict   saveold;        /* Pointer to translated old save array         */
+  BgraphBipartFmSave *            savetab;        /* Move backtracking array                      */
+  BgraphBipartFmSave *            saveold;        /* Pointer to translated old save array         */
   Gnum                            savenum;
   Gnum                            hashold;        /* Size of old hash table (half of new)         */
   Gnum                            hashsiz;
@@ -855,7 +859,7 @@ const Gnum                                  commgainextn)
     if (vertnum == ~0)                            /* If unallocated slot */
       continue;                                   /* Skip to next slot   */
 
-    veloval = (grafptr->s.velotax != NULL) ? grafptr->s.velotax[vertnum] : 1;
+    veloval = (velotax != NULL) ? velotax[vertnum] : 1;
     partval = hashtab[hashnum].partval;
     if ((partval < 0) || (partval > 1)) {
       errorPrint ("bgraphBipartFmCheck: invalid vertex part value");
@@ -875,8 +879,8 @@ const Gnum                                  commgainextn)
 
     commcut  =
     commgain = 0;
-    for (edgenum = grafptr->s.verttax[vertnum];   /* For all neighbors */
-         edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
+    for (edgenum = verttax[vertnum];              /* For all neighbors */
+         edgenum < vendtax[vertnum]; edgenum ++) {
       Gnum                edloval;
       Gnum                vertend;
       Gnum                hashend;
@@ -884,9 +888,9 @@ const Gnum                                  commgainextn)
       int                 partond;
       int                 partdlt;
 
-      vertend = grafptr->s.edgetax[edgenum];
+      vertend = edgetax[edgenum];
       partond = grafptr->parttax[vertend] ^ swapval;
-      edloval = (grafptr->s.edlotax != NULL) ? grafptr->s.edlotax[edgenum] : 1;
+      edloval = (edlotax != NULL) ? edlotax[edgenum] : 1;
 
       for (hashend = (vertend * BGRAPHBIPARTFMHASHPRIME) & hashmsk; ; hashend = (hashend + 1) & hashmsk) {
         if (hashtab[hashend].vertnum == vertend) { /* If end vertex found */

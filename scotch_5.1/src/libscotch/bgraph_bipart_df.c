@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
 /**                                 to     10 sep 2007     **/
 /**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     24 may 2008     **/
+/**                                 to     09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -188,7 +188,7 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
     Gnum                vertnum;
     Gnum                vertnnd;
     float               vancval;                  /* Value to load vertex with if anchor */
-    float * restrict    difttax;                  /* Temporary swap value                */
+    float *             difttax;                  /* Temporary swap value                */
 
     vanctab[0] = vancval0;                        /* Copy anchor values to injection variables */
     vanctab[1] = vancval1;
@@ -248,9 +248,9 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
       vancval = vanctab[vertnum - grafptr->s.vertnnd + 2]; /* Load variable with anchor value */
     }
 
-    difttax = difntax;                            /* Swap old and new diffusion arrays */
-    difntax = difotax;
-    difotax = difttax;
+    difttax = (float *) difntax;                  /* Swap old and new diffusion arrays          */
+    difntax = (float *) difotax;                  /* Casts to prevent IBM compiler from yelling */
+    difotax = (float *) difttax;
   }
 abort :                                           /* If overflow occured, resume here */
 

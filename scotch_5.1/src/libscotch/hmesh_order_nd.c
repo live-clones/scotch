@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.0  : from : 25 jul 2007     **/
 /**                                 to   : 12 sep 2007     **/
+/**                # Version 5.1  : from : 09 nov 2008     **/
+/**                                 to   : 09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -140,17 +142,17 @@ printf ("HN Sepa\tsize=%ld\tload=%ld\tbal=%ld\n", (long) nspmeshdat.fronnbr, (lo
   cblkptr->cblktab[1].vnodnbr = nspmeshdat.ncmpsize[1];
   cblkptr->cblktab[1].cblknbr = 0;
   cblkptr->cblktab[1].cblktab = NULL;
-  cblkptr->cblktab[2].vnodnbr = nspmeshdat.ncmpsize[2];
+  cblkptr->cblktab[2].vnodnbr = nspmeshdat.fronnbr;
   cblkptr->cblktab[2].cblknbr = 0;
   cblkptr->cblktab[2].cblktab = NULL;
 
-  if (nspmeshdat.ncmpsize[2] != 0) {              /* If separator not empty         */
+  if (nspmeshdat.fronnbr != 0) {                  /* If separator not empty         */
     cblkptr->cblknbr  = 3;                        /* It is a three-cell tree node   */
     ordeptr->cblknbr += 2;                        /* Two more column blocks created */
     ordeptr->treenbr += 3;                        /* Three more tree nodes created  */
 
     cblkptr->cblktab[2].typeval = ORDERCBLKOTHR;
-    cblkptr->cblktab[2].vnodnbr = nspmeshdat.ncmpsize[2];
+    cblkptr->cblktab[2].vnodnbr = nspmeshdat.fronnbr;
     cblkptr->cblktab[2].cblknbr = 0;
     cblkptr->cblktab[2].cblktab = NULL;
 
@@ -178,7 +180,7 @@ printf ("HN Sepa\tsize=%ld\tload=%ld\tbal=%ld\n", (long) nspmeshdat.fronnbr, (lo
   }
   if (o == 0) {
     if (hmeshInducePart (meshptr, nspmeshdat.parttax, 0, nspmeshdat.ecmpsize[0],
-                         nspmeshdat.ncmpsize[0], nspmeshdat.ncmpsize[2], &indmeshdat) != 0) {
+                         nspmeshdat.ncmpsize[0], nspmeshdat.fronnbr, &indmeshdat) != 0) {
       errorPrint ("hmeshOrderNd: cannot build induced subgraph (2)");
       memFree    (nspmeshdat.frontab);            /* Free remaining space */
       return     (1);
@@ -188,7 +190,7 @@ printf ("HN Sepa\tsize=%ld\tload=%ld\tbal=%ld\n", (long) nspmeshdat.fronnbr, (lo
   }
   if (o == 0) {
     if (hmeshInducePart (meshptr, nspmeshdat.parttax, 1, nspmeshdat.ecmpsize[1],
-                         nspmeshdat.ncmpsize[1], nspmeshdat.ncmpsize[2], &indmeshdat) != 0) {
+                         nspmeshdat.ncmpsize[1], nspmeshdat.fronnbr, &indmeshdat) != 0) {
       errorPrint ("hmeshOrderNd: cannot build induced subgraph (3)");
       memFree    (nspmeshdat.frontab);            /* Free remaining space */
       return     (1);

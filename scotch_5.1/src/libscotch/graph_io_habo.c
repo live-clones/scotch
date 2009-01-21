@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to     21 mar 2005     **/
 /**                # Version 5.0  : from : 06 jun 2007     **/
 /**                                 to     31 aug 2007     **/
+/**                # Version 5.1  : from : 09 nov 2008     **/
+/**                                 to     09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -354,7 +356,7 @@ static
 int
 graphGeomLoadHaboFormat (
 GraphGeomHaboLine * restrict const  lineptr,      /* Line format to fill */
-const char * restrict const         dataptr)      /* Format string       */
+const char * const                  dataptr)      /* Format string       */
 {
   const char * restrict   charptr;
   int                     number;                 /* Number to read */

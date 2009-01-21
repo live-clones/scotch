@@ -353,7 +353,7 @@ const Gnum                  degrlocmax)
                        &vesongbtab[0], (size_t) (grafptr->vertglbmax * sizeof (DgraphLablSortVert)),
                        &vesongbtab[1], (size_t) (grafptr->vertglbmax * sizeof (DgraphLablSortVert)),
                        &edsoloctab,    (size_t) (grafptr->edgeglbmax * sizeof (DgraphLablSortEdge)),
-                       NULL) == NULL){
+                       NULL) == NULL) {
       errorPrint ("dgraphBuild3: out of memory");
       return     (1);
     }

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                                 to     17 apr 2006     **/
 /**                # Version 5.0  : from : 14 dec 2006     **/
 /**                                 to     11 jun 2008     **/
+/**                # Version 5.1  : from : 01 jan 2009     **/
+/**                                 to     01 jan 2009     **/
 /**                                                        **/
 /**   NOTES      : # Several algorithms, such as the       **/
 /**                  active graph building routine of      **/
@@ -135,8 +137,9 @@ Graph * restrict const          indgrafptr)
   indgrafptr->vertnbr  = indvertnbr;
   indgrafptr->vertnnd  = indvertnbr + indgrafptr->baseval;
 
-  indedgenbr = ((orggrafptr->degrmax > 0) && (indvertnbr < (orggrafptr->edgenbr / orggrafptr->degrmax))) /* Choose best upper bound on number of edges (avoid multiply overflow) */
-               ? (indvertnbr * orggrafptr->degrmax) : orggrafptr->edgenbr;
+  indedgenbr = orggrafptr->edgenbr;               /* Choose best upper bound on number of edges (avoid multiply overflow) */
+  if ((orggrafptr->degrmax > 0) && (indvertnbr < (indedgenbr / orggrafptr->degrmax)))
+    indedgenbr = indvertnbr * orggrafptr->degrmax;
   if (orggrafptr->edlotax != NULL)                /* If graph has edge weights */
     indedgenbr *= 2;                              /* Account for edge weights  */
 

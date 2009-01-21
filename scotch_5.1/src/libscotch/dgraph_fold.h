@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -29,20 +29,22 @@
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
-/**********************************************************/
-/*                                                        */
-/*   NAME       : dgraph_fold.h                           */
-/*                                                        */
-/*   AUTHOR     : Francois PELLEGRINI                     */
-/*                                                        */
-/*   FUNCTION   : These lines are the data declarations   */
-/*                for the distributed source graph        */
-/*                folding routines.                       */
-/*                                                        */
-/*                # Version 5.0  : from : 06 sep 2006     */
-/*                                 to     06 sep 2006     */
-/*                                                        */
-/**********************************************************/
+/************************************************************/
+/**                                                        **/
+/**   NAME       : dgraph_fold.h                           **/
+/**                                                        **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                                                        **/
+/**   FUNCTION   : These lines are the data declarations   **/
+/**                for the distributed source graph        **/
+/**                folding routines.                       **/
+/**                                                        **/
+/**                # Version 5.0  : from : 06 sep 2006     **/
+/**                                 to     06 sep 2006     **/
+/**                # Version 5.1  : from : 31 dec 2008     **/
+/**                                 to     01 jan 2009     **/
+/**                                                        **/
+/************************************************************/
 
 /*
 **  The defines.
@@ -56,9 +58,10 @@
    one for vertinfotab.                          */
 
 typedef enum DgraphFoldTag_ {
-  DGRAPHFOLDTAGVERTLOCTAB = 2,                    /*+ vertloctab message +*/
-  DGRAPHFOLDTAGEDGELOCTAB,                        /*+ edgeloctab message +*/
-  DGRAPHFOLDTAGEDLOLOCTAB,                        /*+ edloloctab message +*/
-  DGRAPHFOLDTAGVELOLOCTAB,                        /*+ veloloctab message +*/
+  DGRAPHFOLDTAGENBR = 2,                          /*+ Edge size message  +*/
+  DGRAPHFOLDTAGVERT,                              /*+ vertloctab message +*/
+  DGRAPHFOLDTAGVELO,                              /*+ veloloctab message +*/
+  DGRAPHFOLDTAGEDGE,                              /*+ edgeloctab message +*/
+  DGRAPHFOLDTAGEDLO,                              /*+ edgeloctab message +*/
   DGRAPHFOLDTAGNBR                                /*+ Number of tags     +*/
 } DgraphFoldTag;

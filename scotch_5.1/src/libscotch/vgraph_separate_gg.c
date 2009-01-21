@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to     22 jan 2004     **/
 /**                # Version 5.0  : from : 02 jan 2007     **/
 /**                                 to     24 mar 2008     **/
+/**                # Version 5.1  : from : 09 nov 2008     **/
+/**                                 to     09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -279,7 +281,7 @@ const VgraphSeparateGgParam * const paraptr)      /*+ Method parameters +*/
   }
   grafptr->compsize[0] = grafptr->s.vertnbr - compsize1 - compsize2;
   grafptr->compsize[1] = compsize1;
-  grafptr->compsize[2] = compsize2;
+  grafptr->fronnbr     = compsize2;
 
 #ifdef SCOTCH_DEBUG_VGRAPH2
   if (vgraphCheck (grafptr) != 0) {

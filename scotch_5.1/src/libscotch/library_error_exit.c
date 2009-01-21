@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 5.0  : from : 06 mar 2008     **/
 /**                                 to     24 may 2008     **/
 /**                # Version 5.1  : from : 27 sep 2008     **/
-/**                                 to     27 sep 2008     **/
+/**                                 to     20 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -130,6 +130,10 @@ const char * const          errstr,               /*+ printf-like variable argum
   va_end   (errlist);
   fprintf  (stderr, "\n");
   fflush   (stderr);                              /* In case it has been set to buffered mode */
+
+#ifdef SCOTCH_ERROR_SLEEP
+  sleep (SCOTCH_ERROR_SLEEP);                     /* Wait for messages to be propagated */
+#endif /* SCOTCH_ERROR_SLEEP */
 
   exit (1);
 }
