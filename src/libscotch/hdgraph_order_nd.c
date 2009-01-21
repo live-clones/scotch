@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 16 apr 2006     **/
 /**                                 to     01 mar 2008     **/
 /**                # Version 5.1  : from : 27 sep 2008     **/
-/**                                 to     27 sep 2008     **/
+/**                                 to     11 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,6 +62,7 @@
 #include "dorder.h"
 #include "hdgraph.h"
 #include "hdgraph_order_nd.h"
+#include "hdgraph_order_sq.h"
 #include "hdgraph_order_st.h"
 #include "vdgraph.h"
 #include "vdgraph_separate_st.h"
@@ -97,8 +98,8 @@ void * const                    dataptr)          /* Pointer to thread data */
     return ((void *) 1);
 
   o = ((void *) 0);
-  if (fldthrdptr->fldprocnbr > 1) {                            /* If subpart has several processes, fold a distributed graph */
-    if (hdgraphFold2 (&indgrafdat, fldthrdptr->fldpartval,     /* Fold temporary induced subgraph from all processes         */
+  if (fldthrdptr->fldprocnbr > 1) {               /* If subpart has several processes, fold a distributed graph  */
+    if (hdgraphFold2 (&indgrafdat, fldthrdptr->fldpartval, /* Fold temporary induced subgraph from all processes */
                       &fldgrafptr->data.dgrfdat, fldthrdptr->fldproccomm) != 0)
       o = ((void *) 1);
   }
@@ -187,10 +188,9 @@ HdgraphOrderNdGraph * restrict const  fldgrafptr)
   fldthrdtab[1].orggrafptr = &orggrafdat;
   MPI_Comm_dup (orggrafptr->s.proccomm, &orggrafdat.s.proccomm); /* Duplicate communicator to avoid interferences in communications */
 
-  if (pthread_create (&thrdval, NULL, hdgraphOrderNdFold2, (void *) &fldthrdtab[1]) != 0) { /* If could not create thread */
-    o = ((int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence             */
+  if (pthread_create (&thrdval, NULL, hdgraphOrderNdFold2, (void *) &fldthrdtab[1]) != 0) /* If could not create thread */
+    o = ((int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence           */
         ((int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[1]));
-  }
   else {                                          /* Newly created thread is processing subgraph 1, so let's process subgraph 0 */
     void *                    o2;
 
@@ -206,129 +206,6 @@ HdgraphOrderNdGraph * restrict const  fldgrafptr)
   o = ((int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence */
       ((int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[1]));
 #endif /* SCOTCH_PTHREAD */
-
-  return (o);
-}
-
-/* This routine builds the distributed part of
-** a distributed halo graph. This is a distinct
-** routine to allow for multi-threading.
-*/
-
-static
-void
-hdgraphOrderNdSequTree2 (
-DorderNode * const              nodetab,
-Gnum * const                    nodeptr,
-const OrderCblk * const         cblkptr,
-const Gnum                      fathnum,
-const Gnum                      fcbknum)
-{
-  Gnum                nodenum;
-  DorderNode *        nodetmp;
-  Gnum                cblknum;
-
-  nodenum = (*nodeptr) ++;
-  nodetmp = &nodetab[nodenum];
-  nodetmp->fathnum = fathnum;
-  nodetmp->typeval = (Gnum) cblkptr->typeval;
-  nodetmp->vnodnbr = cblkptr->vnodnbr;
-  nodetmp->cblknum = fcbknum;
-
-  for (cblknum = 0; cblknum < cblkptr->cblknbr; cblknum ++)
-    hdgraphOrderNdSequTree2 (nodetab, nodeptr, &cblkptr->cblktab[cblknum], nodenum, cblknum);
-}
-
-static
-DorderNode *
-hdgraphOrderNdSequTree (
-const Order * const             cordptr)
-{
-  DorderNode *        nodetab;
-  Gnum                nodenum;
-  Gnum                cblknum;
-
-  if ((nodetab = memAlloc ((cordptr->treenbr - 1) * sizeof (DorderNode))) == NULL) { /* "- 1" as root of tree will not be copied */
-    errorPrint ("hdgraphOrderNdSequTree: out of memory");
-    return     (NULL);
-  }
-
-  nodenum = 0;                                    /* Start labeling nodes from 0 */
-  for (cblknum = 0; cblknum < cordptr->cblktre.cblknbr; cblknum ++)
-    hdgraphOrderNdSequTree2 (nodetab, &nodenum, &cordptr->cblktre.cblktab[cblknum], -1, cblknum); /* Root of tree is labeled "-1" */
-
-#ifdef SCOTCH_DEBUG_HDGRAPH2
-  if (nodenum != (cordptr->treenbr - 1)) {
-    errorPrint ("hdgraphOrderNdSequTree: internal error");
-    return     (NULL);
-  }
-#endif /* SCOTCH_DEBUG_HDGRAPH2 */
-
-  return (nodetab);
-}
-
-static
-int
-hdgraphOrderNdSequ (
-Hgraph * restrict const         grafptr,
-DorderCblk * restrict const     cblkptr,
-const Strat * restrict const    stratptr)
-{
-  Order                     corddat;              /* Centralized ordering structure */
-  Gnum * restrict           vnumtax;
-  Gnum * restrict           peritab;
-  int                       o;
-
-  if (orderInit (&corddat, grafptr->s.baseval, cblkptr->vnodglbnbr, NULL) != 0) {
-    errorPrint ("hdgraphOrderNdSequ: cannot initialize centralized ordering");
-    return     (1);
-  }
-
-  vnumtax = grafptr->s.vnumtax;                   /* Save number array of subgraph to order               */
-  grafptr->s.vnumtax = NULL;                      /* Assume graph does not have one (fake original graph) */
-
-  if (hgraphOrderSt (grafptr, &corddat, 0, &corddat.cblktre, stratptr) != 0) { /* Compute sequential ordering */
-    orderExit (&corddat);
-    return    (1);
-  }
-#ifdef SCOTCH_DEBUG_HDGRAPH2
-  if (orderCheck (&corddat) != 0) {
-    errorPrint ("hdgraphOrderNdSequ: invalid centralized ordering");
-    orderExit  (&corddat);
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_HDGRAPH2 */
-
-  peritab = corddat.peritab;                      /* Get permutation array */
-
-  if (vnumtax != NULL) {
-    Gnum                      perinum;
-
-    grafptr->s.vnumtax = vnumtax;                 /* Restore vertex number array            */
-    for (perinum = 0; perinum < grafptr->vnohnbr; perinum ++) /* Adjust inverse permutation */
-      peritab[perinum] = vnumtax[peritab[perinum]];
-  }
-
-  cblkptr->typeval = DORDERCBLKLEAF;              /* Fill node as leaf */
-  cblkptr->data.leaf.ordelocval = cblkptr->ordeglbval;
-  cblkptr->data.leaf.vnodlocnbr = cblkptr->vnodglbnbr;
-  cblkptr->data.leaf.periloctab = peritab;
-  cblkptr->data.leaf.nodelocnbr = corddat.treenbr - 1; /* Get number of tree nodes, save for root */
-  o = 0;
-  if (corddat.treenbr > 1) {
-    cblkptr->data.leaf.cblklocnum = dorderNewSequIndex (cblkptr, corddat.treenbr - 1); /* Reserve local indices for local nodes */
-    if ((cblkptr->data.leaf.nodeloctab = hdgraphOrderNdSequTree (&corddat)) == NULL) {
-      errorPrint ("hdgraphOrderNdSequ: cannot import centralized separation tree");
-      o = 1;
-    }
-    if (corddat.cblktre.typeval == ORDERCBLKNEDI) /* If root of centralized tree is a nested dissection node */
-      cblkptr->typeval |= DORDERCBLKNEDI;         /* Distributed leaf is also a nested dissection node       */
-  }
-  else
-    cblkptr->data.leaf.nodeloctab = NULL;
-
-  corddat.flagval = ORDERNONE;                    /* Do not free permutation array */
-  orderExit (&corddat);                           /* Free permutation tree         */
 
   return (o);
 }
@@ -369,15 +246,10 @@ const HdgraphOrderNdParam * restrict const  paraptr)
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
 
   if (grafptr->s.procglbnbr == 1) {               /* If we are running on a single process */
-    Hgraph                    cgrfdat;
+    HdgraphOrderSqParam   paradat;
 
-    if (hdgraphGather (grafptr, &cgrfdat) != 0) { /* Turn Gather centralized subgraph from all other processes    */
-      errorPrint ("hdgraphOrderNd: cannot create centralized graph");
-      return     (1);
-    }
-    o = hdgraphOrderNdSequ (&cgrfdat, cblkptr, paraptr->ordstratseq);
-    hgraphFree (&cgrfdat);
-    return (o);
+    paradat.ordstratseq = paraptr->ordstratseq;
+    return (hdgraphOrderSq (grafptr, cblkptr, &paradat)); /* Run sequentially */
   }
 
   if (dgraphGhst (&grafptr->s) != 0) {            /* Compute ghost edge array if not already present, to have vertgstnbr (and procsidtab) */
@@ -526,7 +398,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
         cblkptr01->ordeglbval = ordeglbval;
         cblkptr01->vnodglbnbr = vnodglbnbr;
         cblkptr01->cblkfthnum = cblkfthnum;
-        o = hdgraphOrderNdSequ (&indgrafdat01.data.cgrfdat, cblkptr01, paraptr->ordstratseq);
+        o = hdgraphOrderSq2 (&indgrafdat01.data.cgrfdat, cblkptr01, paraptr->ordstratseq);
         hgraphExit (&indgrafdat01.data.cgrfdat);  /* Free centralized graph here as it is last level                              */
         break;                                    /* No need to dispose of final column block as locally created by dorderNewSequ */
 #ifdef SCOTCH_DEBUG_HDGRAPH2

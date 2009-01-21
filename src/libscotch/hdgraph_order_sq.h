@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,32 +31,41 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : common_integer.h                        **/
+/**   NAME       : hdgraph_order_sq.h                      **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER                        **/
 /**                                                        **/
-/**   FUNCTION   : These lines are the data declarations   **/
-/**                for the generic integer type handling   **/
-/**                routines.                               **/
+/**   FUNCTION   : These lines are the data declaration    **/
+/**                for the halo distributed graph centra-  **/
+/**                lized ordering algorithm.               **/
 /**                                                        **/
-/**   DATES      : # Version 0.0  : from : 07 sep 1998     **/
-/**                                 to     14 sep 1998     **/
-/**                # Version 1.0  : from : 23 aug 2005     **/
-/**                                 to   : 26 Aug 2005     **/
+/**   DATES      : # Version 5.1  : from : 11 nov 2008     **/
+/**                                 to     11 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
-#define COMMON_INTEGER_H
+/*
+**  The type and structure definitions.
+*/
+
+/*+ This structure holds the method parameters. +*/
+
+typedef struct HdgraphOrderSqParam_ {
+  Strat * restrict          ordstratseq;          /*+ Sequential ordering strategy +*/
+} HdgraphOrderSqParam;
 
 /*
 **  The function prototypes.
 */
 
-#ifndef COMMON_INTEGER
+#ifndef HDGRAPH_ORDER_SQ
 #define static
 #endif
 
-static void                 intSearchDicho_2    (const INT * const, INT *, INT *, INT);
+int                         hdgraphOrderSq      (Hdgraph * const, DorderCblk * const, const HdgraphOrderSqParam * const);
+
+int                         hdgraphOrderSq2     (Hgraph * restrict const, DorderCblk * restrict const, const Strat * restrict const);
+static DorderNode *         hdgraphOrderSqTree  (const Order * const);
+static void                 hdgraphOrderSqTree2 (DorderNode * const, Gnum * const, const OrderCblk * const, const Gnum, const Gnum);
 
 #undef static

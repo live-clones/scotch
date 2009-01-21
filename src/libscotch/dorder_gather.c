@@ -318,7 +318,7 @@ const int                     protnum)
   Gnum                        treeglbnbr;
   DorderGatherNode * restrict treercvtab;
   int                         treesndnbr;         /* "int" since used as count in MPI_Gatherv */
-  DorderGatherNode * restrict treesndtab;
+  DorderGatherNode *          treesndtab;
   DorderGatherNode * restrict treesndptr;
   int * restrict              treecnttab;
   int * restrict              treedsptab;

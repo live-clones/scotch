@@ -44,7 +44,7 @@
 /**                result obtained.                        **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 27 dec 2007     **/
-/**                                 to     25 oct 2008     **/
+/**                                 to     26 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -134,10 +134,12 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
   MPI_Datatype      besttypedat;                  /* Data type for finding best bipartition              */
   MPI_Op            bestoperdat;                  /* Handle of MPI operator for finding best bipartition */
   int               bestprocnum;                  /* Rank of process holding best partition              */
+  Gnum * restrict   vnumloctax;
   Gnum              vertlocnum;
   Gnum              complocsize1;
   Gnum              complocload1;
   Gnum              fronlocnbr;
+  int               o;
 
   if ((MPI_Type_contiguous (6, GNUM_MPI, &besttypedat)                              != MPI_SUCCESS) ||
       (MPI_Type_commit (&besttypedat)                                               != MPI_SUCCESS) ||
@@ -153,7 +155,11 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
   reduloctab[4] = 0;
   reduloctab[5] = 0;                              /* Assume no errors */
 
-  if (bdgraphGatherAll (dgrfptr, &cgrfdat) != 0) {
+  vnumloctax = dgrfptr->s.vnumloctax;             /* No need for vertex number array when centralizing graph */
+  dgrfptr->s.vnumloctax = NULL;
+  o = bdgraphGatherAll (dgrfptr, &cgrfdat);
+  dgrfptr->s.vnumloctax = vnumloctax;             /* Restore vertex number array */
+  if (o != 0) {
     errorPrint ("bdgraphBipartSq: cannot build centralized graph");
     return     (1);
   }

@@ -39,7 +39,7 @@
 /**   FUNCTION   : This module handles (partial) mappings. **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 31 mar 2008     **/
-/**                                 to     27 sep 2008     **/
+/**                                 to     09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -97,8 +97,8 @@ void
 dmapExit (
 Dmapping * const             dmapptr)
 {
-  DmappingFrag * restrict   fragptr;
-  DmappingFrag * restrict   fragtmp;
+  DmappingFrag *      fragptr;
+  DmappingFrag *      fragtmp;
 
   for (fragptr = dmapptr->fragptr; fragptr != NULL; fragptr = fragtmp) {
     memFree (fragptr->vnumtab);

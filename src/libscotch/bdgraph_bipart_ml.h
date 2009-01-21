@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routine for distributed graphs.         **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 06 nov 2007     **/
+/**                                 to   : 14 dec 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,7 +65,6 @@ typedef struct BdgraphBipartMlParam_ {
   INT                       dupmax;               /*+ Maximum number of vertices to do fold-dup   +*/
   INT                       duplvlmax;            /*+ Maximum level for allowing fold-dup         +*/
   double                    coarrat;              /*+ Coarsening ratio                            +*/
-  INT                       reqsize;
   Strat *                   stratlow;             /*+ Strategy at lowest level                    +*/
   Strat *                   stratasc;             /*+ Strategy at ascending levels                +*/
   Strat *                   stratseq;             /*+ Strategy when running on a single processor +*/

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,7 +34,6 @@
 /**   NAME       : common_integer.c                        **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER                        **/
 /**                                                        **/
 /**   FUNCTION   : This module handles the generic integer **/
 /**                type.                                   **/
@@ -47,6 +46,8 @@
 /**                                 to   : 19 dec 2006     **/
 /**                # Version 2.0  : from : 26 feb 2008     **/
 /**                                 to   : 26 feb 2008     **/
+/**                # Version 5.1  : from : 09 nov 2008     **/
+/**                                 to   : 21 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,7 +58,6 @@
 #define COMMON_INTEGER
 
 #include "common.h"
-#include "common_integer.h"
 
 /********************************/
 /*                              */
@@ -143,11 +143,11 @@ const INT                   val)                  /*+ Value to write     +*/
 
 void
 intAscn (
-INT * restrict const        permtab,              /*+ Permutation array to build +*/
+INT * const                 permtab,              /*+ Permutation array to build +*/
 const INT                   permnbr,              /*+ Number of entries in array +*/
 const INT                   baseval)              /*+ Base value                 +*/
 {
-  INT * restrict      permtax;
+  INT *               permtax;
   INT                 permnum;
   INT                 permnnd;
 
@@ -164,10 +164,10 @@ const INT                   baseval)              /*+ Base value                
 
 void
 intPerm (
-INT * restrict const        permtab,              /*+ Permutation array to build +*/
+INT * const                 permtab,              /*+ Permutation array to build +*/
 const INT                   permnbr)              /*+ Number of entries in array +*/
 {
-  INT * restrict      permptr;
+  INT *               permptr;
   INT                 permrmn;
 
   for (permptr = permtab, permrmn = permnbr;      /* Perform random permutation */
@@ -188,14 +188,16 @@ const INT                   permnbr)              /*+ Number of entries in array
 /*                  */
 /********************/
 
-static int          intrandflag = 0;              /*+ Flag set if generator already initialized +*/
+static volatile int intrandflag = 0;              /*+ Flag set if generator already initialized +*/
 static unsigned int intrandseed = 1;              /*+ Random seed                               +*/
 
 /* This routine initializes the pseudo-random
 ** generator if necessary. In order for multi-sequential
 ** programs to have exactly the same behavior on any
-** process, the random seed does not depend on the
-** process rank.
+** process, the random seed does not depend on process
+** rank. This routine is not really thread-safe, so it
+** should not be called concurrently when it has never
+** been initialized before.
 ** It returns:
 ** - VOID  : in all cases.
 */
@@ -204,20 +206,21 @@ void
 intRandInit (void)
 {
   if (intrandflag == 0) {                         /* If generator not yet initialized */
-#if ! ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED))
+#if ! ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED) || (defined SCOTCH_DETERMINISTIC))
     intrandseed = time (NULL);                    /* Set random seed if needed */
 #endif /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED)) */
 #ifdef COMMON_RANDOM_RAND
     srand (intrandseed);
 #else /* COMMON_RANDOM_RAND */
-    srandom (intrandseed);                        /* Initialize random generator    */
+    srandom (intrandseed);
 #endif /* COMMON_RANDOM_RAND */
     intrandflag = 1;                              /* Generator has been initialized */
   }
 }
 
 /* This routine reinitializes the pseudo-random
-** generator to its initial value.
+** generator to its initial value. This routine
+** is not thread-safe.
 ** It returns:
 ** - VOID  : in all cases.
 */
@@ -225,11 +228,11 @@ intRandInit (void)
 void
 intRandReset (void)
 {
-  if (intrandflag != 0) {                         /* If random generator already initialized */
+  if (intrandflag != 0) {                         /* Keep seed computed during first initialization */
 #ifdef COMMON_RANDOM_RAND
     srand (intrandseed);
 #else /* COMMON_RANDOM_RAND */
-    srandom (intrandseed);                        /* Initialize random generator    */
+    srandom (intrandseed);
 #endif /* COMMON_RANDOM_RAND */
   }
   else
@@ -310,68 +313,3 @@ intRandReset (void)
 #undef INTSORTSIZE
 #undef INTSORTSWAP
 #undef INTSORTCMP
-
-/* Dichotomy routine
-** It returns:
-** - VOID  : in all cases.
-*/
-
-static void
-intSearchDicho_2 (const INT * const tab,
-		  INT * start, INT * stop, INT element)
-{
-  INT median;
-
-  if ((tab [*start] > element) || (tab [*stop] < element)) {
-    *stop = *start = -1;
-    return;
-  }
-
-  if (*stop == *start + 1) { /* element is in *start */
-    *stop = *start;
-    return;
-  }
-
-  median = (*start + *stop)/2;
-  if (tab [median] < element)
-    *start = median;
-  else if (tab [median] > element)
-    *stop = median;
-  else
-    *stop = *start = median;
-}
-
-/**
- @brief
- This function search the owner of an element in a tab which
- contains sorted intervals.
-
- @param tab     The table of intervals.
- @param first   Indice of the first element (must be >= 0)
- @param last    Indice of the last element (corresponding to upper bound)
- @param element Element which is being searched in tab.
-
- @return
- - < 0 if an error occurs (element < tab[first] or element > tab[last])
- - the indice of the owner of element else.
-*/
-INT
-intSearchDicho      (const INT * const tab,
-		     const INT first, const INT last,
-		     const INT element)
-{
-  INT start, stop;
-
-  start = first;
-  stop  = last;
-
-  while ((stop >= 0) && (start != stop)) {        /* Loop to avoid recursion */
-    intSearchDicho_2 (tab, &start, &stop, element);
-  }
-
-  while ((tab[stop] == element) && (stop < last)
-         && (tab[stop] == tab[stop + 1]))         /* Avoid return empty interval                 */
-    stop ++;                                      /* This can occur when processors set is empty */
-
-  return (stop);
-}

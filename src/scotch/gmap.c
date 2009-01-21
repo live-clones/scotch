@@ -154,19 +154,15 @@ char *                      argv[])
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_paraNum < C_paraNbr) {                /* If number of parameters not reached              */
-        if ((C_partNbr = atoi (argv[i])) < 1) {   /* Get the number of parts                          */
+        if ((C_partNbr = atoi (argv[i])) < 1)     /* Get the number of parts                          */
           errorPrint ("main: invalid number of parts (\"%s\")", argv[i]);
-          exit       (1);
-        }
         C_paraNum ++;
         continue;                                 /* Process the other parameters */
       }
       if (C_fileNum < C_fileNbr)                  /* A file name has been given */
         C_fileTab[C_fileNum ++].name = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (1);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -178,10 +174,7 @@ char *                      argv[])
         case 'm' :
           SCOTCH_stratExit (&stradat);
           SCOTCH_stratInit (&stradat);
-          if ((SCOTCH_stratGraphMap (&stradat, &argv[i][2])) != 0) {
-            errorPrint ("main: invalid mapping strategy");
-            return     (1);
-          }
+          SCOTCH_stratGraphMap (&stradat, &argv[i][2]);
           break;
         case 'S' :
         case 's' :                                /* Source graph parameters */
@@ -196,9 +189,7 @@ char *                      argv[])
                 grafflag |= 1;                    /* Do not load vertex weights */
                 break;
               default :
-                errorPrint ("main: invalid source graph option (\"%c\")",
-                            argv[i][j]);
-                return     (1);
+                errorPrint ("main: invalid source graph option (\"%c\")", argv[i][j]);
             }
           }
           break;
@@ -223,15 +214,12 @@ char *                      argv[])
                 flagval |= C_FLAGVERBTIM;
                 break;
               default :
-                errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"",
-                            argv[i][j], argv[i]);
-                return (1);
+                errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"", argv[i][j], argv[i]);
             }
           }
           break;
         default :
           errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
-          return     (1);
       }
     }
   }

@@ -56,7 +56,7 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:	clean
-					$(MAKE)	SCOTCHLIB=scotch		\
+					$(MAKE) CC=$(CCS) SCOTCHLIB=scotch	\
 					acpl$(EXE)				\
 					amk_ccc$(EXE)				\
 					amk_fft2$(EXE)				\
@@ -86,7 +86,7 @@ scotch				:	clean
 					mtst$(EXE)
 
 ptscotch			:	clean
-					$(MAKE) SCOTCHLIB=ptscotch CC=$(CCP)	\
+					$(MAKE) CC=$(CCP) SCOTCHLIB=ptscotch	\
 					dgmap$(EXE)				\
 					dgord$(EXE)				\
 					dgpart$(EXE)				\

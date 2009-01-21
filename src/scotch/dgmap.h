@@ -40,7 +40,7 @@
 /**                for the main routine.                   **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 12 jun 2008     **/
-/**                                 to   : 28 aug 2008     **/
+/**                                 to   : 22 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -69,7 +69,8 @@
 #define C_FLAGVERBSTR               0x0002        /* Verbose flags */
 #define C_FLAGVERBTIM               0x0004
 #define C_FLAGVERBMAP               0x0008
-#define C_FLAGDEBUG                 0x0010        /* Debugging */
+#define C_FLAGVERBMEM               0x0010
+#define C_FLAGDEBUG                 0x0020        /* Debugging */
 
 /*
 **  The function prototypes.

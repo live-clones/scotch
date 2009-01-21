@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 14 apr 2006     **/
 /**                                 to   : 14 apr 2006     **/
+/**                # Version 5.1  : from : 11 nov 2008     **/
+/**                                 to   : 11 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,9 +53,10 @@
 /*+ Method types. +*/
 
 typedef enum HdgraphOrderStMethodType_ {
-  HDGRAPHORDERSTMETHND = 0,                       /*+ Nested Dissection                     +*/
-  HDGRAPHORDERSTMETHSI,                           /*+ Simple                                +*/
-  HDGRAPHORDERSTMETHNBR                           /*+ Number of methods                     +*/
+  HDGRAPHORDERSTMETHND = 0,                       /*+ Nested Dissection +*/
+  HDGRAPHORDERSTMETHSI,                           /*+ Simple            +*/
+  HDGRAPHORDERSTMETHSQ,                           /*+ Sequential method +*/
+  HDGRAPHORDERSTMETHNBR                           /*+ Number of methods +*/
 } HdgraphOrderStMethodType;
 
 /*

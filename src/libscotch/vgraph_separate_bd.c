@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 5.0  : from : 18 oct 2004     **/
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 30 oct 2007     **/
+/**                                 to   : 09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,25 +74,30 @@ vgraphSeparateBd (
 Vgraph * restrict const             orggrafptr,   /*+ Active graph      +*/
 const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
 {
-  VgraphSeparateBdQueue     queudat;              /* Neighbor queue                                               */
-  Gnum * restrict           orgdisttax;           /* Based access to distance array for original graph            */
-  Gnum                      orgdistmax;           /* Maximum distance allowed                                     */
-#define orgindxtax          orgdisttax            /* Recycle distance array as number indexing array              */
-  Vgraph                    bndgrafdat;           /* Band graph structure                                         */
-  Gnum                      bndvertnbr;           /* Number of regular vertices in band graph (without anchors)   */
-  Gnum                      bndvertnnd;
-  Gnum * restrict           bndvnumtax;           /* Band vertex number array, recycling queudat.qtab             */
-  Gnum                      bndcompsize1;         /* Number of regular vertices in part 1 of band graph           */
-  Gnum                      bndcompload1;         /* Load of regular vertices in part 1                           */
-  Gnum                      bndvlvlnum;           /* Index of first band graph vertex to belong to the last layer */
-  Gnum                      bndvertnum;
-  Gnum                      bndvelosum;           /* Load of regular vertices in band graph                       */
-  Gnum                      bndedgenbr;           /* Upper bound on the number of edges, including anchor edges   */
-  Gnum                      bndeancnbr;           /* Number of anchor edges                                       */
-  Gnum                      bndedgenum;
-  Gnum                      bndedgetmp;
-  Gnum                      bnddegrmax;
-  Gnum                      fronnum;
+  VgraphSeparateBdQueue       queudat;            /* Neighbor queue                                               */
+  Gnum * restrict             orgdisttax;         /* Based access to distance array for original graph            */
+  Gnum                        orgdistmax;         /* Maximum distance allowed                                     */
+#define orgindxtax            orgdisttax          /* Recycle distance array as number indexing array              */
+  Vgraph                      bndgrafdat;         /* Band graph structure                                         */
+  Gnum                        bndvertnbr;         /* Number of regular vertices in band graph (without anchors)   */
+  Gnum                        bndvertnnd;
+  Gnum * restrict             bndvnumtax;         /* Band vertex number array, recycling queudat.qtab             */
+  Gnum                        bndcompsize1;       /* Number of regular vertices in part 1 of band graph           */
+  Gnum                        bndcompload1;       /* Load of regular vertices in part 1                           */
+  Gnum                        bndvlvlnum;         /* Index of first band graph vertex to belong to the last layer */
+  Gnum                        bndvertnum;
+  Gnum                        bndvelosum;         /* Load of regular vertices in band graph                       */
+  Gnum * restrict             bndedgetax;
+  Gnum                        bndedgenbr;         /* Upper bound on the number of edges, including anchor edges   */
+  Gnum                        bndeancnbr;         /* Number of anchor edges                                       */
+  Gnum                        bndedgenum;
+  Gnum                        bndedgetmp;
+  Gnum                        bnddegrmax;
+  Gnum                        fronnum;
+  const Gnum * restrict const orgverttax = orggrafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const orgvendtax = orggrafptr->s.vendtax;
+  const Gnum * restrict const orgvelotax = orggrafptr->s.velotax;
+  const Gnum * restrict const orgedgetax = orggrafptr->s.edgetax;
 
   if (orggrafptr->fronnbr == 0)                   /* If no separator vertices, apply strategy to full graph */
     return (vgraphSeparateSt (orggrafptr, paraptr->stratorg));
@@ -136,8 +141,8 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
     orgdisttax[orgvertnum] = 0;
     vgraphSeparateBdQueuePut (&queudat, orgvertnum);
-    if (orggrafptr->s.velotax != NULL)
-      bndvelosum += orggrafptr->s.velotax[orgvertnum];
+    if (orgvelotax != NULL)
+      bndvelosum += orgvelotax[orgvertnum];
   }
 
   bndcompsize1 = 0;
@@ -155,7 +160,7 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
       return     (1);
     }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
-    bndedgenbr += orggrafptr->s.vendtax[orgvertnum] - orggrafptr->s.verttax[orgvertnum]; /* Exact or upper bound on number of edges, including anchor edge(s) */
+    bndedgenbr += orgvendtax[orgvertnum] - orgverttax[orgvertnum]; /* Exact or upper bound on number of edges, including anchor edge(s) */
 
     orgdistval = orgdisttax[orgvertnum];          /* Get vertex distance                    */
     if (orgdistval >= orgdistmax) {               /* If we belong to the farthest layer     */
@@ -164,12 +169,12 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
     }
 
     orgdistval ++;                                /* Distance of neighbors */
-    for (orgedgenum = orggrafptr->s.verttax[orgvertnum];
-         orgedgenum < orggrafptr->s.vendtax[orgvertnum]; orgedgenum ++) {
+    for (orgedgenum = orgverttax[orgvertnum];
+         orgedgenum < orgvendtax[orgvertnum]; orgedgenum ++) {
       Gnum                orgvertend;
       Gnum                orgpartval1;
 
-      orgvertend = orggrafptr->s.edgetax[orgedgenum];
+      orgvertend = orgedgetax[orgedgenum];
       if (orgdisttax[orgvertend] == ~0) {         /* If vertex not visited yet */
 
 #ifdef SCOTCH_DEBUG_VGRAPH2
@@ -183,9 +188,9 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
         orgdisttax[orgvertend] = orgdistval;      /* Enqueue vertex */
         vgraphSeparateBdQueuePut (&queudat, orgvertend);
         bndcompsize1 += orgpartval1;              /* Count vertices in part 1 */
-        if (orggrafptr->s.velotax != NULL) {
-          bndvelosum   += orggrafptr->s.velotax[orgvertend];
-          bndcompload1 += orggrafptr->s.velotax[orgvertend] * orgpartval1;
+        if (orgvelotax != NULL) {
+          bndvelosum   += orgvelotax[orgvertend];
+          bndcompload1 += orgvelotax[orgvertend] * orgpartval1;
         }
       }
     }
@@ -193,7 +198,7 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
 
   bndvertnbr = queudat.head - queudat.qtab;       /* Number of regular band graph vertices (withour anchors) is number of enqueued vertices */
 
-  if (orggrafptr->s.velotax == NULL) {
+  if (orgvelotax == NULL) {
     bndvelosum   = bndvertnbr;
     bndcompload1 = bndcompsize1;
   }
@@ -248,6 +253,7 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
     return     (1);
   }
   bndgrafdat.parttax -= orggrafptr->s.baseval;    /* From now on we should free a Vgraph and not a Graph */
+  bndedgetax = bndgrafdat.s.edgetax;
 
   for (bndvertnum = bndedgenum = orggrafptr->s.baseval, bnddegrmax = 0; /* Fill index array for vertices not belonging to last level */
        bndvertnum < bndvlvlnum; bndvertnum ++) {
@@ -256,20 +262,20 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
 
     orgvertnum = bndvnumtax[bndvertnum];
     bndgrafdat.s.verttax[bndvertnum] = bndedgenum;
-    bndgrafdat.s.velotax[bndvertnum] = (orggrafptr->s.velotax != NULL) ? orggrafptr->s.velotax[orgvertnum] : 1;
+    bndgrafdat.s.velotax[bndvertnum] = (orgvelotax != NULL) ? orgvelotax[orgvertnum] : 1;
 
-    for (orgedgenum = orggrafptr->s.verttax[orgvertnum]; /* All edges of first levels are kept */
-         orgedgenum < orggrafptr->s.vendtax[orgvertnum]; orgedgenum ++, bndedgenum ++) {
+    for (orgedgenum = orgverttax[orgvertnum];     /* All edges of first levels are kept */
+         orgedgenum < orgvendtax[orgvertnum]; orgedgenum ++, bndedgenum ++) {
 #ifdef SCOTCH_DEBUG_VGRAPH2
       if ((bndedgenum >= (bndedgenbr + orggrafptr->s.baseval)) ||
-          (orgindxtax[orggrafptr->s.edgetax[orgedgenum]] < 0)) {
+          (orgindxtax[orgedgetax[orgedgenum]] < 0)) {
         errorPrint ("vgraphSeparateBd: internal error (6)");
         vgraphExit (&bndgrafdat);
         memFree    (queudat.qtab);
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
-      bndgrafdat.s.edgetax[bndedgenum] = orgindxtax[orggrafptr->s.edgetax[orgedgenum]];
+      bndedgetax[bndedgenum] = orgindxtax[orgedgetax[orgedgenum]];
     }
     bndgrafdat.parttax[bndvertnum] = orggrafptr->parttax[orgvertnum]; /* Copy part array */
 
@@ -285,10 +291,10 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
 
     orgvertnum = bndvnumtax[bndvertnum];
     bndgrafdat.s.verttax[bndvertnum] = bndedgenum;
-    bndgrafdat.s.velotax[bndvertnum] = (orggrafptr->s.velotax != NULL) ? orggrafptr->s.velotax[orgvertnum] : 1;
+    bndgrafdat.s.velotax[bndvertnum] = (orgvelotax != NULL) ? orgvelotax[orgvertnum] : 1;
 
-    for (orgedgenum = orggrafptr->s.verttax[orgvertnum]; /* Keep only band edges */
-         orgedgenum < orggrafptr->s.vendtax[orgvertnum]; orgedgenum ++) {
+    for (orgedgenum = orgverttax[orgvertnum];     /* Keep only band edges */
+         orgedgenum < orgvendtax[orgvertnum]; orgedgenum ++) {
       Gnum                bndvertend;
 
 #ifdef SCOTCH_DEBUG_VGRAPH2
@@ -299,15 +305,15 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
-      bndvertend = orgindxtax[orggrafptr->s.edgetax[orgedgenum]];
+      bndvertend = orgindxtax[orgedgetax[orgedgenum]];
       if (bndvertend != ~0)
-        bndgrafdat.s.edgetax[bndedgenum ++] = bndvertend;
+        bndedgetax[bndedgenum ++] = bndvertend;
     }
     orgpartval = orggrafptr->parttax[orgvertnum];
     bndgrafdat.parttax[bndvertnum] = orgpartval;  /* Record part for vertices of last level */
     bnddegrval = bndedgenum - bndgrafdat.s.verttax[bndvertnum];
-    if (bnddegrval < (orggrafptr->s.vendtax[orgvertnum] - orggrafptr->s.verttax[orgvertnum])) { /* If vertex is connected to rest of part */
-      bndgrafdat.s.edgetax[bndedgenum ++] = bndvertnnd + (Gnum) orgpartval; /* Add anchor edge to proper anchor vertex                    */
+    if (bnddegrval < (orgvendtax[orgvertnum] - orgverttax[orgvertnum])) { /* If vertex is connected to rest of part */
+      bndedgetax[bndedgenum ++] = bndvertnnd + (Gnum) orgpartval; /* Add anchor edge to proper anchor vertex        */
       bndeancnbr ++;
       bnddegrval ++;                              /* One more (anchor) edge added to this vertex */
     }
@@ -337,12 +343,13 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
     if (bndgrafdat.s.verttax[bndvertnum + 1] > bndgrafdat.s.verttax[bndvertnum]) { /* If vertex is not isolated */
       Gnum                bndvertend;
 
-      bndvertend = bndgrafdat.s.edgetax[bndgrafdat.s.verttax[bndvertnum + 1] - 1]; /* Get last neighbor of its edge sub-array */
+      bndvertend = bndedgetax[bndgrafdat.s.verttax[bndvertnum + 1] - 1]; /* Get last neighbor of its edge sub-array */
+
       if (bndvertend >= bndvertnnd) {             /* If it is an anchor          */
         if (bndvertend == bndvertnnd)             /* Add edge from proper anchor */
-          bndgrafdat.s.edgetax[bndedgenum ++] = bndvertnum;
+          bndedgetax[bndedgenum ++] = bndvertnum;
         else
-          bndgrafdat.s.edgetax[-- bndedgetmp] = bndvertnum;
+          bndedgetax[-- bndedgetmp] = bndvertnum;
       }
     }
   }

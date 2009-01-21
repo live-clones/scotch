@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 28 feb 2006     **/
 /**                                 to     05 feb 2008     **/
 /**                # Version 5.1  : from : 28 aug 2008     **/
-/**                                 to     28 aug 2008     **/
+/**                                 to     19 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,27 +72,35 @@
 */
 
 #define DGRAPHHALOFILLNAME          dgraphHaloFillGeneric
+#define DGRAPHHALOFILLSIZE          attrglbsiz
 #define DGRAPHHALOFILLCOPY(d,s,n)   memCpy ((d), (s), (n))
 #include "dgraph_halo_fill.c"
 #undef DGRAPHHALOFILLNAME
+#undef DGRAPHHALOFILLSIZE
 #undef DGRAPHHALOFILLCOPY
 
 #define DGRAPHHALOFILLNAME          dgraphHaloFillGnum
+#define DGRAPHHALOFILLSIZE          sizeof (Gnum)
 #define DGRAPHHALOFILLCOPY(d,s,n)   *((Gnum *) (d)) = *((Gnum *) (s))
 #include "dgraph_halo_fill.c"
 #undef DGRAPHHALOFILLNAME
+#undef DGRAPHHALOFILLSIZE
 #undef DGRAPHHALOFILLCOPY
 
 #define DGRAPHHALOFILLNAME          dgraphHaloFillGraphPart
+#define DGRAPHHALOFILLSIZE          sizeof (GraphPart)
 #define DGRAPHHALOFILLCOPY(d,s,n)   *((GraphPart *) (d)) = *((GraphPart *) (s))
 #include "dgraph_halo_fill.c"
 #undef DGRAPHHALOFILLNAME
+#undef DGRAPHHALOFILLSIZE
 #undef DGRAPHHALOFILLCOPY
 
 #define DGRAPHHALOFILLNAME          dgraphHaloFillInt /* In case Gnum is not int */
+#define DGRAPHHALOFILLSIZE          sizeof (int)
 #define DGRAPHHALOFILLCOPY(d,s,n)   *((int *) (d)) = *((int *) (s))
 #include "dgraph_halo_fill.c"
 #undef DGRAPHHALOFILLNAME
+#undef DGRAPHHALOFILLSIZE
 #undef DGRAPHHALOFILLCOPY
 
 static
@@ -102,11 +110,11 @@ const Dgraph * restrict const grafptr,
 const void * restrict const   attrgsttab,         /* Attribute array to diffuse     */
 int                           attrglbsiz,         /* Type extent of attribute       */
 byte * restrict const         attrsndtab,         /* Array for packing data to send */
-int * restrict const          senddsptab,         /* Temporary displacement array   */
+int * const                   senddsptab,         /* Temporary displacement array   */
 const int * restrict const    sendcnttab)         /* Count array                    */
 {
   int                 procnum;
-  byte ** restrict    attrdsptab;
+  byte **             attrdsptab;
 
   attrdsptab = (byte **) senddsptab;              /* TRICK: use senddsptab (int *) as attrdsptab (byte **) */
   attrdsptab[0] = attrsndtab;                     /* Pre-set send arrays for send buffer filling routines */
@@ -132,47 +140,37 @@ const int * restrict const    sendcnttab)         /* Count array                
 */
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
-static
 int
 dgraphHaloCheck (
 const Dgraph * restrict const grafptr)
 {
-  int * proctmptab;                               /* Array to collect datas */
-  int * dsptab;
-  int * cnttab;
-  int procnum;
+  int *               proctab;                    /* Array to collect data */
+  int                 procnum;
+  int                 o;
 
-  if (memAllocGroup ((void **)
-                     &proctmptab, (size_t) (grafptr->procglbnbr * sizeof (int)),
-                     &dsptab,     (size_t) (grafptr->procglbnbr * sizeof (int)),
-                     &cnttab,     (size_t) (grafptr->procglbnbr * sizeof (int)),NULL) == NULL) {
+  if ((proctab = memAlloc (grafptr->procglbnbr * sizeof (int))) == NULL) {
     errorPrint ("dgraphHaloCheck: out of memory");
-    return (1);
-  }
-
-  memSet (proctmptab, ~0, grafptr->procglbnbr * sizeof (int));
-  for (procnum = 0; procnum < grafptr->procglbnbr; procnum ++) {
-    dsptab[procnum] = procnum;
-    cnttab[procnum] = 1;                          /* One element for each process */
-  }
-
-  if (MPI_Alltoallv (grafptr->procsndtab, cnttab, dsptab, MPI_INT,
-                     proctmptab, cnttab, dsptab, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("dgraphHaloCheck: communication error");
-    memFree    (proctmptab);                      /* Free group leader */
     return     (1);
   }
 
+  if (MPI_Alltoall (grafptr->procsndtab, 1, MPI_INT, proctab, 1, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
+    errorPrint ("dgraphHaloCheck: communication error");
+    memFree    (proctab);                         /* Free group leader */
+    return     (1);
+  }
+
+  o = 0;
   for (procnum = 0; procnum < grafptr->procglbnbr; procnum ++) {
-    if (proctmptab[procnum] != grafptr->procrcvtab[procnum]) {
+    if (proctab[procnum] != grafptr->procrcvtab[procnum]) {
       errorPrint ("dgraphHaloCheck: data error");
-      memFree    (proctmptab);                    /* Free group leader */
-      return     (1);
+      o = 1;
+      break;
     }
   }
-  memFree (proctmptab);                           /* Free group leader */
-  return  (0);
 
+  memFree (proctab);                              /* Free group leader */
+
+  return  (o);
 }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -269,7 +267,7 @@ void *
 dgraphHaloAsync2 (
 DgraphHaloRequest * restrict  requptr)
 {
-  return ((void *) dgraphHaloSync (requptr->grafptr, requptr->attrgsttab, requptr->attrglbtype));
+  return ((void *) (intptr_t) dgraphHaloSync (requptr->grafptr, requptr->attrgsttab, requptr->attrglbtype));
 }
 #endif /* SCOTCH_PTHREAD */
 

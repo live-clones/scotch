@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to     08 jan 2004     **/
 /**                # Version 5.0  : from : 16 sep 2006     **/
 /**                                 to   : 16 sep 2006     **/
+/**                # Version 5.1  : from : 09 nov 2008     **/
+/**                                 to   : 09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -179,7 +181,7 @@ const Vgraph * const        grafptr)
   }
   if ((grafptr->compsize[0] != compsize[0]) ||
       (grafptr->compsize[1] != compsize[1]) ||
-      (grafptr->compsize[2] != compsize[2])) {
+      (grafptr->fronnbr     != compsize[2])) {
     errorPrint ("vgraphCheck: invalid part sizes");
     return     (1);
   }

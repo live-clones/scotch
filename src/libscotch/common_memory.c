@@ -44,6 +44,8 @@
 /**                                 to     24 mar 2003     **/
 /**                # Version 2.0  : from : 01 jul 2008     **/
 /**                                 to   : 01 jul 2008     **/
+/**                # Version 5.1  : from : 22 nov 2008     **/
+/**                                 to   : 22 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,7 +70,9 @@
 
 #ifdef COMMON_MEMORY_TRACE
 
-static size_t           memorynbr = 0;            /*+ Number of allocated bytes        +*/
+#define COMMON_MEMORY_SKEW          (MAX ((sizeof (size_t)), (sizeof (double)))) /* For proper alignment */
+
+static size_t           memorysiz = 0;            /*+ Number of allocated bytes        +*/
 static size_t           memorymax = 0;            /*+ Maximum amount of allocated data +*/
 
 #if (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD))
@@ -80,30 +84,34 @@ void *
 memAllocRecord (
 size_t                      newsiz)
 {
-  char *              newptr;
+  size_t              newadd;
+  byte *              newptr;
 
 #if (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD))
-  if (muteflag != 0) {
+  if (muteflag != 0) {                            /* Unsafe code with respect to race conditions but should work as first allocs are sequential */
     muteflag = 0;
     pthread_mutex_init (&mutelocdat, NULL);       /* Initialize local mutex */
   }
   pthread_mutex_lock (&mutelocdat);               /* Lock local mutex */
 #endif /* (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD)) */
 
-  if ((newptr = malloc (newsiz + 8)) == NULL)
-    return (NULL);
+  if ((newptr = malloc (newsiz + COMMON_MEMORY_SKEW)) == NULL) /* Non-zero sizes will guarantee non-NULL pointers */
+    newadd = (size_t) 0;
+  else {
+    newadd = newsiz;
+    *((size_t *) newptr) = newsiz;                /* Record size for freeing                */
+    newptr += COMMON_MEMORY_SKEW;                 /* Skew pointer while enforcing alignment */
+  }
+
+  memorysiz += newadd;
+  if (memorymax < memorysiz)
+    memorymax = memorysiz;
 
 #if (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD))
-  memorynbr += newsiz;
-  if (memorymax < memorynbr)
-    memorymax = memorynbr;
-
   pthread_mutex_unlock (&mutelocdat);             /* Unlock local mutex */
 #endif /* (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD)) */
 
-  *((size_t *) newptr) = newsiz;                  /* Record size for freeing */
-
-  return ((void *) (newptr + 8));                 /* Return skewed pointer */
+  return ((void *) newptr);                       /* Return skewed pointer or NULL */
 }
 
 void *
@@ -111,41 +119,45 @@ memReallocRecord (
 void *                      oldptr,
 size_t                      newsiz)
 {
-  char *              tmpptr;
-  char *              newptr;
+  byte *              tmpptr;
+  byte *              newptr;
   size_t              oldsiz;
+  size_t              newadd;
 
-  tmpptr = ((char *) oldptr) - 8;
+  tmpptr = ((byte *) oldptr) - COMMON_MEMORY_SKEW;
   oldsiz = *((size_t *) tmpptr);
 
 #if (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD))
   pthread_mutex_lock (&mutelocdat);               /* Lock local mutex */
 #endif /* (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD)) */
 
-  if ((newptr = realloc (tmpptr, newsiz + 8)) == NULL)
-    return (NULL);
+  if ((newptr = realloc (tmpptr, newsiz + COMMON_MEMORY_SKEW)) == NULL)
+    newadd = (size_t) 0;
+  else {
+    newadd = newsiz - oldsiz;                     /* Add difference between the two sizes   */
+    *((size_t *) newptr) = newsiz;                /* Record size for freeing                */
+    newptr += COMMON_MEMORY_SKEW;                 /* Skew pointer while enforcing alignment */
+  }
+
+  memorysiz += newadd;
+  if (memorymax < memorysiz)
+    memorymax = memorysiz;
 
 #if (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD))
-  memorynbr += newsiz - oldsiz;
-  if (memorymax < memorynbr)
-    memorymax = memorynbr;
-
   pthread_mutex_unlock (&mutelocdat);             /* Unlock local mutex */
 #endif /* (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD)) */
 
-  *((size_t *) newptr) = newsiz;                  /* Record size for freeing */
-
-  return ((void *) (newptr + 8));                 /* Return skewed pointer */
+  return ((void *) newptr);                       /* Return skewed pointer or NULL */
 }
 
 void
 memFreeRecord (
 void *                      oldptr)
 {
-  char *              tmpptr;
+  byte *              tmpptr;
   size_t              oldsiz;
 
-  tmpptr = ((char *) oldptr) - 8;
+  tmpptr = ((byte *) oldptr) - COMMON_MEMORY_SKEW;
   oldsiz = *((size_t *) tmpptr);
 
 #if (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD))
@@ -153,13 +165,30 @@ void *                      oldptr)
 #endif /* (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD)) */
 
   free (tmpptr);
-  memorynbr -= oldsiz;
+  memorysiz -= oldsiz;
 
 #if (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD))
   pthread_mutex_unlock (&mutelocdat);             /* Unlock local mutex */
 #endif /* (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD)) */
 }
 
+size_t
+memMax ()
+{
+  size_t              curmax;
+
+#if (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD))
+  pthread_mutex_lock (&mutelocdat);               /* Lock local mutex */
+#endif /* (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD)) */
+
+  curmax = memorymax;
+
+#if (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD))
+  pthread_mutex_unlock (&mutelocdat);             /* Unlock local mutex */
+#endif /* (defined (COMMON_PTHREAD) || defined (SCOTCH_PTHREAD)) */
+
+  return (curmax);
+}
 #endif /* COMMON_MEMORY_TRACE */
 
 /* This routine allocates a set of arrays in

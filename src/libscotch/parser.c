@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 20 feb 2008     **/
 /**                                 to     20 feb 2008     **/
 /**                # Version 5.1  : from : 22 oct 2008     **/
-/**                                 to     22 oct 2008     **/
+/**                                 to     11 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -362,7 +362,7 @@ const void * restrict const       data)           /*+ Pointer to data structure 
       o |= stratTestEvalCast (&val[0], &val[1]);
       if (o != 0)
         break;
-      sign = 0;                                   /* In case of error */
+      sign = STRATTESTNBR;                        /* In case of error */
       switch (val[0].typenode) {
         case STRATPARAMDOUBLE :
           sign = (val[0].data.val.valdbl < val[1].data.val.valdbl) ? STRATTESTLT : ((val[0].data.val.valdbl > val[1].data.val.valdbl) ? STRATTESTGT : STRATTESTEQ);

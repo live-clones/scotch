@@ -49,6 +49,8 @@
 /**                                 to   : 06 jun 2002     **/
 /**                # Version 2.0  : from : 13 jun 2005     **/
 /**                                 to   : 01 jul 2008     **/
+/**                # Version 5.1  : from : 09 nov 2008     **/
+/**                                 to   : 22 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -209,6 +211,7 @@ void *                      memOffset           (void *, ...);
 void *                      memAllocRecord      (size_t);
 void *                      memReallocRecord    (void * const, size_t);
 void                        memFreeRecord       (void * const);
+size_t                      memMax              ();
 #endif /* COMMON_MEMORY_TRACE */
 
 void                        usagePrint          (FILE * const, const char (* []));
@@ -228,8 +231,8 @@ void                        errorPrintW         (const char * const, ...);
 
 int                         intLoad             (FILE * const, INT * const);
 int                         intSave             (FILE * const, const INT);
-void                        intAscn             (INT * restrict const, const INT, const INT);
-void                        intPerm             (INT * restrict const, const INT);
+void                        intAscn             (INT * const, const INT, const INT);
+void                        intPerm             (INT * const, const INT);
 void                        intRandReset        (void);
 void                        intRandInit         (void);
 INT                         intRandVal          (INT);

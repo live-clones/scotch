@@ -18,8 +18,9 @@ MAKE		= make
 AR		= ar
 ARFLAGS		= -ruv
 CAT		= cat
-CC		= gcc
+CCS		= gcc
 CCP		= gcc
+CCD		= gcc
 
 #--- Compiler/loader flags
 CFLAGS_CPL	= -O0 -g3

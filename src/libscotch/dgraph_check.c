@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,6 +52,8 @@
 /**                                 to     02 feb 2000     **/
 /**                # Version 5.0  : from : 04 jul 2005     **/
 /**                                 to   : 10 sep 2007     **/
+/**                # Version 5.1  : from : 20 nov 2008     **/
+/**                                 to   : 02 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -350,30 +352,31 @@ const Dgraph * restrict const grafptr)
   if (chekglbval != 0) {
     if (cheklocval == 0)
       memFree (vertngbtab[0]);                    /* Free group leader */
-    return     (1);
+    return (1);
   }
 
-  MPI_Irecv (vertngbtab[0], grafptr->vertglbmax, GNUM_MPI, procrcvnum, TAGVERTLOCTAB, proccomm, &requloctab[4]);
-  MPI_Irecv (vendngbtab[0], grafptr->vertglbmax, GNUM_MPI, procrcvnum, TAGVENDLOCTAB, proccomm, &requloctab[5]);
-  MPI_Irecv (edgengbtab[0], grafptr->edgeglbsmx, GNUM_MPI, procrcvnum, TAGEDGELOCTAB, proccomm, &requloctab[6]);
-  MPI_Isend (grafptr->vertloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI, procsndnum, TAGVERTLOCTAB, proccomm, &requloctab[1]);
-  MPI_Isend (grafptr->vendloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI, procsndnum, TAGVENDLOCTAB, proccomm, &requloctab[2]);
-  MPI_Isend (grafptr->edgeloctax + grafptr->baseval, grafptr->edgelocsiz, GNUM_MPI, procsndnum, TAGEDGELOCTAB, proccomm, &requloctab[3]);
-  if (grafptr->edloloctax != NULL) {
-    MPI_Irecv (edlongbtab[0], grafptr->edgeglbsmx, GNUM_MPI, procrcvnum, TAGEDLOLOCTAB, proccomm, &requloctab[7]);
-    MPI_Isend (grafptr->edloloctax + grafptr->baseval, grafptr->edgelocsiz, GNUM_MPI, procsndnum, TAGEDLOLOCTAB, proccomm, &requloctab[0]);
-    MPI_Waitall (8, &requloctab[0], &statloctab[0]);
-  }
-  else {
-    MPI_Waitall (6, &requloctab[1], &statloctab[1]);
-  }
-  MPI_Get_count (&statloctab[4], GNUM_MPI, &vertngbnbr[0]);
-  MPI_Get_count (&statloctab[6], GNUM_MPI, &edgengbnbr[0]);
+  MPI_Irecv (vertngbtab[0], grafptr->vertglbmax, GNUM_MPI, procrcvnum, TAGVERTLOCTAB, proccomm, &requloctab[0]);
+  MPI_Irecv (vendngbtab[0], grafptr->vertglbmax, GNUM_MPI, procrcvnum, TAGVENDLOCTAB, proccomm, &requloctab[1]);
+  MPI_Irecv (edgengbtab[0], grafptr->edgeglbsmx, GNUM_MPI, procrcvnum, TAGEDGELOCTAB, proccomm, &requloctab[2]);
+  if (grafptr->edloloctax != NULL)
+    MPI_Irecv (edlongbtab[0], grafptr->edgeglbsmx, GNUM_MPI, procrcvnum, TAGEDLOLOCTAB, proccomm, &requloctab[3]);
 
-  procngbsel = 0;
-  for (procngbnum  = (proclocnum + 1) % procglbnbr; /* Loop on all other processes */
+  MPI_Send (grafptr->vertloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI, procsndnum, TAGVERTLOCTAB, proccomm);
+  MPI_Send (grafptr->vendloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI, procsndnum, TAGVENDLOCTAB, proccomm);
+  MPI_Send (grafptr->edgeloctax + grafptr->baseval, grafptr->edgelocsiz, GNUM_MPI, procsndnum, TAGEDGELOCTAB, proccomm);
+  if (grafptr->edloloctax != NULL) {              /* Send synchronously vertloctab and vendloctab to avoid MPI Isend problem if same array */
+    MPI_Send (grafptr->edloloctax + grafptr->baseval, grafptr->edgelocsiz, GNUM_MPI, procsndnum, TAGEDLOLOCTAB, proccomm);
+    MPI_Waitall (4, &requloctab[0], &statloctab[0]);
+  }
+  else
+    MPI_Waitall (3, &requloctab[0], &statloctab[0]);
+
+  MPI_Get_count (&statloctab[0], GNUM_MPI, &vertngbnbr[0]);
+  MPI_Get_count (&statloctab[2], GNUM_MPI, &edgengbnbr[0]);
+
+  for (procngbnum  = (proclocnum + 1) % procglbnbr, procngbsel = 0; /* Loop on all other processes */
        procngbnum != proclocnum;
-       procngbnum  = (procngbnum + 1) % procglbnbr, procngbsel = 1 - procngbsel) {
+       procngbnum  = (procngbnum + 1) % procglbnbr, procngbsel ^= 1) {
     Gnum                vertlocnum;
     Gnum                vertglbnum;
     Gnum * restrict     edgengbtax;
@@ -403,7 +406,16 @@ const Dgraph * restrict const grafptr)
       }
     }
     edgengbtax = edgengbtab[procngbsel] - grafptr->baseval;
-    edlongbtax = (grafptr->edloloctax != NULL) ? edlongbtab[procngbsel] - grafptr->baseval : NULL;
+    edlongbtax = (grafptr->edloloctax != NULL) ? (edlongbtab[procngbsel] - grafptr->baseval) : NULL;
+
+    if (((procngbnum + 1) % procglbnbr) != proclocnum) { /* Before MPI 2.2, complete communications before accessing arrays being sent */
+      if (grafptr->edloloctax != NULL)
+        MPI_Waitall (8, &requloctab[0], &statloctab[0]);
+      else
+        MPI_Waitall (6, &requloctab[1], &statloctab[1]);
+      MPI_Get_count (&statloctab[4], GNUM_MPI, &vertngbnbr[1 - procngbsel]);
+      MPI_Get_count (&statloctab[6], GNUM_MPI, &edgengbnbr[1 - procngbsel]);
+    }
 
     for (vertlocnum = grafptr->baseval, vertglbnum = grafptr->procvrttab[proclocnum];
          vertlocnum < grafptr->vertlocnnd; vertlocnum ++, vertglbnum ++) {
@@ -438,15 +450,6 @@ const Dgraph * restrict const grafptr)
       }
     }
     MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, proccomm);
-
-    if (((procngbnum + 1) % procglbnbr) != proclocnum) {
-      if (grafptr->edloloctax != NULL)
-        MPI_Waitall (8, &requloctab[0], &statloctab[0]);
-      else
-        MPI_Waitall (6, &requloctab[1], &statloctab[1]);
-      MPI_Get_count (&statloctab[4], GNUM_MPI, &vertngbnbr[1 - procngbsel]);
-      MPI_Get_count (&statloctab[6], GNUM_MPI, &edgengbnbr[1 - procngbsel]);
-    }
 
     if (chekglbval != 0) {                        /* Error number ranges from 1 to 3 */
       if (chekglbval == 1)

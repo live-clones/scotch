@@ -15,7 +15,7 @@ system, which may need some tricky work to compile on other systems,
 because of different C library implementations.
 
 To check if GNU Make is installed and is found first, please
-type :
+type:
 
 %prompt% make --version
 
@@ -26,7 +26,7 @@ etc, etc.
 
 Alternatively, if GNU Make is installed but its directory does
 not appear first in the PATH variable that is searched for
-executables, you can try to locate it using the which command :
+executables, you can try to locate it using the which command:
 
 %prompt% which make
 
@@ -37,7 +37,7 @@ To see if lex and yacc are present, type
 %prompt% which lex
 %prompt% which yacc    (or "bison", the GNU flavor of yacc)
 
-If some of these are missing, please :
+If some of these are missing, please:
 - check your path variable (just in case they are located in
   some unusual place, such as /usr/local/bin, /opt/bin,
   /opt/local/bin/, /opt/gnu/bin, etc). Tools such as "which",
@@ -45,18 +45,18 @@ If some of these are missing, please :
 - ask your system administrator (highly recommended);
 - install a copy of GNU Make of your own (less recommended,
   please ask your system administrator first). GNU Make is
-  available from the FSF website, at :
+  available from the FSF website, at:
   http://www.gnu.org/software/make/ and
   http://ftp.gnu.org/pub/gnu/make/ .
   A GNU version of lex and yacc is also available from the
-  very same FSF website, at :
+  very same FSF website, at:
   http://www.gnu.org/software/flex/
   http://ftp.gnu.org/non-gnu/flex/
   http://www.gnu.org/software/bison/
   http://ftp.gnu.org/pub/gnu/bison/ ;
 - use the "last resort" files placed in a directory judiciously
   called "last_resort", located in subdirectory "src/libscotch".
-  These files are :
+  These files are:
   . parser_ll.c
   . parser_ly.h
   . parser_yy.c .
@@ -133,7 +133,7 @@ available. They are used in two places:
 - to compress and uncompress file data. This can be done either
   by launching a service thread, or else by creating a separate
   process by means of a Posix fork() system call. This choice is
-  controlled by the -DCOMMON_PTHREAD flag : if it is set, threads
+  controlled by the -DCOMMON_PTHREAD flag: if it is set, threads
   will be used, else fork() calls will be performed. For systems
   which do not support the fork() system call, such as the MinGW32
   platform, one can set the -DCOMMON_STUB_FORK flag, which creates
@@ -156,10 +156,52 @@ available. They are used in two places:
   an older MPICH2 version, do not set the SCOTCH_PTHREAD flag.
 
 
-Then, compile the Scotch distribution by typing "make scotch", or
-just "make", in the current "src/" working directory. To compile
-the PT-Scotch distribution, type "make ptscotch" in the same "src/"
+Some memory allocation information can be aggregated if PT-Scotch is
+compiled with the -DCOMMON_MEMORY_TRACE flag. If it is the case, the
+"-va" option will make dgmap, dgord and dgpart output the minimum,
+maximum and average peak amount of memory used over all processors.
+
+
+To ease the tracking down of bugs, it is possible to coerce PT-Scotch
+to have a deterministic behavior by setting the -DSCOTCH_DETERMINISTIC
+flag. This option may have a small impact on performance, since some
+asynchronous messages are received in a fixed order rather than being
+processed on a first-come first-serve basis. It will also impact the
+results, since the order in which messages are received is significant
+to some key algorithms such as the parallel coarsening phase. Setting
+this flag is also equivalent to setting the -DCOMMON_RANDOM_FIXED_SEED
+flag in the sequential routines.
+
+
+3) Compilation
+--------------
+
+Once you have performed the configuration of the "Makefile.inc" file,
+compile the Scotch distribution by typing "make scotch", or just
+"make", in the current "src/" working directory. To compile the
+PT-Scotch distribution, type "make ptscotch" in the same "src/"
 directory. This can be done in any order.
+
+The most common problem you may encounter when trying to compile
+PT-Scotch on a new platform relates to the "dummysizes" executable.
+The purpose of this program is to determine, on the target platform,
+the size of the opaque data structures of Scotch, and it has to be
+compiled and run before any library function can be compiled. In the
+parallel case, it has to take into account the sizes of some MPI data
+structures, such as MPI_Comm, and the most common way to have access
+to this information is to use some flavor of MPI-aware compilers such
+as "mpicc" which automatically refer to "mpi.h". Yet, on some
+platforms, programs compiled for parallel execution cannot be run
+interactively. Moreover, "dummysizes" itself does not contain any MPI
+calls, as it just wants to know the sizes of the data structures, and
+the communication susbystem of the platform may not want to run it. In
+any of these cases, compilation will break. It is possible to solve
+this problem by specifying, in the CCD variable of "Makefile.inc", how
+to compile "dummysizes" sequentially but with knowledge of the
+location of the "mpi.h" include file, for instance with the following
+line:
+CCD = my_sequential_cc -I/path/to/my/mpi/implementation/include/dir/
+
 
 If no error occurs, all of the relevant header, library and executable
 files will be created and copied to the "../include/", "../lib/" and
@@ -168,13 +210,19 @@ directory. Since headers, libraries and binaries of Scotch and
 PT-Scotch can coexist in these directories, you can compile both in
 sequence, in any order.
 
+Because Scotch and PT-Scotch share some of their sources, with
+distinct data structures, both must be fully compiled from scratch.
+This is why you may see the same files be compiled twice, and why all
+object files are cleaned before any compilation process.
+
+
 Further typing "make install" will perform a GNU-like installation,
 with header, library, binary and man files copied to the "include",
 "lib", "bin" and "man" subdirectories of the path specified in the
 "prefix" variable, which is set by default to "/usr/local".
 
 
-3) Documentation and use
+4) Documentation and use
 ------------------------
 
 The Scotch and PT-Scotch user's manuals are available in the "doc/"

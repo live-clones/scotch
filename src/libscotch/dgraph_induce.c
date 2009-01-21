@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 08 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 31 mar 2008     **/
-/**                                 to   : 27 jun 2008     **/
+/**                                 to   : 01 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -114,9 +114,9 @@ Dgraph * restrict const       indgrafptr)
     indvelolocnbr = 0;
     indvelolocsum = indlistnbr;
   }
-  indedgelocmax = indlistnbr * orggrafptr->degrglbmax; /* Compute upper bound of number of edges */
-  if (indedgelocmax > orggrafptr->edgelocnbr)
-    indedgelocmax = orggrafptr->edgelocnbr;
+  indedgelocmax = orggrafptr->edgelocnbr;         /* Choose best upper bound on number of edges (avoid multiply overflow) */
+  if ((orggrafptr->degrglbmax > 0) && (indlistnbr < (indedgelocmax / orggrafptr->degrglbmax)))
+    indedgelocmax = indlistnbr * orggrafptr->degrglbmax;
   if (orggrafptr->edloloctax != NULL)             /* If graph has edge weights */
     indedgelocmax *= 2;                           /* Account for edge weights  */
 
@@ -140,7 +140,7 @@ Dgraph * restrict const       indgrafptr)
   }
   else if (indgrafptr->vertloctax -= orggrafptr->baseval,
            indgrafptr->vnumloctax -= orggrafptr->baseval,
-           indgrafptr->veloloctax  = (indvelolocnbr != 0) ? indgrafptr->veloloctax - orggrafptr->baseval : NULL,
+           indgrafptr->veloloctax  = (orggrafptr->veloloctax != NULL) ? indgrafptr->veloloctax - orggrafptr->baseval : NULL,
            memAllocGroup ((void **) (void *)
                           &indgrafptr->edgeloctax, (size_t) (indedgelocmax          * sizeof (Gnum)), /* Pre-allocate space for edgetab (and edlotab) */
                           &orgindxgsttax,          (size_t) (orggrafptr->vertgstnbr * sizeof (Gnum)), NULL) == NULL) { /* orgindxgsttab is at the end */
@@ -342,9 +342,9 @@ Dgraph * restrict const       indgrafptr)
     indvelolocnbr = 0;
     indvelolocsum = indvertnbr;
   }
-  indedgelocmax = indvertnbr * orggrafptr->degrglbmax; /* Compute upper bound of number of edges */
-  if (indedgelocmax > orggrafptr->edgelocnbr)
-    indedgelocmax = orggrafptr->edgelocnbr;
+  indedgelocmax = orggrafptr->edgelocnbr;         /* Choose best upper bound on number of edges (avoid multiply overflow) */
+  if ((orggrafptr->degrglbmax > 0) && (indvertnbr < (indedgelocmax / orggrafptr->degrglbmax)))
+    indedgelocmax = indvertnbr * orggrafptr->degrglbmax;
   if (orggrafptr->edloloctax != NULL)             /* If graph has edge weights */
     indedgelocmax *= 2;                           /* Account for edge weights  */
 
@@ -368,7 +368,7 @@ Dgraph * restrict const       indgrafptr)
   }
   else if (indgrafptr->vertloctax -= orggrafptr->baseval,
            indgrafptr->vnumloctax -= orggrafptr->baseval,
-           indgrafptr->veloloctax  = (indvelolocnbr != 0) ? indgrafptr->veloloctax - orggrafptr->baseval : NULL,
+           indgrafptr->veloloctax  = (orggrafptr->veloloctax != NULL) ? indgrafptr->veloloctax - orggrafptr->baseval : NULL,
            memAllocGroup ((void **) (void *)
                           &indgrafptr->edgeloctax, (size_t) (indedgelocmax          * sizeof (Gnum)), /* Pre-allocate space for edgetab (and edlotab) */
                           &orgindxgsttax,          (size_t) (orggrafptr->vertgstnbr * sizeof (Gnum)), NULL) == NULL) { /* orgindxgsttab is at the end */

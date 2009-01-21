@@ -42,7 +42,7 @@
 /**                # Version  5.0 : from : 28 apr 2007     **/
 /**                                 to   : 24 mar 2008     **/
 /**                # Version  5.1 : from : 23 jun 2008     **/
-/**                                 to   : 25 jun 2008     **/
+/**                                 to   : 09 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -174,21 +174,21 @@ const int                   protnum)              /* Root process number        
   Gnum                vertglbnbr;
   Gnum                vertglbmax;
   Gnum                vertlocnbr;
-  Gnum * restrict     vertloctax;
-  Gnum * restrict     vertlocptr;
+  Gnum *              vertloctax;
+  Gnum *              vertlocptr;
   Gnum * restrict     vertredtax;
   Gnum                velolocnbr;
   Gnum                velolocsum;
-  Gnum * restrict     veloloctax;
+  Gnum *              veloloctax;
   Gnum * restrict     veloredtax;
   Gnum                vlbllocnbr;
-  Gnum * restrict     vlblloctax;
+  Gnum *              vlblloctax;
   Gnum * restrict     vlblredtax;
   Gnum                edgelocnbr;
-  Gnum * restrict     edgeloctax;
+  Gnum *              edgeloctax;
   Gnum                edgeredmnd;
   Gnum * restrict     edgeredtax;
-  Gnum * restrict     edloloctax;
+  Gnum *              edloloctax;
   Gnum * restrict     edloredtax;
   Gnum                degrglbmax;
   Gnum                baseadj;
@@ -648,7 +648,7 @@ const DgraphFlag            flagval)              /* Graph loading flags        
   Gnum                vertlocnnd;
   Gnum                vertlocnum;
   Gnum * restrict     vertloctax;
-  Gnum * restrict     vertlocptr;
+  Gnum *              vertlocptr;
   Gnum                velolocnbr;
   Gnum                velolocsum;
   Gnum * restrict     veloloctax;
@@ -759,7 +759,7 @@ const DgraphFlag            flagval)              /* Graph loading flags        
     vertloctax  =
     vertlocptr -= baseval;
     vertlocptr += vertlocnbr + 1;
-    if (proptab[2] != 0) {
+    if ((proptab[2] != 0) && ((flagval & GRAPHIONOLOADVERT) == 0)) {
       veloloctax  = vertlocptr;
       vertlocptr += vertlocnbr;
     }
@@ -775,7 +775,7 @@ const DgraphFlag            flagval)              /* Graph loading flags        
     }
     else {
       edgeloctax -= baseval;
-      edloloctax  = (edlolocnbr != 0) ? (edgeloctax + edgelocnbr) : NULL;
+      edloloctax  = ((proptab[1] != 0) && ((flagval & GRAPHIONOLOADEDGE) == 0)) ? (edgeloctax + edgelocnbr) : NULL;
     }
   }
 

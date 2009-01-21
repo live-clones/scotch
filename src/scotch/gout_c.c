@@ -156,19 +156,15 @@ char *                      argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         C_fileTab[C_fileNum ++].name = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (1);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
         case 'G' :                                /* Geometry parameters */
         case 'g' :
-          if ((j = C_geoParse (&argv[i][2])) != 0) {
+          if ((j = C_geoParse (&argv[i][2])) != 0)
             errorPrint ("main: error in geometry option string (%d)", j);
-            return     (1);
-          }
           break;
         case 'H' :                                /* Give the usage message */
         case 'h' :
@@ -176,19 +172,15 @@ char *                      argv[])
           return     (0);
         case 'M' :                                /* No-mapping flag */
         case 'm' :
-          if (((argv[i][2] != 'N') && (argv[i][2] != 'n')) || (argv[i][3] != '\0')) {
+          if (((argv[i][2] != 'N') && (argv[i][2] != 'n')) || (argv[i][3] != '\0'))
             errorPrint ("main: error in mapping option string (%s)", &argv[i][2]);
-            return     (1);
-          }
           C_filenamemapinp = "-";                 /* Default name to avoid opening   */
           C_filepntrmapinp = NULL;                /* NULL file pointer means no file */
           break;
         case 'O' :                                /* Output parameters */
         case 'o' :
-          if ((j = outDrawParse (&argv[i][2])) != 0) {
+          if ((j = outDrawParse (&argv[i][2])) != 0)
             errorPrint ("main: error in output option string (%d)", j);
-            return     (1);
-          }
           break;
         case 'V' :
           fprintf (stderr, "gout, version %s - F. Pellegrini\n", SCOTCH_VERSION);
@@ -197,7 +189,6 @@ char *                      argv[])
           return  (0);
         default :
           errorPrint ("main: Unprocessed option (\"%s\")", argv[i]);
-          return     (1);
       }
     }
   }

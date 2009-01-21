@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to     20 aug 2004     **/
 /**                # Version 5.0  : from : 24 jan 2007     **/
 /**                                 to     12 sep 2007     **/
+/**                # Version 5.1  : from : 09 nov 2008     **/
+/**                                 to     09 nov 2008     **/
 /**                                                        **/
 /**   NOTES      : # This algorithm comes from:            **/
 /**                  "Computing the Block Triangular form  **/
@@ -124,7 +126,7 @@ Gnum * const                  sepaptr)            /* Pointer to size of the arra
   Gnum * restrict                 listtab;        /* List of reachable augmenting rows */
   Gnum                            listnbr;        /* Number of items in list           */
   Gnum * restrict                 matetax;        /* Matching array                    */
-  Gnum * restrict                 queutab;        /* Queue of (free) column nodes      */
+  Gnum *                          queutab;        /* Queue of (free) column nodes      */
   Gnum * restrict                 queuhead;       /* Head of queue                     */
   Gnum * restrict                 queutail;       /* Tail of queue                     */
   VgraphSeparateEsTrav * restrict travtax;        /* Array of traversal flag values    */
@@ -752,7 +754,7 @@ const VgraphSeparateEsParam * const paraptr)      /*+ Method parameters +*/
 
   grafptr->comploaddlt = grafptr->compload[0] - grafptr->compload[1];
   grafptr->compload[2] = grafptr->s.velosum - grafptr->compload[0] - grafptr->compload[1];
-  grafptr->compsize[2] = grafptr->s.vertnbr - grafptr->compsize[0] - grafptr->compsize[1];
+  grafptr->fronnbr     = grafptr->s.vertnbr - grafptr->compsize[0] - grafptr->compsize[1];
 
 #ifdef SCOTCH_DEBUG_VGRAPH2
   if (vgraphCheck (grafptr) != 0) {

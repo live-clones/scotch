@@ -44,7 +44,7 @@
 /**                processes are doing.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 21 jun 2008     **/
-/**                                 to     27 oct 2008     **/
+/**                                 to     22 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -193,21 +193,22 @@ void * const                    dataptr)          /* Pointer to thread data */
   fldgrafptr = fldthrdptr->fldgrafptr;
 
   if (fldthrdptr->fldprocnbr == 0)                /* If recursion stopped, build mapping of graph part */
-    return ((void *) kdgraphMapRbAddPart (fldthrdptr->orggrafptr, fldthrdptr->mappptr, fldthrdptr->inddomnptr, fldthrdptr->indvertnbr, fldthrdptr->indparttax + fldthrdptr->orggrafptr->baseval, fldthrdptr->indpartval));
+    return ((void *) (intptr_t) kdgraphMapRbAddPart (fldthrdptr->orggrafptr, fldthrdptr->mappptr, fldthrdptr->inddomnptr, fldthrdptr->indvertnbr,
+                                                     fldthrdptr->indparttax + fldthrdptr->orggrafptr->baseval, fldthrdptr->indpartval));
 
   if (dgraphInducePart (fldthrdptr->orggrafptr, fldthrdptr->indparttax, /* Compute unfinished induced subgraph on all processes */
                         fldthrdptr->indvertnbr, fldthrdptr->indpartval, &indgrafdat) != 0)
     return ((void *) 1);
 
-  if (fldthrdptr->fldprocnbr > 1) {               /* If subpart has several processes, fold a distributed graph          */
-    o = (void *) dgraphFold2 (&indgrafdat, fldthrdptr->fldpartval, /* Fold temporary induced subgraph from all processes */
-                              &fldgrafptr->data.dgrfdat, fldthrdptr->fldproccomm, NULL, NULL, MPI_INT);
+  if (fldthrdptr->fldprocnbr > 1) {               /* If subpart has several processes, fold a distributed graph                     */
+    o = (void *) (intptr_t) dgraphFold2 (&indgrafdat, fldthrdptr->fldpartval, /* Fold temporary induced subgraph from all processes */
+                                         &fldgrafptr->data.dgrfdat, fldthrdptr->fldproccomm, NULL, NULL, MPI_INT);
   }
   else {                                          /* Create a centralized graph */
     Graph * restrict      fldcgrfptr;
 
-    fldcgrfptr = (fldthrdptr->fldprocnum == 0) ? &fldgrafptr->data.cgrfdat : NULL; /* See if we are the receiver */
-    o = (void *) dgraphGather (&indgrafdat, fldcgrfptr); /* Gather centralized subgraph from all other processes */
+    fldcgrfptr = (fldthrdptr->fldprocnum == 0) ? &fldgrafptr->data.cgrfdat : NULL; /* See if we are the receiver            */
+    o = (void *) (intptr_t) dgraphGather (&indgrafdat, fldcgrfptr); /* Gather centralized subgraph from all other processes */
   }
   dgraphExit (&indgrafdat);                       /* Free temporary induced graph */
 

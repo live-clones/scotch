@@ -52,11 +52,11 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:	clean
-					$(MAKE) SCOTCHLIB=scotch		\
-					scotch.h				\
-					scotchf.h				\
-					libscotch$(LIB)				\
-					libscotcherr$(LIB)			\
+					$(MAKE) CC=$(CCS) CCD=$(CCS) SCOTCHLIB=scotch	\
+					scotch.h					\
+					scotchf.h					\
+					libscotch$(LIB)					\
+					libscotcherr$(LIB)				\
 					libscotcherrexit$(LIB)
 
 ptscotch			:	clean
@@ -122,7 +122,6 @@ common_file_uncompress$(OBJ)	:	common_file_uncompress.c		\
 common_integer$(OBJ)		:	common_integer.c			\
 					module.h				\
 					common.h				\
-					common_integer.h			\
 					common_sort.c
 					$(CAT) module.h common_integer.c > common2_integer.c
 					$(CC) $(CFLAGS) -c common2_integer.c -DSCOTCH_COMMON_RENAME -o $(@)
@@ -477,7 +476,9 @@ dgraph_coarsen$(OBJ)		:	dgraph_coarsen.c			\
 					module.h				\
 					common.h				\
 					dgraph.h				\
-					dgraph_allreduce.h
+					dgraph_allreduce.h			\
+					dgraph_coarsen.h			\
+					dgraph_match.h
 
 dgraph_fold$(OBJ)		:	dgraph_fold.c				\
 					module.h				\
@@ -539,25 +540,20 @@ dgraph_io_save$(OBJ)		:	dgraph_io_save.c			\
 					common.h				\
 					dgraph.h
 
-dgraph_match_sync$(OBJ)		:	dgraph_match_sync.c			\
+dgraph_match$(OBJ)		:	dgraph_match.c				\
+					dgraph_match_scan.c			\
 					module.h				\
 					common.h				\
-					graph.h					\
 					dgraph.h				\
-					dgraph_allreduce.h			\
 					dgraph_coarsen.h			\
-					dgraph_match.h				\
-					dgraph_match_tools.h			\
-					dgraph_match_sync.h
+					dgraph_match.h
 
-dgraph_match_tools$(OBJ)	:	dgraph_match_tools.c			\
+dgraph_match_check$(OBJ)	:	dgraph_match_check.c			\
 					module.h				\
 					common.h				\
-					graph.h					\
 					dgraph.h				\
 					dgraph_coarsen.h			\
-					dgraph_match.h				\
-					dgraph_match_tools.h
+					dgraph_match.h
 
 dgraph_scatter$(OBJ)		:	dgraph_scatter.c			\
 					module.h				\
@@ -772,6 +768,7 @@ hdgraph_order_nd$(OBJ)		:	hdgraph_order_nd.c			\
 					dorder.h				\
 					hdgraph.h				\
 					hdgraph_order_nd.h			\
+					hdgraph_order_sq.h			\
 					hdgraph_order_st.h			\
 					vdgraph.h				\
 					vdgraph_separate_st.h
@@ -783,6 +780,19 @@ hdgraph_order_si$(OBJ)		:	hdgraph_order_si.c			\
 					dorder.h				\
 					hdgraph.h				\
 					hdgraph_order_si.h
+
+hdgraph_order_sq$(OBJ)		:	hdgraph_order_sq.c			\
+					module.h				\
+					common.h				\
+					parser.h				\
+					graph.h					\
+					order.h					\
+					hgraph.h				\
+					hgraph_order_st.h			\
+					dgraph.h				\
+					dorder.h				\
+					hdgraph.h				\
+					hdgraph_order_sq.h
 
 hdgraph_order_st$(OBJ)		:	hdgraph_order_st.c			\
 					module.h				\
@@ -797,6 +807,7 @@ hdgraph_order_st$(OBJ)		:	hdgraph_order_st.c			\
 					hdgraph.h				\
 					hdgraph_order_nd.h			\
 					hdgraph_order_si.h			\
+					hdgraph_order_sq.h			\
 					hdgraph_order_st.h			\
 					vdgraph.h				\
 					vdgraph_separate_st.h
@@ -2146,6 +2157,7 @@ dummysizes$(EXE)		:	dummysizes.c				\
 					mapping.h				\
 					order.h					\
 					parser.h
+			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) $(LDFLAGS)
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
@@ -2183,8 +2195,8 @@ libptscotch$(LIB)		:	bdgraph$(OBJ)				\
 					dgraph_induce$(OBJ)			\
 					dgraph_io_load$(OBJ)			\
 					dgraph_io_save$(OBJ)			\
-					dgraph_match_sync$(OBJ)			\
-					dgraph_match_tools$(OBJ)		\
+					dgraph_match$(OBJ)			\
+					dgraph_match_check$(OBJ)		\
 					dgraph_scatter$(OBJ)			\
 					dgraph_view$(OBJ)			\
 					dmapping$(OBJ)				\
@@ -2203,6 +2215,7 @@ libptscotch$(LIB)		:	bdgraph$(OBJ)				\
 					hdgraph_induce$(OBJ)			\
 					hdgraph_order_nd$(OBJ)			\
 					hdgraph_order_si$(OBJ)			\
+					hdgraph_order_sq$(OBJ)			\
 					hdgraph_order_st$(OBJ)			\
 					kdgraph$(OBJ)				\
 					kdgraph_map_rb$(OBJ)			\

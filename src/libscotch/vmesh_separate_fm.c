@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to     06 may 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to     22 may 2008     **/
+/**                # Version 5.1  : from : 12 nov 2008     **/
+/**                                 to     12 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,10 +98,10 @@ const Gnum                                hashold) /*+ Maximum number of vertice
   Gnum                              hashmax;      /* Maximum number of objects in tables  */
   VmeshSeparateFmSave * restrict    movetab;      /* Pointer to move array                */
   VmeshSeparateFmElement * restrict helmtab;      /* Element hash table                   */
-  VmeshSeparateFmNode * restrict    hnodtab;      /* Node hash table                      */
+  VmeshSeparateFmNode *             hnodtab;      /* Node hash table                      */
   size_t                            addradj;      /* Address adjustment                   */
   Gnum                              helmold;
-  VmeshSeparateFmNode * restrict    hnodtld;
+  VmeshSeparateFmNode *             hnodtld;
   Gnum                              hnodold;
   VmeshSeparateFmSave * restrict    savetab;
   Gnum                              savenum;
@@ -340,7 +342,7 @@ const VmeshSeparateFmParam * restrict const paraptr) /*+ Method parameters    +*
 
   ncmploaddltmat = (paraptr->deltrat > 0.0L) ? ((Gnum) (paraptr->deltrat * meshptr->m.vnlosum) + 1) : 0;
 
-printf ("FM Mbal=%ld\n", (long) ncmploaddltmat);
+/* printf ("FM Mbal=%ld\n", (long) ncmploaddltmat); */
 
   if ((meshptr->fronnbr == 0) &&                  /* If imbalance in graph with no frontier */
       (abs (meshptr->ncmploaddlt) > ncmploaddltmat)) {
@@ -1047,7 +1049,7 @@ printf ("FM Mbal=%ld\n", (long) ncmploaddltmat);
   }
 #endif /* SCOTCH_DEBUG_VMESH2 */
 
-printf ("FM Sepa\tsize=%ld\tload=%ld\tbal=%ld\n", (long) meshptr->fronnbr, (long) meshptr->ncmpload[2], (long) meshptr->ncmploaddlt);
+/* printf ("FM Sepa\tsize=%ld\tload=%ld\tbal=%ld\n", (long) meshptr->fronnbr, (long) meshptr->ncmpload[2], (long) meshptr->ncmploaddlt); */
 
   return (0);
 }

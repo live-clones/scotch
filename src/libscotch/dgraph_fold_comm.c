@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 23 may 2006     **/
 /**                                 to   : 10 sep 2007     **/
+/**                # Version 5.1  : from : 18 jan 2009     **/
+/**                                 to   : 18 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,6 +52,16 @@
 #include "common.h"
 #include "dgraph.h"
 #include "dgraph_fold_comm.h"
+
+/* This routine computes an optimized communication
+** scheme for folding the data of a distributed graph.
+** It is currently based on a maximum fixed number of
+** communications per process. If this maximum is reached,
+** the algorithm will fail.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 dgraphFoldComm (
@@ -63,23 +75,16 @@ int * restrict const                vertadjptr,   /* Number of adjustment ranges
 Gnum * restrict const               vertadjtab,   /* Pointer to global index adjustment array, for receivers */
 Gnum * restrict const               vertdlttab)   /* Pointer to global delta adjustment array, for receivers */
 {
-  int                           procrcvbas;
-  int                           procrcvnnd;
-  int                           procrcvidx;
-  int                           procrcvnum;
+  int                           procnum;
+  DgraphFoldCommData * restrict procsrttab;       /* Sort array                                                        */
   int                           procsndbas;
   int                           procsndmnd;
   int                           procsndidx;
-  int                           procsndnum;
-  int                           procnum;
-  DgraphFoldCommData * restrict procsrttab;       /* Sort array                                                        */
+  int                           procrcvbas;
+  int                           procrcvnnd;
+  int                           procrcvidx;
   int                           fldprocnbr;
   int * restrict                vertprmtab;       /* Permutation array for adjustment range computations               */
-  Gnum                          vertglbsum;
-  Gnum                          vertglbavg;
-  Gnum                          vertsndrmn;       /* Remaining number of vertices to send from current sending process */
-  int                           flagrcvval;       /* Flags set if receiver or sender already communicate               */
-  int                           flagsndval;
   int                           i;
 #ifdef SCOTCH_DEBUG_DGRAPH2
   DgraphFoldCommData * restrict procchktab;
@@ -101,8 +106,8 @@ Gnum * restrict const               vertdlttab)   /* Pointer to global delta adj
   }
 
   for (procnum = 0; procnum < grafptr->procglbnbr; procnum ++) {
-    procsrttab[procnum].vertnbr = grafptr->proccnttab[procnum];
     procsrttab[procnum].procnum = procnum;
+    procsrttab[procnum].vertnbr = grafptr->proccnttab[procnum];
   }
   fldprocnbr = (grafptr->procglbnbr + 1) / 2;     /* Get number of processes in part 0 (always more than in part 1) */
 
@@ -150,8 +155,10 @@ Gnum * restrict const               vertdlttab)   /* Pointer to global delta adj
     }
   }
 
-  for (procrcvidx = procrcvbas; procrcvidx < (procrcvnnd - 1); procrcvidx ++, procrcvnnd --) {
+  for (procrcvidx = procrcvbas; procrcvidx < (procrcvnnd - 1); procrcvidx ++, procrcvnnd --) { /* Overloaded receiver vertices will re-send some of their load */
     Gnum                  vertsndnbr;             /* Potential overload of receiver process */
+    int                   procrcvnum;
+    int                   procsndnum;
 
     procsndidx = procrcvnnd - 1;
     vertsndnbr = procsrttab[procsndidx].vertnbr - DATASIZE (grafptr->vertglbnbr, fldprocnbr, procsndidx - procrcvbas);
@@ -184,90 +191,124 @@ Gnum * restrict const               vertdlttab)   /* Pointer to global delta adj
     }
   }
 
-  while ((procsndmnd < (procsndbas - 1)) && (procsrttab[procsndmnd].vertnbr == 0)) /* Do not account for empty sender processes (leave just one) */
+  while ((procsndmnd < procsndbas) && (procsrttab[procsndmnd].vertnbr == 0)) /* Do not account for empty sender processes */
     procsndmnd ++;
 
-  procsndidx = procsndbas - 1;
-  procsndnum = procsrttab[procsndidx].procnum;
-  vertsndrmn = procsrttab[procsndidx].vertnbr;
-  flagsndval = 0;
-  procrcvidx = procrcvbas;
-  procrcvnum = procsrttab[procrcvidx].procnum;
-  flagrcvval = 0;
-  vertglbavg = DATASIZE (grafptr->vertglbnbr, fldprocnbr, 0);
-  vertglbsum = procsrttab[procrcvidx].vertnbr;    /* Account for vertices already present in receiver process */
-  if (vertglbsum < 0) {                           /* If first receiver has already received a communication   */
-    flagrcvval = 1;
-    vertglbsum = - vertglbsum;
-    procsrttab[procrcvidx].vertnbr = vertglbsum;  /* Un-flag */
-  }
-  
-  while (1) {
-    Gnum                  vertrcvrmn;             /* Remaining number of vertices to receive       */
-    Gnum                  vertsndnbr;             /* Number of vertices actually sent and received */
+  if (procsndmnd < procsndbas) {                  /* If there are sender processes */
+    int                   procrcvnum;
+    int                   procsndnum;
+    int                   procsndnxt;             /* Index of next sender to process after current sender                */
+    Gnum                  vertglbsum;             /* Global number of vertices already sent from all previous senders    */
+    Gnum                  vertglbavg;             /* Global average value of sent vertices to reach during current round */
+    Gnum                  vertsndrmn;             /* Remaining number of vertices to send from current sending process   */
+    int                   flagrcvval;             /* Number of messages already sent by receiver and sender              */
+    int                   flagsndval;
+
+    procsndidx = procsndbas - 1;
+    procsndnxt = procsndidx - 1;
+    vertsndrmn = procsrttab[procsndidx].vertnbr;
+    flagsndval = 0;
+    procrcvidx = procrcvbas;
+    procrcvnum = procsrttab[procrcvidx].procnum;
+    flagrcvval = 0;
+    vertglbavg = DATASIZE (grafptr->vertglbnbr, fldprocnbr, 0);
+    vertglbsum = procsrttab[procrcvidx].vertnbr;  /* Account for vertices already present in receiver process */
+    if (vertglbsum < 0) {                         /* If first receiver has already received a communication   */
+      flagrcvval = 1;
+      vertglbsum = - vertglbsum;
+      procsrttab[procrcvidx].vertnbr = vertglbsum; /* Un-flag */
+    }
+
+    while (1) {
+      Gnum                vertrcvrmn;             /* Remaining number of vertices to receive       */
+      Gnum                vertsndnbr;             /* Number of vertices actually sent and received */
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
-    if (flagrcvval + flagsndval >= (DGRAPHFOLDCOMMNBR * 2)) {
-      errorPrint ("dgraphFoldComm: internal error (2)");
-      memFree    (procsrttab);                    /* Free group leader */
-      return     (1);
-    }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-
-    vertrcvrmn = (vertglbavg > vertglbsum) ? (vertglbavg - vertglbsum) : 0;
-    vertsndnbr = ((flagsndval >= (DGRAPHFOLDCOMMNBR - 1)) || /* If last chance to send for this process */
-                  (((procrcvnnd - procrcvidx) * (DGRAPHFOLDCOMMNBR - 1) - flagrcvval) <= (procsndidx - procsndmnd + 1))) /* Or if too few communications remain with sender receivers accounted for */
-                 ? vertsndrmn                     /* Send all of the vertices to be sent    */
-                 : MIN (vertsndrmn, vertrcvrmn);  /* Else just send what the receiver needs */
-
-    if (vertsndnbr > 0) {                         /* If useful communication can take place                         */
-      if (proccnttab != NULL) {                   /* If we are a receiver process, fill count and adjustment arrays */
-        proccnttab[procrcvnum - procrcvbas] += vertsndnbr;
-        vertadjtab[procsndnum * DGRAPHFOLDCOMMNBR + flagsndval] = grafptr->procvrttab[procsndnum] + grafptr->proccnttab[procsndnum] - vertsndrmn;
-        vertdlttab[procsndnum * DGRAPHFOLDCOMMNBR + flagsndval] = vertsndnbr;
-        vertprmtab[(procrcvnum - procrcvbas) * (DGRAPHFOLDCOMMNBR + 1) + 1 + flagrcvval] = procsndnum * DGRAPHFOLDCOMMNBR + flagsndval;
-
-        if (procrcvnum == grafptr->proclocnum) {  /* If we are the receiver process */
-          commdattab[flagrcvval].procnum = procsndnum; /* Record communication      */
-          commdattab[flagrcvval].vertnbr = vertsndnbr;
-          commvrttab[flagrcvval] = grafptr->procvrttab[procsndnum] + grafptr->proccnttab[procsndnum] - vertsndrmn; /* Set starting global index of vertices to be sent */
-        }
-      }
-      else if (procsndnum == grafptr->proclocnum) { /* If we are the sending process */
-        commdattab[flagsndval].procnum = procrcvnum; /* Record communication         */
-        commdattab[flagsndval].vertnbr = vertsndnbr;
-        commvrttab[flagsndval] = grafptr->procvrttab[procsndnum] + grafptr->proccnttab[procsndnum] - vertsndrmn; /* Set starting global index of vertices to be sent */
-      }
-      vertglbsum += vertsndnbr;                   /* Account for vertices sent and received */
-      vertsndrmn -= vertsndnbr;
-      flagsndval ++;
-      flagrcvval ++;
-    }
-    if (vertsndrmn <= 0) {                        /* If sending process has sent everything */
-#ifndef SCOTCH_DEBUG_DGRAPH2
-      if (procsndnum == grafptr->proclocnum) {    /* If we are the sending process            */
-        memFree (procsrttab);                     /* Free group leader                        */
-        return  (0);                              /* Return as we do not need the count array */
+      if (flagrcvval + flagsndval >= (DGRAPHFOLDCOMMNBR * 2)) {
+        errorPrint ("dgraphFoldComm: internal error (2)");
+        memFree    (procsrttab);                  /* Free group leader */
+        return     (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
-      if (-- procsndidx < procsndmnd)             /* If was last sending process, end loop */
-        break;
-      flagsndval = 0;                             /* Skip to next sending process */
+
+      vertrcvrmn = (vertglbavg > vertglbsum) ? (vertglbavg - vertglbsum) : 0;
+      if ((flagsndval == 0) &&                    /* If sender has not sent anything yet                    */
+          (flagrcvval < (DGRAPHFOLDCOMMNBR - 2)) && /* And receiver has space for large messages to come    */
+          (vertrcvrmn >= procsrttab[procsndmnd].vertnbr)) { /* And receiver can hold small message entirely */
+        procsndnxt = procsndidx;                  /* Current large message will be processed next time      */
+        procsndidx = procsndmnd;                  /* Process smallest message available to date             */
+        vertsndnbr =                              /* All of its contents will be sent in one piece          */
+        vertsndrmn = procsrttab[procsndmnd].vertnbr;
+        procsndmnd ++;                            /* Small message has been processed */
+      }
+      else {
+        vertsndnbr = ((flagsndval >= (DGRAPHFOLDCOMMNBR - 1)) || /* If last chance to send for this process */
+                      (((procrcvnnd - procrcvidx) * (DGRAPHFOLDCOMMNBR - 1) - flagrcvval) <= (procsndidx - procsndmnd))) /* Or if too few communications remain with sender receivers accounted for */
+                     ? vertsndrmn                   /* Send all of the vertices to be sent     */
+                     : MIN (vertsndrmn, vertrcvrmn); /* Else just send what the receiver needs */
+      }
       procsndnum = procsrttab[procsndidx].procnum;
-      vertsndrmn = procsrttab[procsndidx].vertnbr;
-    }
-    if ((vertglbsum >= vertglbavg) || (flagrcvval >= DGRAPHFOLDCOMMNBR)) { /* If receiver has received what it needed or cannot receive more */
-      if (++ procrcvidx >= procrcvnnd)            /* If was last receiver, exit loop and go finalizing communication arrays                  */
-        break;
-      procrcvnum  = procsrttab[procrcvidx].procnum; /* Skip to next receiver process */
-      vertglbavg += DATASIZE (grafptr->vertglbnbr, fldprocnbr, procrcvidx - procrcvbas);
-      if (procsrttab[procrcvidx].vertnbr >= 0) {  /* If receiver did not receive from a sender receiver */
-        flagrcvval  = 0;
-        vertglbsum += procsrttab[procrcvidx].vertnbr; /* Account for vertices already present in receiver process */
+
+      if (vertsndnbr > 0) {                       /* If useful communication can take place                         */
+        if (proccnttab != NULL) {                 /* If we are a receiver process, fill count and adjustment arrays */
+          proccnttab[procrcvnum - procrcvbas] += vertsndnbr;
+          vertadjtab[procsndnum * DGRAPHFOLDCOMMNBR + flagsndval] = grafptr->procvrttab[procsndnum] + grafptr->proccnttab[procsndnum] - vertsndrmn;
+          vertdlttab[procsndnum * DGRAPHFOLDCOMMNBR + flagsndval] = vertsndnbr;
+          vertprmtab[(procrcvnum - procrcvbas) * (DGRAPHFOLDCOMMNBR + 1) + 1 + flagrcvval] = procsndnum * DGRAPHFOLDCOMMNBR + flagsndval;
+
+          if (procrcvnum == grafptr->proclocnum) { /* If we are the receiver process */
+            commdattab[flagrcvval].procnum = procsndnum; /* Record communication     */
+            commdattab[flagrcvval].vertnbr = vertsndnbr;
+            commvrttab[flagrcvval] = grafptr->procvrttab[procsndnum] + grafptr->proccnttab[procsndnum] - vertsndrmn; /* Set starting global index of vertices to be sent */
+          }
+        }
+        else if (procsndnum == grafptr->proclocnum) { /* If we are the sending process */
+          commdattab[flagsndval].procnum = procrcvnum; /* Record communication         */
+          commdattab[flagsndval].vertnbr = vertsndnbr;
+          commvrttab[flagsndval] = grafptr->procvrttab[procsndnum] + grafptr->proccnttab[procsndnum] - vertsndrmn; /* Set starting global index of vertices to be sent */
+        }
+        vertglbsum += vertsndnbr;                 /* Account for vertices sent and received */
+        vertsndrmn -= vertsndnbr;
+        flagsndval ++;
+        flagrcvval ++;
       }
-      else {                                      /* Receiver already received from a sender receiver */
-        flagrcvval  = 1;                          /* Already a communication performed                */
-        vertglbsum -= procsrttab[procrcvidx].vertnbr; /* Use negative value                           */
+      if (vertsndrmn <= 0) {                      /* If sending process has sent everything */
+#ifndef SCOTCH_DEBUG_DGRAPH2
+        if (procsndnum == grafptr->proclocnum) {  /* If we are the sending process              */
+          memFree (procsrttab);                   /* Free group leader for senders if not debug */
+          return  (0);                            /* Return as we do not need the count array   */
+        }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+        procsndidx = procsndnxt;                  /* Process next vertex to send           */
+        if (procsndidx < procsndmnd)              /* If was last sending process, end loop */
+          break;
+        procsndnxt = procsndidx - 1;              /* Prepare next sender process  */
+        flagsndval = 0;                           /* Skip to next sending process */
+        vertsndrmn = procsrttab[procsndidx].vertnbr;
+      }
+      if ((flagrcvval >= DGRAPHFOLDCOMMNBR) ||    /* If receiver cannot receive more                                 */
+          ((vertglbsum >= vertglbavg) &&          /* Or has received what it needed and is not forced to accept more */
+	   (((procrcvnnd - procrcvidx) * (DGRAPHFOLDCOMMNBR - 1) - flagrcvval) > (procsndidx - procsndmnd)))) {
+        if (++ procrcvidx >= procrcvnnd) {        /* If was last receiver, exit loop and go finalizing communication arrays */
+#ifndef SCOTCH_DEBUG_DGRAPH2
+          if ((procsndidx > procsndmnd) || (vertsndrmn > 0)) { /* If there remains a sender vertex which has yet something to send */
+            errorPrint ("dgraphFoldComm: internal error (3)");
+            memFree    (procsrttab);              /* Free group leader */
+            return     (1);
+          }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+          break;
+        }
+        procrcvnum  = procsrttab[procrcvidx].procnum; /* Skip to next receiver process */
+        vertglbavg += DATASIZE (grafptr->vertglbnbr, fldprocnbr, procrcvidx - procrcvbas);
+        if (procsrttab[procrcvidx].vertnbr >= 0) { /* If receiver did not receive from a sender receiver */
+          flagrcvval  = 0;
+          vertglbsum += procsrttab[procrcvidx].vertnbr; /* Account for vertices already present in receiver process */
+        }
+        else {                                    /* Receiver already received from a sender receiver */
+          flagrcvval  = 1;                        /* Already a communication performed                */
+          vertglbsum -= procsrttab[procrcvidx].vertnbr; /* Use negative value                         */
+        }
       }
     }
   }
@@ -308,7 +349,7 @@ Gnum * restrict const               vertdlttab)   /* Pointer to global delta adj
     for (i = 0, vertsndnbr = 0; (i < DGRAPHFOLDCOMMNBR) && (commdattab[i].procnum != -1); i ++)
       vertsndnbr += commdattab[i].vertnbr;
     if (vertsndnbr != grafptr->vertlocnbr) {
-      errorPrint ("dgraphFoldComm: internal error (3)");
+      errorPrint ("dgraphFoldComm: internal error (4)");
       memFree    (procsrttab);                    /* Free group leader */
       return     (1);
     }
@@ -337,15 +378,15 @@ Gnum * restrict const               vertdlttab)   /* Pointer to global delta adj
           break;
       }
       if (commend >= DGRAPHFOLDCOMMNBR) {
-        errorPrint ("dgraphFoldComm: internal error (4)");
+        errorPrint ("dgraphFoldComm: internal error (5)");
         memFree    (procsrttab);                  /* Free group leader */
         return     (1);
       }
     }
   }
-
-  memFree (procsrttab);                           /* Free group leader */
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
+
+  memFree (procsrttab);                           /* Free group leader for receiver processes or all in case of debug */
 
   return (0);
 }

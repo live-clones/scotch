@@ -100,19 +100,13 @@ char *              argv[])
 
 #ifdef SCOTCH_PTHREAD
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
-  if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS) {
+  if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (1)");
-    exit       (1);
-  }
-  if (thrdlvlreqval > thrdlvlproval) {
+  if (thrdlvlreqval > thrdlvlproval)
     errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
-    exit       (1);
-  }
 #else /* SCOTCH_PTHREAD */
-  if (MPI_Init (&argc, &argv) != MPI_SUCCESS) {
+  if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (2)");
-    exit       (1);
-  }
 #endif /* SCOTCH_PTHREAD */
 
   MPI_Comm_size (MPI_COMM_WORLD, &procglbnbr);    /* Get communicator data */
@@ -133,10 +127,8 @@ char *              argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         C_fileTab[C_fileNum ++].name = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (1);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -159,10 +151,8 @@ char *              argv[])
           protglbnum = atoi (&argv[i][2]);
           if ((protglbnum < 0)           ||
               (protglbnum >= procglbnbr) ||
-              ((protglbnum == 0) && (argv[i][2] != '0'))) {
+              ((protglbnum == 0) && (argv[i][2] != '0')))
             errorPrint ("main: invalid root process number");
-            return     (1);
-          }
           break;
         case 'V' :
         case 'v' :
@@ -172,7 +162,6 @@ char *              argv[])
           return  (0);
         default :
           errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
-          return     (1);
       }
     }
   }

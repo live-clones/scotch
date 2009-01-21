@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                graph using a multi-level scheme.       **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 22 jul 2008     **/
+/**                                 to   : 05 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,12 +99,13 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
   }
 
   if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->coarnbr,
-                     dofolddup, paraptr->dupmax * finegrafptr->s.procglbnbr, paraptr->coarrat, paraptr->reqsize) != 0)
+                     dofolddup, paraptr->dupmax, paraptr->coarrat) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   if (coargrafptr->s.procglbnbr == 0) {           /* Not owner of graph */
-    coargrafptr->fronloctab = NULL;
+    coargrafptr->veexloctax = NULL;
     coargrafptr->partgsttax = NULL;
+    coargrafptr->fronloctab = NULL;
     coargrafptr->fronglbnbr = -1;                 /* Mark frontab as invalid */
     return (0);
   }
@@ -135,8 +136,8 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
       Gnum		finevertnum0;             /* First multinode vertex  */
       Gnum              finevertnum1;             /* Second multinode vertex */
 
-      finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
-      finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
+      finevertnum0 = coarmulttax[coarvertnum].vertglbnum[0];
+      finevertnum1 = coarmulttax[coarvertnum].vertglbnum[1];
       coarveexloctax[coarvertnum] = (finevertnum0 != finevertnum1)
                                     ? finegrafptr->veexloctax[finevertnum0] + finegrafptr->veexloctax[finevertnum1] 
                                     : finegrafptr->veexloctax[finevertnum0];
@@ -198,8 +199,8 @@ const MPI_Datatype * const  typedat)              /* MPI datatype ; not used    
   }
 }
 
-/* This routine selects the best coarsen partition to
-** project to finer graph.
+/* This routine selects the best coarse partition
+** to project back to finer graph.
 */
 
 static
@@ -209,7 +210,7 @@ const Bdgraph * restrict const  coargrafptr,
 const MPI_Comm                  parentcomm,
 const int                       proclocnum)
 {
-  Gnum              reduloctab[4];                /* Local array for best bipartition data (7 for Bcast) */
+  Gnum              reduloctab[4];                /* Local array for best bipartition data               */
   Gnum              reduglbtab[4];                /* Global array for best bipartition data              */
   MPI_Datatype      besttypedat;                  /* Data type for finding best bipartition              */
   MPI_Op            bestoperdat;                  /* Handle of MPI operator for finding best bipartition */
@@ -219,9 +220,9 @@ const int                       proclocnum)
 
   if (coargrafptr->fronglbnbr < 0) {              /* Processors own coargrafptr      */
     MPI_Comm_size (parentcomm, &myassoc);         /* Mark higher than other vertices */
-    ++myassoc;
+    ++ myassoc;
     reduloctab[0] = 0;
-    reduloctab[1] = 0;                            /* To avoid warning in valgrind    */
+    reduloctab[1] = 0;                            /* To avoid warning in valgrind */
     reduloctab[2] = myassoc;
     reduloctab[3] = 1;
   }
@@ -232,7 +233,7 @@ const int                       proclocnum)
       return     (-1);
     }
     reduloctab[0] = coargrafptr->commglbload;     /* Communication load */
-    reduloctab[1] = coargrafptr->compglbload0dlt; /* Load imbalance              */
+    reduloctab[1] = coargrafptr->compglbload0dlt; /* Load imbalance     */
     reduloctab[2] = myassoc;
     reduloctab[3] = (coargrafptr->fronglbnbr <= 0) ? 1 : 0;
   }
@@ -298,7 +299,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   Gnum                    finevertadj;            /* Global vertex adjustment                  */
   Gnum                    coarfronnum;            /* Index for frontier array of coarse graph  */
   Gnum                    finefronnum;            /* Index for frontier array of fine graph    */
-  Gnum                    fronlocnum;             /* Index for frontier array fronloctab       */
+  Gnum                    fronlocnnd;             /* Index for frontier array fronloctab       */
   Gnum                    partval;                /* Part of current vertex                    */
   Gnum                    vertnum;                /* Current vertex                            */
   Gnum                    veloval;                /* External load of current vertex           */
@@ -314,7 +315,6 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   Gnum                    recvsize;               /* Size of partrcvtab */
   Gnum                  * fronlocptr;             /* Pointer to current frontier vertex        */
   Gnum                  * fronlocend;             /* End of array */
-  Gnum * restrict         fronloctab;             /* Temporary array to store additional frontiers  */
   Gnum * restrict         frontmptab;             /* Temporary array to update frontiers  */
   GraphPart               coarpartval;            /* Value of current multinode part */
   BdgraphBipartMlPart   * partglbptr;             /* Pointer to current vertex data to send    */
@@ -372,14 +372,13 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
       cheklocval = 1;
     }
     if (index == 0) {
-      errorPrint ("bdgraphBipartMlUncoarsen: common error (1)");
+      errorPrint ("bdgraphBipartMlUncoarsen: internal error (1)");
       cheklocval = 1;
     }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
 
     if (memAllocGroup ((void **) (void *)
 		       &partglbtab, (size_t) (2 * coargrafptr->s.vertlocnbr * sizeof (BdgraphBipartMlPart)),
-		       &fronloctab, (size_t) (coargrafptr->fronlocnbr   * sizeof (Gnum)),
 	               &senddsptab, (size_t) (finegrafptr->s.procglbnbr * sizeof (int)),
                        &sendcnttab, (size_t) (finegrafptr->s.procglbnbr * sizeof (int)),
                        &recvdsptab, (size_t) (finegrafptr->s.procglbnbr * sizeof (int)),
@@ -398,7 +397,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     
     /* Initialize variables for finer Bdgraph */
     glbfronnbr                = 0; 
-    fronlocnum                = 0; 
+    fronlocnnd                = finegrafptr->s.vertlocnbr;
     finefronnum               = 0;
     finegrafptr->fronlocnbr   = 0;
     finesize1                 = 0;
@@ -408,14 +407,13 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     commlocloadextn           = 0;
     commlocgainextn           = 0;
 
-    /* Mark all vertices as unvisited */
-    memSet (finegrafptr->partgsttax + finegrafptr->s.baseval, 2, finegrafptr->s.vertgstnbr * sizeof (GraphPart));
+    memSet (finegrafptr->partgsttax + finegrafptr->s.baseval, 2, finegrafptr->s.vertgstnbr * sizeof (GraphPart)); /* All vertices are unvisited */
 
     if (sendmode) {                               /* We must browse local data */
       for (coarfronnum = 0; coarfronnum < coargrafptr->fronlocnbr; coarfronnum ++) {
         coarvertnum  = coargrafptr->fronloctab[coarfronnum];
-	finevertnum  = coarmulttax[coarvertnum].vertnum[0];
-	finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
+	finevertnum  = coarmulttax[coarvertnum].vertglbnum[0];
+	finevertnum1 = coarmulttax[coarvertnum].vertglbnum[1];
         coarpartval  = coargrafptr->partgsttax[coarvertnum];
 	
 	if (finevertnum != finevertnum1) {        /* If multinode is made of two distinct vertices */
@@ -423,7 +421,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 	    finegrafptr->fronloctab[finefronnum ++] = finevertnum - finevertadj; /* Record it in lieu of the coarse frontier vertex */ 
 #ifdef SCOTCH_DEBUG_BDGRAPH2
             if (finegrafptr->partgsttax[finevertnum - finevertadj] != 2) {
-              errorPrint ("bdgraphBipartMlUncoarsen: internal error (1)");
+              errorPrint ("bdgraphBipartMlUncoarsen: internal error (2)");
               return (1);
             }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -444,11 +442,11 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
             partglbptr->partval = (Gnum) coarpartval;
             partglbptr ++;
           }
-	  if (dgraphVertexLocal (&finegrafptr->s, finevertnum1)) {
-	    fronloctab[fronlocnum ++] = finevertnum1 - finevertadj; /* Record it in the temporary local frontier array  */
+          if (dgraphVertexLocal (&finegrafptr->s, finevertnum1)) {
+            finegrafptr->fronloctab[-- fronlocnnd] = finevertnum1 - finevertadj; /* Record it in the temporary local frontier array */
 #ifdef SCOTCH_DEBUG_BDGRAPH2
             if (finegrafptr->partgsttax[finevertnum1 - finevertadj] != 2) {
-              errorPrint ("bdgraphBipartMlUncoarsen: internal error (2)");
+              errorPrint ("bdgraphBipartMlUncoarsen: internal error (3)");
               return (1);
             }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -475,7 +473,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 	    finegrafptr->fronloctab[finefronnum ++] = finevertnum - finevertadj; /* Record it in lieu of the coarse frontier vertex */
 #ifdef SCOTCH_DEBUG_BDGRAPH2
             if (finegrafptr->partgsttax[finevertnum - finevertadj] != 2) {
-              errorPrint ("bdgraphBipartMlUncoarsen: internal error (3)");
+              errorPrint ("bdgraphBipartMlUncoarsen: internal error (4)");
               return     (1);
             }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -500,9 +498,9 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 	coargrafptr->partgsttax[coarvertnum] = 2; /* Mark the coarse vertex as already treated */
       }
       
-      if (fronlocnum > 0) {                       /* Update fronloctab of fine graph, if any */
-	memCpy (finegrafptr->fronloctab + finefronnum, fronloctab, fronlocnum * sizeof (Gnum));
-	finefronnum += fronlocnum;
+      if (fronlocnnd != finegrafptr->s.vertlocnbr) { /* Update fronloctab of fine graph, if any */
+	memMov (finegrafptr->fronloctab + finefronnum, finegrafptr->fronloctab + fronlocnnd, (finegrafptr->s.vertlocnbr - fronlocnnd) * sizeof (Gnum));
+	finefronnum += (finegrafptr->s.vertlocnbr - fronlocnnd);
       }
       
       glbfronnbr = partglbptr - partglbtab;       /* Record the number of frontiers to be sent */
@@ -511,7 +509,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
         coarpartval = coargrafptr->partgsttax[coarvertnum];
 #ifdef SCOTCH_DEBUG_BDGRAPH2
         if (coarpartval > 2) {
-          errorPrint ("bdgraphBipartMlUncoarsen: internal error (4)");
+          errorPrint ("bdgraphBipartMlUncoarsen: internal error (5)");
           cheklocval = 1;
         }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -519,11 +517,11 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 	  continue;
 
         for (i = 0; i < 2; i ++) {
-          finevertnum = coarmulttax[coarvertnum].vertnum[i];
+          finevertnum = coarmulttax[coarvertnum].vertglbnum[i];
           if (dgraphVertexLocal (&finegrafptr->s, finevertnum)) { /* Vertex is a local one */
 #ifdef SCOTCH_DEBUG_BDGRAPH2
             if (finegrafptr->partgsttax[finevertnum - finevertadj] != 2) {
-              errorPrint ("bdgraphBipartMlUncoarsen: internal error (5)");
+              errorPrint ("bdgraphBipartMlUncoarsen: internal error (6)");
               return (1);
             }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -544,7 +542,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
             partglbptr->partval = (Gnum) coarpartval;
             partglbptr ++;
           }
-          if (coarmulttax[coarvertnum].vertnum[0] == coarmulttax[coarvertnum].vertnum[1]) /* In fact no contraction */
+          if (coarmulttax[coarvertnum].vertglbnum[0] == coarmulttax[coarvertnum].vertglbnum[1]) /* In fact no contraction */
             break;
         }
       }
@@ -592,8 +590,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
     if (memAllocGroup ((void **) (void *)
 	               &partsndtab, (size_t) (sendsize * sizeof (int)),
-                       &partrcvtab, (size_t) (recvsize * sizeof (int)),
-                       NULL) == NULL) {
+                       &partrcvtab, (size_t) (recvsize * sizeof (int)), NULL) == NULL) {
       errorPrint ("bdgraphBipartMlUncoarsen: out of memory (4)");
       cheklocval = 1;
     }
@@ -602,15 +599,14 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     memSet (partsndtab, 0, sendsize * sizeof (int));
     memSet (partrcvtab, 0, recvsize * sizeof (int));
     memSet (partnbr1, 0, finegrafptr->s.procglbnbr * sizeof (int));
-    for (partglbptr = partglbtab; partglbptr < (partglbtab + glbfronnbr); 
-	 ++ partglbptr) {                                                       /* For frontiers         */
-      low = 0;
+    for (partglbptr = partglbtab; partglbptr < (partglbtab + glbfronnbr); partglbptr ++) { /* For frontiers */
+      low  = 0;
       high = finegrafptr->s.procglbnbr - 1;
       while (low <= high) {
 	procnum = (low + high) / 2;
 	if ((partglbptr->vertnum < finegrafptr->s.procvrttab[procnum + 1]) &&
 	    (partglbptr->vertnum >= finegrafptr->s.procvrttab[procnum]))
-	  break;                                                                /* owner process found   */
+	  break;                                                                /* Owner process found */
 	else if (partglbptr->vertnum >= finegrafptr->s.procvrttab[procnum + 1])
 	  low  = procnum + 1;
 	else
@@ -627,12 +623,10 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 	partglbptr->vertnum;                                                     
 	partsndtab[senddsptab[procnum] + 1] ++;                         /* Update second header element  */
       }
-
     }
-    
-    for (partglbptr = partglbtab + glbfronnbr; partglbptr < partglbend;
-	 ++ partglbptr) {                                                       /* For normal vertices   */
-      low = 0;
+
+    for (partglbptr = partglbtab + glbfronnbr; partglbptr < partglbend; partglbptr ++) { /* For normal vertices */
+      low  = 0;
       high = finegrafptr->s.procglbnbr - 1;
       while (low <= high) {
 	procnum = (low + high) / 2;
@@ -658,11 +652,10 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 	partglbptr->vertnum;                                                     
 	partnbr1[procnum] ++; 
       }
-      
     }
 
     if (MPI_Alltoallv (partsndtab, sendcnttab, senddsptab, MPI_INT, 
-	partrcvtab, recvcnttab, recvdsptab, MPI_INT, finegrafptr->s.proccomm) != MPI_SUCCESS) {
+                       partrcvtab, recvcnttab, recvdsptab, MPI_INT, finegrafptr->s.proccomm) != MPI_SUCCESS) {
       errorPrint ("bdgraphBipartMlUncoarsen: communication error (3)");
       cheklocval = 1;
     }
@@ -676,7 +669,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 	  vertnum = partrcvtab[recvdsptab[procnum] + i];
 	  finegrafptr->partgsttax[vertnum - finevertadj] = 0;
 	  if (finegrafptr->veexloctax != NULL) {
-	    veexval = finegrafptr->veexloctax[vertnum -finevertadj];
+	    veexval = finegrafptr->veexloctax[vertnum - finevertadj];
 	    commlocgainextn += veexval;
 	  }
 	}
@@ -713,7 +706,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 	continue;
 #ifdef SCOTCH_DEBUG_BDGRAPH2
       else {
-	errorPrint ("bdgraphBipartMlUncoarsen: internal error (8)");
+	errorPrint ("bdgraphBipartMlUncoarsen: internal error (7)");
 	cheklocval = 1;
       }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -722,29 +715,27 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     /* Verify that the partgsttax is fully completed for local vertices */
     for (finevertnum = finegrafptr->s.baseval ; finevertnum < finegrafptr->s.vertlocnnd ; ++ finevertnum) {
       if (finegrafptr->partgsttax[finevertnum] > 1) {
-        errorPrint ("bdgraphBipartMlUncoarsen: internal error (9)");
+        errorPrint ("bdgraphBipartMlUncoarsen: internal error (8)");
         cheklocval = 1;
         break;
       }
     }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
 
-    /* Do synchronized halo */
     if (dgraphHaloSync (&finegrafptr->s, (byte *) (finegrafptr->partgsttax + finegrafptr->s.baseval), GRAPHPART_MPI) != 0) {
       errorPrint ("bdgraphBipartMlUncoarsen: cannot perform halo exchange");
       cheklocval = 1;
     }
     
-    /* Extract real frontier vertices and calculate communication local load values */
-    commlocloadintn  = 0;
-    edlolocval       = 1;                            /* Assume edges are not weighted */
+    commlocloadintn  = 0;                         /* Extract real frontier vertices and calculate communication local load values */
+    edlolocval       = 1;                         /* Assume edges are not weighted                                                */
     if ((frontmptab = (Gnum *) memAlloc (finefronnum * sizeof (Gnum))) == NULL) {
       errorPrint ("bdgraphBipartMlUncoarsen: out of memory (5)");
       cheklocval = 1;
     }
     for (fronlocptr = finegrafptr->fronloctab, fronlocend = finegrafptr->fronloctab + finefronnum, i = 0; 
-	 fronlocptr < fronlocend; fronlocptr ++) {
-      Gnum                edgelocnum;                /* Current edge number                */ 
+         fronlocptr < fronlocend; fronlocptr ++) {
+      Gnum                edgelocnum;                /* Current edge number                                 */ 
       Gnum                commcut;                   /* Number of communication cuts for the current vertex */
 
       partval = (Gnum) finegrafptr->partgsttax[* fronlocptr];
@@ -769,13 +760,12 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     memFree (frontmptab);
     memFree (partsndtab);
 
-    /* Now compute Bdgraph fields */
+    finegrafptr->fronlocnbr     = finefronnum;    /* Now compute Bdgraph fields */
     finegrafptr->complocsize0   = finegrafptr->s.vertlocnbr - finesize1; 
     if (finegrafptr->s.veloloctax == NULL)
       finegrafptr->complocload0 = finegrafptr->complocsize0;
     else
       finegrafptr->complocload0 = finegrafptr->s.velolocsum - fineload1;
-    finegrafptr->fronlocnbr     = finefronnum;
 
     reduloctab[0] = cheklocval;
     reduloctab[1] = finegrafptr->complocload0;
@@ -787,7 +777,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     reduloctab[7] = commlocgainextn;
     MPI_Allreduce (reduloctab, reduglbtab, 8, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm);
     if (reduglbtab[0] > 0) {
-      errorPrint ("bdgraphBipartMlUncoarsen: common error (2)");
+      errorPrint ("bdgraphBipartMlUncoarsen: internal error (9)");
       return (1);
     }
     finegrafptr->compglbload0    = reduglbtab[1];
@@ -825,8 +815,8 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 static
 int
 bdgraphBipartMl2 (
-Bdgraph * restrict const             grafptr,     /* Active graph      */
-const BdgraphBipartMlParam * const paraptr)       /* Method parameters */
+Bdgraph * restrict const            grafptr,      /* Active graph      */
+const BdgraphBipartMlParam * const  paraptr)      /* Method parameters */
 {
   Bdgraph                       coargrafdat;
   DgraphCoarsenMulti * restrict coarmulttax;

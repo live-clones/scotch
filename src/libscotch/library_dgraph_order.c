@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 25 apr 2006     **/
-/**                                 to     31 may 2008     **/
+/**                                 to     11 nov 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -190,7 +190,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy         
   const Strat *       ordstratptr;                /* Pointer to ordering strategy */
 
   if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&hdgraphorderststratab, "n{sep=m{asc=b{width=3,strat=q{strat=f}},low=q{strat=h},vert=1000,dvert=100,dlevl=0,proc=1,seq=q{strat=m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}}}},ole=s,ose=s,osq=n{sep=/(vert>120)?m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
+    *((Strat **) stratptr) = stratInit (&hdgraphorderststratab, "n{sep=m{asc=b{width=3,strat=q{strat=f}},low=q{strat=h},vert=100,dvert=10,dlevl=0,proc=1,seq=q{strat=m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}}}},ole=q{strat=n{sep=/(vert>120)?m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}},ose=s,osq=n{sep=/(vert>120)?m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hdgraphorderststratab) {
     errorPrint ("SCOTCH_dgraphOrderComputeList: not a distributed ordering strategy");

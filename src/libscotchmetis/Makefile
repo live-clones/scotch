@@ -52,7 +52,9 @@ include ../Makefile.inc
 
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
-scotch				:	libscotchmetis$(LIB)
+scotch				:
+					$(MAKE) CC=$(CCS) SCOTCHLIB=ptscotch						\
+					libscotchmetis$(LIB)
 
 ptscotch			:
 					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC=$(CCP) SCOTCHLIB=ptscotch	\

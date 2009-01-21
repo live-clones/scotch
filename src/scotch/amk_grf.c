@@ -52,6 +52,8 @@
 /**                                 to   : 17 mar 2005     **/
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
+/**                # Version 5.1  : from : 11 dec 2008     **/
+/**                                 to   : 11 dec 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -239,7 +241,8 @@ char *                      argv[])
   SCOTCH_graphExit (&grafdat);                    /* Free target graph        */
   SCOTCH_archExit  (&archdat);                    /* Free target architecture */
   SCOTCH_stratExit (&bipastrat);                  /* Free strategy string     */
-  memFree          (listtab);                     /* Free vertex list         */
+  if (listtab != NULL)                            /* If vertex list provided  */
+    memFree (listtab);                            /* Free it                  */
 
 #ifdef COMMON_PTHREAD
   pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
