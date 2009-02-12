@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 23 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 27 jun 2008     **/
-/**                                 to   : 03 jan 2009     **/
+/**                                 to   : 05 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -352,9 +352,6 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
     const Gnum * restrict const orgvertloctax = orggrafptr->s.vertloctax;
     const Gnum * restrict const orgvendloctax = orggrafptr->s.vendloctax;
     const Gnum * restrict const orgedgeloctax = orggrafptr->s.edgeloctax;
-    Gnum * restrict const       fldvertloctax = fldgrafptr->s.vertloctax;
-    Gnum * restrict const       fldvendloctax = fldgrafptr->s.vendloctax;
-    Gnum * restrict const       fldedgeloctax = fldgrafptr->s.edgeloctax;
 
     fldgrafptr->s.procvrttab = fldgrafptr->s.procdsptab; /* Graph does not have holes                           */
     fldgrafptr->s.procdsptab[0] = orggrafptr->s.baseval; /* Build private data of folded graph and array        */
@@ -370,6 +367,8 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
       Gnum                fldvertrcvnbr;
       int                 procngbmin;
       int                 procngbmax;
+
+      Gnum * restrict const fldedgeloctax = fldgrafptr->s.edgeloctax;
 
       for (i = 0, fldvertrcvbas = orggrafptr->s.vertlocnnd, fldvertrcvnbr = 0; /* For all receive communications to perform */
            (i < commnbr) && (cheklocval == 0); i ++) {
@@ -440,12 +439,14 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
         Gnum              fldvertlocadj;
         int               i;
 
+        Gnum * restrict const fldvnumloctax = fldgrafptr->s.vnumloctax;
+
         for (i = 0, fldvertlocnum = orgvertlocnnd; i < commnbr; i ++) {
           Gnum              fldvertlocnnd;
 
           for (fldvertlocnnd = fldvertlocnum + fldcommdattab[i].vertnbr, fldvertlocadj = fldcommvrttab[i];
                fldvertlocnum < fldvertlocnnd; fldvertlocnum ++)
-            fldgrafptr->s.vnumloctax[fldvertlocnum] = fldvertlocadj ++;
+            fldvnumloctax[fldvertlocnum] = fldvertlocadj ++;
         }
       }
 
@@ -525,6 +526,8 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
       Gnum              fldvhallocmax;            /* Maximum current size of halo vertex array */
       int               procngbmin;
       int               procngbmax;
+
+      Gnum * restrict const fldedgeloctax = fldgrafptr->s.edgeloctax;
 
       orgvertlocnbr = fldvertlocnbr;              /* Process only remaining local vertices */
       orgvertlocnnd = fldvertlocnbr + orggrafptr->s.baseval;
@@ -652,12 +655,14 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
         Gnum              fldvertlocnnd;
         Gnum              fldvertlocadj;
 
+        Gnum * restrict const fldvertloctax = fldgrafptr->s.vertloctax;
+
         fldvertlocnum = fldvertidxtab[j];
         fldvertlocadj = fldedgeidxtab[j] - fldgrafptr->s.vertloctax[fldvertlocnum];
         fldvendidxtab[j] = fldvertlocadj;         /* Record updated adjust value for vendloctab pass */
 
         for (fldvertlocnnd = fldvertlocnum + fldcommdattab[j].vertnbr; fldvertlocnum < fldvertlocnnd; fldvertlocnum ++)
-          fldgrafptr->s.vertloctax[fldvertlocnum] += fldvertlocadj;
+          fldvertloctax[fldvertlocnum] += fldvertlocadj;
       }
     }
 
@@ -673,11 +678,13 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
         Gnum              fldvendlocnnd;
         Gnum              fldvendlocadj;
 
+        Gnum * restrict const fldvendloctax = fldgrafptr->s.vendloctax;
+
         fldvendlocnum = fldvertidxtab[j];
         fldvendlocadj = fldvendidxtab[j];         /* Get updated adjust from above vertloctab pass */
 
         for (fldvendlocnnd = fldvendlocnum + fldcommdattab[j].vertnbr; fldvendlocnum < fldvendlocnnd; fldvendlocnum ++)
-          fldgrafptr->s.vendloctax[fldvendlocnum] += fldvendlocadj;
+          fldvendloctax[fldvendlocnum] += fldvendlocadj;
       }
     }
 
@@ -698,6 +705,10 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
         Gnum              fldvhallocmax;          /* Maximum current size of halo vertex array */
         int               procngbmin;
         int               procngbmax;
+
+        Gnum * restrict const fldvertloctax = fldgrafptr->s.vertloctax;
+        Gnum * restrict const fldvendloctax = fldgrafptr->s.vendloctax;
+        Gnum * restrict const fldedgeloctax = fldgrafptr->s.edgeloctax;
 
 #ifdef SCOTCH_DEBUG_HDGRAPH2
         int               fldedgercvnbr;

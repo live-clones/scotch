@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 10 aug 2006     **/
 /**                                 to   : 27 jun 2008     **/
 /**                # Version 5.1  : from : 12 nov 2008     **/
-/**                                 to   : 16 jan 2009     **/
+/**                                 to   : 05 feb 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -464,12 +464,14 @@ MPI_Datatype                  vertinfotype)
         Gnum              fldvertlocadj;
         int               i;
 
+        Gnum * restrict const fldvnumloctax = fldgrafptr->vnumloctax;
+
         for (i = 0, fldvertlocnum = orgvertlocnnd; i < commnbr; i ++) {
           Gnum              fldvertlocnnd;
 
           for (fldvertlocnnd = fldvertlocnum + fldcommdattab[i].vertnbr, fldvertlocadj = fldcommvrttab[i];
                fldvertlocnum < fldvertlocnnd; fldvertlocnum ++)
-            fldgrafptr->vnumloctax[fldvertlocnum] = fldvertlocadj ++;
+            fldvnumloctax[fldvertlocnum] = fldvertlocadj ++;
         }
       }
 
@@ -574,11 +576,13 @@ MPI_Datatype                  vertinfotype)
         Gnum              fldvertlocnnd;
         Gnum              fldvertlocadj;
 
+        Gnum * restrict const fldvertloctax = fldgrafptr->vertloctax;
+
         fldvertlocnum = fldvertidxtab[j];
         fldvertlocadj = fldedgeidxtab[j] - fldgrafptr->vertloctax[fldvertlocnum];
 
         for (fldvertlocnnd = fldvertlocnum + fldcommdattab[j].vertnbr; fldvertlocnum < fldvertlocnnd; fldvertlocnum ++)
-          fldgrafptr->vertloctax[fldvertlocnum] += fldvertlocadj;
+          fldvertloctax[fldvertlocnum] += fldvertlocadj;
       }
     }
 
@@ -596,6 +600,8 @@ MPI_Datatype                  vertinfotype)
         Gnum              fldvertlocadj;
         int               procngbnum;
         int               procngbmax;
+
+        Gnum * restrict const fldedgeloctax = fldgrafptr->edgeloctax;
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
         int               fldedgercvnbr;

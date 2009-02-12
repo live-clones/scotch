@@ -262,19 +262,19 @@ const Gnum                  degrlocmax)
   Gnum                  vertngbmin;               /* Smallest vertex number of neighbor process   */
   Gnum                  vertlocnum;
   Gnum                  edgelocnum;
-  const Gnum *          vlbllocptr;               /* Pointer to current vertex label              */
-  DgraphLablSortVert *  vesongbptr;               /* Pointer to current sort cell                 */
-  DgraphLablSortVert *  vesongbtnd;               /* Pointer to end of current sort array         */
-  DgraphLablSortVert *  vesongbtab[2];            /* Neighbor vertex sorting array                */
-  int                   vesongbnbr[2];            /* Sizes of both vertex sort arrays             */
-  DgraphLablSortEdge *  edsoloctab;               /* Local edge sorting array                     */
-  DgraphLablSortEdge *  edsoloctnd;               /* Pointer to end of edge sort array            */
-  DgraphLablSortEdge *  edsolocptr;               /* Pointer to current sort edge                 */
-  MPI_Request           requloctab[2];            /* Arrays for pipelined communication           */
+  const Gnum *          vlbllocptr;               /* Pointer to current vertex label                  */
+  DgraphLablSortVert *  vesongbptr;               /* Pointer to current sort cell                     */
+  DgraphLablSortVert *  vesongbtnd;               /* Pointer to end of current sort array             */
+  DgraphLablSortVert *  vesongbtab[2];            /* Neighbor vertex sorting array [norestrict:async] */
+  int                   vesongbnbr[2];            /* Sizes of both vertex sort arrays                 */
+  DgraphLablSortEdge *  edsoloctab;               /* Local edge sorting array                         */
+  DgraphLablSortEdge *  edsoloctnd;               /* Pointer to end of edge sort array                */
+  DgraphLablSortEdge *  edsolocptr;               /* Pointer to current sort edge                     */
+  MPI_Request           requloctab[2];            /* Arrays for pipelined communication               */
   MPI_Status            statloctab[2];
-  int                   cheklocval;               /* Local consistency flag                       */
-  int                   chekglbval;               /* Global consistency flag                      */
-  Gnum                  reduloctab[20];           /* Arrays for reductions                        */
+  int                   cheklocval;               /* Local consistency flag                           */
+  int                   chekglbval;               /* Global consistency flag                          */
+  Gnum                  reduloctab[20];           /* Arrays for reductions                            */
   Gnum                  reduglbtab[20];
 
   reduloctab[0]  =   baseval;                     /* Check argument consistency */

@@ -277,7 +277,7 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
     }
   }
   else {
-    errorPrint ("hdgraphGather: Not implemented"); /* TODO, but not really necessary as all Hdgraph structures created by Scotch itself are compact */
+    errorPrint ("hdgraphGather: Not implemented"); /* Not really necessary as all Hdgraph structures created by Scotch itself are compact */
     return     (1);
   }
 

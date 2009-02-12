@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,7 +63,7 @@
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     06 mar 2005     **/
 /**                # Version 5.1  : from : 22 nov 2007     **/
-/**                                 to     07 oct 2008     **/
+/**                                 to     04 feb 2009     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -231,15 +231,15 @@ KgraphMapRbMapPoolData * const  poolptr)
 
   jobbest = (KgraphMapRbMapJob *) poolptr->pooltab[0]->next;  /* Get first job in pool */
   for (jobptr  = jobbest;                         /* For all jobs in pool              */
-       jobptr != (KgraphMapRbMapJob *) &kgraphmaprbmappooldummy;
+       jobptr != (KgraphMapRbMapJob *) (void *) &kgraphmaprbmappooldummy;
        jobptr  = (KgraphMapRbMapJob *) jobptr->poollink.next) {
     if (jobptr->priolvl > jobbest->priolvl)       /* If the current job has stronger priority */
       jobbest = jobptr;                           /* Select it as the best job                */
   }
 
-  if (jobbest != (KgraphMapRbMapJob *) &kgraphmaprbmappooldummy) { /* If job found      */
-    jobbest->poollink.next->prev = jobbest->poollink.prev; /* Remove it from pool       */
-    jobbest->poollink.prev->next = jobbest->poollink.next; /* But do not mark it unused */
+  if (jobbest != (KgraphMapRbMapJob *) (void *) &kgraphmaprbmappooldummy) { /* If job found */
+    jobbest->poollink.next->prev = jobbest->poollink.prev; /* Remove it from pool           */
+    jobbest->poollink.prev->next = jobbest->poollink.next; /* But do not mark it unused     */
   }
   else                                            /* Dummy job means no job found */
     jobbest = NULL;

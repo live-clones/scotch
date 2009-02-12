@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                processes are doing.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 21 jun 2008     **/
-/**                                 to     22 nov 2008     **/
+/**                                 to     27 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -181,7 +181,7 @@ const Strat * restrict const            stratptr)
 
 static
 void *
-kdgraphMapRbFold2 (
+kdgraphMapRbPartFold2 (
 void * const                    dataptr)          /* Pointer to thread data */
 {
   KdgraphMapRbPartData *            fldthrdptr;   /* Thread input parameters      */
@@ -224,14 +224,14 @@ const ArchDom * restrict const          domsubtab,
 KdgraphMapRbPartGraph * restrict const  fldgrafptr)
 {
   KdgraphMapRbPartData  fldthrdtab[2];
-  int                   fldprocnbr;               /* Number of processes in part of this process    */
-  int                   fldprocnbr0;              /* Number of processes in first part              */
+  int                   fldprocnbr;               /* Number of processes in part of this process  */
+  int                   fldprocnbr0;              /* Number of processes in first part            */
   int                   fldprocnum;
   int                   fldproccol;
   int                   fldpartval;
-  Gnum                  indvertlocmax;            /* Local number of vertices in biggest subgraph   */
-  int                   indconttab[2];            /* Array of subjob continuation flags             */
-  int                   indpartmax;               /* Induced part having most vertices              */
+  Gnum                  indvertlocmax;            /* Local number of vertices in biggest subgraph */
+  int                   indconttab[2];            /* Array of subjob continuation flags           */
+  int                   indpartmax;               /* Induced part having most vertices            */
 #ifdef SCOTCH_PTHREAD
   Dgraph                orggrafdat;               /* Structure for copying graph fields except communicator */
   pthread_t             thrdval;                  /* Data of second thread                                  */
@@ -322,13 +322,13 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
     fldthrdtab[1].orggrafptr = &orggrafdat;
     MPI_Comm_dup (actgrafptr->s.proccomm, &orggrafdat.proccomm); /* Duplicate communicator to avoid interferences in communications */
 
-    if (pthread_create (&thrdval, NULL, kdgraphMapRbFold2, (void *) &fldthrdtab[1]) != 0) /* If could not create thread */
-      o = ((int) (intptr_t) kdgraphMapRbFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence           */
-          ((int) (intptr_t) kdgraphMapRbFold2 ((void *) &fldthrdtab[1]));
+    if (pthread_create (&thrdval, NULL, kdgraphMapRbPartFold2, (void *) &fldthrdtab[1]) != 0) /* If could not create thread */
+      o = ((int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence           */
+          ((int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[1]));
     else {                                        /* Newly created thread is processing subgraph 1, so let's process subgraph 0 */
       void *                    o2;
 
-      o = (int) (intptr_t) kdgraphMapRbFold2 ((void *) &fldthrdtab[0]); /* Work on copy with private communicator */
+      o = (int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[0]); /* Work on copy with private communicator */
 
       pthread_join (thrdval, &o2);
       o |= (int) (intptr_t) o2;
@@ -337,8 +337,8 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   }
   else
 #endif /* SCOTCH_PTHREAD */
-    o = ((int) (intptr_t) kdgraphMapRbFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence */
-        ((int) (intptr_t) kdgraphMapRbFold2 ((void *) &fldthrdtab[1]));
+    o = ((int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence */
+        ((int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[1]));
 
   return (o);
 }
@@ -367,7 +367,7 @@ const KdgraphMapRbParam * restrict const paraptr)
     return     (1);
   }
 
-  if (dgraphGhst(&grafptr->data.dgrfdat) != 0) { /* Compute ghost edge array if not already present, to have vertgstnbr (and procsidtab) */
+  if (dgraphGhst (&grafptr->data.dgrfdat) != 0) { /* Compute ghost edge array if not already present, to have vertgstnbr (and procsidtab) */
     errorPrint ("kdgraphMapRbPart2: cannot compute ghost edge array");
     return     (1);
   }
@@ -406,7 +406,16 @@ const KdgraphMapRbParam * restrict const paraptr)
 
   grafdat.domnorg = grafptr->m.domnorg;
   grafdat.procnbr = grafptr->s.procglbnbr;
-  grafdat.levlnum = 0;                            /* Set initial DRB level to zero                 */
+  grafdat.levlnum = 0;                            /* Set initial DRB level to zero */
+
+  if (grafptr->s.procglbnbr <= 1) {               /* If single process, switch immediately to sequential mode */
+    if (dgraphGather (&grafptr->s, &grafdat.data.cgrfdat) != 0) {
+      errorPrint ("kdgraphMapRbPart: cannot centralize graph");
+      return     (1);
+    }
+    return (kdgraphMapRbPartSequ (&grafdat, mappptr->mappptr, paraptr->stratseq));
+  }
+
   grafdat.data.dgrfdat = grafptr->s;              /* Create a clone graph that will never be freed */
   grafdat.data.dgrfdat.flagval &= ~DGRAPHFREEALL;
   return (kdgraphMapRbPart2 (&grafdat, mappptr->mappptr, paraptr)); /* Perform DRB */

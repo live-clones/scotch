@@ -64,8 +64,8 @@ typedef struct DgraphBuildGrid3DPoint_ {
 #endif /* inline */
 
 inline Gnum
-dgraphBuildGrid3DNeighboors (DgraphBuildGrid3DPoint * restrict edgecase,
-			     Gnum x, Gnum y, Gnum z, Gnum height, Gnum width, Gnum depth)
+dgraphBuildGrid3DNeighbors (DgraphBuildGrid3DPoint * restrict edgecase,
+			    Gnum x, Gnum y, Gnum z, Gnum height, Gnum width, Gnum depth)
 {
   Gnum edgenbrcase;
   for (edgenbrcase = 0; edgenbrcase < 6 ; edgenbrcase ++)
@@ -163,8 +163,8 @@ const int                   distribute)           /* By slices or random */
   }
 
   vertglbnbr  = width * height * depth;
-  edgeglbnbr  = width * height * depth * 6;       /* Vertices which have 6 neighboors, thus they are in the box                          */
-  edgeglbnbr -= 2 * (width * height + width * depth + height * depth);  /* Vertices which have only 5 neighboors, on the side of the box */
+  edgeglbnbr  = width * height * depth * 6;       /* Vertices which have 6 neighbors, thus they are in the box                          */
+  edgeglbnbr -= 2 * (width * height + width * depth + height * depth);  /* Vertices which have only 5 neighbors, on the side of the box */
 
   if (edgeglbnbr > 6 * vertglbnbr) {
     errorPrint ("dgraphBuildGrid3D: internal error (1)");
@@ -217,7 +217,7 @@ const int                   distribute)           /* By slices or random */
     if (grafptr->proclocnum == grafptr->procglbnbr - 1) /* If the last proc */
       slicewidth += height - grafptr->procglbnbr * slicewidth;
 
-    vertlocnbr  = slicewidth * width * depth;     /* Vertices which have 6 neighboors, thus they are in the box */
+    vertlocnbr  = slicewidth * width * depth;     /* Vertices which have 6 neighbors, thus they are in the box */
     edgelocnbr  = width * slicewidth * depth * 6;
     edgelocnbr -= 2 * (width * slicewidth + depth * slicewidth);
 
@@ -290,8 +290,7 @@ const int                   distribute)           /* By slices or random */
       y = (*vlbllocptr % (height*width)) / height;
       x = (*vlbllocptr % (height*width)) % height;
 
-      edgenbrcase = dgraphBuildGrid3DNeighboors (edgecase,
-						 x, y, z, height, width, depth);
+      edgenbrcase = dgraphBuildGrid3DNeighbors (edgecase, x, y, z, height, width, depth);
       edgelocnum += edgenbrcase;
       edgenbrcase --;
 
@@ -340,8 +339,7 @@ const int                   distribute)           /* By slices or random */
           }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-          edgenbrcase = dgraphBuildGrid3DNeighboors (edgecase,
-                                                     x, y, z, height, width, depth);
+          edgenbrcase = dgraphBuildGrid3DNeighbors (edgecase, x, y, z, height, width, depth);
 
           edgelocnum += edgenbrcase;
           edgenbrcase --;

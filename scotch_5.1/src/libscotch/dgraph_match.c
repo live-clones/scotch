@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**    DATES     : # Version 5.1  : from : 01 dec 2008     **/
-/**                                 to   : 25 dec 2008     **/
+/**                                 to   : 10 feb 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,6 +83,7 @@ DgraphMatchData * restrict const    mateptr,
 const float                         probval)
 {
   Dgraph *            grafptr;
+  int                 procngbnum;
   Gnum                vertlocnbr;
   Gnum                vertgstnbr;
 
@@ -90,7 +91,9 @@ const float                         probval)
   vertlocnbr = grafptr->vertlocnbr;
   vertgstnbr = grafptr->vertgstnbr;
 
-  if ((mateptr->queuloctab = memAlloc (vertlocnbr * sizeof (Gnum))) == NULL) {
+  if (memAllocGroup ((void **) (void *)
+                     &mateptr->procvgbtab, (size_t) ((grafptr->procngbnbr + 1) * sizeof (Gnum)),
+                     &mateptr->queuloctab, (size_t) (vertlocnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("dgraphMatchInit: out of memory");
     return     (1);
   }
@@ -102,6 +105,10 @@ const float                         probval)
   mateptr->probval = (grafptr->procngbnbr == 0) ? 1.0F : probval;
 
   memSet (mateptr->mategsttax + grafptr->vertlocnnd, ~0, (vertgstnbr - vertlocnbr) * sizeof (Gnum)); /* No ghost vertices matched to date */
+
+  for (procngbnum = 0; procngbnum < grafptr->procngbnbr; procngbnum ++)
+    mateptr->procvgbtab[procngbnum] = (Gnum) grafptr->procvrttab[grafptr->procngbtab[procngbnum]];
+  mateptr->procvgbtab[procngbnum] = (Gnum) grafptr->procvrttab[grafptr->procglbnbr]; /* Mark end */
 
   return (0);
 }
@@ -116,7 +123,7 @@ void
 dgraphMatchExit (
 DgraphMatchData * restrict const  mateptr)
 {
-  memFree (mateptr->queuloctab);
+  memFree (mateptr->procvgbtab);
 }
 
 /* This routine performs a round of communication
@@ -142,18 +149,17 @@ DgraphMatchData * restrict const  mateptr)
   int                 vrcvreqnbr;
 
   Dgraph * restrict const             grafptr    = mateptr->c.finegrafptr;
-  const Gnum * restrict const         procvgbtab = mateptr->c.procvgbtab;
   int * restrict const                procgsttax = mateptr->c.procgsttax;
+  const Gnum * restrict const         procvgbtab = mateptr->procvgbtab;
   const Gnum * restrict const         vertloctax = grafptr->vertloctax;
   const Gnum * restrict const         vendloctax = grafptr->vendloctax;
   const Gnum * restrict const         edgeloctax = grafptr->edgeloctax;
   const Gnum * restrict const         edgegsttax = grafptr->edgegsttax;
   Gnum * restrict const               queuloctab = mateptr->queuloctab;
   Gnum * restrict const               mategsttax = mateptr->mategsttax;
-  DgraphCoarsenVert * restrict const  vrcvdattab = mateptr->c.vrcvdattab;
-  DgraphCoarsenVert * restrict const  vsnddattab = mateptr->c.vsnddattab;
   DgraphCoarsenMulti * restrict const multloctab = mateptr->c.multloctab;
   int * restrict const                vsndidxtab = mateptr->c.vsndidxtab;
+  DgraphCoarsenVert * const           vsnddattab = mateptr->c.vsnddattab; /* [norestrict:async] */
 
   procngbnbr = grafptr->procngbnbr;
 
@@ -244,7 +250,8 @@ DgraphMatchData * restrict const  mateptr)
 
     procngbnum = (procngbnum + (procngbnbr - 1)) % procngbnbr; /* Pre-decrement neighbor rank */
     procglbnum = grafptr->procngbtab[procngbnum];
-    if (MPI_Irecv (vrcvdattab + mateptr->c.vrcvdsptab[procngbnum], 2 * (mateptr->c.vrcvdsptab[procngbnum + 1] - mateptr->c.vrcvdsptab[procngbnum]), GNUM_MPI,
+    if (MPI_Irecv (mateptr->c.vrcvdattab + mateptr->c.vrcvdsptab[procngbnum],
+                   2 * (mateptr->c.vrcvdsptab[procngbnum + 1] - mateptr->c.vrcvdsptab[procngbnum]), GNUM_MPI,
                    procglbnum, TAGMATCH, grafptr->proccomm, &mateptr->c.vrcvreqtab[procngbnum]) != MPI_SUCCESS) {
       errorPrint ("dgraphMatchSync: communication error (2)");
       return     (1);
@@ -256,7 +263,8 @@ DgraphMatchData * restrict const  mateptr)
     int                 procglbnum;
 
     procglbnum = grafptr->procngbtab[procngbnum];
-    if (MPI_Isend (vsnddattab + mateptr->c.vsnddsptab[procngbnum], 2 * (vsndidxtab[procngbnum] - mateptr->c.vsnddsptab[procngbnum]), GNUM_MPI,
+    if (MPI_Isend (vsnddattab + mateptr->c.vsnddsptab[procngbnum],
+                   2 * (vsndidxtab[procngbnum] - mateptr->c.vsnddsptab[procngbnum]), GNUM_MPI,
                    procglbnum, TAGMATCH, grafptr->proccomm, &mateptr->c.vsndreqtab[procngbnum]) != MPI_SUCCESS) {
       errorPrint ("dgraphMatchSync: communication error (3)");
       return     (1);
@@ -273,8 +281,6 @@ DgraphMatchData * restrict const  mateptr)
     int                 requrcvnum;
     int                 requnxtnum;               /* Index of location where to pack requests to process when all messages arrive */
     int                 procngbnum;
-    Gnum                vertsndnbr;               /* Number of vertices to be sent to requesting neighbor */
-    Gnum                edgesndnbr;               /* Number of edges to be sent to requesting neighbor    */
     MPI_Status          statdat;
     int                 statsiz;
     int                 o;
@@ -297,92 +303,99 @@ DgraphMatchData * restrict const  mateptr)
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
+    vrcvidxnnd = mateptr->c.vrcvdsptab[procngbnum];
     if (statsiz <= 0) {                           /* If query message is empty */
       mateptr->c.vrcvidxtab[procngbnum] = -1;     /* No need to send a reply   */
       continue;                                   /* Skip message processing   */
     }
+    else {
+      Gnum                vertsndnbr;               /* Number of vertices to be sent to requesting neighbor */
+      Gnum                edgesndnbr;               /* Number of edges to be sent to requesting neighbor    */
 
-    vertsndnbr =
-    edgesndnbr = 0;
-    for (requrcvnum = requnxtnum = mateptr->c.vrcvdsptab[procngbnum], vrcvidxnnd = requrcvnum + (statsiz / 2); /* TRICK: each message item costs 2 Gnum's */
-         requrcvnum < vrcvidxnnd; requrcvnum ++) {
-      Gnum                vertglbnum;             /* Our global number (the one seen as mate by sender)   */
-      Gnum                vertlocnum;             /* Our local number (the one seen as mate by sender)    */
-      Gnum                vmatglbnum;             /* Global number of requesting mate (sender of message) */
-      Gnum                mategstnum;             /* The mate we wanted to ask for                        */
+      DgraphCoarsenVert * restrict const  vrcvdattab = mateptr->c.vrcvdattab; /* Local restrict pointer only when data available (has been received) */
 
-      vmatglbnum = vrcvdattab[requrcvnum].datatab[0]; /* Names are opposite because receiving side */
-      vertglbnum = vrcvdattab[requrcvnum].datatab[1];
-      vertlocnum = vertglbnum - vertlocadj;
+      vertsndnbr =
+      edgesndnbr = 0;
+      for (requrcvnum = requnxtnum = vrcvidxnnd, vrcvidxnnd += (statsiz / 2); /* TRICK: each message item costs 2 Gnum's */
+           requrcvnum < vrcvidxnnd; requrcvnum ++) {
+        Gnum                vertglbnum;           /* Our global number (the one seen as mate by sender)   */
+        Gnum                vertlocnum;           /* Our local number (the one seen as mate by sender)    */
+        Gnum                vmatglbnum;           /* Global number of requesting mate (sender of message) */
+        Gnum                mategstnum;           /* The mate we wanted to ask for                        */
+
+        vmatglbnum = vrcvdattab[requrcvnum].datatab[0]; /* Names are opposite because receiving side */
+        vertglbnum = vrcvdattab[requrcvnum].datatab[1];
+        vertlocnum = vertglbnum - vertlocadj;
 #ifdef SCOTCH_DEBUG_DGRAPH2
-      if ((vertlocnum <  grafptr->baseval) ||     /* If matching request is not directed towards our process */
-          (vertlocnum >= grafptr->vertlocnnd)) {
-        errorPrint ("dgraphMatchSync: internal error (5)");
-        return     (1);
-      }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-
-      mategstnum = mategsttax[vertlocnum];        /* Get our local mating decision data        */
-      if (mategstnum == -1) {                     /* If local vertex wanted for mating is free */
-        Gnum                edgelocnum;
-
-        for (edgelocnum = vertloctax[vertlocnum]; edgeloctax[edgelocnum] != vmatglbnum; edgelocnum ++) {
-#ifdef SCOTCH_DEBUG_DGRAPH2
-          if (edgelocnum >= vendloctax[vertlocnum]) {
-            errorPrint ("dgraphMatchSync: internal error (6)");
-            return     (1);
-          }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
+        if ((vertlocnum <  grafptr->baseval) ||   /* If matching request is not directed towards our process */
+            (vertlocnum >= grafptr->vertlocnnd)) {
+          errorPrint ("dgraphMatchSync: internal error (5)");
+          return     (1);
         }
-        mategsttax[edgegsttax[edgelocnum]] = vertglbnum; /* We are no longer free          */
-        mategsttax[vertlocnum] = vmatglbnum;      /* Leave message as is to acknowledge it */
-        matelocnbr ++;
-        vertsndnbr ++;
-        edgesndnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum];
-      }
-      else if (mategstnum < -1) {                 /* If local vertex is also asking for mating */
-        Gnum                edgelocnum;
-        Gnum                mateglbnum;
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-        edgelocnum = -2 - mategstnum;
-        mateglbnum = edgeloctax[edgelocnum];      /* Get global number of our remote mate       */
-        if (mateglbnum == vmatglbnum) {           /* If it is with the sender                   */
-          Gnum                flagval;            /* Flag for choosing side to create multinode */
+        mategstnum = mategsttax[vertlocnum];      /* Get our local mating decision data        */
+        if (mategstnum == -1) {                   /* If local vertex wanted for mating is free */
+          Gnum                edgelocnum;
 
-          mategsttax[vertlocnum] = mateglbnum;    /* Say we are mated to inform future requesting processes in same pass */
-          mategsttax[edgegsttax[edgelocnum]] = vertglbnum;
-          flagval = (mateglbnum > vertglbnum) ? 1 : 0; /* Compute pseudo-random flag always opposite for both ends */
-          flagval = ((mateglbnum + (mateglbnum - vertglbnum) * flagval) & 1) ^ flagval;
-          if (flagval == 0) {                     /* If flag is even, create multinode */
-            multloctab[multlocnbr].vertglbnum[0] = vertglbnum;
-            multloctab[multlocnbr].vertglbnum[1] = mategstnum; /* Remote mate: negative value */
-            multlocnbr ++;                        /* One more coarse vertex created           */
+          for (edgelocnum = vertloctax[vertlocnum]; edgeloctax[edgelocnum] != vmatglbnum; edgelocnum ++) {
+#ifdef SCOTCH_DEBUG_DGRAPH2
+            if (edgelocnum >= vendloctax[vertlocnum]) {
+              errorPrint ("dgraphMatchSync: internal error (6)");
+              return     (1);
+            }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+          }
+          mategsttax[edgegsttax[edgelocnum]] = vertglbnum; /* We are no longer free        */
+          mategsttax[vertlocnum] = vmatglbnum;    /* Leave message as is to acknowledge it */
+          matelocnbr ++;
+          vertsndnbr ++;
+          edgesndnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum];
+        }
+        else if (mategstnum < -1) {               /* If local vertex is also asking for mating */
+          Gnum                edgelocnum;
+          Gnum                mateglbnum;
+
+          edgelocnum = -2 - mategstnum;
+          mateglbnum = edgeloctax[edgelocnum];    /* Get global number of our remote mate       */
+          if (mateglbnum == vmatglbnum) {         /* If it is with the sender                   */
+            Gnum                flagval;          /* Flag for choosing side to create multinode */
+
+            mategsttax[vertlocnum] = mateglbnum;  /* Say we are mated to inform future requesting processes in same pass */
+            mategsttax[edgegsttax[edgelocnum]] = vertglbnum;
+            flagval = (mateglbnum > vertglbnum) ? 1 : 0; /* Compute pseudo-random flag always opposite for both ends */
+            flagval = ((mateglbnum + (mateglbnum - vertglbnum) * flagval) & 1) ^ flagval;
+            if (flagval == 0) {                   /* If flag is even, create multinode */
+              multloctab[multlocnbr].vertglbnum[0] = vertglbnum;
+              multloctab[multlocnbr].vertglbnum[1] = mategstnum; /* Remote mate: negative value */
+              multlocnbr ++;                      /* One more coarse vertex created             */
             edgekptnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum];
+            }
+            else {                                /* If flag is odd, prepare to send vertex data at build time */
+              vertsndnbr ++;
+              edgesndnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum];
+            }                                     /* Go on by destroying message in all cases since both ends know what it is about */
+
+            vrcvdattab[requrcvnum --] = vrcvdattab[-- vrcvidxnnd]; /* Replace current message with another one and process it */
+            matelocnbr ++;                        /* One more local vertex mated on each side; no messages will tell it       */
           }
-          else {                                  /* If flag is odd, prepare to send vertex data at build time */
-            vertsndnbr ++;
-            edgesndnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum];
-          }                                       /* Go on by destroying message in all cases since both ends know what it is about */
+          else {                                  /* If willing to mate but not with the sender, tell later with whom */
+            DgraphCoarsenVert   vertdat;          /* Temporary storage data for swapping vertices                     */
 
-          vrcvdattab[requrcvnum --] = vrcvdattab[-- vrcvidxnnd]; /* Replace current message with another one and process it */
-          matelocnbr ++;                          /* One more local vertex mated on each side; no messages will tell it     */
+            vertdat = vrcvdattab[requnxtnum];     /* Pack requests to process later at beginning of message */
+            vrcvdattab[requnxtnum].datatab[0] = vmatglbnum;
+            vrcvdattab[requnxtnum].datatab[1] = -2 - vertlocnum; /* Build appropriate answer to mating request later, when all messages arrived */
+            if (requnxtnum ++ != requrcvnum)
+              vrcvdattab[requrcvnum] = vertdat;   /* Swap vertices if not already at the right place */
+          }
         }
-        else {                                    /* If willing to mate but not with the sender, tell later with whom */
-          DgraphCoarsenVert   vertdat;            /* Temporary storage data for swapping vertices                     */
-
-          vertdat = vrcvdattab[requnxtnum];       /* Pack requests to process later at beginning of message */
-          vrcvdattab[requnxtnum].datatab[0] = vmatglbnum;
-          vrcvdattab[requnxtnum].datatab[1] = -2 - vertlocnum; /* Build appropriate answer to mating request later, when all messages arrived */
-          if (requnxtnum ++ != requrcvnum)
-            vrcvdattab[requrcvnum] = vertdat;     /* Swap vertices if not already at the right place */
-        }
+        else                                      /* If already matched, inform sender */
+          vrcvdattab[requrcvnum].datatab[1] = mategstnum;
       }
-      else                                        /* If already matched, inform sender */
-        vrcvdattab[requrcvnum].datatab[1] = mategstnum;
+      mateptr->c.dcntloctab[grafptr->procngbtab[procngbnum]].vertsndnbr += vertsndnbr;
+      mateptr->c.dcntloctab[grafptr->procngbtab[procngbnum]].edgesndnbr += edgesndnbr;
     }
     mateptr->c.vrcvidxtab[procngbnum] = vrcvidxnnd;
-    mateptr->c.dcntloctab[grafptr->procngbtab[procngbnum]].vertsndnbr += vertsndnbr;
-    mateptr->c.dcntloctab[grafptr->procngbtab[procngbnum]].edgesndnbr += edgesndnbr;
   }
 
   if (MPI_Waitall (procngbnbr, mateptr->c.vsndreqtab, MPI_STATUSES_IGNORE) != MPI_SUCCESS) { /* Wait for send requests of mating requests to complete */
@@ -410,7 +423,8 @@ DgraphMatchData * restrict const  mateptr)
       continue;
     }
     procglbnum = grafptr->procngbtab[procngbnum];
-    if (MPI_Irecv (vsnddattab + mateptr->c.vsnddsptab[procngbnum], 2 * (mateptr->c.vsnddsptab[procngbnum + 1] - mateptr->c.vsnddsptab[procngbnum]), GNUM_MPI,
+    if (MPI_Irecv (vsnddattab + mateptr->c.vsnddsptab[procngbnum],
+                   2 * (mateptr->c.vsnddsptab[procngbnum + 1] - mateptr->c.vsnddsptab[procngbnum]), GNUM_MPI,
                    procglbnum, TAGMATCH + 1, grafptr->proccomm, &mateptr->c.vrcvreqtab[procngbnum]) != MPI_SUCCESS) {
       errorPrint ("dgraphMatchSync: communication error (7)");
       return     (1);
@@ -423,9 +437,10 @@ DgraphMatchData * restrict const  mateptr)
     int                 vsndidxnnd;
 
     procglbnum = grafptr->procngbtab[procngbnum];
-    vsndidxnnd = mateptr->c.vrcvidxtab[procngbnum]; /* Re-send (or not) the messages we have received to acknowledge   */
-    if (vsndidxnnd >= 0) {                        /* If we had received a non-empty message (but reply might be empty) */
-      int                 vsndidxnum;
+    vsndidxnnd = mateptr->c.vrcvidxtab[procngbnum]; /* Re-send (or not) the messages we have received to acknowledge             */
+    if (vsndidxnnd >= 0) {                        /* If we had received a non-empty message (but reply might be empty)           */
+      DgraphCoarsenVert * restrict const  vrcvdattab = mateptr->c.vrcvdattab; /* Local restrict pointer only when data available */
+      int                                 vsndidxnum;
 
       for (vsndidxnum = mateptr->c.vrcvdsptab[procngbnum]; /* Finalize unfinished messages */
            vsndidxnum < vsndidxnnd; vsndidxnum ++) {

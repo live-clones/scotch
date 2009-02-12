@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to   : 03 apr 2008     **/
 /**                # Version 5.1  : from : 16 jun 2008     **/
-/**                                 to   : 16 jun 2008     **/
+/**                                 to   : 22 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -222,6 +222,7 @@ char *                      argv[])
   subsFill (substab[subsnbr ++], "DUMMYSIZEDORDER", sizeof (Dorder));
 #else /* SCOTCH_PTSCOTCH */
   subsFill (substab[subsnbr ++], "DUMMYSIZEDGRAPH", 1);
+  subsFill (substab[subsnbr ++], "DUMMYSIZEDMAP",   1);
   subsFill (substab[subsnbr ++], "DUMMYSIZEDORDER", 1);
 #endif /* SCOTCH_PTSCOTCH */
 
