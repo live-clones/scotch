@@ -305,11 +305,11 @@ Dgraph * restrict const       indgrafptr)
 
 int
 dgraphInducePart (
-Dgraph * restrict const       orggrafptr,         /* Pointer to original distributed graph          */
-GraphPart * restrict const    orgpartgsttax,      /* Based array of local vertex partition flags    */  
-const Gnum                    indvertnbr,         /* Number of local vertices in selected part      */
-const GraphPart               indpartval,
-Dgraph * restrict const       indgrafptr)
+Dgraph * restrict const           orggrafptr,     /* Pointer to original distributed graph          */
+const GraphPart * restrict const  orgpartgsttax,  /* Based array of local vertex partition flags    */  
+const Gnum                        indvertnbr,     /* Number of local vertices in selected part      */
+const GraphPart                   indpartval,
+Dgraph * restrict const           indgrafptr)
 {
   Gnum * restrict       orgindxgsttax;            /* Based access to vertex translation array       */
   Gnum                  orgvertlocnum;            /* Number of current vertex in original graph     */

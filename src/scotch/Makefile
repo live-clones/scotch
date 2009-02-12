@@ -40,13 +40,13 @@ libdir		= ../../lib
 
 include ../Makefile.inc
 
-%$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -c $(<) -o $(@)
-
-%$(EXE)	:	%.c
+%$(EXE)	:	%$(OBJ)
 		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
-%$(EXE)	:	%.$(OBJ)
+%$(OBJ)	:	%.c
+				$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -DSCOTCH_VERSION=\"$(VERSION)\" -c $(<) -o $(@)
+
+%$(EXE)	:	%.c
 		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
 ##
@@ -104,7 +104,7 @@ ptinstall			:
 					-$(LN) $(bindir)/dgmap$(EXE) $(bindir)/dgpart$(EXE)
 
 clean				:
-					-$(RM) *~ *$(OBJ) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) dgscat$(EXE) gbase$(EXE) gcv$(EXE) gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) *gord$(EXE) gotst$(EXE) gout$(EXE) *gpart$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE)
+					-$(RM) *~ *$(OBJ) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) dgscat$(EXE) gbase$(EXE) gcv$(EXE) *gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) *gord$(EXE) gotst$(EXE) gout$(EXE) *gpart$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE)
 
 realclean			:	clean
 

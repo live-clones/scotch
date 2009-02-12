@@ -79,7 +79,7 @@ static union {
 
 static StratMethodTab       kdgraphmapstmethtab[] = { /* Mapping methods array */
                               { KDGRAPHMAPSTMETHRB, "b",  kdgraphMapRb, &kdgraphmapstdefaultrb },
-                              { -1,                NULL, NULL,        NULL } };
+                              { -1,                 NULL, NULL,         NULL } };
 
 static StratParamTab        kdgraphmapstparatab[] = { /* Method parameter list */
                               { KDGRAPHMAPSTMETHRB,  STRATPARAMSTRAT,  "sep",

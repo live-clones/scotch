@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 04 may 2006     **/
 /**                                 to   : 21 jun 2007     **/
 /**                # Version 5.1  : from : 23 nov 2008     **/
-/**                                 to   : 25 dec 2008     **/
+/**                                 to   : 10 feb 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,12 +54,13 @@
 /* This structure contains all the tables describing the matching state */
 
 typedef struct DgraphMatchData_ {
-  DgraphCoarsenData             c;                /*+ Coarsening structure                       +*/
-  Gnum *                        mategsttax;       /*+ Mating table for local and ghost vertices  +*/
-  Gnum                          matelocnbr;       /*+ Number of local matchings                  +*/
-  Gnum * restrict               queuloctab;       /*+ Queue of unmated local vertex              +*/
-  Gnum                          queulocnbr;       /*+ Number of enqueued unmated vertices        +*/
-  float                         probval;          /*+ Vertex mating probability (1.0 is certain) +*/
+  DgraphCoarsenData             c;                /*+ Coarsening structure                                        +*/
+  Gnum *                        mategsttax;       /*+ Mating table for local and ghost vertices                   +*/
+  Gnum                          matelocnbr;       /*+ Number of local matchings                                   +*/
+  Gnum * restrict               queuloctab;       /*+ Queue of unmated local vertex                               +*/
+  Gnum                          queulocnbr;       /*+ Number of enqueued unmated vertices                         +*/
+  Gnum * restrict               procvgbtab;       /*+ Global vertex number bounds for neighboring processors [+1] +*/
+  float                         probval;          /*+ Vertex mating probability (1.0 is certain)                  +*/
 } DgraphMatchData;
 
 /*
@@ -69,6 +70,7 @@ typedef struct DgraphMatchData_ {
 int                         dgraphMatchInit     (DgraphMatchData * restrict const, const float);
 void                        dgraphMatchExit     (DgraphMatchData * restrict const);
 int                         dgraphMatchSync     (DgraphMatchData * restrict const);
+int                         dgraphMatchSyncColl (DgraphMatchData * restrict const);
 int                         dgraphMatchCheck    (DgraphMatchData * restrict const);
 
 void                        dgraphMatchSc       (DgraphMatchData * restrict const);

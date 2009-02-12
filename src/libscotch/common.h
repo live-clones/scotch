@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,35 +50,11 @@
 /**                # Version 2.0  : from : 13 jun 2005     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to   : 22 nov 2008     **/
+/**                                 to   : 04 feb 2009     **/
 /**                                                        **/
 /************************************************************/
 
 #define COMMON_H
-
-/*
-** Machine configuration values.
-** The end of the X_ARCH variable is built with parts of the
-** `uname -m`, `uname -r`, and `uname -s` commands.
-*/
-
-#define X_C_RESTRICT
-
-#if (defined X_ARCHpower_ibm_aix)
-#undef  X_C_RESTRICT
-#endif /* (defined X_ARCHpower_ibm_aix) */
-
-/*
-** Compiler optimizations.
-*/
-
-#ifdef __GNUC__
-#define restrict                    __restrict
-#else /* __GNUC__ */
-#ifndef X_C_RESTRICT
-#define restrict
-#endif /* X_C_RESTRICT */
-#endif /* __GNUC__ */
 
 /*
 ** The includes.

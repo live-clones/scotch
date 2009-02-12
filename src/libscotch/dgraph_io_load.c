@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                # Version  5.0 : from : 28 apr 2007     **/
 /**                                 to   : 24 mar 2008     **/
 /**                # Version  5.1 : from : 23 jun 2008     **/
-/**                                 to   : 09 nov 2008     **/
+/**                                 to   : 27 jan 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -137,17 +137,15 @@ const DgraphFlag            flagval)              /* Graph loading flags        
     errorPrint ("dgraphLoad: inconsistent graph file version value");
     return     (1);
   }
-  if (reduglbtab[7] == 1) {                       /* If only one input stream */
-    if (reduglbtab[4] != 0) {
-      errorPrint ("dgraphLoad: cannot load distributed graph from single processor");
-      return     (1);
-    }
-    return (dgraphLoadCent (grafptr, stream, baseval, flagval, reduglbtab[8])); /* Distribute centralized graph from known root */
-  }
-  else if (reduglbtab[7] == grafptr->procglbnbr) { /* If as many input streams as processors */
-    if (versval == 2)                             /* If distributed graph format             */
+
+  if (versval == 2) {                             /* If distributed graph format             */
+    if (reduglbtab[7] == grafptr->procglbnbr)     /* If as many input streams as processors  */
       return (dgraphLoadDist (grafptr, stream, baseval, flagval)); /* Read distributed graph */
-    else
+  }
+  else {                                          /* If centralized graph format */
+    if (reduglbtab[7] == 1)                       /* If only one reader stream   */
+      return (dgraphLoadCent (grafptr, stream, baseval, flagval, reduglbtab[8])); /* Distribute centralized graph from known root */
+    else if (reduglbtab[7] == grafptr->procglbnbr)
       return (dgraphLoadMulti (grafptr, stream, baseval, flagval)); /* Read multi-centralized graph */
   }
 
@@ -174,7 +172,7 @@ const int                   protnum)              /* Root process number        
   Gnum                vertglbnbr;
   Gnum                vertglbmax;
   Gnum                vertlocnbr;
-  Gnum *              vertloctax;
+  Gnum *              vertloctax;                 /* [norestrict:async] */
   Gnum *              vertlocptr;
   Gnum * restrict     vertredtax;
   Gnum                velolocnbr;

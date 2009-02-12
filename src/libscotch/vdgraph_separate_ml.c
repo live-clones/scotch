@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 07 mar 2006     **/
 /**                                 to   : 01 mar 2008     **/
 /**                # Version 5.1  : from : 14 dec 2008     **/
-/**                                 to   : 14 dec 2008     **/
+/**                                 to   : 04 feb 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -261,8 +261,6 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   MPI_Request           * requestrcv;             /* Shortcut on receiving requests */
   MPI_Request           * requestsnd;             /* Shortcut on sending requests   */
   MPI_Request           * requestsndsize;         /* Shortcut on sending requests   */
-  MPI_Status            * statuses;               /* Statuses of current mpi communications */
-  MPI_Status              status;                 /* Status of current MPI communication */
   int                     flag;                   /* Result of MPI_Test */
   int                     i;                      /* Indice for loop */
   int                     procnum;                /* Indice to browse processor neighbors */
@@ -270,7 +268,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   Gnum                    reduglbtab[7];          /* Temporary array for reduction */
   Gnum                    cheklocval;
   Gnum * restrict         sendsize;
-  Gnum * restrict         recvsize;
+  Gnum *                  recvsize;               /* [norestrict:async] */
   VdgraphSeparateMlPart * restrict * sendoffset;
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   int                     index;
@@ -330,7 +328,6 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     if (memAllocGroup ((void **) (void *)
                        &partglbtab, (size_t) (2 * coargrafptr->s.vertlocnbr * sizeof (VdgraphSeparateMlPart)),
                        &requests,   (size_t) (3 * finegrafptr->s.procglbnbr * sizeof (MPI_Request)), /* Max nbr communications */
-                       &statuses,   (size_t) (3 * finegrafptr->s.procglbnbr * sizeof (MPI_Status)),
                        &sendsize,   (size_t) (finegrafptr->s.procglbnbr * sizeof (Gnum)),
                        &sendoffset, (size_t) ((finegrafptr->s.procglbnbr + 1) * sizeof (VdgraphSeparateMlPart*)),
                        &recvsize,   (size_t) (finegrafptr->s.procglbnbr * sizeof (Gnum)), NULL) == NULL) {
@@ -353,7 +350,6 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
       MPI_Irecv (&recvsize[procnum], 1, GNUM_MPI,
                  procnum, TAGMLSIZE, finegrafptr->s.proccomm,
                  &requestrcv[procnum]);
-      MPI_Test (&requestrcv[procnum], &flag, &status);
       requestsnd[procnum] = MPI_REQUEST_NULL;     /* Initialize sending */
       requestsndsize[procnum] = MPI_REQUEST_NULL; /* Initialize sending size */
     }
@@ -422,7 +418,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
                  || (partglbptr->vertnum >= finegrafptr->s.procvrttab[procnum + 1]))) {
         /* We must change neighbor, thus the current is ready */
         sendoffset[procnum + 1] = partglbptr;
-        sendsize  [procnum]     = partglbptr - sendoffset[procnum];
+        sendsize[procnum]       = partglbptr - sendoffset[procnum];
 
         if (procnum == finegrafptr->s.proclocnum) {               /* local communication is not useful */
 #ifdef SCOTCH_DEBUG_VDGRAPH2
@@ -437,13 +433,11 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
         else {
           MPI_Isend (&sendsize[procnum], 1, COMM_INT, procnum, TAGMLSIZE,
                      finegrafptr->s.proccomm, &requestsndsize[procnum]);
-          MPI_Test (&requestsndsize[procnum], &flag, &status);
         }
 
         if (sendsize[procnum] > 0) {
           MPI_Isend (sendoffset[procnum], 2 * sendsize[procnum], GNUM_MPI, procnum,
                      TAGMLVERT, finegrafptr->s.proccomm, &requestsnd[procnum]);
-          MPI_Test (&requestsnd[procnum], &flag, &status);
         }
         else {
 #ifdef SCOTCH_DEBUG_VDGRAPH2
@@ -461,13 +455,13 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
         partglbptr --;
     }
 
-    if (MPI_Waitall (finegrafptr->s.procglbnbr * 2, requests, statuses) != MPI_SUCCESS) { /* Wait for needed datas */
+    if (MPI_Waitall (finegrafptr->s.procglbnbr * 2, requests, MPI_STATUSES_IGNORE) != MPI_SUCCESS) { /* Wait for needed datas */
       cheklocval = 1;
       errorPrint ("vdgraphSeparateMlUncoarsen: communication error (1)");
     }
 
     for (procnum = 0, vertsize = 0; procnum < finegrafptr->s.procglbnbr; procnum ++) /* Compute size of data to receive */
-      vertsize += recvsize [procnum];
+      vertsize += recvsize[procnum];
 
     if ((rcvparttab = memAlloc (vertsize * sizeof (VdgraphSeparateMlPart))) == NULL) {
       cheklocval = 1;
@@ -492,7 +486,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
       currentrcvptr += recvsize[procnum];
     }
 
-    if (MPI_Waitall (finegrafptr->s.procglbnbr, requestrcv, statuses) != MPI_SUCCESS) { /* Wait for vertices */
+    if (MPI_Waitall (finegrafptr->s.procglbnbr, requestrcv, MPI_STATUSES_IGNORE) != MPI_SUCCESS) { /* Wait for vertices */
       cheklocval = 1;
       errorPrint ("vdgraphSeparateMlUncoarsen: communication error (2)");
     }
@@ -548,7 +542,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
     /* All local finegraph vertices have been marked in one part */
 
-    if (MPI_Waitall (finegrafptr->s.procglbnbr, requestsnd, statuses) != MPI_SUCCESS) { /* Wait for needed datas */
+    if (MPI_Waitall (finegrafptr->s.procglbnbr, requestsnd, MPI_STATUSES_IGNORE) != MPI_SUCCESS) { /* Wait for needed datas */
       cheklocval = 1;
       errorPrint ("vdgraphSeparateMlUncoarsen: communication error (3)");
     }

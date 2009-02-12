@@ -45,7 +45,7 @@
 /**   DATES      : # Version 5.0  : from : 27 jul 2005     **/
 /**                                 to   : 15 may 2008     **/
 /**                # Version 5.1  : from : 23 jun 2008     **/
-/**                                 to   : 16 jan 2009     **/
+/**                                 to   : 13 feb 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -133,14 +133,12 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
 
   coarptr->vrcvdsptab = coargrafptr->procngbtab;  /* TRICK: re-use some coarse graph private arrays */
   coarptr->vsnddsptab = coarptr->vrcvdsptab + procglbnbr;
-  coarptr->procvgbtab = coarptr->vsnddsptab + procglbnbr;
 
   for (procngbnum = 0, vdsprcvnum = vdspsndnum = procngbnxt = 0; /* Build communication index arrays */
        procngbnum < procngbnbr; procngbnum ++) {
     int                 procglbnum;
 
     procglbnum = finegrafptr->procngbtab[procngbnum];
-    coarptr->procvgbtab[procngbnum] = finegrafptr->procvrttab[procglbnum];
     if ((procngbnxt == 0) && (procglbnum > finegrafptr->proclocnum)) /* Find index of first neighbor of higher rank */
       procngbnxt = procngbnum;
     coarptr->vrcvdsptab[procngbnum] = vdsprcvnum;
@@ -148,7 +146,6 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
     vdsprcvnum += finegrafptr->procrcvtab[procglbnum];
     vdspsndnum += finegrafptr->procsndtab[procglbnum];
   }
-  coarptr->procvgbtab[procngbnum] = finegrafptr->procvrttab[procglbnbr]; /* Mark end        */
   coarptr->vrcvdsptab[procngbnum] = vdsprcvnum;   /* Mark end of communication index arrays */
   coarptr->vsnddsptab[procngbnum] = vdspsndnum;
   coarptr->procngbnxt = procngbnxt;
@@ -248,7 +245,7 @@ DgraphCoarsenData * restrict const  coarptr)
   const Gnum * restrict const               edgegsttax  = grafptr->edgegsttax;
   const Gnum * restrict const               edloloctax  = grafptr->edloloctax;
   const DgraphCoarsenMulti * restrict const multloctab  = coarptr->multloctab;
-  DgraphCoarsenVert * restrict const        vrcvdattab  = coarptr->vrcvdattab;
+  DgraphCoarsenVert * const                 vrcvdattab  = coarptr->vrcvdattab; /* [norestrict:async] */
   DgraphCoarsenVert * restrict const        vsnddattab  = coarptr->vsnddattab;
   int * restrict const                      vsndidxtab  = coarptr->vsndidxtab;
 
@@ -353,8 +350,8 @@ DgraphCoarsenData * restrict const  coarptr)
   coarptr->multloctab = memRealloc (coarptr->multloctab, coarptr->multlocnbr * sizeof (DgraphCoarsenMulti)); /* In the mean time, resize multinode array */
   multloctax = coarptr->multloctab - grafptr->baseval;
 
-  ercvcnttab = coarptr->vsnddsptab;               /* TRICK: re-use some private coarse graph arrays after vertex exchange phase */
-  ercvdsptab = coarptr->procvgbtab;
+  ercvcnttab = coarptr->coargrafptr->procrcvtab;  /* TRICK: re-use some private coarse graph arrays after vertex exchange phase */
+  ercvdsptab = coarptr->coargrafptr->procsndtab;
   for (procnum = 0, ercvdspval = 0; procnum < grafptr->procglbnbr; procnum ++) { /* TRICK: dcntglbtab array no longer needed afterwards; can be freed */
     ercvdsptab[procnum] = ercvdspval;
     ercvcnttab[procnum] = coarptr->dcntglbtab[procnum].vertsndnbr * ((veloloctax != NULL) ? 2 : 1) +
@@ -770,19 +767,19 @@ const int                             foldval,    /*+ Allow fold/dup or fold or 
 const Gnum                            dupmax,     /*+ Minimum number of vertices to do dup +*/
 const double                          coarrat)    /*+ Maximum contraction ratio            +*/
 {
-  DgraphMatchData                matedat;         /* Matching state data; includes coarsening handling data   */
-  Gnum                           vertrcvnbr;      /* Overall number of vertices to be received from neighbors */
-  Gnum                           edgercvnbr;      /* Overall number of edges to be received from neighbors    */
-  Gnum                           vertsndnbr;      /* Overall number of vertices to be sent to neighbors       */
-  Gnum                           edgesndnbr;      /* Overall number of edges to be sent to neighbors          */
-  int                            cheklocval;
-  int                            chekglbval;
-  Gnum                           coarvertmax;
-  DgraphCoarsenMulti * restrict  multloctax;
-  Gnum                           passnbr;
-  Gnum                           passnum;
-  int                            procnum;
-  int                            o;
+  DgraphMatchData           matedat;              /* Matching state data; includes coarsening handling data   */
+  Gnum                      vertrcvnbr;           /* Overall number of vertices to be received from neighbors */
+  Gnum                      edgercvnbr;           /* Overall number of edges to be received from neighbors    */
+  Gnum                      vertsndnbr;           /* Overall number of vertices to be sent to neighbors       */
+  Gnum                      edgesndnbr;           /* Overall number of edges to be sent to neighbors          */
+  int                       cheklocval;
+  int                       chekglbval;
+  Gnum                      coarvertmax;
+  DgraphCoarsenMulti *      multloctax;
+  Gnum                      passnbr;
+  Gnum                      passnum;
+  int                       procnum;
+  int                       o;
 
   memSet (coargrafptr, 0, sizeof (Dgraph));       /* Preset coarse graph data                      */
   *multlocptr = NULL;                             /* Assume we will not create any multinode array */
@@ -898,9 +895,9 @@ const double                          coarrat)    /*+ Maximum contraction ratio 
 #ifdef PTSCOTCH_FOLD_DUP
   if ((coargrafptr->procglbnbr >= 2) &&
       ((foldval != 0) || (dupmax > (coargrafptr->vertglbnbr / coargrafptr->procglbnbr)))) {
-    Dgraph                        coargrafdat;    /* Coarse graph data before folding */
-    MPI_Datatype                  coarmultype;
-    DgraphCoarsenMulti * restrict coarmultptr;
+    Dgraph                coargrafdat;            /* Coarse graph data before folding */
+    MPI_Datatype          coarmultype;
+    DgraphCoarsenMulti *  coarmultptr;
 
     MPI_Type_contiguous (2, GNUM_MPI, &coarmultype); /* Define type for MPI transfer */
     MPI_Type_commit (&coarmultype);               /* Commit new type                 */
@@ -909,13 +906,13 @@ const double                          coarrat)    /*+ Maximum contraction ratio 
     coarmultptr = multloctax;
     if ((foldval < 0) || (dupmax < coargrafdat.vertglbnbr)) { /* Do a simple folding            */
       memSet (coargrafptr, 0, sizeof (Dgraph));   /* Also reset procglbnbr for unused processes */
-      o = dgraphFold (&coargrafdat, 0, coargrafptr, (void *) coarmultptr, (void **) &multloctax, coarmultype);
+      o = dgraphFold (&coargrafdat, 0, coargrafptr, (void *) coarmultptr, (void **) (void *) &multloctax, coarmultype);
     }
     else {                                        /* Do a duplicant-folding */
       int               loopval;
       int               dumyval;
 
-      o = dgraphFoldDup (&coargrafdat, coargrafptr, (void *) coarmultptr, (void **) &multloctax, coarmultype);
+      o = dgraphFoldDup (&coargrafdat, coargrafptr, (void *) coarmultptr, (void **) (void *) &multloctax, coarmultype);
       loopval = intRandVal (finegrafptr->proclocnum + intRandVal (finegrafptr->proclocnum * 2 + 1) + 1);
       while (loopval --)                          /* Desynchronize pseudo-random generator between processes */
         dumyval = intRandVal (2);

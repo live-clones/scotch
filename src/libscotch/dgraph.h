@@ -203,7 +203,7 @@ int                         dgraphFold          (const Dgraph * restrict const, 
 int                         dgraphFold2         (const Dgraph * restrict const, const int, Dgraph * restrict const, MPI_Comm, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFoldDup       (const Dgraph * restrict const, Dgraph * restrict const, void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphInduceList    (Dgraph * const, const Gnum, const Gnum * const, Dgraph * const);
-int                         dgraphInducePart    (Dgraph * const, GraphPart * restrict const, const Gnum, const GraphPart, Dgraph * const);
+int                         dgraphInducePart    (Dgraph * const, const GraphPart * restrict const, const Gnum, const GraphPart, Dgraph * const);
 #ifdef GRAPH_H
 int                         dgraphGather        (const Dgraph * restrict const, Graph * restrict);
 int                         dgraphGather2       (const Dgraph * restrict const, Graph * restrict, const int, const Gnum);
