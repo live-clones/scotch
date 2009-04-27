@@ -1,4 +1,4 @@
-## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -52,15 +52,15 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:	clean
-					$(MAKE) CC=$(CCS) CCD=$(CCS) SCOTCHLIB=scotch	\
-					scotch.h					\
-					scotchf.h					\
-					libscotch$(LIB)					\
-					libscotcherr$(LIB)				\
+					$(MAKE) CC="$(CCS)" CCD="$(CCS)" SCOTCHLIB=scotch	\
+					scotch.h						\
+					scotchf.h						\
+					libscotch$(LIB)						\
+					libscotcherr$(LIB)					\
 					libscotcherrexit$(LIB)
 
 ptscotch			:	clean
-					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC=$(CCP) SCOTCHLIB=ptscotch	\
+					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIB=ptscotch	\
 					scotch.h									\
 					scotchf.h									\
 					libptscotch$(LIB)								\
@@ -554,6 +554,22 @@ dgraph_match_check$(OBJ)	:	dgraph_match_check.c			\
 					dgraph.h				\
 					dgraph_coarsen.h			\
 					dgraph_match.h
+
+dgraph_match_sync_coll$(OBJ)	:	dgraph_match_sync_coll.c		\
+					module.h				\
+					common.h				\
+					dgraph.h				\
+					dgraph_coarsen.h                        \
+					dgraph_match.h				\
+					graph.h
+
+dgraph_match_sync_ptop$(OBJ)	:	dgraph_match_sync_ptop.c		\
+					module.h				\
+					common.h				\
+					dgraph.h				\
+					dgraph_coarsen.h                        \
+					dgraph_match.h				\
+					graph.h
 
 dgraph_scatter$(OBJ)		:	dgraph_scatter.c			\
 					module.h				\
@@ -2196,6 +2212,8 @@ libptscotch$(LIB)		:	bdgraph$(OBJ)				\
 					dgraph_io_load$(OBJ)			\
 					dgraph_io_save$(OBJ)			\
 					dgraph_match$(OBJ)			\
+					dgraph_match_sync_coll$(OBJ)		\
+					dgraph_match_sync_ptop$(OBJ)		\
 					dgraph_match_check$(OBJ)		\
 					dgraph_scatter$(OBJ)			\
 					dgraph_view$(OBJ)			\

@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 27 Jul 2005     **/
 /**                                 to   : 24 feb 2007     **/
 /**                # Version 5.1  : from : 11 nov 2008     **/
-/**                                 to   : 13 feb 2009     **/
+/**                                 to   : 04 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,33 +88,35 @@ typedef struct DgraphCoarsenHash_ {
 
 
 /*+ This structure gathers all data necessary
-    for the proper execution of the coarsening
-    and matching routines.                     +*/
+    to the proper execution of the coarsening
+    and matching routines.                    +*/
 
 typedef struct DgraphCoarsenData_ {
-  Dgraph * restrict             finegrafptr;      /*+ Pointer to fine graph                                          +*/
-  Dgraph * restrict             coargrafptr;      /*+ Pointer to coarse graph which is built                         +*/
-  int * restrict                coarprivptr;      /*+ Pointer to coarse private data to free in case of error        +*/
-  DgraphCoarsenVert *           vrcvdattab;       /*+ Area reserved for receiving vertex messages [norestrict:async] +*/
-  DgraphCoarsenVert *           vsnddattab;       /*+ Area reserved for sending vertex messages [norestrict:async]   +*/
-  int * restrict                vrcvdsptab;       /*+ Displacement for vertex receive sub-arrays [+1]                +*/
-  int * restrict                vsnddsptab;       /*+ Displacement data for vertex send sub-arrays [+1]              +*/
-  int * restrict                vrcvidxtab;       /*+ Count array for receive sub-arrays                             +*/
-  int * restrict                vsndidxtab;       /*+ Count array for sending sub-arrays                             +*/
-  MPI_Request * restrict        vrcvreqtab;       /*+ Request array for receive requests                             +*/
-  MPI_Request * restrict        vsndreqtab;       /*+ TRICK: requsndtab = (requrcvtab + procngbnbr)                  +*/
-  int * restrict                procgsttax;       /*+ Array giving the neighbor process index of each ghost vertex   +*/
-  int                           procngbnxt;       /*+ Index of first neighbor of higher rank than current process    +*/
-  DgraphCoarsenCount * restrict dcntloctab;       /*+ Count array for sending vertices and edges                     +*/
-  DgraphCoarsenCount * restrict dcntglbtab;       /*+ Count array for receiving vertices and edges                   +*/
-  Gnum *                        coargsttax;       /*+ Fine-to-coarse vertex index array                              +*/
-  DgraphCoarsenMulti * restrict multloctab;       /*+ Structure which contains the result of the matching            +*/
-  Gnum                          multlocnbr;       /*+ Index of next multinode to be created                          +*/
-  Gnum                          vertrcvnbr;       /*+ Number of fine vertices to be received                         +*/
-  Gnum                          edgercvnbr;       /*+ Number of fine edges to be received                            +*/
-  Gnum                          edgekptnbr;       /*+ Upper bound on number of edges kept from finer graph           +*/
-  Gnum                          vertsndnbr;       /*+ Number of fine vertices to be sent                             +*/
-  Gnum                          edgesndnbr;       /*+ Number of fine edges to be sent                                +*/
+  Dgraph *                  finegrafptr;          /*+ Pointer to fine graph                                          +*/
+  Dgraph *                  coargrafptr;          /*+ Pointer to coarse graph which is built                         +*/
+  int *                     coarprivptr;          /*+ Pointer to coarse private data to free in case of error        +*/
+  DgraphCoarsenVert *       vrcvdattab;           /*+ Area reserved for receiving vertex messages [norestrict:async] +*/
+  DgraphCoarsenVert *       vsnddattab;           /*+ Area reserved for sending vertex messages [norestrict:async]   +*/
+  int *                     vrcvcnttab;           /*+ Count data for vertex receive sub-arrays                       +*/
+  int *                     vsndcnttab;           /*+ Count data for vertex send sub-arrays                          +*/
+  int *                     vrcvdsptab;           /*+ Displacement for vertex receive sub-arrays [+1]                +*/
+  int *                     vsnddsptab;           /*+ Displacement data for vertex send sub-arrays [+1]              +*/
+  int *                     nrcvidxtab;           /*+ Count array for neighbor receive sub-arrays                    +*/
+  int *                     nsndidxtab;           /*+ Count array for neighbor send sub-arrays                       +*/
+  MPI_Request *             nrcvreqtab;           /*+ Request array for receive requests [norestrict:async]          +*/
+  MPI_Request *             nsndreqtab;           /*+ TRICK: nsndreqtab = (nrcvreqtab + procngbnbr)                  +*/
+  int *                     procgsttax;           /*+ Array giving the neighbor process index of each ghost vertex   +*/
+  int                       procngbnxt;           /*+ Index of first neighbor of higher rank than current process    +*/
+  DgraphCoarsenCount *      dcntloctab;           /*+ Count array for sending vertices and edges                     +*/
+  DgraphCoarsenCount *      dcntglbtab;           /*+ Count array for receiving vertices and edges                   +*/
+  Gnum *                    coargsttax;           /*+ Fine-to-coarse vertex index array                              +*/
+  DgraphCoarsenMulti *      multloctab;           /*+ Structure which contains the result of the matching            +*/
+  Gnum                      multlocnbr;           /*+ Index of next multinode to be created                          +*/
+  Gnum                      vertrcvnbr;           /*+ Number of fine vertices to be received                         +*/
+  Gnum                      edgercvnbr;           /*+ Number of fine edges to be received                            +*/
+  Gnum                      edgekptnbr;           /*+ Upper bound on number of edges kept from finer graph           +*/
+  Gnum                      vertsndnbr;           /*+ Number of fine vertices to be sent                             +*/
+  Gnum                      edgesndnbr;           /*+ Number of fine edges to be sent                                +*/
 } DgraphCoarsenData;
 
 /*

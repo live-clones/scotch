@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -33,7 +33,8 @@
 /**                                                        **/
 /**   NAME       : vdgraph_separate_ml.h                   **/
 /**                                                        **/
-/**   AUTHOR     : Cedric CHEVALIER                        **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the data declaration    **/
 /**                for the sequential vertex separation    **/
@@ -42,19 +43,9 @@
 /**   DATES      : # Version 5.0  : from : 07 feb 2006     **/
 /**                                 to   : 03 aug 2007     **/
 /**                # Version 5.1  : from : 14 dec 2008     **/
-/**                                 to   : 14 dec 2008     **/
+/**                                 to   : 30 mar 2009     **/
 /**                                                        **/
 /************************************************************/
-
-/*
-**  The defines
-*/
-
-/* Mpi tags */
-
-#define TAGMLSIZE    1
-#define TAGMLVERT    2
-#define TAGMLPARTTAX 3
 
 /*
 **  The type and structure definitions.
@@ -72,11 +63,6 @@ typedef struct VdgraphSeparateMlParam_ {
   Strat *                   stratseq;             /*+ Strategy when running on a single processor +*/
   INT                       seqnbr;               /*+ Threshold when entering into seq mode       +*/
 } VdgraphSeparateMlParam;
-
-typedef struct VdgraphSeparateMlPart_ {
-  Gnum                      vertnum;              /*+ Global vertex index for uncoarsening   +*/
-  Gnum                      partval;              /*+ Gnum to have same type and for sorting +*/
-} VdgraphSeparateMlPart;
 
 /*
 **  The function prototypes.

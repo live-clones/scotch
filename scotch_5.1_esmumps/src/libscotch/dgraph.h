@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 03 aug 2007     **/
 /**                # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 31 dec 2008     **/
+/**                                 to   : 07 mar 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -123,7 +123,8 @@ typedef enum DgraphTag_ {
   TAGBAD,                                         /*+ Negative answer          +*/
   TAGCOARSEN = 100,                               /*+ Tag class for coarsening +*/
   TAGMATCH   = 200,                               /*+ Tag class for matching   +*/
-  TAGFOLD    = 300                                /*+ Tag class for folding    +*/
+  TAGFOLD    = 300,                               /*+ Tag class for folding    +*/
+  TAGBAND    = 400                                /*+ Tag class for band graph +*/
 } DgraphTag;
 
 /*+ The graph flag type. +*/
@@ -172,7 +173,6 @@ typedef struct Dgraph_ {
   int                       procngbnbr;           /*+ Number of neighboring processes                          +*/
   int                       procngbmax;           /*+ Maximum number of neighboring processes                  +*/
   int * restrict            procngbtab;           /*+ Array of neighbor process numbers [sorted]               +*/
-  int                       procgstmax;           /*+ Maximum number of ghost vertices per neighbor            +*/
   int * restrict            procrcvtab;           /*+ Number of vertices to receive in ghost vertex sub-arrays +*/
   int                       procsndnbr;           /*+ Overall size of local send array                         +*/
   int * restrict            procsndtab;           /*+ Number of vertices to send in ghost vertex sub-arrays    +*/
@@ -221,33 +221,5 @@ int                         dgraphHaloSync      (Dgraph * const, void * const, M
 #define dgraphGhst(grafptr)         dgraphGhst2 (grafptr, 0) /* Build ghost edge array in addition to local edge array */
 #define dgraphGhstReplace(grafptr)  dgraphGhst2 (grafptr, 1) /* Replace local edge array by ghost edge array           */
 #define dgraphHasGhst(grafptr)      (((grafptr)->flagval & DGRAPHHASEDGEGST) != 0) /* If graph has a ghost edge array  */
-
-#ifndef inline
-#define inline static __inline__
-#endif /* inline */
-
-inline int
-dgraphVertexProc (const Dgraph * restrict const g, Gnum v)
-{
-  int start, stop, median;
-
-  start = 0;
-  stop  = g->procglbnbr;
-
-  if ((g->procvrttab[start] > (int) v) ||
-      (g->procvrttab[stop] < (int) v))
-    return (-1);
-
-  while (stop > start + 1) {
-    median = (start + stop) / 2;
-    if (g->procvrttab[median] < (int) v)
-      start = median;
-    else if (g->procvrttab[median] > (int) v)
-      stop = median;
-    else
-      stop = start = median;
-  }
-  return (start);
-}
 
 #define dgraphVertexLocal(g,v)      (((g)->procvrttab[(g)->proclocnum] <= (v)) && ((g)->procvrttab[(g)->proclocnum + 1] > (v)))

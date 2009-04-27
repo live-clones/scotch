@@ -102,7 +102,7 @@ Gnum * restrict const         permloctab)
       vnodlocnbr += cblklocptr->data.leaf.vnodlocnbr; /* And more node vertices */
 #ifdef SCOTCH_DEBUG_DORDER2
     else if (cblklocptr->typeval != DORDERCBLKNEDI) {
-      errorPrint ("dorderPerm: invalid parameters");
+      errorPrint ("dorderPerm: invalid parameters (1)");
       return     (1);
     }
 #endif /* SCOTCH_DEBUG_DORDER2 */
@@ -143,7 +143,7 @@ Gnum * restrict const         permloctab)
     return (0);
   }
   if (reduglbtab[0] != grafptr->vertglbnbr) {
-    errorPrint ("dorderPerm: invalid parameters");
+    errorPrint ("dorderPerm: invalid parameters (2)");
     memFree    (senddsptab);                      /* Free group leader */
     return     (1);
   }

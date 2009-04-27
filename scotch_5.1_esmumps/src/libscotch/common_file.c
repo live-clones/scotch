@@ -62,8 +62,8 @@
 ** according to process numbers and the root
 ** process number.
 ** It returns:
-** - 1  : on success.
-** - 0  : on error.
+** - 0  : on success.
+** - !0 : on error.
 */
 
 int

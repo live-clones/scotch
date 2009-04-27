@@ -45,7 +45,7 @@
 /**   DATES      : # Version 5.0  : from : 27 jul 2005     **/
 /**                                 to   : 15 may 2008     **/
 /**                # Version 5.1  : from : 23 jun 2008     **/
-/**                                 to   : 13 feb 2009     **/
+/**                                 to   : 21 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,22 +72,29 @@ Dgraph * restrict const             finegrafptr,  /*+ Graph to coarsen          
 Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     +*/
 {
   int                 procglbnbr;
+  int                 procglbnum;
   int                 procngbnbr;
   int                 procngbnum;
   int                 procngbnxt;
-  int                 procrcvnbr;
-  int                 procsndnbr;
+  int                 vertrcvnbr;
+  int                 vertsndnbr;
   Gnum                vertlocnbr;
   Gnum                vertgstnbr;
   int                 vdsprcvnum;
   int                 vdspsndnum;
+  byte *              bufftab;
+  size_t              buffsiz;
+
+  const int * restrict const  fineprocngbtab = finegrafptr->procngbtab;
+  const int * restrict const  fineprocrcvtab = finegrafptr->procrcvtab;
+  const int * restrict const  fineprocsndtab = finegrafptr->procsndtab;
 
   vertlocnbr = finegrafptr->vertlocnbr;
   vertgstnbr = finegrafptr->vertgstnbr;
   procglbnbr = finegrafptr->procglbnbr;
   procngbnbr = finegrafptr->procngbnbr;
-  procrcvnbr = vertgstnbr - vertlocnbr;
-  procsndnbr = finegrafptr->procsndnbr;
+  vertrcvnbr = vertgstnbr - vertlocnbr;
+  vertsndnbr = finegrafptr->procsndnbr;
 
   if ((coarptr->coarprivptr = memAllocGroup ((void **) (void *) /* Allocate distributed coarse graph private data */
                                              &coargrafptr->procdsptab, (size_t) ((procglbnbr + 1) * sizeof (int)),
@@ -107,47 +114,52 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
   }
 
   if (memAllocGroup ((void **) (void *)           /* Data used up to edge exchange phase at coarse graph build time */
-                     &coarptr->vrcvidxtab, (procngbnbr * sizeof (int)),
-                     &coarptr->coargsttax, (vertgstnbr * sizeof (Gnum)),
-                     &coarptr->procgsttax, (procrcvnbr * sizeof (int)), /* TRICK: Only purely ghost part of array will be used */
-                     &coarptr->vrcvdattab, (procrcvnbr * sizeof (DgraphCoarsenVert)), NULL) == NULL) {
+                     &coarptr->nrcvidxtab, (size_t) (procngbnbr * sizeof (int)),
+                     &coarptr->vrcvdsptab, (size_t) ((procglbnbr + 1) * sizeof (int)), /* TRICK: "+1" for size count */
+                     &coarptr->coargsttax, (size_t) (vertgstnbr * sizeof (Gnum)),
+                     &coarptr->procgsttax, (size_t) (vertrcvnbr * sizeof (int)), /* TRICK: Only purely ghost part of array will be used */
+                     &coarptr->vrcvdattab, (size_t) (vertrcvnbr * sizeof (DgraphCoarsenVert)), NULL) == NULL) {
     errorPrint ("dgraphCoarsenInit: out of memory (3)");
     memFree    (coarptr->multloctab);
     memFree    (coarptr->coarprivptr);
     return     (1);
   }
 
+  buffsiz = 2 * MAX ((procngbnbr * sizeof (MPI_Request)), (procglbnbr * sizeof (int)));
   if (memAllocGroup ((void **) (void *)           /* Data released after coarse vertex index exchange phase */
-                     &coarptr->vsndidxtab, (procngbnbr * sizeof (int)),
-                     &coarptr->vsndreqtab, (procngbnbr * sizeof (MPI_Request)),
-                     &coarptr->vrcvreqtab, (procngbnbr * sizeof (MPI_Request)),
-                     &coarptr->dcntloctab, (procglbnbr * sizeof (DgraphCoarsenCount)),
-                     &coarptr->dcntglbtab, (procglbnbr * sizeof (DgraphCoarsenCount)),
-                     &coarptr->vsnddattab, (procsndnbr * sizeof (DgraphCoarsenVert)), NULL) == NULL) {
+                     &coarptr->nsndidxtab, (size_t) (procngbnbr * sizeof (int)),
+                     &coarptr->vsnddsptab, (size_t) ((procglbnbr + 1) * sizeof (int)), /* TRICK: "+1" for size count check */
+                     &bufftab,             (size_t) buffsiz,
+                     &coarptr->dcntloctab, (size_t) (procglbnbr * sizeof (DgraphCoarsenCount)),
+                     &coarptr->dcntglbtab, (size_t) (procglbnbr * sizeof (DgraphCoarsenCount)),
+                     &coarptr->vsnddattab, (size_t) (vertsndnbr * sizeof (DgraphCoarsenVert)), NULL) == NULL) {
     errorPrint ("dgraphCoarsenInit: out of memory (4)");
-    memFree    (coarptr->vrcvidxtab);
+    memFree    (coarptr->nrcvidxtab);
     memFree    (coarptr->multloctab);
     memFree    (coarptr->coarprivptr);
     return     (1);
   }
+  coarptr->nrcvreqtab = (MPI_Request *) (void *) bufftab; /* TRICK: point-to-point requests and collective arrays share same space */
+  coarptr->nsndreqtab = coarptr->nrcvreqtab + procngbnbr;
+  coarptr->vrcvcnttab = (int *) (void *) bufftab;
+  coarptr->vsndcnttab = coarptr->vrcvcnttab + procglbnbr;
 
-  coarptr->vrcvdsptab = coargrafptr->procngbtab;  /* TRICK: re-use some coarse graph private arrays */
-  coarptr->vsnddsptab = coarptr->vrcvdsptab + procglbnbr;
-
-  for (procngbnum = 0, vdsprcvnum = vdspsndnum = procngbnxt = 0; /* Build communication index arrays */
-       procngbnum < procngbnbr; procngbnum ++) {
-    int                 procglbnum;
-
-    procglbnum = finegrafptr->procngbtab[procngbnum];
-    if ((procngbnxt == 0) && (procglbnum > finegrafptr->proclocnum)) /* Find index of first neighbor of higher rank */
-      procngbnxt = procngbnum;
-    coarptr->vrcvdsptab[procngbnum] = vdsprcvnum;
-    coarptr->vsnddsptab[procngbnum] = vdspsndnum;
-    vdsprcvnum += finegrafptr->procrcvtab[procglbnum];
-    vdspsndnum += finegrafptr->procsndtab[procglbnum];
+  for (procglbnum = 0, vdsprcvnum = vdspsndnum = 0; /* Build communication index arrays */
+       procglbnum < procglbnbr; procglbnum ++) {
+    coarptr->vrcvdsptab[procglbnum] = vdsprcvnum;
+    coarptr->vsnddsptab[procglbnum] = vdspsndnum;
+    vdsprcvnum += fineprocrcvtab[procglbnum];
+    vdspsndnum += fineprocsndtab[procglbnum];
   }
-  coarptr->vrcvdsptab[procngbnum] = vdsprcvnum;   /* Mark end of communication index arrays */
-  coarptr->vsnddsptab[procngbnum] = vdspsndnum;
+  coarptr->vrcvdsptab[procglbnum] = vdsprcvnum;   /* Mark end of communication index arrays */
+  coarptr->vsnddsptab[procglbnum] = vdspsndnum;
+
+  for (procngbnum = procngbnxt = 0; procngbnum < procngbnbr; procngbnum ++) {
+    if ((procngbnxt == 0) && (fineprocngbtab[procngbnum] > finegrafptr->proclocnum)) { /* Find index of first neighbor of higher rank */
+      procngbnxt = procngbnum;
+      break;
+    }
+  }
   coarptr->procngbnxt = procngbnxt;
 
   coarptr->coargsttax -= finegrafptr->baseval;
@@ -156,7 +168,7 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
 
   memSet (coarptr->dcntloctab, 0, procglbnbr * sizeof (DgraphCoarsenCount));
 
-  memSet (coarptr->procgsttax, ~0, procrcvnbr * sizeof (int)); /* Values have not yet been computed                       */
+  memSet (coarptr->procgsttax, ~0, vertrcvnbr * sizeof (int)); /* Values have not yet been computed                       */
   coarptr->procgsttax -= vertlocnbr + finegrafptr->baseval; /* TRICK: base array such that only purely ghost part is used */
 
   coarptr->edgekptnbr = 0;
@@ -169,19 +181,210 @@ void
 dgraphCoarsenExit (
 DgraphCoarsenData * restrict const    coarptr)    /*+ Coarsening data structure +*/
 {
-  if (coarptr->vsndidxtab != NULL)                /* Auxiliary array is released after first phase of coarse graph building */
-    memFree (coarptr->vsndidxtab);
-  memFree (coarptr->vrcvidxtab);
+  if (coarptr->nsndidxtab != NULL)                /* Auxiliary array is released after first phase of coarse graph building */
+    memFree (coarptr->nsndidxtab);
+  memFree (coarptr->nrcvidxtab);
   if (coarptr->multloctab != NULL)                /* If multinode array not passed back to calling routine */
     memFree (coarptr->multloctab);
   if (coarptr->coarprivptr != NULL)               /* If ownership of coarse graph private data not yet transferred to it */
     memFree (coarptr->coarprivptr);
 }
 
+int
+dgraphCoarsenBuildColl (
+DgraphCoarsenData * restrict const  coarptr)
+{
+  Gnum                          vertlocadj;
+  int * restrict                esndcnttab;
+  int * restrict                esnddsptab;
+  int                           ercvdspval;
+  int                           procngbnbr;
+  int                           procngbnum;
+  int                           vrcvreqnbr;
+
+  Dgraph * restrict const       grafptr    = coarptr->finegrafptr;
+  const int * restrict const    procngbtab = grafptr->procngbtab;
+  Gnum * restrict const         coargsttax = coarptr->coargsttax;
+  int * restrict const          vsndcnttab = coarptr->vsndcnttab;
+  int * restrict const          vrcvdsptab = coarptr->coargrafptr->procrcvtab; /* TRICK: use coarse graph procrcvtab and procsndtab */
+  int * restrict const          vsnddsptab = coarptr->coargrafptr->procsndtab;
+  int * restrict const          nrcvidxtab = coarptr->nrcvidxtab;
+  int * restrict const          nsndidxtab = coarptr->nsndidxtab;
+
+  procngbnbr = grafptr->procngbnbr;
+  vertlocadj = grafptr->procvrttab[grafptr->proclocnum] - grafptr->baseval;
+
+  memSet (vsndcnttab, 0, grafptr->procglbnbr * sizeof (int));
+  memSet (vrcvdsptab, 0, grafptr->procglbnbr * sizeof (int));
+  memSet (vsnddsptab, 0, grafptr->procglbnbr * sizeof (int));
+  for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++) {
+    int                 procglbnum;
+
+    procglbnum = procngbtab[procngbnum];
+    vsndcnttab[procglbnum] = 2 * (nsndidxtab[procngbnum] - coarptr->vsnddsptab[procglbnum]);
+    vrcvdsptab[procglbnum] = 2 * coarptr->vrcvdsptab[procglbnum];
+    vsnddsptab[procglbnum] = 2 * coarptr->vsnddsptab[procglbnum];
+  }
+
+  if (MPI_Alltoall (vsndcnttab, 1, MPI_INT, coarptr->vrcvcnttab, 1, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
+    errorPrint ("dgraphCoarsenBuildColl: communication error (1)");
+    return     (1);
+  }
+  if (MPI_Alltoallv (coarptr->vsnddattab, vsndcnttab,          vsnddsptab, GNUM_MPI,
+                     coarptr->vrcvdattab, coarptr->vrcvcnttab, vrcvdsptab, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
+    errorPrint ("dgraphCoarsenBuildColl: communication error (2)");
+    return     (1);
+  }
+
+  for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++) { /* For all received data chunks */
+    int                 vrcvidxnnd;
+    int                 vrcvidxnum;
+    int                 procglbnum;
+    int                 statsiz;
+    int                 o;
+
+    const DgraphCoarsenVert * restrict const  vrcvdattab = coarptr->vrcvdattab; /* After data is received */
+
+    procglbnum = procngbtab[procngbnum];
+    statsiz = coarptr->vrcvcnttab[procglbnum];
+    for (vrcvidxnum = coarptr->vrcvdsptab[procglbnum], vrcvidxnnd = vrcvidxnum + (statsiz / 2); /* TRICK: each message item costs 2 Gnum's */
+         vrcvidxnum < vrcvidxnnd; vrcvidxnum ++) {
+      Gnum                vertglbnum;             /* Our global number (the one seen as mate by sender) */
+      Gnum                vertlocnum;             /* Our local number (the one seen as mate by sender)  */
+      Gnum                multglbnum;             /* Global number of coarse vertex                     */
+
+      vertglbnum = vrcvdattab[vrcvidxnum].datatab[0];
+      multglbnum = vrcvdattab[vrcvidxnum].datatab[1];
+      vertlocnum = vertglbnum - vertlocadj;
+#ifdef SCOTCH_DEBUG_DGRAPH2
+      if ((vertlocnum <  grafptr->baseval) ||     /* If matching request is not directed towards our process */
+          (vertlocnum >= grafptr->vertlocnnd)) {
+        errorPrint ("dgraphCoarsenBuildColl: internal error (1)");
+        return     (1);
+      }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+      coargsttax[vertlocnum] = multglbnum;
+    }
+    nrcvidxtab[procngbnum] = vrcvidxnnd;          /* Keep receive end index for preparing edge arrays */
+  }
+
+  return (0);
+}
+
+int
+dgraphCoarsenBuildPtop (
+DgraphCoarsenData * restrict const  coarptr)
+{
+  Gnum                          vertlocadj;
+  int * restrict                esndcnttab;
+  int * restrict                esnddsptab;
+  int                           ercvdspval;
+  int                           procngbnbr;
+  int                           procngbnum;
+  int                           vrcvreqnbr;
+
+  Dgraph * restrict const       grafptr    = coarptr->finegrafptr;
+  const int * restrict const    procngbtab = grafptr->procngbtab;
+  Gnum * restrict const         coargsttax = coarptr->coargsttax;
+  const int * restrict const    vrcvdsptab = coarptr->vrcvdsptab;
+  const int * restrict const    vsnddsptab = coarptr->vsnddsptab;
+  int * restrict const          nrcvidxtab = coarptr->nrcvidxtab;
+  int * restrict const          nsndidxtab = coarptr->nsndidxtab;
+
+  procngbnbr = grafptr->procngbnbr;
+  vertlocadj = grafptr->procvrttab[grafptr->proclocnum] - grafptr->baseval;
+
+  if (procngbnbr > 0) {                           /* No communication else             */
+    procngbnum = coarptr->procngbnxt;             /* Post receives in descending order */
+    do {
+      int                 procglbnum;
+
+      procngbnum = (procngbnum + (procngbnbr - 1)) % procngbnbr; /* Pre-decrement neighbor rank */
+      procglbnum = procngbtab[procngbnum];
+      if (MPI_Irecv (coarptr->vrcvdattab + vrcvdsptab[procglbnum], 2 * (vrcvdsptab[procglbnum + 1] - vrcvdsptab[procglbnum]), GNUM_MPI,
+                     procglbnum, TAGCOARSEN, grafptr->proccomm, &coarptr->nrcvreqtab[procngbnum]) != MPI_SUCCESS) {
+        errorPrint ("dgraphCoarsenBuildPtop: communication error (1)");
+        return     (1);
+      }
+    } while (procngbnum != coarptr->procngbnxt);
+
+    procngbnum = coarptr->procngbnxt;             /* Post sends in ascending order */
+    do {
+      int                 procglbnum;
+
+      procglbnum = procngbtab[procngbnum];
+      if (MPI_Isend (coarptr->vsnddattab + vsnddsptab[procglbnum], 2 * (nsndidxtab[procngbnum] - vsnddsptab[procglbnum]), GNUM_MPI,
+                     procglbnum, TAGCOARSEN, grafptr->proccomm, &coarptr->nsndreqtab[procngbnum]) != MPI_SUCCESS) {
+        errorPrint ("dgraphCoarsenBuildPtop: communication error (2)");
+        return     (1);
+      }
+      procngbnum = (procngbnum + 1) % procngbnbr; /* Post-increment neighbor rank */
+    } while (procngbnum != coarptr->procngbnxt);
+  }
+
+  for (vrcvreqnbr = procngbnbr; vrcvreqnbr > 0; vrcvreqnbr --) { /* For all pending receive requests */
+    int                 vrcvidxnnd;
+    int                 vrcvidxnum;
+    int                 procngbnum;
+    MPI_Status          statdat;
+    int                 statsiz;
+    int                 o;
+
+#ifdef SCOTCH_DETERMINISTIC
+    procngbnum = vrcvreqnbr - 1;
+    o = MPI_Wait (&coarptr->nrcvreqtab[procngbnum], &statdat);
+#else /* SCOTCH_DETERMINISTIC */
+    o = MPI_Waitany (procngbnbr, coarptr->nrcvreqtab, &procngbnum, &statdat);
+#endif /* SCOTCH_DETERMINISTIC */
+    if ((o != MPI_SUCCESS) ||
+        (MPI_Get_count (&statdat, GNUM_MPI, &statsiz) != MPI_SUCCESS)) {
+      errorPrint ("dgraphCoarsenBuildPtop: communication error (3)");
+      return     (1);
+    }
+#ifdef SCOTCH_DEBUG_DGRAPH2
+    if (statdat.MPI_SOURCE != procngbtab[procngbnum]) {
+      errorPrint ("dgraphCoarsenBuildPtop: internal error (1)");
+      return     (1);
+    }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+
+    {
+      const DgraphCoarsenVert * restrict const  vrcvdattab = coarptr->vrcvdattab; /* After data is received */
+
+      for (vrcvidxnum = vrcvdsptab[procngbtab[procngbnum]], vrcvidxnnd = vrcvidxnum + (statsiz / 2); /* TRICK: each message item costs 2 Gnum's */
+           vrcvidxnum < vrcvidxnnd; vrcvidxnum ++) {
+        Gnum                vertglbnum;           /* Our global number (the one seen as mate by sender) */
+        Gnum                vertlocnum;           /* Our local number (the one seen as mate by sender)  */
+        Gnum                multglbnum;           /* Global number of coarse vertex                     */
+
+        vertglbnum = vrcvdattab[vrcvidxnum].datatab[0];
+        multglbnum = vrcvdattab[vrcvidxnum].datatab[1];
+        vertlocnum = vertglbnum - vertlocadj;
+#ifdef SCOTCH_DEBUG_DGRAPH2
+        if ((vertlocnum <  grafptr->baseval) ||   /* If matching request is not directed towards our process */
+            (vertlocnum >= grafptr->vertlocnnd)) {
+          errorPrint ("dgraphCoarsenBuildPtop: internal error (2)");
+          return     (1);
+        }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+        coargsttax[vertlocnum] = multglbnum;
+      }
+      nrcvidxtab[procngbnum] = vrcvidxnnd;        /* Keep receive end index for preparing edge arrays */
+    }
+  }
+
+  if (MPI_Waitall (procngbnbr, coarptr->nsndreqtab, MPI_STATUSES_IGNORE) != MPI_SUCCESS) { /* Wait for send requests to complete */
+    errorPrint ("dgraphCoarsenBuildPtop: communication error (4)");
+    return     (1);
+  }
+
+  return (0);
+}
+
 /* This routine performs the coarsening of edges
 ** with respect to the coarmulttax array computed
-** by dgraphMatch.  All data must be available when
-** running (all receptions done).  This function is
+** by dgraphMatch. All data must be available when
+** running (all receptions done). This function is
 ** inspired by libscotch/src/graph_coarsen_edge.c.
 */
 
@@ -198,9 +401,10 @@ DgraphCoarsenData * restrict const  coarptr)
   Gnum                          edlolocval;
   Gnum * restrict               ercvdattab;
   Gnum * restrict               esnddattab;
+  int                           ercvcntval;
   int * restrict                ercvcnttab;
-  int * restrict                ercvdsptab;
   int * restrict                esndcnttab;
+  int * restrict                ercvdsptab;
   int * restrict                esnddsptab;
   int                           ercvdspval;
   int                           esnddspval;
@@ -212,7 +416,6 @@ DgraphCoarsenData * restrict const  coarptr)
   int                           procngbnbr;
   int                           procngbnum;
   int                           procnum;
-  int                           vrcvreqnbr;
   Gnum                          coarvertglbnum;
   Gnum                          coarvertlocnum;
   Gnum                          coarvertlocnnd;
@@ -237,6 +440,7 @@ DgraphCoarsenData * restrict const  coarptr)
   Dgraph * restrict const                   grafptr     = coarptr->finegrafptr;
   Dgraph * restrict const                   coargrafptr = coarptr->coargrafptr;
   Gnum * restrict const                     coargsttax  = coarptr->coargsttax;
+  const int * restrict const                procngbtab  = grafptr->procngbtab;
   const int * restrict const                procgsttax  = coarptr->procgsttax;
   const Gnum * restrict const               vertloctax  = grafptr->vertloctax;
   const Gnum * restrict const               vendloctax  = grafptr->vendloctax;
@@ -247,7 +451,7 @@ DgraphCoarsenData * restrict const  coarptr)
   const DgraphCoarsenMulti * restrict const multloctab  = coarptr->multloctab;
   DgraphCoarsenVert * const                 vrcvdattab  = coarptr->vrcvdattab; /* [norestrict:async] */
   DgraphCoarsenVert * restrict const        vsnddattab  = coarptr->vsnddattab;
-  int * restrict const                      vsndidxtab  = coarptr->vsndidxtab;
+  int * restrict const                      nsndidxtab  = coarptr->nsndidxtab;
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   memSet (coargsttax + grafptr->baseval, ~0, grafptr->vertgstnbr * sizeof (Gnum));
@@ -255,7 +459,8 @@ DgraphCoarsenData * restrict const  coarptr)
 
   procngbnbr = grafptr->procngbnbr;
 
-  memCpy (vsndidxtab, coarptr->vsnddsptab, procngbnbr * sizeof (int)); /* Reset indices for sending messages */
+  for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++) /* Reset indices for sending messages */
+    nsndidxtab[procngbnum] = coarptr->vsnddsptab[procngbtab[procngbnum]];
 
   vertlocadj = grafptr->procvrttab[grafptr->proclocnum] - grafptr->baseval;
   multlocadj = coarptr->coargrafptr->procdsptab[grafptr->proclocnum];
@@ -309,9 +514,9 @@ DgraphCoarsenData * restrict const  coarptr)
         return     (1);
       }
 
-      coarsndidx = vsndidxtab[procngbnum] ++;     /* Get position of message in send array */
+      coarsndidx = nsndidxtab[procngbnum] ++;     /* Get position of message in send array */
 #ifdef SCOTCH_DEBUG_DGRAPH2
-      if (coarsndidx >= coarptr->vsnddsptab[procngbnum + 1]) {
+      if (coarsndidx >= coarptr->vsnddsptab[procngbtab[procngbnum] + 1]) {
         errorPrint ("dgraphCoarsenBuild: internal error (5)");
         return     (1);
       }
@@ -321,34 +526,17 @@ DgraphCoarsenData * restrict const  coarptr)
     }
   }
 
-  procngbnum = coarptr->procngbnxt;               /* Post receives in descending order */
-  do {
-    int                 procglbnum;
-
-    procngbnum = (procngbnum + (procngbnbr - 1)) % procngbnbr; /* Pre-decrement neighbor rank */
-    procglbnum = grafptr->procngbtab[procngbnum];
-    if (MPI_Irecv (vrcvdattab + coarptr->vrcvdsptab[procngbnum], 2 * (coarptr->vrcvdsptab[procngbnum + 1] - coarptr->vrcvdsptab[procngbnum]), GNUM_MPI,
-                   procglbnum, TAGCOARSEN, grafptr->proccomm, &coarptr->vrcvreqtab[procngbnum]) != MPI_SUCCESS) {
-      errorPrint ("dgraphCoarsenBuild: communication error (1)");
-      return     (1);
-    }
-  } while (procngbnum != coarptr->procngbnxt);
-
-  procngbnum = coarptr->procngbnxt;               /* Post sends in ascending order */
-  do {
-    int                 procglbnum;
-
-    procglbnum = grafptr->procngbtab[procngbnum];
-    if (MPI_Isend (vsnddattab + coarptr->vsnddsptab[procngbnum], 2 * (vsndidxtab[procngbnum] - coarptr->vsnddsptab[procngbnum]), GNUM_MPI,
-                   procglbnum, TAGCOARSEN, grafptr->proccomm, &coarptr->vsndreqtab[procngbnum]) != MPI_SUCCESS) {
-      errorPrint ("dgraphCoarsenBuild: communication error (2)");
-      return     (1);
-    }
-    procngbnum = (procngbnum + 1) % procngbnbr;   /* Post-increment neighbor rank */
-  } while (procngbnum != coarptr->procngbnxt);
-
   coarptr->multloctab = memRealloc (coarptr->multloctab, coarptr->multlocnbr * sizeof (DgraphCoarsenMulti)); /* In the mean time, resize multinode array */
-  multloctax = coarptr->multloctab - grafptr->baseval;
+
+  if (((SCOTCH_COLLECTIVE_TEST) ? dgraphCoarsenBuildColl : dgraphCoarsenBuildPtop) (coarptr) != 0)
+    return (1);
+
+#ifdef SCOTCH_DEBUG_DGRAPH2
+  if (MPI_Barrier (grafptr->proccomm) != MPI_SUCCESS) {
+    errorPrint ("dgraphCoarsenBuild: communication error (1)");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   ercvcnttab = coarptr->coargrafptr->procrcvtab;  /* TRICK: re-use some private coarse graph arrays after vertex exchange phase */
   ercvdsptab = coarptr->coargrafptr->procsndtab;
@@ -359,67 +547,8 @@ DgraphCoarsenData * restrict const  coarptr)
     ercvdspval += ercvcnttab[procnum];
   }
 
-  for (vrcvreqnbr = procngbnbr; vrcvreqnbr > 0; vrcvreqnbr --) { /* For all pending receive requests */
-    int                 vrcvidxnnd;
-    int                 vrcvidxnum;
-    int                 procngbnum;
-    MPI_Status          statdat;
-    int                 statsiz;
-    int                 o;
-
-#ifdef SCOTCH_DETERMINISTIC
-    procngbnum = vrcvreqnbr - 1;
-    o = MPI_Wait (&coarptr->vrcvreqtab[procngbnum], &statdat);
-#else /* SCOTCH_DETERMINISTIC */
-    o = MPI_Waitany (procngbnbr, coarptr->vrcvreqtab, &procngbnum, &statdat);
-#endif /* SCOTCH_DETERMINISTIC */
-    if ((o != MPI_SUCCESS) ||
-        (MPI_Get_count (&statdat, GNUM_MPI, &statsiz) != MPI_SUCCESS)) {
-      errorPrint ("dgraphCoarsenBuild: communication error (3)");
-      return     (1);
-    }
-#ifdef SCOTCH_DEBUG_DGRAPH2
-    if (statdat.MPI_SOURCE != grafptr->procngbtab[procngbnum]) {
-      errorPrint ("dgraphCoarsenBuild: internal error (6)");
-      return     (1);
-    }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-
-    for (vrcvidxnum = coarptr->vrcvdsptab[procngbnum], vrcvidxnnd = vrcvidxnum + (statsiz / 2); /* TRICK: each message item costs 2 Gnum's */
-         vrcvidxnum < vrcvidxnnd; vrcvidxnum ++) {
-      Gnum                vertglbnum;             /* Our global number (the one seen as mate by sender) */
-      Gnum                vertlocnum;             /* Our local number (the one seen as mate by sender)  */
-      Gnum                multglbnum;             /* Global number of coarse vertex                     */
-
-      vertglbnum = vrcvdattab[vrcvidxnum].datatab[0];
-      multglbnum = vrcvdattab[vrcvidxnum].datatab[1];
-      vertlocnum = vertglbnum - vertlocadj;
-#ifdef SCOTCH_DEBUG_DGRAPH2
-      if ((vertlocnum <  grafptr->baseval) ||     /* If matching request is not directed towards our process */
-          (vertlocnum >= grafptr->vertlocnnd)) {
-        errorPrint ("dgraphCoarsenBuild: internal error (7)");
-        return     (1);
-      }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-      coargsttax[vertlocnum] = multglbnum;
-    }
-    coarptr->vrcvidxtab[procngbnum] = vrcvidxnnd; /* Keep receive end index for preparing edge arrays */
-  }
-
-  if (MPI_Waitall (procngbnbr, coarptr->vsndreqtab, MPI_STATUSES_IGNORE) != MPI_SUCCESS) { /* Wait for send requests to complete */
-    errorPrint ("dgraphCoarsenBuild: communication error (4)");
-    return     (1);
-  }
-
-#ifdef SCOTCH_DEBUG_DGRAPH2
-  if (MPI_Barrier (grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("dgraphCoarsenBuild: communication error (5)");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-
-  memFree (coarptr->vsndidxtab);                  /* Free now useless work memory  */
-  coarptr->vsndidxtab = NULL;                     /* This block won't be reclaimed */
+  memFree (coarptr->nsndidxtab);                  /* Free now useless work memory  */
+  coarptr->nsndidxtab = NULL;                     /* This block won't be reclaimed */
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   for (vertlocnum = grafptr->baseval; vertlocnum < grafptr->vertlocnnd; vertlocnum ++) {
@@ -448,7 +577,7 @@ DgraphCoarsenData * restrict const  coarptr)
   }
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (ercvdspval != ercvdatsiz) {
-    errorPrint ("dgraphCoarsenBuild: internal error (8)");
+    errorPrint ("dgraphCoarsenBuild: internal error (6)");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -474,11 +603,11 @@ DgraphCoarsenData * restrict const  coarptr)
     errorPrint ("dgraphCoarsenBuild: out of memory (3)");
     cheklocval = 1;
   }
-  else if ((coarptr->vsndidxtab = memAllocGroup ((void **) (void *) /* TRICK: allow data array to be released on error */
+  else if ((coarptr->nsndidxtab = memAllocGroup ((void **) (void *) /* TRICK: allow data array to be released on error */
                                                  &esndcnttab,  (size_t) (grafptr->procglbnbr * sizeof (int)),
                                                  &esnddsptab,  (size_t) (grafptr->procglbnbr * sizeof (int)),
-                                                 &esnddattab,  (size_t) (esnddatsiz  * sizeof (Gnum)),
-                                                 &ercvdattab,  (size_t) (ercvdatsiz  * sizeof (Gnum)),
+                                                 &esnddattab,  (size_t) (esnddatsiz * sizeof (Gnum)),
+                                                 &ercvdattab,  (size_t) (ercvdatsiz * sizeof (Gnum)),
 #ifdef SCOTCH_DEBUG_DGRAPH2
                                                  &ercvdbgtab,  (size_t) (grafptr->procglbnbr * sizeof (int)),
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -488,7 +617,7 @@ DgraphCoarsenData * restrict const  coarptr)
   }
 #ifdef SCOTCH_DEBUG_DGRAPH1                       /* Communication cannot be overlapped by a useful one */
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_SUM, grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("dgraphCoarsenBuild: communication error (6)");
+    errorPrint ("dgraphCoarsenBuild: communication error (2)");
     chekglbval = 1;
   }
 #else /* SCOTCH_DEBUG_DGRAPH1 */
@@ -517,15 +646,15 @@ DgraphCoarsenData * restrict const  coarptr)
     int                 vrcvidxnnd;
     int                 vrcvidxnum;
 
-    procglbnum = grafptr->procngbtab[procngbnum];
-    while (procnum < procglbnum) {
+    procglbnum = procngbtab[procngbnum];
+    while (procnum < procglbnum) {                /* Fill empty slots */
       esnddsptab[procnum] = esnddspval;
       esndcnttab[procnum] = 0;
       procnum ++;
     }
     esnddsptab[procnum] = esnddspval;
 
-    for (vrcvidxnum = coarptr->vrcvdsptab[procngbnum], vrcvidxnnd = coarptr->vrcvidxtab[procngbnum]; /* For all multinode requests received, in order */
+    for (vrcvidxnum = coarptr->vrcvdsptab[procglbnum], vrcvidxnnd = coarptr->nrcvidxtab[procngbnum]; /* For all multinode requests received, in order */
          vrcvidxnum < vrcvidxnnd; vrcvidxnum ++) {
       Gnum                vertlocnum;
       Gnum                edgelocnum;
@@ -536,7 +665,7 @@ DgraphCoarsenData * restrict const  coarptr)
       edgelocnnd = vendloctax[vertlocnum];
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if ((esnddspval + ((veloloctax != NULL) ? 2 : 1) + ((edloloctax != NULL) ? 2 : 1) * (edgelocnnd - edgelocnum)) > esnddatsiz) {
-        errorPrint ("dgraphCoarsenBuild: internal error (9)");
+        errorPrint ("dgraphCoarsenBuild: internal error (7)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -557,9 +686,14 @@ DgraphCoarsenData * restrict const  coarptr)
     esndcnttab[procnum] = esnddspval - esnddsptab[procnum];
     procnum ++;
   }
+  while (procnum < grafptr->procglbnbr) {         /* Complete fill-in of empty slots */
+    esnddsptab[procnum] = esnddspval;
+    esndcnttab[procnum] = 0;
+    procnum ++;
+  }
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (esnddspval != esnddatsiz) {
-    errorPrint ("dgraphCoarsenBuild: internal error (10)");
+    errorPrint ("dgraphCoarsenBuild: internal error (8)");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -571,24 +705,26 @@ DgraphCoarsenData * restrict const  coarptr)
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (MPI_Alltoall (esndcnttab, 1, MPI_INT, ercvdbgtab, 1, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("dgraphCoarsenBuild: communication error (7)");
+    errorPrint ("dgraphCoarsenBuild: communication error (3)");
     return     (1);
   }
   for (procnum = 0; procnum < grafptr->procglbnbr; procnum ++) {
     if (ercvdbgtab[procnum] != ercvcnttab[procnum]) {
-      errorPrint ("dgraphCoarsenBuild: internal error (11)");
+      errorPrint ("dgraphCoarsenBuild: internal error (9)");
       return     (1);
     }
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
   if (MPI_Alltoallv (esnddattab, esndcnttab, esnddsptab, GNUM_MPI,
                      ercvdattab, ercvcnttab, ercvdsptab, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("dgraphCoarsenBuild: communication error (8)");
+    errorPrint ("dgraphCoarsenBuild: communication error (4)");
     return     (1);
   }
 
   for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++)
-    ercvdsptab[procngbnum] = ercvdsptab[grafptr->procngbtab[procngbnum]];
+    ercvdsptab[procngbnum] = ercvdsptab[procngbtab[procngbnum]];
+
+  multloctax = coarptr->multloctab - grafptr->baseval;
 
   edlolocval = 1;
   coarvelolocsum = 0;
@@ -635,7 +771,7 @@ DgraphCoarsenData * restrict const  coarptr)
             coarhashtab[h].edgelocnum = coaredgelocnum;
 #ifdef SCOTCH_DEBUG_DGRAPH2
             if (coaredgelocnum >= (edgelocnbr + coargrafptr->baseval)) {
-              errorPrint ("dgraphCoarsenBuild: internal error (12)");
+              errorPrint ("dgraphCoarsenBuild: internal error (10)");
               return     (1);
             }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -687,7 +823,7 @@ DgraphCoarsenData * restrict const  coarptr)
             coarhashtab[h].edgelocnum = coaredgelocnum;
 #ifdef SCOTCH_DEBUG_DGRAPH2
             if (coaredgelocnum >= (edgelocnbr + coargrafptr->baseval)) {
-              errorPrint ("dgraphCoarsenBuild: internal error (13)");
+              errorPrint ("dgraphCoarsenBuild: internal error (11)");
               return     (1);
             }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -728,7 +864,7 @@ DgraphCoarsenData * restrict const  coarptr)
   reduloctab[3] = coargrafptr->edgelocnbr;
 
   if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 3, 1, coargrafptr->proccomm) != 0) {
-    errorPrint ("dgraphCoarsenBuild: communication error (9)");
+    errorPrint ("dgraphCoarsenBuild: communication error (5)");
     return     (1);
   }
 
@@ -813,15 +949,13 @@ const double                          coarrat)    /*+ Maximum contraction ratio 
     return (2);
 
   passnbr = 5;
-  if (matedat.c.finegrafptr->procngbnbr > 0) {
-    for (passnum = 0; passnum < passnbr; passnum ++) {
-      dgraphMatchHy (&matedat);
-      if (dgraphMatchSync (&matedat) != 0) {
-        errorPrint        ("dgraphCoarsen: cannot perform matching (X)");
-        dgraphMatchExit   (&matedat);
-        dgraphCoarsenExit (&matedat.c);
-        return            (2);
-      }
+  for (passnum = 0; passnum < passnbr; passnum ++) {
+    dgraphMatchHy (&matedat);
+    if (((SCOTCH_COLLECTIVE_TEST) ? dgraphMatchSyncColl : dgraphMatchSyncPtop) (&matedat) != 0) {
+      errorPrint        ("dgraphCoarsen: cannot perform matching");
+      dgraphMatchExit   (&matedat);
+      dgraphCoarsenExit (&matedat.c);
+      return            (2);
     }
   }
   dgraphMatchLy (&matedat);                       /* All remaining vertices are matched locally */

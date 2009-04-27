@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 04 may 2006     **/
 /**                                 to   : 21 jun 2007     **/
 /**                # Version 5.1  : from : 23 nov 2008     **/
-/**                                 to   : 10 feb 2009     **/
+/**                                 to   : 04 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,13 +54,13 @@
 /* This structure contains all the tables describing the matching state */
 
 typedef struct DgraphMatchData_ {
-  DgraphCoarsenData             c;                /*+ Coarsening structure                                        +*/
-  Gnum *                        mategsttax;       /*+ Mating table for local and ghost vertices                   +*/
-  Gnum                          matelocnbr;       /*+ Number of local matchings                                   +*/
-  Gnum * restrict               queuloctab;       /*+ Queue of unmated local vertex                               +*/
-  Gnum                          queulocnbr;       /*+ Number of enqueued unmated vertices                         +*/
-  Gnum * restrict               procvgbtab;       /*+ Global vertex number bounds for neighboring processors [+1] +*/
-  float                         probval;          /*+ Vertex mating probability (1.0 is certain)                  +*/
+  DgraphCoarsenData         c;                    /*+ Coarsening structure                                        +*/
+  Gnum *                    mategsttax;           /*+ Mating table for local and ghost vertices                   +*/
+  Gnum                      matelocnbr;           /*+ Number of local matchings                                   +*/
+  Gnum *                    queuloctab;           /*+ Queue of unmated local vertex                               +*/
+  Gnum                      queulocnbr;           /*+ Number of enqueued unmated vertices                         +*/
+  Gnum *                    procvgbtab;           /*+ Global vertex number bounds for neighboring processors [+1] +*/
+  float                     probval;              /*+ Vertex mating probability (1.0 is certain)                  +*/
 } DgraphMatchData;
 
 /*
@@ -71,6 +71,7 @@ int                         dgraphMatchInit     (DgraphMatchData * restrict cons
 void                        dgraphMatchExit     (DgraphMatchData * restrict const);
 int                         dgraphMatchSync     (DgraphMatchData * restrict const);
 int                         dgraphMatchSyncColl (DgraphMatchData * restrict const);
+int                         dgraphMatchSyncPtop (DgraphMatchData * restrict const);
 int                         dgraphMatchCheck    (DgraphMatchData * restrict const);
 
 void                        dgraphMatchSc       (DgraphMatchData * restrict const);
