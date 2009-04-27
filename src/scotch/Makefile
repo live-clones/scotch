@@ -1,4 +1,4 @@
-## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:	clean
-					$(MAKE) CC=$(CCS) SCOTCHLIB=scotch	\
+					$(MAKE) CC="$(CCS)" SCOTCHLIB=scotch	\
 					acpl$(EXE)				\
 					amk_ccc$(EXE)				\
 					amk_fft2$(EXE)				\
@@ -78,6 +78,7 @@ scotch				:	clean
 					gotst$(EXE)				\
 					gout$(EXE)				\
 					gpart$(EXE)				\
+					gscat$(EXE)				\
 					gtst$(EXE)				\
 					mcv$(EXE)				\
 					mmk_m2$(EXE)				\
@@ -86,7 +87,7 @@ scotch				:	clean
 					mtst$(EXE)
 
 ptscotch			:	clean
-					$(MAKE) CC=$(CCP) SCOTCHLIB=ptscotch	\
+					$(MAKE) CC="$(CCP)" SCOTCHLIB=ptscotch	\
 					dgmap$(EXE)				\
 					dgord$(EXE)				\
 					dgpart$(EXE)				\
@@ -94,7 +95,7 @@ ptscotch			:	clean
 					dgtst$(EXE)
 
 install				:
-					-$(CP) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) gord$(EXE) gotst$(EXE) gout$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE) $(bindir)
+					-$(CP) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) gord$(EXE) gotst$(EXE) gout$(EXE) *gtst$(EXE) gscat$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE) $(bindir)
 					-$(RM) $(bindir)/gpart$(EXE)
 					-$(LN) $(bindir)/gmap$(EXE) $(bindir)/gpart$(EXE)
 
@@ -104,7 +105,7 @@ ptinstall			:
 					-$(LN) $(bindir)/dgmap$(EXE) $(bindir)/dgpart$(EXE)
 
 clean				:
-					-$(RM) *~ *$(OBJ) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) dgscat$(EXE) gbase$(EXE) gcv$(EXE) *gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) *gord$(EXE) gotst$(EXE) gout$(EXE) *gpart$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE)
+					-$(RM) *~ *$(OBJ) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) *gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) *gord$(EXE) gotst$(EXE) gout$(EXE) *gpart$(EXE) *gscat$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE)
 
 realclean			:	clean
 
@@ -308,6 +309,14 @@ gout$(EXE)			:	gout_c.c				\
 gpart$(EXE)			:	gmap$(EXE)
 					-$(RM) gpart$(EXE)
 					-$(LN) gmap$(EXE) gpart$(EXE)
+
+gscat$(EXE)			:	gscat.c					\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
+					gscat.h
 
 gtst$(EXE)			:	gtst.c					\
 					../libscotch/module.h			\

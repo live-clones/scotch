@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 26 jul 2008     **/
-/**                                 to     07 oct 2008     **/
+/**                                 to     25 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -127,7 +127,7 @@ FILE * const                  stream)
   archDomFrst (&mappptr->m.archdat, &domnfrst);   /* Get architecture domain      */
   tgtnbr = archDomSize (&mappptr->m.archdat, &domnfrst); /* Get architecture size */
 
-  if (archVar (&mappptr->m.archdat) || (tgtnbr > grafptr->vertglbmax)) {
+  if (archVar (&mappptr->m.archdat)) {
     errorPrint ("SCOTCH_dgraphMapView: not implemented");
     return     (1);
   }
@@ -214,17 +214,6 @@ FILE * const                  stream)
     mapdlt += fabs ((double) tgloglbtab[tgtnum] - mapavg);
   mapdlt = (mapnbr != 0) ? mapdlt / ((double) mapnbr * mapavg) : 0.0L;
   mapmmy = (mapnbr != 0) ? (double) mapmax / (double) mapavg : 0.0L;
-
-  if (mapnbr > tgtnbr) {                          /* If more subdomains than architecture size */
-#ifdef SCOTCH_DEBUG_DMAP2
-    if (! archVar (&mappptr->m.archdat)) {        /* If not a variable-sized architecture */
-      errorPrint ("SCOTCH_dgraphMapView: invalid mapping");
-      memFree    (nmskloctab);                      /* Free group leader */
-      return     (1);
-    }
-#endif /* SCOTCH_DEBUG_DMAP2 */
-    tgtnbr = mapnbr;                              /* Assume it is a variable-sized architecture */
-  }
 
   if (stream != NULL) {
     fprintf (stream, "M\tProcessors %ld/%ld (%g)\n",

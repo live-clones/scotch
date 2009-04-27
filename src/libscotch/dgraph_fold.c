@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 10 aug 2006     **/
 /**                                 to   : 27 jun 2008     **/
 /**                # Version 5.1  : from : 12 nov 2008     **/
-/**                                 to   : 05 feb 2009     **/
+/**                                 to   : 18 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,6 +119,7 @@ MPI_Datatype                  vertinfotype)
   Gnum                fldvertidxtab[DGRAPHFOLDCOMMNBR]; /* Start indices of vertex arrays                      */
   Gnum                fldedgeidxtab[DGRAPHFOLDCOMMNBR]; /* Start indices of edge arrays                        */
   Gnum                fldedgecnttab[DGRAPHFOLDCOMMNBR]; /* Number of edges exchanged during each communication */
+  Gnum                fldedgecnptab[DGRAPHFOLDCOMMNBR]; /* Temporary save for fldedgecnttab for MPI standard   */
   Gnum                fldvertlocnbr;              /* Number of vertices in local folded part                   */
   Gnum                fldedgelocsiz;              /* (Upper bound of) number of edges in folded graph          */
   Gnum                fldedlolocsiz;              /* (Upper bound of) number of edge loads in folded graph     */
@@ -296,8 +297,9 @@ MPI_Datatype                  vertinfotype)
 
       fldvertidxtab[i] = vertsndbas;
       fldedgeidxtab[i] = orggrafptr->vertloctax[vertsndbas];
-      fldedgecnttab[i] = orggrafptr->vertloctax[vertsndbas + vertsndnbr] - orggrafptr->vertloctax[vertsndbas]; /* Graph is compact */
-      if (MPI_Isend (&fldedgecnttab[i], 1, GNUM_MPI, fldcommdattab[i].procnum,
+      fldedgecnptab[i] =                          /* Save fldedgecnttab in temporary array to read it while MPI communication in progress */
+      fldedgecnttab[i] = orggrafptr->vertloctax[vertsndbas + vertsndnbr] - orggrafptr->vertloctax[vertsndbas]; /* Graph is compact        */
+      if (MPI_Isend (&fldedgecnptab[i], 1, GNUM_MPI, fldcommdattab[i].procnum,
                      TAGFOLD + TAGVLBLLOCTAB, orggrafptr->proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
         errorPrint ("dgraphFold2: communication error (2)");
         cheklocval = 1;

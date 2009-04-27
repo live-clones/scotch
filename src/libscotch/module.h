@@ -49,11 +49,24 @@
 /**                # Version 5.0  : from : 24 feb 2007     **/
 /**                                 to     24 jul 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     21 jan 2009     **/
+/**                                 to     27 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
 #define MODULE_H
+
+/*
+** Collective communication handling.
+*/
+
+#ifdef SCOTCH_PTOP
+#ifndef SCOTCH_COLLECTIVE_TEST
+#define SCOTCH_COLLECTIVE_TEST      0             /* Never perform collective communication for data exchange */
+#endif /* SCOTCH_COLLECTIVE_TEST */
+#endif /* SCOTCH_PTOP */
+#ifndef SCOTCH_COLLECTIVE_TEST
+#define SCOTCH_COLLECTIVE_TEST      1             /* Always perform collective communication for data exchange */
+#endif /* SCOTCH_COLLECTIVE_TEST */
 
 /*
 ** Debug values.
@@ -405,6 +418,8 @@
 #define dgraphMatchInit             _SCOTCHdgraphMatchInit
 #define dgraphMatchExit             _SCOTCHdgraphMatchExit
 #define dgraphMatchSync             _SCOTCHdgraphMatchSync
+#define dgraphMatchSyncColl         _SCOTCHdgraphMatchSyncColl
+#define dgraphMatchSyncPtop         _SCOTCHdgraphMatchSyncPtop
 #define dgraphMatchCheck            _SCOTCHdgraphMatchCheck
 #define dgraphMatchSc               _SCOTCHdgraphMatchSc
 #define dgraphMatchHy               _SCOTCHdgraphMatchHy

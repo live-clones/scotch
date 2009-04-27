@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to     14 apr 2008     **/
+/**                # Version 5.1  : from : 26 mar 2009     **/
+/**                                 to     26 mar 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -190,7 +192,7 @@ MPI_Comm * const            comm)                 /* MPI Communicator           
   if (vertlocptz != NULL)
     *vertlocptz = srcgrafptr->procvrttab[srcgrafptr->proclocnum + 1] - srcgrafptr->procvrttab[srcgrafptr->proclocnum];
   if (vertgstptr != NULL)
-    *vertlocptr = ((srcgrafptr->flagval & DGRAPHHASEDGEGST) != 0) ? srcgrafptr->vertgstnbr : -1;
+    *vertgstptr = ((srcgrafptr->flagval & DGRAPHHASEDGEGST) != 0) ? srcgrafptr->vertgstnbr : -1;
   if (vertloctab != NULL)
     *vertloctab = srcgrafptr->vertloctax + srcgrafptr->baseval;
   if (vendloctab != NULL)

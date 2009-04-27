@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 17 oct 2007     **/
 /**                                 to     07 dec 2007     **/
+/**                # Version 5.1  : from : 18 mar 2009     **/
+/**                                 to     18 mar 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,15 +76,19 @@ const int                   levlnum,
 const int                   cblknum,
 int                         cblkidx)
 {
-  if (levlnum < levlmax) {                        /* If nested dissection node */
-    sizeglbtnd[- cblkidx] = (sepaglbtab[3 * cblknum + 2] < 0) ? 0 : sizeglbtab[sepaglbtab[3 * cblknum + 2]]; /* Get size of separator, if any */
-    if (sepaglbtab[3 * cblknum] >= 0)
+  int                 sizeval;
+
+  sizeval = sizeglbtab[cblknum];                  /* Assume node is terminal or has no nested dissection sons */
+  if (levlnum < levlmax) {
+    if ((sepaglbtab[3 * cblknum]     >= 0) &&     /* If node has at least two sons, assume is is a nested dissection node */
+        (sepaglbtab[3 * cblknum + 1] >= 0)) {
       ParMETIS_V3_NodeNDTree (sizeglbtnd, sizeglbtab, sepaglbtab, levlmax, levlnum + 1, sepaglbtab[3 * cblknum],     (cblkidx << 1) + 1);
-    if (sepaglbtab[3 * cblknum + 1] >= 0)
       ParMETIS_V3_NodeNDTree (sizeglbtnd, sizeglbtab, sepaglbtab, levlmax, levlnum + 1, sepaglbtab[3 * cblknum + 1], (cblkidx << 1));
+      sizeval = (sepaglbtab[3 * cblknum + 2] < 0) ? 0 : sizeglbtab[sepaglbtab[3 * cblknum + 2]]; /* Get size of separator, if any */
+    }
   }
-  else
-    sizeglbtnd[- cblkidx] = sizeglbtab[cblknum];
+
+  sizeglbtnd[- cblkidx] = sizeval;                /* Set size of current column block */
 }
 
 /*
@@ -121,12 +127,12 @@ MPI_Comm *                  comm)
 
   MPI_Comm_size (proccomm, &procglbnbr);
   MPI_Comm_rank (proccomm, &proclocnum);
-  baseval    = (SCOTCH_Num) *numflag;
+  baseval    = *numflag;
   vertlocnbr = vtxdist[proclocnum + 1] - vtxdist[proclocnum];
   edgelocnbr = xadj[vertlocnbr] - baseval;
 
   if (sizes != NULL)
-    memSet (sizes, ~0, (2 * procglbnbr - 1) * sizeof (int)); /* Array not used if procglbnbr is not a power of 2 */
+    memSet (sizes, ~0, (2 * procglbnbr - 1) * sizeof (int)); /* Array not used if procglbnbr is not a power of 2 or if error */
 
   if (SCOTCH_dgraphBuild (&grafdat, baseval,
                           vertlocnbr, vertlocnbr, xadj, xadj + 1, NULL, NULL,
@@ -181,20 +187,26 @@ MPI_Comm *                  comm)
                     int                 i;
 
                     for (i = 0; i < 3; i ++) {
-                      if (sepaglbtab[3 * fathnum + i] < 0) { /* If empty slot found */
-                        sepaglbtab[3 * fathnum + i] = cblknum; /* Add link to slot  */
+                      int                 j;
+
+                      j = 3 * fathnum + i;        /* Slot number of prospective son  */
+                      if (sepaglbtab[j] < 0) {    /* If potentially empty slot found */
+                        if (sepaglbtab[j] == -1)  /* If we don't have too many sons  */
+                          sepaglbtab[j] = cblknum; /* Add link to son in slot        */
                         break;
                       }
                     }
-                    if (i == 3) {                 /* If no empty slot found */
-                      rootnum = -1;               /* Indicate error         */
+                    if (i == 3) {                 /* If no empty slot found             */
+                      sepaglbtab[3 * fathnum] = -2; /* Indicate there are too many sons */
                       break;
                     }
                   }
                 }
 
-                if (rootnum >= 0)                 /* If no error above, go on processing separator tree */
+                if ((rootnum >= 0) && (sizes != NULL)) { /* If no error above, go on processing separator tree  */
+                  memSet (sizes, 0, (2 * procglbnbr - 1) * sizeof (int)); /* Set array of sizes to 0 by default */
                   ParMETIS_V3_NodeNDTree (sizes + (2 * procglbnbr - 1), sizeglbtab, sepaglbtab, levlmax, 0, rootnum, 1);
+                }
               }
 
               memFree (treeglbtab);               /* Free group leader */

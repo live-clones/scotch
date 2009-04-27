@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : vdgraph_gather_all.c                    **/
 /**                                                        **/
 /**   AUTHORS    : Cedric CHEVALIER                        **/
+/**                Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module contains the routine which  **/
 /**                builds a centralized Vgraph on all      **/
@@ -42,6 +43,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 29 apr 2006     **/
 /**                                 to     01 mar 2008     **/
+/**                # Version 5.1  : from : 18 apr 2009     **/
+/**                                 to     23 apr 2009     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -82,7 +85,7 @@ const Vdgraph * restrict const dgrfptr,            /* Distributed graph */
 Vgraph * restrict              cgrfptr)            /* Centralized graph */
 {
   int * restrict     froncnttab;                   /* Count array for gather operations        */
-  int * restrict     fronvrttab;                   /* Displacement array for gather operations */
+  int * restrict     frondsptab;                   /* Displacement array for gather operations */
   int                fronlocnbr;                   /* Also int to enforce MPI standard         */
   int                cheklocval;
 #ifdef SCOTCH_DEBUG_VDGRAPH1
@@ -111,17 +114,10 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
 
   cgrfptr->parttax = NULL;                        /* In case of error */
   cgrfptr->frontab = NULL;
-  if ((cgrfptr->frontab = (Gnum *) memAlloc (cgrfptr->s.vertnbr * sizeof (Gnum))) == NULL) {
+  if (((cgrfptr->parttax = (GraphPart *) memAlloc (cgrfptr->s.vertnbr * sizeof (GraphPart))) == NULL) ||
+      ((cgrfptr->parttax -= cgrfptr->s.baseval,
+        cgrfptr->frontab = (Gnum *) memAlloc (cgrfptr->s.vertnbr * sizeof (Gnum))) == NULL)) {
     errorPrint ("vdgraphGatherAll: out of memory (1)");
-#ifndef SCOTCH_DEBUG_VDGRAPH1
-    vgraphExit (cgrfptr);
-    return     (1);
-#else /* SCOTCH_DEBUG_VDGRAPH1 */
-    cheklocval = 1;
-#endif /* SCOTCH_DEBUG_VDGRAPH1 */
-  }
-  else if ((cgrfptr->parttax = (GraphPart *) memAlloc (cgrfptr->s.vertnbr * sizeof (GraphPart))) == NULL) {
-    errorPrint ("vdgraphGatherAll: out of memory (2)");
 #ifndef SCOTCH_DEBUG_VDGRAPH1
     vgraphExit (cgrfptr);
     return     (1);
@@ -139,6 +135,7 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
 
+  cgrfptr->levlnum = dgrfptr->levlnum;            /* Set level of separation graph as level of halo graph */
 
   if (dgrfptr->partgsttax == NULL) {              /* If distributed graph does not have a part array yet */
     vgraphZero (cgrfptr);
@@ -147,8 +144,8 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
 
   if (memAllocGroup ((void **) (void *)           /* Allocate tempory arrays to gather separator vertices */
                      &froncnttab, (size_t) (dgrfptr->s.procglbnbr * sizeof (int)),
-                     &fronvrttab, (size_t) (dgrfptr->s.procglbnbr * sizeof (int)), NULL) == NULL) {
-    errorPrint ("vdgraphGatherAll: out of memory (3)");
+                     &frondsptab, (size_t) (dgrfptr->s.procglbnbr * sizeof (int)), NULL) == NULL) {
+    errorPrint ("vdgraphGatherAll: out of memory (2)");
 #ifndef SCOTCH_DEBUG_VDGRAPH1
     vgraphExit (cgrfptr);
     return     (1);
@@ -168,9 +165,6 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
 
-  cgrfptr->parttax -= cgrfptr->s.baseval;
-  cgrfptr->levlnum  = dgrfptr->levlnum;           /* Set level of separation graph as level of halo graph */
-
   if (MPI_Allgatherv (dgrfptr->partgsttax + dgrfptr->s.baseval, (int) dgrfptr->s.vertlocnbr, GRAPHPART_MPI, /* Get parttax of distributed graph */
                       cgrfptr->parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (4)");
@@ -183,12 +177,12 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
     errorPrint ("vdgraphGatherAll: communication error (5)");
     return     (1);
   }
-  fronvrttab[0] = 0;                              /* Offset 0 for first process                                                     */
+  frondsptab[0] = 0;                              /* Offset 0 for first process                                                     */
   for (procnum = 1; procnum < dgrfptr->s.procglbnbr; procnum ++) /* Adjust index sub-arrays for all processors except the first one */
-    fronvrttab[procnum] = fronvrttab[procnum - 1] + froncnttab[procnum - 1];
+    frondsptab[procnum] = frondsptab[procnum - 1] + froncnttab[procnum - 1];
 
   if (MPI_Allgatherv (dgrfptr->fronloctab, fronlocnbr, GNUM_MPI, /* Gather separator vertices */
-                      cgrfptr->frontab, froncnttab, fronvrttab, GNUM_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
+                      cgrfptr->frontab, froncnttab, frondsptab, GNUM_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (6)");
     return     (1);
   }
@@ -197,7 +191,7 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
     Gnum               vertnum;
     Gnum               vertnnd;
 
-    for (vertnum = (Gnum) fronvrttab[procnum], vertnnd = (Gnum) fronvrttab[procnum] + (Gnum) froncnttab[procnum];
+    for (vertnum = (Gnum) frondsptab[procnum], vertnnd = vertnum + (Gnum) froncnttab[procnum];
          vertnum < vertnnd; vertnum ++)
       cgrfptr->frontab[vertnum] += (Gnum) dgrfptr->s.procdsptab[procnum] - dgrfptr->s.baseval;
   }
