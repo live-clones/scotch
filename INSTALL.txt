@@ -100,7 +100,7 @@ platform.
 
 By default, all integers used in Scotch and PT-Scotch are based on
 the "int" C type, corresponding to the "INTEGER" type in Fortran. To
-coerce the length of the integer type to 32 or 64 bits, add the
+coerce the length of the Scotch integer type to 32 or 64 bits, add the
 INTSIZE32 or INTSIZE64 flags, respectively, to the C compiler flags in
 the Makefile.inc configuration file. If you do so, make sure to use
 integer types of equivalent length to declare variables passed to Scotch
@@ -171,6 +171,20 @@ results, since the order in which messages are received is significant
 to some key algorithms such as the parallel coarsening phase. Setting
 this flag is also equivalent to setting the -DCOMMON_RANDOM_FIXED_SEED
 flag in the sequential routines.
+
+
+Since distributed graph vertices can have any initial distribution
+across processes, communication rounds are likely to involve all of
+the processes in an almost all-to-all scheme. In order to speed-up
+running time, most of these communications are performed by means of
+asynchronous sends and receives, which allows computations to overlap
+with communications. However, for large numbers of processes, this can
+lead to the saturation of the communication network of the target
+parallel machine. To avoid this, communication consuming routines also
+have a collective communication based version. The use of this version
+is enabled by default, as it greatly improves scalability for large
+numbers of processors. To disable it, set the -DSCOTCH_PTOP flag at
+compile time.
 
 
 3) Compilation

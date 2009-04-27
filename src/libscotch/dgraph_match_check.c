@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**    DATES     : # Version 5.1  : from : 25 dec 2008     **/
-/**                                 to   : 06 jan 2009     **/
+/**                                 to   : 08 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,6 +76,7 @@ DgraphMatchData * restrict const    mateptr)
 {
   Gnum                baseval;
   Gnum * restrict     flaggsttax;
+  int                 procngbnum;
   Gnum                multlocnbr;
   Gnum                multlocnum;
   Gnum                vertglbnnd;
@@ -87,6 +88,7 @@ DgraphMatchData * restrict const    mateptr)
   int                 chekglbval;
 
   Dgraph * restrict const                   grafptr    = mateptr->c.finegrafptr;
+  const int * restrict const                procngbtab = grafptr->procngbtab;
   const Gnum * restrict const               mategsttax = mateptr->mategsttax;
   DgraphCoarsenVert * restrict const        vsnddattab = mateptr->c.vsnddattab;
   const DgraphCoarsenMulti * restrict const multloctab = mateptr->c.multloctab;
@@ -95,7 +97,7 @@ DgraphMatchData * restrict const    mateptr)
   const Gnum * restrict const               edgegsttax = grafptr->edgegsttax;
   const Gnum * restrict const               vertloctax = grafptr->vertloctax;
   const Gnum * restrict const               vendloctax = grafptr->vendloctax;
-  int * restrict const                      vsndidxtab = mateptr->c.vsndidxtab;
+  int * restrict const                      nsndidxtab = mateptr->c.nsndidxtab;
 
   baseval = grafptr->baseval;
 
@@ -131,7 +133,8 @@ DgraphMatchData * restrict const    mateptr)
     return (1);
   }
 
-  memCpy (vsndidxtab, mateptr->c.vsnddsptab, grafptr->procngbnbr * sizeof (int)); /* Reset indices for sending messages */
+  for (procngbnum = 0; procngbnum < grafptr->procngbnbr; procngbnum ++) /* Reset indices for sending messages */
+    nsndidxtab[procngbnum] = mateptr->c.vsnddsptab[procngbtab[procngbnum]];
 
   memSet (flaggsttax, ~0, grafptr->vertgstnbr * sizeof (Gnum));
   flaggsttax -= baseval;
@@ -195,14 +198,14 @@ DgraphMatchData * restrict const    mateptr)
         errorPrint ("dgraphMatchCheck: internal error (1)");
         goto abort;
       }
-      if ((grafptr->procvrttab[grafptr->procngbtab[procngbnum]]     >  vertglbend) ||
-          (grafptr->procvrttab[grafptr->procngbtab[procngbnum] + 1] <= vertglbend)) {
+      if ((grafptr->procvrttab[procngbtab[procngbnum]]     >  vertglbend) ||
+          (grafptr->procvrttab[procngbtab[procngbnum] + 1] <= vertglbend)) {
         errorPrint ("dgraphMatchCheck: internal error (2)");
         goto abort;
       }
 
-      vsndidxnum = vsndidxtab[procngbnum] ++;     /* Get position of message in send array */
-      if (vsndidxnum >= mateptr->c.vsnddsptab[procngbnum + 1]) {
+      vsndidxnum = nsndidxtab[procngbnum] ++;     /* Get position of message in send array */
+      if (vsndidxnum >= mateptr->c.vsnddsptab[procngbtab[procngbnum] + 1]) {
         errorPrint ("dgraphMatchCheck: internal error (3)");
         goto abort;
       }

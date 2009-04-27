@@ -53,13 +53,13 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:	clean
-					$(MAKE) CC=$(CCS) CCD=$(CCS) SCOTCHLIB=scotch ESMUMPSLIB=esmumps	\
+					$(MAKE) CC="$(CCS)" CCD="$(CCS)" SCOTCHLIB=scotch ESMUMPSLIB=esmumps	\
 					libesmumps$(LIB)							\
 					main_esmumps$(EXE)
 
 ptscotch			:	clean
-					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC=$(CCP) SCOTCHLIB=ptscotch ESMUMPSLIB=ptesmumps	\
-					libesmumps$(LIB)										\
+					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" "CC=$(CCP)" SCOTCHLIB=ptscotch ESMUMPSLIB=ptesmumps	\
+					libesmumps$(LIB)											\
 					main_esmumps$(EXE)
 
 install				:

@@ -138,7 +138,7 @@ const DgraphFlag            flagval)              /* Graph loading flags        
     return     (1);
   }
 
-  if (versval == 2) {                             /* If distributed graph format             */
+  if (reduglbtab[4] == 2) {                       /* If distributed graph format             */
     if (reduglbtab[7] == grafptr->procglbnbr)     /* If as many input streams as processors  */
       return (dgraphLoadDist (grafptr, stream, baseval, flagval)); /* Read distributed graph */
   }

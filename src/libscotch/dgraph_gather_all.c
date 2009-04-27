@@ -109,13 +109,15 @@ const int                     protnum)            /* -1 means allgather */
   Gnum * restrict     edgetax;                    /* Target edge array for root, dummy for non-roots          */
   Gnum * restrict     edlotax;                    /* Target edge load array for root, dummy for non-roots     */
   Gnum                vertlocnbr;                 /* Size of temporary distributed vertex array               */
-  Gnum * restrict     vertloctab;                 /* Temporary vertex array if graph is not compact           */
+  Gnum * restrict     vertloctax;                 /* Temporary vertex array if graph is not compact           */
   Gnum                edgelocnbr;                 /* Size of temporary distributed edge array                 */
   Gnum * restrict     edgeloctab;                 /* Temporary edge array if distributed graph is not compact */
   int * restrict      recvcnttab;                 /* Count array for gather operations                        */
   int * restrict      recvdsptab;                 /* Displacement array for gather operations                 */
   int                 cheklocval;
   int                 chekglbval;
+
+  const Gnum * restrict const edgeloctax = dgrfptr->edgeloctax;
 
 #ifdef SCOTCH_DEBUG_DGRAPH1
   cheklocval = 0;
@@ -182,7 +184,7 @@ const int                     protnum)            /* -1 means allgather */
     if (memAllocGroup ((void **) (void *)
                        &recvcnttab, (size_t) (dgrfptr->procglbnbr * sizeof (int)), /* Allocated for non-roots too but don't care as these are very small */
                        &recvdsptab, (size_t) (dgrfptr->procglbnbr * sizeof (int)),
-                       &vertloctab, (size_t) (vertlocnbr          * sizeof (Gnum)),
+                       &vertloctax, (size_t) (vertlocnbr          * sizeof (Gnum)),
                        &edgeloctab, (size_t) (edgelocnbr          * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("dgraphGatherAll2: out of memory (3)");
       cheklocval = 1;
@@ -270,11 +272,10 @@ const int                     protnum)            /* -1 means allgather */
     }
   }
   else {                                          /* Distributed graph is not compact */
-    Gnum * restrict     vertloctax;
     Gnum                vertlocnum;
     Gnum * restrict     edgelocptr;
 
-    vertloctax = vertloctab - baseval;
+    vertloctax -= baseval;                        /* Base temporary vertex array   */
     for (vertlocnum = baseval, edgelocptr = edgeloctab; /* Build vertex send array */
          vertlocnum < dgrfptr->vertlocnnd; vertlocnum ++) {
       Gnum                edgelocnum;
@@ -282,10 +283,10 @@ const int                     protnum)            /* -1 means allgather */
       vertloctax[vertlocnum] = dgrfptr->vendloctax[vertlocnum] - dgrfptr->vertloctax[vertlocnum]; /* Get edge counts */
 
       for (edgelocnum = dgrfptr->vertloctax[vertlocnum]; edgelocnum < dgrfptr->vendloctax[vertlocnum]; edgelocnum ++)
-        *edgelocptr ++ = dgrfptr->edgeloctax[edgelocnum];
+        *edgelocptr ++ = edgeloctax[edgelocnum];
     }
 
-    if (dgraphGatherAll3 (vertloctab, dgrfptr->vertlocnbr,
+    if (dgraphGatherAll3 (vertloctax + baseval, dgrfptr->vertlocnbr,
                           verttax + 1,            /* First index will always be equal to baseval, and procdsptab holds based values */
                           dgrfptr->proccnttab, dgrfptr->procdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphGatherAll2: communication error (4)");
