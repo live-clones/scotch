@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 07 mar 2006     **/
 /**                                 to   : 01 mar 2008     **/
 /**                # Version 5.1  : from : 14 dec 2008     **/
-/**                                 to   : 22 apr 2009     **/
+/**                                 to   : 28 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -215,8 +215,6 @@ Gnum * restrict             ssndcnttab)
     }
   }
   else {                                          /* Arrays do overlap */
-    Gnum *              datadsttab = dataloctab + datalocidx;
-    Gnum *              datasrctab = dataloctab + datalocidx * 2; /* Can be equal to datadsttab if datalocidx equals 0 */
     Gnum                datadstnum;
     Gnum                datasrcnum;
     Gnum                datasrcnnd;
@@ -293,7 +291,6 @@ Gnum * restrict             ssndcnttab)
 
     for (datasrcnnd += finevertsndnbr2 << 1; datasrcnum < datasrcnnd; ) { /* Work on pairs of Gnum's */
       Gnum                finevertglbnum;
-      Gnum                finepartval;
 
       finevertglbnum = dataloctab[datasrcnum];
 #ifdef SCOTCH_DEBUG_VDGRAPH2
@@ -623,8 +620,8 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   }
 
   vrcvcnttab = (int *) ssnddattab;                /* TRICK: re-use ssnddattab */
-  vsnddsptab = ssnddattab + finegrafptr->s.procglbnbr;
-  vrcvdsptab = ssnddattab + finegrafptr->s.procglbnbr * 2;
+  vsnddsptab = vrcvcnttab + finegrafptr->s.procglbnbr;
+  vrcvdsptab = vrcvcnttab + finegrafptr->s.procglbnbr * 2;
   for (procnum = 0, vsnddspnum = vrcvdspnum = 0; procnum < finegrafptr->s.procglbnbr; procnum ++) { /* Compute size of data to exchange */
     vrcvcnttab[procnum] = (int) (srcvdattab[3 * procnum] + srcvdattab[3 * procnum + 1] + srcvdattab[3 * procnum + 2]);
     vrcvdsptab[procnum] = vrcvdspnum;

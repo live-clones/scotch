@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 17 jul 2007     **/
 /**                                 to     02 aug 2007     **/
 /**                # Version 5.1  : from : 02 jul 2008     **/
-/**                                 to     07 jul 2008     **/
+/**                                 to     10 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,6 +56,7 @@
 #include "common.h"
 #include "graph.h"
 #include "dgraph.h"
+#include "dgraph_halo.h"
 #include "scotch.h"
 
 /************************************/
@@ -121,4 +122,38 @@ void * const                datatab,
 const MPI_Datatype          typeval)
 {
   return (dgraphHaloSync ((Dgraph *) grafptr, (byte *) datatab, typeval));
+}
+
+/*+ This routine spreads local information
+*** borne by local vertices across the ghost
+*** vertices of the neighboring processes, in
+*** an asynchronous way.
+*** It returns:
+*** - 0   : if the exchange succeeded.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_dgraphHaloAsync (
+SCOTCH_Dgraph * const         grafptr,
+void * const                  datatab,
+const MPI_Datatype            typeval,
+SCOTCH_DgraphHaloReq * const  requptr)
+{
+  dgraphHaloAsync ((Dgraph *) grafptr, (byte *) datatab, typeval, (DgraphHaloRequest *) requptr);
+  return (0);
+}
+
+/*+ This routine waits for the termination of
+*** an asynchronous halo request.
+*** It returns:
+*** - 0   : if the exchange succeeded.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_dgraphHaloWait (
+SCOTCH_DgraphHaloReq * const  requptr)
+{
+  return (dgraphHaloWait ((DgraphHaloRequest *) requptr));
 }

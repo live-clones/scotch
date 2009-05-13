@@ -264,6 +264,7 @@ const int                   distribute)           /* By slices or random */
   edgeloctax -= baseval;
   edloloctax -= baseval;
 
+  edgelocnum = baseval;
   if ((distribute == DGRAPHBUILDRANDOM) || (height < grafptr->procglbnbr)) {
     Gnum x,y,z;
 
@@ -273,7 +274,6 @@ const int                   distribute)           /* By slices or random */
          vertloctnd = vertloctax + baseval + vertlocnbr, /* pointer limit */
          vlbllocptr = vlblloctax + baseval,            /* Pointer to current label  */
          edgelocptr = edgeloctax + baseval,            /* Pointer to current edge   */
-         edgelocnum = baseval,
          edlolocptr = edloloctax + baseval;            /* Pointer to weight of current edge */
          vertlocptr < vertloctnd;
          vertlocptr ++, vertlocnum ++, vlbllocptr ++) {  /* Take the next element */
@@ -308,16 +308,11 @@ const int                   distribute)           /* By slices or random */
     /* In this case, we make slices */
     Gnum x,y,z;
 
-#ifdef SCOTCH_DEBUG_DGRAPH2
-    fprintf (stderr, "x from %ld to %ld\n", (long)sliceoffset, (long)slicewidth + sliceoffset);
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-
     for (z = 0, vertlocptr = vertloctax + baseval,              /* pointer to current vertex */
            *vertlocptr = baseval,
            vertloctnd = vertloctax + baseval + vertlocnbr, /* pointer limit */
            vlbllocptr = vlblloctax + baseval,            /* Pointer to current label  */
            edgelocptr = edgeloctax + baseval,            /* Pointer to current edge   */
-           edgelocnum = baseval,
            edlolocptr = edloloctax + baseval;            /* Pointer to weight of current edge */
          z < depth ;
          ++ z)                                      /* Take the next element */

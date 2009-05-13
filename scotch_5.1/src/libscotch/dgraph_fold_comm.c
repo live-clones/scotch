@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 23 may 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 18 jan 2009     **/
-/**                                 to   : 18 jan 2009     **/
+/**                                 to   : 05 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -220,8 +220,11 @@ Gnum * restrict const               vertdlttab)   /* Pointer to global delta adj
     }
 
     while (1) {
-      Gnum                vertrcvrmn;             /* Remaining number of vertices to receive       */
-      Gnum                vertsndnbr;             /* Number of vertices actually sent and received */
+      Gnum                vertrcvrmn;             /* Remaining number of vertices to receive           */
+      Gnum                vertsndnbr;             /* Number of vertices actually sent and received     */
+      Gnum                vertsndnxt;             /* Adjustment to add to vertex count of next sender  */
+      int                 mesgrcvrmn;             /* Number of message slots to receive small messages */
+      int                 flagsndnxt;
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if (flagrcvval + flagsndval >= (DGRAPHFOLDCOMMNBR * 2)) {
@@ -231,18 +234,27 @@ Gnum * restrict const               vertdlttab)   /* Pointer to global delta adj
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-      vertrcvrmn = (vertglbavg > vertglbsum) ? (vertglbavg - vertglbsum) : 0;
-      if ((flagsndval == 0) &&                    /* If sender has not sent anything yet                    */
-          (flagrcvval < (DGRAPHFOLDCOMMNBR - 2)) && /* And receiver has space for large messages to come    */
-          (vertrcvrmn >= procsrttab[procsndmnd].vertnbr)) { /* And receiver can hold small message entirely */
-        procsndnxt = procsndidx;                  /* Current large message will be processed next time      */
-        procsndidx = procsndmnd;                  /* Process smallest message available to date             */
-        vertsndnbr =                              /* All of its contents will be sent in one piece          */
+      vertrcvrmn = (vertglbavg > vertglbsum) ? (vertglbavg - vertglbsum) : 0; /* Remaining space on receiver */
+      mesgrcvrmn = (vertsndrmn >= vertrcvrmn) ? (DGRAPHFOLDCOMMNBR - 1) : (DGRAPHFOLDCOMMNBR - 2);
+      if ((procsndidx > procsndmnd) &&            /* If there remains small messages to be considered          */
+          (((flagsndval == 0) &&                  /* If sender has not sent anything yet or just started       */
+            (flagrcvval < mesgrcvrmn)) ||         /* And receiver has space for larger messages to come        */
+           ((flagrcvval == 0) &&                  /* Or if receiver has not received anything yet              */
+            (flagsndval < (DGRAPHFOLDCOMMNBR - 2)))) && /* And sender has enough slots to send                 */
+          (vertrcvrmn >= procsrttab[procsndmnd].vertnbr)) { /* And if receiver can hold small message entirely */
+        procsndnxt = procsndidx;                  /* Current large message will be processed next time         */
+        procsndidx = procsndmnd;                  /* Process smallest message available to date                */
+        flagsndnxt = flagsndval;                  /* Record location of next message to send                   */
+        flagsndval = 0;
+        vertsndnxt = procsrttab[procsndnxt].vertnbr - vertsndrmn; /* Record vertices already sent  */
+        vertsndnbr =                              /* All of its contents will be sent in one piece */
         vertsndrmn = procsrttab[procsndmnd].vertnbr;
         procsndmnd ++;                            /* Small message has been processed */
       }
       else {
-        vertsndnbr = ((flagsndval >= (DGRAPHFOLDCOMMNBR - 1)) || /* If last chance to send for this process */
+        flagsndnxt = 0;
+        vertsndnxt = 0;                           /* Next sender will not have been interrupted by a small message */
+        vertsndnbr = ((flagsndval >= (DGRAPHFOLDCOMMNBR - 1)) || /* If last chance to send for this process        */
                       (((procrcvnnd - procrcvidx) * (DGRAPHFOLDCOMMNBR - 1) - flagrcvval) <= (procsndidx - procsndmnd))) /* Or if too few communications remain with sender receivers accounted for */
                      ? vertsndrmn                   /* Send all of the vertices to be sent     */
                      : MIN (vertsndrmn, vertrcvrmn); /* Else just send what the receiver needs */
@@ -283,8 +295,8 @@ Gnum * restrict const               vertdlttab)   /* Pointer to global delta adj
         if (procsndidx < procsndmnd)              /* If was last sending process, end loop */
           break;
         procsndnxt = procsndidx - 1;              /* Prepare next sender process  */
-        flagsndval = 0;                           /* Skip to next sending process */
-        vertsndrmn = procsrttab[procsndidx].vertnbr;
+        flagsndval = flagsndnxt;                  /* Skip to next sending process */
+        vertsndrmn = procsrttab[procsndidx].vertnbr - vertsndnxt;
       }
       if ((flagrcvval >= DGRAPHFOLDCOMMNBR) ||    /* If receiver cannot receive more                                 */
           ((vertglbsum >= vertglbavg) &&          /* Or has received what it needed and is not forced to accept more */

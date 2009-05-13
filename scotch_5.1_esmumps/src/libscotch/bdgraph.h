@@ -103,9 +103,9 @@ typedef struct BdgraphStore_ {
 #define static
 #endif
 
-#ifdef DMAPPING_H
+#ifdef ARCH_H
 int                         bdgraphInit         (Bdgraph * const, const Dgraph * const, const Dgraph * const, const Arch * const, const ArchDom[]);
-#endif /* DMAPPING_H */
+#endif /* ARCH_H */
 void                        bdgraphInit2        (Bdgraph * const, const Anum, const Anum, const Anum);
 #ifdef DMAPPING_H
 int                         bdgraphInit3        (Bdgraph * const, const Dgraph * const, const Dmapping * const, const ArchDom[]);

@@ -1,4 +1,4 @@
-!* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+!* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 !*
 !* This file is part of the Scotch software package for static mapping,
 !* graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 !*                # Version 5.0  : from : 26 apr 2006     **
 !*                                 to     26 apr 2006     **
 !*                # Version 5.1  : from : 26 mar 2009     **
-!*                                 to     26 mar 2009     **
+!*                                 to     10 may 2009     **
 !*                                                        **
 !***********************************************************
 
@@ -60,6 +60,7 @@
 
         INTEGER SCOTCH_ARCHDIM
         INTEGER SCOTCH_DGRAPHDIM
+        INTEGER SCOTCH_DGRAPHHALOREQDIM
         INTEGER SCOTCH_DORDERDIM
         INTEGER SCOTCH_GEOMDIM
         INTEGER SCOTCH_GRAPHDIM
@@ -67,12 +68,13 @@
         INTEGER SCOTCH_MESHDIM
         INTEGER SCOTCH_ORDERDIM
         INTEGER SCOTCH_STRATDIM
-        PARAMETER (SCOTCH_ARCHDIM   = DUMMYSIZEARCH)
-        PARAMETER (SCOTCH_DGRAPHDIM = DUMMYSIZEDGRAPH)
-        PARAMETER (SCOTCH_DORDERDIM = DUMMYSIZEDORDER)
-        PARAMETER (SCOTCH_GEOMDIM   = DUMMYSIZEGEOM)
-        PARAMETER (SCOTCH_GRAPHDIM  = DUMMYSIZEGRAPH)
-        PARAMETER (SCOTCH_MAPDIM    = DUMMYSIZEMAP)
-        PARAMETER (SCOTCH_MESHDIM   = DUMMYSIZEMESH)
-        PARAMETER (SCOTCH_ORDERDIM  = DUMMYSIZEORDER)
-        PARAMETER (SCOTCH_STRATDIM  = DUMMYSIZESTRAT)
+        PARAMETER (SCOTCH_ARCHDIM          = DUMMYSIZEARCH)
+        PARAMETER (SCOTCH_DGRAPHDIM        = DUMMYSIZEDGRAPH)
+        PARAMETER (SCOTCH_DGRAPHHALOREQDIM = DUMMYSIZEDGRAPHHALOREQ)
+        PARAMETER (SCOTCH_DORDERDIM        = DUMMYSIZEDORDER)
+        PARAMETER (SCOTCH_GEOMDIM          = DUMMYSIZEGEOM)
+        PARAMETER (SCOTCH_GRAPHDIM         = DUMMYSIZEGRAPH)
+        PARAMETER (SCOTCH_MAPDIM           = DUMMYSIZEMAP)
+        PARAMETER (SCOTCH_MESHDIM          = DUMMYSIZEMESH)
+        PARAMETER (SCOTCH_ORDERDIM         = DUMMYSIZEORDER)
+        PARAMETER (SCOTCH_STRATDIM         = DUMMYSIZESTRAT)

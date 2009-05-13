@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 04 sep 2006     **/
 /**                                 to     05 aug 2007     **/
 /**                # Version 5.1  : from : 27 jul 2008     **/
-/**                                 to     27 jul 2008     **/
+/**                                 to     09 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,11 +70,14 @@
 FORTRAN (                                       \
 SCOTCHFDGRAPHINIT, scotchfdgraphinit, (         \
 SCOTCH_Dgraph * const       grafptr,            \
-const MPI_Comm * const      commptr,            \
+const MPI_Fint * const      commptr,            \
 int * const                 revaptr),           \
 (grafptr, commptr, revaptr))
 {
-  *revaptr = SCOTCH_dgraphInit (grafptr, *commptr);
+  MPI_Comm            commdat;
+
+  commdat = MPI_Comm_f2c (*commptr);
+  *revaptr = SCOTCH_dgraphInit (grafptr, commdat);
 }
 
 /*
@@ -128,13 +131,13 @@ SCOTCH_Num * const          edgelocptz,         \
 SCOTCH_Num * const          edgelocidx,         \
 SCOTCH_Num * const          edgegstidx,         \
 SCOTCH_Num * const          edlolocidx,         \
-int * const                 comm),              \
+MPI_Fint * const            commptr),           \
 (grafptr, indxptr, baseptr,                     \
  vertglbptr, vertlocptr, vertlocptz,            \
  vertgstptr, vertlocidx, vendlocidx,            \
  velolocidx, vlbllocidx, edgeglbptr,            \
  edgelocptr, edgelocptz, edgelocidx,            \
- edgegstidx, edlolocidx, comm))
+ edgegstidx, edlolocidx, commptr))
 {
   SCOTCH_Num *        vertloctab;                 /* Pointer to graph arrays */
   SCOTCH_Num *        vendloctab;
@@ -143,11 +146,12 @@ int * const                 comm),              \
   SCOTCH_Num *        edgeloctab;
   SCOTCH_Num *        edgegsttab;
   SCOTCH_Num *        edloloctab;
+  MPI_Comm            commdat;
 
   SCOTCH_dgraphData (grafptr, baseptr, vertglbptr, vertlocptr, vertlocptz, vertgstptr,
                      &vertloctab, &vendloctab, &veloloctab, &vlblloctab,
                      edgeglbptr, edgelocptr, edgelocptz,
-                     &edgeloctab, &edgegsttab, &edloloctab, (MPI_Comm * const) comm);
+                     &edgeloctab, &edgegsttab, &edloloctab, &commdat);
   *vertlocidx = (vertloctab - indxptr) + 1;       /* Add 1 since Fortran indices start at 1 */
   *vendlocidx = (vendloctab - indxptr) + 1;
   *velolocidx = (veloloctab != NULL) ? (veloloctab - indxptr) + 1 : *vertlocidx;
@@ -155,4 +159,5 @@ int * const                 comm),              \
   *edgelocidx = (edgeloctab - indxptr) + 1;
   *edgegstidx = (edgegsttab != NULL) ? (edgegsttab - indxptr) + 1 : *vertlocidx;
   *edlolocidx = (edloloctab != NULL) ? (edloloctab - indxptr) + 1 : *vertlocidx;
+  *commptr = MPI_Comm_c2f (commdat);
 }
