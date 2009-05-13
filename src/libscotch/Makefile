@@ -1341,6 +1341,7 @@ library_dgraph_halo$(OBJ)	:	library_dgraph_halo.c			\
 					module.h				\
 					common.h				\
 					dgraph.h				\
+					dgraph_halo.h				\
 					scotch.h
 
 library_dgraph_halo_f$(OBJ)	:	library_dgraph_halo_f.c			\
@@ -2164,6 +2165,7 @@ dummysizes$(EXE)		:	dummysizes.c				\
 					common.h				\
 					arch.h					\
 					dgraph.h				\
+					dgraph_halo.h				\
 					dorder.h				\
 					geom.h					\
 					graph.h					\

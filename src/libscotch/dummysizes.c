@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to   : 03 apr 2008     **/
 /**                # Version 5.1  : from : 16 jun 2008     **/
-/**                                 to   : 22 jan 2009     **/
+/**                                 to   : 10 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,6 +87,7 @@
 #include "order.h"
 #ifdef SCOTCH_PTSCOTCH
 #include "dgraph.h"
+#include "dgraph_halo.h"
 #include "dmapping.h"
 #include "dorder.h"
 #include "library_dmapping.h"
@@ -209,21 +210,23 @@ char *                      argv[])
   substab[4][1] = "SEQSCOTCH";
 #endif /* SCOTCH_PTSCOTCH */
   subsnbr = 5;
-  subsFill (substab[subsnbr ++], "DUMMYSIZEARCH",  sizeof (Arch));
-  subsFill (substab[subsnbr ++], "DUMMYSIZEGEOM",  sizeof (Geom));
-  subsFill (substab[subsnbr ++], "DUMMYSIZEGRAPH", sizeof (Graph));
-  subsFill (substab[subsnbr ++], "DUMMYSIZEMESH",  sizeof (Mesh));
-  subsFill (substab[subsnbr ++], "DUMMYSIZEMAP",   sizeof (LibMapping));
-  subsFill (substab[subsnbr ++], "DUMMYSIZEORDER", sizeof (LibOrder));
-  subsFill (substab[subsnbr ++], "DUMMYSIZESTRAT", sizeof (Strat *));
+  subsFill (substab[subsnbr ++], "DUMMYSIZEARCH",          sizeof (Arch));
+  subsFill (substab[subsnbr ++], "DUMMYSIZEGEOM",          sizeof (Geom));
+  subsFill (substab[subsnbr ++], "DUMMYSIZEGRAPH",         sizeof (Graph));
+  subsFill (substab[subsnbr ++], "DUMMYSIZEMESH",          sizeof (Mesh));
+  subsFill (substab[subsnbr ++], "DUMMYSIZEMAP",           sizeof (LibMapping));
+  subsFill (substab[subsnbr ++], "DUMMYSIZEORDER",         sizeof (LibOrder));
+  subsFill (substab[subsnbr ++], "DUMMYSIZESTRAT",         sizeof (Strat *));
 #ifdef SCOTCH_PTSCOTCH
-  subsFill (substab[subsnbr ++], "DUMMYSIZEDGRAPH", sizeof (Dgraph));
-  subsFill (substab[subsnbr ++], "DUMMYSIZEDMAP",   sizeof (LibDmapping));
-  subsFill (substab[subsnbr ++], "DUMMYSIZEDORDER", sizeof (Dorder));
+  subsFill (substab[subsnbr ++], "DUMMYSIZEDGRAPHHALOREQ", sizeof (DgraphHaloRequest)); /* TRICK: before DUMMYSIZEDGRAPH */
+  subsFill (substab[subsnbr ++], "DUMMYSIZEDGRAPH",        sizeof (Dgraph));
+  subsFill (substab[subsnbr ++], "DUMMYSIZEDMAP",          sizeof (LibDmapping));
+  subsFill (substab[subsnbr ++], "DUMMYSIZEDORDER",        sizeof (Dorder));
 #else /* SCOTCH_PTSCOTCH */
-  subsFill (substab[subsnbr ++], "DUMMYSIZEDGRAPH", 1);
-  subsFill (substab[subsnbr ++], "DUMMYSIZEDMAP",   1);
-  subsFill (substab[subsnbr ++], "DUMMYSIZEDORDER", 1);
+  subsFill (substab[subsnbr ++], "DUMMYSIZEDGRAPHHALOREQ", 1); /* TRICK: before DUMMYSIZEDGRAPH */
+  subsFill (substab[subsnbr ++], "DUMMYSIZEDGRAPH",        1);
+  subsFill (substab[subsnbr ++], "DUMMYSIZEDMAP",          1);
+  subsFill (substab[subsnbr ++], "DUMMYSIZEDORDER",        1);
 #endif /* SCOTCH_PTSCOTCH */
 
   while (fgets (chartab, CHARMAX, C_filepntrhedinp) != NULL) { /* Infinite loop on file lines */

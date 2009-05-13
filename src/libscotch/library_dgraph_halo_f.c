@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 17 jul 2007     **/
 /**                                 to     02 aug 2007     **/
+/**                # Version 5.1  : from : 09 may 2009     **/
+/**                                 to     10 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,9 +85,44 @@ FORTRAN (                                       \
 SCOTCHFDGRAPHHALO, scotchfdgraphhalo, (         \
 SCOTCH_Dgraph * const       grafptr,            \
 void * const                datatab,            \
-const MPI_Datatype          typeval,            \
+MPI_Fint * const            typeptr,            \
 int * const                 revaptr),           \
-(grafptr, datatab, typeval, revaptr))
+(grafptr, datatab, typeptr, revaptr))
 {
+  MPI_Datatype        typeval;
+
+  typeval = MPI_Type_f2c (*typeptr);
   *revaptr = SCOTCH_dgraphHalo (grafptr, datatab, typeval);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                         \
+SCOTCHFDGRAPHHALOASYNC, scotchfdgraphhaloasync, ( \
+SCOTCH_Dgraph * const         grafptr,            \
+void * const                  datatab,            \
+MPI_Fint * const              typeptr,            \
+SCOTCH_DgraphHaloReq * const  requptr,            \
+int * const                   revaptr),           \
+(grafptr, datatab, typeptr, requptr, revaptr))
+{
+  MPI_Datatype        typeval;
+
+  typeval = MPI_Type_f2c (*typeptr);
+  *revaptr = SCOTCH_dgraphHaloAsync (grafptr, datatab, typeval, requptr);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFDGRAPHHALOWAIT, scotchfdgraphhalowait, ( \
+SCOTCH_DgraphHaloReq * const  requptr,          \
+int * const                   revaptr),         \
+(requptr, revaptr))
+{
+  *revaptr = SCOTCH_dgraphHaloWait (requptr);
 }

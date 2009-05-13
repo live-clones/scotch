@@ -45,7 +45,7 @@
 /**   DATES      : # Version 5.0  : from : 27 jul 2005     **/
 /**                                 to   : 15 may 2008     **/
 /**                # Version 5.1  : from : 23 jun 2008     **/
-/**                                 to   : 21 apr 2009     **/
+/**                                 to   : 28 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -195,12 +195,8 @@ dgraphCoarsenBuildColl (
 DgraphCoarsenData * restrict const  coarptr)
 {
   Gnum                          vertlocadj;
-  int * restrict                esndcnttab;
-  int * restrict                esnddsptab;
-  int                           ercvdspval;
   int                           procngbnbr;
   int                           procngbnum;
-  int                           vrcvreqnbr;
 
   Dgraph * restrict const       grafptr    = coarptr->finegrafptr;
   const int * restrict const    procngbtab = grafptr->procngbtab;
@@ -241,7 +237,6 @@ DgraphCoarsenData * restrict const  coarptr)
     int                 vrcvidxnum;
     int                 procglbnum;
     int                 statsiz;
-    int                 o;
 
     const DgraphCoarsenVert * restrict const  vrcvdattab = coarptr->vrcvdattab; /* After data is received */
 
@@ -276,9 +271,6 @@ dgraphCoarsenBuildPtop (
 DgraphCoarsenData * restrict const  coarptr)
 {
   Gnum                          vertlocadj;
-  int * restrict                esndcnttab;
-  int * restrict                esnddsptab;
-  int                           ercvdspval;
   int                           procngbnbr;
   int                           procngbnum;
   int                           vrcvreqnbr;
@@ -401,7 +393,6 @@ DgraphCoarsenData * restrict const  coarptr)
   Gnum                          edlolocval;
   Gnum * restrict               ercvdattab;
   Gnum * restrict               esnddattab;
-  int                           ercvcntval;
   int * restrict                ercvcnttab;
   int * restrict                esndcnttab;
   int * restrict                ercvdsptab;

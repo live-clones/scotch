@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,7 +62,7 @@
 /**                # Version 4.0  : from : 16 jan 2004     **/
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.1  : from : 25 jun 2008     **/
-/**                                 to     28 sep 2008     **/
+/**                                 to     28 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,7 +99,7 @@ const Arch * restrict const     archptr,
 const ArchDom * restrict const  domnptr)          /*+ Pointer to initial (sub)domain +*/
 {
   Anum                domnmax;                    /* Maximum number of domains       */
-  Gnum * restrict     parttab;                    /* Temporary pointer to part array */
+  Anum * restrict     parttab;                    /* Temporary pointer to part array */
 
   if (archVar (archptr))                          /* If target architecture is variable-sized */
     domnmax = (vertnbr > 1024) ? 1024 : vertnbr;  /* Pre-set number of domains                */
@@ -120,7 +120,7 @@ const ArchDom * restrict const  domnptr)          /*+ Pointer to initial (sub)do
   mappptr->archdat = *archptr;
   mappptr->domnorg = *domnptr;
 
-  if ((parttab = (Gnum *) memAlloc (vertnbr * sizeof (Gnum))) == NULL) { /* Allocate part array first as it will never move */
+  if ((parttab = (Anum *) memAlloc (vertnbr * sizeof (Anum))) == NULL) { /* Allocate part array first as it will never move */
     errorPrint ("mapInit: out of memory (1)");
     return     (1);
   }
