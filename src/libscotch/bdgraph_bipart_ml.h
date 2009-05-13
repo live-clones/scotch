@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,25 +34,16 @@
 /**   NAME       : bdgraph_bipart_ml.h                     **/
 /**                                                        **/
 /**   AUTHOR     : Jun-Ho HER                              **/
+/**                Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the data declaration    **/
 /**                for the multi-level bipartition         **/
 /**                routine for distributed graphs.         **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 14 dec 2008     **/
+/**                                 to   : 06 may 2009     **/
 /**                                                        **/
 /************************************************************/
-
-/*
-**  The defines
-*/
-
-/* Mpi tags */
-
-#define TAGMLSIZE    1
-#define TAGMLVERT    2
-#define TAGMLPARTTAX 3
 
 /*
 **  The type and structure definitions.
@@ -70,10 +61,10 @@ typedef struct BdgraphBipartMlParam_ {
   Strat *                   stratseq;             /*+ Strategy when running on a single processor +*/
 } BdgraphBipartMlParam;
 
-typedef struct BdgraphBipartMlPart_ {
-  Gnum                      vertnum;              /*+ Global vertex index for uncoarsening   +*/
-  Gnum                      partval;              /*+ Gnum to have same type and for sorting +*/
-} BdgraphBipartMlPart;
+typedef struct BdgraphBipartMlSort_ {
+  Gnum                      vertnum;              /*+ Global vertex index for uncoarsening +*/
+  Gnum                      procnum;              /*+ Gnum to have same type               +*/
+} BdgraphBipartMlSort;
 
 /*
 **  The function prototypes.
@@ -87,7 +78,7 @@ static int                  bdgraphBipartMlCoarsen (Bdgraph * const, Bdgraph * c
 static int                  bdgraphBipartMlUncoarsen (Bdgraph *, const Bdgraph * const, const DgraphCoarsenMulti * restrict const);
 static void                 bdgraphBipartMlOpBest (const Gnum * const, Gnum * const, const int * const, const MPI_Datatype * const);
 static int                  bdgraphBipartMlBest (const Bdgraph * restrict const, const MPI_Comm, const int);
-int                         bdgraphBipartMl          (Bdgraph * const, const BdgraphBipartMlParam * const);
-static int                  bdgraphBipartMl2         (Bdgraph * const, const BdgraphBipartMlParam * const);
+int                         bdgraphBipartMl     (Bdgraph * const, const BdgraphBipartMlParam * const);
+static int                  bdgraphBipartMl2    (Bdgraph * const, const BdgraphBipartMlParam * const);
 
 #undef static

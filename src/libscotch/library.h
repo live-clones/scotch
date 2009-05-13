@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to   : 20 feb 2008     **/
 /**                # Version 5.1  : from : 30 nov 2007     **/
-/**                                 to   : 28 aug 2008     **/
+/**                                 to   : 10 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,6 +82,10 @@ typedef struct {
 typedef struct {
   double                    dummy[DUMMYSIZEDGRAPH];
 } SCOTCH_Dgraph;
+
+typedef struct {
+  double                    dummy[DUMMYSIZEDGRAPHHALOREQ];
+} SCOTCH_DgraphHaloReq;
 
 typedef struct {
   double                    dummy[DUMMYSIZEDMAP];
@@ -154,6 +158,8 @@ void                        SCOTCH_dgraphData   (const SCOTCH_Dgraph * const, SC
 int                         SCOTCH_dgraphStat   (const SCOTCH_Dgraph * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, double * const, double * const, SCOTCH_Num * const, SCOTCH_Num * const, double * const, double * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, double * const, double * const);
 int                         SCOTCH_dgraphGhst   (SCOTCH_Dgraph * const);
 int                         SCOTCH_dgraphHalo   (SCOTCH_Dgraph * const, void * const, const MPI_Datatype);
+int                         SCOTCH_dgraphHaloAsync (SCOTCH_Dgraph * const, void * const, const MPI_Datatype, SCOTCH_DgraphHaloReq * const);
+int                         SCOTCH_dgraphHaloWait (SCOTCH_DgraphHaloReq * const);
 int                         SCOTCH_dgraphMapInit (const SCOTCH_Dgraph * const, SCOTCH_Dmapping * const, const SCOTCH_Arch * const, SCOTCH_Num * const);
 void                        SCOTCH_dgraphMapExit (const SCOTCH_Dgraph * const, SCOTCH_Dmapping * const);
 int                         SCOTCH_dgraphMapSave (const SCOTCH_Dgraph * const, const SCOTCH_Dmapping * const, FILE * const);

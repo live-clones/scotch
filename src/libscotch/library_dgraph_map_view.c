@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 26 jul 2008     **/
-/**                                 to     25 apr 2009     **/
+/**                                 to     28 apr 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -295,7 +295,7 @@ FILE * const                  stream)
              (long) ngbsum);
   }
 
-  memset (commlocdist, 0, 256 * sizeof (Gnum));   /* Initialize the data */
+  memSet (commlocdist, 0, 256 * sizeof (Gnum));   /* Initialize the data */
   commlocload  =
   commlocdilat =
   commlocexpan = 0;

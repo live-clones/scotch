@@ -138,14 +138,13 @@ const char * const          dataptr)              /* No use           */
   grafptr->vertnbr = mrownbr;
   grafptr->vertnnd = grafptr->vertnbr + 1;
 
-  if ((grafptr->verttax = memAlloc ((grafptr->vertnbr + 1) * sizeof (Gnum))) == NULL) {
+  if ((grafptr->vendtax = memAlloc ((grafptr->vertnbr + 1) * sizeof (Gnum))) == NULL) { /* TRICK: vendtax = verttax + 1 */
     errorPrint ("graphGeomLoadMmkt: out of memory (1)");
     graphExit  (grafptr);
     return     (1);
   }
-  grafptr->verttax -= grafptr->baseval;
-  grafptr->vendtax  = grafptr->verttax + 1;       /* Use compact vertex array */
-  grafptr->velosum  = grafptr->vertnbr;
+  grafptr->verttax = grafptr->vendtax - 1;        /* Matrix Market indices start from 1 */
+  grafptr->velosum = grafptr->vertnbr;
 
   if ((sorttab = (GraphGeomMmktEdge *) memAlloc (2 * linenbr * sizeof (GraphGeomMmktEdge))) == NULL) { /* Twice the space for symmetric edges */
     errorPrint ("graphGeomLoadMmkt: out of memory (2)");
