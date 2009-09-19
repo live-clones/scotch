@@ -47,6 +47,8 @@
 /**                                 to     11 sep 2001     **/
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     23 dec 2001     **/
+/**                # Version 5.1  : from : 09 jun 2009     **/
+/**                                 to     09 jun 2009     **/
 /**                                                        **/
 /**   NOTES      : # In order for flex to read its input   **/
 /**                  with getc() instead of fread, we set  **/
@@ -91,7 +93,6 @@
 #define yygetc(stream)              stratParserInput ()
 #endif /* FLEX_SCANNER */
 
-#define yylex                       stratParserLex /* The lexical analyzer                       */
 #define YY_NO_UNPUT                               /* No prototype for yyunput as not defined     */
 #define YY_SKIP_YYWRAP                            /* No prototype for yywrap as defined as macro */
 #define yywrap()                    (1)           /* Always return end-of-file on end-of-string  */

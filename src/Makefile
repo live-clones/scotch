@@ -100,7 +100,7 @@ ptscotch			:	required
 install				:	required	$(bindir)	$(includedir)	$(libdir)	$(mandir)/man1
 					-$(CP) -f ../bin/[agm]*$(EXE) $(bindir)
 					-$(CP) -f ../include/*scotch*.h $(includedir)
-					-$(CP) -f ../lib/*scotc*[^m]$(LIB) $(libdir)
+					-$(CP) -f ../lib/*scotch*$(LIB) $(libdir)
 					-$(CP) -Rf ../man/* $(mandir)
 
 clean				:	required

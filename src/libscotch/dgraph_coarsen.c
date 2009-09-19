@@ -45,7 +45,7 @@
 /**   DATES      : # Version 5.0  : from : 27 jul 2005     **/
 /**                                 to   : 15 may 2008     **/
 /**                # Version 5.1  : from : 23 jun 2008     **/
-/**                                 to   : 28 apr 2009     **/
+/**                                 to   : 25 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -190,6 +190,7 @@ DgraphCoarsenData * restrict const    coarptr)    /*+ Coarsening data structure 
     memFree (coarptr->coarprivptr);
 }
 
+static
 int
 dgraphCoarsenBuildColl (
 DgraphCoarsenData * restrict const  coarptr)
@@ -266,6 +267,7 @@ DgraphCoarsenData * restrict const  coarptr)
   return (0);
 }
 
+static
 int
 dgraphCoarsenBuildPtop (
 DgraphCoarsenData * restrict const  coarptr)
@@ -889,6 +891,7 @@ dgraphCoarsen (
 Dgraph * restrict const               finegrafptr, /*+ Graph to coarsen                    +*/
 Dgraph * restrict const               coargrafptr, /*+ Coarse graph to build               +*/
 DgraphCoarsenMulti * restrict * const multlocptr, /*+ Pointer to based multinode table     +*/
+const Gnum                            passnbr,    /*+ Number of coarsening passes to go    +*/
 const Gnum                            coarnbr,    /*+ Minimum number of coarse vertices    +*/
 const int                             foldval,    /*+ Allow fold/dup or fold or nofold     +*/
 const Gnum                            dupmax,     /*+ Minimum number of vertices to do dup +*/
@@ -903,7 +906,6 @@ const double                          coarrat)    /*+ Maximum contraction ratio 
   int                       chekglbval;
   Gnum                      coarvertmax;
   DgraphCoarsenMulti *      multloctax;
-  Gnum                      passnbr;
   Gnum                      passnum;
   int                       procnum;
   int                       o;
@@ -939,7 +941,6 @@ const double                          coarrat)    /*+ Maximum contraction ratio 
   if (chekglbval != 0)
     return (2);
 
-  passnbr = 5;
   for (passnum = 0; passnum < passnbr; passnum ++) {
     dgraphMatchHy (&matedat);
     if (((SCOTCH_COLLECTIVE_TEST) ? dgraphMatchSyncColl : dgraphMatchSyncPtop) (&matedat) != 0) {

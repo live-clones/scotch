@@ -41,7 +41,7 @@
 /**                routine for distributed graphs.         **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 06 may 2009     **/
+/**                                 to   : 25 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +52,7 @@
 /*+ This structure holds the method parameters. +*/
 
 typedef struct BdgraphBipartMlParam_ {
+  INT                       passnbr;              /*+ Number of coarsening passes to go           +*/
   INT                       coarnbr;              /*+ Minimum number of vertices                  +*/
   INT                       dupmax;               /*+ Maximum number of vertices to do fold-dup   +*/
   INT                       duplvlmax;            /*+ Maximum level for allowing fold-dup         +*/

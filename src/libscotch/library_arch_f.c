@@ -168,20 +168,6 @@ int * const                 revaptr),           \
 */
 
 FORTRAN (                                       \
-SCOTCHFARCHCMPLT, scotchfarchcmplt, (           \
-SCOTCH_Arch * const         archptr,            \
-const SCOTCH_Num * const    archnbr,            \
-int * const                 revaptr),           \
-(archptr, archnbr, revaptr))
-{
-  *revaptr = SCOTCH_archCmplt (archptr, *archnbr);
-}
-
-/*
-**
-*/
-
-FORTRAN (                                       \
 SCOTCHFARCHNAME, scotchfarchname, (             \
 const SCOTCH_Arch * const   archptr,            \
 char * const                chartab,            \
@@ -205,4 +191,152 @@ int * const                 sizeptr),           \
 (archptr, sizeptr))
 {
   *sizeptr = SCOTCH_archSize (archptr);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHCMPLT, scotchfarchcmplt, (           \
+SCOTCH_Arch * const         archptr,            \
+const SCOTCH_Num * const    archnbr,            \
+int * const                 revaptr),           \
+(archptr, archnbr, revaptr))
+{
+  *revaptr = SCOTCH_archCmplt (archptr, *archnbr);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHCMPLTW, scotchfarchcmpltw, (         \
+SCOTCH_Arch * const         archptr,            \
+const SCOTCH_Num * const    vertnbr,            \
+const SCOTCH_Num * const    velotab,            \
+int * const                 revaptr),           \
+(archptr, vertnbr, velotab, revaptr))
+{
+  *revaptr = SCOTCH_archCmpltw (archptr, *vertnbr, velotab);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHHCUB, scotchfarchhcub, (             \
+SCOTCH_Arch * const         archptr,            \
+const SCOTCH_Num * const    dimmax,             \
+int * const                 revaptr),           \
+(archptr, dimmax, revaptr))
+{
+  *revaptr = SCOTCH_archHcub (archptr, *dimmax);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHMESH2, scotchfarchmesh2, (           \
+SCOTCH_Arch * const         archptr,            \
+const SCOTCH_Num * const    dimxval,            \
+const SCOTCH_Num * const    dimyval,            \
+int * const                 revaptr),           \
+(archptr, dimxval, dimyval, revaptr))
+{
+  *revaptr = SCOTCH_archMesh2 (archptr, *dimxval, *dimyval);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHMESH3, scotchfarchmesh3, (           \
+SCOTCH_Arch * const         archptr,            \
+const SCOTCH_Num * const    dimxval,            \
+const SCOTCH_Num * const    dimyval,            \
+const SCOTCH_Num * const    dimzval,            \
+int * const                 revaptr),           \
+(archptr, dimxval, dimyval, dimzval, revaptr))
+{
+  *revaptr = SCOTCH_archMesh3 (archptr, *dimxval, *dimyval, *dimzval);
+}
+
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHTLEAF, scotchfarchtleaf, (           \
+SCOTCH_Arch * const         archptr,            \
+const SCOTCH_Num * const    leafdep,            \
+const SCOTCH_Num * const    clusdep,            \
+const SCOTCH_Num * const    linkval,            \
+int * const                 revaptr),           \
+(archptr, leafdep, clusdep, linkval, revaptr))
+{
+  *revaptr = SCOTCH_archTleaf (archptr, *leafdep, *clusdep, *linkval);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHTORUS2, scotchfarchtorus2, (         \
+SCOTCH_Arch * const         archptr,            \
+const SCOTCH_Num * const    dimxval,            \
+const SCOTCH_Num * const    dimyval,            \
+int * const                 revaptr),           \
+(archptr, dimxval, dimyval, revaptr))
+{
+  *revaptr = SCOTCH_archTorus2 (archptr, *dimxval, *dimyval);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHTORUS3, scotchfarchtorus3, (         \
+SCOTCH_Arch * const         archptr,            \
+const SCOTCH_Num * const    dimxval,            \
+const SCOTCH_Num * const    dimyval,            \
+const SCOTCH_Num * const    dimzval,            \
+int * const                 revaptr),           \
+(archptr, dimxval, dimyval, dimzval, revaptr))
+{
+  *revaptr = SCOTCH_archTorus3 (archptr, *dimxval, *dimyval, *dimzval);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHVCMPLT, scotchfarchvcmplt, (         \
+SCOTCH_Arch * const         archptr,            \
+int * const                 revaptr),           \
+(archptr, revaptr))
+{
+  *revaptr = SCOTCH_archVcmplt (archptr);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHVHCUB, scotchfarchvhcub, (           \
+SCOTCH_Arch * const         archptr,            \
+int * const                 revaptr),           \
+(archptr, revaptr))
+{
+  *revaptr = SCOTCH_archVhcub (archptr);
 }

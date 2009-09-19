@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to   : 13 jan 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to   : 12 sep 2007     **/
+/**                # Version 5.1  : from : 05 jun 2009     **/
+/**                                 to   : 11 aug 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,6 +65,13 @@
 #include "graph.h"
 #include "arch.h"
 #include "arch_cmplt.h"
+#include "arch_cmpltw.h"
+#include "arch_hcub.h"
+#include "arch_mesh.h"
+#include "arch_tleaf.h"
+#include "arch_torus.h"
+#include "arch_vcmplt.h"
+#include "arch_vhcub.h"
 #include "scotch.h"
 
 /***************************************/
@@ -141,36 +150,6 @@ FILE * const                stream)
   return (archSave ((Arch *) archptr, stream));
 }
 
-/*+ This routine fills the contents of the given
-*** opaque target structure so as to yield a
-*** complete graph with the given number of vertices.
-*** It returns:
-*** - 0   : if the computation succeeded.
-*** - !0  : on error.
-+*/
-
-int
-SCOTCH_archCmplt (
-SCOTCH_Arch * const         archptr,
-const SCOTCH_Num            archnbr)
-{
-  Arch *              tgtarchptr;
-  ArchCmplt *         tgtarchcmpptr;
-
-  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archCmplt: internal error (1)");
-    return     (1);
-  }
-
-  tgtarchptr    = (Arch *) archptr;
-  tgtarchcmpptr = (ArchCmplt *) (void *) (&tgtarchptr->data);
-
-  tgtarchptr->class     = archClass ("cmplt");
-  tgtarchcmpptr->numnbr = (Gnum) archnbr;
-
-  return (0);
-}
-
 /*+ This routine returns the name of the
 *** given target architecture.
 *** It returns:
@@ -199,4 +178,273 @@ const SCOTCH_Arch * const   archptr)
 
   archDomFrst ((Arch *) archptr, &domdat);        /* Get first domain     */
   return (archDomSize ((Arch *) archptr, &domdat)); /* Return domain size */
+}
+
+/*+ These routines fill the contents of the given
+*** opaque target structure so as to yield target
+*** architectures of the given types.
+*** It returns:
+*** - 0   : if the computation succeeded.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_archCmplt (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            numnbr)
+{
+  Arch *              tgtarchptr;
+  ArchCmplt *         tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archCmplt: internal error");
+    return     (1);
+  }
+
+  tgtarchptr    = (Arch *) archptr;
+  tgtarchdatptr = (ArchCmplt *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class     = archClass ("cmplt");
+  tgtarchdatptr->numnbr = (Anum) numnbr;
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archCmpltw (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            vertnbr,
+const SCOTCH_Num * const    velotab)
+{
+  Arch *              tgtarchptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archCmpltw: internal error");
+    return     (1);
+  }
+
+  tgtarchptr        = (Arch *) archptr;
+  tgtarchptr->class = archClass ("cmpltw");
+
+  return (archCmpltwArchBuild ((ArchCmpltw *) (void *) (&tgtarchptr->data), vertnbr, velotab));
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archHcub (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            dimmax)               /*+ Number of dimensions +*/
+{
+  Arch *              tgtarchptr;
+  ArchHcub *          tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archHcub: internal error");
+    return     (1);
+  }
+
+  tgtarchptr    = (Arch *) archptr;
+  tgtarchdatptr = (ArchHcub *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class     = archClass ("hcub");
+  tgtarchdatptr->dimmax = (Anum) dimmax;
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archMesh2 (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            dimxval,
+const SCOTCH_Num            dimyval)
+{
+  Arch *              tgtarchptr;
+  ArchMesh2 *         tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archMesh2: internal error");
+    return     (1);
+  }
+
+  tgtarchptr    = (Arch *) archptr;
+  tgtarchdatptr = (ArchMesh2 *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class   = archClass ("mesh2D");
+  tgtarchdatptr->c[0] = (Anum) dimxval;
+  tgtarchdatptr->c[1] = (Anum) dimyval;
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archMesh3 (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            dimxval,
+const SCOTCH_Num            dimyval,
+const SCOTCH_Num            dimzval)
+{
+  Arch *              tgtarchptr;
+  ArchMesh3 *         tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archMesh3: internal error");
+    return     (1);
+  }
+
+  tgtarchptr    = (Arch *) archptr;
+  tgtarchdatptr = (ArchMesh3 *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class   = archClass ("mesh3D");
+  tgtarchdatptr->c[0] = (Anum) dimxval;
+  tgtarchdatptr->c[1] = (Anum) dimyval;
+  tgtarchdatptr->c[2] = (Anum) dimzval;
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archTleaf (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            leafdep,              /*+ Maximum leaf depth                      +*/
+const SCOTCH_Num            clusdep,              /*+ Depth before reaching complete clusters +*/
+const SCOTCH_Num            linkval)              /*+ Value of extra-cluster links            +*/
+{
+  Arch *              tgtarchptr;
+  ArchTleaf *         tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archTleaf: internal error");
+    return     (1);
+  }
+
+  tgtarchptr    = (Arch *) archptr;
+  tgtarchdatptr = (ArchTleaf *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class      = archClass ("tleaf");
+  tgtarchdatptr->leafdep = (Anum) leafdep;
+  tgtarchdatptr->clusdep = (Anum) clusdep;
+  tgtarchdatptr->linkval = (Anum) linkval;
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archTorus2 (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            dimxval,
+const SCOTCH_Num            dimyval)
+{
+  Arch *              tgtarchptr;
+  ArchTorus2 *        tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archTorus2: internal error");
+    return     (1);
+  }
+
+  tgtarchptr    = (Arch *) archptr;
+  tgtarchdatptr = (ArchTorus2 *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class   = archClass ("torus2D");
+  tgtarchdatptr->c[0] = (Anum) dimxval;
+  tgtarchdatptr->c[1] = (Anum) dimyval;
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archTorus3 (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            dimxval,
+const SCOTCH_Num            dimyval,
+const SCOTCH_Num            dimzval)
+{
+  Arch *              tgtarchptr;
+  ArchTorus3 *        tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archTorus3: internal error");
+    return     (1);
+  }
+
+  tgtarchptr    = (Arch *) archptr;
+  tgtarchdatptr = (ArchTorus3 *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class   = archClass ("torus3D");
+  tgtarchdatptr->c[0] = (Anum) dimxval;
+  tgtarchdatptr->c[1] = (Anum) dimyval;
+  tgtarchdatptr->c[2] = (Anum) dimzval;
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archVcmplt (
+SCOTCH_Arch * const         archptr)
+{
+  Arch *              tgtarchptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archVcmplt: internal error");
+    return     (1);
+  }
+
+  tgtarchptr = (Arch *) archptr;
+
+  tgtarchptr->class = archClass ("vcmplt");
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archVhcub (
+SCOTCH_Arch * const         archptr)
+{
+  Arch *              tgtarchptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archVhcub: internal error");
+    return     (1);
+  }
+
+  tgtarchptr = (Arch *) archptr;
+
+  tgtarchptr->class = archClass ("vhcub");
+
+  return (0);
 }
