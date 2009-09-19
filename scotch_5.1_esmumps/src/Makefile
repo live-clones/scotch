@@ -83,7 +83,7 @@ ptscotch			:	required
 
 install				:	required
 					-$(CP) -f ../include/*scotch*.h $(includedir)
-					-$(CP) -f ../lib/*scotc*[^m]$(LIB) $(libdir)
+					-$(CP) -f ../lib/*scotch*$(LIB) $(libdir)
 
 clean				:	required
 					(cd libscotch ;      $(MAKE) clean)

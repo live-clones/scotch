@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 16 feb 2006     **/
 /**                                 to     01 aug 2007     **/
 /**                # Version 5.1  : from : 05 nov 2007     **/
-/**                                 to     14 dec 2008     **/
+/**                                 to     26 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,7 +88,7 @@ static union {
 static union {
   VdgraphSeparateMlParam    param;
   StratNodeMethodData       padding;
-} vdgraphseparatedefaultml = { { 1000, 100, 0, 0.8L, &stratdummy, &stratdummy, &stratdummy, 1 } };
+} vdgraphseparatedefaultml = { { 5, 1000, 100, 0, 0.8L, &stratdummy, &stratdummy, &stratdummy, 1 } };
 
 static union {
   VdgraphSeparateSqParam    param;
@@ -146,6 +146,10 @@ static StratParamTab        vdgraphseparatestparatab[] = { /* Distributed graph 
                                 (byte *) &vdgraphseparatedefaultml.param,
                                 (byte *) &vdgraphseparatedefaultml.param.stratseq,
                                 (void *) &vdgraphseparateststratab },
+                              { VDGRAPHSEPASTMETHML,  STRATPARAMINT,    "pass",
+                                (byte *) &vdgraphseparatedefaultml.param,
+                                (byte *) &vdgraphseparatedefaultml.param.passnbr,
+                                NULL },
                               { VDGRAPHSEPASTMETHML,  STRATPARAMINT,    "proc",
                                 (byte *) &vdgraphseparatedefaultml.param,
                                 (byte *) &vdgraphseparatedefaultml.param.seqnbr,

@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 08 sep 2006     **/
 /**                                 to     07 jun 2007     **/
+/**                # Version 5.1  : from : 06 jun 2009     **/
+/**                                 to     06 jun 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,6 +86,8 @@ int * const                 part)
 {
   SCOTCH_Graph        grafdat;                    /* Scotch graph object to interface with libScotch */
   SCOTCH_Strat        stradat;
+  SCOTCH_Num          baseval;
+  SCOTCH_Num          vertnbr;
   int                 o;
 
   if (sizeof (SCOTCH_Num) != sizeof (int)) {
@@ -93,10 +97,13 @@ int * const                 part)
 
   SCOTCH_graphInit (&grafdat);
 
+  baseval = *numflag;
+  vertnbr = *n;
+
   o = 1;                                          /* Assume something will go wrong */
   if (SCOTCH_graphBuild (&grafdat,
-                         *numflag, *n, xadj, xadj + 1, vwgt, NULL,
-                         xadj[*n] - *numflag, adjncy, adjwgt) == 0) {
+                         baseval, vertnbr, xadj, xadj + 1, vwgt, NULL,
+                         xadj[vertnbr] - baseval, adjncy, adjwgt) == 0) {
     SCOTCH_stratInit (&stradat);
 #ifdef SCOTCH_DEBUG_ALL
     if (SCOTCH_graphCheck (&grafdat) == 0)        /* TRICK: next instruction called only if graph is consistent */
@@ -105,6 +112,13 @@ int * const                 part)
     SCOTCH_stratExit (&stradat);
   }
   SCOTCH_graphExit (&grafdat);
+
+  if (baseval != 0) {                             /* MeTiS part array is based, Scotch is not */
+    SCOTCH_Num          vertnum;
+
+    for (vertnum = 0; vertnum < vertnbr; vertnum ++)
+      part[vertnum] += baseval;
+  }
 
   return (o);
 }

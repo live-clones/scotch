@@ -1268,19 +1268,6 @@ library_arch_build_f$(OBJ)	:	library_arch_build_f.c			\
 					common.h				\
 					scotch.h
 
-library_arch_cmpltw$(OBJ)	:	library_arch_cmpltw.c			\
-					module.h				\
-					common.h				\
-					graph.h					\
-					arch.h					\
-					arch_cmpltw.h				\
-					scotch.h
-
-library_arch_cmpltw_f$(OBJ)	:	library_arch_cmpltw_f.c			\
-					module.h				\
-					common.h				\
-					scotch.h
-
 library_dgraph$(OBJ)		:	library_dgraph.c			\
 					module.h				\
 					common.h				\
@@ -2373,8 +2360,6 @@ libscotch$(LIB)			:	arch$(OBJ)				\
 					library_arch_f$(OBJ)			\
 					library_arch_build$(OBJ)		\
 					library_arch_build_f$(OBJ)		\
-					library_arch_cmpltw$(OBJ)		\
-					library_arch_cmpltw_f$(OBJ)		\
 					library_geom$(OBJ)			\
 					library_geom_f$(OBJ)			\
 					library_graph$(OBJ)			\

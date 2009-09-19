@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 07 feb 2006     **/
 /**                                 to   : 03 aug 2007     **/
 /**                # Version 5.1  : from : 14 dec 2008     **/
-/**                                 to   : 30 mar 2009     **/
+/**                                 to   : 29 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +54,7 @@
 /*+ This structure holds the method parameters. +*/
 
 typedef struct VdgraphSeparateMlParam_ {
+  INT                       passnbr;              /*+ Number of coarsening passes to go           +*/
   INT                       coarnbr;              /*+ Minimum number of vertices                  +*/
   INT                       dupmax;               /*+ Maximum number of vertices to do fold-dup   +*/
   INT                       duplvlmax;            /*+ Maximum level for allowing fold-dup         +*/

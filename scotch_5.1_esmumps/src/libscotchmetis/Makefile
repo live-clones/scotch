@@ -113,8 +113,22 @@ parmetis_dgraph_order_f$(OBJ)	:	parmetis_dgraph_order_f.c		\
 					$(includedir)/ptscotch.h		\
 					parmetis.h
 
+parmetis_dgraph_part$(OBJ)	:	parmetis_dgraph_part.c			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/ptscotch.h		\
+					parmetis.h
+
+parmetis_dgraph_part_f$(OBJ)	:	parmetis_dgraph_part_f.c		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/ptscotch.h		\
+					parmetis.h
+
 libptscotchparmetis$(LIB)	:	parmetis_dgraph_order$(OBJ)		\
-					parmetis_dgraph_order_f$(OBJ)
+					parmetis_dgraph_order_f$(OBJ)		\
+					parmetis_dgraph_part$(OBJ)		\
+					parmetis_dgraph_part_f$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(^)
 					-$(RANLIB) $(@)
 

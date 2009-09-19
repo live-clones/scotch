@@ -40,7 +40,7 @@
 /**                graph using a multi-level scheme.       **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 09 may 2009     **/
+/**                                 to   : 26 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,8 +93,8 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
   else if (paraptr->duplvlmax < -1)               /* duplvlmax can allow only fold */
     foldval = (-(paraptr->duplvlmax + 1) < (finegrafptr->levlnum + 1)) ? 0 : -1;
 
-  if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->coarnbr,
-                     foldval, paraptr->dupmax, paraptr->coarrat) != 0)
+  if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->passnbr,
+                     paraptr->coarnbr, foldval, paraptr->dupmax, paraptr->coarrat) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   coargrafptr->partgsttax = NULL;                 /* Do not allocate partition data yet */

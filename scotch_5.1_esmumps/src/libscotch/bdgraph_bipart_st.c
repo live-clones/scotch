@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                bipartitioning methods.                 **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 10 sep 2007     **/
-/**                                 to     14 dec 2008     **/
+/**                                 to   : 25 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,7 +88,7 @@ static union {
 static union {
   BdgraphBipartMlParam      param;
   StratNodeMethodData       padding;
-} bdgraphbipartdefaultml = { { 1000, 100, 0, 0.8L, &stratdummy, &stratdummy, &stratdummy} };
+} bdgraphbipartdefaultml = { { 5, 1000, 100, 0, 0.8L, &stratdummy, &stratdummy, &stratdummy} };
 
 static union {
   BdgraphBipartSqParam      param;
@@ -140,6 +140,10 @@ static StratParamTab        bdgraphbipartstparatab[] = { /* Method parameter lis
                                 (byte *) &bdgraphbipartdefaultml.param,
                                 (byte *) &bdgraphbipartdefaultml.param.stratseq,
                                 (void *) &bdgraphbipartststratab },
+                              { BDGRAPHBIPARTMETHML,  STRATPARAMINT,    "pass",
+                                (byte *) &bdgraphbipartdefaultml.param,
+                                (byte *) &bdgraphbipartdefaultml.param.passnbr,
+                                NULL },
                               { BDGRAPHBIPARTMETHML,  STRATPARAMINT,    "vert",
                                 (byte *) &bdgraphbipartdefaultml.param,
                                 (byte *) &bdgraphbipartdefaultml.param.coarnbr,
