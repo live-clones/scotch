@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     11 jun 2004     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to     22 oct 2008     **/
+/**                                 to     09 jun 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,12 +67,6 @@
 #include "parser.h"
 #include "parser_ll.h"
 #include "parser_yy.h"
-
-/* Change some function names. */
-
-#define yylex                       stratParserLex /* Lexical analyzer           */
-#define yyparse                     stratParserParse2 /* Parser function name    */
-#define yyerror                     stratParserError /* Error processing routine */
 
 /* #define SCOTCH_DEBUG_PARSER3 */
 #ifdef SCOTCH_DEBUG_PARSER3

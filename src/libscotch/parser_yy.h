@@ -47,8 +47,24 @@
 /**                                 to     01 oct 1998     **/
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     21 dec 2001     **/
+/**                # Version 5.1  : from : 09 jun 2009     **/
+/**                                 to     09 jun 2009     **/
 /**                                                        **/
 /************************************************************/
+
+/*
+**  The defines.
+*/
+
+/* Change some function names. */
+
+#define yylex                       stratParserLex /* Lexical analyzer           */
+#define yyparse                     stratParserParse2 /* Parser function name    */
+#define yyerror                     stratParserError /* Error processing routine */
+
+#define yychar                      stratparserchar /* To avoid conflicts with other parsers */
+#define yydebug                     stratparserdebug
+#define yylval                      stratparserlval
 
 /*
 **  The function prototypes.

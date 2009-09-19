@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 27 Jul 2005     **/
 /**                                 to   : 24 feb 2007     **/
 /**                # Version 5.1  : from : 11 nov 2008     **/
-/**                                 to   : 04 apr 2009     **/
+/**                                 to   : 26 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -131,6 +131,6 @@ static int                  dgraphCoarsenInit   (DgraphCoarsenData * restrict co
 static void                 dgraphCoarsenExit   (DgraphCoarsenData * restrict const);
 static int                  dgraphCoarsenBuild  (DgraphCoarsenData * restrict const);
 
-int                         dgraphCoarsen       (Dgraph * restrict const, Dgraph * restrict const, DgraphCoarsenMulti * restrict * const, const Gnum, const int, const Gnum, const double);
+int                         dgraphCoarsen       (Dgraph * restrict const, Dgraph * restrict const, DgraphCoarsenMulti * restrict * const, const Gnum, const Gnum, const int, const Gnum, const double);
 
 #undef static

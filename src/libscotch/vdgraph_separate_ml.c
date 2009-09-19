@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 07 mar 2006     **/
 /**                                 to   : 01 mar 2008     **/
 /**                # Version 5.1  : from : 14 dec 2008     **/
-/**                                 to   : 28 apr 2009     **/
+/**                                 to   : 26 may 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,8 +99,8 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
       dofolddup = -1;
   }
 
-  if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->coarnbr,
-                     dofolddup, paraptr->dupmax, paraptr->coarrat) != 0)
+  if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->passnbr,
+                     paraptr->coarnbr, dofolddup, paraptr->dupmax, paraptr->coarrat) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   if (coargrafptr->s.procglbnbr == 0) {           /* Not a owner graph */

@@ -1,0 +1,20 @@
+EXE	=
+LIB	= .a
+OBJ	= .o
+
+MAKE	= make
+AR	= ar
+ARFLAGS	= -ruv
+CAT	= cat
+CCS	= icc -O3 -fp-model fast
+CCP     = icpc
+CCD	= icpc
+CFLAGS	= -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME
+LDFLAGS	= -g -lz -lm -lrt
+CP	= cp
+LEX	= flex
+LN	= ln
+MKDIR	= mkdir
+MV	= mv
+RANLIB	= ranlib
+YACC	= bison -y

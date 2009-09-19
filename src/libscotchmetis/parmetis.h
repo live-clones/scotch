@@ -9,7 +9,7 @@
 **  the libPTScotchMeTiS library.                       **
 **                                                      **
 *********************************************************/
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,6 +52,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 17 oct 2007     **/
 /**                                 to     18 oct 2007     **/
+/**                # Version 5.1  : from : 19 jun 2008     **/
+/**                                 to     20 jun 2008     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,3 +73,5 @@
 */
 
 void                        ParMETIS_V3_NodeND  (const int * const, int * const, int * const, const int * const, const int * const, int * const, int * const, MPI_Comm * const);
+void                        ParMETIS_V3_PartGeomKway (const int * const, int * const, int * const, int * const, int * const, const int * const, const int * const, const int * const, const float * const, const int * const, const int * const, const float * const, const float * const, const int * const, int * const, int * const, MPI_Comm * const);
+void                        ParMETIS_V3_PartKway (const int * const, int * const, int * const, int * const, int * const, const int * const, const int * const, const int * const, const int * const, const float * const, const float * const, const int * const, int * const, int * const, MPI_Comm * const);
