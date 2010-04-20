@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 09 dec 2003     **/
 /**                                 to     10 dec 2003     **/
+/**                # Version 5.1  : from : 01 oct 2009     **/
+/**                                 to   : 01 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,8 +60,8 @@
 /*+ This structure holds the method parameters. +*/
 
 typedef struct HmeshOrderHdParam_ {
-  long                      colmin;               /*+ Minimum number of columns +*/
-  long                      colmax;               /*+ Maximum number of columns +*/
+  INT                       colmin;               /*+ Minimum number of columns +*/
+  INT                       colmax;               /*+ Maximum number of columns +*/
   double                    fillrat;              /*+ Fill-in ratio             +*/
 } HmeshOrderHdParam;
 

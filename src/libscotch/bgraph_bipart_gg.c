@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 02 jan 2007     **/
 /**                                 to     04 feb 2007     **/
 /**                # Version 5.1  : from : 21 nov 2007     **/
-/**                                 to     21 nov 2007     **/
+/**                                 to     28 jan 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,7 +103,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
   Gnum                            permnum;        /* Current permutation index                  */
   const Gnum * restrict           velobax;        /* Data for handling of optional arrays       */
   Gnum                            velomsk;
-  const byte * restrict           veexbax;
+  const byte * restrict           veexbab;        /* Un-based array for external gains          */
   int                             veexsiz;
   const Gnum * restrict           edlobax;
   Gnum                            edlomsk;
@@ -167,11 +167,11 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
     velomsk = ~((Gnum) 0);
   }
   if (grafptr->veextax == NULL) {
-    veexbax = (byte *) &bgraphbipartggloadzero;
+    veexbab = (byte *) &bgraphbipartggloadzero;
     veexsiz = 0;
   }
   else {
-    veexbax = (byte *) grafptr->veextax;
+    veexbab = (byte *) (grafptr->veextax + grafptr->s.baseval);
     veexsiz = sizeof (Gnum);
   }
 
@@ -270,7 +270,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
 
   flagtax = (byte *) (vexxtax + grafptr->s.baseval) - grafptr->s.baseval; /* Re-use extended vertex array for flag array */
   memSet (flagtax + grafptr->s.baseval, ~0, grafptr->s.vertnbr * sizeof (byte));
-  for (vertnum = grafptr->s.baseval, veexptr = (Gnum *) veexbax, fronnum = 0, compsize1 = 0, commgainextn = grafptr->commgainextn0;
+  for (vertnum = grafptr->s.baseval, veexptr = (Gnum *) veexbab, fronnum = 0, compsize1 = 0, commgainextn = grafptr->commgainextn0;
        vertnum < grafptr->s.vertnnd; vertnum ++, veexptr = (Gnum *) ((byte *) veexptr + veexsiz)) {
     int                 partval;
 

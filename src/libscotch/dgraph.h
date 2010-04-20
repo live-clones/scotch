@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 03 aug 2007     **/
 /**                # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 07 mar 2009     **/
+/**                                 to   : 28 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -140,44 +140,45 @@ typedef byte GraphPart;
 /* The distributed graph structure. */
 
 typedef struct Dgraph_ {
-  DgraphFlag                flagval;              /*+ Graph properties                                         +*/
-  Gnum                      baseval;              /*+ Base index for edge/vertex arrays                        +*/
-  Gnum                      vertglbnbr;           /*+ Global number of vertices                                +*/
-  Gnum                      vertglbmax;           /*+ Maximum number of local vertices over all processes      +*/
-  Gnum                      vertgstnbr;           /*+ Number of local + ghost vertices                         +*/
-  Gnum                      vertgstnnd;           /*+ vertgstnbr + baseval                                     +*/
-  Gnum                      vertlocnbr;           /*+ Local number of vertices                                 +*/
-  Gnum                      vertlocnnd;           /*+ Local number of vertices + baseval                       +*/
-  Gnum * restrict           vertloctax;           /*+ Local vertex beginning index array [based]               +*/
-  Gnum * restrict           vendloctax;           /*+ Local vertex end index array [based]                     +*/
-  Gnum * restrict           veloloctax;           /*+ Local vertex load array if present                       +*/
-  Gnum                      velolocsum;           /*+ Local sum of all vertex loads                            +*/
-  Gnum                      veloglbsum;           /*+ Global sum of all vertex loads                           +*/
-  Gnum * restrict           vnumloctax;           /*+ Arrays of global vertex numbers in original graph        +*/
-  Gnum * restrict           vlblloctax;           /*+ Arrays of vertex labels (when read from file)            +*/
-  Gnum                      edgeglbnbr;           /*+ Global number of arcs                                    +*/
-  Gnum                      edgeglbmax;           /*+ Maximum number of local edges over all processes         +*/
-  Gnum                      edgelocnbr;           /*+ Number of local edges                                    +*/
-  Gnum                      edgelocsiz;           /*+ Size of local edge array (= edgelocnbr when compact)     +*/
-  Gnum                      edgeglbsmx;           /*+ Maximum size of local edge arrays over all processes     +*/
-  Gnum * restrict           edgegsttax;           /*+ Edge array holding local indices of neighbors [based]    +*/
-  Gnum * restrict           edgeloctax;           /*+ Edge array holding global neighbor numbers [based]       +*/
-  Gnum * restrict           edloloctax;           /*+ Edge load array                                          +*/
-  Gnum                      degrglbmax;           /*+ Maximum degree over all processes                        +*/
-  MPI_Comm                  proccomm;             /*+ Graph communicator                                       +*/
-  int                       procglbnbr;           /*+ Number of processes sharing graph data                   +*/
-  int                       proclocnum;           /*+ Number of this process                                   +*/
-  int * restrict            procvrttab;           /*+ Global array of vertex number ranges [+1,based]          +*/
-  int * restrict            proccnttab;           /*+ Count array for local number of vertices                 +*/
-  int * restrict            procdsptab;           /*+ Displacement array with respect to proccnttab [+1,based] +*/
-  int                       procngbnbr;           /*+ Number of neighboring processes                          +*/
-  int                       procngbmax;           /*+ Maximum number of neighboring processes                  +*/
-  int * restrict            procngbtab;           /*+ Array of neighbor process numbers [sorted]               +*/
-  int * restrict            procrcvtab;           /*+ Number of vertices to receive in ghost vertex sub-arrays +*/
-  int                       procsndnbr;           /*+ Overall size of local send array                         +*/
-  int * restrict            procsndtab;           /*+ Number of vertices to send in ghost vertex sub-arrays    +*/
-  int * restrict            procsidtab;           /*+ Array of indices to build communication vectors (send)   +*/
-  int                       procsidnbr;           /*+ Size of the send index array                             +*/
+  DgraphFlag                flagval;              /*+ Graph properties                                          +*/
+  Gnum                      baseval;              /*+ Base index for edge/vertex arrays                         +*/
+  Gnum                      vertglbnbr;           /*+ Global number of vertices                                 +*/
+  Gnum                      vertglbmax;           /*+ Maximum number of local vertices over all processes       +*/
+  Gnum                      vertgstnbr;           /*+ Number of local + ghost vertices                          +*/
+  Gnum                      vertgstnnd;           /*+ vertgstnbr + baseval                                      +*/
+  Gnum                      vertlocnbr;           /*+ Local number of vertices                                  +*/
+  Gnum                      vertlocnnd;           /*+ Local number of vertices + baseval                        +*/
+  Gnum * restrict           vertloctax;           /*+ Local vertex beginning index array [based]                +*/
+  Gnum * restrict           vendloctax;           /*+ Local vertex end index array [based]                      +*/
+  Gnum * restrict           veloloctax;           /*+ Local vertex load array if present                        +*/
+  Gnum                      velolocsum;           /*+ Local sum of all vertex loads                             +*/
+  Gnum                      veloglbsum;           /*+ Global sum of all vertex loads                            +*/
+  Gnum * restrict           vnumloctax;           /*+ Arrays of global vertex numbers in original graph         +*/
+  Gnum * restrict           vlblloctax;           /*+ Arrays of vertex labels (when read from file)             +*/
+  Gnum                      edgeglbnbr;           /*+ Global number of arcs                                     +*/
+  Gnum                      edgeglbmax;           /*+ Maximum number of local edges over all processes          +*/
+  Gnum                      edgelocnbr;           /*+ Number of local edges                                     +*/
+  Gnum                      edgelocsiz;           /*+ Size of local edge array (= edgelocnbr when compact)      +*/
+  Gnum                      edgeglbsmx;           /*+ Maximum size of local edge arrays over all processes      +*/
+  Gnum * restrict           edgegsttax;           /*+ Edge array holding local indices of neighbors [based]     +*/
+  Gnum * restrict           edgeloctax;           /*+ Edge array holding global neighbor numbers [based]        +*/
+  Gnum * restrict           edloloctax;           /*+ Edge load array                                           +*/
+  Gnum                      degrglbmax;           /*+ Maximum degree over all processes                         +*/
+  MPI_Comm                  proccomm;             /*+ Graph communicator                                        +*/
+  int                       prockeyval;           /*+ Communicator key value: folded communicators are distinct +*/
+  int                       procglbnbr;           /*+ Number of processes sharing graph data                    +*/
+  int                       proclocnum;           /*+ Number of this process                                    +*/
+  int * restrict            procvrttab;           /*+ Global array of vertex number ranges [+1,based]           +*/
+  int * restrict            proccnttab;           /*+ Count array for local number of vertices                  +*/
+  int * restrict            procdsptab;           /*+ Displacement array with respect to proccnttab [+1,based]  +*/
+  int                       procngbnbr;           /*+ Number of neighboring processes                           +*/
+  int                       procngbmax;           /*+ Maximum number of neighboring processes                   +*/
+  int * restrict            procngbtab;           /*+ Array of neighbor process numbers [sorted]                +*/
+  int * restrict            procrcvtab;           /*+ Number of vertices to receive in ghost vertex sub-arrays  +*/
+  int                       procsndnbr;           /*+ Overall size of local send array                          +*/
+  int * restrict            procsndtab;           /*+ Number of vertices to send in ghost vertex sub-arrays     +*/
+  int * restrict            procsidtab;           /*+ Array of indices to build communication vectors (send)    +*/
+  int                       procsidnbr;           /*+ Size of the send index array                              +*/
 } Dgraph;
 
 /*
@@ -199,6 +200,9 @@ int                         dgraphCheck         (const Dgraph * const);
 int                         dgraphView          (const Dgraph * const, FILE * const);
 int                         dgraphGhst2         (Dgraph * const, const int);
 int                         dgraphBand          (Dgraph * restrict const, const Gnum, Gnum * restrict const, const GraphPart * restrict const, const Gnum, const Gnum, Gnum, Dgraph * restrict const, Gnum * restrict * const, GraphPart * restrict * const, Gnum * const, Gnum * const, Gnum * const);
+int                  dgraphBandColl      (Dgraph * restrict const, const Gnum, Gnum * restrict const, const Gnum, Gnum * restrict * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const);
+int                  dgraphBandPtop      (Dgraph * restrict const, const Gnum, Gnum * restrict const, const Gnum, Gnum * restrict * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const);
+
 int                         dgraphFold          (const Dgraph * restrict const, const int, Dgraph * restrict const, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFold2         (const Dgraph * restrict const, const int, Dgraph * restrict const, MPI_Comm, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFoldDup       (const Dgraph * restrict const, Dgraph * restrict const, void * restrict const, void ** restrict const, MPI_Datatype);
@@ -221,5 +225,3 @@ int                         dgraphHaloSync      (Dgraph * const, void * const, M
 #define dgraphGhst(grafptr)         dgraphGhst2 (grafptr, 0) /* Build ghost edge array in addition to local edge array */
 #define dgraphGhstReplace(grafptr)  dgraphGhst2 (grafptr, 1) /* Replace local edge array by ghost edge array           */
 #define dgraphHasGhst(grafptr)      (((grafptr)->flagval & DGRAPHHASEDGEGST) != 0) /* If graph has a ghost edge array  */
-
-#define dgraphVertexLocal(g,v)      (((g)->procvrttab[(g)->proclocnum] <= (v)) && ((g)->procvrttab[(g)->proclocnum + 1] > (v)))

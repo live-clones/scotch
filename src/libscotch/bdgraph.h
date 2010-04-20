@@ -84,7 +84,7 @@ typedef struct Bdgraph_ {
 
 typedef struct BdgraphStore_ {
   Gnum                      fronlocnbr;           /*+ Number of local frontier vertices   +*/
-  Gnum                      fronglbnbr;           /*+ Number of frontier nodes            +*/
+  Gnum                      fronglbnbr;           /*+ Number of frontier vertices         +*/
   Gnum                      complocload0;         /*+ Local load in part 0                +*/
   Gnum                      compglbload0;         /*+ Load in part 0                      +*/ 
   Gnum                      compglbload0dlt;      /*+ Difference from the average         +*/
@@ -103,9 +103,9 @@ typedef struct BdgraphStore_ {
 #define static
 #endif
 
-#ifdef ARCH_H
+#ifdef DMAPPING_H
 int                         bdgraphInit         (Bdgraph * const, const Dgraph * const, const Dgraph * const, const Arch * const, const ArchDom[]);
-#endif /* ARCH_H */
+#endif /* DMAPPING_H */
 void                        bdgraphInit2        (Bdgraph * const, const Anum, const Anum, const Anum);
 #ifdef DMAPPING_H
 int                         bdgraphInit3        (Bdgraph * const, const Dgraph * const, const Dmapping * const, const ArchDom[]);

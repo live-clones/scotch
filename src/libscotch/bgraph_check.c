@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 08 jan 2004     **/
 /**                                 to     07 dec 2005     **/
+/**                # Version 5.1  : from : 04 oct 2009     **/
+/**                                 to     04 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,6 +86,13 @@ const Bgraph * restrict const grafptr)
   Gnum                commgainextn;
   Gnum                edloval;
 
+  const Gnum * restrict const       verttax = grafptr->s.verttax;
+  const Gnum * restrict const       vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const       velotax = grafptr->s.velotax;
+  const Gnum * restrict const       edgetax = grafptr->s.edgetax;
+  const Gnum * restrict const       edlotax = grafptr->s.edlotax;
+  const GraphPart * restrict const  parttax = grafptr->parttax;
+
   if ((flagtax = memAlloc (grafptr->s.vertnbr * sizeof (Gnum))) == NULL) {
     errorPrint ("bgraphCheck: out of memory");
     return     (1);
@@ -97,7 +106,8 @@ const Bgraph * restrict const grafptr)
   }
 
   for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) {
-    if (grafptr->parttax[vertnum] > 1) {
+    if ((parttax[vertnum] < 0) ||
+        (parttax[vertnum] > 1)) {
       errorPrint ("bgraphCheck: invalid part array");
       return     (1);
     }
@@ -111,8 +121,8 @@ const Bgraph * restrict const grafptr)
   for (fronnum = 0; fronnum < grafptr->fronnbr; fronnum ++) {
     Gnum                vertnum;
     Gnum                edgenum;
-    Gnum                commcut;
-    int                 partval;
+    GraphPart           partval;
+    GraphPart           flagval;
 
     vertnum = grafptr->frontab[fronnum];
     if ((vertnum < grafptr->s.baseval) || (vertnum >= grafptr->s.vertnnd)) {
@@ -124,16 +134,13 @@ const Bgraph * restrict const grafptr)
       return     (1);
     }
     flagtax[vertnum] = 0;
-    partval = grafptr->parttax[vertnum];
+    partval = parttax[vertnum];
 
-    for (edgenum = grafptr->s.verttax[vertnum], commcut = 0;
-         edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
-      int                 partdlt;
+    for (edgenum = verttax[vertnum], flagval = 0;
+         edgenum < vendtax[vertnum]; edgenum ++)
+      flagval |= parttax[edgetax[edgenum]] ^ partval; /* Flag set if neighbor part differs from vertex part */
 
-      partdlt  = grafptr->parttax[grafptr->s.edgetax[edgenum]] ^ partval;
-      commcut += partdlt;
-    }
-    if (commcut == 0) {
+    if (flagval == 0) {
       errorPrint ("bgraphCheck: invalid vertex in frontier array");
       return     (1);
     }
@@ -151,7 +158,7 @@ const Bgraph * restrict const grafptr)
     Gnum                partval;                  /* Part of current vertex */
     Gnum                edgenum;                  /* Number of current edge */
 
-    partval = (Gnum) grafptr->parttax[vertnum];
+    partval = (Gnum) parttax[vertnum];
     if (grafptr->veextax != NULL) {
       Gnum                veexval;
 
@@ -160,26 +167,26 @@ const Bgraph * restrict const grafptr)
       commgainextn += veexval * (1 - 2 * partval);
     }
 
-    compload[partval] += (grafptr->s.velotax == NULL) ? 1 : grafptr->s.velotax[vertnum];
+    compload[partval] += (velotax == NULL) ? 1 : velotax[vertnum];
     compsize[partval] ++;
 
     commcut[0] =
     commcut[1] = 0;
-    for (edgenum = grafptr->s.verttax[vertnum]; edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
+    for (edgenum = verttax[vertnum]; edgenum < vendtax[vertnum]; edgenum ++) {
       int                 partend;
       int                 partdlt;
 
-      if (grafptr->s.edlotax != NULL)
-        edloval = grafptr->s.edlotax[edgenum];
-      partend = grafptr->parttax[grafptr->s.edgetax[edgenum]];
+      if (edlotax != NULL)
+        edloval = edlotax[edgenum];
+      partend = parttax[edgetax[edgenum]];
       partdlt = partval ^ partend;
       commcut[partend] ++;
       commloadintn += partdlt * edloval * partend; /* Only count loads once, when (partend == 1) */
     }
 
-    if ((commcut[0] != 0) && (commcut[1] != 0) && /* If vertex should be in separator */
+    if ((commcut[0] != 0) && (commcut[1] != 0) && /* If vertex should be in frontier array */
         (flagtax[vertnum] != 0)) {
-      errorPrint ("bgraphCheck: vertex should be in separator");
+      errorPrint ("bgraphCheck: vertex should be in frontier array");
       return     (1);
     }
   }

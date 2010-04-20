@@ -40,7 +40,7 @@
 /**                graph using a multi-level scheme.       **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 26 may 2009     **/
+/**                                 to   : 29 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,21 +99,13 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
 
   coargrafptr->partgsttax = NULL;                 /* Do not allocate partition data yet */
   coargrafptr->fronloctab = NULL;
+  coargrafptr->fronglbnbr = 0;
 
   if (coargrafptr->s.procglbnbr == 0) {           /* Not owner of graph */
     coargrafptr->veexloctax = NULL;
-    coargrafptr->fronglbnbr = -1;                 /* Mark frontab as invalid */
     return (0);
   }
-  else
-    coargrafptr->fronglbnbr = 0;                  /* Mark frontab as valid */
 
-#ifdef SCOTCH_DEBUG_BDGRAPH2
-  if (dgraphCheck (&coargrafptr->s) != 0) {
-    errorPrint ("bdgraphBipartMlCoarsen: internal error");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_BDGRAPH2 */
   if (finegrafptr->veexloctax != NULL) {          /* Merge external gains for coarsened vertices */
     DgraphCoarsenMulti * restrict coarmulttax;
     Gnum * restrict               coarveexloctax;
@@ -168,90 +160,34 @@ Gnum * const                inout,                /* Second and output operand  
 const int * const           len,                  /* Number of instances ; should be 1, not used */
 const MPI_Datatype * const  typedat)              /* MPI datatype ; not used                     */
 {
-  if (inout[3] == 1) {                            /* Handle cases when at least one of them is erroneous */
-    if (in[3] == 1) {
-      if (inout[2] > in[2])                       /* To enforce commutativity, always keep smallest process number */
+  inout[5] |= in[5];                              /* Memory error flag */
+
+  if (inout[0] == 1) {                            /* Handle cases when at least one of them is erroneous */
+    if (in[0] == 1) {
+      if (inout[1] > in[1])                       /* To enforce commutativity, always keep smallest process number */
+        inout[1] = in[1];
         inout[2] = in[2];
       return;
     }
 
-    inout[0] = in[0];
+    inout[0] = in[0];                             /* Validity flag        */
+    inout[1] = in[1];                             /* Lead process rank    */
+    inout[2] = in[2];                             /* Lead process color   */
+    inout[3] = in[3];                             /* Communication load   */
+    inout[4] = in[4];                             /* Load imbalance       */
+    return;
+  }
+  else if (in[0] == 1)
+    return;
+
+  if ((in[3] < inout[3]) ||                       /* Select best partition */
+      ((in[3] == inout[3]) && ((in[4] < inout[4]) ||
+			       ((in[4] == inout[4]) && (in[1] < inout[1]))))) {
     inout[1] = in[1];
     inout[2] = in[2];
     inout[3] = in[3];
-    return;
+    inout[4] = in[4];
   }
-  else if (in[3] == 1)
-    return;
-
-  if ((in[0] < inout[0]) ||                       /* Select best partition */
-      ((in[0] == inout[0]) && ((in[1] < inout[1]) ||
-			       ((in[1] == inout[1]) && (in[2] < inout[2]))))) {
-    inout[0] = in[0];
-    inout[1] = in[1];
-    inout[2] = in[2];
-  }
-}
-
-/* This routine selects the best coarse partition
-** to project back to finer graph.
-*/
-
-static
-int
-bdgraphBipartMlBest (
-const Bdgraph * restrict const  coargrafptr,
-const MPI_Comm                  parentcomm,
-const int                       proclocnum)
-{
-  Gnum              reduloctab[4];                /* Local array for best bipartition data               */
-  Gnum              reduglbtab[4];                /* Global array for best bipartition data              */
-  MPI_Datatype      besttypedat;                  /* Data type for finding best bipartition              */
-  MPI_Op            bestoperdat;                  /* Handle of MPI operator for finding best bipartition */
-  int               myassoc;                      /* To know how graphs are folded                       */
-  int               bestassoc;
-
-
-  if (coargrafptr->fronglbnbr < 0) {              /* Processors own coargrafptr      */
-    MPI_Comm_size (parentcomm, &myassoc);         /* Mark higher than other vertices */
-    ++ myassoc;
-    reduloctab[0] = 0;
-    reduloctab[1] = 0;                            /* To avoid warning in valgrind */
-    reduloctab[2] = myassoc;
-    reduloctab[3] = 1;
-  }
-  else {
-    bestassoc = proclocnum;
-    if (MPI_Allreduce (&bestassoc, &myassoc, 1, MPI_INT, MPI_MIN, coargrafptr->s.proccomm) != MPI_SUCCESS)  {
-      errorPrint ("bdgraphBipartMlBest: communication error (1)");
-      return     (-1);
-    }
-    reduloctab[0] = coargrafptr->commglbload;     /* Communication load */
-    reduloctab[1] = coargrafptr->compglbload0dlt; /* Load imbalance     */
-    reduloctab[2] = myassoc;
-    reduloctab[3] = (coargrafptr->fronglbnbr <= 0) ? 1 : 0;
-  }
-
-  if ((MPI_Type_contiguous (4, GNUM_MPI, &besttypedat)                              != MPI_SUCCESS) ||
-      (MPI_Type_commit (&besttypedat)                                               != MPI_SUCCESS) ||
-      (MPI_Op_create ((MPI_User_function *) bdgraphBipartMlOpBest, 1, &bestoperdat) != MPI_SUCCESS)) {
-    errorPrint ("bdgraphBipartMlBest: communication error (2)");
-    return     (-1);
-  }
-
-  if (MPI_Allreduce (reduloctab, reduglbtab, 1, besttypedat, bestoperdat, parentcomm) != MPI_SUCCESS) {
-    errorPrint ("bdgraphBipartMlBest: communication error (3)");
-    return     (-1);
-  }
-
-  bestassoc = (int) reduglbtab[2];
-  if ((MPI_Op_free   (&bestoperdat) != MPI_SUCCESS) ||
-      (MPI_Type_free (&besttypedat) != MPI_SUCCESS)) {
-    errorPrint ("bdgraphBipartMlBest: communication error (4)");
-    return     (-1);
-  }
-
-  return ((myassoc == bestassoc) ? 1 : 0);
 }
 
 /* This routine propagates the bipartitioning of the
@@ -276,9 +212,9 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   Gnum                            finefronlocnbr;
   Gnum                            finefronlocnum;
   Gnum                            fineedlolocval;
-  Gnum                            finevertlocadj; /* Global vertex adjustment                  */
+  Gnum                            finevertlocadj; /* Global vertex adjustment                            */
   Gnum                            finevertlocnum;
-  Gnum                            finevertlocnnd; /* Index for frontier array fronloctab       */
+  Gnum                            finevertlocnnd; /* Index for frontier array fronloctab                 */
   Gnum                            finecomplocsize1;
   Gnum                            finecomplocload1;
   Gnum                            finecommlocloadintn;
@@ -293,17 +229,20 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   Gnum * restrict                 vrcvdattab;
   Gnum * restrict                 vsnddattab;
   Gnum * restrict                 vsndidxtab;
-  BdgraphBipartMlSort * restrict  sortloctab;     /* Array of vertices to send to their owner  */
+  BdgraphBipartMlSort * restrict  sortloctab;     /* Array of vertices to send to their owner            */
   Gnum                            sortlocnbr;
   Gnum                            sortlocnum;
-  int                             procglbnbr;
   int                             procnum;
-  int                             sendval;        /* Flag set if process has to send data      */
-  Gnum                            reduloctab[6];
+  MPI_Datatype                    besttypedat;    /* Data type for finding best bipartition              */
+  MPI_Op                          bestoperdat;    /* Handle of MPI operator for finding best bipartition */
+  Gnum                            reduloctab[6];  /* "6": both for selecting best and propagating data   */
   Gnum                            reduglbtab[6];
+  const Gnum * restrict           coarfronloctab;
+  GraphPart * restrict            coarpartgsttax;
+  GraphPart * restrict            finepartgsttax;
+  Gnum * restrict                 finefronloctab;
 
-  const Gnum * restrict       coarfronloctab;
-  GraphPart * restrict        coarpartgsttax;
+  const int                   fineprocglbnbr = finegrafptr->s.procglbnbr;
   const int * restrict const  fineprocvrttab = finegrafptr->s.procvrttab;
   const Gnum * restrict const fineedgegsttax = finegrafptr->s.edgegsttax;
   const Gnum * restrict const finevertloctax = finegrafptr->s.vertloctax;
@@ -311,89 +250,103 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   const Gnum * restrict const fineveloloctax = finegrafptr->s.veloloctax;
   const Gnum * restrict const fineveexloctax = finegrafptr->veexloctax;
   const Gnum * restrict const fineedloloctax = finegrafptr->s.edloloctax;
-  GraphPart * restrict        finepartgsttax;
-  Gnum * restrict             finefronloctab;
 
-  reduloctab[0] = 0;                              /* Assume everything is fine                      */
+  reduloctab[5] = 0;                              /* Assume everything is fine                      */
   if (finegrafptr->partgsttax == NULL) {          /* If partition array not yet allocated           */
     if (dgraphGhst (&finegrafptr->s) != 0) {      /* Create ghost edge array and compute vertgstnbr */
       errorPrint ("bdgraphBipartMlUncoarsen: cannot compute ghost edge array");
-      reduloctab[0] = 1;                          /* Allocated data will be freed along with graph structure */
+      reduloctab[5] = 1;                          /* Allocated data will be freed along with graph structure */
     }
     else if ((finegrafptr->partgsttax = (GraphPart *) memAlloc (finegrafptr->s.vertgstnbr * sizeof (GraphPart))) == NULL) {
       errorPrint ("bdgraphBipartMlUncoarsen: out of memory (1)");
-      reduloctab[0] = 1;                          /* Allocated data will be freed along with graph structure */
+      reduloctab[5] = 1;                          /* Allocated data will be freed along with graph structure */
     }
     else if (finegrafptr->partgsttax -= finegrafptr->s.baseval,
              (finegrafptr->fronloctab = (Gnum *) memAlloc (finegrafptr->s.vertlocnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("bdgraphBipartMlUncoarsen: out of memory (2)");
-      reduloctab[0] = 1;                          /* Allocated data will be freed along with graph structure */
+      reduloctab[5] = 1;                          /* Allocated data will be freed along with graph structure */
     }
   }
 
+  if (coargrafptr == NULL) {                      /* If coarser graph not provided                      */
 #ifdef SCOTCH_DEBUG_BDGRAPH1                      /* Communication cannot be overlapped by a useful one */
-  if (MPI_Allreduce (reduloctab, reduglbtab, 1, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS)  {
-    errorPrint ("bdgraphBipartMlUncoarsen: communication error (1)");
-    return     (1);
-  }
+    if (MPI_Allreduce (&reduloctab[5], &reduglbtab[5], 1, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS) {
+      errorPrint ("bdgraphBipartMlUncoarsen: communication error (1)");
+      return     (1);
+    }
 #else /* SCOTCH_DEBUG_BDGRAPH1 */
-  reduglbtab[0] = reduloctab[0];
+    reduglbtab[5] = reduloctab[5];
 #endif /* SCOTCH_DEBUG_BDGRAPH1 */
-  if (reduglbtab[0] != 0)
-    return (1);
+    if (reduglbtab[5] != 0)
+      return (1);
 
-  if (coargrafptr == NULL) {                      /* If coarser graph not provided */
     bdgraphZero (finegrafptr);                    /* Assign all vertices to part 0 */
+
     return (0);
   }
 
-  baseval        = finegrafptr->s.baseval;
-  finepartgsttax = finegrafptr->partgsttax;
-
-#ifdef SCOTCH_DEBUG_BDGRAPH2
-  memSet (finepartgsttax + baseval, ~0, finegrafptr->s.vertgstnbr * sizeof (GraphPart)); /* All vertices are unvisited */
-
-  if ((coargrafptr->s.procglbnbr  != 0) &&        /* If process is not inactive process of folded graph */
-      (bdgraphCheck (coargrafptr) != 0)) {
-    errorPrint ("bdgraphBipartMlUncoarsen: inconsistent coarse graph data");
-    reduloctab[0] = 1;
+  if (coargrafptr->s.procglbnbr <= 0) {           /* If unused folded coargrafptr   */
+    reduloctab[0] = 1;                            /* Set it as invalid              */
+    reduloctab[1] = 0;                            /* Useless rank                   */
+    reduloctab[2] = 1;                            /* Color is not the one of folded */
+    reduloctab[3] =                               /* Prevent Valgrind from yelling  */
+    reduloctab[4] = 0;
   }
-#endif /* SCOTCH_DEBUG_BDGRAPH2 */
-
-#ifdef PTSCOTCH_FOLD_DUP
-  sendval = ((coargrafptr->s.procglbnbr == 0) || /* If folded graph, select best partition */
-             (coargrafptr->s.proccomm != finegrafptr->s.proccomm))
-    ? bdgraphBipartMlBest (coargrafptr, finegrafptr->s.proccomm, finegrafptr->s.proclocnum) : 1;
-#else /* PTSCOTCH_FOLD_DUP */
-  sendval = 1;
-#endif /* PTSCOTCH_FOLD_DUP */
-
-  procglbnbr = finegrafptr->s.procglbnbr;
-
-  if (memAllocGroup ((void **) (void *)
-                     &vrcvcnttab, (size_t) (procglbnbr * sizeof (int)),
-                     &vrcvdsptab, (size_t) (procglbnbr * sizeof (int)),
-                     &vsnddsptab, (size_t) (procglbnbr * sizeof (int)),
-                     &vsndcnttab, (size_t) (procglbnbr * sizeof (int)),
-                     &vsndidxtab, (size_t) (procglbnbr * sizeof (Gnum) * 4), /* TRICK: sortloctab after vsndidxtab after vsndcnttab */
-                     &sortloctab, (size_t) (2 * coargrafptr->s.vertlocnbr * sizeof (BdgraphBipartMlSort)), NULL) == NULL) {
-    errorPrint ("bdgraphBipartMlUncoarsen: out of memory (3)");
-    reduloctab[0] = 1;
+  else {
+    reduloctab[0] = (coargrafptr->fronglbnbr <= 0) ? 1 : 0; /* Empty frontiers are deemed invalid                       */
+    reduloctab[1] = finegrafptr->s.proclocnum;    /* Set rank and color key according to coarse graph (sub)communicator */
+    reduloctab[2] = finegrafptr->s.prockeyval;
+    reduloctab[3] = coargrafptr->commglbload;
+    reduloctab[4] = coargrafptr->compglbload0dlt;
   }
-#ifdef SCOTCH_DEBUG_BDGRAPH1                      /* Communication cannot be overlapped by a useful one */
-  reduloctab[1] = (Gnum) sendval;
-  if (MPI_Allreduce (reduloctab, reduglbtab, 2, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS)  {
+
+  if ((MPI_Type_contiguous (6, GNUM_MPI, &besttypedat)                              != MPI_SUCCESS) ||
+      (MPI_Type_commit (&besttypedat)                                               != MPI_SUCCESS) ||
+      (MPI_Op_create ((MPI_User_function *) bdgraphBipartMlOpBest, 1, &bestoperdat) != MPI_SUCCESS)) {
     errorPrint ("bdgraphBipartMlUncoarsen: communication error (2)");
     return     (1);
   }
-  if (reduglbtab[1] == 0) {
-    errorPrint ("bdgraphBipartMlUncoarsen: internal error (1)");
+
+  if (MPI_Allreduce (reduloctab, reduglbtab, 1, besttypedat, bestoperdat, finegrafptr->s.proccomm) != MPI_SUCCESS) {
+    errorPrint ("bdgraphBipartMlUncoarsen: communication error (3)");
+    return     (1);
+  }
+
+  if ((MPI_Op_free   (&bestoperdat) != MPI_SUCCESS) ||
+      (MPI_Type_free (&besttypedat) != MPI_SUCCESS)) {
+    errorPrint ("bdgraphBipartMlUncoarsen: communication error (4)");
+    return     (1);
+  }
+
+  if (reduglbtab[5] != 0)                         /* If memory error, return */
+    return (1);
+
+  if (reduglbtab[0] == 1) {                       /* If all possible partitions are invalid */
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+    errorPrintW ("bdgraphBipartMlUncoarsen: no valid partition");
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
+    return (1);                                   /* All invalid partitions will lead to low method be applied at upper level */
+  }
+
+  if (memAllocGroup ((void **) (void *)
+                     &vrcvcnttab, (size_t) (fineprocglbnbr * sizeof (int)),
+                     &vrcvdsptab, (size_t) (fineprocglbnbr * sizeof (int)),
+                     &vsnddsptab, (size_t) (fineprocglbnbr * sizeof (int)),
+                     &vsndcnttab, (size_t) (fineprocglbnbr * sizeof (int)),
+                     &vsndidxtab, (size_t) (fineprocglbnbr * sizeof (Gnum) * 4), /* TRICK: sortloctab after vsndidxtab after vsndcnttab */
+                     &sortloctab, (size_t) (2 * coargrafptr->s.vertlocnbr * sizeof (BdgraphBipartMlSort)), NULL) == NULL) {
+    errorPrint ("bdgraphBipartMlUncoarsen: out of memory (3)");
+    reduloctab[5] = 1;
+  }
+#ifdef SCOTCH_DEBUG_BDGRAPH1                      /* Communication cannot be overlapped by a useful one */
+  if (MPI_Allreduce (&reduloctab[5], &reduglbtab[5], 1, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS) {
+    errorPrint ("bdgraphBipartMlUncoarsen: communication error (5)");
     return     (1);
   }
 #else /* SCOTCH_DEBUG_BDGRAPH1 */
-  reduglbtab[0] = reduloctab[0];
+  reduglbtab[5] = reduloctab[5];
 #endif /* SCOTCH_DEBUG_BDGRAPH1 */
-  if (reduglbtab[0] != 0) {
+  if (reduglbtab[5] != 0) {
     if (vrcvcnttab != NULL)
       memFree (vrcvcnttab);
     return (1);
@@ -401,8 +354,10 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
   memSet (vsndcnttab, 0, ((byte *) sortloctab) - ((byte *) vsndcnttab)); /* TRICK: sortloctab after vsndidxtab after vsndcnttab */
 
+  baseval        = finegrafptr->s.baseval;
   coarfronloctab = coargrafptr->fronloctab;
   coarpartgsttax = coargrafptr->partgsttax;
+  finepartgsttax = finegrafptr->partgsttax;
   finevertlocnnd = finegrafptr->s.vertlocnnd;
   finevertlocadj = finegrafptr->s.procvrttab[finegrafptr->s.proclocnum] - baseval;
   finefronloctab = finegrafptr->fronloctab;
@@ -412,9 +367,13 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   finecommlocloadextn = 0;
   finecommlocgainextn = 0;
 
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+  memSet (finepartgsttax + baseval, ~0, finegrafptr->s.vertgstnbr * sizeof (GraphPart)); /* All vertices are unvisited */
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
+
   finefronlocnbr = 0;
   sortlocnbr     = 0;
-  if (sendval != 0) {                             /* We must browse local data */
+  if (reduglbtab[2] == (Gnum) coargrafptr->s.prockeyval) { /* If we belong to the group of the lead process, we must browse and send local data */
     Gnum                coarfronlocnum;
     Gnum                coarvertlocnum;
 
@@ -438,10 +397,9 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
         if ((finevertlocnum >= baseval) &&        /* If vertex is local */
             (finevertlocnum <  finevertlocnnd)) {
-
 #ifdef SCOTCH_DEBUG_BDGRAPH2
           if (finepartgsttax[finevertlocnum] != ((GraphPart) ~0)) {
-            errorPrint ("bdgraphBipartMlUncoarsen: internal error (2)");
+            errorPrint ("bdgraphBipartMlUncoarsen: internal error (1)");
             return (1);
           }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -468,10 +426,9 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
         else {
           int               procngbnum;
           int               procngbmax;
-          int               j;
 
           procngbnum = 0;
-          procngbmax = procglbnbr;
+          procngbmax = fineprocglbnbr;
           while ((procngbmax - procngbnum) > 1) { /* Find owner process by dichotomy on procvgbtab */
             int                 procngbmed;
 
@@ -484,7 +441,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
           vsndidxtab[4 * procngbnum + coarpartval] ++; /* One of four counters per process number will be incremented */
           sortloctab[sortlocnbr].vertnum = finevertglbnum;
-          sortloctab[sortlocnbr].procnum = ((procngbnum + (procglbnbr * coarpartmsk)) ^ (- (Gnum) (coarpartval >> 1))); /* Embed part and frontier information */
+          sortloctab[sortlocnbr].procnum = ((procngbnum + (fineprocglbnbr * coarpartmsk)) ^ (- (Gnum) (coarpartval >> 1))); /* Embed part and frontier information */
           sortlocnbr ++;
         }
 
@@ -492,7 +449,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
       } while (finevertglbnum != coarmulttax[coarvertlocnum].vertglbnum[1]); /* If not single node */
     }
 
-    for (procnum = 0; procnum < procglbnbr; procnum ++) { /* Aggregate data to be sent */
+    for (procnum = 0; procnum < fineprocglbnbr; procnum ++) { /* Aggregate data to be sent */
       vsndcnttab[procnum] = vsndidxtab[4 * procnum]     + vsndidxtab[4 * procnum + 1] +
                             vsndidxtab[4 * procnum + 2] + vsndidxtab[4 * procnum + 3];
 
@@ -507,7 +464,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   }
 
   for (procnum = 0, vrcvdspnbr = vsnddspnbr = 0; /* Build communication index arrays */
-       procnum < finegrafptr->s.procglbnbr; procnum ++) {
+       procnum < fineprocglbnbr; procnum ++) {
     vrcvdsptab[procnum] = vrcvdspnbr;
     vsnddsptab[procnum] = vsnddspnbr;
     vrcvdspnbr += vrcvcnttab[procnum];
@@ -518,17 +475,17 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
                      &vrcvdattab, (size_t) (vrcvdspnbr * sizeof (Gnum)),
                      &vsnddattab, (size_t) (vsnddspnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("bdgraphBipartMlUncoarsen: out of memory (4)");
-    reduloctab[0] = 1;
+    reduloctab[5] = 1;
   }
 #ifdef SCOTCH_DEBUG_BDGRAPH1                      /* Communication cannot be overlapped by a useful one */
-  if (MPI_Allreduce (reduloctab, reduglbtab, 1, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS)  {
+  if (MPI_Allreduce (&reduloctab[5], &reduglbtab[5], 1, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS)  {
     errorPrint ("bdgraphBipartMlUncoarsen: communication error (4)");
     return     (1);
   }
 #else /* SCOTCH_DEBUG_BDGRAPH1 */
-  reduglbtab[0] = reduloctab[0];
+  reduglbtab[5] = reduloctab[5];
 #endif /* SCOTCH_DEBUG_BDGRAPH1 */
-  if (reduglbtab[0] != 0) {
+  if (reduglbtab[5] != 0) {
     if (vrcvdattab != NULL)
       memFree (vrcvdattab);
     if (vrcvcnttab != NULL)
@@ -536,7 +493,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     return (1);
   }
 
-  for (procnum = 0; procnum < procglbnbr; procnum ++) {
+  for (procnum = 0; procnum < fineprocglbnbr; procnum ++) {
     Gnum              vsnddspval;
 
     vsnddspval = vsnddsptab[procnum];
@@ -574,9 +531,9 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
       partval = 2;
       procngbnum ^= (Gnum) -1;
     }
-    if (procngbnum >= procglbnbr) {
+    if (procngbnum >= fineprocglbnbr) {
       partval |= 1;
-      procngbnum -= procglbnbr;
+      procngbnum -= fineprocglbnbr;
     }
 
 #ifdef SCOTCH_DEBUG_BDGRAPH2
@@ -595,7 +552,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     return (1);
   }
     
-  for (procnum = 0; procnum < finegrafptr->s.procglbnbr; ++ procnum) { /* Update local ones from the buffer for receiving data */
+  for (procnum = 0; procnum < fineprocglbnbr; ++ procnum) { /* Update local ones from the buffer for receiving data */
     Gnum                vrcvidxnum;
     Gnum                vrcvidxnnd;
 
@@ -649,7 +606,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 #ifdef SCOTCH_DEBUG_BDGRAPH2
       if ((finevertlocnum < baseval) || (finevertlocnum >= finevertlocnnd)) {
         errorPrint ("bdgraphBipartMlUncoarsen: internal error (6)");
-        return (1);
+        return     (1);
       }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
       finepartgsttax[finevertlocnum] = 0;
@@ -664,7 +621,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 #ifdef SCOTCH_DEBUG_BDGRAPH2
       if ((finevertlocnum < baseval) || (finevertlocnum >= finevertlocnnd)) {
         errorPrint ("bdgraphBipartMlUncoarsen: internal error (7)");
-        return (1);
+        return     (1);
       }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
       finepartgsttax[finevertlocnum] = 1;
@@ -779,10 +736,7 @@ const BdgraphBipartMlParam * const  paraptr)      /* Method parameters */
   }
 
   if (bdgraphBipartMlCoarsen (grafptr, &coargrafdat, &coarmulttax, paraptr) == 0) {
-    if (coargrafdat.fronglbnbr == -1)             /* If frontab is invalid */
-      o = 0;
-    else
-      o = bdgraphBipartMl2 (&coargrafdat, paraptr);
+    o = (coargrafdat.s.procglbnbr == 0) ? 0 : bdgraphBipartMl2 (&coargrafdat, paraptr); /* Apply recursion on coarsened graph if it exists */
     if ((o == 0) &&
         ((o = bdgraphBipartMlUncoarsen (grafptr, &coargrafdat, coarmulttax)) == 0) &&
         ((o = bdgraphBipartSt          (grafptr, paraptr->stratasc))         != 0)) /* Apply ascending strategy */
