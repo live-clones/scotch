@@ -63,6 +63,16 @@
 /**                # Version 5.1  : from : 25 jun 2008     **/
 /**                                 to     28 sep 2008     **/
 /**                                                        **/
+/**   NOTES      : # While Anum and Gnum are different     **/
+/**                  types, because architectures are      **/
+/**                  most often much smaller than          **/
+/**                  than graphs and require smaller       **/
+/**                  integer ranges, for interface         **/
+/**                  consistency reasons as well as for    **/
+/**                  variable-sized architecture handling, **/
+/**                  they will always amount to the same   **/
+/**                  type.                                 **/
+/**                                                        **/
 /************************************************************/
 
 #define MAPPING_H

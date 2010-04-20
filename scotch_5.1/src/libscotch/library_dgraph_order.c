@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 25 apr 2006     **/
 /**                                 to     11 nov 2008     **/
+/**                # Version 5.1  : from : 29 mar 2010     **/
+/**                                 to     29 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -159,7 +161,7 @@ int
 SCOTCH_dgraphOrderCompute (
 const SCOTCH_Dgraph * const grafptr,              /*+ Graph to order      +*/
 SCOTCH_Dordering * const    ordeptr,              /*+ Ordering to compute +*/
-const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy   +*/
+SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy   +*/
 {
   return (SCOTCH_dgraphOrderComputeList (grafptr, ordeptr, 0, NULL, stratptr));
 }
@@ -179,7 +181,7 @@ const SCOTCH_Dgraph * const grafptr,              /*+ Graph to order            
 SCOTCH_Dordering * const    ordeptr,              /*+ Ordering to compute             +*/
 const SCOTCH_Num            listnbr,              /*+ Number of vertices in list      +*/
 const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order +*/
-const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy               +*/
+SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy               +*/
 {
   Dorder *            srcordeptr;                 /* Pointer to ordering          */
   DorderCblk *        srccblkptr;                 /* Initial column block         */

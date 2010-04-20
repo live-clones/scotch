@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                ing routine for distributed graphs.     **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 nov 2007     **/
-/**                                 to   : 16 nov 2007     **/
+/**                                 to   : 12 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,13 +68,6 @@ typedef struct BdgraphBipartDfParam_ {
   double                    cremval;              /*+ Coefficient of remaining load  +*/
   double                    deltval;              /*+ Maximum imbalance ratio        +*/
 } BdgraphBipartDfParam;
-
-/*+ The complementary vertex structure. +*/
-
-typedef struct BdgraphBipartDfVertex_ {
-  float                     veexval;              /*+ Veexval, divided by domdist     +*/
-  float                     ielsval;              /*+ Inverse of vertex edge load sum +*/
-} BdgraphBipartDfVertex;
 
 /*
 **  The function prototypes.

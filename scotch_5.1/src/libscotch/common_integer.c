@@ -246,8 +246,8 @@ intRandReset (void)
 /*********************/
 
 /* This routine sorts an array of
-** INT values by ascending order
-** on their first value, used as key.
+** INT values in ascending order
+** by their first value, used as key.
 ** It returns:
 ** - VOID  : in all cases.
 */
@@ -263,7 +263,7 @@ intRandReset (void)
 #undef INTSORTCMP
 
 /* This routine sorts an array of pairs of
-** INT values by ascending order on their
+** INT values in ascending order by their
 ** first value, used as key.
 ** It returns:
 ** - VOID  : in all cases.
@@ -280,7 +280,7 @@ intRandReset (void)
 #undef INTSORTCMP
 
 /* This routine sorts an array of 3-tuples of
-** INT values by ascending order on their
+** INT values in ascending order by their
 ** first value, used as key.
 ** It returns:
 ** - VOID  : in all cases.
@@ -297,7 +297,7 @@ intRandReset (void)
 #undef INTSORTCMP
 
 /* This routine sorts an array of pairs of
-** INT values by ascending order on both
+** INT values in ascending order by both
 ** of their values, used as primary and
 ** secondary keys.
 ** It returns:

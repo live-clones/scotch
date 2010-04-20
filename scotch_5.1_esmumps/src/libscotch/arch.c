@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,7 +61,7 @@
 /**                # Version 4.0  : from : 04 nov 2003     **/
 /**                                 to     09 jan 2004     **/
 /**                # Version 5.1  : from : 11 dec 2007     **/
-/**                                 to     23 jun 2008     **/
+/**                                 to     27 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -462,9 +462,19 @@ archDomMpiType (
 const Arch * const          archptr,
 MPI_Datatype * const        typeptr)
 {
+  int                 bloktab[2];
+  MPI_Aint            disptab[2];
+  MPI_Datatype        typetab[2];
   int                 o;
 
-  o = ((int (*) (const void * const, const void * const)) archptr->class->domMpiType) ((const void * const) &archptr->data, typeptr);
+  bloktab[0] =                                    /* Build structured type to set up upper bound of domain datatype */
+  bloktab[1] = 1;
+  disptab[0] = 0;                                 /* Displacement of real datatype is base of array */
+  disptab[1] = sizeof (ArchDom);                  /* Displacement of upper bound is size of ArchDom */
+  typetab[1] = MPI_UB;
+  o = ((int (*) (const void * const, const void * const)) archptr->class->domMpiType) ((const void * const) &archptr->data, &typetab[0]);
+  if (o == 0)
+    o = (MPI_Type_struct (2, bloktab, disptab, typetab, typeptr) != MPI_SUCCESS);
   if (o == 0)
     o = (MPI_Type_commit (typeptr) != MPI_SUCCESS); /* Created MPI types have to be committed */
 

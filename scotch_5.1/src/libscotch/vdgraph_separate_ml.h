@@ -75,7 +75,7 @@ typedef struct VdgraphSeparateMlParam_ {
 
 static int                  vdgraphSeparateMlCoarsen (Vdgraph * const, Vdgraph * const, DgraphCoarsenMulti * restrict * const, const VdgraphSeparateMlParam * const);
 static int                  vdgraphSeparateMlUncoarsen (Vdgraph *, const Vdgraph * const, const DgraphCoarsenMulti * restrict const);
-
+static void                 vdgraphSeparateMlOpBest (const Gnum * const, Gnum * const, const int * const, const MPI_Datatype * const);
 int                         vdgraphSeparateMl    (Vdgraph * const, const VdgraphSeparateMlParam * const);
 static int                  vdgraphSeparateMl2   (Vdgraph * const, const VdgraphSeparateMlParam * const);
 

@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 12 jun 2008     **/
-/**                                 to     08 jul 2008     **/
+/**                                 to     29 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -161,7 +161,7 @@ int
 SCOTCH_dgraphMapCompute (
 const SCOTCH_Dgraph * const grafptr,              /*+ Graph to map       +*/
 SCOTCH_Dmapping * const     mappptr,              /*+ Mapping to compute +*/
-const SCOTCH_Strat * const  stratptr)             /*+ Mapping strategy   +*/
+SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
 {
   Kdgraph                 mapgrafdat;             /* Effective mapping graph     */
   Kdmapping               mapmappdat;             /* Initial mapping domain      */
@@ -170,7 +170,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Mapping strategy   +*/
   int                     o;
 
   if (*((Strat **) stratptr) == NULL)             /* Set default mapping strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&kdgraphmapststratab, "b{sep=m{asc=b{bnd=q{strat=f},org=q{strat=f}},low=q{strat=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}},seq=q{strat=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}},seq=b{job=t,map=t,poli=S,sep=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}}");
+    *((Strat **) stratptr) = stratInit (&kdgraphmapststratab, "r{sep=m{asc=b{bnd=q{strat=f},org=q{strat=f}},low=q{strat=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}},seq=q{strat=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}},seq=r{job=t,map=t,poli=S,sep=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}}");
   mapstratptr = *((Strat **) stratptr);
   if (mapstratptr->tabl != &kdgraphmapststratab) {
     errorPrint ("SCOTCH_dgraphMapCompute: not a parallel graph mapping strategy");
@@ -203,7 +203,7 @@ int
 SCOTCH_dgraphMap (
 const SCOTCH_Dgraph * const grafptr,              /*+ Graph to map        +*/
 const SCOTCH_Arch * const   archptr,              /*+ Target architecture +*/
-const SCOTCH_Strat * const  stratptr,             /*+ Mapping strategy    +*/
+SCOTCH_Strat * const        stratptr,             /*+ Mapping strategy    +*/
 SCOTCH_Num * const          termloctab)           /*+ Mapping array       +*/
 {
   SCOTCH_Dmapping     mappdat;
@@ -228,7 +228,7 @@ int
 SCOTCH_dgraphPart (
 const SCOTCH_Dgraph * const grafptr,              /*+ Graph to map     +*/
 const SCOTCH_Num            partnbr,              /*+ Number of parts  +*/
-const SCOTCH_Strat * const  stratptr,             /*+ Mapping strategy +*/
+SCOTCH_Strat * const        stratptr,             /*+ Mapping strategy +*/
 SCOTCH_Num * const          termloctab)           /*+ Mapping array    +*/
 {
   SCOTCH_Arch         archdat;

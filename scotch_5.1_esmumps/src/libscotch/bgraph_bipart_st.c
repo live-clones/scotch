@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to     20 aug 2004     **/
 /**                # Version 5.0  : from : 27 nov 2006     **/
 /**                                 to     29 may 2007     **/
+/**                # Version 5.1  : from : 26 oct 2009     **/
+/**                                 to     26 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -204,7 +206,7 @@ static StratParamTab        bgraphbipartstcondtab[] = { /* Active graph conditio
                                 (byte *) &bgraphdummy,
                                 (byte *) &bgraphdummy.s.vertnbr,
                                 NULL },
-                              { STRATNODECOND,       STRATPARAMDOUBLE, "levl",
+                              { STRATNODECOND,       STRATPARAMINT,    "levl",
                                 (byte *) &bgraphdummy,
                                 (byte *) &bgraphdummy.levlnum,
                                 NULL },

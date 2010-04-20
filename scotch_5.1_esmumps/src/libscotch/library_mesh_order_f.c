@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     20 dec 2005     **/
 /**                # Version 5.0  : from : 04 aug 2007     **/
 /**                                 to     04 aug 2007     **/
+/**                # Version 5.1  : from : 27 mar 2010     **/
+/**                                 to     29 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -140,7 +142,7 @@ int * const                   revaptr),       \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFMESHORDERSAVE: cannot open output stream");
     close      (filenum);
     *revaptr = 1;
@@ -176,7 +178,7 @@ int * const                   revaptr),             \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFMESHORDERSAVEMAP: cannot open output stream");
     close      (filenum);
     *revaptr = 1;
@@ -212,7 +214,7 @@ int * const                   revaptr),               \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFMESHORDERSAVETREE: cannot open output stream");
     close      (filenum);
     *revaptr = 1;
@@ -234,7 +236,7 @@ FORTRAN (                                           \
 SCOTCHFMESHORDERCOMPUTE, scotchfmeshordercompute, ( \
 const SCOTCH_Mesh * const   meshptr,                \
 SCOTCH_Ordering * const     ordeptr,                \
-const SCOTCH_Strat * const  stratptr,               \
+SCOTCH_Strat * const        stratptr,               \
 int * const                 revaptr),               \
 (meshptr, ordeptr, stratptr, revaptr))
 {
@@ -251,7 +253,7 @@ const SCOTCH_Mesh * const   meshptr,                        \
 SCOTCH_Ordering * const     ordeptr,                        \
 const SCOTCH_Num *          listptr,                        \
 const SCOTCH_Num * const    listtab,                        \
-const SCOTCH_Strat * const  stratptr,                       \
+SCOTCH_Strat * const        stratptr,                       \
 int * const                 revaptr),                       \
 (meshptr, ordeptr, listptr, listtab, stratptr, revaptr))
 {
@@ -264,8 +266,8 @@ int * const                 revaptr),                       \
 
 FORTRAN (                                       \
 SCOTCHFMESHORDER, scotchfmeshorder, (           \
-const SCOTCH_Mesh * const  meshptr,             \
-const SCOTCH_Strat * const  stratptr,           \
+const SCOTCH_Mesh * const   meshptr,            \
+SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          permtab,            \
 SCOTCH_Num * const          peritab,            \
 SCOTCH_Num * const          cblkptr,            \
@@ -287,7 +289,7 @@ SCOTCHFMESHORDERLIST, scotchfmeshorderlist, (   \
 const SCOTCH_Mesh * const   meshptr,            \
 const SCOTCH_Num * const    listptr,            \
 const SCOTCH_Num * const    listtab,            \
-const SCOTCH_Strat * const  stratptr,           \
+SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          permtab,            \
 SCOTCH_Num * const          peritab,            \
 SCOTCH_Num * const          cblkptr,            \

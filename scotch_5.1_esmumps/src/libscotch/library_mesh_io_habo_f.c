@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 24 nov 2005     **/
 /**                                 to     24 nov 2005     **/
+/**                # Version 5.1  : from : 27 mar 2010     **/
+/**                                 to     27 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,14 +95,14 @@ const int                   datanbr),               \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((filegrfstream = fdopen (filegrfnum, "r+")) == NULL) { /* Build stream from handle */
+  if ((filegrfstream = fdopen (filegrfnum, "r")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFMESHGEOMLOADHABO: cannot open input stream (1)");
     close      (filegrfnum);
     close      (filegeonum);
     *revaptr = 1;
     return;
   }
-  if ((filegeostream = fdopen (filegeonum, "r+")) == NULL) { /* Build stream from handle */
+  if ((filegeostream = fdopen (filegeonum, "r")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFMESHGEOMLOADHABO: cannot open input stream (2)");
     fclose     (filegrfstream);
     close      (filegeonum);

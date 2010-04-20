@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : bipart_fm.c                             **/
+/**   NAME       : bgraph_bipart_fm.c                      **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
@@ -178,11 +178,12 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
   Gnum                            domdist;        /* Distance between the two subdomains      */
   Gnum                            fronnbr;
   Gnum                            fronnum;
-  const Gnum * restrict const     verttax = grafptr->s.verttax; /* Fast accesses              */
-  const Gnum * restrict const     vendtax = grafptr->s.vendtax;
-  const Gnum * restrict const     velotax = grafptr->s.velotax;
-  const Gnum * restrict const     edgetax = grafptr->s.edgetax;
-  const Gnum * restrict const     edlotax = grafptr->s.edlotax;
+
+  const Gnum * restrict const verttax = grafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const velotax = grafptr->s.velotax;
+  const Gnum * restrict const edgetax = grafptr->s.edgetax;
+  const Gnum * restrict const edlotax = grafptr->s.edlotax;
 
   compload0dltmat = (paraptr->deltval > 0.0L) ? ((Gnum) (paraptr->deltval * (double) grafptr->s.velosum) + 1) : 0;
   compload0dltmax = MAX (compload0dltmat, abs (grafptr->compload0dlt)); /* Set current maximum distance */

@@ -254,7 +254,7 @@ Gnum * const                  sepaptr)            /* Pointer to size of the arra
 
     loadcval =                                    /* Reset loads */
     loadrval = 0;
-    for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) { /* Accumulate loads   */
+    for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) { /* Accumulate loads */
       VgraphSeparateEsType  typeval;
       Gnum                  veloval;
       Gnum                  bitcval;

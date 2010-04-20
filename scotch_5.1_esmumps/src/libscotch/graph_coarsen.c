@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                                 to     31 aug 2005     **/
 /**                # Version 5.0  : from : 13 dec 2006     **/
 /**                                 to     24 mar 2008     **/
+/**                # Version 5.1  : from : 30 oct 2009     **/
+/**                                 to     30 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -269,21 +271,25 @@ const GraphCoarsenType                coartype)   /*+ Edge matching type        
 /****************************************/
 
 #define GRAPHCOARSENEDGENAME        graphCoarsenEdgeLl
-#define GRAPHCOARSENEDGEEDLOINIT    coargrafptr->edlotax[coaredgenum] = finegrafptr->edlotax[fineedgenum]
-#define GRAPHCOARSENEDGEEDLOADD     coargrafptr->edlotax[coarhashtab[h].edgenum] += finegrafptr->edlotax[fineedgenum]
+#define GRAPHCOARSENEDGEINIT        const Gnum * restrict const fineedlotax = finegrafptr->edlotax
+#define GRAPHCOARSENEDGEEDLOINIT    coaredlotax[coaredgenum] = fineedlotax[fineedgenum]
+#define GRAPHCOARSENEDGEEDLOADD     coaredlotax[coarhashtab[h].edgenum] += fineedlotax[fineedgenum]
 #define GRAPHCOARSENEDGEEDLOSUB     coaredlosum -= finegrafptr->edlotax[fineedgenum]
 #include "graph_coarsen_edge.c"
 #undef GRAPHCOARSENEDGENAME
+#undef GRAPHCOARSENEDGEINIT
 #undef GRAPHCOARSENEDGEEDLOINIT
 #undef GRAPHCOARSENEDGEEDLOADD
 #undef GRAPHCOARSENEDGEEDLOSUB
 
 #define GRAPHCOARSENEDGENAME        graphCoarsenEdgeLu
-#define GRAPHCOARSENEDGEEDLOINIT    coargrafptr->edlotax[coaredgenum] = 1
-#define GRAPHCOARSENEDGEEDLOADD     coargrafptr->edlotax[coarhashtab[h].edgenum] ++
+#define GRAPHCOARSENEDGEINIT
+#define GRAPHCOARSENEDGEEDLOINIT    coaredlotax[coaredgenum] = 1
+#define GRAPHCOARSENEDGEEDLOADD     coaredlotax[coarhashtab[h].edgenum] ++
 #define GRAPHCOARSENEDGEEDLOSUB     coaredlosum --
 #include "graph_coarsen_edge.c"
 #undef GRAPHCOARSENEDGENAME
+#undef GRAPHCOARSENEDGEINIT
 #undef GRAPHCOARSENEDGEEDLOINIT
 #undef GRAPHCOARSENEDGEEDLOADD
 #undef GRAPHCOARSENEDGEEDLOSUB

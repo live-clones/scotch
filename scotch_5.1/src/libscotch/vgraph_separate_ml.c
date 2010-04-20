@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,7 +35,7 @@
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module separates an active         **/
+/**   FUNCTION   : This module separates a separator       **/
 /**                graph using a multi-level scheme.       **/
 /**                                                        **/
 /**   DATES      : # Version 3.2  : from : 28 oct 1997     **/
@@ -44,6 +44,8 @@
 /**                                 to     01 oct 1998     **/
 /**                # Version 4.0  : from : 13 dec 2001     **/
 /**                                 to     20 mar 2005     **/
+/**                # Version 5.1  : from : 11 nov 2009     **/
+/**                                 to     11 nov 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,9 +112,9 @@ const VgraphSeparateMlParam * const   paraptr)    /*+ Method parameters         
 static
 int
 vgraphSeparateMlUncoarsen (
-Vgraph * restrict const                     finegrafptr, /*+ Finer graph     +*/
-const Vgraph * restrict const               coargrafptr, /*+ Coarser graph   +*/
-const GraphCoarsenMulti * restrict const    coarmulttax) /*+ Multinode array +*/
+Vgraph * restrict const                   finegrafptr, /*+ Finer graph     +*/
+const Vgraph * restrict const             coargrafptr, /*+ Coarser graph   +*/
+const GraphCoarsenMulti * restrict const  coarmulttax) /*+ Multinode array +*/
 {
   Gnum                coarvertnum;                /* Number of current coarse vertex           */
   Gnum                finefronnbr;                /* Number of frontier vertices in fine graph */
@@ -125,21 +127,24 @@ const GraphCoarsenMulti * restrict const    coarmulttax) /*+ Multinode array +*/
     finegrafptr->parttax -= finegrafptr->s.baseval;
   }
 
-  if (coargrafptr != NULL) {                      /* If coarser graph provided         */
-    Gnum                finesize1;                /* Number of vertices in fine part 1 */
+  if (coargrafptr != NULL) {                      /* If coarser graph provided */
+    GraphPart * restrict  fineparttax;
+    Gnum                  finesize1;              /* Number of vertices in fine part 1 */
 
-    finesize1 = coargrafptr->compsize[1];         /* Pre-allocate size */
+    const GraphPart * restrict const  coarparttax = coargrafptr->parttax;
 
+    finesize1   = coargrafptr->compsize[1];       /* Pre-allocate size */
+    fineparttax = finegrafptr->parttax;
     for (coarvertnum = coargrafptr->s.baseval, finefronnbr = 0;
          coarvertnum < coargrafptr->s.vertnnd; coarvertnum ++) {
       GraphPart           coarpartval;            /* Value of current multinode part */
 
-      coarpartval = coargrafptr->parttax[coarvertnum];
-      finegrafptr->parttax[coarmulttax[coarvertnum].vertnum[0]] = coarpartval;
+      coarpartval = coarparttax[coarvertnum];
+      fineparttax[coarmulttax[coarvertnum].vertnum[0]] = coarpartval;
       if (coarpartval != 2) {                     /* If vertex is not in separator */
         if (coarmulttax[coarvertnum].vertnum[0] !=
             coarmulttax[coarvertnum].vertnum[1]) {
-          finegrafptr->parttax[coarmulttax[coarvertnum].vertnum[1]] = coarpartval;
+          fineparttax[coarmulttax[coarvertnum].vertnum[1]] = coarpartval;
           finesize1 += (Gnum) coarpartval;        /* One extra vertex created in part 1 if (coarpartval == 1) */
         }
       }
@@ -147,7 +152,7 @@ const GraphCoarsenMulti * restrict const    coarmulttax) /*+ Multinode array +*/
         finegrafptr->frontab[finefronnbr ++] = coarmulttax[coarvertnum].vertnum[0];
         if (coarmulttax[coarvertnum].vertnum[0] !=
             coarmulttax[coarvertnum].vertnum[1]) {
-          finegrafptr->parttax[coarmulttax[coarvertnum].vertnum[1]] = coarpartval;
+          fineparttax[coarmulttax[coarvertnum].vertnum[1]] = coarpartval;
           finegrafptr->frontab[finefronnbr ++] = coarmulttax[coarvertnum].vertnum[1]; /* One extra vertex in separator */
         }
       }

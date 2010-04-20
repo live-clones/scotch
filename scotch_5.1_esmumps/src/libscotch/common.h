@@ -50,7 +50,7 @@
 /**                # Version 2.0  : from : 13 jun 2005     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to   : 04 feb 2009     **/
+/**                                 to   : 15 apr 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -138,6 +138,18 @@
 #endif /* INTSIZE64 */
 #endif /* INTSIZE32 */
 #endif /* INT       */
+
+#ifndef IDX                                       /* If type not externally overriden */
+#ifdef IDXSIZE32
+#define IDX                         int32_t
+#else /* IDXSIZE32 */
+#ifdef IDXSIZE64
+#define IDX                         int64_t
+#else /* IDXSIZE64 */
+#define IDX                         INT
+#endif /* IDXSIZE64 */
+#endif /* IDXSIZE32 */
+#endif /* IDX       */
 
 #ifndef INTSIZEBITS
 #define INTSIZEBITS                 (sizeof (INT) << 3)

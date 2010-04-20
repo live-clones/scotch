@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                of the libSCOTCH library.               **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 27 jul 2008     **/
-/**                                 to     28 aug 2008     **/
+/**                                 to     27 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,7 +85,7 @@ int * const                   revaptr),         \
       *revaptr = 1;                               /* Indicate error */
       return;
     }
-    if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+    if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
       errorPrint ("SCOTCHFDGRAPHMAPVIEW: cannot open output stream");
       close      (filenum);
       *revaptr = 1;

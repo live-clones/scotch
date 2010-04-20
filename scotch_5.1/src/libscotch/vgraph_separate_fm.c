@@ -171,10 +171,11 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
   Gnum                            mswpnum;        /* Number of current move sweep            */
   Gnum                            compsize1add;   /* Number of vertices to add to counters   */
   Gnum                            compsize1sub;
-  const Gnum * restrict const     verttax = grafptr->s.verttax; /* Fast accesses */
-  const Gnum * restrict const     vendtax = grafptr->s.vendtax;
-  const Gnum * restrict const     velotax = grafptr->s.velotax;
-  const Gnum * restrict const     edgetax = grafptr->s.edgetax;
+
+  const Gnum * restrict const verttax = grafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const velotax = grafptr->s.velotax;
+  const Gnum * restrict const edgetax = grafptr->s.edgetax;
 
   comploaddltmat = (paraptr->deltrat > 0.0L)
                    ? MAX ((Gnum) ((grafptr->compload[0] + grafptr->compload[1]) * paraptr->deltrat),

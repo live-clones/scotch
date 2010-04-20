@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 04 sep 2006     **/
 /**                                 to     05 aug 2007     **/
 /**                # Version 5.1  : from : 27 jul 2008     **/
-/**                                 to     09 may 2009     **/
+/**                                 to     15 apr 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,16 +121,16 @@ SCOTCH_Num * const          vertglbptr,         \
 SCOTCH_Num * const          vertlocptr,         \
 SCOTCH_Num * const          vertlocptz,         \
 SCOTCH_Num * const          vertgstptr,         \
-SCOTCH_Num * const          vertlocidx,         \
-SCOTCH_Num * const          vendlocidx,         \
-SCOTCH_Num * const          velolocidx,         \
-SCOTCH_Num * const          vlbllocidx,         \
+SCOTCH_Idx * const          vertlocidx,         \
+SCOTCH_Idx * const          vendlocidx,         \
+SCOTCH_Idx * const          velolocidx,         \
+SCOTCH_Idx * const          vlbllocidx,         \
 SCOTCH_Num * const          edgeglbptr,         \
 SCOTCH_Num * const          edgelocptr,         \
 SCOTCH_Num * const          edgelocptz,         \
-SCOTCH_Num * const          edgelocidx,         \
-SCOTCH_Num * const          edgegstidx,         \
-SCOTCH_Num * const          edlolocidx,         \
+SCOTCH_Idx * const          edgelocidx,         \
+SCOTCH_Idx * const          edgegstidx,         \
+SCOTCH_Idx * const          edlolocidx,         \
 MPI_Fint * const            commptr),           \
 (grafptr, indxptr, baseptr,                     \
  vertglbptr, vertlocptr, vertlocptz,            \

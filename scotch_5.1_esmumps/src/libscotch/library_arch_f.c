@@ -43,6 +43,8 @@
 /**                                 to     15 nov 2001     **/
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     13 jan 2004     **/
+/**                # Version 5.1  : from : 27 mar 2010     **/
+/**                                 to     27 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -113,7 +115,7 @@ int * const                 revaptr),           \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "r+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "r")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFARCHLOAD: cannot open input stream");
     close      (filenum);
     *revaptr = 1;
@@ -149,7 +151,7 @@ int * const                 revaptr),           \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFARCHSAVE: cannot open output stream");
     close      (filenum);
     *revaptr = 1;

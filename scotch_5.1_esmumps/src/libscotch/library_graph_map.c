@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     13 nov 2005     **/
 /**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     28 sep 2008     **/
+/**                                 to     29 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -201,7 +201,7 @@ int
 SCOTCH_graphMapCompute (
 const SCOTCH_Graph * const  grafptr,              /*+ Graph to order     +*/
 SCOTCH_Mapping * const      mappptr,              /*+ Mapping to compute +*/
-const SCOTCH_Strat * const  stratptr)             /*+ Mapping strategy   +*/
+SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
 {
   Kgraph                mapgrafdat;               /* Effective mapping graph     */
   const Strat *         mapstratptr;              /* Pointer to mapping strategy */
@@ -210,7 +210,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Mapping strategy   +*/
 
   lmapptr = (LibMapping *) mappptr;
   if (*((Strat **) stratptr) == NULL)             /* Set default mapping strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&kgraphmapststratab, "b{job=t,map=t,poli=S,sep=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}");
+    *((Strat **) stratptr) = stratInit (&kgraphmapststratab, "r{job=t,map=t,poli=S,sep=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}");
   mapstratptr = *((Strat **) stratptr);
   if (mapstratptr->tabl != &kgraphmapststratab) {
     errorPrint ("SCOTCH_graphMapCompute: not a graph mapping strategy");
@@ -247,7 +247,7 @@ int
 SCOTCH_graphMap (
 const SCOTCH_Graph * const  grafptr,              /*+ Graph to map        +*/
 const SCOTCH_Arch * const   archptr,              /*+ Target architecture +*/
-const SCOTCH_Strat * const  stratptr,             /*+ Mapping strategy    +*/
+SCOTCH_Strat * const        stratptr,             /*+ Mapping strategy    +*/
 SCOTCH_Num * const          maptab)               /*+ Mapping array       +*/
 {
   SCOTCH_Mapping      mapdat;
@@ -272,7 +272,7 @@ int
 SCOTCH_graphPart (
 const SCOTCH_Graph * const  grafptr,              /*+ Graph to map     +*/
 const SCOTCH_Num            partnbr,              /*+ Number of parts  +*/
-const SCOTCH_Strat * const  stratptr,             /*+ Mapping strategy +*/
+SCOTCH_Strat * const        stratptr,             /*+ Mapping strategy +*/
 SCOTCH_Num * const          maptab)               /*+ Mapping array    +*/
 {
   SCOTCH_Arch         archdat;

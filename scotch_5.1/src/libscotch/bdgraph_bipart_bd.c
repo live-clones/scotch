@@ -168,7 +168,7 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
   reduloctab[4] = bndvertlocancadj;               /* Sum increases in size and load */
   reduloctab[5] = bndveexlocsum;
   reduloctab[6] = bndveexlocsum0;
-  if (MPI_Allreduce (&reduloctab[0], &reduglbtab[0], 7, GNUM_MPI, MPI_SUM, orggrafptr->s.proccomm) != MPI_SUCCESS) {
+  if (MPI_Allreduce (reduloctab, reduglbtab, 7, GNUM_MPI, MPI_SUM, orggrafptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("bdgraphBipartBd: communication error (1)");
     return     (1);
   }

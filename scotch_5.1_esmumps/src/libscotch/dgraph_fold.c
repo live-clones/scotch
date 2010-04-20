@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 10 aug 2006     **/
 /**                                 to   : 27 jun 2008     **/
 /**                # Version 5.1  : from : 12 nov 2008     **/
-/**                                 to   : 18 apr 2009     **/
+/**                                 to   : 28 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,10 +64,11 @@
 /*                            */
 /******************************/
 
-/* This routine builds a folded graph by
-** merging graph data to the processes of
-** the first half or to the second half
-** of the communicator.
+/* This routine builds a folded graph by merging graph
+** data to the processes of the first half or to the
+** second half of the communicator.
+** The key value of the folded communicator is not
+** changed as it is not relevant.
 ** It returns:
 ** - 0   : on success.
 ** - !0  : on error.
@@ -86,6 +87,7 @@ MPI_Datatype                  vertinfotype)
   int               fldprocnum;                   /* Index of local process in folded communicator   */
   int               fldproccol;                   /* Color of receiver or not wanted in communicator */
   MPI_Comm          fldproccomm;                  /* Communicator of folded part                     */
+  int               o;
 
   fldprocnbr = (orggrafptr->procglbnbr + 1) / 2;
   fldprocnum = orggrafptr->proclocnum;
@@ -100,7 +102,10 @@ MPI_Datatype                  vertinfotype)
     return     (1);
   }
 
-  return (dgraphFold2 (orggrafptr, partval, fldgrafptr, fldproccomm, vertinfoptrin, vertinfoptrout, vertinfotype));
+  o = dgraphFold2 (orggrafptr, partval, fldgrafptr, fldproccomm, vertinfoptrin, vertinfoptrout, vertinfotype);
+  fldgrafptr->prockeyval = fldproccol;            /* Key of folded communicator is always zero if no duplication occurs */
+
+  return (o);
 }
 
 int

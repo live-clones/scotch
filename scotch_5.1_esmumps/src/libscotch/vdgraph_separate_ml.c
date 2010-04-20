@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 07 mar 2006     **/
 /**                                 to   : 01 mar 2008     **/
 /**                # Version 5.1  : from : 14 dec 2008     **/
-/**                                 to   : 26 may 2009     **/
+/**                                 to   : 29 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,7 +85,7 @@ Vdgraph * restrict const              coargrafptr, /*+ Coarser graph to build   
 DgraphCoarsenMulti * restrict * const coarmultptr, /*+ Pointer to multinode table to build +*/
 const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters                   +*/
 {
-  int dofolddup;
+  int                 dofolddup;
 
   dofolddup = 1;
   if ((paraptr->duplvlmax > -1) &&                  /* duplvlmax can allow fold dup */
@@ -103,29 +103,21 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
                      paraptr->coarnbr, dofolddup, paraptr->dupmax, paraptr->coarrat) != 0)
     return (1);                                   /* Return if coarsening failed */
 
-  if (coargrafptr->s.procglbnbr == 0) {           /* Not a owner graph */
-    coargrafptr->fronloctab = NULL;
-    coargrafptr->partgsttax = NULL;
-    coargrafptr->compglbsize[2] = -1;             /* Mark frontab as invalid */
+  coargrafptr->fronloctab = NULL;
+  coargrafptr->partgsttax = NULL;                 /* Do not allocate partition data yet */
+
+  if (coargrafptr->s.procglbnbr == 0) {           /* Not a owner graph                        */
+    coargrafptr->s.vertlocnbr = 0;                /* Set it to zero for vrcvdattab allocation */
     return (0);
   }
-  else
-    coargrafptr->compglbsize[2] = 0;              /* Mark as valid */
 
-#ifdef SCOTCH_DEBUG_VDGRAPH2
-  if (dgraphCheck (&coargrafptr->s) != 0) {
-    errorPrint ("vdgraphSeparateMlCoarsen: internal error");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_VDGRAPH2 */
-
-  coargrafptr->partgsttax = NULL;                 /* Do not allocate partition data yet               */
-  coargrafptr->levlnum    = finegrafptr->levlnum + 1; /* Graph level is coarsening level              */
+  coargrafptr->levlnum = finegrafptr->levlnum + 1; /* Graph level is coarsening level                 */
   if (coargrafptr->s.vertlocnbr <= finegrafptr->s.vertlocnbr) /* If (folded) coarser graph is smaller */
     coargrafptr->fronloctab = finegrafptr->fronloctab; /* Re-use frontier array for coarser graph     */
   else {                                          /* Else allocate new private frontier array         */
     if ((coargrafptr->fronloctab = memAlloc (coargrafptr->s.vertlocnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("vdgraphSeparateMlCoarsen: out of memory");
+      dgraphExit (&coargrafptr->s);               /* Only free Dgraph since fronloctab not allocated */
       return     (1);
     }
   }
@@ -142,34 +134,41 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
 
 static
 void
-vdgraphSeparateMlOp (
+vdgraphSeparateMlOpBest (
 const Gnum * const          in,                   /* First operand                               */
 Gnum * const                inout,                /* Second and output operand                   */
 const int * const           len,                  /* Number of instances ; should be 1, not used */
 const MPI_Datatype * const  typedat)              /* MPI datatype ; not used                     */
 {
-  if (inout[3] == 1) {                            /* Handle cases when at least one of them is erroneous */
-    if (in[3] == 1) {
-      if (inout[2] > in[2])                       /* To enforce commutativity, always keep smallest process number */
+  inout[5] |= in[5];                              /* Memory error flag */
+
+  if (inout[0] == 1) {                            /* Handle cases when at least one of them is erroneous */
+    if (in[0] == 1) {
+      if (inout[1] > in[1]) {                     /* To enforce commutativity, always keep smallest process number */
+        inout[1] = in[1];
         inout[2] = in[2];
+      }
       return;
     }
 
-    inout[0] = in[0];
+    inout[0] = in[0];                             /* Validity flag      */
+    inout[1] = in[1];                             /* Lead process rank  */
+    inout[2] = in[2];                             /* Lead process color */
+    inout[3] = in[3];                             /* Separator size     */
+    inout[4] = in[4];                             /* Parts imbalance    */
+    return;
+  }
+  else if (in[0] == 1)
+    return;
+
+  if ((in[3] < inout[3]) ||                       /* Select best partition */
+      ((in[3] == inout[3]) &&
+       ((in[4] < inout[4]) ||
+	((in[4] == inout[4]) && (in[1] < inout[1]))))) {
     inout[1] = in[1];
     inout[2] = in[2];
     inout[3] = in[3];
-    return;
-  }
-  else if (in[3] == 1)
-    return;
-
-  if ((in[0] < inout[0]) ||                       /* Select best partition */
-      ((in[0] == inout[0]) && ((in[1] < inout[1]) ||
-			       ((in[1] == inout[1]) && (in[2] < inout[2]))))) {
-    inout[0] = in[0];
-    inout[1] = in[1];
-    inout[2] = in[2];
+    inout[4] = in[4];
   }
 }
 
@@ -305,69 +304,6 @@ Gnum * restrict             ssndcnttab)
   }
 }
 
-/* This routine selects the best coarse partition to
-** project back to the finer graph.
-** It returns:
-** - 0   : on success.
-** - !0  : on error.
-*/
-
-static
-int
-vdgraphSeparateMlPart (
-const Vdgraph * restrict const  coargrafptr,
-const MPI_Comm                  parentcomm,
-const int                       proclocnum)
-{
-  Gnum              reduloctab[4];                /* Local array for best separator data               */
-  Gnum              reduglbtab[4];                /* Global array for best separator data              */
-  MPI_Datatype      typedat;                      /* Data type for finding best separator              */
-  MPI_Op            operdat;                      /* Handle of MPI operator for finding best separator */
-  int               myassoc;                      /* To know how graphs are folded                     */
-  int               bestassoc;
-
-  if (coargrafptr->compglbsize[2] < 0) {          /* Processors own coargrafptr      */
-    MPI_Comm_size (parentcomm, &myassoc);         /* Mark higher than other vertices */
-    ++ myassoc;
-    reduloctab[0] = 0;
-    reduloctab[1] = 0;                            /* To avoid warning in valgrind */
-    reduloctab[2] = myassoc;
-    reduloctab[3] = 1;
-  }
-  else {
-    bestassoc = proclocnum;
-    if (MPI_Allreduce (&bestassoc, &myassoc, 1, MPI_INT, MPI_MIN, coargrafptr->s.proccomm) != MPI_SUCCESS) {
-      errorPrint ("vdgraphSeparateMlPart: communication error (1)");
-      return     (1);
-    }
-    reduloctab[0] = coargrafptr->compglbsize[2];  /* Frontier size  */
-    reduloctab[1] = coargrafptr->compglbloaddlt;  /* Load imbalance */
-    reduloctab[2] = myassoc;
-    reduloctab[3] = (coargrafptr->compglbsize[2] <= 0) ? 1 : 0;
-  }
-
-  if ((MPI_Type_contiguous (4, GNUM_MPI, &typedat)                            != MPI_SUCCESS) ||
-      (MPI_Type_commit (&typedat)                                             != MPI_SUCCESS) ||
-      (MPI_Op_create ((MPI_User_function *) vdgraphSeparateMlOp, 1, &operdat) != MPI_SUCCESS)) {
-    errorPrint ("vdgraphSeparateMlPart: communication error (2)");
-    return     (1);
-  }
-
-  if (MPI_Allreduce (reduloctab, reduglbtab, 1, typedat, operdat, parentcomm) != MPI_SUCCESS) {
-    errorPrint ("vdgraphSeparateMlPart: communication error (3)");
-    return     (1);
-  }
-
-  bestassoc = (int) reduglbtab[2];
-  if ((MPI_Op_free   (&operdat) != MPI_SUCCESS) ||
-      (MPI_Type_free (&typedat) != MPI_SUCCESS)) {
-    errorPrint ("vdgraphSeparateMlPart: communication error (4)");
-    return     (1);
-  }
-
-  return ((myassoc == bestassoc) ? 1 : 0);
-}
-
 /* This routine propagates the separation of the
 ** coarser graph back to the finer graph, according
 ** to the multinode table of collapsed vertices.
@@ -386,8 +322,7 @@ Vdgraph * restrict                        finegrafptr, /*+ Finer graph     +*/
 const Vdgraph * restrict const            coargrafptr, /*+ Coarser graph   +*/
 const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 {
-  Gnum                    coarvertnum;            /* Number of current coarse vertex           */
-  Gnum                    finevertnum;
+  Gnum                    coarvertnum;
   Gnum                    finevertlocadj;
   Gnum                    finecomplocload0;
   Gnum                    finecomplocload2;
@@ -396,7 +331,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   Gnum * restrict         srcvdattab;
   Gnum *                  ssnddattab;             /* TRICK: holds vrcvcnttab, vsnddsptab, vrcvdsptab                   */
   Gnum *                  vrcvdattab;             /* TRICK: overlaps with vsnddattab before packing [norestrict:async] */
-  Gnum *                  vsnddattab;             /* [norestrict:async] */
+  Gnum *                  vsnddattab;             /* [norestrict:async]                                                */
   int *                   vrcvcnttab;
   int *                   vsndcnttab;
   int *                   vrcvdsptab;
@@ -404,66 +339,47 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   int                     vrcvdspnum;
   int                     vsnddspnum;
   Gnum                    vrcvdatnum;
-  int                     procnum;
-  int                     sendval;                /* Flag set if process participates in sending */
-#ifdef SCOTCH_DEBUG_VDGRAPH2
-  int                     sendtmp;
-#endif /* SCOTCH_DEBUG_VDGRAPH2 */
+  MPI_Datatype            besttypedat;            /* Data type for finding best bipartition              */
+  MPI_Op                  bestoperdat;            /* Handle of MPI operator for finding best bipartition */
   Gnum                    reduloctab[6];
   Gnum                    reduglbtab[6];
-  Gnum                    cheklocval;
+  int                     procnum;
+  const Gnum * restrict   fineveloglbtax;
+  GraphPart * restrict    finepartglbtax;
 
-  Gnum * restrict const       finefronloctab = finegrafptr->fronloctab;
-  const Gnum * restrict       fineveloglbtax;
-  GraphPart * restrict        finepartglbtax;
+  Gnum * restrict const finefronloctab = finegrafptr->fronloctab;
 
+  reduloctab[5] = 0;                              /* Assume everything is fine                      */
   if (finegrafptr->partgsttax == NULL) {          /* If partition array not yet allocated           */
     if (dgraphGhst (&finegrafptr->s) != 0) {      /* Create ghost edge array and compute vertgstnbr */
       errorPrint ("vdgraphSeparateMlUncoarsen: cannot compute ghost edge array");
-      return     (1);                             /* Allocated data will be freed along with graph structure */
+      reduloctab[5] = 1;                          /* Allocated data will be freed along with graph structure */
     }
     if ((finegrafptr->partgsttax = (GraphPart *) memAlloc (finegrafptr->s.vertgstnbr * sizeof (GraphPart))) == NULL) {
       errorPrint ("vdgraphSeparateMlUncoarsen: out of memory (1)");
-      return     (1);                             /* Allocated data will be freed along with graph structure */
+      reduloctab[5] = 1;                          /* Allocated data will be freed along with graph structure */
     }
     else
       finegrafptr->partgsttax -= finegrafptr->s.baseval;
   }
-#ifdef SCOTCH_DEBUG_VDGRAPH2
-  memSet (finegrafptr->partgsttax + finegrafptr->s.baseval, 3, finegrafptr->s.vertgstnbr * sizeof (GraphPart)); /* Mark all vertices as unvisited */
-#endif /* SCOTCH_DEBUG_VDGRAPH2 */
 
-  if (coargrafptr == NULL) {                      /* If coarser graph not provided */
+  if (coargrafptr == NULL) {                      /* If coarser graph not provided                      */
+#ifdef SCOTCH_DEBUG_BDGRAPH1                      /* Communication cannot be overlapped by a useful one */
+    if (MPI_Allreduce (&reduloctab[5], &reduglbtab[5], 1, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS) {
+      errorPrint ("vdgraphSeparateMlUncoarsen: communication error (1)");
+      return     (1);
+    }
+#else /* SCOTCH_DEBUG_BDGRAPH1 */
+    reduglbtab[5] = reduloctab[5];
+#endif /* SCOTCH_DEBUG_BDGRAPH1 */
+    if (reduglbtab[5] != 0)
+      return (1);
+
     vdgraphZero (finegrafptr);                    /* Assign all vertices to part 0 */
-    return      (0);
+
+    return (0);
   }
 
-#ifdef SCOTCH_DEBUG_VDGRAPH2
-  if ((coargrafptr->s.procglbnbr != 0) && (vdgraphCheck (coargrafptr) != 0)) {
-    errorPrint ("vdgraphSeparateMlUncoarsen: inconsistent input graph data");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_VDGRAPH2 */
-
-  sendval = 1;                                    /* Assume process participates in sending partition data */
-#ifdef PTSCOTCH_FOLD_DUP
-  if ((coargrafptr->s.procglbnbr == 0) ||         /* If folding occured, select best partition */
-      (coargrafptr->s.proccomm != finegrafptr->s.proccomm))
-    sendval = vdgraphSeparateMlPart (coargrafptr, finegrafptr->s.proccomm, finegrafptr->s.proclocnum);
-#endif /* PTSCOTCH_FOLD_DUP */
-
-#ifdef SCOTCH_DEBUG_VDGRAPH2
-  if (MPI_Allreduce (&sendval, &sendtmp, 1, MPI_INT, MPI_MAX, finegrafptr->s.proccomm) != MPI_SUCCESS)  {
-    errorPrint ("vdgraphSeparateMlUncoarsen: communication error (1)");
-    return     (1);
-  }
-  if (sendtmp == 0) {
-    errorPrint ("vdgraphSeparateMlUncoarsen: internal error (1)");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_VDGRAPH2 */
-
-  cheklocval = 0;
   if (memAllocGroup ((void **) (void *)
                      &vsndcnttab, (size_t) (finegrafptr->s.procglbnbr * sizeof (int)), /* TRICK: srcvdattab after ssnddattab, after vsndcnttab         */
                      &ssnddattab, (size_t) (finegrafptr->s.procglbnbr * 3 * sizeof (Gnum)), /* TRICK: ssnddattab is vrcvcnttab, vsnddsptab, vrcvdsptab */
@@ -471,8 +387,53 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
                      &vsnddattab, (size_t) (coargrafptr->s.vertlocnbr * 2 * sizeof (Gnum)), /* TRICK: vsnddattab overlaps with vrcvdattab */
                      &vrcvdattab, (size_t) (MAX ((coargrafptr->s.vertlocnbr * 2), finegrafptr->s.vertlocnbr) * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("vdgraphSeparateMlUncoarsen: out of memory (2)");
-    cheklocval = 1;
-    return (1);                                   /* Allocated data will be freed along with graph structure */
+    reduloctab[5] = 1;
+  }
+
+  if (coargrafptr->s.procglbnbr <= 0) {           /* If unused folded coargrafptr   */
+    reduloctab[0] = 1;                            /* Set it as invalid              */
+    reduloctab[1] = 0;                            /* Useless rank                   */
+    reduloctab[2] = 1;                            /* Color is not the one of folded */
+    reduloctab[3] =                               /* Prevent Valgrind from yelling  */
+    reduloctab[4] = 0;
+  }
+  else {
+    reduloctab[0] = (coargrafptr->compglbsize[2] <= 0) ? 1 : 0; /* Empty separators are deemed invalid                  */
+    reduloctab[1] = finegrafptr->s.proclocnum;    /* Set rank and color key according to coarse graph (sub)communicator */
+    reduloctab[2] = finegrafptr->s.prockeyval;
+    reduloctab[3] = coargrafptr->compglbsize[2];
+    reduloctab[4] = coargrafptr->compglbloaddlt;
+  }
+
+  if ((MPI_Type_contiguous (6, GNUM_MPI, &besttypedat)                                != MPI_SUCCESS) ||
+      (MPI_Type_commit (&besttypedat)                                                 != MPI_SUCCESS) ||
+      (MPI_Op_create ((MPI_User_function *) vdgraphSeparateMlOpBest, 1, &bestoperdat) != MPI_SUCCESS)) {
+    errorPrint ("vdgraphSeparateMlUncoarsen: communication error (2)");
+    return     (1);
+  }
+
+  if (MPI_Allreduce (reduloctab, reduglbtab, 1, besttypedat, bestoperdat, finegrafptr->s.proccomm) != MPI_SUCCESS) {
+    errorPrint ("vdgraphSeparateMlUncoarsen: communication error (3)");
+    return     (1);
+  }
+
+  if ((MPI_Op_free   (&bestoperdat) != MPI_SUCCESS) ||
+      (MPI_Type_free (&besttypedat) != MPI_SUCCESS)) {
+    errorPrint ("vdgraphSeparateMlUncoarsen: communication error (4)");
+    return     (1);
+  }
+
+  if (reduglbtab[5] != 0) {                       /* If memory error, return                     */
+    if (vsndcnttab != NULL)                       /* Partgsttax will be freed at the above level */
+      memFree (vsndcnttab);
+    return (1);
+  }
+
+  if (reduglbtab[0] == 1) {                       /* If all possible partitions are invalid */
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+    errorPrintW ("vdgraphSeparateMlUncoarsen: no valid partition");
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
+    return (1);                                   /* All invalid partitions will lead to low method be applied at upper level */
   }
 
   finevertlocadj = finegrafptr->s.procvrttab[finegrafptr->s.proclocnum] - finegrafptr->s.baseval;
@@ -486,11 +447,14 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   finegrafptr->complocsize[1] =
   finegrafptr->complocsize[2] = 0;
   
+#ifdef SCOTCH_DEBUG_VDGRAPH2
+  memSet (finegrafptr->partgsttax + finegrafptr->s.baseval, 3, finegrafptr->s.vertgstnbr * sizeof (GraphPart)); /* Mark all vertices as unvisited */
+#endif /* SCOTCH_DEBUG_VDGRAPH2 */
+
   memSet (vsndcnttab, 0, ((byte *) srcvdattab) - ((byte *) vsndcnttab)); /* TRICK: Assume process has nothing to send in vsndcnttab and ssnddattab */
 
-  if (sendval != 0) {                             /* If our data is wanted by other processes */
+  if (reduglbtab[2] == (Gnum) coargrafptr->s.prockeyval) { /* If we belong to the group of the lead process, we must browse and send local data */
     Gnum                fineveloval;
-    Gnum                finevertsndnbr0;
     Gnum                finevertsndnbr1;
     Gnum                finevertsndnbr2;
     Gnum                finevertglbmin;
@@ -786,10 +750,7 @@ const VdgraphSeparateMlParam * const paraptr)     /* Method parameters       */
   }
 
   if (vdgraphSeparateMlCoarsen (grafptr, &coargrafdat, &coarmulttax, paraptr) == 0) {
-    if (coargrafdat.compglbsize[2] == -1)         /* Mark frontab as invalid */
-      o = 0;
-    else
-      o = vdgraphSeparateMl2 (&coargrafdat, paraptr);
+    o = (coargrafdat.s.procglbnbr == 0) ? 0 : vdgraphSeparateMl2 (&coargrafdat, paraptr); /* Apply recursion on coarsened graph if it exists */
     if ((o == 0) &&
         ((o = vdgraphSeparateMlUncoarsen (grafptr, &coargrafdat, coarmulttax)) == 0) &&
         ((o = vdgraphSeparateSt          (grafptr, paraptr->stratasc))         != 0)) /* Apply ascending strategy */

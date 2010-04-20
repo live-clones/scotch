@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 02 oct 1998     **/
 /**                # Version 4.0  : from : 04 nov 2002     **/
 /**                                 to   : 01 dec 2003     **/
+/**                # Version 5.1  : from : 01 oct 2009     **/
+/**                                 to   : 01 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,7 +57,7 @@
 /*+ This structure holds the method parameters. +*/
 
 typedef struct HmeshOrderGpParam_ {
-  long                      passnbr;              /*+ Number of passes to do +*/
+  INT                       passnbr;              /*+ Number of passes to do +*/
 } HmeshOrderGpParam;
 
 /*+ Complementary vertex structure. +*/

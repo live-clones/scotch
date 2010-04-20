@@ -67,6 +67,12 @@
 #include "common.h"
 #include "dgraph.h"
 
+/*****************************/
+/*                           */
+/* This is the main routine. */
+/*                           */
+/*****************************/
+
 /* This function checks the consistency
 ** of the given distributed graph.
 ** It returns:

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to   : 03 apr 2008     **/
 /**                # Version 5.1  : from : 16 jun 2008     **/
-/**                                 to   : 10 may 2009     **/
+/**                                 to   : 15 apr 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -167,7 +167,7 @@ char *                      argv[])
           exit       (0);
         case 'V' :
           fprintf (stderr, "dummysizes, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -199,17 +199,19 @@ char *                      argv[])
 #else /* SCOTCH_PTSCOTCH */
   substab[1][1] = "ptscotchf.h";
 #endif /* SCOTCH_PTSCOTCH */
-  substab[2][0] = "DUMMYINT";
-  substab[2][1] = EXPAND(INT);
-  substab[3][0] = "DUMMYMAXINT";
-  substab[3][1] = EXPAND(INTVALMAX);
-  substab[4][0] = "DUMMYPTFLAG";
+  substab[2][0] = "DUMMYIDX";
+  substab[2][1] = EXPAND(IDX);
+  substab[3][0] = "DUMMYINT";
+  substab[3][1] = EXPAND(INT);
+  substab[4][0] = "DUMMYMAXINT";
+  substab[4][1] = EXPAND(INTVALMAX);
+  substab[5][0] = "DUMMYPTFLAG";
 #ifdef SCOTCH_PTSCOTCH
-  substab[4][1] = "PTSCOTCH";
+  substab[5][1] = "PTSCOTCH";
 #else /* SCOTCH_PTSCOTCH */
-  substab[4][1] = "SEQSCOTCH";
+  substab[5][1] = "SEQSCOTCH";
 #endif /* SCOTCH_PTSCOTCH */
-  subsnbr = 5;
+  subsnbr = 6;
   subsFill (substab[subsnbr ++], "DUMMYSIZEARCH",          sizeof (Arch));
   subsFill (substab[subsnbr ++], "DUMMYSIZEGEOM",          sizeof (Geom));
   subsFill (substab[subsnbr ++], "DUMMYSIZEGRAPH",         sizeof (Graph));
