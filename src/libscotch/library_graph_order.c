@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 5.0  : from : 19 dec 2006     **/
 /**                                 to     04 aug 2007     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to     01 jun 2008     **/
+/**                                 to     29 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -240,7 +240,7 @@ int
 SCOTCH_graphOrderCompute (
 const SCOTCH_Graph * const  grafptr,              /*+ Graph to order      +*/
 SCOTCH_Ordering * const     ordeptr,              /*+ Ordering to compute +*/
-const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy   +*/
+SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy   +*/
 {
   return (SCOTCH_graphOrderComputeList (grafptr, ordeptr, ((Graph *) grafptr)->vertnbr, NULL, stratptr));
 }
@@ -260,7 +260,7 @@ const SCOTCH_Graph * const  grafptr,              /*+ Graph to order            
 SCOTCH_Ordering * const     ordeptr,              /*+ Ordering to compute             +*/
 const SCOTCH_Num            listnbr,              /*+ Number of vertices in list      +*/
 const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order +*/
-const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy               +*/
+SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy               +*/
 {
   Graph * restrict    srcgrafptr;
   LibOrder *          libordeptr;                 /* Pointer to ordering             */
@@ -402,7 +402,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Ordering strategy         
 int
 SCOTCH_graphOrder (
 const SCOTCH_Graph * const  grafptr,              /*+ Graph to order                     +*/
-const SCOTCH_Strat * const  stratptr,             /*+ Ordering strategy                  +*/
+SCOTCH_Strat * const        stratptr,             /*+ Ordering strategy                  +*/
 SCOTCH_Num * const          permtab,              /*+ Ordering permutation               +*/
 SCOTCH_Num * const          peritab,              /*+ Inverse permutation array          +*/
 SCOTCH_Num * const          cblkptr,              /*+ Pointer to number of column blocks +*/
@@ -436,7 +436,7 @@ SCOTCH_graphOrderList (
 const SCOTCH_Graph * const  grafptr,              /*+ Graph to order                     +*/
 const SCOTCH_Num            listnbr,              /*+ Number of vertices in list         +*/
 const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order    +*/
-const SCOTCH_Strat * const  stratptr,             /*+ Ordering strategy                  +*/
+SCOTCH_Strat * const        stratptr,             /*+ Ordering strategy                  +*/
 SCOTCH_Num * const          permtab,              /*+ Ordering permutation               +*/
 SCOTCH_Num * const          peritab,              /*+ Inverse permutation array          +*/
 SCOTCH_Num * const          cblkptr,              /*+ Pointer to number of column blocks +*/

@@ -41,7 +41,7 @@
 /**                bipartitioning methods.                 **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 10 sep 2007     **/
-/**                                 to   : 25 may 2009     **/
+/**                                 to   : 26 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,7 +83,7 @@ static union {
 static union {
   BdgraphBipartDfParam      param;
   StratNodeMethodData       padding;
-} bdgraphbipartdefaultdf = { { 500, 1.0F, 0.0F } };
+} bdgraphbipartdefaultdf = { { 500, 1.0, 0.0, 0.0 } };
 
 static union {
   BdgraphBipartMlParam      param;
@@ -176,7 +176,7 @@ static StratParamTab        bdgraphbipartstcondtab[] = { /* Active graph conditi
                                 (byte *) &bdgraphdummy,
                                 (byte *) &bdgraphdummy.s.vertglbnbr,
                                 NULL },
-                              { STRATNODECOND,       STRATPARAMDOUBLE, "levl",
+                              { STRATNODECOND,       STRATPARAMINT,    "levl",
                                 (byte *) &bdgraphdummy,
                                 (byte *) &bdgraphdummy.levlnum,
                                 NULL },

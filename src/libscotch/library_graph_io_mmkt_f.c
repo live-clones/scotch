@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 14 mar 2008     **/
 /**                                 to     14 mar 2008     **/
 /**                # Version 5.1  : from : 11 oct 2008     **/
-/**                                 to     11 oct 2008     **/
+/**                                 to     27 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,14 +95,14 @@ const int                   datanbr),                 \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((filegrfstream = fdopen (filegrfnum, "r+")) == NULL) { /* Build stream from handle */
+  if ((filegrfstream = fdopen (filegrfnum, "r")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHGEOMLOADMMKT: cannot open input stream (1)");
     close      (filegrfnum);
     close      (filegeonum);
     *revaptr = 1;
     return;
   }
-  if ((filegeostream = fdopen (filegeonum, "r+")) == NULL) { /* Build stream from handle */
+  if ((filegeostream = fdopen (filegeonum, "r")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHGEOMLOADMMKT: cannot open input stream (2)");
     fclose     (filegrfstream);
     close      (filegeonum);
@@ -150,14 +150,14 @@ const int                   datanbr),                 \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((filegrfstream = fdopen (filegrfnum, "w+")) == NULL) { /* Build stream from handle */
+  if ((filegrfstream = fdopen (filegrfnum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHGEOMSAVEMMKT: cannot open output stream (1)");
     close      (filegrfnum);
     close      (filegeonum);
     *revaptr = 1;
     return;
   }
-  if ((filegeostream = fdopen (filegeonum, "w+")) == NULL) { /* Build stream from handle */
+  if ((filegeostream = fdopen (filegeonum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHGEOMSAVEMMKT: cannot open output stream (2)");
     fclose     (filegrfstream);
     close      (filegeonum);

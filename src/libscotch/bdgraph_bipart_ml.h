@@ -41,7 +41,7 @@
 /**                routine for distributed graphs.         **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 25 may 2009     **/
+/**                                 to   : 29 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,7 +78,6 @@ typedef struct BdgraphBipartMlSort_ {
 static int                  bdgraphBipartMlCoarsen (Bdgraph * const, Bdgraph * const, DgraphCoarsenMulti * restrict * const, const BdgraphBipartMlParam * const);
 static int                  bdgraphBipartMlUncoarsen (Bdgraph *, const Bdgraph * const, const DgraphCoarsenMulti * restrict const);
 static void                 bdgraphBipartMlOpBest (const Gnum * const, Gnum * const, const int * const, const MPI_Datatype * const);
-static int                  bdgraphBipartMlBest (const Bdgraph * restrict const, const MPI_Comm, const int);
 int                         bdgraphBipartMl     (Bdgraph * const, const BdgraphBipartMlParam * const);
 static int                  bdgraphBipartMl2    (Bdgraph * const, const BdgraphBipartMlParam * const);
 

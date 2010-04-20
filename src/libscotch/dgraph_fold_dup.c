@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 10 aug 2006     **/
 /**                                 to   : 20 jun 2007     **/
 /**                # Version 5.1  : from : 14 nov 2008     **/
-/**                                 to   : 14 nov 2008     **/
+/**                                 to   : 28 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,7 +94,7 @@ dgraphFoldDup (
 const Dgraph * restrict const orggrafptr,
 Dgraph * restrict const       fldgrafptr,
 void * restrict const         vertinfoptrin,      /* Based array of informations which must be kept, like coarmulttax */
-void ** restrict const        vertinfoptrout,     /* Based to array of informations which must be kept, like coarmulttax */
+void ** restrict const        vertinfoptrout,     /* Based array of informations which must be kept, like coarmulttax */
 MPI_Datatype                  vertinfotype)
 {
   int                       fldprocnbr;
@@ -105,8 +105,8 @@ MPI_Datatype                  vertinfotype)
   Dgraph                    orggrafdat;
   DgraphFoldDupData         fldthrdtab[2];
   pthread_t                 thrdval;              /* Data of second thread */
-  int                       o;
 #endif /* SCOTCH_PTHREAD */
+  int                       o;
 
   fldprocnbr = (orggrafptr->procglbnbr + 1) / 2;  /* Median cut on number of processors     */
   if (orggrafptr->proclocnum < fldprocnbr) {      /* Compute color and rank in two subparts */
@@ -160,9 +160,12 @@ MPI_Datatype                  vertinfotype)
   }
   MPI_Comm_free (&orggrafdat.proccomm);
 
-  return (o);
 #else /* SCOTCH_PTHREAD */
-  return (dgraphFold2 (orggrafptr, 0, fldgrafptr, fldproccommtab[0], vertinfoptrin, vertinfoptrout, vertinfotype) || /* Call routines in sequence */
-          dgraphFold2 (orggrafptr, 1, fldgrafptr, fldproccommtab[1], vertinfoptrin, vertinfoptrout, vertinfotype));
+  o = (dgraphFold2 (orggrafptr, 0, fldgrafptr, fldproccommtab[0], vertinfoptrin, vertinfoptrout, vertinfotype) || /* Call routines in sequence */
+       dgraphFold2 (orggrafptr, 1, fldgrafptr, fldproccommtab[1], vertinfoptrin, vertinfoptrout, vertinfotype));
 #endif /* SCOTCH_PTHREAD */
+
+  fldgrafptr->prockeyval = fldproccol;            /* Discriminate between folded communicators at same level */
+
+  return (o);
 }

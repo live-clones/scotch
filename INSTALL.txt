@@ -24,6 +24,7 @@ It should read:
 % Copyright (C) 20xx  Free Software Foundation, Inc.
 etc, etc.
 
+
 Alternatively, if GNU Make is installed but its directory does
 not appear first in the PATH variable that is searched for
 executables, you can try to locate it using the which command:
@@ -76,10 +77,20 @@ If some of these are missing, please:
 
 Go to the "src/" directory.
 
+
 Look in the "Make.inc/" subdirectory for a configuration
 file which matches your system configuration. If there
 is none, build a proper one in the "Make.inc/" subdirectory,
 basing on the structure of existing ones.
+
+In particular, the Makefile.inc file contains three variables
+which specify which C compiler to use. Their semantic is as
+follows: the compiler set in the variable CCS is used to compile
+the sequential (hence the "S" in "CCS") Scotch distribution. The
+compiler set in CCP is used for the parallel ("P") PT-Scotch
+distribution. The compiler set in CCD is used by both to compile
+the "dummysizes" ("D") executable, as explained below.
+
 
 Create a symbolic link from the configuration file to the
 current "src/" working directory, renaming it as "Makefile.inc":
@@ -98,16 +109,35 @@ Make.inc directory. This is for instance the case for the mingw32
 platform.
 
 
-By default, all integers used in Scotch and PT-Scotch are based on
-the "int" C type, corresponding to the "INTEGER" type in Fortran. To
-coerce the length of the Scotch integer type to 32 or 64 bits, add the
-INTSIZE32 or INTSIZE64 flags, respectively, to the C compiler flags in
-the Makefile.inc configuration file. If you do so, make sure to use
-integer types of equivalent length to declare variables passed to Scotch
-routines from caller C and Fortran procedures. It is usually safer and
-cleaner to tune your C and Fortran compilers to make them interpret
-"int" and "INTEGER" types as 32 or 64 bit values than to use the
-aforementioned flags and hard-code type lengths in your own code.
+By default, all integers used in Scotch and PT-Scotch are of the "int"
+C type, corresponding to the "INTEGER" type in Fortran. To coerce the
+size of the Scotch integer type to 32 or 64 bits, add the INTSIZE32
+or INTSIZE64 flags, respectively, to the C compiler flags in the
+Makefile.inc configuration file. If you do so, make sure to use
+integer types of equivalent size to declare variables passed to Scotch
+routines from caller C and Fortran procedures. Also, when running on
+32_64-bit architectures, some integer array indices returned by the
+Fortran interface have to be of a size equivalent to the one of the
+memory addresses, that is, 64 bits. The size of these variables is
+determined by the IDXSIZE32 and IDXSIZE64 flags, respectively. When
+none of them is provided, the size of the indices is assumed to be
+equivalent to the one of the Scotch integer type.
+
+For instance, on a 32-bit architecture, you can use 64-bit integers in
+Scotch by just setting the "-DINTSIZE64" flag, because addresses will
+remain on 32 bits. On a 32_64 architecture, you can use either 32-bit
+or 64-bit integers in Scotch, by setting the "-DINTSIZE32" or
+"-DINTSIZE64" flags accordingly, but in all cases you must set the
+"-DIDXSIZE64" flag in order for some of the routines of the Fortran
+interface to operate properly, because the array indices returned by
+these routines have to be stored as 64-bit quantities.
+
+Of course, on 64-bit architectures, another possibility is to tune
+your C and Fortran compilers to make them interpret all "int" and
+"INTEGER" types as 64 bit values. This solution is the simplest one,
+as there is no need to use any of the aforementioned flags, nor to
+hard-code type lengths in user's code. Yet, it prevents mixing 32 and
+64-bit features.
 
 
 The binaries of the Scotch distribution can handle compressed

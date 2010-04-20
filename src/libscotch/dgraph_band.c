@@ -39,7 +39,7 @@
 /**                graph from the given frontier array.    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 28 apr 2009     **/
+/**                                 to   : 25 mar 2009     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version 5.0. **/
@@ -70,7 +70,6 @@
 ** - !0  : on error.
 */
 
-static
 int
 dgraphBandColl (
 Dgraph * restrict const           grafptr,        /*+ Distributed graph                                        +*/
@@ -122,7 +121,7 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
   vnumgstsiz    = MAX ((grafptr->vertgstnbr * sizeof (Gnum)), (grafptr->procglbnbr * sizeof (int))); /* TRICK: re-use array for further error collective communications */
   if (((vnumgsttax = memAlloc (vnumgstsiz)) == NULL) ||
       (memAllocGroup ((void **) (void *)
-                      &procvgbtab, (size_t) ((procngbnbr + 1) * sizeof (Gnum)),
+                      &procvgbtab, (size_t) ((procngbnbr + 1) * sizeof (int)),
                       &nsndidxtab, (size_t) (procngbnbr * sizeof (int)),
                       &vrcvcnttab, (size_t) (grafptr->procglbnbr * sizeof (int)),
                       &vsndcnttab, (size_t) (grafptr->procglbnbr * sizeof (int)), /* TRICK: vsndcnttab, vrcvdsptab, vrcvdattab, vrcvdattab joined */
@@ -162,13 +161,13 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
     int                 procglbnum;
 
     procglbnum = grafptr->procngbtab[procngbnum];
-    procvgbtab[procngbnum] = (Gnum) grafptr->procvrttab[procglbnum];
+    procvgbtab[procngbnum] = grafptr->procvrttab[procglbnum];
     vrcvdsptab[procglbnum] = vrcvdspnum;
     vsnddsptab[procglbnum] = vsnddspnum;
     vrcvdspnum += grafptr->procsndtab[procglbnum]; /* Senders and receivers are reversed */
     vsnddspnum += grafptr->procrcvtab[procglbnum];
   }
-  procvgbtab[procngbnum] = (Gnum) grafptr->procvrttab[grafptr->procglbnbr];
+  procvgbtab[procngbnum] = grafptr->procvrttab[grafptr->procglbnbr];
 
   bandvertlvlnum =                                /* Start index of last level is start index */
   bandvertlocnnd = grafptr->baseval;              /* Reset number of band vertices, plus base */
@@ -311,7 +310,6 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
 ** - !0  : on error.
 */
 
-static
 int
 dgraphBandPtop (
 Dgraph * restrict const           grafptr,        /*+ Distributed graph                                        +*/

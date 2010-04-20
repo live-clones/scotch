@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 28 sep 2002     **/
 /**                                 to     04 jan 2005     **/
+/**                # Version 5.1  : from : 01 oct 2009     **/
+/**                                 to   : 01 oct 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,7 +53,7 @@
 
 typedef struct HmeshOrderBlParam_ {
   Strat * restrict          strat;                /*+ Ordering strategy    +*/
-  long                      cblkmin;              /*+ Block splitting size +*/
+  INT                       cblkmin;              /*+ Block splitting size +*/
 } HmeshOrderBlParam;
 
 /*

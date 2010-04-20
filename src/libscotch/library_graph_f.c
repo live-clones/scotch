@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to     17 mar 2005     **/
 /**                # Version 5.0  : from : 11 jul 2007     **/
 /**                                 to     11 jul 2007     **/
+/**                # Version 5.1  : from : 27 mar 2010     **/
+/**                                 to     15 apr 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -128,7 +130,7 @@ int * const                 revaptr),           \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "r+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "r")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHLOAD: cannot open input stream");
     close      (filenum);
     *revaptr = 1;
@@ -164,7 +166,7 @@ int * const                 revaptr),           \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHSAVE: cannot open output stream");
     close      (filenum);
     *revaptr = 1;
@@ -227,13 +229,13 @@ const SCOTCH_Graph * const  grafptr,            \
 const SCOTCH_Num * const    indxptr,            \
 SCOTCH_Num * const          baseptr,            \
 SCOTCH_Num * const          vertptr,            \
-SCOTCH_Num * const          vertidx,            \
-SCOTCH_Num * const          vendidx,            \
-SCOTCH_Num * const          veloidx,            \
-SCOTCH_Num * const          vlblidx,            \
+SCOTCH_Idx * const          vertidx,            \
+SCOTCH_Idx * const          vendidx,            \
+SCOTCH_Idx * const          veloidx,            \
+SCOTCH_Idx * const          vlblidx,            \
 SCOTCH_Num * const          edgeptr,            \
-SCOTCH_Num * const          edgeidx,            \
-SCOTCH_Num * const          edloidx),           \
+SCOTCH_Idx * const          edgeidx,            \
+SCOTCH_Idx * const          edloidx),           \
 (grafptr, indxptr, baseptr,                     \
  vertptr, vertidx, vendidx, veloidx, vlblidx,   \
  edgeptr, edgeidx, edloidx))

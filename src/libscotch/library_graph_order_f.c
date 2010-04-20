@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to     13 dec 2005     **/
 /**                # Version 5.0  : from : 04 aug 2007     **/
 /**                                 to     31 may 2008     **/
+/**                # Version 5.1  : from : 27 mar 2010     **/
+/**                                 to     29 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -142,7 +144,7 @@ int * const                   revaptr),         \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHORDERSAVE: cannot open output stream");
     close      (filenum);
     *revaptr = 1;
@@ -178,7 +180,7 @@ int * const                   revaptr),               \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHORDERSAVEMAP: cannot open output stream");
     close      (filenum);
     *revaptr = 1;
@@ -214,7 +216,7 @@ int * const                   revaptr),                 \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHORDERSAVETREE: cannot open output stream");
     close      (filenum);
     *revaptr = 1;
@@ -236,7 +238,7 @@ FORTRAN (                                             \
 SCOTCHFGRAPHORDERCOMPUTE, scotchfgraphordercompute, ( \
 const SCOTCH_Graph * const  grafptr,                  \
 SCOTCH_Ordering * const     ordeptr,                  \
-const SCOTCH_Strat * const  stratptr,                 \
+SCOTCH_Strat * const        stratptr,                 \
 int * const                 revaptr),                 \
 (grafptr, ordeptr, stratptr, revaptr))
 {
@@ -253,7 +255,7 @@ const SCOTCH_Graph * const  grafptr,                          \
 SCOTCH_Ordering * const     ordeptr,                          \
 const SCOTCH_Num *          listptr,                          \
 const SCOTCH_Num * const    listtab,                          \
-const SCOTCH_Strat * const  stratptr,                         \
+SCOTCH_Strat * const        stratptr,                         \
 int * const                 revaptr),                         \
 (grafptr, ordeptr, listptr, listtab, stratptr, revaptr))
 {
@@ -267,7 +269,7 @@ int * const                 revaptr),                         \
 FORTRAN (                                       \
 SCOTCHFGRAPHORDER, scotchfgraphorder, (         \
 const SCOTCH_Graph * const  grafptr,            \
-const SCOTCH_Strat * const  stratptr,           \
+SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          permtab,            \
 SCOTCH_Num * const          peritab,            \
 SCOTCH_Num * const          cblkptr,            \
@@ -289,7 +291,7 @@ SCOTCHFGRAPHORDERLIST, scotchfgraphorderlist, ( \
 const SCOTCH_Graph * const  grafptr,            \
 const SCOTCH_Num * const    listptr,            \
 const SCOTCH_Num * const    listtab,            \
-const SCOTCH_Strat * const  stratptr,           \
+SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          permtab,            \
 SCOTCH_Num * const          peritab,            \
 SCOTCH_Num * const          cblkptr,            \

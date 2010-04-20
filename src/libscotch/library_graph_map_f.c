@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     15 nov 2001     **/
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     12 dec 2005     **/
+/**                # Version 5.1  : from : 27 mar 2010     **/
+/**                                 to     29 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -140,7 +142,7 @@ int * const                 revaptr),           \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "r+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "r")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHMAPLOAD: cannot open input stream");
     close      (filenum);
     *revaptr = 1;
@@ -176,7 +178,7 @@ int * const                 revaptr),           \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFGRAPHMAPSAVE: cannot open output stream");
     close      (filenum);
     *revaptr = 1;
@@ -198,7 +200,7 @@ FORTRAN (                                         \
 SCOTCHFGRAPHMAPCOMPUTE, scotchfgraphmapcompute, ( \
 const SCOTCH_Graph * const  grafptr,              \
 SCOTCH_Mapping * const      mapptr,               \
-const SCOTCH_Strat * const  stratptr,             \
+SCOTCH_Strat * const        stratptr,             \
 int * const                 revaptr),             \
 (grafptr, mapptr, stratptr, revaptr))
 {
@@ -213,7 +215,7 @@ FORTRAN (                                       \
 SCOTCHFGRAPHMAP, scotchfgraphmap, (             \
 const SCOTCH_Graph * const  grafptr,            \
 const SCOTCH_Arch * const   archptr,            \
-const SCOTCH_Strat * const  stratptr,           \
+SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          maptab,             \
 int * const                 revaptr),           \
 (grafptr, archptr, stratptr, maptab, revaptr))
@@ -229,7 +231,7 @@ FORTRAN (                                       \
 SCOTCHFGRAPHPART, scotchfgraphpart, (           \
 const SCOTCH_Graph * const  grafptr,            \
 const SCOTCH_Num * const    partptr,            \
-const SCOTCH_Strat * const  stratptr,           \
+SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          maptab,             \
 int * const                 revaptr),           \
 (grafptr, partptr, stratptr, maptab, revaptr))

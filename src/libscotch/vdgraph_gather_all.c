@@ -38,8 +38,8 @@
 /**                                                        **/
 /**   FUNCTION   : This module contains the routine which  **/
 /**                builds a centralized Vgraph on all      **/
-/**                processors by gathering the pieces of   **/
-/**                a distributed Vdgraph.                  **/
+/**                processes by gathering the pieces of a  **/
+/**                distributed Vdgraph.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 29 apr 2006     **/
 /**                                 to     01 mar 2008     **/
@@ -54,7 +54,7 @@
 /**                  especially when the number of         **/
 /**                  vertices in the centralized graph is  **/
 /**                  smaller than the number of            **/
-/**                  processors.                           **/
+/**                  processes.                            **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,7 +71,7 @@
 #include "dgraph.h"
 #include "vdgraph.h"
 
-/* This function gathers on all processors
+/* This function gathers on all processes
 ** the pieces of a distributed Vdgraph to
 ** build a centralized Vgraph.
 ** It returns:
@@ -81,12 +81,12 @@
 
 int
 vdgraphGatherAll (
-const Vdgraph * restrict const dgrfptr,            /* Distributed graph */
-Vgraph * restrict              cgrfptr)            /* Centralized graph */
+const Vdgraph * restrict const dgrfptr,           /* Distributed graph */
+Vgraph * restrict              cgrfptr)           /* Centralized graph */
 {
-  int * restrict     froncnttab;                   /* Count array for gather operations        */
-  int * restrict     frondsptab;                   /* Displacement array for gather operations */
-  int                fronlocnbr;                   /* Also int to enforce MPI standard         */
+  int * restrict     froncnttab;                  /* Count array for gather operations        */
+  int * restrict     frondsptab;                  /* Displacement array for gather operations */
+  int                fronlocnbr;                  /* Also int to enforce MPI standard         */
   int                cheklocval;
 #ifdef SCOTCH_DEBUG_VDGRAPH1
   int                chekglbval;
@@ -177,8 +177,8 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
     errorPrint ("vdgraphGatherAll: communication error (5)");
     return     (1);
   }
-  frondsptab[0] = 0;                              /* Offset 0 for first process                                                     */
-  for (procnum = 1; procnum < dgrfptr->s.procglbnbr; procnum ++) /* Adjust index sub-arrays for all processors except the first one */
+  frondsptab[0] = 0;                              /* Offset 0 for first process                                                    */
+  for (procnum = 1; procnum < dgrfptr->s.procglbnbr; procnum ++) /* Adjust index sub-arrays for all processes except the first one */
     frondsptab[procnum] = frondsptab[procnum - 1] + froncnttab[procnum - 1];
 
   if (MPI_Allgatherv (dgrfptr->fronloctab, fronlocnbr, GNUM_MPI, /* Gather separator vertices */
@@ -187,7 +187,7 @@ Vgraph * restrict              cgrfptr)            /* Centralized graph */
     return     (1);
   }
 
-  for (procnum = 1; procnum < dgrfptr->s.procglbnbr; procnum ++) { /* Adjust index sub-arrays for all processors except the first one */
+  for (procnum = 1; procnum < dgrfptr->s.procglbnbr; procnum ++) { /* Adjust index sub-arrays for all processes except the first one */
     Gnum               vertnum;
     Gnum               vertnnd;
 

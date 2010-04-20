@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 4.0  : from : 12 dec 2003     **/
 /**                                 to     20 mar 2005     **/
 /**                # Version 5.1  : from : 28 sep 2008     **/
-/**                                 to     28 sep 2008     **/
+/**                                 to     18 nov 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,6 +102,8 @@ const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters         
     Gnum * restrict               coarveextax;
     Gnum                          coarvertnum;
 
+    const Gnum * restrict const fineveextax = finegrafptr->veextax;
+
     if ((coarveextax = (Gnum *) memAlloc (coargrafptr->s.vertnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("bgraphBipartMlCoarsen: out of memory");
       graphExit  (&coargrafptr->s);               /* Only free Graph since veextab not allocated */
@@ -119,8 +121,8 @@ const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters         
       finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
       finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
       coarveextax[coarvertnum] = (finevertnum0 != finevertnum1)
-                                 ? finegrafptr->veextax[finevertnum0] + finegrafptr->veextax[finevertnum1]
-                                 : finegrafptr->veextax[finevertnum0];
+                                 ? fineveextax[finevertnum0] + fineveextax[finevertnum1]
+                                 : fineveextax[finevertnum0];
     }
   }
   else                                            /* If fine graph does not have external gains */
@@ -159,6 +161,18 @@ Bgraph * restrict const         finegrafptr,      /*+ Finer graph               
 const Bgraph * const            coargrafptr,      /*+ Coarser graph              +*/
 const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array +*/
 {
+  GraphPart * restrict        fineparttax;
+  Gnum                        finefronnum;
+  Gnum                        finecompsize1;
+  const GraphPart * restrict  coarparttax;
+  Gnum                        coarvertnum;
+  Gnum                        coarfronnum;
+  Gnum * restrict             coarfrontab;
+
+  const Gnum * restrict const       fineverttax = finegrafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const       finevendtax = finegrafptr->s.vendtax;
+  const Gnum * restrict const       fineedgetax = finegrafptr->s.edgetax;
+
   if (finegrafptr->parttax == NULL) {             /* If partition array not yet allocated */
     if ((finegrafptr->parttax = (GraphPart *) memAlloc (finegrafptr->s.vertnbr * sizeof (GraphPart))) == NULL) {
       errorPrint ("bgraphBipartMlUncoarsen: out of memory");
@@ -167,97 +181,96 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
     finegrafptr->parttax -= finegrafptr->s.baseval;
   }
 
-  if (coargrafptr != NULL) {                      /* If coarser graph provided */
-    Gnum                coarvertnum;
-    Gnum                coarfronnum;
-    Gnum                finefronnum;
-    Gnum                finecompsize1;
-
-    finecompsize1 = coargrafptr->s.vertnbr - coargrafptr->compsize0; /* Pre-allocate sizes */
-
-    for (coarvertnum = coargrafptr->s.baseval; coarvertnum < coargrafptr->s.vertnnd; coarvertnum ++) {
-      Gnum                finevertnum0;           /* First multinode vertex  */
-      Gnum                finevertnum1;           /* Second multinode vertex */
-      GraphPart           partval;
-
-      finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
-      finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
-      partval      = coargrafptr->parttax[coarvertnum];
-
-      finegrafptr->parttax[finevertnum0] = partval;
-      if (finevertnum0 != finevertnum1) {
-        finegrafptr->parttax[finevertnum1] = partval;
-        finecompsize1 += partval;                 /* Account for extra vertices created in part 1 */
-      }
-    }
-
-    finegrafptr->compload0    = coargrafptr->compload0;
-    finegrafptr->compload0dlt = coargrafptr->compload0dlt;
-    finegrafptr->compsize0    = finegrafptr->s.vertnbr - finecompsize1;
-    finegrafptr->commload     = coargrafptr->commload;
-    finegrafptr->commgainextn = coargrafptr->commgainextn;
-
-    for (coarfronnum = 0, finefronnum = coargrafptr->fronnbr; /* Re-cycle frontier array from coarse to fine graph */
-         coarfronnum < coargrafptr->fronnbr; coarfronnum ++) {
-      Gnum                coarvertnum;
-      Gnum                finevertnum0;           /* First multinode vertex  */
-      Gnum                finevertnum1;           /* Second multinode vertex */
-
-      coarvertnum  = coargrafptr->frontab[coarfronnum];
-      finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
-      finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
-      
-      if (finevertnum0 != finevertnum1) {         /* If multinode si made of two distinct vertices */
-        Gnum                coarpartval;
-        Gnum                fineedgenum;
-
-        coarpartval = coargrafptr->parttax[coarvertnum];
-
-#ifdef SCOTCH_DEBUG_BGRAPH2
-        coargrafptr->frontab[coarfronnum] = ~0;
-#endif /* SCOTCH_DEBUG_BGRAPH2 */
-
-        for (fineedgenum = finegrafptr->s.verttax[finevertnum0];
-             fineedgenum < finegrafptr->s.vendtax[finevertnum0]; fineedgenum ++) {
-          if (finegrafptr->parttax[finegrafptr->s.edgetax[fineedgenum]] != coarpartval) { /* If first vertex belongs to frontier */
-            coargrafptr->frontab[coarfronnum] = finevertnum0; /* Record it in lieu of the coarse frontier vertex                 */
-            break;
-	  }
-        }
-        if (fineedgenum >= finegrafptr->s.vendtax[finevertnum0]) { /* If first vertex not in frontier */
-          coargrafptr->frontab[coarfronnum] = finevertnum1; /* Then second vertex must be in frontier */
-          continue;                               /* Skip to next multinode                           */
-        }
-
-        for (fineedgenum = finegrafptr->s.verttax[finevertnum1]; /* Check if second vertex belong to frontier too */
-             fineedgenum < finegrafptr->s.vendtax[finevertnum1]; fineedgenum ++) {
-          if (finegrafptr->parttax[finegrafptr->s.edgetax[fineedgenum]] != coarpartval) { /* If second vertex belongs to frontier */
-            coargrafptr->frontab[finefronnum ++] = finevertnum1; /* Record it at the end of the recycled frontier array           */
-            break;
-          }
-        }
-
-#ifdef SCOTCH_DEBUG_BGRAPH2
-        if (coargrafptr->frontab[coarfronnum] == ~0) {
-          errorPrint ("bgraphBipartMlUncoarsen: internal error");
-          return     (1);
-        }
-#endif /* SCOTCH_DEBUG_BGRAPH2 */
-      }
-      else                                        /* If coarse vertex is single node         */
-        coargrafptr->frontab[coarfronnum] = finevertnum0; /* Then it belongs to the frontier */
-    }
-    finegrafptr->fronnbr = finefronnum;
-
-#ifdef SCOTCH_DEBUG_BGRAPH2
-    if (bgraphCheck (finegrafptr) != 0) {
-      errorPrint ("bgraphBipartMlUncoarsen: inconsistent graph data");
-      return     (1);
-    }
-#endif /* SCOTCH_DEBUG_BGRAPH2 */
-  }
-  else                                            /* No coarse graph provided      */
+  if (coargrafptr == NULL) {                      /* If no coarse graph provided   */
     bgraphZero (finegrafptr);                     /* Assign all vertices to part 0 */
+    return     (0);
+  }
+
+  coarparttax   = coargrafptr->parttax;
+  coarfrontab   = coargrafptr->frontab;           /* TRICK: also equal to finefrontab */
+  fineparttax   = finegrafptr->parttax;
+  finecompsize1 = coargrafptr->s.vertnbr - coargrafptr->compsize0; /* Pre-allocate sizes */
+
+  for (coarvertnum = coargrafptr->s.baseval; coarvertnum < coargrafptr->s.vertnnd; coarvertnum ++) {
+    Gnum                finevertnum0;             /* First multinode vertex  */
+    Gnum                finevertnum1;             /* Second multinode vertex */
+    GraphPart           partval;
+
+    finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
+    finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
+    partval      = coarparttax[coarvertnum];
+
+    fineparttax[finevertnum0] = partval;
+    if (finevertnum0 != finevertnum1) {
+      fineparttax[finevertnum1] = partval;
+      finecompsize1 += partval;                   /* Account for extra vertices created in part 1 */
+    }
+  }
+
+  finegrafptr->compload0    = coargrafptr->compload0;
+  finegrafptr->compload0dlt = coargrafptr->compload0dlt;
+  finegrafptr->compsize0    = finegrafptr->s.vertnbr - finecompsize1;
+  finegrafptr->commload     = coargrafptr->commload;
+  finegrafptr->commgainextn = coargrafptr->commgainextn;
+
+  for (coarfronnum = 0, finefronnum = coargrafptr->fronnbr; /* Re-cycle frontier array from coarse to fine graph */
+       coarfronnum < coargrafptr->fronnbr; coarfronnum ++) {
+    Gnum                coarvertnum;
+    Gnum                finevertnum0;             /* First multinode vertex  */
+    Gnum                finevertnum1;             /* Second multinode vertex */
+
+    coarvertnum  = coarfrontab[coarfronnum];
+    finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
+    finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
+      
+    if (finevertnum0 != finevertnum1) {           /* If multinode si made of two distinct vertices */
+      Gnum                coarpartval;
+      Gnum                fineedgenum;
+
+      coarpartval = coarparttax[coarvertnum];
+
+#ifdef SCOTCH_DEBUG_BGRAPH2
+      coarfrontab[coarfronnum] = ~0;
+#endif /* SCOTCH_DEBUG_BGRAPH2 */
+
+      for (fineedgenum = fineverttax[finevertnum0];
+           fineedgenum < finevendtax[finevertnum0]; fineedgenum ++) {
+        if (fineparttax[fineedgetax[fineedgenum]] != coarpartval) { /* If first vertex belongs to frontier */
+          coarfrontab[coarfronnum] = finevertnum0; /* Record it in lieu of the coarse frontier vertex      */
+          break;
+        }
+      }
+      if (fineedgenum >= finegrafptr->s.vendtax[finevertnum0]) { /* If first vertex not in frontier */
+        coarfrontab[coarfronnum] = finevertnum1;  /* Then second vertex must be in frontier         */
+        continue;                                 /* Skip to next multinode                         */
+      }
+
+      for (fineedgenum = fineverttax[finevertnum1]; /* Check if second vertex belong to frontier too */
+           fineedgenum < finevendtax[finevertnum1]; fineedgenum ++) {
+        if (fineparttax[fineedgetax[fineedgenum]] != coarpartval) { /* If second vertex belongs to frontier  */
+          coarfrontab[finefronnum ++] = finevertnum1; /* Record it at the end of the recycled frontier array */
+          break;
+        }
+      }
+
+#ifdef SCOTCH_DEBUG_BGRAPH2
+      if (coarfrontab[coarfronnum] == ~0) {
+        errorPrint ("bgraphBipartMlUncoarsen: internal error");
+        return     (1);
+      }
+#endif /* SCOTCH_DEBUG_BGRAPH2 */
+    }
+    else                                          /* If coarse vertex is single node */
+      coarfrontab[coarfronnum] = finevertnum0;    /* Then it belongs to the frontier */
+  }
+  finegrafptr->fronnbr = finefronnum;
+
+#ifdef SCOTCH_DEBUG_BGRAPH2
+  if (bgraphCheck (finegrafptr) != 0) {
+    errorPrint ("bgraphBipartMlUncoarsen: inconsistent graph data");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_BGRAPH2 */
 
   return (0);
 }

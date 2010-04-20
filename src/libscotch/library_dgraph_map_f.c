@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 28 jun 2008     **/
-/**                                 to     28 jun 2008     **/
+/**                                 to     29 mar 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -138,7 +138,7 @@ int * const                 revaptr),           \
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
-  if ((stream = fdopen (filenum, "w+")) == NULL) { /* Build stream from handle */
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
     errorPrint ("SCOTCHFDGRAPHMAPSAVE: cannot open output stream");
     close      (filenum);
     *revaptr = 1;
@@ -160,7 +160,7 @@ FORTRAN (                                           \
 SCOTCHFDGRAPHMAPCOMPUTE, scotchfdgraphmapcompute, ( \
 const SCOTCH_Dgraph * const grafptr,                \
 SCOTCH_Dmapping * const     mapptr,                 \
-const SCOTCH_Strat * const  stratptr,               \
+SCOTCH_Strat * const        stratptr,               \
 int * const                 revaptr),               \
 (grafptr, mapptr, stratptr, revaptr))
 {
@@ -175,7 +175,7 @@ FORTRAN (                                       \
 SCOTCHFDGRAPHMAP, scotchfdgraphmap, (           \
 const SCOTCH_Dgraph * const grafptr,            \
 const SCOTCH_Arch * const   archptr,            \
-const SCOTCH_Strat * const  stratptr,           \
+SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          termloctab,         \
 int * const                 revaptr),           \
 (grafptr, archptr, stratptr, termloctab, revaptr))
@@ -191,7 +191,7 @@ FORTRAN (                                       \
 SCOTCHFDGRAPHPART, scotchfdgraphpart, (         \
 const SCOTCH_Dgraph * const grafptr,            \
 const SCOTCH_Num * const    partptr,            \
-const SCOTCH_Strat * const  stratptr,           \
+SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          termloctab,         \
 int * const                 revaptr),           \
 (grafptr, partptr, stratptr, termloctab, revaptr))

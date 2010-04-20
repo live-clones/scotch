@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.0  : from : 29 dec 2006     **/
 /**                                 to     22 may 2008     **/
+/**                # Version 5.1  : from : 01 oct 2009     **/
+/**                                 to   : 01 oct 2009     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -54,7 +56,7 @@
 /**                  will be performed in the pre-hashing  **/
 /**                  array, and for others, for which pre- **/
 /**                  hashing costs much more, it will save **/
-/**                  time at the end.                      **/
+/**                  time in the end.                      **/
 /**                                                        **/
 /************************************************************/
 
@@ -116,6 +118,11 @@ const HgraphOrderCpParam * const  paraptr)
   Gnum                          finevsizsum;      /* Sum of compressed vertex sizes to build fine inverse permutation      */
   void *                        dataptr;          /* Flag of memory allocation success                                     */
 
+  const Gnum * restrict const   fineverttax = finegrafptr->s.verttax;
+  const Gnum * restrict const   finevendtax = finegrafptr->s.vendtax;
+  const Gnum * restrict const   finevnhdtax = finegrafptr->vnhdtax;
+  const Gnum * restrict const   fineedgetax = finegrafptr->s.edgetax;
+
   for (finehashmsk = 15;                          /* Set neighbor hash table sizes */
        finehashmsk < finegrafptr->s.degrmax;
        finehashmsk = finehashmsk * 2 + 1) ;
@@ -152,9 +159,9 @@ const HgraphOrderCpParam * const  paraptr)
     Gnum                finehsumval;              /* Hash sum value      */
     Gnum                finehsumbit;
 
-    for (fineedgenum = finegrafptr->s.verttax[finevertnum], finehsumval = finevertnum; /* For all edges, including halo edges */
-         fineedgenum < finegrafptr->s.vendtax[finevertnum]; fineedgenum ++)
-      finehsumval += finegrafptr->s.edgetax[fineedgenum];
+    for (fineedgenum = fineverttax[finevertnum], finehsumval = finevertnum; /* For all edges, including halo edges */
+         fineedgenum < finevendtax[finevertnum]; fineedgenum ++)
+      finehsumval += fineedgetax[fineedgenum];
 
     finehsumtax[finevertnum] = finehsumval;
 
@@ -186,19 +193,19 @@ const HgraphOrderCpParam * const  paraptr)
     Gnum                finematenbr;              /* Number of mates of current vertex */
     Gnum                fineedgenum;              /* Current edge number               */
 
-    finedegrval = finegrafptr->s.vendtax[finevertnum] - finegrafptr->s.verttax[finevertnum];
+    finedegrval = finevendtax[finevertnum] - fineverttax[finevertnum];
     finehsumval = finehsumtax[finevertnum];
     finematenbr = 0;                              /* Reset potential mate array */
 
-    for (fineedgenum = finegrafptr->s.verttax[finevertnum]; /* For all edges, including halo edges */
-         fineedgenum < finegrafptr->s.vendtax[finevertnum]; fineedgenum ++) {
+    for (fineedgenum = fineverttax[finevertnum];  /* For all edges, including halo edges */
+         fineedgenum < finevendtax[finevertnum]; fineedgenum ++) {
       Gnum                finevertend;
 
-      finevertend = finegrafptr->s.edgetax[fineedgenum];
+      finevertend = fineedgetax[fineedgenum];
 
       if ((finevertend < finevertnum) &&          /* If neighbor has same characteristics */
           (finehsumval == finehsumtax[finevertend]) &&
-          (finedegrval == (finegrafptr->s.vendtax[finevertend] - finegrafptr->s.verttax[finevertend]))) {
+          (finedegrval == (finevendtax[finevertend] - fineverttax[finevertend]))) {
         Gnum                finematenum;
         Gnum                coarvertend;
 
@@ -219,11 +226,11 @@ const HgraphOrderCpParam * const  paraptr)
       Gnum                fineedgenum;            /* Current edge number      */
       Gnum                finehashnum;
 
-      for (fineedgenum = finegrafptr->s.verttax[finevertnum]; /* For all edges, including halo edges */
-           fineedgenum < finegrafptr->s.vendtax[finevertnum]; fineedgenum ++) {
+      for (fineedgenum = fineverttax[finevertnum]; /* For all edges, including halo edges */
+           fineedgenum < finevendtax[finevertnum]; fineedgenum ++) {
         Gnum                finevertend;
 
-        finevertend = finegrafptr->s.edgetax[fineedgenum]; /* Add end vertex to hash table */
+        finevertend = fineedgetax[fineedgenum];   /* Add end vertex to hash table */
 
         for (finehashnum = (finevertend * HGRAPHORDERCPHASHPRIME) & finehashmsk; /* Search for empty slot in hash table */
              finehashtab[finehashnum].vertnum == finevertnum; finehashnum = (finehashnum + 1) & finehashmsk) ;
@@ -240,12 +247,12 @@ const HgraphOrderCpParam * const  paraptr)
         Gnum                fineedgenum;          /* Current edge number           */
         Gnum                fineedgennd;
 
-        for (fineedgenum = finegrafptr->s.verttax[finematetab[finematenbr].finevertend], /* For all edges, including halo edges */
-             fineedgennd = finegrafptr->s.vendtax[finematetab[finematenbr].finevertend];
+        for (fineedgenum = fineverttax[finematetab[finematenbr].finevertend], /* For all edges, including halo edges */
+             fineedgennd = finevendtax[finematetab[finematenbr].finevertend];
              fineedgenum < fineedgennd; fineedgenum ++) {
           Gnum                finevertend;
 
-          finevertend = finegrafptr->s.edgetax[fineedgenum];
+          finevertend = fineedgetax[fineedgenum];
 
           for (finehashnum = (finevertend * HGRAPHORDERCPHASHPRIME) & finehashmsk; ;
                finehashnum = (finehashnum + 1) & finehashmsk) {
@@ -346,12 +353,12 @@ loop_failed: ;
     coargrafdat.s.verttax[coarvertnum] = coaredgenum;
     coarvsiztax[coarvertnum] = 1;                 /* Fill coargrafdat.s.velotax if finegrafptr has no vertex loads */
 
-    for (fineedgenum = finegrafptr->s.verttax[finevertnum]; /* For all non-halo edges of vertex */
-         fineedgenum < finegrafptr->vnhdtax[finevertnum]; fineedgenum ++) {
+    for (fineedgenum = fineverttax[finevertnum];  /* For all non-halo edges of vertex */
+         fineedgenum < finevnhdtax[finevertnum]; fineedgenum ++) {
       Gnum                finevertend;
       Gnum                finehashnum;
 
-      finevertend = finegrafptr->s.edgetax[fineedgenum];
+      finevertend = fineedgetax[fineedgenum];
       if (finecoartax[finevertend] == coarvertnum) { /* If neighbor is merged into us, merge load but do not write edge */
         coarvsiztax[coarvertnum] ++;              /* Fill coargrafdat.s.velotax if finegrafptr has no vertex loads      */
         continue;
@@ -373,7 +380,7 @@ loop_failed: ;
     for ( ; fineedgenum < finegrafptr->s.vendtax[finevertnum]; fineedgenum ++) { /* For edges linking to halo vertices */
       Gnum                finevertend;
 
-      finevertend = finegrafptr->s.edgetax[fineedgenum];
+      finevertend = fineedgetax[fineedgenum];
       coargrafdat.s.edgetax[coaredgenum ++] = finecoartax[finevertend]; /* Halo vertices are always defined and unique */
     }
     coarvertnum ++;
@@ -384,11 +391,11 @@ loop_failed: ;
     coargrafdat.s.verttax[coarvertnum] = coaredgenum;
     coarvsiztax[coarvertnum] = 1;                 /* Fill coargrafdat.s.velotax if finegrafptr has no vertex loads */
 
-    for (fineedgenum = finegrafptr->s.verttax[finevertnum]; /* For all edges of halo vertex */
-         fineedgenum < finegrafptr->s.vendtax[finevertnum]; fineedgenum ++) {
+    for (fineedgenum = fineverttax[finevertnum];  /* For all edges of halo vertex */
+         fineedgenum < finevendtax[finevertnum]; fineedgenum ++) {
       Gnum                finevertend;
 
-      finevertend = finegrafptr->s.edgetax[fineedgenum];
+      finevertend = fineedgetax[fineedgenum];
       coargrafdat.s.edgetax[coaredgenum ++] = finecoartax[finevertend];
     }
     coarvertnum ++;

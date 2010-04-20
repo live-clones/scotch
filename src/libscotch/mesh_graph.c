@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 11 oct 2003     **/
 /**                                 to     05 may 2004     **/
+/**                # Version 5.1  : from : 19 nov 2009     **/
+/**                                 to     19 nov 2009     **/
 /**                                                        **/
 /**   NOTES      : # From a given mesh is created a graph, **/
 /**                  such that all vertices of the graph   **/
@@ -120,7 +122,7 @@ Graph * restrict const        grafptr)            /*+ Graph to build +*/
 
   grafptr->velosum = meshptr->vnlosum;
 
-  edgemax = ((meshptr->degrmax * meshptr->degrmax) / 2 + 1)  * meshptr->vnodnbr; /* Compute estimated number of edges in graph */
+  edgemax = 2 * meshptr->edgenbr;                 /* Compute lower bound on number of edges in graph */
 #ifdef SCOTCH_DEBUG_MESH2
   edgemax = meshptr->degrmax + 1;                 /* Allow testing dynamic reallocation of edge array */
 #endif /* SCOTCH_DEBUG_MESH2 */
