@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 28 nov 2003     **/
 /**                                 to     19 jan 2004     **/
+/**                # Version 5.1  : from : 27 apr 2010     **/
+/**                                 to     27 apr 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,9 +78,9 @@ SCOTCH_Graph * restrict const grafptr,
 SCOTCH_Geom * restrict const  geomptr,
 FILE * const                  filegrfptr,
 FILE * const                  filegeoptr,
-const char * const            dataptr)            /* No use */
+const char * const            dataptr)
 {
-  return (graphGeomLoadChac ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, NULL));
+  return (graphGeomLoadChac ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, dataptr));
 }
 
 /*+ This routine saves the contents of the given
@@ -94,7 +96,7 @@ const SCOTCH_Graph * restrict const grafptr,
 const SCOTCH_Geom * restrict const  geomptr,
 FILE * const                        filegrfptr,
 FILE * const                        filegeoptr,
-const char * const                  dataptr)      /* No use */
+const char * const                  dataptr)
 {
-  return (graphGeomSaveChac ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, NULL));
+  return (graphGeomSaveChac ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, dataptr));
 }
