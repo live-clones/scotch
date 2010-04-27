@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 17 jan 2008     **/
 /**                                 to   : 21 mar 2008     **/
+/**                # Version 5.1  : from : 27 apr 2010     **/
+/**                                 to   : 27 apr 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,8 +78,9 @@ Graph * restrict const      grafptr,              /* Graph to load    */
 Geom * restrict const       geomptr,              /* Geometry to load */
 FILE * const                filesrcptr,           /* Topological data */
 FILE * const                filegeoptr,           /* No use           */
-const char * const          dataptr)              /* No use           */
+const char * const          dataptr)              /* Fake base value  */
 {
+  Gnum                baseval;
   Gnum                mrownbr;
   Gnum                mcolnbr;
   Gnum                linenbr;
@@ -94,6 +97,16 @@ const char * const          dataptr)              /* No use           */
   char                linetab[1025];
   char *              lineptr;
   char                c;
+
+  baseval = 1;                                    /* Regular MatrixMarket indices start from 1 */
+
+  if ((dataptr != NULL)                        && /* If base value provided */
+      (dataptr[0] != '\0')                     &&
+      ((baseval = (Gnum) atol (dataptr)) == 0) && /* Get base value */
+      (dataptr[0] != '0')) {
+    errorPrint ("graphGeomLoadMmkt: invalid parameter");
+    return     (1);
+  }
 
   if (fgets (linetab, 1025, filesrcptr) == NULL) { /* Read header lines */
     errorPrint ("graphGeomLoadMmkt: bad input (1)");
@@ -134,24 +147,25 @@ const char * const          dataptr)              /* No use           */
   memSet (grafptr, 0, sizeof (Graph));
 
   grafptr->flagval = GRAPHFREETABS | GRAPHVERTGROUP | GRAPHEDGEGROUP;
-  grafptr->baseval = 1;                           /* Matrix Market indices start from 1 */
+  grafptr->baseval = baseval;
   grafptr->vertnbr = mrownbr;
-  grafptr->vertnnd = grafptr->vertnbr + 1;
+  grafptr->vertnnd = grafptr->vertnbr + baseval;
 
-  if ((grafptr->vendtax = memAlloc ((grafptr->vertnbr + 1) * sizeof (Gnum))) == NULL) { /* TRICK: vendtax = verttax + 1 */
+  if ((grafptr->verttax = memAlloc ((grafptr->vertnbr + 1) * sizeof (Gnum))) == NULL) {
     errorPrint ("graphGeomLoadMmkt: out of memory (1)");
     graphExit  (grafptr);
     return     (1);
   }
-  grafptr->verttax = grafptr->vendtax - 1;        /* Matrix Market indices start from 1 */
-  grafptr->velosum = grafptr->vertnbr;
+  grafptr->verttax -= baseval;
+  grafptr->vendtax  = grafptr->verttax + 1;
+  grafptr->velosum  = grafptr->vertnbr;
 
   if ((sorttab = (GraphGeomMmktEdge *) memAlloc (2 * linenbr * sizeof (GraphGeomMmktEdge))) == NULL) { /* Twice the space for symmetric edges */
     errorPrint ("graphGeomLoadMmkt: out of memory (2)");
     graphExit  (grafptr);
     return     (1);
   }
-  grafptr->edgetax = ((Gnum *) sorttab) - grafptr->baseval; /* TRICK: will be freed if graph is freed */
+  grafptr->edgetax = ((Gnum *) sorttab) - baseval; /* TRICK: will be freed if graph is freed */
 
   for (linenum = sortnbr = 0; linenum < linenbr; linenum ++) {
     if ((intLoad (filesrcptr, &sorttab[sortnbr].vertnum[0]) != 1) || /* Read edge ends */
@@ -162,8 +176,8 @@ const char * const          dataptr)              /* No use           */
       return     (1);
     }
 
-    if ((sorttab[sortnbr].vertnum[0] < 1) || (sorttab[sortnbr].vertnum[0] > mrownbr) ||
-        (sorttab[sortnbr].vertnum[1] < 1) || (sorttab[sortnbr].vertnum[1] > mrownbr)) {
+    if ((sorttab[sortnbr].vertnum[0] < baseval) || (sorttab[sortnbr].vertnum[0] >= (mrownbr + baseval)) ||
+        (sorttab[sortnbr].vertnum[1] < baseval) || (sorttab[sortnbr].vertnum[1] >= (mrownbr + baseval))) {
       errorPrint ("graphGeomLoadMmkt: bad input (5)");
       graphExit  (grafptr);
       return     (1);
@@ -179,7 +193,7 @@ const char * const          dataptr)              /* No use           */
   intSort2asc2 (sorttab, sortnbr);                /* Sort edges by increasing indices */
 
   edgetax = grafptr->edgetax;                     /* TRICK: point to beginning of sorted edge array for re-use */
-  for (sortnum = vertnum = degrmax = 0, edgetmp = edgenum = 1;
+  for (sortnum = degrmax = 0, vertnum = baseval - 1, edgetmp = edgenum = baseval;
        sortnum < sortnbr; sortnum ++) {
     Gnum                vertend;
 
@@ -191,14 +205,15 @@ const char * const          dataptr)              /* No use           */
 
       grafptr->verttax[++ vertnum] = edgenum;     /* Set beginning of new edge sub-array */
 
-      while (vertnum < sorttab[sortnum].vertnum[0]) /* Fill gaps with isolated vertices and mark beginning of new one */
+      while (vertnum < sorttab[sortnum].vertnum[0]) /* Fill gaps with isolated vertices */
         grafptr->verttax[++ vertnum] = edgenum;
-      verttmp = 0;
+
+      verttmp = baseval - 1;                      /* Make sure next edge will be considered as never seen before */
     }
 
-    vertend = sorttab[sortnum].vertnum[1];
-    if (vertend != verttmp)                       /* If edge differs from previous one */
-      edgetax[edgenum ++] = verttmp = vertend;
+    vertend = sorttab[sortnum].vertnum[1];        /* Get end of current edge                */
+    if (vertend != verttmp)                       /* If edge differs from previous one      */
+      edgetax[edgenum ++] = verttmp = vertend;    /* Add it to array and prevent duplicates */
   }
   edgetmp = edgenum - edgetmp;                    /* Compute degree and see if it is maximum degree */
   if (edgetmp > degrmax)
@@ -215,9 +230,8 @@ const char * const          dataptr)              /* No use           */
   }
 #endif /* SCOTCH_DEBUG_GRAPH2 */
 
-  grafptr->edgenbr = edgenum - 1;
-  grafptr->edgetax = memRealloc (edgetax + 1, grafptr->edgenbr * sizeof (Gnum)); /* TRICK: keep only useful space in re-used array */
-  grafptr->edgetax --;                            /* Base is 1 */
+  grafptr->edgenbr = edgenum - baseval;
+  grafptr->edgetax = ((Gnum *) memRealloc (edgetax + baseval, grafptr->edgenbr * sizeof (Gnum))) - baseval; /* TRICK: keep only useful space in re-used array */
   grafptr->edlotax = NULL;
   grafptr->edlosum = grafptr->edgenbr;
   grafptr->degrmax = degrmax;

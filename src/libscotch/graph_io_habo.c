@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 5.0  : from : 06 jun 2007     **/
 /**                                 to     31 aug 2007     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to     09 nov 2008     **/
+/**                                 to     27 apr 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,7 +77,7 @@ Graph * restrict const      grafptr,              /* Graph to load    */
 Geom * restrict const       geomptr,              /* Geometry to load */
 FILE * const                filesrcptr,           /* Topological data */
 FILE * const                filegeoptr,           /* No use           */
-const char * const          dataptr)              /* No use           */
+const char * const          dataptr)              /* Tag value        */
 {
   Gnum                          habmattag;        /* Matrix tag number in file       */
   Gnum                          habmatnum;        /* Current matrix number           */
@@ -104,9 +104,11 @@ const char * const          dataptr)              /* No use           */
   Gnum                          degrmax;          /* Maximum degree                  */
   int                           c;
 
-  if (((habmattag = (Gnum) atol (dataptr)) == 0) && /* Get tag value */
-      (dataptr[0] != '0') && (dataptr[0] != '\0')) {
-    errorPrint ("graphGeomLoadHabo: bad input (1)");
+  if ((dataptr != NULL)                          && /* If tag value provided */
+      (dataptr[0] != '\0')                       &&
+      ((habmattag = (Gnum) atol (dataptr)) == 0) && /* Get tag value */
+      (dataptr[0] != '0')) {
+    errorPrint ("graphGeomLoadHabo: invalid parameter");
     return     (1);
   }
 
@@ -119,7 +121,7 @@ const char * const          dataptr)              /* No use           */
         (fgets (habmatbuf[1], 83, filesrcptr) == NULL) ||
         (fgets (habmatbuf[2], 83, filesrcptr) == NULL) ||
         (fgets (habmatbuf[3], 83, filesrcptr) == NULL)) {
-      errorPrint ("graphGeomLoadHabo: bad input (2)");
+      errorPrint ("graphGeomLoadHabo: bad input (1)");
       return     (1);
     }
     habmatbuf[1][70] = '\0';                      /* Extract header values */
@@ -138,19 +140,19 @@ const char * const          dataptr)              /* No use           */
 
     habmatbuf[3][32] = '\0';
     if (graphGeomLoadHaboFormat (&habnzrfmt, &habmatbuf[3][16]) != 0) {
-      errorPrint ("graphGeomLoadHabo: bad input (3)");
+      errorPrint ("graphGeomLoadHabo: bad input (2)");
       return     (1);
     }
     habmatbuf[3][16] = '\0';
     if (graphGeomLoadHaboFormat (&habcolfmt, &habmatbuf[3][0]) != 0) {
-      errorPrint ("graphGeomLoadHabo: bad input (4)");
+      errorPrint ("graphGeomLoadHabo: bad input (3)");
       return     (1);
     }
 
     if (habrhsnbr != 0) {
       while ((c = getc (filesrcptr)) != '\n'){    /* Skip RHS format line */
         if (c == EOF) {
-          errorPrint ("graphGeomLoadHabo: bad input (5)");
+          errorPrint ("graphGeomLoadHabo: bad input (4)");
           return     (1);
         }
       }
@@ -160,7 +162,7 @@ const char * const          dataptr)              /* No use           */
       while (habcrdnbr -- > 0) {                 /* Skip all of file lines  */
         while ((c = getc (filesrcptr)) != '\n') { /* Skip line              */
           if (c == EOF) {
-            errorPrint ("graphGeomLoadHabo: bad input (6)");
+            errorPrint ("graphGeomLoadHabo: bad input (5)");
             return     (1);
           }
         }
@@ -222,14 +224,14 @@ const char * const          dataptr)              /* No use           */
         habcolval = habcolval * 10 + c - '0';
     }
     if (c == EOF) {
-      errorPrint ("graphGeomLoadHabo: bad input (7)");
+      errorPrint ("graphGeomLoadHabo: bad input (6)");
       graphFree  (grafptr);
       return     (1);
     }
     habcoltab[habcolnum] = habcolval;
   }
   if (habcoltab[habcolnbr] != (Gnum) habnzrnbr + 1) {
-    errorPrint ("graphGeomLoadHabo: bad input (8)");
+    errorPrint ("graphGeomLoadHabo: bad input (7)");
     graphFree  (grafptr);
     return     (1);
   }
@@ -259,7 +261,7 @@ const char * const          dataptr)              /* No use           */
           habnzrval = habnzrval * 10 + c - '0';
       }
       if (c == EOF) {
-        errorPrint ("graphGeomLoadHabo: bad input (9)");
+        errorPrint ("graphGeomLoadHabo: bad input (8)");
         graphFree  (grafptr);
         return     (1);
       }
