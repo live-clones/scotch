@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to     22 may 2008     **/
 /**                # Version 5.1  : from : 10 nov 2008     **/
-/**                                 to     12 nov 2008     **/
+/**                                 to     12 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -467,9 +467,9 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
                 savenbr ++;                       /* One more move recorded */
               }
 
-              vexxend->partval               = 2; /* Vertex will be in separator                    */
-              vexxend->compgain[partval]     = vexxend->veloval; /* Moved vertex still in separator */
-              vexxend->compgain[1 - partval] = vexxend->veloval - vexxptr->veloval;
+              vexxend->partval               = 2; /* Vertex will be in separator                       */
+              vexxend->compgain[partval]     = vexxend->veloval; /* Moved vertex still in separator    */
+              vexxend->compgain[1 - partval] = vexxend->veloval - vexxptr->veloval; /* TRICK: -veloval */
 
               for (edgeend = verttax[vertend], compgainp = 0;
                    edgeend < vendtax[vertend]; edgeend ++) {
@@ -816,6 +816,11 @@ const Gnum                                    comploaddlt)
 {
   Gnum                  hashnum;
   Gnum                  comploadtmp[3];
+
+  const Gnum * restrict const verttax = grafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const velotax = grafptr->s.velotax;
+  const Gnum * restrict const edgetax = grafptr->s.edgetax;
 
   comploadtmp[0] = grafptr->compload[0];
   comploadtmp[1] = grafptr->compload[1];
