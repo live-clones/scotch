@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : library_dgraph_build_grid_f.c           **/
+/**   NAME       : library_dgraph_build_grid3d_f.c         **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 16 feb 2007     **/
 /**                                 to     16 feb 2007     **/
+/**                # Version 5.1  : from : 06 jun 2010     **/
+/**                                 to     06 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,8 +75,10 @@ const SCOTCH_Num * const    baseptr,                  \
 const SCOTCH_Num * const    dimxptr,                  \
 const SCOTCH_Num * const    dimyptr,                  \
 const SCOTCH_Num * const    dimzptr,                  \
+const SCOTCH_Num * const    incrptr,                  \
+const int * const           flagptr,                  \
 int * const                 revaptr),                 \
-(grafptr, baseptr, dimxptr, dimyptr, dimzptr, revaptr))
+(grafptr, baseptr, dimxptr, dimyptr, dimzptr, incrptr, flagptr, revaptr))
 {
-  *revaptr = SCOTCH_dgraphBuildGrid3D (grafptr, *baseptr, *dimxptr, *dimyptr, *dimzptr);
+  *revaptr = SCOTCH_dgraphBuildGrid3D (grafptr, *baseptr, *dimxptr, *dimyptr, *dimzptr, *incrptr, *flagptr);
 }

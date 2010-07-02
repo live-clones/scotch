@@ -1,4 +1,4 @@
-/* Copyright 2008,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 19 jun 2008     **/
-/**                                 to     06 jun 2009     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,7 +64,7 @@
 /************************************/
 
 void
-ParMETIS_V3_PartKway (
+METISNAMEU(ParMETIS_V3_PartKway) (
 const int * const           vtxdist,
 int * const                 xadj,
 int * const                 adjncy,
@@ -176,7 +176,7 @@ MPI_Comm *                  comm)
 */
 
 void
-ParMETIS_V3_PartGeomKway (
+METISNAMEU(ParMETIS_V3_PartGeomKway) (
 const int * const           vtxdist,
 int * const                 xadj,
 int * const                 adjncy,
@@ -195,5 +195,5 @@ int * const                 edgecut,
 int * const                 part,
 MPI_Comm *                  commptr)
 {
-  ParMETIS_V3_PartKway (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr);
+  METISNAMEU(ParMETIS_V3_PartKway) (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr);
 }

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 2.0  : from : 13 jun 2005     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to   : 15 apr 2010     **/
+/**                                 to   : 30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,12 +119,12 @@
 #ifdef INTSIZE32
 #define INT                         int32_t
 #define UINT                        u_int32_t
-#define COMM_INT                    MPI_INTEGER4
+#define COMM_INT                    MPI_LONG
 #else /* INTSIZE32 */
 #ifdef INTSIZE64
 #define INT                         int64_t
 #define UINT                        u_int64_t
-#define COMM_INT                    MPI_INTEGER8
+#define COMM_INT                    MPI_LONG_LONG
 #else /* INTSIZE64 */
 #ifdef LONG                                       /* Better not use it */
 #define INT                         long          /* Long integer type */
@@ -252,12 +252,15 @@ double                      clockGet            (void);
 
 #define DATASIZE(n,p,i)             ((INT) (((n) + ((p) - 1 - (i))) / (p)))
 
-#define FORTRAN(nu,nl,pl,pc)                     \
+#define FORTRAN(nu,nl,pl,pc)        FORTRAN2(FORTRAN3(nu),FORTRAN3(nl),pl,pc)
+#define FORTRAN2(nu,nl,pl,pc)                    \
 void nu pl;                                      \
 void nl pl                                       \
 { nu pc; }                                       \
-void nl##_ pl                                    \
+void FORTRAN4(nl,_) pl	                         \
 { nu pc; }                                       \
-void nl##__ pl                                   \
+void FORTRAN4(nl,__) pl                          \
 { nu pc; }                                       \
 void nu pl
+#define FORTRAN3(s)                 s
+#define FORTRAN4(p,s)               p##s

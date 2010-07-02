@@ -57,6 +57,12 @@
 #include "common.h"
 #include "dgraph.h"
 
+/*******************************************/
+/*                                         */
+/* The distributed graph building routine. */
+/*                                         */
+/*******************************************/
+
 /* This routine builds a distributed hypercube of
 ** given dimension.
 ** Since this routine calls dgraphBuild, the private

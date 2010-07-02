@@ -1,4 +1,4 @@
-## Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,7 +30,9 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
-VERSION	= 5.1
+VERSION	= 5
+RELEASE = 1
+PATCHLEVEL = 9
 
 .PHONY				:	clean	default	install	ptscotch	realclean	required	scotch
 
@@ -88,14 +90,14 @@ $(mandir)/man1			:	$(mandir)
 					-$(MKDIR) $(mandir)/man1
 
 scotch				:	required
-					(cd libscotch ;      $(MAKE) VERSION=\"$(VERSION)\" scotch && $(MAKE) install)
-					(cd scotch ;         $(MAKE) VERSION=\"$(VERSION)\" scotch && $(MAKE) install)
-					(cd libscotchmetis ; $(MAKE)                        scotch && $(MAKE) install)
+					(cd libscotch ;      $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) scotch && $(MAKE) install)
+					(cd scotch ;         $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) scotch && $(MAKE) install)
+					(cd libscotchmetis ; $(MAKE)                                                                scotch && $(MAKE) install)
 
 ptscotch			:	required
-					(cd libscotch ;      $(MAKE) VERSION=\"$(VERSION)\" ptscotch && $(MAKE) ptinstall)
-					(cd scotch ;         $(MAKE) VERSION=\"$(VERSION)\" ptscotch && $(MAKE) ptinstall)
-					(cd libscotchmetis ; $(MAKE)                        ptscotch && $(MAKE) ptinstall)
+					(cd libscotch ;      $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) ptscotch && $(MAKE) ptinstall)
+					(cd scotch ;         $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) ptscotch && $(MAKE) ptinstall)
+					(cd libscotchmetis ; $(MAKE)                                                                ptscotch && $(MAKE) ptinstall)
 
 install				:	required	$(bindir)	$(includedir)	$(libdir)	$(mandir)/man1
 					-$(CP) -f ../bin/[agm]*$(EXE) $(bindir)

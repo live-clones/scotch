@@ -40,9 +40,9 @@
 /**                Jerome LACOSTE (P0.1)                   **/
 /**                Cedric CHEVALIER                        **/
 /**                                                        **/
-/**   FUNCTION   : These lines are the data declarations   **/
-/**                for the distributed graph general       **/
-/**                purpose routines.                       **/
+/**   FUNCTION   : This module contains the distributed    **/
+/**                graph data structure handling           **/
+/**                routines.                               **/
 /**                                                        **/
 /**    DATES     : # Version P0.0 : from : 01 apr 1997     **/
 /**                                 to     01 apr 1997     **/

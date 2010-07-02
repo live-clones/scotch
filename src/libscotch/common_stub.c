@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 11 may 2008     **/
 /**                                 to     11 may 2008     **/
+/**                # Version 5.1  : from : 27 jun 2010     **/
+/**                                 to     01 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,13 +52,16 @@
 
 #define COMMON
 
+#ifndef COMMON_NOMODULE
+#include "module.h"
+#endif /* COMMON_NOMODULE */
 #include "common.h"
 
 /*
 **  The static and global variables.
 */
 
-int commonStubDummy_;                             /* Dummy variable so that the object file will never be empty */
+int commonStubDummy;                              /* Dummy variable so that the object file will never be empty */
 
 /******************/
 /*                */

@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to   : 03 apr 2008     **/
 /**                # Version 5.1  : from : 16 jun 2008     **/
-/**                                 to   : 15 apr 2010     **/
+/**                                 to   : 01 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,7 +62,7 @@
 
 #define CHARMAX                     2048          /* Maximum line size */
 
-#define SUBSMAX                     32            /* Maximum number of substitutions */
+#define SUBSMAX                     48            /* Maximum number of substitutions */
 
 #define C_FILENBR                   2             /* Number of files in list                */
 #define C_FILEARGNBR                2             /* Number of files which can be arguments */
@@ -73,8 +73,8 @@
 #define C_filepntrhedinp            C_fileTab[0].pntr /* Source graph input file */
 #define C_filepntrhedout            C_fileTab[1].pntr /* Statistics output file  */
 
-#define EXPAND(s) EXPANDTWO(s)
-#define EXPANDTWO(s) #s
+#define EXPAND(s)                   EXPANDTWO(s)
+#define EXPANDTWO(s)                #s
 
 #include "module.h"
 #include "common.h"
@@ -166,8 +166,8 @@ char *                      argv[])
           printf ("Usage is:\ndummysizes [<input pattern header file> [<output header file>]]\n");
           exit       (0);
         case 'V' :
-          fprintf (stderr, "dummysizes, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "dummysizes, version " SCOTCH_VERSION_STRING "\n");
+          fprintf (stderr, "Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -200,18 +200,24 @@ char *                      argv[])
   substab[1][1] = "ptscotchf.h";
 #endif /* SCOTCH_PTSCOTCH */
   substab[2][0] = "DUMMYIDX";
-  substab[2][1] = EXPAND(IDX);
+  substab[2][1] = EXPAND (IDX);
   substab[3][0] = "DUMMYINT";
-  substab[3][1] = EXPAND(INT);
+  substab[3][1] = EXPAND (INT);
   substab[4][0] = "DUMMYMAXINT";
-  substab[4][1] = EXPAND(INTVALMAX);
+  substab[4][1] = EXPAND (INTVALMAX);
   substab[5][0] = "DUMMYPTFLAG";
 #ifdef SCOTCH_PTSCOTCH
   substab[5][1] = "PTSCOTCH";
 #else /* SCOTCH_PTSCOTCH */
   substab[5][1] = "SEQSCOTCH";
 #endif /* SCOTCH_PTSCOTCH */
-  subsnbr = 6;
+  substab[6][0] = "DUMMYVERSION";
+  substab[6][1] = EXPAND (SCOTCH_VERSION);
+  substab[7][0] = "DUMMYRELEASE";
+  substab[7][1] = EXPAND (SCOTCH_RELEASE);
+  substab[8][0] = "DUMMYPATCHLEVEL";
+  substab[8][1] = EXPAND (SCOTCH_PATCHLEVEL);
+  subsnbr = 9;
   subsFill (substab[subsnbr ++], "DUMMYSIZEARCH",          sizeof (Arch));
   subsFill (substab[subsnbr ++], "DUMMYSIZEGEOM",          sizeof (Geom));
   subsFill (substab[subsnbr ++], "DUMMYSIZEGRAPH",         sizeof (Graph));

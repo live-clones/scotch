@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     13 jan 2004     **/
 /**                # Version 5.1  : from : 27 mar 2010     **/
-/**                                 to     27 mar 2010     **/
+/**                                 to     24 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -277,13 +277,13 @@ int * const                 revaptr),           \
 FORTRAN (                                       \
 SCOTCHFARCHTLEAF, scotchfarchtleaf, (           \
 SCOTCH_Arch * const         archptr,            \
-const SCOTCH_Num * const    leafdep,            \
-const SCOTCH_Num * const    clusdep,            \
-const SCOTCH_Num * const    linkval,            \
+const SCOTCH_Num * const    levlnbr,            \
+const SCOTCH_Num * const    sizetab,            \
+const SCOTCH_Num * const    linktab,            \
 int * const                 revaptr),           \
-(archptr, leafdep, clusdep, linkval, revaptr))
+(archptr, levlnbr, sizetab, linktab, revaptr))
 {
-  *revaptr = SCOTCH_archTleaf (archptr, *leafdep, *clusdep, *linkval);
+  *revaptr = SCOTCH_archTleaf (archptr, *levlnbr, sizetab, linktab);
 }
 
 /*

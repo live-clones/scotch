@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 04 feb 2007     **/
 /**                                 to     03 apr 2008     **/
 /**                # Version 5.1  : from : 27 jul 2008     **/
-/**                                 to     28 sep 2008     **/
+/**                                 to     29 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -105,12 +105,11 @@ FILE * const                  stream)
   Gnum                      mapsum;               /* (Partial) sum of vertex loads                */
   double                    mapdlt;
   double                    mapmmy;               /* Maximum / average ratio                      */
-  Anum * restrict           ngbtab;               /* Table storing neighbors of current subdomain */
-  Anum                      ngbnbr;
-  Anum                      ngbsum;
-  Anum                      ngbnum;
-  Anum                      ngbmin;
-  Anum                      ngbmax;
+  Anum * restrict           nghbtab;              /* Table storing neighbors of current subdomain */
+  Anum                      nghbnbr;
+  Anum                      nghbmin;
+  Anum                      nghbmax;
+  Anum                      nghbsum;
   Gnum                      vertnum;
   Gnum                      veloval;
   Gnum                      edloval;
@@ -125,6 +124,12 @@ FILE * const                  stream)
   Gnum                      diamsum;
   Anum                      i;
 
+  const Gnum * restrict const verttax = ((Graph *) libgrafptr)->verttax;
+  const Gnum * restrict const vendtax = ((Graph *) libgrafptr)->vendtax;
+  const Gnum * restrict const velotax = ((Graph *) libgrafptr)->velotax;
+  const Gnum * restrict const edgetax = ((Graph *) libgrafptr)->edgetax;
+  const Gnum * restrict const edlotax = ((Graph *) libgrafptr)->edlotax;
+
   grafptr = (Graph *) libgrafptr;
   mappptr = &((LibMapping *) libmappptr)->m;
 
@@ -135,7 +140,7 @@ FILE * const                  stream)
   if (memAllocGroup ((void **) (void *)
                      &domntab, (size_t) ((grafptr->vertnbr + 1) * sizeof (MappingSort)),
                      &parttax, (size_t) (grafptr->vertnbr       * sizeof (Anum)),
-                     &ngbtab,  (size_t) ((grafptr->vertnbr + 2) * sizeof (Anum)), NULL) == NULL) {
+                     &nghbtab, (size_t) ((grafptr->vertnbr + 2) * sizeof (Anum)), NULL) == NULL) {
     errorPrint ("SCOTCH_graphMapView: out of memory");
     return     (1);
   }
@@ -163,8 +168,8 @@ FILE * const                  stream)
     parttax[domntab[vertnum].peri] = mapnbr;      /* Build map of partition parts starting from 0  */
     if (domntab[vertnum].labl != domntab[vertnum + 1].labl) /* TRICK: if new (or end) domain label */
       mapnbr ++;
-    if (grafptr->velotax != NULL)
-      veloval = grafptr->velotax[domntab[vertnum].peri];
+    if (velotax != NULL)
+      veloval = velotax[domntab[vertnum].peri];
     mapsum += veloval;
   }
   mapavg = (mapnbr == 0) ? 0.0L : (double) mapsum / (double) mapnbr;
@@ -174,8 +179,8 @@ FILE * const                  stream)
   mapmax = 0;
   mapdlt = 0.0L;
   for (vertnum = 0; domntab[vertnum].labl != ARCHDOMNOTTERM; vertnum ++) {
-    if (grafptr->velotax != NULL)
-      veloval = grafptr->velotax[domntab[vertnum].peri];
+    if (velotax != NULL)
+      veloval = velotax[domntab[vertnum].peri];
     mapsum += veloval;
 
     if (domntab[vertnum].labl != domntab[vertnum + 1].labl) { /* TRICK: if new (or end) domain label */
@@ -211,49 +216,71 @@ FILE * const                  stream)
            mapdlt,
            mapmmy);
 
-  ngbnbr = 0;
-  ngbmin = ANUMMAX;
-  ngbmax = 0;
-  ngbsum = 0;
-  ngbnum = 0;
-  ngbtab[0] = ANUMMAX;
+  nghbnbr = 0;
+  nghbmin = ANUMMAX;
+  nghbmax = 0;
+  nghbsum = 0;
+  nghbnbr = 0;
+  nghbtab[0] = -2;
   for (vertnum = 0; domntab[vertnum].labl != ARCHDOMNOTTERM; vertnum ++) {
     Gnum                edgenum;
     Gnum                edgennd;
     Anum                partnum;
 
     partnum = parttax[domntab[vertnum].peri];
-    for (edgenum = grafptr->verttax[domntab[vertnum].peri],
-         edgennd = grafptr->vendtax[domntab[vertnum].peri];
+    for (edgenum = verttax[domntab[vertnum].peri],
+         edgennd = vendtax[domntab[vertnum].peri];
          edgenum < edgennd; edgenum ++) {
       Anum                partend;
 
-      partend = parttax[grafptr->edgetax[edgenum]];
-      if ((partend != partnum) &&                 /* If edge is not internal              */
-          (partend != ngbtab[ngbnum]))            /* And neighbor has not just been found */
-        ngbtab[++ ngbnum] = partend;
+      partend = parttax[edgetax[edgenum]];
+      if ((partend != partnum) &&                 /* If edge is not internal                                      */
+          (partend != nghbtab[nghbnbr])) {        /* And neighbor is not sole neighbor or has not just been found */
+        Anum                partmin;
+        Anum                partmax;
+
+        partmin = 0;
+        partmax = nghbnbr;
+        while ((partmax - partmin) > 1) {
+          Anum                partmed;
+
+          partmed = (partmax + partmin) >> 1;
+          if (nghbtab[partmed] > partend)
+            partmax = partmed;
+          else
+            partmin = partmed;
+        }
+        if (nghbtab[partmin] == partend)          /* If neighboring part found, skip to next neighbor */
+          continue;
+
+#ifdef SCOTCH_DEBUG_MAP2
+        if (nghbnbr >= (grafptr->vertnbr + 1)) {
+          errorPrint ("SCOTCH_graphMapView: internal error");
+          return (1);
+        }
+#endif /* SCOTCH_DEBUG_MAP2 */
+
+        nghbnbr ++;
+        for (partmax = nghbnbr; partmax > (partmin + 1); partmax --)
+          nghbtab[partmax] = nghbtab[partmax - 1];
+        nghbtab[partmin + 1] = partend;           /* Add new neighbor part in the right place */
+      }
     }
     if (domntab[vertnum].labl != domntab[vertnum + 1].labl) { /* TRICK: if new (or end) domain label */
-      intSort1asc1 (ngbtab, ngbnum + 1);          /* Sort neighbor label array by increasing labels  */
-      for (i = 0, ngbnbr = 0; ngbtab[i] != ANUMMAX; i ++) {
-        if (ngbtab[i] != ngbtab[i + 1])
-          ngbnbr ++;
-      }
-      if (ngbnbr < ngbmin)
-        ngbmin = ngbnbr;
-      if (ngbnbr > ngbmax)
-        ngbmax = ngbnbr;
-      ngbsum += ngbnbr;
+      if (nghbnbr < nghbmin)
+        nghbmin = nghbnbr;
+      if (nghbnbr > nghbmax)
+        nghbmax = nghbnbr;
+      nghbsum += nghbnbr;
 
-      ngbnum = 0;
-      ngbtab[0] = ANUMMAX;
+      nghbnbr = 0;
     }
   }
 
   fprintf (stream, "M\tNeighbors min=%ld\tmax=%ld\tsum=%ld\n",
-           (long) ngbmin,
-           (long) ngbmax,
-           (long) ngbsum);
+           (long) nghbmin,
+           (long) nghbmax,
+           (long) nghbsum);
 
   memset (commdist, 0, 256 * sizeof (Gnum));      /* Initialize the data */
   commload  =
@@ -266,13 +293,13 @@ FILE * const                  stream)
 
     if (parttax[vertnum] == ~0)                   /* Skip unmapped vertices */
       continue;
-    for (edgenum = grafptr->verttax[vertnum];
-         edgenum < grafptr->vendtax[vertnum]; edgenum ++) {
-      if (parttax[grafptr->edgetax[edgenum]] == ~0)
+    for (edgenum = verttax[vertnum];
+         edgenum < vendtax[vertnum]; edgenum ++) {
+      if (parttax[edgetax[edgenum]] == ~0)
         continue;
-      distval = archDomDist (&mappptr->archdat, mapDomain (mappptr, vertnum), mapDomain (mappptr, grafptr->edgetax[edgenum]));
-      if (grafptr->edlotax != NULL)              /* Get edge weight if any */
-        edloval = grafptr->edlotax[edgenum];
+      distval = archDomDist (&mappptr->archdat, mapDomain (mappptr, vertnum), mapDomain (mappptr, edgetax[edgenum]));
+      if (edlotax != NULL)                        /* Get edge weight if any */
+        edloval = edlotax[edgenum];
       commdist[(distval > 255) ? 255 : distval] += edloval;
       commload  += edloval;
       commdilat += distval;

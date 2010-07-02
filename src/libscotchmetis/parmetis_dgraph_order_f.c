@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 17 oct 2007     **/
 /**                                 to     17 oct 2007     **/
+/**                # Version 5.1  : from : 30 jun 2010     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,17 +68,17 @@
 **
 */
 
-FORTRAN (                                       \
-PARMETIS_V3_NODEND, parmetis_v3_nodend, (       \
-const int * const           vtxdist,            \
-int * const                 xadj,               \
-int * const                 adjncy,             \
-const int * const           numflag,            \
-const int * const           options,            \
-int * const                 order,              \
-int * const                 sizes,              \
-MPI_Comm * const            commptr),           \
+FORTRAN (                                                         \
+METISNAMEU(PARMETIS_V3_NODEND), METISNAMEL(parmetis_v3_nodend), ( \
+const int * const           vtxdist,                              \
+int * const                 xadj,                                 \
+int * const                 adjncy,                               \
+const int * const           numflag,                              \
+const int * const           options,                              \
+int * const                 order,                                \
+int * const                 sizes,                                \
+MPI_Comm * const            commptr),                             \
 (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr))
 {
-  ParMETIS_V3_NodeND (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr);
+  METISNAMEU(ParMETIS_V3_NodeND) (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr);
 }

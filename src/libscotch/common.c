@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -33,9 +33,9 @@
 /**                                                        **/
 /**   NAME       : common.c                                **/
 /**                                                        **/
-/**   AUTHORS    : David GOUDIN                            **/
+/**   AUTHORS    : Francois PELLEGRINI                     **/
+/**                David GOUDIN                            **/
 /**                Pascal HENON                            **/
-/**                Francois PELLEGRINI                     **/
 /**                Pierre RAMET                            **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel direct block solver. **/
@@ -46,6 +46,8 @@
 /**                                 to     14 sep 1998     **/
 /**                # Version 2.0  : from : 27 sep 2004     **/
 /**                                 to     27 sep 2004     **/
+/**                # Version 5.1  : from : 27 jun 2010     **/
+/**                                 to     27 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,6 +57,9 @@
 
 #define COMMON
 
+#ifndef COMMON_NOMODULE
+#include "module.h"
+#endif /* COMMON_NOMODULE */
 #include <time.h>
 #include "common.h"
 

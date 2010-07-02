@@ -67,7 +67,7 @@
 /************************************/
 
 /* This routine builds the active dgraph
- ** corresponding to the given k-way
+** corresponding to the given k-way
 ** partition parameters.
 ** It returns:
 ** - 0   : on success.

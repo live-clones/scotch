@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 19 jan 2004     **/
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
+/**                # Version 5.1  : from : 01 jul 2010     **/
+/**                                 to   : 01 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,8 +165,8 @@ char *                      argv[])
           }
           break;
         case 'V' :
-          fprintf (stderr, "mcv, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "mcv, version " SCOTCH_VERSION_STRING "\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :

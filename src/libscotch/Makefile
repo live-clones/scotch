@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -40,10 +40,10 @@ libdir		= ../../lib
 include ../Makefile.inc
 
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -DSCOTCH_VERSION=$(VERSION) -DSCOTCH_RELEASE=$(RELEASE) -DSCOTCH_PATCHLEVEL=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 ##
 ##  Project rules.
@@ -52,20 +52,20 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:	clean
-					$(MAKE) CC="$(CCS)" CCD="$(CCS)" SCOTCHLIB=scotch	\
-					scotch.h						\
-					scotchf.h						\
-					libscotch$(LIB)						\
-					libscotcherr$(LIB)					\
+					$(MAKE) CC="$(CCS)" CCD="$(CCS)"	\
+					scotch.h				\
+					scotchf.h				\
+					libscotch$(LIB)				\
+					libscotcherr$(LIB)			\
 					libscotcherrexit$(LIB)
 
 ptscotch			:	clean
-					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIB=ptscotch	\
-					scotch.h									\
-					scotchf.h									\
-					libptscotch$(LIB)								\
-					libscotch$(LIB)									\
-					libptscotcherr$(LIB)								\
+					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)"	\
+					scotch.h							\
+					scotchf.h							\
+					libptscotch$(LIB)						\
+					libscotch$(LIB)							\
+					libptscotcherr$(LIB)						\
 					libptscotcherrexit$(LIB)
 
 install				:
@@ -78,9 +78,275 @@ ptinstall			:
 					-$(CP) libptscotch*$(LIB) $(libdir)
 
 clean				:
-					-$(RM) *~ *$(OBJ) lib*$(LIB) common2* parser_yy.c parser_ly.h parser_ll.c *scotch.h *scotchf.h y.output dummysizes$(EXE)
+					-$(RM) *~ *$(OBJ) lib*$(LIB) parser_yy.c parser_ly.h parser_ll.c *scotch.h *scotchf.h y.output dummysizes$(EXE)
 
 realclean			:	clean
+
+##
+##  Library dependencies.
+##
+
+LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
+			bdgraph_bipart_bd$(OBJ)			\
+			bdgraph_bipart_df$(OBJ)			\
+			bdgraph_bipart_ml$(OBJ)			\
+			bdgraph_bipart_sq$(OBJ)			\
+			bdgraph_bipart_st$(OBJ)			\
+			bdgraph_bipart_zr$(OBJ)			\
+			bdgraph_check$(OBJ)			\
+			bdgraph_gather_all$(OBJ)		\
+			bdgraph_store$(OBJ)			\
+			dgraph$(OBJ)				\
+			dgraph_allreduce$(OBJ)			\
+			dgraph_band$(OBJ)			\
+			dgraph_build$(OBJ)			\
+			dgraph_build_grid3d$(OBJ)		\
+			dgraph_build_hcub$(OBJ)			\
+			dgraph_check$(OBJ)			\
+			dgraph_coarsen$(OBJ)			\
+			dgraph_fold$(OBJ)			\
+			dgraph_fold_comm$(OBJ)			\
+			dgraph_fold_dup$(OBJ)			\
+			dgraph_gather$(OBJ)			\
+			dgraph_gather_all$(OBJ)			\
+			dgraph_ghst$(OBJ)			\
+			dgraph_halo$(OBJ)			\
+			dgraph_induce$(OBJ)			\
+			dgraph_io_load$(OBJ)			\
+			dgraph_io_save$(OBJ)			\
+			dgraph_match$(OBJ)			\
+			dgraph_match_sync_coll$(OBJ)		\
+			dgraph_match_sync_ptop$(OBJ)		\
+			dgraph_match_check$(OBJ)		\
+			dgraph_scatter$(OBJ)			\
+			dgraph_view$(OBJ)			\
+			dmapping$(OBJ)				\
+			dmapping_io$(OBJ)			\
+			dorder$(OBJ)				\
+			dorder_gather$(OBJ)			\
+			dorder_io$(OBJ)				\
+			dorder_io_block$(OBJ)			\
+			dorder_io_tree$(OBJ)			\
+			dorder_perm$(OBJ)			\
+			dorder_tree_dist$(OBJ)			\
+			hdgraph$(OBJ)				\
+			hdgraph_check$(OBJ)			\
+			hdgraph_fold$(OBJ)			\
+			hdgraph_gather$(OBJ)			\
+			hdgraph_induce$(OBJ)			\
+			hdgraph_order_nd$(OBJ)			\
+			hdgraph_order_si$(OBJ)			\
+			hdgraph_order_sq$(OBJ)			\
+			hdgraph_order_st$(OBJ)			\
+			kdgraph$(OBJ)				\
+			kdgraph_map_rb$(OBJ)			\
+			kdgraph_map_rb_map$(OBJ)		\
+			kdgraph_map_rb_part$(OBJ)		\
+			kdgraph_map_st$(OBJ)			\
+			library_dgraph$(OBJ)			\
+			library_dgraph_f$(OBJ)			\
+			library_dgraph_build$(OBJ)		\
+			library_dgraph_build_f$(OBJ)		\
+			library_dgraph_build_grid3d$(OBJ)	\
+			library_dgraph_build_grid3d_f$(OBJ)	\
+			library_dgraph_check$(OBJ)		\
+			library_dgraph_check_f$(OBJ)		\
+			library_dgraph_gather$(OBJ)		\
+			library_dgraph_gather_f$(OBJ)		\
+			library_dgraph_halo$(OBJ)		\
+			library_dgraph_halo_f$(OBJ)		\
+			library_dgraph_io_load$(OBJ)		\
+			library_dgraph_io_load_f$(OBJ)		\
+			library_dgraph_io_save$(OBJ)		\
+			library_dgraph_io_save_f$(OBJ)		\
+			library_dgraph_map$(OBJ)		\
+			library_dgraph_map_f$(OBJ)		\
+			library_dgraph_map_view$(OBJ)		\
+			library_dgraph_map_view_f$(OBJ)		\
+			library_dgraph_order$(OBJ)		\
+			library_dgraph_order_f$(OBJ)		\
+			library_dgraph_order_gather$(OBJ)	\
+			library_dgraph_order_gather_f$(OBJ)	\
+			library_dgraph_order_io$(OBJ)		\
+			library_dgraph_order_io_f$(OBJ)		\
+			library_dgraph_order_io_block$(OBJ)	\
+			library_dgraph_order_io_block_f$(OBJ)	\
+			library_dgraph_order_perm$(OBJ)		\
+			library_dgraph_order_perm_f$(OBJ)	\
+			library_dgraph_order_tree_dist$(OBJ)	\
+			library_dgraph_order_tree_dist_f$(OBJ)	\
+			library_dgraph_scatter$(OBJ)		\
+			library_dgraph_scatter_f$(OBJ)		\
+			library_dgraph_stat$(OBJ)		\
+			library_dgraph_stat_f$(OBJ)		\
+			vdgraph$(OBJ)				\
+			vdgraph_check$(OBJ)			\
+			vdgraph_gather_all$(OBJ)		\
+			vdgraph_separate_bd$(OBJ)		\
+			vdgraph_separate_df$(OBJ)		\
+			vdgraph_separate_ml$(OBJ)		\
+			vdgraph_separate_sq$(OBJ)		\
+			vdgraph_separate_st$(OBJ)		\
+			vdgraph_separate_zr$(OBJ)		\
+			vdgraph_store$(OBJ)
+
+LIBSCOTCHDEPS	=	arch$(OBJ)				\
+			arch_build$(OBJ)			\
+			arch_cmplt$(OBJ)			\
+			arch_cmpltw$(OBJ)			\
+			arch_deco$(OBJ)				\
+			arch_hcub$(OBJ)				\
+			arch_mesh$(OBJ)				\
+			arch_tleaf$(OBJ)			\
+			arch_torus$(OBJ)			\
+			arch_vcmplt$(OBJ)			\
+			arch_vhcub$(OBJ)			\
+			bgraph$(OBJ)				\
+			bgraph_bipart_bd$(OBJ)			\
+			bgraph_bipart_df$(OBJ)			\
+			bgraph_bipart_ex$(OBJ)			\
+			bgraph_bipart_fm$(OBJ)			\
+			bgraph_bipart_gg$(OBJ)			\
+			bgraph_bipart_gp$(OBJ)			\
+			bgraph_bipart_ml$(OBJ)			\
+			bgraph_bipart_st$(OBJ)			\
+			bgraph_bipart_zr$(OBJ)			\
+			bgraph_check$(OBJ)			\
+			bgraph_store$(OBJ)			\
+			common$(OBJ)				\
+			common_file$(OBJ)			\
+			common_file_compress$(OBJ)		\
+			common_file_uncompress$(OBJ)		\
+			common_integer$(OBJ)			\
+			common_memory$(OBJ)			\
+			common_stub$(OBJ)			\
+			gain$(OBJ)				\
+			geom$(OBJ)				\
+			graph$(OBJ)				\
+			graph_base$(OBJ)			\
+			graph_check$(OBJ)			\
+			graph_coarsen$(OBJ)			\
+			graph_induce$(OBJ)			\
+			graph_io$(OBJ)				\
+			graph_io_chac$(OBJ)			\
+			graph_io_habo$(OBJ)			\
+			graph_io_mmkt$(OBJ)			\
+			graph_io_scot$(OBJ)			\
+			graph_list$(OBJ)			\
+			hall_order_hd$(OBJ)			\
+			hall_order_hf$(OBJ)			\
+			hall_order_hx$(OBJ)			\
+			hgraph$(OBJ)				\
+			hgraph_check$(OBJ)			\
+			hgraph_induce$(OBJ)			\
+			hgraph_order_bl$(OBJ)			\
+			hgraph_order_cp$(OBJ)			\
+			hgraph_order_gp$(OBJ)			\
+			hgraph_order_hd$(OBJ)			\
+			hgraph_order_hf$(OBJ)			\
+			hgraph_order_hx$(OBJ)			\
+			hgraph_order_nd$(OBJ)			\
+			hgraph_order_si$(OBJ)			\
+			hgraph_order_st$(OBJ)			\
+			hmesh$(OBJ)				\
+			hmesh_check$(OBJ)			\
+			hmesh_hgraph$(OBJ)			\
+			hmesh_induce$(OBJ)			\
+			hmesh_mesh$(OBJ)			\
+			hmesh_order_bl$(OBJ)			\
+			hmesh_order_cp$(OBJ)			\
+			hmesh_order_gr$(OBJ)			\
+			hmesh_order_gp$(OBJ)			\
+			hmesh_order_hd$(OBJ)			\
+			hmesh_order_hf$(OBJ)			\
+			hmesh_order_hx$(OBJ)			\
+			hmesh_order_nd$(OBJ)			\
+			hmesh_order_si$(OBJ)			\
+			hmesh_order_st$(OBJ)			\
+			kgraph$(OBJ)				\
+			kgraph_map_rb$(OBJ)			\
+			kgraph_map_rb_map$(OBJ)			\
+			kgraph_map_rb_part$(OBJ)		\
+			kgraph_map_st$(OBJ)			\
+			library_arch$(OBJ)			\
+			library_arch_f$(OBJ)			\
+			library_arch_build$(OBJ)		\
+			library_arch_build_f$(OBJ)		\
+			library_geom$(OBJ)			\
+			library_geom_f$(OBJ)			\
+			library_graph$(OBJ)			\
+			library_graph_f$(OBJ)			\
+			library_graph_base$(OBJ)		\
+			library_graph_base_f$(OBJ)		\
+			library_graph_check$(OBJ)		\
+			library_graph_check_f$(OBJ)		\
+			library_graph_io_chac$(OBJ)		\
+			library_graph_io_chac_f$(OBJ)		\
+			library_graph_io_habo$(OBJ)		\
+			library_graph_io_habo_f$(OBJ)		\
+			library_graph_io_mmkt$(OBJ)		\
+			library_graph_io_mmkt_f$(OBJ)		\
+			library_graph_io_scot$(OBJ)		\
+			library_graph_io_scot_f$(OBJ)		\
+			library_graph_map$(OBJ)			\
+			library_graph_map_f$(OBJ)		\
+			library_graph_map_view$(OBJ)		\
+			library_graph_map_view_f$(OBJ)		\
+			library_graph_order$(OBJ)		\
+			library_graph_order_f$(OBJ)		\
+			library_mesh$(OBJ)			\
+			library_mesh_f$(OBJ)			\
+			library_mesh_graph$(OBJ)		\
+			library_mesh_graph_f$(OBJ)		\
+			library_mesh_io_habo$(OBJ)		\
+			library_mesh_io_habo_f$(OBJ)		\
+			library_mesh_io_scot$(OBJ)		\
+			library_mesh_io_scot_f$(OBJ)		\
+			library_mesh_order$(OBJ)		\
+			library_mesh_order_f$(OBJ)		\
+			library_parser$(OBJ)			\
+			library_parser_f$(OBJ)			\
+			library_random$(OBJ)			\
+			library_random_f$(OBJ)			\
+			mapping$(OBJ)				\
+			mapping_io$(OBJ)			\
+			mesh$(OBJ)				\
+			mesh_check$(OBJ)			\
+			mesh_coarsen$(OBJ)			\
+			mesh_graph$(OBJ)			\
+			mesh_induce_sepa$(OBJ)			\
+			mesh_io$(OBJ)				\
+			mesh_io_habo$(OBJ)			\
+			mesh_io_scot$(OBJ)			\
+			order$(OBJ)				\
+			order_check$(OBJ)			\
+			order_io$(OBJ)				\
+			parser$(OBJ)				\
+			parser_ll$(OBJ)				\
+			parser_yy$(OBJ)				\
+			vgraph$(OBJ)				\
+			vgraph_check$(OBJ)			\
+			vgraph_separate_bd$(OBJ)		\
+			vgraph_separate_es$(OBJ)		\
+			vgraph_separate_fm$(OBJ)		\
+			vgraph_separate_gg$(OBJ)		\
+			vgraph_separate_gp$(OBJ)		\
+			vgraph_separate_ml$(OBJ)		\
+			vgraph_separate_st$(OBJ)		\
+			vgraph_separate_th$(OBJ)		\
+			vgraph_separate_vw$(OBJ)		\
+			vgraph_separate_zr$(OBJ)		\
+			vgraph_store$(OBJ)			\
+			vmesh$(OBJ)				\
+			vmesh_check$(OBJ)			\
+			vmesh_separate_fm$(OBJ)			\
+			vmesh_separate_gg$(OBJ)			\
+			vmesh_separate_gr$(OBJ)			\
+			vmesh_separate_ml$(OBJ)			\
+			vmesh_separate_zr$(OBJ)			\
+			vmesh_separate_st$(OBJ)			\
+			vmesh_store$(OBJ)
+
 
 ##
 ##  Todo list.
@@ -89,57 +355,43 @@ realclean			:	clean
 common$(OBJ)			:	common.c				\
 					module.h				\
 					common.h
-					$(CAT) module.h common.c > common2.c
-					$(CC) $(CFLAGS) -c common2.c -DSCOTCH_COMMON_RENAME -o $(@)
-					$(RM) common2.c
+					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file$(OBJ)		:	common_file.c				\
 					module.h				\
 					common.h				\
 					common_file.h
-					$(CAT) module.h common_file.c > common2_file.c
-					$(CC) $(CFLAGS) -c common2_file.c -DSCOTCH_COMMON_RENAME -o $(@)
-					$(RM) common2_file.c
+					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file_compress$(OBJ)	:	common_file_compress.c			\
 					module.h				\
 					common.h				\
 					common_file.h				\
 					common_file_compress.h
-					$(CAT) module.h common_file_compress.c > common2_file_compress.c
-					$(CC) $(CFLAGS) -c common2_file_compress.c -DSCOTCH_COMMON_RENAME -o $(@)
-					$(RM) common2_file_compress.c
+					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file_uncompress$(OBJ)	:	common_file_uncompress.c		\
 					module.h				\
 					common.h				\
 					common_file.h				\
 					common_file_compress.h
-					$(CAT) module.h common_file_uncompress.c > common2_file_uncompress.c
-					$(CC) $(CFLAGS) -c common2_file_uncompress.c -DSCOTCH_COMMON_RENAME -o $(@)
-					$(RM) common2_file_uncompress.c
+					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_integer$(OBJ)		:	common_integer.c			\
 					module.h				\
 					common.h				\
 					common_sort.c
-					$(CAT) module.h common_integer.c > common2_integer.c
-					$(CC) $(CFLAGS) -c common2_integer.c -DSCOTCH_COMMON_RENAME -o $(@)
-					$(RM) common2_integer.c
+					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_memory$(OBJ)		:	common_memory.c				\
 					module.h				\
 					common.h
-					$(CAT) module.h common_memory.c > common2_memory.c
-					$(CC) $(CFLAGS) -c common2_memory.c -DSCOTCH_COMMON_RENAME -o $(@)
-					$(RM) common2_memory.c
+					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_stub$(OBJ)		:	common_stub.c				\
 					module.h				\
 					common.h
-					$(CAT) module.h common_stub.c > common_stub2.c
-					$(CC) $(CFLAGS) -c common_stub2.c -DSCOTCH_COMMON_RENAME -o $(@)
-					$(RM) common_stub2.c
+					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 arch$(OBJ)			:	arch.c					\
 					module.h				\
@@ -460,7 +712,8 @@ dgraph_build$(OBJ)		:	dgraph_build.c				\
 dgraph_build_grid3d$(OBJ)	:	dgraph_build_grid3d.c			\
 					module.h				\
 					common.h				\
-					dgraph.h
+					dgraph.h				\
+					dgraph_build_grid3d.h
 
 dgraph_build_hcub$(OBJ)		:	dgraph_build_hcub.c			\
 					module.h				\
@@ -1291,13 +1544,13 @@ library_dgraph_build_f$(OBJ)	:	library_dgraph_build_f.c		\
 					common.h				\
 					scotch.h
 
-library_dgraph_build_grid$(OBJ)	:	library_dgraph_build_grid.c		\
+library_dgraph_build_grid3d$(OBJ):	library_dgraph_build_grid3d.c		\
 					module.h				\
 					common.h				\
 					dgraph.h				\
 					scotch.h
 
-library_dgraph_build_grid_f$(OBJ):	library_dgraph_build_grid_f.c		\
+library_dgraph_build_grid3d_f$(OBJ):	library_dgraph_build_grid3d_f.c		\
 					module.h				\
 					common.h				\
 					scotch.h
@@ -1978,8 +2231,10 @@ vgraph_separate_es$(OBJ)	:	vgraph_separate_es.c			\
 vgraph_separate_fm$(OBJ)	:	vgraph_separate_fm.c			\
 					module.h				\
 					common.h				\
+					gain.h					\
 					graph.h					\
 					vgraph.h				\
+					vgraph_separate_gg.h			\
 					vgraph_separate_fm.h
 
 vgraph_separate_gg$(OBJ)	:	vgraph_separate_gg.c			\
@@ -2162,7 +2417,7 @@ dummysizes$(EXE)		:	dummysizes.c				\
 					mapping.h				\
 					order.h					\
 					parser.h
-			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) $(LDFLAGS)
+			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION=$(VERSION) -DSCOTCH_RELEASE=$(RELEASE) -DSCOTCH_PATCHLEVEL=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
@@ -2172,270 +2427,13 @@ scotchf.h			:	dummysizes$(EXE) 			\
 					libraryf.h
 					./dummysizes$(EXE) libraryf.h scotchf.h
 
-libptscotch$(LIB)		:	bdgraph$(OBJ)				\
-					bdgraph_bipart_bd$(OBJ)			\
-					bdgraph_bipart_df$(OBJ)			\
-					bdgraph_bipart_ml$(OBJ)			\
-					bdgraph_bipart_sq$(OBJ)			\
-					bdgraph_bipart_st$(OBJ)			\
-					bdgraph_bipart_zr$(OBJ)			\
-					bdgraph_check$(OBJ)			\
-					bdgraph_gather_all$(OBJ)		\
-					bdgraph_store$(OBJ)			\
-					dgraph$(OBJ)				\
-					dgraph_allreduce$(OBJ)			\
-					dgraph_band$(OBJ)			\
-					dgraph_build$(OBJ)			\
-					dgraph_build_grid3d$(OBJ)		\
-					dgraph_build_hcub$(OBJ)			\
-					dgraph_check$(OBJ)			\
-					dgraph_coarsen$(OBJ)			\
-					dgraph_fold$(OBJ)			\
-					dgraph_fold_comm$(OBJ)			\
-					dgraph_fold_dup$(OBJ)			\
-					dgraph_gather$(OBJ)			\
-					dgraph_gather_all$(OBJ)			\
-					dgraph_ghst$(OBJ)			\
-					dgraph_halo$(OBJ)			\
-					dgraph_induce$(OBJ)			\
-					dgraph_io_load$(OBJ)			\
-					dgraph_io_save$(OBJ)			\
-					dgraph_match$(OBJ)			\
-					dgraph_match_sync_coll$(OBJ)		\
-					dgraph_match_sync_ptop$(OBJ)		\
-					dgraph_match_check$(OBJ)		\
-					dgraph_scatter$(OBJ)			\
-					dgraph_view$(OBJ)			\
-					dmapping$(OBJ)				\
-					dmapping_io$(OBJ)			\
-					dorder$(OBJ)				\
-					dorder_gather$(OBJ)			\
-					dorder_io$(OBJ)				\
-					dorder_io_block$(OBJ)			\
-					dorder_io_tree$(OBJ)			\
-					dorder_perm$(OBJ)			\
-					dorder_tree_dist$(OBJ)			\
-					hdgraph$(OBJ)				\
-					hdgraph_check$(OBJ)			\
-					hdgraph_fold$(OBJ)			\
-					hdgraph_gather$(OBJ)			\
-					hdgraph_induce$(OBJ)			\
-					hdgraph_order_nd$(OBJ)			\
-					hdgraph_order_si$(OBJ)			\
-					hdgraph_order_sq$(OBJ)			\
-					hdgraph_order_st$(OBJ)			\
-					kdgraph$(OBJ)				\
-					kdgraph_map_rb$(OBJ)			\
-					kdgraph_map_rb_map$(OBJ)		\
-					kdgraph_map_rb_part$(OBJ)		\
-					kdgraph_map_st$(OBJ)			\
-					library_dgraph$(OBJ)			\
-					library_dgraph_f$(OBJ)			\
-					library_dgraph_build$(OBJ)		\
-					library_dgraph_build_f$(OBJ)		\
-					library_dgraph_build_grid$(OBJ)		\
-					library_dgraph_build_grid_f$(OBJ)	\
-					library_dgraph_check$(OBJ)		\
-					library_dgraph_check_f$(OBJ)		\
-					library_dgraph_gather$(OBJ)		\
-					library_dgraph_gather_f$(OBJ)		\
-					library_dgraph_halo$(OBJ)		\
-					library_dgraph_halo_f$(OBJ)		\
-					library_dgraph_io_load$(OBJ)		\
-					library_dgraph_io_load_f$(OBJ)		\
-					library_dgraph_io_save$(OBJ)		\
-					library_dgraph_io_save_f$(OBJ)		\
-					library_dgraph_map$(OBJ)		\
-					library_dgraph_map_f$(OBJ)		\
-					library_dgraph_map_view$(OBJ)		\
-					library_dgraph_map_view_f$(OBJ)		\
-					library_dgraph_order$(OBJ)		\
-					library_dgraph_order_f$(OBJ)		\
-					library_dgraph_order_gather$(OBJ)	\
-					library_dgraph_order_gather_f$(OBJ)	\
-					library_dgraph_order_io$(OBJ)		\
-					library_dgraph_order_io_f$(OBJ)		\
-					library_dgraph_order_io_block$(OBJ)	\
-					library_dgraph_order_io_block_f$(OBJ)	\
-					library_dgraph_order_perm$(OBJ)		\
-					library_dgraph_order_perm_f$(OBJ)	\
-					library_dgraph_order_tree_dist$(OBJ)	\
-					library_dgraph_order_tree_dist_f$(OBJ)	\
-					library_dgraph_scatter$(OBJ)		\
-					library_dgraph_scatter_f$(OBJ)		\
-					library_dgraph_stat$(OBJ)		\
-					library_dgraph_stat_f$(OBJ)		\
-					vdgraph$(OBJ)				\
-					vdgraph_check$(OBJ)			\
-					vdgraph_gather_all$(OBJ)		\
-					vdgraph_separate_bd$(OBJ)		\
-					vdgraph_separate_df$(OBJ)		\
-					vdgraph_separate_ml$(OBJ)		\
-					vdgraph_separate_sq$(OBJ)		\
-					vdgraph_separate_st$(OBJ)		\
-					vdgraph_separate_zr$(OBJ)		\
-					vdgraph_store$(OBJ)
+libptscotch$(LIB)		:	$(LIBPTSCOTCHDEPS) $(LIBSCOTCHDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)
 					-$(RANLIB) $(@)
 
-libscotch$(LIB)			:	arch$(OBJ)				\
-					arch_build$(OBJ)			\
-					arch_cmplt$(OBJ)			\
-					arch_cmpltw$(OBJ)			\
-					arch_deco$(OBJ)				\
-					arch_hcub$(OBJ)				\
-					arch_mesh$(OBJ)				\
-					arch_tleaf$(OBJ)			\
-					arch_torus$(OBJ)			\
-					arch_vcmplt$(OBJ)			\
-					arch_vhcub$(OBJ)			\
-					bgraph$(OBJ)				\
-					bgraph_bipart_bd$(OBJ)			\
-					bgraph_bipart_df$(OBJ)			\
-					bgraph_bipart_ex$(OBJ)			\
-					bgraph_bipart_fm$(OBJ)			\
-					bgraph_bipart_gg$(OBJ)			\
-					bgraph_bipart_gp$(OBJ)			\
-					bgraph_bipart_ml$(OBJ)			\
-					bgraph_bipart_st$(OBJ)			\
-					bgraph_bipart_zr$(OBJ)			\
-					bgraph_check$(OBJ)			\
-					bgraph_store$(OBJ)			\
-					common$(OBJ)				\
-					common_file$(OBJ)			\
-					common_file_compress$(OBJ)		\
-					common_file_uncompress$(OBJ)		\
-					common_integer$(OBJ)			\
-					common_memory$(OBJ)			\
-					common_stub$(OBJ)			\
-					gain$(OBJ)				\
-					geom$(OBJ)				\
-					graph$(OBJ)				\
-					graph_base$(OBJ)			\
-					graph_check$(OBJ)			\
-					graph_coarsen$(OBJ)			\
-					graph_induce$(OBJ)			\
-					graph_io$(OBJ)				\
-					graph_io_chac$(OBJ)			\
-					graph_io_habo$(OBJ)			\
-					graph_io_mmkt$(OBJ)			\
-					graph_io_scot$(OBJ)			\
-					graph_list$(OBJ)			\
-					hall_order_hd$(OBJ)			\
-					hall_order_hf$(OBJ)			\
-					hall_order_hx$(OBJ)			\
-					hgraph$(OBJ)				\
-					hgraph_check$(OBJ)			\
-					hgraph_induce$(OBJ)			\
-					hgraph_order_bl$(OBJ)			\
-					hgraph_order_cp$(OBJ)			\
-					hgraph_order_gp$(OBJ)			\
-					hgraph_order_hd$(OBJ)			\
-					hgraph_order_hf$(OBJ)			\
-					hgraph_order_hx$(OBJ)			\
-					hgraph_order_nd$(OBJ)			\
-					hgraph_order_si$(OBJ)			\
-					hgraph_order_st$(OBJ)			\
-					hmesh$(OBJ)				\
-					hmesh_check$(OBJ)			\
-					hmesh_hgraph$(OBJ)			\
-					hmesh_induce$(OBJ)			\
-					hmesh_mesh$(OBJ)			\
-					hmesh_order_bl$(OBJ)			\
-					hmesh_order_cp$(OBJ)			\
-					hmesh_order_gr$(OBJ)			\
-					hmesh_order_gp$(OBJ)			\
-					hmesh_order_hd$(OBJ)			\
-					hmesh_order_hf$(OBJ)			\
-					hmesh_order_hx$(OBJ)			\
-					hmesh_order_nd$(OBJ)			\
-					hmesh_order_si$(OBJ)			\
-					hmesh_order_st$(OBJ)			\
-					kgraph$(OBJ)				\
-					kgraph_map_rb$(OBJ)			\
-					kgraph_map_rb_map$(OBJ)			\
-					kgraph_map_rb_part$(OBJ)		\
-					kgraph_map_st$(OBJ)			\
-					library_arch$(OBJ)			\
-					library_arch_f$(OBJ)			\
-					library_arch_build$(OBJ)		\
-					library_arch_build_f$(OBJ)		\
-					library_geom$(OBJ)			\
-					library_geom_f$(OBJ)			\
-					library_graph$(OBJ)			\
-					library_graph_f$(OBJ)			\
-					library_graph_base$(OBJ)		\
-					library_graph_base_f$(OBJ)		\
-					library_graph_check$(OBJ)		\
-					library_graph_check_f$(OBJ)		\
-					library_graph_io_chac$(OBJ)		\
-					library_graph_io_chac_f$(OBJ)		\
-					library_graph_io_habo$(OBJ)		\
-					library_graph_io_habo_f$(OBJ)		\
-					library_graph_io_mmkt$(OBJ)		\
-					library_graph_io_mmkt_f$(OBJ)		\
-					library_graph_io_scot$(OBJ)		\
-					library_graph_io_scot_f$(OBJ)		\
-					library_graph_map$(OBJ)			\
-					library_graph_map_f$(OBJ)		\
-					library_graph_map_view$(OBJ)		\
-					library_graph_map_view_f$(OBJ)		\
-					library_graph_order$(OBJ)		\
-					library_graph_order_f$(OBJ)		\
-					library_mesh$(OBJ)			\
-					library_mesh_f$(OBJ)			\
-					library_mesh_graph$(OBJ)		\
-					library_mesh_graph_f$(OBJ)		\
-					library_mesh_io_habo$(OBJ)		\
-					library_mesh_io_habo_f$(OBJ)		\
-					library_mesh_io_scot$(OBJ)		\
-					library_mesh_io_scot_f$(OBJ)		\
-					library_mesh_order$(OBJ)		\
-					library_mesh_order_f$(OBJ)		\
-					library_parser$(OBJ)			\
-					library_parser_f$(OBJ)			\
-					library_random$(OBJ)			\
-					library_random_f$(OBJ)			\
-					mapping$(OBJ)				\
-					mapping_io$(OBJ)			\
-					mesh$(OBJ)				\
-					mesh_check$(OBJ)			\
-					mesh_coarsen$(OBJ)			\
-					mesh_graph$(OBJ)			\
-					mesh_induce_sepa$(OBJ)			\
-					mesh_io$(OBJ)				\
-					mesh_io_habo$(OBJ)			\
-					mesh_io_scot$(OBJ)			\
-					order$(OBJ)				\
-					order_check$(OBJ)			\
-					order_io$(OBJ)				\
-					parser$(OBJ)				\
-					parser_ll$(OBJ)				\
-					parser_yy$(OBJ)				\
-					vgraph$(OBJ)				\
-					vgraph_check$(OBJ)			\
-					vgraph_separate_bd$(OBJ)		\
-					vgraph_separate_es$(OBJ)		\
-					vgraph_separate_fm$(OBJ)		\
-					vgraph_separate_gg$(OBJ)		\
-					vgraph_separate_gp$(OBJ)		\
-					vgraph_separate_ml$(OBJ)		\
-					vgraph_separate_st$(OBJ)		\
-					vgraph_separate_th$(OBJ)		\
-					vgraph_separate_vw$(OBJ)		\
-					vgraph_separate_zr$(OBJ)		\
-					vgraph_store$(OBJ)			\
-					vmesh$(OBJ)				\
-					vmesh_check$(OBJ)			\
-					vmesh_separate_fm$(OBJ)			\
-					vmesh_separate_gg$(OBJ)			\
-					vmesh_separate_gr$(OBJ)			\
-					vmesh_separate_ml$(OBJ)			\
-					vmesh_separate_zr$(OBJ)			\
-					vmesh_separate_st$(OBJ)			\
-					vmesh_store$(OBJ)
-					$(AR) $(ARFLAGS) lib$(SCOTCHLIB)$(LIB) $(?)
-					-$(RANLIB) lib$(SCOTCHLIB)$(LIB)
+libscotch$(LIB)			:	$(LIBSCOTCHDEPS)
+					$(AR) $(ARFLAGS) $(@) $(?)
+					-$(RANLIB) $(@)
 
 libptscotcherr$(LIB)		:	library_error$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(?)

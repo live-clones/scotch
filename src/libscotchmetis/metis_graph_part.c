@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 08 sep 2006     **/
 /**                                 to     07 jun 2007     **/
 /**                # Version 5.1  : from : 06 jun 2009     **/
-/**                                 to     06 jun 2009     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -128,7 +128,7 @@ int * const                 part)
 */
 
 void
-METIS_PartGraphKway (
+METISNAMEU(METIS_PartGraphKway) (
 const int * const           n,
 const int * const           xadj,
 const int * const           adjncy,
@@ -141,11 +141,11 @@ const int * const           options,
 int * const                 edgecut,
 int * const                 part)
 {
-  METIS_PartGraphRecursive (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part);
+  METISNAMEU(METIS_PartGraphRecursive) (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part);
 }
 
 void
-METIS_PartGraphRecursive (
+METISNAMEU(METIS_PartGraphRecursive) (
 const int * const           n,
 const int * const           xadj,
 const int * const           adjncy,
@@ -223,7 +223,7 @@ int * const                 part)
 */
 
 void
-METIS_PartGraphVKway (
+METISNAMEU(METIS_PartGraphVKway) (
 const int * const           n,
 const int * const           xadj,
 const int * const           adjncy,

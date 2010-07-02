@@ -48,7 +48,7 @@
 /**                # Version 5.0  : from : 04 aug 2007     **/
 /**                                 to     31 may 2008     **/
 /**                # Version 5.1  : from : 29 mar 2010     **/
-/**                                 to     29 mar 2010     **/
+/**                                 to     29 may 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -211,7 +211,7 @@ FILE * const                  stream)             /*+ Output stream    +*/
 
 int
 SCOTCH_meshOrderCompute (
-const SCOTCH_Mesh * const   meshptr,              /*+ Mesh to order       +*/
+SCOTCH_Mesh * const         meshptr,              /*+ Mesh to order       +*/
 SCOTCH_Ordering * const     ordeptr,              /*+ Ordering to compute +*/
 SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy   +*/
 {
@@ -229,7 +229,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy   +*/
 
 int
 SCOTCH_meshOrderComputeList (
-const SCOTCH_Mesh * const   meshptr,              /*+ Mesh to order                   +*/
+SCOTCH_Mesh * const         meshptr,              /*+ Mesh to order                   +*/
 SCOTCH_Ordering * const     ordeptr,              /*+ Ordering to compute             +*/
 const SCOTCH_Num            listnbr,              /*+ Number of vertices in list      +*/
 const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order +*/
@@ -302,7 +302,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 
 int
 SCOTCH_meshOrder (
-const SCOTCH_Mesh * const   meshptr,              /*+ Mesh to order                      +*/
+SCOTCH_Mesh * const         meshptr,              /*+ Mesh to order                      +*/
 SCOTCH_Strat * const        stratptr,             /*+ Ordering strategy                  +*/
 SCOTCH_Num * const          permtab,              /*+ Ordering permutation               +*/
 SCOTCH_Num * const          peritab,              /*+ Inverse permutation array          +*/
@@ -332,7 +332,7 @@ SCOTCH_Num * const          treetab)              /*+ Separator tree array      
 
 int
 SCOTCH_meshOrderList (
-const SCOTCH_Mesh * const   meshptr,              /*+ Mesh to order                      +*/
+SCOTCH_Mesh * const         meshptr,              /*+ Mesh to order                      +*/
 const SCOTCH_Num            listnbr,              /*+ Number of vertices in list         +*/
 const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order    +*/
 SCOTCH_Strat * const        stratptr,             /*+ Ordering strategy                  +*/

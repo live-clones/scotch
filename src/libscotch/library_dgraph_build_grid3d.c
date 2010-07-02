@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,28 +31,28 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : library_dgraph_build_grid.c             **/
+/**   NAME       : library_dgraph_build_grid3d.c           **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Cedric CHEVALIER (5.0)                  **/
 /**                                                        **/
-/**   FUNCTION   : This module is the API for the distri-  **/
-/**                buted source graph handling routines of **/
-/**                the libSCOTCH library.                  **/
+/**   FUNCTION   : These lines are the distributed source  **/
+/**                graph building routines for 3D grid     **/
+/**                graphs.                                 **/
 /**                                                        **/
-/**   DATES      : # Version 5.0  : from : 26 apr 2006     **/
-/**                                 to     26 apr 2006     **/
+/**   DATES      : # Version 5.0  : from : 21 jul 2005     **/
+/**                                 to   : 10 sep 2007     **/
+/**                # Version 5.1  : from : 05 jun 2010     **/
+/**                                 to   : 06 jun 2010     **/
 /**                                                        **/
 /************************************************************/
-
-/*
-**  The defines and includes.
-*/
 
 #define LIBRARY
 
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
+
 #include "scotch.h"
 
 /************************************/
@@ -62,22 +62,22 @@
 /*                                  */
 /************************************/
 
-/*+ This routine initializes the opaque
-*** distributed graph structure used to
-*** handle distributed graphs in the
-*** Scotch library.
+/*+ This routine builds a distributed
+*** 3D grid or torus graph structure.
 *** It returns:
-*** - 0   : if the initialization succeeded.
+*** - 0   : if the creation succeeded.
 *** - !0  : on error.
 +*/
 
 int
 SCOTCH_dgraphBuildGrid3D (
 SCOTCH_Dgraph * const       grafptr,
-const Gnum                  baseval,              /* Base value          */
-const Gnum                  dimx,                 /* First dimension     */
-const Gnum                  dimy,                 /* Second dimension    */
-const Gnum                  dimz)                 /* Third dimension     */
+const SCOTCH_Num            baseval,              /* Base value       */
+const SCOTCH_Num            dimx,                 /* First dimension  */
+const SCOTCH_Num            dimy,                 /* Second dimension */
+const SCOTCH_Num            dimz,                 /* Third dimension  */
+const SCOTCH_Num            incrval,              /* Increment value  */
+const int                   flagval)              /* Flag value       */
 {
-  return (dgraphBuildGrid3D ((Dgraph *) grafptr, baseval, dimx, dimy, dimz, DGRAPHBUILDSLICES));
+  return (dgraphBuildGrid3D ((Dgraph *) grafptr, baseval, dimx, dimy, dimz, incrval, flagval));
 }

@@ -204,7 +204,7 @@ Hdgraph * restrict const    indgrafptr)
 
   indlisttax    = indlisttab - orggrafptr->s.baseval;
   indvertlocnnd = indlistnbr + orggrafptr->s.baseval;
-  for (indvertlocnum = orggrafptr->s.baseval, indvertglbnum = indgrafptr->s.procdsptab[indgrafptr->s.proclocnum]; /* Set adjustement for global ordering */
+  for (indvertlocnum = orggrafptr->s.baseval, indvertglbnum = indgrafptr->s.procdsptab[indgrafptr->s.proclocnum]; /* Set adjustment for global ordering */
        indvertlocnum < indvertlocnnd; indvertlocnum ++, indvertglbnum ++)
     orgindxgsttax[indlisttax[indvertlocnum]] = indvertglbnum; /* Mark selected vertices */
 
