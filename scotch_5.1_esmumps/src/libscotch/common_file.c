@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 21 may 2007     **/
 /**                                 to   : 16 mar 2008     **/
+/**                # Version 5.1  : from : 27 jun 2010     **/
+/**                                 to     27 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -49,6 +51,9 @@
 
 #define COMMON_FILE
 
+#ifndef COMMON_NOMODULE
+#include "module.h"
+#endif /* COMMON_NOMODULE */
 #include "common.h"
 #include "common_file.h"
 

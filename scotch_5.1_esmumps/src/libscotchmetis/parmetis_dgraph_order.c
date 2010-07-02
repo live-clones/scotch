@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 17 oct 2007     **/
 /**                                 to     07 dec 2007     **/
 /**                # Version 5.1  : from : 18 mar 2009     **/
-/**                                 to     18 mar 2009     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,7 +67,7 @@
 
 static
 void
-ParMETIS_V3_NodeNDTree (
+_SCOTCH_ParMETIS_V3_NodeNDTree (
 int * const                 sizeglbtnd,
 SCOTCH_Num * const          sizeglbtab,
 SCOTCH_Num * const          sepaglbtab,
@@ -82,8 +82,8 @@ int                         cblkidx)
   if (levlnum < levlmax) {
     if ((sepaglbtab[3 * cblknum]     >= 0) &&     /* If node has at least two sons, assume is is a nested dissection node */
         (sepaglbtab[3 * cblknum + 1] >= 0)) {
-      ParMETIS_V3_NodeNDTree (sizeglbtnd, sizeglbtab, sepaglbtab, levlmax, levlnum + 1, sepaglbtab[3 * cblknum],     (cblkidx << 1) + 1);
-      ParMETIS_V3_NodeNDTree (sizeglbtnd, sizeglbtab, sepaglbtab, levlmax, levlnum + 1, sepaglbtab[3 * cblknum + 1], (cblkidx << 1));
+      _SCOTCH_ParMETIS_V3_NodeNDTree (sizeglbtnd, sizeglbtab, sepaglbtab, levlmax, levlnum + 1, sepaglbtab[3 * cblknum],     (cblkidx << 1) + 1);
+      _SCOTCH_ParMETIS_V3_NodeNDTree (sizeglbtnd, sizeglbtab, sepaglbtab, levlmax, levlnum + 1, sepaglbtab[3 * cblknum + 1], (cblkidx << 1));
       sizeval = (sepaglbtab[3 * cblknum + 2] < 0) ? 0 : sizeglbtab[sepaglbtab[3 * cblknum + 2]]; /* Get size of separator, if any */
     }
   }
@@ -96,7 +96,7 @@ int                         cblkidx)
 */
 
 void
-ParMETIS_V3_NodeND (
+METISNAMEU(ParMETIS_V3_NodeND) (
 const int * const           vtxdist,
 int * const                 xadj,
 int * const                 adjncy,
@@ -205,7 +205,7 @@ MPI_Comm *                  comm)
 
                 if ((rootnum >= 0) && (sizes != NULL)) { /* If no error above, go on processing separator tree  */
                   memSet (sizes, 0, (2 * procglbnbr - 1) * sizeof (int)); /* Set array of sizes to 0 by default */
-                  ParMETIS_V3_NodeNDTree (sizes + (2 * procglbnbr - 1), sizeglbtab, sepaglbtab, levlmax, 0, rootnum, 1);
+                  _SCOTCH_ParMETIS_V3_NodeNDTree (sizes + (2 * procglbnbr - 1), sizeglbtab, sepaglbtab, levlmax, 0, rootnum, 1);
                 }
               }
 

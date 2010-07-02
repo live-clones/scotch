@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 28 jun 2008     **/
-/**                                 to     29 mar 2010     **/
+/**                                 to     29 may 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,7 +76,7 @@ const int                   strnbr),            \
   char * restrict     strtab;                     /* Pointer to null-terminated string */
 
   if ((strtab = (char *) memAlloc (strnbr + 1)) == NULL) { /* Allocate temporary space */
-    errorPrint ("SCOTCHFSTRATGRAPHMAP: out of memory (1)");
+    errorPrint ("SCOTCHFSTRATDGRAPHMAP: out of memory (1)");
     *revaptr = 1;
   }
   memCpy (strtab, string, strnbr);                /* Copy string contents */
@@ -158,7 +158,7 @@ int * const                 revaptr),           \
 
 FORTRAN (                                           \
 SCOTCHFDGRAPHMAPCOMPUTE, scotchfdgraphmapcompute, ( \
-const SCOTCH_Dgraph * const grafptr,                \
+SCOTCH_Dgraph * const       grafptr,                \
 SCOTCH_Dmapping * const     mapptr,                 \
 SCOTCH_Strat * const        stratptr,               \
 int * const                 revaptr),               \
@@ -173,7 +173,7 @@ int * const                 revaptr),               \
 
 FORTRAN (                                       \
 SCOTCHFDGRAPHMAP, scotchfdgraphmap, (           \
-const SCOTCH_Dgraph * const grafptr,            \
+SCOTCH_Dgraph * const       grafptr,            \
 const SCOTCH_Arch * const   archptr,            \
 SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          termloctab,         \
@@ -189,7 +189,7 @@ int * const                 revaptr),           \
 
 FORTRAN (                                       \
 SCOTCHFDGRAPHPART, scotchfdgraphpart, (         \
-const SCOTCH_Dgraph * const grafptr,            \
+SCOTCH_Dgraph * const       grafptr,            \
 const SCOTCH_Num * const    partptr,            \
 SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          termloctab,         \

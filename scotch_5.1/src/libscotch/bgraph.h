@@ -72,8 +72,8 @@
 
 /*+ Graph option flags. +*/
 
-#define BGRAPHFREEFRON              (GRAPHBITSNOTUSED) /* Free part array               */
-#define BGRAPHFREEPART              (GRAPHBITSNOTUSED << 1) /* Free frontier array      */
+#define BGRAPHFREEFRON              (GRAPHBITSNOTUSED) /* Free frontier array           */
+#define BGRAPHFREEPART              (GRAPHBITSNOTUSED << 1) /* Free part array          */
 #define BGRAPHFREEVEEX              (GRAPHBITSNOTUSED << 2) /* Free external gain array */
 
 /*+ The bipartition graph structure. +*/

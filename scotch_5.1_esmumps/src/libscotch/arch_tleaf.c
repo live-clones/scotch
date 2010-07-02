@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,7 +61,7 @@
 /**                # Version 4.0  : from : 10 dec 2003     **/
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
-/**                                 to     28 feb 2008     **/
+/**                                 to     25 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,6 +94,9 @@ archTleafArchLoad (
 ArchTleaf * restrict const  archptr,
 FILE * restrict const       stream)
 {
+  Anum                sizeval;
+  Anum                levlnum;
+
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchTleaf)    > sizeof (ArchDummy)) ||
       (sizeof (ArchTleafDom) > sizeof (ArchDomDummy))) {
@@ -102,16 +105,58 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((intLoad (stream, &archptr->leafdep) != 1) ||
-      (intLoad (stream, &archptr->clusdep) != 1) ||
-      (intLoad (stream, &archptr->linkval) != 1) ||
-      (archptr->leafdep < 1)                     ||
-      (archptr->clusdep < 0)                     ||
-      (archptr->clusdep > archptr->leafdep)      ||
-      (archptr->linkval < 1)) {
-    errorPrint ("archTleafArchLoad: bad input");
+  if (intLoad (stream, &archptr->levlnbr) != 1) {
+    errorPrint ("archTleafArchLoad: bad input (1)");
     return     (1);
   }
+
+  if ((archptr->sizetab = memAlloc ((archptr->levlnbr * 2 + 1) * sizeof (Anum))) == NULL) { /* TRICK: One more slot for linktab[-1] */
+    errorPrint ("archTleafArchLoad: out of memory");
+    return     (1);
+  }
+  archptr->linktab     = archptr->sizetab + archptr->levlnbr + 1; /* TRICK: One more slot     */
+  archptr->linktab[-1] = 0;                       /* Dummy slot for for level-0 communication */
+
+  for (levlnum = 0, sizeval = 1; levlnum < archptr->levlnbr; levlnum ++) {
+    if ((intLoad (stream, &archptr->sizetab[levlnum]) != 1) ||
+        (intLoad (stream, &archptr->linktab[levlnum]) != 1) ||
+        (archptr->sizetab[levlnum] < 2)                     ||
+        (archptr->linktab[levlnum] < 1)) {
+      errorPrint ("archTleafArchLoad: bad input (2)");
+      return     (1);
+    }
+    sizeval *= archptr->sizetab[levlnum];
+  }
+  archptr->sizeval = sizeval;
+
+  return (0);
+}
+
+/* This routine frees the tree
+** leaf architecture structures.
+** It returns:
+** - 0   : if the architecture has been successfully freed.
+** - !0  : on error.
+*/
+
+int
+archTleafArchFree (
+ArchTleaf * const           archptr)
+{
+#ifdef SCOTCH_DEBUG_ARCH1
+  if ((sizeof (ArchTleaf)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchTleafDom) > sizeof (ArchDomDummy))) {
+    errorPrint ("archTleafArchFree: invalid type specification");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_ARCH1 */
+
+  memFree (archptr->sizetab);                     /* Free group leader */
+
+#ifdef SCOTCH_DEBUG_ARCH2
+  archptr->sizetab =
+  archptr->linktab = NULL;
+#endif /* SCOTCH_DEBUG_ARCH2 */
 
   return (0);
 }
@@ -128,6 +173,8 @@ archTleafArchSave (
 const ArchTleaf * const     archptr,
 FILE * restrict const       stream)
 {
+  Anum                levlnum;
+
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchTleaf)    > sizeof (ArchDummy)) ||
       (sizeof (ArchTleafDom) > sizeof (ArchDomDummy))) {
@@ -136,12 +183,19 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if (fprintf (stream, "%ld %ld %ld ",
-               (long) archptr->leafdep,
-               (long) archptr->clusdep,
-               (long) archptr->linkval) == EOF) {
-    errorPrint ("archTleafSave: bad output");
+  if (fprintf (stream, "%ld",
+               (long) archptr->levlnbr) == EOF) {
+    errorPrint ("archTleafSave: bad output (1)");
     return     (1);
+  }
+
+  for (levlnum = 0; levlnum < archptr->levlnbr; levlnum ++) {
+    if (fprintf (stream, " %ld %ld",
+                 (long) archptr->sizetab[levlnum],
+                 (long) archptr->linktab[levlnum]) == EOF) {
+      errorPrint ("archTleafSave: bad output (2)");
+      return     (1);
+    }
   }
 
   return (0);
@@ -155,9 +209,16 @@ FILE * restrict const       stream)
 ArchDomNum
 archTleafDomNum (
 const ArchTleaf * const     archptr,
-const ArchTleafDom * const  domptr)
+const ArchTleafDom * const  domnptr)
 {
-  return ((domptr->leafnum << (archptr->leafdep - domptr->leaflvl)) - (1 << archptr->leafdep));  /* Return vertex number */
+  Anum                levlnum;
+  Anum                sizeval;
+
+  sizeval = 1;                                    /* Compute size of blocks below */
+  for (levlnum = domnptr->levlnum; levlnum < archptr->levlnbr; levlnum ++)
+    sizeval *= archptr->sizetab[levlnum];
+
+  return (domnptr->indxmin * sizeval);
 }
 
 /* This function returns the terminal domain associated
@@ -171,12 +232,20 @@ const ArchTleafDom * const  domptr)
 int
 archTleafDomTerm (
 const ArchTleaf * const     archptr,
-ArchTleafDom * const        domptr,
-const ArchDomNum            domnum)
+ArchTleafDom * const        domnptr,
+const ArchDomNum            domnnum)
 {
-  if (domnum < (1 << archptr->leafdep)) {         /* If valid label */
-    domptr->leaflvl = archptr->leafdep;           /* Set the domain */
-    domptr->leafnum = domnum + (1 << archptr->leafdep);
+#ifdef SCOTCH_DEBUG_ARCH2
+  if (domnnum < 0) {
+    errorPrint ("archTleafDomTerm: invalid parameter");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_ARCH2 */
+
+  if (domnnum < archptr->sizeval) {               /* If valid label */
+    domnptr->levlnum = archptr->levlnbr;          /* Set the domain */
+    domnptr->indxmin = domnnum;
+    domnptr->indxnbr = 1;
 
     return (0);
   }
@@ -191,9 +260,16 @@ const ArchDomNum            domnum)
 Anum 
 archTleafDomSize (
 const ArchTleaf * const     archptr,
-const ArchTleafDom * const  domptr)
+const ArchTleafDom * const  domnptr)
 {
-  return (1 << (archptr->leafdep - domptr->leaflvl));
+  Anum                levlnum;
+  Anum                sizeval;
+
+  sizeval = 1;                                    /* Compute size of blocks below */
+  for (levlnum = domnptr->levlnum; levlnum < archptr->levlnbr; levlnum ++)
+    sizeval *= archptr->sizetab[levlnum];
+
+  return (sizeval * domnptr->indxnbr);
 }
 
 /* This function returns the average
@@ -207,28 +283,44 @@ const ArchTleaf * const     archptr,
 const ArchTleafDom * const  dom0ptr,
 const ArchTleafDom * const  dom1ptr)
 {
-  Anum                clus0;
-  Anum                clus1;
-  Anum                dist0;
+  Anum                lev0num;
+  Anum                lev1num;
+  Anum                idx0min;
+  Anum                idx1min;
+  Anum                idx0nbr;
+  Anum                idx1nbr;
+  Anum                distval;
 
-  if (dom0ptr->leafnum == dom1ptr->leafnum)       /* If same node */
-    return (0);
+  const Anum * const  sizetab = archptr->sizetab;
 
-  clus0 = dom0ptr->leafnum >> (dom0ptr->leaflvl - archptr->clusdep);
-  clus1 = dom1ptr->leafnum >> (dom1ptr->leaflvl - archptr->clusdep);
+  lev0num = dom0ptr->levlnum;
+  lev1num = dom1ptr->levlnum;
+  idx0min = dom0ptr->indxmin;
+  idx1min = dom1ptr->indxmin;
+  idx0nbr = dom0ptr->indxnbr;
+  idx1nbr = dom1ptr->indxnbr;
 
-  if (clus0 == clus1)                             /* If in same cluster */
-    return (1);
-
-  for (dist0 = 0; clus0 != clus1; ) {             /* As long as common ancestor not found */
-    if (clus0 > clus1) {
-      clus0 >>= 1;
-      dist0 ++;                                   /* Increase distance between both clusters and ancestor */
+  if (lev0num != lev1num) {
+    if (lev0num > lev1num) {
+      idx0nbr = 1;
+      do {
+        lev0num --;
+        idx0min /= sizetab[lev0num];
+      } while (lev0num > lev1num);
     }
-    else
-      clus1 >>= 1;
+    else {
+      idx1nbr = 1;
+      do {
+        lev1num --;
+        idx1min /= sizetab[lev1num];
+      } while (lev1num > lev0num);
+    }
   }
-  return (dist0 * archptr->linkval);
+
+  distval = archptr->linktab[lev0num - 1];        /* Get cost at this level */
+
+  return (((idx0min >= (idx1min + idx1nbr)) ||    /* If inclusion, only half of the distance */
+           (idx1min >= (idx0min + idx0nbr))) ? distval : ((idx0nbr == idx1nbr) ? 0 : (distval >> 1)));
 }
 
 /* This function sets the biggest
@@ -242,10 +334,11 @@ const ArchTleafDom * const  dom1ptr)
 int
 archTleafDomFrst (
 const ArchTleaf * const       archptr,
-ArchTleafDom * restrict const domptr)
+ArchTleafDom * restrict const domnptr)
 {
-  domptr->leaflvl = 0;
-  domptr->leafnum = 1;
+  domnptr->levlnum = 0;
+  domnptr->indxmin = 0;
+  domnptr->indxnbr = 1;                           /* The root vertex is unique */
 
   return (0);
 }
@@ -260,14 +353,14 @@ ArchTleafDom * restrict const domptr)
 int
 archTleafDomLoad (
 const ArchTleaf * const       archptr,
-ArchTleafDom * restrict const domptr,
+ArchTleafDom * restrict const domnptr,
 FILE * const                  stream)
 {
-  if (((intLoad (stream, &domptr->leaflvl) +
-        intLoad (stream, &domptr->leafnum)) != 2) ||
-      (domptr->leaflvl < 1)                       ||
-      (domptr->leaflvl > archptr->leafdep)        ||
-      (domptr->leafnum >= (1 << archptr->leafdep))) {
+  if ((intLoad (stream, &domnptr->levlnum) != 1) ||
+      (intLoad (stream, &domnptr->indxmin) != 1) ||
+      (intLoad (stream, &domnptr->indxnbr) != 1) ||
+      (domnptr->levlnum < 0)                     ||
+      (domnptr->levlnum > archptr->levlnbr)) {
     errorPrint ("archTleafDomLoad: bad input");
     return     (1);
   }
@@ -285,12 +378,13 @@ FILE * const                  stream)
 int
 archTleafDomSave (
 const ArchTleaf * const     archptr,
-const ArchTleafDom * const  domptr,
+const ArchTleafDom * const  domnptr,
 FILE * const                stream)
 {
-  if (fprintf (stream, "%ld %ld ",
-               (long) domptr->leaflvl,
-               (long) domptr->leafnum) == EOF) {
+  if (fprintf (stream, "%ld %ld %ld ",
+               (long) domnptr->levlnum,
+               (long) domnptr->indxmin,
+               (long) domnptr->indxnbr) == EOF) {
     errorPrint ("archTleafDomSave: bad output");
     return     (1);
   }
@@ -309,17 +403,33 @@ FILE * const                stream)
 int
 archTleafDomBipart (
 const ArchTleaf * const       archptr,
-const ArchTleafDom * const    domptr,
+const ArchTleafDom * const    domnptr,
 ArchTleafDom * restrict const dom0ptr,
 ArchTleafDom * restrict const dom1ptr)
 {
-  if (domptr->leaflvl >= archptr->leafdep)        /* Return if cannot bipartition more */
-    return (1);
+  Anum                sizeval;
 
-  dom0ptr->leaflvl =                              /* Bipartition the domain */
-  dom1ptr->leaflvl = domptr->leaflvl + 1;
-  dom0ptr->leafnum = domptr->leafnum << 1;
-  dom1ptr->leafnum = dom0ptr->leafnum + 1;
+  if (domnptr->indxnbr <= 1) {                    /* If dubdomain has only one node at this level */
+    if (domnptr->levlnum >= archptr->levlnbr)     /* Return if cannot bipartition more            */
+      return (1);
+
+    sizeval = archptr->sizetab[domnptr->levlnum]; /* Partition all the vertices of a new level */
+
+    dom0ptr->levlnum =
+    dom1ptr->levlnum = domnptr->levlnum + 1;
+    dom0ptr->indxmin = domnptr->indxmin * sizeval;
+  }
+  else {                                          /* Subdomain has several indices */
+    sizeval = domnptr->indxnbr;                   /* Base on existing block size   */
+
+    dom0ptr->levlnum =                            /* Stay at same level */
+    dom1ptr->levlnum = domnptr->levlnum;
+    dom0ptr->indxmin = domnptr->indxmin;          /* Start from the existing start index */
+  }
+
+  dom0ptr->indxnbr = (sizeval + 1) >> 1;          /* Subdomain 0 is always the largest one */
+  dom1ptr->indxmin = dom0ptr->indxmin + dom0ptr->indxnbr;
+  dom1ptr->indxnbr = sizeval - dom0ptr->indxnbr;
 
   return (0);
 }
@@ -337,7 +447,7 @@ archTleafDomMpiType (
 const ArchTleaf * const       archptr,
 MPI_Datatype * const          typeptr)
 {
-  MPI_Type_contiguous (2, ANUM_MPI, typeptr);
+  MPI_Type_contiguous (3, ANUM_MPI, typeptr);
 
   return (0);
 }

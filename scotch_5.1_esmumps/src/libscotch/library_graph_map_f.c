@@ -44,7 +44,7 @@
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     12 dec 2005     **/
 /**                # Version 5.1  : from : 27 mar 2010     **/
-/**                                 to     29 mar 2010     **/
+/**                                 to     29 may 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -198,7 +198,7 @@ int * const                 revaptr),           \
 
 FORTRAN (                                         \
 SCOTCHFGRAPHMAPCOMPUTE, scotchfgraphmapcompute, ( \
-const SCOTCH_Graph * const  grafptr,              \
+SCOTCH_Graph * const        grafptr,              \
 SCOTCH_Mapping * const      mapptr,               \
 SCOTCH_Strat * const        stratptr,             \
 int * const                 revaptr),             \
@@ -213,7 +213,7 @@ int * const                 revaptr),             \
 
 FORTRAN (                                       \
 SCOTCHFGRAPHMAP, scotchfgraphmap, (             \
-const SCOTCH_Graph * const  grafptr,            \
+SCOTCH_Graph * const        grafptr,            \
 const SCOTCH_Arch * const   archptr,            \
 SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          maptab,             \
@@ -229,7 +229,7 @@ int * const                 revaptr),           \
 
 FORTRAN (                                       \
 SCOTCHFGRAPHPART, scotchfgraphpart, (           \
-const SCOTCH_Graph * const  grafptr,            \
+SCOTCH_Graph * const        grafptr,            \
 const SCOTCH_Num * const    partptr,            \
 SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          maptab,             \

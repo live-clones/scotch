@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                ParMeTiS partitioning routine.          **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 19 jun 2008     **/
-/**                                 to     20 jun 2008     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,52 +66,52 @@
 **
 */
 
-FORTRAN (                                       \
-PARMETIS_V3_PARTKWAY, parmetis_v3_partkway, (   \
-const int * const           vtxdist,            \
-int * const                 xadj,               \
-int * const                 adjncy,             \
-int * const                 vwgt,               \
-int * const                 adjwgt,             \
-const int * const           wgtflag,		\
-const int * const           numflag,            \
-const int * const           ncon,               \
-const int * const           nparts,             \
-const float * const         tpwgts,             \
-const float * const         ubvec,              \
-const int * const           options,            \
-int * const                 edgecut,            \
-int * const                 part,               \
-MPI_Comm * const            commptr),           \
+FORTRAN (                                                             \
+METISNAMEU(PARMETIS_V3_PARTKWAY), METISNAMEL(parmetis_v3_partkway), ( \
+const int * const           vtxdist,                                  \
+int * const                 xadj,                                     \
+int * const                 adjncy,                                   \
+int * const                 vwgt,                                     \
+int * const                 adjwgt,                                   \
+const int * const           wgtflag,		                      \
+const int * const           numflag,                                  \
+const int * const           ncon,                                     \
+const int * const           nparts,                                   \
+const float * const         tpwgts,                                   \
+const float * const         ubvec,                                    \
+const int * const           options,                                  \
+int * const                 edgecut,                                  \
+int * const                 part,                                     \
+MPI_Comm * const            commptr),                                 \
 (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr))
 {
-  ParMETIS_V3_PartKway (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr);
+  METISNAMEU(ParMETIS_V3_PartKway) (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr);
 }
 
 /*
 **
 */
 
-FORTRAN (                                               \
-PARMETIS_V3_PARTGEOMKWAY, parmetis_v3_partgeomkway, (   \
-const int * const           vtxdist,                    \
-int * const                 xadj,                       \
-int * const                 adjncy,                     \
-int * const                 vwgt,                       \
-int * const                 adjwgt,                     \
-const int * const           wgtflag,		        \
-const int * const           numflag,                    \
-const int * const           ndims,                      \
-const float * const         xyz,                        \
-const int * const           ncon,                       \
-const int * const           nparts,                     \
-const float * const         tpwgts,                     \
-const float * const         ubvec,                      \
-const int * const           options,                    \
-int * const                 edgecut,                    \
-int * const                 part,                       \
-MPI_Comm * const            commptr),                   \
+FORTRAN (                                                                     \
+METISNAMEU(PARMETIS_V3_PARTGEOMKWAY), METISNAMEL(parmetis_v3_partgeomkway), ( \
+const int * const           vtxdist,                                          \
+int * const                 xadj,                                             \
+int * const                 adjncy,                                           \
+int * const                 vwgt,                                             \
+int * const                 adjwgt,                                           \
+const int * const           wgtflag,		                              \
+const int * const           numflag,                                          \
+const int * const           ndims,                                            \
+const float * const         xyz,                                              \
+const int * const           ncon,                                             \
+const int * const           nparts,                                           \
+const float * const         tpwgts,                                           \
+const float * const         ubvec,                                            \
+const int * const           options,                                          \
+int * const                 edgecut,                                          \
+int * const                 part,                                             \
+MPI_Comm * const            commptr),                                         \
 (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ndims, xyz, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr))
 {
-  ParMETIS_V3_PartGeomKway (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ndims, xyz, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr);
+  METISNAMEU(ParMETIS_V3_PartGeomKway) (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ndims, xyz, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr);
 }

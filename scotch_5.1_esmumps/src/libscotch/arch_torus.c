@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,7 +59,7 @@
 /**                # Version 4.0  : from : 05 nov 2003     **/
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
-/**                                 to     28 feb 2008     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -204,21 +204,18 @@ const ArchTorus2 * const    archptr,
 const ArchTorus2Dom * const dom0ptr,
 const ArchTorus2Dom * const dom1ptr)
 {
-  Anum                dx, dy;
+  Anum               dc0, dc1;
+  Anum               ds0, ds1;
 
-  dx = abs (dom0ptr->c[0][0] + dom0ptr->c[0][1] -
-            dom1ptr->c[0][0] - dom1ptr->c[0][1]);
-  dx = (dx > archptr->c[0])
-       ? archptr->c[0] - (dx / 2)
-       : (dx / 2);
+  dc0 = abs (dom0ptr->c[0][0] + dom0ptr->c[0][1] -
+             dom1ptr->c[0][0] - dom1ptr->c[0][1]);
+  ds0 = (dc0 > archptr->c[0]) ? (2 * archptr->c[0] - dc0) : dc0;
 
-  dy = abs (dom0ptr->c[1][0] + dom0ptr->c[1][1] -
-            dom1ptr->c[1][0] - dom1ptr->c[1][1]);
-  dy = (dy > archptr->c[1])
-       ? archptr->c[1] - (dy / 2)
-       : (dy / 2);
+  dc1 = abs (dom0ptr->c[1][0] + dom0ptr->c[1][1] -
+             dom1ptr->c[1][0] - dom1ptr->c[1][1]);
+  ds1 = (dc1 > archptr->c[1]) ? (2 * archptr->c[1] - dc1) : dc1;
 
-  return (dx + dy);
+  return ((ds0 + ds1) >> 1);
 }
 
 /* This function sets the biggest
@@ -303,12 +300,21 @@ const ArchTorus2Dom * const     domptr,
 ArchTorus2Dom * restrict const  dom0ptr,
 ArchTorus2Dom * restrict const  dom1ptr)
 {
-  if ((domptr->c[0][0] == domptr->c[0][1]) &&     /* Return if cannot bipartition more */
-      (domptr->c[1][0] == domptr->c[1][1]))
+  Anum                dimsiz[2];
+  int                 dimval;                     /* Dimension along which to split */
+
+  dimsiz[0] = domptr->c[0][1] - domptr->c[0][0];
+  dimsiz[1] = domptr->c[1][1] - domptr->c[1][0];
+
+  if ((dimsiz[0] | dimsiz[1]) == 0)               /* Return if cannot bipartition more */
     return (1);
 
-  if ((domptr->c[0][1] - domptr->c[0][0]) >       /* Split domain in two along largest dimension */
-      (domptr->c[1][1] - domptr->c[1][0])) {
+  dimval = 1;
+  if ((dimsiz[0] > dimsiz[1]) ||                  /* Split domain in two along largest dimension */
+      ((dimsiz[0] == dimsiz[1]) && (archptr->c[0] > archptr->c[1])))
+    dimval = 0;
+
+  if (dimval == 0) {                              /* Split across the X dimension */
     dom0ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = (domptr->c[0][0] + domptr->c[0][1]) / 2;
     dom1ptr->c[0][0] = dom0ptr->c[0][1] + 1;
@@ -316,7 +322,7 @@ ArchTorus2Dom * restrict const  dom1ptr)
     dom0ptr->c[1][0] = dom1ptr->c[1][0] = domptr->c[1][0];
     dom0ptr->c[1][1] = dom1ptr->c[1][1] = domptr->c[1][1];
   }
-  else {
+  else {                                          /* Split across the Y dimension */
     dom0ptr->c[0][0] = dom1ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = dom1ptr->c[0][1] = domptr->c[0][1];
     dom0ptr->c[1][0] = domptr->c[1][0];
@@ -481,27 +487,22 @@ const ArchTorus3 * const    archptr,
 const ArchTorus3Dom * const dom0ptr,
 const ArchTorus3Dom * const dom1ptr)
 {
-  Anum               dc, ds;
+  Anum               dc0, dc1, dc2;
+  Anum               ds0, ds1, ds2;
 
-  dc = abs (dom0ptr->c[0][0] + dom0ptr->c[0][1] -
-            dom1ptr->c[0][0] - dom1ptr->c[0][1]);
-  ds = (dc > archptr->c[0])
-       ? archptr->c[0] - (dc / 2)
-       : (dc / 2);
+  dc0 = abs (dom0ptr->c[0][0] + dom0ptr->c[0][1] -
+             dom1ptr->c[0][0] - dom1ptr->c[0][1]);
+  ds0 = (dc0 > archptr->c[0]) ? (2 * archptr->c[0] - dc0) : dc0;
 
-  dc = abs (dom0ptr->c[1][0] + dom0ptr->c[1][1] -
-            dom1ptr->c[1][0] - dom1ptr->c[1][1]);
-  ds += (dc > archptr->c[1])
-        ? archptr->c[1] - (dc / 2)
-        : (dc / 2);
+  dc1 = abs (dom0ptr->c[1][0] + dom0ptr->c[1][1] -
+             dom1ptr->c[1][0] - dom1ptr->c[1][1]);
+  ds1 = (dc1 > archptr->c[1]) ? (2 * archptr->c[1] - dc1) : dc1;
 
-  dc = abs (dom0ptr->c[2][0] + dom0ptr->c[2][1] -
-            dom1ptr->c[2][0] - dom1ptr->c[2][1]);
-  ds += (dc > archptr->c[2])
-        ? archptr->c[2] - (dc / 2)
-        : (dc / 2);
+  dc2 = abs (dom0ptr->c[2][0] + dom0ptr->c[2][1] -
+             dom1ptr->c[2][0] - dom1ptr->c[2][1]);
+  ds2 = (dc2 > archptr->c[2]) ? (2 * archptr->c[2] - dc2) : dc2;
 
-  return (ds);
+  return ((ds0 + ds1 + ds2) >> 1);
 }
 
 /* This function sets the biggest
@@ -591,21 +592,28 @@ const ArchTorus3Dom * const     domptr,
 ArchTorus3Dom * restrict const  dom0ptr,
 ArchTorus3Dom * restrict const  dom1ptr)
 {
-  int                 i;
+  Anum                dimsiz[3];
+  int                 dimtmp;
+  int                 dimval;
 
-  if ((domptr->c[0][0] == domptr->c[0][1]) &&     /* Return if cannot bipartition more */
-      (domptr->c[1][0] == domptr->c[1][1]) &&
-      (domptr->c[2][0] == domptr->c[2][1]))
+  dimsiz[0] = domptr->c[0][1] - domptr->c[0][0];
+  dimsiz[1] = domptr->c[1][1] - domptr->c[1][0];
+  dimsiz[2] = domptr->c[2][1] - domptr->c[2][0];
+
+  if ((dimsiz[0] | dimsiz[1] | dimsiz[2]) == 0)   /* Return if cannot bipartition more */
     return (1);
 
-  i = ((domptr->c[1][1] - domptr->c[1][0]) >      /* Find largest dimension */
-       (domptr->c[0][1] - domptr->c[0][0]))
-    ? 1 : 0;
-  if  ((domptr->c[2][1] - domptr->c[2][0]) >
-       (domptr->c[i][1] - domptr->c[i][0]))
-    i = 2;
+  dimval = (archptr->c[1] > archptr->c[0]) ? 1 : 0; /* Assume all subdomain dimensions are equal */
+  if (archptr->c[2] > archptr->c[dimval])         /* Find priviledged dimension                  */
+    dimval = 2;
 
-  if (i == 0) {                                   /* Split domain in two along largest dimension */
+  dimtmp = dimval;                                /* Find best dimension */
+  if (dimsiz[(dimtmp + 1) % 3] > dimsiz[dimval])
+    dimval = (dimtmp + 1) % 3;
+  if (dimsiz[(dimtmp + 2) % 3] > dimsiz[dimval])
+    dimval = (dimtmp + 2) % 3;
+
+  if (dimval == 0) {                              /* Split domain in two along largest dimension */
     dom0ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = (domptr->c[0][0] + domptr->c[0][1]) / 2;
     dom1ptr->c[0][0] = dom0ptr->c[0][1] + 1;
@@ -617,7 +625,7 @@ ArchTorus3Dom * restrict const  dom1ptr)
     dom0ptr->c[2][0] = dom1ptr->c[2][0] = domptr->c[2][0];
     dom0ptr->c[2][1] = dom1ptr->c[2][1] = domptr->c[2][1];
   }
-  else if (i == 1) {
+  else if (dimval == 1) {
     dom0ptr->c[0][0] = dom1ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = dom1ptr->c[0][1] = domptr->c[0][1];
 

@@ -67,7 +67,7 @@
 #define C_filepntrordout            C_fileTab[1].pntr /* Ordering output file    */
 #define C_filepntrlogout            C_fileTab[2].pntr /* Log file                */
 #define C_filepntrmapout            C_fileTab[3].pntr /* Separator mapping file  */
-#define C_filepntrtreout            C_fileTab[4].pntr /* Separator tre file      */
+#define C_filepntrtreout            C_fileTab[4].pntr /* Separator tree file     */
 
 /*+ Process flags. +*/
 

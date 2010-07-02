@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,7 +59,7 @@
 /**                # Version 4.0  : from : 09 jan 2004     **/
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
-/**                                 to     28 feb 2008     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -298,12 +298,21 @@ const ArchMesh2Dom * const    domptr,
 ArchMesh2Dom * restrict const dom0ptr,
 ArchMesh2Dom * restrict const dom1ptr)
 {
-  if ((domptr->c[0][0] == domptr->c[0][1]) &&     /* Return if cannot bipartition more */
-      (domptr->c[1][0] == domptr->c[1][1]))
+  Anum                dimsiz[2];
+  int                 dimval;                     /* Dimension along which to split */
+
+  dimsiz[0] = domptr->c[0][1] - domptr->c[0][0];
+  dimsiz[1] = domptr->c[1][1] - domptr->c[1][0];
+
+  if ((dimsiz[0] | dimsiz[1]) == 0)               /* Return if cannot bipartition more */
     return (1);
 
-  if ((domptr->c[0][1] - domptr->c[0][0]) >       /* Split domain in two along largest dimension */
-      (domptr->c[1][1] - domptr->c[1][0])) {
+  dimval = 1;
+  if ((dimsiz[0] > dimsiz[1]) ||                  /* Split domain in two along largest dimension */
+      ((dimsiz[0] == dimsiz[1]) && (archptr->c[0] > archptr->c[1])))
+    dimval = 0;
+
+  if (dimval == 0) {                              /* Split across the X dimension */
     dom0ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = (domptr->c[0][0] + domptr->c[0][1]) / 2;
     dom1ptr->c[0][0] = dom0ptr->c[0][1] + 1;
@@ -311,7 +320,7 @@ ArchMesh2Dom * restrict const dom1ptr)
     dom0ptr->c[1][0] = dom1ptr->c[1][0] = domptr->c[1][0];
     dom0ptr->c[1][1] = dom1ptr->c[1][1] = domptr->c[1][1];
   }
-  else {
+  else {                                          /* Split across the Y dimension */
     dom0ptr->c[0][0] = dom1ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = dom1ptr->c[0][1] = domptr->c[0][1];
     dom0ptr->c[1][0] = domptr->c[1][0];
@@ -634,21 +643,28 @@ const ArchMesh3Dom * const    domptr,
 ArchMesh3Dom * restrict const dom0ptr,
 ArchMesh3Dom * restrict const dom1ptr)
 {
-  int                 i;
+  Anum                dimsiz[3];
+  int                 dimtmp;
+  int                 dimval;
 
-  if ((domptr->c[0][0] == domptr->c[0][1]) &&     /* Return if cannot bipartition more */
-      (domptr->c[1][0] == domptr->c[1][1]) &&
-      (domptr->c[2][0] == domptr->c[2][1]))
+  dimsiz[0] = domptr->c[0][1] - domptr->c[0][0];
+  dimsiz[1] = domptr->c[1][1] - domptr->c[1][0];
+  dimsiz[2] = domptr->c[2][1] - domptr->c[2][0];
+
+  if ((dimsiz[0] | dimsiz[1] | dimsiz[2]) == 0)   /* Return if cannot bipartition more */
     return (1);
 
-  i = ((domptr->c[1][1] - domptr->c[1][0]) >      /* Find largest dimension */
-       (domptr->c[0][1] - domptr->c[0][0]))
-    ? 1 : 0;
-  if  ((domptr->c[2][1] - domptr->c[2][0]) >
-       (domptr->c[i][1] - domptr->c[i][0]))
-    i = 2;
+  dimval = (archptr->c[1] > archptr->c[0]) ? 1 : 0; /* Assume all subdomain dimensions are equal */
+  if (archptr->c[2] > archptr->c[dimval])         /* Find priviledged dimension                  */
+    dimval = 2;
 
-  if (i == 0) {                                   /* Split domain in two along largest dimension */
+  dimtmp = dimval;                                /* Find best dimension */
+  if (dimsiz[(dimtmp + 1) % 3] > dimsiz[dimval])
+    dimval = (dimtmp + 1) % 3;
+  if (dimsiz[(dimtmp + 2) % 3] > dimsiz[dimval])
+    dimval = (dimtmp + 2) % 3;
+
+  if (dimval == 0) {                              /* Split domain in two along largest dimension */
     dom0ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = (domptr->c[0][0] + domptr->c[0][1]) / 2;
     dom1ptr->c[0][0] = dom0ptr->c[0][1] + 1;
@@ -660,7 +676,7 @@ ArchMesh3Dom * restrict const dom1ptr)
     dom0ptr->c[2][0] = dom1ptr->c[2][0] = domptr->c[2][0];
     dom0ptr->c[2][1] = dom1ptr->c[2][1] = domptr->c[2][1];
   }
-  else if (i == 1) {
+  else if (dimval == 1) {
     dom0ptr->c[0][0] = dom1ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = dom1ptr->c[0][1] = domptr->c[0][1];
 

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 /**                                 to   : 18 may 2004     **/
 /**                # Version 5.0  : from : 13 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
+/**                # Version 5.1  : from : 01 jul 2010     **/
+/**                                 to   : 01 jul 2010     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -164,8 +166,8 @@ char *                      argv[])
           flagval |= C_FLAGTORUS;
           break;
         case 'V' :
-          fprintf (stderr, "acpl, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "gmk_m2, version " SCOTCH_VERSION_STRING "\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -177,7 +179,7 @@ char *                      argv[])
 
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
-  if (flagval & C_FLAGELEM) {                     /* Build a torus */
+  if (flagval & C_FLAGELEM) {                     /* Build a 8-neighbor grid */
     errorPrint ("main: elements not supported");
     return     (1);
   }

@@ -1,6 +1,6 @@
 /*********************************************************
 **                                                      **
-**  WARNING : THIS IS NOT THE ORIGINAL INCLUDE FILE OF  **
+**  WARNING: THIS IS NOT THE ORIGINAL INCLUDE FILE OF   **
 **  THE ParMeTiS SOFTWARE PACKAGE.                      **
 **  This file is a compatibility include file provided  **
 **  as part of the Scotch software distribution.        **
@@ -9,7 +9,7 @@
 **  the libPTScotchMeTiS library.                       **
 **                                                      **
 *********************************************************/
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**   DATES      : # Version 5.0  : from : 17 oct 2007     **/
 /**                                 to     18 oct 2007     **/
 /**                # Version 5.1  : from : 19 jun 2008     **/
-/**                                 to     20 jun 2008     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,10 +68,31 @@
 
 #endif /* __parmetis_h__ */
 
+#ifdef SCOTCH_METIS_PREFIX
+#define SCOTCH_METIS_PREFIXL        scotch_
+#define SCOTCH_METIS_PREFIXU        SCOTCH_
+#endif /* SCOTCH_METIS_PREFIX */
+
+#ifndef SCOTCH_METIS_PREFIXL
+#define SCOTCH_METIS_PREFIXL
+#endif /* SCOTCH_METIS_PREFIXL */
+
+#ifndef SCOTCH_METIS_PREFIXU
+#define SCOTCH_METIS_PREFIXU
+#endif /* SCOTCH_METIS_PREFIXU */
+
+#ifndef METISNAMEL
+#define METISNAMEL(s)               METISNAME2(METISNAME3(SCOTCH_METIS_PREFIXL),s)
+#define METISNAMEU(s)               METISNAME2(METISNAME3(SCOTCH_METIS_PREFIXU),s)
+#define METISNAME2(p,s)             METISNAME4(p,s)
+#define METISNAME3(s)               s
+#define METISNAME4(p,s)             p##s
+#endif /* METISNAMEL */
+
 /*
 **  The function prototypes.
 */
 
-void                        ParMETIS_V3_NodeND  (const int * const, int * const, int * const, const int * const, const int * const, int * const, int * const, MPI_Comm * const);
-void                        ParMETIS_V3_PartGeomKway (const int * const, int * const, int * const, int * const, int * const, const int * const, const int * const, const int * const, const float * const, const int * const, const int * const, const float * const, const float * const, const int * const, int * const, int * const, MPI_Comm * const);
-void                        ParMETIS_V3_PartKway (const int * const, int * const, int * const, int * const, int * const, const int * const, const int * const, const int * const, const int * const, const float * const, const float * const, const int * const, int * const, int * const, MPI_Comm * const);
+void                        METISNAMEU(ParMETIS_V3_NodeND) (const int * const, int * const, int * const, const int * const, const int * const, int * const, int * const, MPI_Comm * const);
+void                        METISNAMEU(ParMETIS_V3_PartGeomKway) (const int * const, int * const, int * const, int * const, int * const, const int * const, const int * const, const int * const, const float * const, const int * const, const int * const, const float * const, const float * const, const int * const, int * const, int * const, MPI_Comm * const);
+void                        METISNAMEU(ParMETIS_V3_PartKway) (const int * const, int * const, int * const, int * const, int * const, const int * const, const int * const, const int * const, const int * const, const float * const, const float * const, const int * const, int * const, int * const, MPI_Comm * const);

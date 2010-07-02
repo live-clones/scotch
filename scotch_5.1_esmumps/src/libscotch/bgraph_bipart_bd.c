@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 27 nov 2006     **/
 /**                                 to   : 23 dec 2007     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to   : 09 nov 2008     **/
+/**                                 to   : 28 may 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -446,6 +446,14 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
+
+  if ((bndedgenum == bndgrafdat.s.verttax[bndvertnnd]) || /* If any of the anchor edges is isolated */
+      (bndedgenum == bndgrafdat.s.verttax[bndvertnnd + 2])) {
+    bgraphExit (&bndgrafdat);                     /* Free all band graph related data */
+    memFree    (queudat.qtab);
+    return     (bgraphBipartSt (orggrafptr, paraptr->stratorg)); /* Work on original graph */
+  }
+
   if (bnddegrmax < (bndgrafdat.s.verttax[bndvertnnd + 1] - bndgrafdat.s.verttax[bndvertnnd]))
     bnddegrmax = (bndgrafdat.s.verttax[bndvertnnd + 1] - bndgrafdat.s.verttax[bndvertnnd]);
   if (bnddegrmax < (bndgrafdat.s.verttax[bndvertnnd + 2] - bndgrafdat.s.verttax[bndvertnnd + 1]))

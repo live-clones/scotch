@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 08 sep 2006     **/
 /**                                 to     07 jun 2007     **/
+/**                # Version 5.1  : from : 30 jun 2010     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,7 +69,7 @@
 */
 
 void
-METIS_EdgeND (
+METISNAMEU(METIS_EdgeND) (
 const int * const           n,
 const int * const           xadj,
 const int * const           adjncy,
@@ -76,7 +78,7 @@ const int * const           options,
 int * const                 perm,
 int * const                 iperm)
 {
-  METIS_NodeWND (n, xadj, adjncy, NULL, numflag, options, perm, iperm);
+  METISNAMEU(METIS_NodeWND) (n, xadj, adjncy, NULL, numflag, options, perm, iperm);
 }
 
 /*
@@ -84,7 +86,7 @@ int * const                 iperm)
 */
 
 void
-METIS_NodeND (
+METISNAMEU(METIS_NodeND) (
 const int * const           n,
 const int * const           xadj,
 const int * const           adjncy,
@@ -93,7 +95,7 @@ const int * const           options,
 int * const                 perm,
 int * const                 iperm)
 {
-  METIS_NodeWND (n, xadj, adjncy, NULL, numflag, options, perm, iperm);
+  METISNAMEU(METIS_NodeWND) (n, xadj, adjncy, NULL, numflag, options, perm, iperm);
 }
 
 /*
@@ -101,7 +103,7 @@ int * const                 iperm)
 */
 
 void
-METIS_NodeWND (
+METISNAMEU(METIS_NodeWND) (
 const int * const           n,
 const int * const           xadj,
 const int * const           adjncy,

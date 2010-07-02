@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,13 +41,13 @@ libdir		= ../../lib
 include ../Makefile.inc
 
 %$(EXE)	:	%$(OBJ)
-		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -DSCOTCH_VERSION=\"$(VERSION)\" -c $(<) -o $(@)
+				$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -DSCOTCH_VERSION=\"$(VERSION)\" $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
 ##
 ##  Project rules.
@@ -303,8 +303,9 @@ gotst$(EXE)			:	gotst.c					\
 
 gout$(EXE)			:	gout_c.c				\
 					gout_o.c				\
+					$(includedir)/scotch.h			\
 					$(libdir)/libscotch$(LIB)
-					$(CC) $(CFLAGS) -I../libscotch -I$(includedir) -DSCOTCH_VERSION=\"$(VERSION)\" gout_c.c gout_o.c -o $(@) -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
+					$(CC) $(CFLAGS) -I../libscotch -I$(includedir) gout_c.c gout_o.c -o $(@) -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
 
 gpart$(EXE)			:	gmap$(EXE)
 					-$(RM) gpart$(EXE)

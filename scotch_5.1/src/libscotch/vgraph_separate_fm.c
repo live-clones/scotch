@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to     22 may 2008     **/
 /**                # Version 5.1  : from : 10 nov 2008     **/
-/**                                 to     12 nov 2010     **/
+/**                                 to     01 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -176,6 +176,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
   const Gnum * restrict const vendtax = grafptr->s.vendtax;
   const Gnum * restrict const velotax = grafptr->s.velotax;
   const Gnum * restrict const edgetax = grafptr->s.edgetax;
+  GraphPart * restrict const  parttax = grafptr->parttax;
 
   comploaddltmat = (paraptr->deltrat > 0.0L)
                    ? MAX ((Gnum) ((grafptr->compload[0] + grafptr->compload[1]) * paraptr->deltrat),
@@ -223,7 +224,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 
     vertnum = grafptr->frontab[fronnum];
 #ifdef SCOTCH_DEBUG_VGRAPH2
-    if (grafptr->parttax[vertnum] != 2) {
+    if (parttax[vertnum] != 2) {
       errorPrint   ("vgraphSeparateFm: vertex not in separator");
       return       (1);
     }
@@ -244,7 +245,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
         Gnum                veloend;
 
         vertend = edgetax[edgenum];
-        partend = (Gnum) grafptr->parttax[vertend];
+        partend = (Gnum) parttax[vertend];
         veloend = velotax[vertend];
 
         compgain0  += (partend & 1)       * veloend;
@@ -266,7 +267,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
         Gnum                partend;
 
         vertend = edgetax[edgenum];
-        partend = (Gnum) grafptr->parttax[vertend];
+        partend = (Gnum) parttax[vertend];
 
         compgain0 += (partend & 1);
         compgain2 += (partend & 2);
@@ -409,10 +410,10 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 
           vexxend = hashtab + hashnum;            /* Point to neighbor              */
           if (vexxend->vertnum == ~0) {           /* If neighbor does not exist yet */
-            if (grafptr->parttax[vertend] == partval) /* If no use to create it     */
+            if (parttax[vertend] == partval)      /* If no use to create it         */
               break;                              /* Skip to next vertex            */
 #ifdef SCOTCH_DEBUG_VGRAPH2
-            if (grafptr->parttax[vertend] != (1 - partval)) {
+            if (parttax[vertend] != (1 - partval)) {
               errorPrint ("vgraphSeparateFm: undeclared separator vertex");
               return     (1);
             }
@@ -483,7 +484,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
                   vexxent = hashtab + hashnum;
                   if (vexxent->vertnum == ~0) {   /* If neighbor does not exist */
 #ifdef SCOTCH_DEBUG_VGRAPH2
-                    if (grafptr->parttax[vertent] != (1 - partval)) {
+                    if (parttax[vertent] != (1 - partval)) {
                       errorPrint ("vgraphSeparateFm: broken separator (1)");
                       return     (1);
                     }
@@ -641,10 +642,10 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
       int                 partold;                /* Old part of current vertex        */
 
       partval = vexxptr->partval;
-      partold = grafptr->parttax[vexxptr->vertnum]; /* Get old part value from array */
-      if (partval != partold) {                   /* If vertex part changed          */
-        grafptr->parttax[vertnum] = partval;      /* Set new part value              */
-        compsize1add += (partval & 1);            /* Superscalar update              */
+      partold = parttax[vexxptr->vertnum];        /* Get old part value from array */
+      if (partval != partold) {                   /* If vertex part changed        */
+        parttax[vertnum] = partval;               /* Set new part value            */
+        compsize1add += (partval & 1);            /* Superscalar update            */
         compsize1sub += (partold & 1);
       }
       if (partval == 2)                           /* If vertex belongs to cut */
@@ -817,10 +818,11 @@ const Gnum                                    comploaddlt)
   Gnum                  hashnum;
   Gnum                  comploadtmp[3];
 
-  const Gnum * restrict const verttax = grafptr->s.verttax; /* Fast accesses */
-  const Gnum * restrict const vendtax = grafptr->s.vendtax;
-  const Gnum * restrict const velotax = grafptr->s.velotax;
-  const Gnum * restrict const edgetax = grafptr->s.edgetax;
+  const Gnum * restrict const       verttax = grafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const       vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const       velotax = grafptr->s.velotax;
+  const Gnum * restrict const       edgetax = grafptr->s.edgetax;
+  const GraphPart * restrict const  parttax = grafptr->parttax;
 
   comploadtmp[0] = grafptr->compload[0];
   comploadtmp[1] = grafptr->compload[1];
@@ -843,9 +845,9 @@ const Gnum                                    comploaddlt)
       return     (1);
     }
 
-    if (partval != grafptr->parttax[vertnum]) {
-      comploadtmp[grafptr->parttax[vertnum]] += hashtab[hashnum].veloval; /* TRICK: -veloval */
-      comploadtmp[partval]                   -= hashtab[hashnum].veloval;
+    if (partval != parttax[vertnum]) {
+      comploadtmp[parttax[vertnum]] += hashtab[hashnum].veloval; /* TRICK: -veloval */
+      comploadtmp[partval]          -= hashtab[hashnum].veloval;
     }
 
     if (partval < 2) {                            /* If not separator vertex */
@@ -886,7 +888,7 @@ const Gnum                                    comploaddlt)
             break;
           }
           if (hashtab[hashnum].vertnum == ~0) {     /* If element not present */
-            partend = grafptr->parttax[vertend];
+            partend = parttax[vertend];
             veloend = - ((velotax == NULL) ? 1 : velotax[vertend]);
             break;
           }

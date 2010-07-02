@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,7 +61,7 @@
 /**                # Version 4.0  : from : 04 nov 2003     **/
 /**                                 to     09 jan 2004     **/
 /**                # Version 5.1  : from : 11 dec 2007     **/
-/**                                 to     27 oct 2009     **/
+/**                                 to     25 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,7 +92,7 @@ static const ArchClass      archClassTab[] = { ARCHCLASSBLOCK ("cmplt",    Cmplt
                                                ARCHCLASSBLOCK ("cmpltw",   Cmpltw, ARCHPART),
                                                ARCHCLASSBLOCK ("deco",     Deco,   ARCHNONE),
                                                ARCHCLASSBLOCK ("hcub",     Hcub,   ARCHNONE),
-                                               ARCHCLASSBLOCK ("leaf",     Tleaf,  ARCHNONE),
+                                               ARCHCLASSBLOCK ("tleaf",    Tleaf,  ARCHNONE),
                                                ARCHCLASSBLOCK ("mesh2D",   Mesh2,  ARCHNONE),
 #ifdef SCOTCH_DEBUG_ARCH3
                                                ARCHCLASSBLOCK ("mesh2O",   Mesh2o, ARCHNONE),

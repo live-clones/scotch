@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,11 +49,19 @@
 /**                # Version 5.0  : from : 24 feb 2007     **/
 /**                                 to     24 jul 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     27 apr 2009     **/
+/**                                 to     01 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
 #define MODULE_H
+
+/*
+** Version string.
+*/
+
+#define SCOTCH_VERSION_STRING       SCOTCH_VERSION_STRING2(SCOTCH_VERSION) "." SCOTCH_VERSION_STRING2(SCOTCH_RELEASE) "." SCOTCH_VERSION_STRING2(SCOTCH_PATCHLEVEL)
+#define SCOTCH_VERSION_STRING2(x)   SCOTCH_VERSION_STRING3(x)
+#define SCOTCH_VERSION_STRING3(x)   #x
 
 /*
 ** Collective communication handling.
@@ -188,8 +196,8 @@
 #define archDomDist                 _SCOTCHarchDomDist
 #define archDomFrst                 _SCOTCHarchDomFrst
 #define archDomBipart               _SCOTCHarchDomBipart
-#define archDomMpiType              _SCOTCHarchDomMpiType
 #endif /* SCOTCH_DEBUG_ARCH2 */
+#define archDomMpiType              _SCOTCHarchDomMpiType
 #define archBuild                   _SCOTCHarchBuild
 #define archCmpltArchLoad           _SCOTCHarchCmpltArchLoad
 #define archCmpltArchSave           _SCOTCHarchCmpltArchSave
@@ -244,6 +252,7 @@
 #define archHcubDomBipart           _SCOTCHarchHcubDomBipart
 #define archHcubDomMpiType          _SCOTCHarchHcubDomMpiType
 #define archTleafArchLoad           _SCOTCHarchTleafArchLoad
+#define archTleafArchFree           _SCOTCHarchTleafArchFree
 #define archTleafArchSave           _SCOTCHarchTleafArchSave
 #define archTleafDomNum             _SCOTCHarchTleafDomNum
 #define archTleafDomTerm            _SCOTCHarchTleafDomTerm
@@ -394,6 +403,8 @@
 #define dgraphBuildHcub             _SCOTCHdgraphBuildHcub
 #define dgraphCheck                 _SCOTCHdgraphCheck
 #define dgraphBand                  _SCOTCHdgraphBand
+#define dgraphBandColl              _SCOTCHdgraphBandColl
+#define dgraphBandPtop              _SCOTCHdgraphBandPtop
 #define dgraphCoarsen               _SCOTCHdgraphCoarsen
 #define dgraphExit                  _SCOTCHdgraphExit
 #define dgraphFold                  _SCOTCHdgraphFold

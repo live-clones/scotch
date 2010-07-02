@@ -1,24 +1,23 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton implementation for Bison's Yacc-like parsers in C
-
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -29,7 +28,7 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-
+   
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
@@ -47,7 +46,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.3"
+#define YYBISON_VERSION "2.4.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -55,43 +54,28 @@
 /* Pure parsers.  */
 #define YYPURE 0
 
+/* Push parsers.  */
+#define YYPUSH 0
+
+/* Pull parsers.  */
+#define YYPULL 1
+
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
-
-
-/* Tokens.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     METHODNAME = 258,
-     PARAMNAME = 259,
-     VALCASE = 260,
-     VALDOUBLE = 261,
-     VALINT = 262,
-     VALSTRING = 263,
-     VALSTRAT = 264,
-     VALPARAM = 265,
-     VALTEST = 266
-   };
-#endif
-/* Tokens.  */
-#define METHODNAME 258
-#define PARAMNAME 259
-#define VALCASE 260
-#define VALDOUBLE 261
-#define VALINT 262
-#define VALSTRING 263
-#define VALSTRAT 264
-#define VALPARAM 265
-#define VALTEST 266
-
-
+/* Substitute the variable and function names.  */
+#define yyparse         scotchyyparse
+#define yylex           scotchyylex
+#define yyerror         scotchyyerror
+#define yylval          scotchyylval
+#define yychar          scotchyychar
+#define yydebug         scotchyydebug
+#define yynerrs         scotchyynerrs
 
 
 /* Copy the first part of user declarations.  */
+
+/* Line 189 of yacc.c  */
 #line 1 "parser_yy.y"
 
 /* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
@@ -143,7 +127,7 @@
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     11 jun 2004     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to     22 oct 2008     **/
+/**                                 to     09 jun 2009     **/
 /**                                                        **/
 /************************************************************/
 
@@ -162,12 +146,6 @@
 #include "parser.h"
 #include "parser_ll.h"
 #include "parser_yy.h"
-
-/* Change some function names. */
-
-#define yylex                       stratParserLex /* Lexical analyzer           */
-#define yyparse                     stratParserParse2 /* Parser function name    */
-#define yyerror                     stratParserError /* Error processing routine */
 
 /* #define SCOTCH_DEBUG_PARSER3 */
 #ifdef SCOTCH_DEBUG_PARSER3
@@ -188,6 +166,9 @@ extern unsigned int         parsermethtokentab[]; /* Pre-definition for stupid c
 
 
 
+/* Line 189 of yacc.c  */
+#line 171 "y.tab.c"
+
 /* Enabling traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -206,10 +187,45 @@ extern unsigned int         parsermethtokentab[]; /* Pre-definition for stupid c
 # define YYTOKEN_TABLE 0
 #endif
 
+
+/* Tokens.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     METHODNAME = 258,
+     PARAMNAME = 259,
+     VALCASE = 260,
+     VALDOUBLE = 261,
+     VALINT = 262,
+     VALSTRING = 263,
+     VALSTRAT = 264,
+     VALPARAM = 265,
+     VALTEST = 266
+   };
+#endif
+/* Tokens.  */
+#define METHODNAME 258
+#define PARAMNAME 259
+#define VALCASE 260
+#define VALDOUBLE 261
+#define VALINT 262
+#define VALSTRING 263
+#define VALSTRAT 264
+#define VALPARAM 265
+#define VALTEST 266
+
+
+
+
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 96 "parser_yy.y"
 {
+
+/* Line 214 of yacc.c  */
+#line 90 "parser_yy.y"
+
   char                      CASEVAL;              /* Case value          */
   StratTest *               TEST;                 /* Test type           */
   StratTestType             TESTOP;               /* Relational type     */
@@ -222,22 +238,23 @@ typedef union YYSTYPE
     StratParamTab *         param;                /* Current parameter */
   } SAVE;                                         /* Parameter type    */
   Strat *                   STRAT;                /* Strategy tree     */
-}
-/* Line 187 of yacc.c.  */
-#line 228 "y.tab.c"
-	YYSTYPE;
+
+
+
+/* Line 214 of yacc.c  */
+#line 246 "y.tab.c"
+} YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
-
 
 
 /* Copy the second part of user declarations.  */
 
 
-/* Line 216 of yacc.c.  */
-#line 241 "y.tab.c"
+/* Line 264 of yacc.c  */
+#line 258 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -312,14 +329,14 @@ typedef short int yytype_int16;
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static int
-YYID (int i)
+YYID (int yyi)
 #else
 static int
-YYID (i)
-    int i;
+YYID (yyi)
+    int yyi;
 #endif
 {
-  return i;
+  return yyi;
 }
 #endif
 
@@ -400,9 +417,9 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  yytype_int16 yyss;
-  YYSTYPE yyvs;
-  };
+  yytype_int16 yyss_alloc;
+  YYSTYPE yyvs_alloc;
+};
 
 /* The size of the maximum gap between one aligned stack and the next.  */
 # define YYSTACK_GAP_MAXIMUM (sizeof (union yyalloc) - 1)
@@ -436,12 +453,12 @@ union yyalloc
    elements in the stack, and YYPTR gives the new location of the
    stack.  Advance YYPTR to a properly aligned location for the next
    stack.  */
-# define YYSTACK_RELOCATE(Stack)					\
+# define YYSTACK_RELOCATE(Stack_alloc, Stack)				\
     do									\
       {									\
 	YYSIZE_T yynewbytes;						\
-	YYCOPY (&yyptr->Stack, Stack, yysize);				\
-	Stack = &yyptr->Stack;						\
+	YYCOPY (&yyptr->Stack_alloc, Stack, yysize);			\
+	Stack = &yyptr->Stack_alloc;					\
 	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
 	yyptr += yynewbytes / sizeof (*yyptr);				\
       }									\
@@ -540,13 +557,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   136,   136,   142,   160,   163,   165,   180,   198,   202,
-     206,   202,   230,   233,   238,   243,   247,   251,   250,   312,
-     316,   312,   320,   323,   324,   328,   327,   366,   399,   412,
-     425,   440,   440,   462,   470,   473,   491,   494,   512,   515,
-     531,   535,   538,   557,   561,   565,   571,   587,   590,   594,
-     600,   616,   619,   625,   641,   644,   650,   654,   655,   658,
-     673,   690
+       0,   130,   130,   136,   154,   157,   159,   174,   192,   196,
+     200,   196,   224,   227,   232,   237,   241,   245,   244,   306,
+     310,   306,   314,   317,   318,   322,   321,   360,   393,   406,
+     419,   434,   434,   456,   464,   467,   485,   488,   506,   509,
+     525,   529,   532,   551,   555,   559,   565,   581,   584,   588,
+     594,   610,   613,   619,   635,   638,   644,   648,   649,   652,
+     667,   684
 };
 #endif
 
@@ -559,12 +576,12 @@ static const char *const yytname[] =
   "VALDOUBLE", "VALINT", "VALSTRING", "VALSTRAT", "VALPARAM", "VALTEST",
   "'|'", "'/'", "'?'", "';'", "':'", "'('", "')'", "'{'", "'}'", "','",
   "'='", "'&'", "'!'", "'<'", "'>'", "'+'", "'-'", "'*'", "'%'", "$accept",
-  "STRAT", "STRATSELECT", "STRATEMPTY", "STRATCONCAT", "STRATTEST", "@1",
-  "@2", "STRATTESTELSE", "STRATGROUP", "STRATMETHOD", "@3", "METHODPARAM",
-  "@4", "@5", "PARAMLIST", "PARAMPARAM", "@6", "PARAMVAL", "@7", "TEST",
-  "TESTOR", "TESTAND", "TESTNOT", "TESTREL", "TESTRELOP", "TESTEXPR1",
-  "TESTEXPR1OP", "TESTEXPR2", "TESTEXPR2OP", "TESTEXPR3", "TESTEXPR3OP",
-  "TESTEXPR4", "TESTVAL", "TESTVAR", 0
+  "STRAT", "STRATSELECT", "STRATEMPTY", "STRATCONCAT", "STRATTEST", "$@1",
+  "$@2", "STRATTESTELSE", "STRATGROUP", "STRATMETHOD", "$@3",
+  "METHODPARAM", "$@4", "$@5", "PARAMLIST", "PARAMPARAM", "@6", "PARAMVAL",
+  "@7", "TEST", "TESTOR", "TESTAND", "TESTNOT", "TESTREL", "TESTRELOP",
+  "TESTEXPR1", "TESTEXPR1OP", "TESTEXPR2", "TESTEXPR2OP", "TESTEXPR3",
+  "TESTEXPR3OP", "TESTEXPR4", "TESTVAL", "TESTVAR", 0
 };
 #endif
 
@@ -882,17 +899,20 @@ yy_symbol_print (yyoutput, yytype, yyvaluep)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_stack_print (yytype_int16 *bottom, yytype_int16 *top)
+yy_stack_print (yytype_int16 *yybottom, yytype_int16 *yytop)
 #else
 static void
-yy_stack_print (bottom, top)
-    yytype_int16 *bottom;
-    yytype_int16 *top;
+yy_stack_print (yybottom, yytop)
+    yytype_int16 *yybottom;
+    yytype_int16 *yytop;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
-  for (; bottom <= top; ++bottom)
-    YYFPRINTF (stderr, " %d", *bottom);
+  for (; yybottom <= yytop; yybottom++)
+    {
+      int yybot = *yybottom;
+      YYFPRINTF (stderr, " %d", yybot);
+    }
   YYFPRINTF (stderr, "\n");
 }
 
@@ -926,11 +946,11 @@ yy_reduce_print (yyvsp, yyrule)
   /* The symbols being reduced.  */
   for (yyi = 0; yyi < yynrhs; yyi++)
     {
-      fprintf (stderr, "   $%d = ", yyi + 1);
+      YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
 		       		       );
-      fprintf (stderr, "\n");
+      YYFPRINTF (stderr, "\n");
     }
 }
 
@@ -1210,10 +1230,8 @@ yydestruct (yymsg, yytype, yyvaluep)
 	break;
     }
 }
-
 
 /* Prevent warnings from -Wmissing-prototypes.  */
-
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
 int yyparse (void *YYPARSE_PARAM);
@@ -1229,11 +1247,10 @@ int yyparse ();
 #endif /* ! YYPARSE_PARAM */
 
 
-
-/* The look-ahead symbol.  */
+/* The lookahead symbol.  */
 int yychar;
 
-/* The semantic value of the look-ahead symbol.  */
+/* The semantic value of the lookahead symbol.  */
 YYSTYPE yylval;
 
 /* Number of syntax errors so far.  */
@@ -1241,9 +1258,9 @@ int yynerrs;
 
 
 
-/*----------.
-| yyparse.  |
-`----------*/
+/*-------------------------.
+| yyparse or yypush_parse.  |
+`-------------------------*/
 
 #ifdef YYPARSE_PARAM
 #if (defined __STDC__ || defined __C99__FUNC__ \
@@ -1267,14 +1284,39 @@ yyparse ()
 #endif
 #endif
 {
-  
-  int yystate;
+
+
+    int yystate;
+    /* Number of tokens to shift before error messages enabled.  */
+    int yyerrstatus;
+
+    /* The stacks and their tools:
+       `yyss': related to states.
+       `yyvs': related to semantic values.
+
+       Refer to the stacks thru separate pointers, to allow yyoverflow
+       to reallocate them elsewhere.  */
+
+    /* The state stack.  */
+    yytype_int16 yyssa[YYINITDEPTH];
+    yytype_int16 *yyss;
+    yytype_int16 *yyssp;
+
+    /* The semantic value stack.  */
+    YYSTYPE yyvsa[YYINITDEPTH];
+    YYSTYPE *yyvs;
+    YYSTYPE *yyvsp;
+
+    YYSIZE_T yystacksize;
+
   int yyn;
   int yyresult;
-  /* Number of tokens to shift before error messages enabled.  */
-  int yyerrstatus;
-  /* Look-ahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  /* Lookahead token as an internal (translated) token number.  */
+  int yytoken;
+  /* The variables used to return semantic value and location from the
+     action routines.  */
+  YYSTYPE yyval;
+
 #if YYERROR_VERBOSE
   /* Buffer for error messages, and its allocated size.  */
   char yymsgbuf[128];
@@ -1282,51 +1324,28 @@ yyparse ()
   YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
 #endif
 
-  /* Three stacks and their tools:
-     `yyss': related to states,
-     `yyvs': related to semantic values,
-     `yyls': related to locations.
-
-     Refer to the stacks thru separate pointers, to allow yyoverflow
-     to reallocate them elsewhere.  */
-
-  /* The state stack.  */
-  yytype_int16 yyssa[YYINITDEPTH];
-  yytype_int16 *yyss = yyssa;
-  yytype_int16 *yyssp;
-
-  /* The semantic value stack.  */
-  YYSTYPE yyvsa[YYINITDEPTH];
-  YYSTYPE *yyvs = yyvsa;
-  YYSTYPE *yyvsp;
-
-
-
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
-
-  YYSIZE_T yystacksize = YYINITDEPTH;
-
-  /* The variables used to return semantic value and location from the
-     action routines.  */
-  YYSTYPE yyval;
-
 
   /* The number of symbols on the RHS of the reduced rule.
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
+
+  yytoken = 0;
+  yyss = yyssa;
+  yyvs = yyvsa;
+  yystacksize = YYINITDEPTH;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yystate = 0;
   yyerrstatus = 0;
   yynerrs = 0;
-  yychar = YYEMPTY;		/* Cause a token to be read.  */
+  yychar = YYEMPTY; /* Cause a token to be read.  */
 
   /* Initialize stack pointers.
      Waste one element of value and location stack
      so that they stay on the same level as the state stack.
      The wasted elements are never initialized.  */
-
   yyssp = yyss;
   yyvsp = yyvs;
 
@@ -1356,7 +1375,6 @@ yyparse ()
 	YYSTYPE *yyvs1 = yyvs;
 	yytype_int16 *yyss1 = yyss;
 
-
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
 	   conditional around just the two extra args, but that might
@@ -1364,7 +1382,6 @@ yyparse ()
 	yyoverflow (YY_("memory exhausted"),
 		    &yyss1, yysize * sizeof (*yyssp),
 		    &yyvs1, yysize * sizeof (*yyvsp),
-
 		    &yystacksize);
 
 	yyss = yyss1;
@@ -1387,9 +1404,8 @@ yyparse ()
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
 	  goto yyexhaustedlab;
-	YYSTACK_RELOCATE (yyss);
-	YYSTACK_RELOCATE (yyvs);
-
+	YYSTACK_RELOCATE (yyss_alloc, yyss);
+	YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
 	if (yyss1 != yyssa)
 	  YYSTACK_FREE (yyss1);
@@ -1400,7 +1416,6 @@ yyparse ()
       yyssp = yyss + yysize - 1;
       yyvsp = yyvs + yysize - 1;
 
-
       YYDPRINTF ((stderr, "Stack size increased to %lu\n",
 		  (unsigned long int) yystacksize));
 
@@ -1410,6 +1425,9 @@ yyparse ()
 
   YYDPRINTF ((stderr, "Entering state %d\n", yystate));
 
+  if (yystate == YYFINAL)
+    YYACCEPT;
+
   goto yybackup;
 
 /*-----------.
@@ -1418,16 +1436,16 @@ yyparse ()
 yybackup:
 
   /* Do appropriate processing given the current state.  Read a
-     look-ahead token if we need one and don't already have one.  */
+     lookahead token if we need one and don't already have one.  */
 
-  /* First try to decide what to do without reference to look-ahead token.  */
+  /* First try to decide what to do without reference to lookahead token.  */
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
 
-  /* Not known => get a look-ahead token if don't already have one.  */
+  /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid look-ahead symbol.  */
+  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
@@ -1459,20 +1477,16 @@ yybackup:
       goto yyreduce;
     }
 
-  if (yyn == YYFINAL)
-    YYACCEPT;
-
   /* Count tokens shifted since error; after three, turn off error
      status.  */
   if (yyerrstatus)
     yyerrstatus--;
 
-  /* Shift the look-ahead token.  */
+  /* Shift the lookahead token.  */
   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
 
-  /* Discard the shifted token unless it is eof.  */
-  if (yychar != YYEOF)
-    yychar = YYEMPTY;
+  /* Discard the shifted token.  */
+  yychar = YYEMPTY;
 
   yystate = yyn;
   *++yyvsp = yylval;
@@ -1512,14 +1526,18 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 137 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 131 "parser_yy.y"
     {
                 parserstratcurr = ((yyvsp[(1) - (1)].STRAT));           /* Save pointer to root of tree */
               }
     break;
 
   case 3:
-#line 143 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 137 "parser_yy.y"
     {
                 Strat *           strat;
 
@@ -1540,7 +1558,9 @@ yyreduce:
     break;
 
   case 6:
-#line 165 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 159 "parser_yy.y"
     {
                 Strat *           strat;
 
@@ -1557,7 +1577,9 @@ yyreduce:
     break;
 
   case 7:
-#line 181 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 175 "parser_yy.y"
     {
                 Strat *           strat;
 
@@ -1578,21 +1600,27 @@ yyreduce:
     break;
 
   case 9:
-#line 202 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 196 "parser_yy.y"
     {
                 stratParserSelect (VALTEST);      /* Parse parameter tokens */
               }
     break;
 
   case 10:
-#line 206 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 200 "parser_yy.y"
     {
                 stratParserSelect (VALSTRAT);     /* Parse strategy tokens */
               }
     break;
 
   case 11:
-#line 210 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 204 "parser_yy.y"
     {
                 Strat *           strat;
 
@@ -1616,28 +1644,36 @@ yyreduce:
     break;
 
   case 13:
-#line 234 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 228 "parser_yy.y"
     {
                 ((yyval.STRAT)) = ((yyvsp[(2) - (2)].STRAT));
               }
     break;
 
   case 14:
-#line 238 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 232 "parser_yy.y"
     {
                 ((yyval.STRAT)) = NULL;
               }
     break;
 
   case 15:
-#line 244 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 238 "parser_yy.y"
     {
                 ((yyval.STRAT)) = ((yyvsp[(2) - (3)].STRAT));
               }
     break;
 
   case 17:
-#line 251 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 245 "parser_yy.y"
     {
                 Strat *           strat;
                 int               meth;
@@ -1658,7 +1694,7 @@ yyreduce:
                   }
                 }
                 if (methlen == 0) {               /* If method name not known */
-                  errorPrint ("stratParserParse: invalid method name (\"%s\", before \"%s\")",
+                  errorPrint ("stratParserParse: invalid method name \"%s\", before \"%s\"",
                               ((yyvsp[(1) - (1)].STRING)), stratParserRemain ());
                   YYABORT;
                 }
@@ -1680,7 +1716,9 @@ yyreduce:
     break;
 
   case 18:
-#line 291 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 285 "parser_yy.y"
     {
                 StratParamTab *   paratab;
                 int               i;
@@ -1702,21 +1740,27 @@ yyreduce:
     break;
 
   case 19:
-#line 312 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 306 "parser_yy.y"
     {
                 stratParserSelect (VALPARAM);     /* Parse parameter tokens */
               }
     break;
 
   case 20:
-#line 316 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 310 "parser_yy.y"
     {
                 stratParserSelect (VALSTRAT);     /* Parse strategy tokens */
               }
     break;
 
   case 25:
-#line 328 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 322 "parser_yy.y"
     {
                 int               para;
                 int               paralen;
@@ -1737,7 +1781,7 @@ yyreduce:
                   }
                 }
                 if (paralen == 0) {
-                  errorPrint ("stratParserParse: invalid method parameter name (\"%s\", before \"%s\")",
+                  errorPrint ("stratParserParse: invalid method parameter name \"%s\", before \"%s\"",
                               ((yyvsp[(1) - (1)].STRING)), stratParserRemain ());
                   YYABORT;
                 }
@@ -1751,7 +1795,9 @@ yyreduce:
     break;
 
   case 26:
-#line 360 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 354 "parser_yy.y"
     {
                 stratParserSelect (VALPARAM);     /* Go-on reading parameters        */
                 parserstrattab = ((yyvsp[(2) - (4)].SAVE)).tabl; /* Restore current strategy tables */
@@ -1759,7 +1805,9 @@ yyreduce:
     break;
 
   case 27:
-#line 367 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 361 "parser_yy.y"
     {
                 char              c;              /* Character read             */
                 char *            p;              /* Pointer to selector string */
@@ -1775,7 +1823,7 @@ yyreduce:
                        (*p != '\0') && (*p != c);
                        p ++, i ++) ;
                   if (*p == '\0') {
-                    errorPrint ("stratParserParse: invalid method parameter switch (\"%s=%c\", before \"%s\")",
+                    errorPrint ("stratParserParse: invalid method parameter switch \"%s=%c\", before \"%s\"",
                                 parserparamcurr->name, ((yyvsp[(1) - (1)].CASEVAL)), stratParserRemain ());
                     YYABORT;
                   }
@@ -1795,7 +1843,9 @@ yyreduce:
     break;
 
   case 28:
-#line 400 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 394 "parser_yy.y"
     {
 #ifdef SCOTCH_DEBUG_PARSER2
                 if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (double)) > sizeof (StratNodeMethodData)) {
@@ -1811,7 +1861,9 @@ yyreduce:
     break;
 
   case 29:
-#line 413 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 407 "parser_yy.y"
     {
 #ifdef SCOTCH_DEBUG_PARSER2
                 if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (INT)) > sizeof (StratNodeMethodData)) {
@@ -1827,7 +1879,9 @@ yyreduce:
     break;
 
   case 30:
-#line 426 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 420 "parser_yy.y"
     {
 #ifdef SCOTCH_DEBUG_PARSER2
                 if ((parserparamcurr->dataofft - parserparamcurr->database + strlen ((yyvsp[(1) - (1)].STRING)) + 1) > sizeof (StratNodeMethodData)) {
@@ -1844,7 +1898,9 @@ yyreduce:
     break;
 
   case 31:
-#line 440 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 434 "parser_yy.y"
     {
                 ((yyval.SAVE)).strat = parserstratcurr;
                 ((yyval.SAVE)).param = parserparamcurr;
@@ -1854,7 +1910,9 @@ yyreduce:
     break;
 
   case 32:
-#line 447 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 441 "parser_yy.y"
     {
                 parserstratcurr = ((yyvsp[(1) - (2)].SAVE)).strat; /* Restore current method    */
                 parserparamcurr = ((yyvsp[(1) - (2)].SAVE)).param; /* Restore current parameter */
@@ -1873,16 +1931,20 @@ yyreduce:
     break;
 
   case 33:
-#line 463 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 457 "parser_yy.y"
     {
-                errorPrint ("stratParserParse: invalid value for parameter \"%s\" of method \"%s\" (before \"%s\")",
+                errorPrint ("stratParserParse: invalid value for parameter \"%s\" of method \"%s\", before \"%s\"",
                             parserparamcurr->name, parserstratcurr->tabl->methtab[parserstratcurr->data.method.meth].name, stratParserRemain ());
                 YYABORT;
               }
     break;
 
   case 35:
-#line 474 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 468 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -1903,7 +1965,9 @@ yyreduce:
     break;
 
   case 37:
-#line 495 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 489 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -1924,7 +1988,9 @@ yyreduce:
     break;
 
   case 39:
-#line 516 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 510 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -1943,14 +2009,18 @@ yyreduce:
     break;
 
   case 40:
-#line 532 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 526 "parser_yy.y"
     {
                 ((yyval.TEST)) = ((yyvsp[(2) - (3)].TEST));
               }
     break;
 
   case 42:
-#line 539 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 533 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -1970,28 +2040,36 @@ yyreduce:
     break;
 
   case 43:
-#line 558 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 552 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTLT;
               }
     break;
 
   case 44:
-#line 562 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 556 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTEQ;
               }
     break;
 
   case 45:
-#line 566 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 560 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTGT;
               }
     break;
 
   case 46:
-#line 572 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 566 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -2010,21 +2088,27 @@ yyreduce:
     break;
 
   case 48:
-#line 591 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 585 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTADD;
               }
     break;
 
   case 49:
-#line 595 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 589 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTSUB;
               }
     break;
 
   case 50:
-#line 601 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 595 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -2043,14 +2127,18 @@ yyreduce:
     break;
 
   case 52:
-#line 620 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 614 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTMUL;
               }
     break;
 
   case 53:
-#line 626 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 620 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -2069,21 +2157,27 @@ yyreduce:
     break;
 
   case 55:
-#line 645 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 639 "parser_yy.y"
     {
                 ((yyval.TESTOP)) = STRATTESTMOD;
               }
     break;
 
   case 56:
-#line 651 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 645 "parser_yy.y"
     {
                 ((yyval.TEST)) = ((yyvsp[(2) - (3)].TEST));
               }
     break;
 
   case 59:
-#line 659 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 653 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -2101,7 +2195,9 @@ yyreduce:
     break;
 
   case 60:
-#line 674 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 668 "parser_yy.y"
     {
                 StratTest *       test;
 
@@ -2119,7 +2215,9 @@ yyreduce:
     break;
 
   case 61:
-#line 691 "parser_yy.y"
+
+/* Line 1455 of yacc.c  */
+#line 685 "parser_yy.y"
     {
                 StratTest *       test;
                 StratParamTab *   condtab;
@@ -2140,7 +2238,7 @@ yyreduce:
                   }
                 }
                 if (paralen == 0) {
-                  errorPrint ("stratParserParse: invalid graph parameter name (\"%s\", before \"%s\")",
+                  errorPrint ("stratParserParse: invalid graph parameter name \"%s\", before \"%s\"",
                               ((yyvsp[(1) - (1)].STRING)), stratParserRemain ());
                   YYABORT;
                 }
@@ -2161,8 +2259,9 @@ yyreduce:
     break;
 
 
-/* Line 1267 of yacc.c.  */
-#line 2166 "y.tab.c"
+
+/* Line 1455 of yacc.c  */
+#line 2265 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2172,7 +2271,6 @@ yyreduce:
   YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
-
 
   /* Now `shift' the result of the reduction.  Determine what state
      that goes to, based on the state we popped back to and the rule
@@ -2238,7 +2336,7 @@ yyerrlab:
 
   if (yyerrstatus == 3)
     {
-      /* If just tried and failed to reuse look-ahead token after an
+      /* If just tried and failed to reuse lookahead token after an
 	 error, discard it.  */
 
       if (yychar <= YYEOF)
@@ -2255,7 +2353,7 @@ yyerrlab:
 	}
     }
 
-  /* Else will try to reuse look-ahead token after shifting the error
+  /* Else will try to reuse lookahead token after shifting the error
      token.  */
   goto yyerrlab1;
 
@@ -2312,9 +2410,6 @@ yyerrlab1:
       YY_STACK_PRINT (yyss, yyssp);
     }
 
-  if (yyn == YYFINAL)
-    YYACCEPT;
-
   *++yyvsp = yylval;
 
 
@@ -2339,7 +2434,7 @@ yyabortlab:
   yyresult = 1;
   goto yyreturn;
 
-#ifndef yyoverflow
+#if !defined(yyoverflow) || YYERROR_VERBOSE
 /*-------------------------------------------------.
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
@@ -2350,7 +2445,7 @@ yyexhaustedlab:
 #endif
 
 yyreturn:
-  if (yychar != YYEOF && yychar != YYEMPTY)
+  if (yychar != YYEMPTY)
      yydestruct ("Cleanup: discarding lookahead",
 		 yytoken, &yylval);
   /* Do not reclaim the symbols of the rule which action triggered
@@ -2376,7 +2471,9 @@ yyreturn:
 }
 
 
-#line 731 "parser_yy.y"
+
+/* Line 1675 of yacc.c  */
+#line 725 "parser_yy.y"
 
 
 /*
@@ -2443,7 +2540,7 @@ int
 stratParserError (
 const char * const          errstr)
 {
-  errorPrint ("stratParserParse: invalid strategy string (before \"%s\")", stratParserRemain ());
+  errorPrint ("stratParserParse: invalid strategy string, before \"%s\"", stratParserRemain ());
   return     (1);
 }
 

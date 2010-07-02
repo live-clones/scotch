@@ -1,4 +1,4 @@
-/* Copyright 2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2009,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                distributed source graph.               **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 26 apr 2009     **/
-/**                                 to   : 26 apr 2009     **/
+/**                                 to   : 01 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,8 +119,8 @@ char *                      argv[])
           usagePrint (stdout, C_usageList);
           return     (0);
         case 'V' :
-          fprintf (stderr, "gscat, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2009 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "gscat, version " SCOTCH_VERSION_STRING "\n");
+          fprintf (stderr, "Copyright 2009,2010 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :

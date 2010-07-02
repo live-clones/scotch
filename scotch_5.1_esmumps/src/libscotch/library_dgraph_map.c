@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 12 jun 2008     **/
-/**                                 to     29 mar 2010     **/
+/**                                 to     29 may 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -159,7 +159,7 @@ FILE * const                  stream)             /*+ Output stream   +*/
 
 int
 SCOTCH_dgraphMapCompute (
-const SCOTCH_Dgraph * const grafptr,              /*+ Graph to map       +*/
+SCOTCH_Dgraph * const       grafptr,              /*+ Graph to map       +*/
 SCOTCH_Dmapping * const     mappptr,              /*+ Mapping to compute +*/
 SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
 {
@@ -201,7 +201,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
 
 int
 SCOTCH_dgraphMap (
-const SCOTCH_Dgraph * const grafptr,              /*+ Graph to map        +*/
+SCOTCH_Dgraph * const       grafptr,              /*+ Graph to map        +*/
 const SCOTCH_Arch * const   archptr,              /*+ Target architecture +*/
 SCOTCH_Strat * const        stratptr,             /*+ Mapping strategy    +*/
 SCOTCH_Num * const          termloctab)           /*+ Mapping array       +*/
@@ -226,7 +226,7 @@ SCOTCH_Num * const          termloctab)           /*+ Mapping array       +*/
 
 int
 SCOTCH_dgraphPart (
-const SCOTCH_Dgraph * const grafptr,              /*+ Graph to map     +*/
+SCOTCH_Dgraph * const       grafptr,              /*+ Graph to map     +*/
 const SCOTCH_Num            partnbr,              /*+ Number of parts  +*/
 SCOTCH_Strat * const        stratptr,             /*+ Mapping strategy +*/
 SCOTCH_Num * const          termloctab)           /*+ Mapping array    +*/

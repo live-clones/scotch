@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,7 +34,7 @@
 /**   NAME       : dgord.c                                 **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel sparse matrix        **/
 /**                ordering software.                      **/
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 30 apr 2006     **/
 /**                                 to   : 16 jun 2008     **/
 /**                # Version 5.1  : from : 26 oct 2008     **/
-/**                                 to   : 22 nov 2008     **/
+/**                                 to   : 01 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -198,8 +198,8 @@ char *              argv[])
             C_filenametreout = &argv[i][2];
           break;
         case 'V' :
-          fprintf (stderr, "dgord, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2007,2008 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "dgord, version " SCOTCH_VERSION_STRING "\n");
+          fprintf (stderr, "Copyright 2007-2010 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                                /* Output control info */
@@ -262,6 +262,8 @@ char *              argv[])
 #endif /* SCOTCH_DEBUG_ALL */
 
   clockStart (&runtime[1]);
+
+  SCOTCH_dgraphGhst (&grafdat);                   /* Compute it once for good */
 
   SCOTCH_dgraphOrderInit (&grafdat, &ordedat);
   SCOTCH_dgraphOrderCompute (&grafdat, &ordedat, &stradat);

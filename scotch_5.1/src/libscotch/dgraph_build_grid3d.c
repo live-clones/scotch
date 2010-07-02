@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -33,7 +33,8 @@
 /**                                                        **/
 /**   NAME       : dgraph_build_grid3d.c                   **/
 /**                                                        **/
-/**   AUTHOR     : Cedric CHEVALIER                        **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Cedric CHEVALIER (5.0)                  **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the distributed source  **/
 /**                graph building routines for 3D grid     **/
@@ -41,303 +42,440 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 21 jul 2005     **/
 /**                                 to   : 10 sep 2007     **/
+/**                # Version 5.1  : from : 05 jun 2010     **/
+/**                                 to   : 06 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
-#define DGRAPH
+#define DGRAPH_BUILD_GRID3D
 
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
+#include "dgraph_build_grid3d.h"
 
+/**************************************/
+/*                                    */
+/* Vertex neighbor handling routines. */
+/*                                    */
+/**************************************/
 
-typedef struct DgraphBuildGrid3DPoint_ {
-  Gnum x, y, z;
-} DgraphBuildGrid3DPoint;
-
-
-/* #define INTERIOR(x) (((x) < 2)?(0):((x)-2)) */
-#define ORDINAL(x,y,z,height,width) ((x)+(y)*(height)+(z)*(height)*(width))
-
-#ifndef inline
-# define inline static __inline__
-#endif /* inline */
-
-inline Gnum
-dgraphBuildGrid3DNeighbors (DgraphBuildGrid3DPoint * restrict edgecase,
-			    Gnum x, Gnum y, Gnum z, Gnum height, Gnum width, Gnum depth)
-{
-  Gnum edgenbrcase;
-  for (edgenbrcase = 0; edgenbrcase < 6 ; edgenbrcase ++)
-    {
-      edgecase [edgenbrcase].x = x;
-      edgecase [edgenbrcase].y = y;
-      edgecase [edgenbrcase].z = z;
-    }
-  edgenbrcase = 0;
-  /* Fill edge array */
-  if (x > 0)
-    edgecase [edgenbrcase++].x = x-1;
-  if (x < height - 1)
-    edgecase [edgenbrcase++].x = x+1;
-  if (y > 0)
-    edgecase [edgenbrcase++].y = y-1;
-  if (y < width - 1)
-    edgecase [edgenbrcase++].y = y+1;
-  if (z > 0)
-    edgecase [edgenbrcase++].z = z-1;
-  if (z < depth - 1)
-    edgecase [edgenbrcase++].z = z+1;
-
-  return (edgenbrcase);
-}
-
-
-/**
-   @brief
-   This routine builds a distributed grid of the given dimensions.
-
-   @param grafptr  Pointer to the distributed graph to be completed
-   @param height   First dimension of grid
-   @param width    Second dimension of grid
-   @param depth    Third dimension of grid
-   @param baseval  Base value to access different tabs
-
-   @return
-     - 0  : if successfull
-     - !0 : if an error occurs
+/*
+**
 */
 
-int
-dgraphBuildGrid3D (
-Dgraph * restrict const     grafptr,              /* Graph               */
-const Gnum                  baseval,              /* Base value          */
-const Gnum                  rheight,              /* First dimension     */
-const Gnum                  rwidth,               /* Second dimension    */
-const Gnum                  rdepth,               /* Third dimension     */
-const int                   distribute)           /* By slices or random */
+static
+Gnum
+dgraphBuildGrid3Dvertex26M (
+const DgraphBuildGrid3DData * restrict const  dataptr,
+const Gnum                                    vertglbnum,
+Gnum                                          edgelocnum,
+const Gnum                                    posxval,
+const Gnum                                    posyval,
+const Gnum                                    poszval)
 {
-  Gnum                procngbnum;
-  Gnum                vertglbnbr;                 /* Total number of vertices */
-  Gnum                vertlocnbr;                 /* Number of local vertices */
-  Gnum                vertlocnnd;
-  Gnum                vertlocnum;                 /* Index of current local vertex (based) */
-  Gnum *              vertloctnd;                 /* End of local vertex array             */
-  Gnum *              vertloctax;                 /* Array of vertices                     */
-  Gnum *              vertlocptr;                 /* Current vertices                      */
-  Gnum *              vlblloctax;                 /* Array of labels                       */
-  Gnum *              vlbllocptr;                 /* Pointer to the current label          */
-  Gnum                edgeglbnbr;
-  Gnum                edgelocnbr;
-  Gnum *              edgeloctax;
-  Gnum *              edgelocptr;
-  Gnum                edgelocnum;
-  Gnum *              edloloctax;
-  Gnum *              edlolocptr;
-  Gnum                slicewidth;
-  Gnum                sliceoffset;                /* Beginning of the slice                */
-  Gnum                height, width, depth;       /* We must have height >= width>= depth  */
-  Gnum                swap;
+  Gnum                ngbxmin;
+  Gnum                ngbxmax;
+  Gnum                ngbxval;
+  Gnum                ngbymin;
+  Gnum                ngbymax;
+  Gnum                ngbyval;
+  Gnum                ngbzmin;
+  Gnum                ngbzmax;
+  Gnum                ngbzval;
 
-  if ((rwidth < 1) || (rheight < 1) || (rdepth < 1)) /* At least one vertex */
-    return (1);
+  ngbxmin = (posxval > 0) ? -1 : 0;
+  ngbymin = (posyval > 0) ? -1 : 0;
+  ngbzmin = (poszval > 0) ? -1 : 0;
+  ngbxmax = (posxval < (dataptr->dimxval - 1)) ? 1 : 0;
+  ngbymax = (posyval < (dataptr->dimyval - 1)) ? 1 : 0;
+  ngbzmax = (poszval < (dataptr->dimzval - 1)) ? 1 : 0;
 
-  width  = rwidth;
-  height = rheight;
-  depth  = rdepth;
-
-  if (height < width) {
-    swap  = height;
-    height = width;
-    width  = swap;
-  }
-  if (height < depth) {
-    swap   = height;
-    height = depth;
-    depth  = swap;
-  }
-  if (width < depth) {
-    swap  = width;
-    width = depth;
-    depth = swap;
-  }
-
-  vertglbnbr  = width * height * depth;
-  edgeglbnbr  = width * height * depth * 6;       /* Vertices which have 6 neighbors, thus they are in the box                          */
-  edgeglbnbr -= 2 * (width * height + width * depth + height * depth);  /* Vertices which have only 5 neighbors, on the side of the box */
-
-  if (edgeglbnbr > 6 * vertglbnbr) {
-    errorPrint ("dgraphBuildGrid3D: internal error (1)");
-    return     (1);
-  }
-
-  vertlocnum  =
-  vertlocnbr  =
-  edgelocnbr  =
-  slicewidth  =
-  sliceoffset = 0;
-  if ((distribute == DGRAPHBUILDRANDOM) || (height < grafptr->procglbnbr)) {
-    vertlocnbr = DATASIZE (vertglbnbr, grafptr->procglbnbr, grafptr->proclocnum);
-    if ((grafptr->procglbnbr & 1) == 0) {         /* If even number of processes */
-      /* Add ghost vertices to number of local vertices */
-      if (grafptr->proclocnum < (grafptr->procglbnbr / 2))
-        vertlocnbr += (grafptr->proclocnum - (grafptr->procglbnbr / 2));
-      else
-        vertlocnbr += (grafptr->proclocnum - (grafptr->procglbnbr / 2) + 1);
-
-      for (procngbnum = 0, vertlocnum = 0; procngbnum < grafptr->proclocnum; procngbnum ++) { /* Compute index of first local vertex */
-        vertlocnum += DATASIZE (vertglbnbr, grafptr->procglbnbr, procngbnum);
-        if (procngbnum < (grafptr->procglbnbr / 2))
-          vertlocnum += (procngbnum - (grafptr->procglbnbr / 2));
-        else
-          vertlocnum += (procngbnum - (grafptr->procglbnbr / 2) + 1);
-      }
-    }
-    else {                                          /* Odd number of processes */
-      vertlocnbr += (Gnum) (grafptr->proclocnum - (grafptr->procglbnbr / 2)); /* Add ghost vertices to number of local vertices */
-
-      for (procngbnum = 0, vertlocnum = 0; procngbnum < grafptr->proclocnum; procngbnum ++) /* Compute index of first local vertex */
-        vertlocnum += DATASIZE (vertglbnbr, grafptr->procglbnbr, procngbnum) + (procngbnum - (int) (grafptr->procglbnbr / 2));
-    }
-
-    edgelocnbr = vertlocnbr * 6;                  /* Upper bound */
-  }
-  else if (distribute == DGRAPHBUILDSLICES) {
-    slicewidth  = height / grafptr->procglbnbr;
-    sliceoffset = slicewidth * (grafptr->proclocnum);
-
-    if (grafptr->proclocnum == grafptr->procglbnbr - 1) /* If last process */
-      slicewidth += height - grafptr->procglbnbr * slicewidth;
-
-    vertlocnbr  = slicewidth * width * depth;     /* Vertices which have 6 neighbors, thus they are in the box */
-    edgelocnbr  = width * slicewidth * depth * 6;
-    edgelocnbr -= 2 * (width * slicewidth + depth * slicewidth);
-
-    if (grafptr->proclocnum == 0)
-      edgelocnbr -= width * depth;
-    if (grafptr->proclocnum == grafptr->procglbnbr - 1)
-      edgelocnbr -= width * depth;
-  }
-#ifdef SCOTCH_DEBUG_DGRAPH2
-  else {
-    errorPrint ("dgraphBuildGrid3D: invalid parameter");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-
-  vertlocnnd = vertlocnbr + baseval;
-
-  if (memAllocGroup ((void **) (void *)
-                     &vertloctax, (size_t) ((vertlocnbr + 1) * sizeof (Gnum)), /* +1 to indicate end of array */
-                     &vlblloctax, (size_t) (vertlocnbr       * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint ("dgraphBuildGrid3D: out of memory (1)");
-    return     (1);
-  }
-  if (memAllocGroup ((void **) (void *)
-                     &edgeloctax, (size_t) (edgelocnbr * sizeof (Gnum)),
-                     &edloloctax, (size_t) (edgelocnbr * sizeof (Gnum)), NULL) == NULL) {
-    memFree (vertloctax);
-    errorPrint ("dgraphBuildGrid3D: out of memory (2)");
-    return     (1);
-  }
-
-  vertloctax -= baseval;
-  vlblloctax -= baseval;
-  edgeloctax -= baseval;
-  edloloctax -= baseval;
-
-  edgelocnum = baseval;
-  vertlocptr = vertloctax + baseval;
-  vertloctnd = vertlocptr + vertlocnbr;
-  vlbllocptr = vlblloctax + baseval;
-  edgelocptr = edgeloctax + baseval;
-  edlolocptr = edloloctax + baseval;
-  if ((distribute == DGRAPHBUILDRANDOM) || (height < grafptr->procglbnbr)) {
-    Gnum                x;
-    Gnum                y;
-    Gnum                z;
-
-    for ( ; vertlocptr < vertloctnd; vertlocptr ++, vertlocnum ++, vlbllocptr ++) {
-      DgraphBuildGrid3DPoint  edgecase[6];
-      Gnum                    edgenbrcase;
-
-      *vlbllocptr = ((vertlocnum * COARHASHPRIME) % vertglbnbr) + baseval; /* Hash vertices */
-      *vertlocptr = edgelocnum;
-
-      z = *vlbllocptr / (height*width);           /* Fill edge array */
-      y = (*vlbllocptr % (height*width)) / height;
-      x = (*vlbllocptr % (height*width)) % height;
-
-      edgenbrcase = dgraphBuildGrid3DNeighbors (edgecase, x, y, z, height, width, depth);
-      edgelocnum += edgenbrcase;
-      edgenbrcase --;
-
-      for ( ; edgenbrcase >= 0; edgenbrcase --, edgelocptr ++, edlolocptr ++) {
-        *edgelocptr = ORDINAL (edgecase [edgenbrcase].x, edgecase [edgenbrcase].y,
-                               edgecase [edgenbrcase].z, height, width ) + baseval;
-        *edlolocptr = ((*vlbllocptr + *edgelocptr) % 16) + 1; /* Pseudo random weight (1 to 16) */
+  for (ngbzval = ngbzmin; ngbzval <= ngbzmax; ngbzval ++) {
+    for (ngbyval = ngbymin; ngbyval <= ngbymax; ngbyval ++) {
+      for (ngbxval = ngbxmin; ngbxval <= ngbxmax; ngbxval ++) {
+        if ((ngbxval | ngbyval | ngbzval) != 0)   /* If not loop edge */
+          DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++,
+                                (posxval + dataptr->dimxval + ngbxval) % dataptr->dimxval,
+                                (posyval + dataptr->dimyval + ngbyval) % dataptr->dimyval,
+                                (poszval + dataptr->dimzval + ngbzval) % dataptr->dimzval);
       }
     }
   }
-  else if (distribute == DGRAPHBUILDSLICES) {
-    Gnum                x;
-    Gnum                y;
-    Gnum                z;
 
-    for (z = 0; z < depth ; z ++) {
-      for (y = 0 ; y < width; ++ y) {
-        for (x = sliceoffset; x < sliceoffset + slicewidth;
-             x ++, vertlocptr ++, vertlocnum ++, vlbllocptr ++) {
-          DgraphBuildGrid3DPoint  edgecase[6];
-          Gnum                    edgenbrcase;
+  return (edgelocnum);
+}
 
-          *vlbllocptr = ORDINAL (x, y, z, height, width) + baseval;
-          *vertlocptr = edgelocnum;
+/*
+**
+*/
 
-#ifdef SCOTCH_DEBUG_DGRAPH2
-          if (vertlocptr > vertloctnd) {
-            errorPrint ("dgraphBuildGrid3D: internal error (2)");
-            memFree    (vertloctax + baseval);           /* Free memory group leader */
-            return     (1);
-          }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
+static
+Gnum
+dgraphBuildGrid3Dvertex26T (
+const DgraphBuildGrid3DData * restrict const  dataptr,
+const Gnum                                    vertglbnum,
+Gnum                                          edgelocnum,
+const Gnum                                    posxval,
+const Gnum                                    posyval,
+const Gnum                                    poszval)
+{
+  Gnum                ngbxmin;
+  Gnum                ngbxmax;
+  Gnum                ngbxval;
+  Gnum                ngbymin;
+  Gnum                ngbymax;
+  Gnum                ngbyval;
+  Gnum                ngbzmin;
+  Gnum                ngbzmax;
+  Gnum                ngbzval;
 
-          edgenbrcase = dgraphBuildGrid3DNeighbors (edgecase, x, y, z, height, width, depth);
+  ngbxmin = dataptr->t26.ngbxmin;
+  ngbxmax = dataptr->t26.ngbxmax;
+  ngbymin = dataptr->t26.ngbymin;
+  ngbymax = dataptr->t26.ngbymax;
+  ngbzmin = dataptr->t26.ngbzmin;
+  ngbzmax = dataptr->t26.ngbzmax;
 
-          edgelocnum += edgenbrcase;
-          edgenbrcase --;
+  for (ngbzval = ngbzmin; ngbzval <= ngbzmax; ngbzval ++) {
+    for (ngbyval = ngbymin; ngbyval <= ngbymax; ngbyval ++) {
+      for (ngbxval = ngbxmin; ngbxval <= ngbxmax; ngbxval ++) {
+        Gnum                vertglbend;
 
-          for (; edgenbrcase >= 0; edgenbrcase --, edgelocptr ++, edlolocptr ++) {
-            *edgelocptr = ORDINAL (edgecase [edgenbrcase].x, edgecase [edgenbrcase].y,
-                                   edgecase [edgenbrcase].z, height, width ) + baseval;
-            *edlolocptr = ((*vlbllocptr + *edgelocptr) % 16) + 1; /* Pseudo random weight (1 to 16) */
-          }
+        vertglbend = (((poszval + ngbzval) % dataptr->dimzval)  * dataptr->dimyval +
+                      ((posyval + ngbyval) % dataptr->dimyval)) * dataptr->dimxval +
+                      ((posxval + ngbxval) % dataptr->dimxval)  + dataptr->baseval;
+        if (vertglbend != vertglbnum) {           /* If not loop edge */
+          if (dataptr->edloloctax != NULL)
+            dataptr->edloloctax[edgelocnum] = ((vertglbend + vertglbnum) % 16) + 1;
+          dataptr->edgeloctax[edgelocnum ++] = vertglbend;
         }
       }
     }
   }
-  *vertlocptr = edgelocnum;                       /* Mark end of local vertex array */
-  edgelocnbr  = edgelocnum - baseval;
 
-#ifdef SCOTCH_DEBUG_DGRAPH2
-  if (edgelocnum != edgelocnbr + baseval) {
-    errorPrint ("dgraphBuildGrid3D: internal error (3)");
-    memFree    (vertloctax + baseval);            /* Free memory group leader */
+  return (edgelocnum);
+}
+
+/*
+**
+*/
+
+static
+Gnum
+dgraphBuildGrid3Dvertex6M (
+const DgraphBuildGrid3DData * restrict const  dataptr,
+const Gnum                                    vertglbnum,
+Gnum                                          edgelocnum,
+const Gnum                                    posxval,
+const Gnum                                    posyval,
+const Gnum                                    poszval)
+{
+  Gnum                ngbxval;
+  Gnum                ngbyval;
+  Gnum                ngbzval;
+
+  ngbxval = posxval - 1;
+  if (ngbxval >= 0)
+    DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, ngbxval, posyval, poszval);
+  ngbxval = posxval + 1;
+  if (ngbxval < dataptr->dimxval)
+    DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, ngbxval, posyval, poszval);
+
+  ngbyval = posyval - 1;
+  if (ngbyval >= 0)
+    DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, posxval, ngbyval, poszval);
+  ngbyval = posyval + 1;
+  if (ngbyval < dataptr->dimyval)
+    DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, posxval, ngbyval, poszval);
+
+  ngbzval = poszval - 1;
+  if (ngbzval >= 0)
+    DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, posxval, posyval, ngbzval);
+  ngbzval = poszval + 1;
+  if (ngbzval < dataptr->dimzval)
+    DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, posxval, posyval, ngbzval);
+
+  return (edgelocnum);
+}
+
+/*
+**
+*/
+
+static
+Gnum
+dgraphBuildGrid3Dvertex6T (
+const DgraphBuildGrid3DData * restrict const  dataptr,
+const Gnum                                    vertglbnum,
+Gnum                                          edgelocnum,
+const Gnum                                    posxval,
+const Gnum                                    posyval,
+const Gnum                                    poszval)
+{
+  Gnum                ngbxval;
+  Gnum                ngbyval;
+  Gnum                ngbzval;
+
+  if (dataptr->dimxval > 1) {
+    ngbxval = (posxval + 1) % dataptr->dimxval;
+    DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, ngbxval, posyval, poszval);
+    if (dataptr->dimxval > 2) {
+      ngbxval = (posxval + dataptr->dimxval - 1) % dataptr->dimxval;
+      DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, ngbxval, posyval, poszval);
+    }
+  }
+
+  if (dataptr->dimyval > 1) {
+    ngbyval = (posyval + 1) % dataptr->dimyval;
+    DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, posxval, ngbyval, poszval);
+    if (dataptr->dimyval > 2) {
+      ngbyval = (posyval + dataptr->dimyval - 1) % dataptr->dimyval;
+      DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, posxval, ngbyval, poszval);
+    }
+  }
+
+  if (dataptr->dimzval > 1) {
+    ngbzval = (poszval + 1) % dataptr->dimzval;
+    DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, posxval, posyval, ngbzval);
+    if (dataptr->dimzval > 2) {
+      ngbzval = (poszval + dataptr->dimzval - 1) % dataptr->dimzval;
+      DGRAPHBUILDGRID3DNGB (dataptr, vertglbnum, edgelocnum ++, posxval, posyval, ngbzval);
+    }
+  }
+
+  return (edgelocnum);
+}
+
+/*******************************************/
+/*                                         */
+/* The distributed graph building routine. */
+/*                                         */
+/*******************************************/
+
+/* This routine builds a distrbuted grid graph
+** of the given dimensions.
+** hashval is the increment between two vertex
+** indices (1 for sliced meshes).
+** flagval is a combilation of:
+** - 1  : 26-neighbor mesh (default: 6-neighbor mesh).
+** - 2  : torus (default: mesh)
+** - 4  : weighted vertices (default: no weights).
+** - 8  : weighted edges (default: no weights).
+** It returns:
+** - 0   : graph created.
+** - !0  : on error.
+*/
+
+int
+dgraphBuildGrid3D (
+Dgraph * restrict const     grafptr,              /* Graph            */
+const Gnum                  baseval,              /* Base value       */
+const Gnum                  dimxval,              /* First dimension  */
+const Gnum                  dimyval,              /* Second dimension */
+const Gnum                  dimzval,              /* Third dimension  */
+const Gnum                  incrval,              /* Increment step   */
+const int                   flagval)              /* Grid type        */
+{
+  DgraphBuildGrid3DData datadat;                  /* Data structure for creating vertices   */
+  Gnum                  proclocadj;               /* Number of processes with most vertices */
+  Gnum                  vertglbmin;               /* Minimum global index of local vertices */
+  Gnum                  vertglbnbr;
+  Gnum                  vertlocnbr;
+  Gnum                  vertlocnnd;
+  Gnum                  vertlocnum;
+  Gnum *                vertloctax;
+  Gnum                  velolocsiz;
+  Gnum                  velolocsum;
+  Gnum *                veloloctax;
+  Gnum *                vlblloctax;
+  Gnum                  vlbllocsiz;
+  Gnum                  edgelocsiz;
+  Gnum                  edgelocnum;
+  Gnum *                edgeloctab;
+  Gnum                  edlolocsiz;
+  Gnum *                edloloctab;
+  Gnum                  degrglbmax;
+
+#ifdef SCOTCH_DEBUG_DGRAPH1
+  if ((dimxval < 1) || (dimyval < 1) || (dimzval < 1)) { /* At least one vertex */
+    errorPrint ("dgraphBuildGrid3D: invalid parameters (1)");
     return     (1);
   }
+  if (incrval < 1) {
+    errorPrint ("dgraphBuildGrid3D: invalid parameters (2)");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_DGRAPH1 */
+
+  vertglbnbr = dimxval * dimyval * dimzval;
+  vertlocnbr = DATASIZE (vertglbnbr, grafptr->procglbnbr, grafptr->proclocnum);
+
+  if ((flagval & 1) != 0) {                       /* If 26-neighbor mesh */
+    degrglbmax = 26;
+    if ((flagval & 2) != 0) {                     /* If torus graph */
+      datadat.t26.ngbxmin = (dimxval > 1) ? (dimxval - 1) : dimxval; /* Avoid loop edges */
+      datadat.t26.ngbxmax = (dimxval > 2) ? (dimxval + 1) : dimxval;
+      datadat.t26.ngbymin = (dimyval > 1) ? (dimyval - 1) : dimyval;
+      datadat.t26.ngbymax = (dimyval > 2) ? (dimyval + 1) : dimyval;
+      datadat.t26.ngbzmin = (dimzval > 1) ? (dimzval - 1) : dimzval;
+      datadat.t26.ngbzmax = (dimzval > 2) ? (dimzval + 1) : dimzval;
+
+      datadat.funcvrtptr = dgraphBuildGrid3Dvertex26T;
+    }
+    else
+      datadat.funcvrtptr = dgraphBuildGrid3Dvertex26M;
+  }
+  else {                                          /* If 6-neighbor mesh */
+    degrglbmax = 6;
+    datadat.funcvrtptr = ((flagval & 2) != 0) ? dgraphBuildGrid3Dvertex6T : dgraphBuildGrid3Dvertex6M;
+  }
+  edgelocsiz  = vertlocnbr * degrglbmax;          /* (Possibly upper bound on) number of edges */
+  vlbllocsiz  = (incrval != 1) ? vertlocnbr : 0;  /* If no hashing, no need for vertex labels  */
+  velolocsiz  = ((flagval & 4) != 0) ? vertlocnbr : 0;
+  edlolocsiz  = ((flagval & 8) != 0) ? edgelocsiz : 0;
+
+  if (memAllocGroup ((void **) (void *)
+                     &vertloctax, (size_t) ((vertlocnbr + 1) * sizeof (Gnum)), /* +1 to indicate end of array */
+                     &veloloctax, (size_t) (velolocsiz       * sizeof (Gnum)),
+                     &vlblloctax, (size_t) (vlbllocsiz       * sizeof (Gnum)), NULL) == NULL) {
+    errorPrint ("dgraphBuildGrid3D: out of memory (1)");
+    return     (1);
+  }
+  if (memAllocGroup ((void **) (void *)
+                     &edgeloctab, (size_t) (edgelocsiz * sizeof (Gnum)),
+                     &edloloctab, (size_t) (edlolocsiz * sizeof (Gnum)), NULL) == NULL) {
+    memFree    (vertloctax);
+    errorPrint ("dgraphBuildGrid3D: out of memory (2)");
+    return     (1);
+  }
+
+  datadat.baseval = baseval;
+  datadat.dimxval = dimxval;
+  datadat.dimyval = dimyval;
+  datadat.dimzval = dimzval;
+  datadat.edgeloctax = edgeloctab - baseval;
+  datadat.edloloctax = ((flagval & 8) != 0) ? (edloloctab - baseval) : NULL;
+  vertloctax = vertloctax - baseval;
+  veloloctax = ((flagval & 4) != 0) ? (veloloctax - baseval) : NULL;
+  vlblloctax = (incrval != 1) ? (vlblloctax - baseval) : NULL;
+
+  proclocadj = vertglbnbr % grafptr->procglbnbr;  /* Number of processes with +1 number of vertices */
+  vertglbmin = (vertglbnbr / grafptr->procglbnbr) * grafptr->proclocnum + MIN (grafptr->proclocnum, proclocadj);
+
+  edgelocnum =
+  vertlocnum = baseval;
+  vertlocnnd = baseval + vertlocnbr;
+  velolocsum = (veloloctax == NULL) ? vertlocnbr : 0;
+  if (incrval != 1) {                             /* If strided or pseudo-randomly distributed mesh   */
+    Gnum                vertglbidx;               /* Un-based global index of current vertex          */
+    Gnum                rondlocnbr;               /* Number of already completed rounds of increments */
+    Gnum                a;
+    Gnum                b;
+
+    a = (vertglbnbr > incrval) ? vertglbnbr : incrval; /* Get biggest of the two */
+    b = (vertglbnbr + incrval) - a;               /* Get smallest of the two     */
+    do {
+      Gnum                t;
+
+      t = a % b;
+      if (t == 0)
+        break;
+      a = b;
+      b = t;
+    } while (b > 1);                              /* Compute GCD of vertglbnbr and incrval in b */
+
+    rondlocnbr = (vertglbmin * b) / vertglbnbr;
+    vertglbidx = (vertglbmin * incrval + rondlocnbr) % vertglbnbr; /* Compute skewed index, with rounds */
+
+    for ( ; vertlocnum < vertlocnnd; vertlocnum ++) {
+      Gnum                vertglbnum;
+      Gnum                positmp;
+      Gnum                posxval;
+      Gnum                posyval;
+      Gnum                poszval;
+
+      poszval = vertglbidx / (dimxval * dimyval);
+      positmp = vertglbidx % (dimxval * dimyval);
+      posyval = positmp / dimxval;
+      posxval = positmp % dimxval;
+
+      vertglbnum = vertglbidx + baseval;
+      vertloctax[vertlocnum] = edgelocnum;
+      vlblloctax[vertlocnum] = vertglbnum;
+      if (veloloctax != NULL) {
+        velolocsum +=
+        veloloctax[vertlocnum] = (vertglbnum % 16) + 1;
+      }
+      edgelocnum = datadat.funcvrtptr (&datadat, vertglbnum, edgelocnum, posxval, posyval, poszval);
+#ifdef SCOTCH_DEBUG_DGRAPH2
+      if (edgelocnum > (edgelocsiz + baseval)) {
+        errorPrint ("dgraphBuildGrid3D: internal error (1)");
+        return     (1);
+      }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  if (dgraphBuild2 (grafptr, baseval,             /* Build the distributed graph */
-                    vertlocnbr, vertlocnbr, vertloctax, vertloctax + 1, NULL, vertlocnbr, NULL, vlblloctax,
-                    edgelocnbr, edgelocnbr, edgeloctax, NULL, edloloctax, 6) != 0) {
-    memFree (edgeloctax + baseval);               /* Free memory group leaders */
+      vertglbidx = (vertglbidx + incrval) % vertglbnbr; /* Add increment to global index        */
+      if (vertglbidx == rondlocnbr) {             /* If we looped back to the current beginning */
+        rondlocnbr ++;                            /* Start a new round of increments            */
+        vertglbidx = rondlocnbr;
+      }
+    }
+  }
+  else {                                          /* Regularly sliced mesh      */
+    Gnum                vertglbnum;               /* Based global vertex number */
+    Gnum                positmp;
+    Gnum                posxval;
+    Gnum                posyval;
+    Gnum                poszval;
+
+    poszval = vertglbmin / (dimxval * dimyval);
+    positmp = vertglbmin % (dimxval * dimyval);
+    posyval = positmp / dimxval;
+    posxval = positmp % dimxval;
+
+    for (vertglbnum = vertglbmin + baseval; vertlocnum < vertlocnnd; vertlocnum ++, vertglbnum ++) {
+      vertloctax[vertlocnum] = edgelocnum;
+      if (veloloctax != NULL) {
+        velolocsum +=
+        veloloctax[vertlocnum] = (vertglbnum % 16) + 1;
+      }
+
+      edgelocnum = datadat.funcvrtptr (&datadat, vertglbnum, edgelocnum, posxval, posyval, poszval);
+#ifdef SCOTCH_DEBUG_DGRAPH2
+      if (edgelocnum > (edgelocsiz + baseval)) {
+        errorPrint ("dgraphBuildGrid3D: internal error (2)");
+        return     (1);
+      }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+
+      if (++ posxval >= dimxval) {
+        posxval = 0;
+        if (++ posyval >= dimyval) {
+          posyval = 0;
+          poszval ++;
+#ifdef SCOTCH_DEBUG_DGRAPH2
+          if ((poszval >= dimzval) &&
+              (vertglbnum < (vertglbnbr + baseval - 1))){
+            errorPrint ("dgraphBuildGrid3D: internal error (X)");
+            return     (1);
+          }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+        }
+      }
+    }
+  }
+  vertloctax[vertlocnum] = edgelocnum;            /* Mark end of local vertex array */
+
+  grafptr->flagval = (DGRAPHFREETABS | DGRAPHVERTGROUP | DGRAPHEDGEGROUP); /* All arrays will be freed on exit */
+
+  if (dgraphBuild2 (grafptr, baseval,             /* Build distributed graph */
+                    vertlocnbr, vertlocnbr, vertloctax, vertloctax + 1, veloloctax, velolocsum, NULL, vlblloctax,
+                    edgelocnum - baseval, edgelocsiz, datadat.edgeloctax, NULL, datadat.edloloctax, degrglbmax) != 0) {
+    memFree (datadat.edgeloctax + baseval);       /* Free memory group leaders */
     memFree (vertloctax + baseval);
     return  (1);
   }
-  grafptr->vnumloctax = grafptr->vlblloctax;      /* No labels, but vertex indices after redistribution */
-  grafptr->vlblloctax = NULL;
-
-  grafptr->flagval |= (DGRAPHFREETABS | DGRAPHVERTGROUP | DGRAPHEDGEGROUP); /* Arrays created by the routine itself */
 
   return (0);
 }
