@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 0.0  : from : 22 aug 1998     **/
 /**                                 to     01 may 1999     **/
 /**                # Version 2.0  : from : 25 oct 2003     **/
-/**                                 to     22 apr 2004     **/
+/**                                 to     02 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,17 +87,17 @@ int                         orderGrid3          (Order * const ordeptr, const IN
 int                         orderGrid3C         (Order * const ordeptr, const INT xnbr, const INT ynbr, const INT znbr, const INT baseval, const INT xlim, const INT ylim, const INT zlim);
 
 #ifdef GRAPH_H
-int                         orderGraph          (Order * restrict const ordeptr, const Graph * restrict const grafptr);
-int                         orderGraphList      (Order * restrict const ordeptr, const Graph * restrict const grafptr, const INT listnbr, const INT * restrict const listtab);
-int                         orderGraphStrat     (Order * restrict const ordeptr, const Graph * restrict const grafptr, const char * restrict const);
-int                         orderGraphListStrat (Order * restrict const ordeptr, const Graph * restrict const grafptr, const INT listnbr, const INT * restrict const listtab, const char * const);
+int                         orderGraph          (Order * restrict const ordeptr, Graph * restrict const grafptr);
+int                         orderGraphList      (Order * restrict const ordeptr, Graph * restrict const grafptr, const INT listnbr, const INT * restrict const listtab);
+int                         orderGraphStrat     (Order * restrict const ordeptr, Graph * restrict const grafptr, const char * restrict const);
+int                         orderGraphListStrat (Order * restrict const ordeptr, Graph * restrict const grafptr, const INT listnbr, const INT * restrict const listtab, const char * const);
 #endif /* GRAPH_H */
 
 #ifdef MESH_H
-int                         orderMesh           (Order * restrict const ordeptr, const Mesh * restrict const meshptr);
-int                         orderMeshList       (Order * restrict const ordeptr, const Mesh * restrict const meshptr, const INT listnbr, const INT * restrict const listtab);
-int                         orderMeshStrat      (Order * restrict const ordeptr, const Mesh * restrict const meshptr, const char * const);
-int                         orderMeshListStrat  (Order * restrict const ordeptr, const Mesh * restrict const meshptr, const INT listnbr, const INT * restrict const listtab, const char * const);
+int                         orderMesh           (Order * restrict const ordeptr, Mesh * restrict const meshptr);
+int                         orderMeshList       (Order * restrict const ordeptr, Mesh * restrict const meshptr, const INT listnbr, const INT * restrict const listtab);
+int                         orderMeshStrat      (Order * restrict const ordeptr, Mesh * restrict const meshptr, const char * const);
+int                         orderMeshListStrat  (Order * restrict const ordeptr, Mesh * restrict const meshptr, const INT listnbr, const INT * restrict const listtab, const char * const);
 #endif /* MESH_H */
 
 #undef static

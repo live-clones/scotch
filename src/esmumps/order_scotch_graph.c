@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 08 feb 2008     **/
 /**                                 to     01 jun 2008     **/
 /**                # Version 5.1  : from : 22 jan 2009     **/
-/**                                 to     22 jan 2009     **/
+/**                                 to     02 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,8 +85,8 @@
 
 int
 orderGraph (
-Order * restrict const        ordeptr,            /*+ Ordering to compute   +*/
-const Graph * restrict const  grafptr)            /*+ Graph matrix to order +*/
+Order * restrict const      ordeptr,              /*+ Ordering to compute   +*/
+Graph * restrict const      grafptr)              /*+ Graph matrix to order +*/
 {
   INT                 vertnbr;
 
@@ -105,10 +105,10 @@ const Graph * restrict const  grafptr)            /*+ Graph matrix to order +*/
 
 int
 orderGraphList (
-Order * restrict const        ordeptr,            /*+ Ordering to compute        +*/
-const Graph * restrict const  grafptr,            /*+ Graph matrix to order      +*/
-const INT                     listnbr,            /*+ Number of vertices in list +*/
-const INT * restrict const    listtab)              /*+ Vertex list array          +*/
+Order * restrict const      ordeptr,              /*+ Ordering to compute        +*/
+Graph * restrict const      grafptr,              /*+ Graph matrix to order      +*/
+const INT                   listnbr,              /*+ Number of vertices in list +*/
+const INT * restrict const  listtab)              /*+ Vertex list array          +*/
 {
   return (orderGraphListStrat (ordeptr, grafptr, listnbr, listtab,
                                "c{rat=0.7,cpr=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}};,ole=f{cmin=0,cmax=100000,frat=0.0},ose=g},unc=n{sep=/(vert>120)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}"));
@@ -124,9 +124,9 @@ const INT * restrict const    listtab)              /*+ Vertex list array       
 
 int
 orderGraphStrat (
-Order * restrict const        ordeptr,            /*+ Ordering to compute   +*/
-const Graph * restrict const  grafptr,            /*+ Graph matrix to order +*/
-const char * restrict const   stratptr)           /*+ Ordering strategy     +*/
+Order * restrict const      ordeptr,              /*+ Ordering to compute   +*/
+Graph * restrict const      grafptr,              /*+ Graph matrix to order +*/
+const char * restrict const stratptr)             /*+ Ordering strategy     +*/
 {
   INT                 vertnbr;
 
@@ -145,11 +145,11 @@ const char * restrict const   stratptr)           /*+ Ordering strategy     +*/
 
 int
 orderGraphListStrat (
-Order * restrict const        ordeptr,            /*+ Ordering to compute        +*/
-const Graph * restrict const  grafptr,            /*+ Graph matrix to order      +*/
-const INT                     listnbr,            /*+ Number of vertices in list +*/
-const INT * restrict const    listtab,            /*+ Vertex list array          +*/
-const char * restrict const   stratptr)           /*+ Ordering strategy          +*/
+Order * restrict const      ordeptr,              /*+ Ordering to compute        +*/
+Graph * restrict const      grafptr,              /*+ Graph matrix to order      +*/
+const INT                   listnbr,              /*+ Number of vertices in list +*/
+const INT * restrict const  listtab,              /*+ Vertex list array          +*/
+const char * restrict const stratptr)             /*+ Ordering strategy          +*/
 {
   SCOTCH_Strat        scotstrat;                  /* Scotch ordering strategy */
   INT                 baseval;

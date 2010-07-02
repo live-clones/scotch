@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : arch_build.c                            **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Sebastien FOURESTIER                    **/
 /**                                                        **/
 /**   FUNCTION   : This module builds a decomposition-     **/
 /**                based architecture from a source graph. **/
@@ -49,7 +50,7 @@
 /**                # Version 5.0  : from : 10 sep 2007     **/
 /**                                 to     03 apr 2008     **/
 /**                # Version 5.1  : from : 28 sep 2008     **/
-/**                                 to     28 sep 2008     **/
+/**                                 to     01 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -136,6 +137,8 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
   ArchBuildJob *                joborgptr;        /* Pointer to original job and first subjob */
   ArchBuildJob *                jobsubptr;        /* Pointer to second subjob                 */
   Bgraph                        actgrafdat;       /* Active graph for bipartitioning          */
+  Gnum                          invedlosiz;       /* Size of inversed edge load array         */
+  Gnum * restrict               invedlotax;       /* Inversed edge load array for cutting     */
   Gnum * restrict               actfrontab;       /* Frontier array for all bipartitionings   */
   GraphPart * restrict          actparttax;       /* Part array for all bipartitionings       */
   GraphPart                     actpartval;       /* Part value to put to subjob              */
@@ -149,10 +152,12 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
   if (termdomnbr == 0)                            /* If nothing to do */
     return (0);
 
+  invedlosiz = (tgtgrafptr->edlotax != NULL) ? tgtgrafptr->edgenbr : 0;
   if ((memAllocGroup ((void **) (void *)
                       &jobtab,     (size_t) (termdomnbr * sizeof (ArchBuildJob)),
                       &actfrontab, (size_t) (termdomnbr * sizeof (Gnum)),
-                      &actparttax, (size_t) (termdomnbr * sizeof (GraphPart)), NULL) == NULL) ||
+                      &actparttax, (size_t) (termdomnbr * sizeof (GraphPart)),
+                      &invedlotax, (size_t) (invedlosiz * sizeof (Gnum)), NULL) == NULL) ||
       ((mapdat.parttax = memAlloc (termdomnbr * sizeof (ArchDomNum))) == NULL) ||
       ((mapdat.domntab = memAlloc (termdomnbr * sizeof (ArchDom)))    == NULL)) {
     errorPrint ("archBuild: out of memory (1)");
@@ -185,6 +190,55 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
     jobtab[0].grafdat.flagval &= ~GRAPHFREETABS;  /* Graph is a clone                     */
   }
 
+  if (tgtgrafptr->edlotax != NULL) {              /* If architecture graph has edge loads */
+    const Gnum * restrict indedlotax;
+    Gnum                  edlomin;
+    Gnum                  edlomax;
+    Gnum                  edgennd;
+    Gnum                  edgenum;
+    float                 prodval;
+
+    invedlotax -= tgtgrafptr->baseval;            /* Base inversed edge load array                 */
+    indedlotax  = jobtab[0].grafdat.edlotax;      /* Point to possibly induced original edge array */
+
+    edlomin = GNUMMAX;
+    edlomax = 1;
+    for (edgenum = tgtgrafptr->baseval, edgennd = edgenum + jobtab[0].grafdat.edgenbr; /* Get extremal values */
+         edgenum < edgennd; edgenum ++) {
+      Gnum                edloval;
+
+      edloval = indedlotax[edgenum];
+      if (edloval < edlomin)
+        edlomin = edloval;
+      if (edloval > edlomax)
+        edlomax = edloval;
+    }
+
+    prodval = (float) edlomin * (float) edlomax;
+
+    for (edgenum = tgtgrafptr->baseval; edgenum < edgennd; edgenum ++) {
+      Gnum                edloval;
+
+      edloval = indedlotax[edgenum];
+      if (edloval == edlomin)
+        edloval = edlomax;
+      else if (edloval == edlomax)
+        edloval = edlomin;
+      else {
+        edloval = (Gnum) (prodval / (float) edloval + 0.49F);
+      }
+#ifdef SCOTCH_DEBUG_ARCH2
+      if ((edloval < edlomin) || (edloval > edlomax)) {
+        errorPrint ("archBuild: internal error (1)");
+        return     (1);
+      }
+#endif /* SCOTCH_DEBUG_ARCH2 */
+      invedlotax[edgenum] = edloval;              /* Write inversed cost in working array */
+    }
+
+    jobtab[0].grafdat.edlotax = invedlotax;       /* Replace potentially induced edge array with inversed one */
+  }                                               /* Edge array will be freed along with jobtab group leader  */
+
   mapparttax = mapdat.parttax;
 
   actgrafdat.veextax = NULL;                      /* No external gain array      */
@@ -204,7 +258,7 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
     actgrafdat.s.flagval = joborgptr->grafdat.flagval & ~GRAPHFREETABS;
     bgraphInit2 (&actgrafdat, 1, 1, 1);           /* Create active graph         */
     if (bgraphBipartSt (&actgrafdat, mapstrat) != 0) { /* Perform bipartitioning */
-      errorPrint       ("archBuild: internal error (1)");
+      errorPrint       ("archBuild: internal error (2)");
       archBuildJobExit (joborgptr);
       archBuildJobExit (joblink);
       mapExit          (&mapdat);

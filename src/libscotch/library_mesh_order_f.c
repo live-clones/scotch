@@ -44,7 +44,7 @@
 /**                # Version 5.0  : from : 04 aug 2007     **/
 /**                                 to     04 aug 2007     **/
 /**                # Version 5.1  : from : 27 mar 2010     **/
-/**                                 to     29 mar 2010     **/
+/**                                 to     29 may 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -234,7 +234,7 @@ int * const                   revaptr),               \
 
 FORTRAN (                                           \
 SCOTCHFMESHORDERCOMPUTE, scotchfmeshordercompute, ( \
-const SCOTCH_Mesh * const   meshptr,                \
+SCOTCH_Mesh * const         meshptr,                \
 SCOTCH_Ordering * const     ordeptr,                \
 SCOTCH_Strat * const        stratptr,               \
 int * const                 revaptr),               \
@@ -249,7 +249,7 @@ int * const                 revaptr),               \
 
 FORTRAN (                                                   \
 SCOTCHFMESHORDERCOMPUTELIST, scotchfmeshordercomputelist, ( \
-const SCOTCH_Mesh * const   meshptr,                        \
+SCOTCH_Mesh * const         meshptr,                        \
 SCOTCH_Ordering * const     ordeptr,                        \
 const SCOTCH_Num *          listptr,                        \
 const SCOTCH_Num * const    listtab,                        \
@@ -266,7 +266,7 @@ int * const                 revaptr),                       \
 
 FORTRAN (                                       \
 SCOTCHFMESHORDER, scotchfmeshorder, (           \
-const SCOTCH_Mesh * const   meshptr,            \
+SCOTCH_Mesh * const         meshptr,            \
 SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          permtab,            \
 SCOTCH_Num * const          peritab,            \
@@ -286,7 +286,7 @@ int * const                 revaptr),           \
 
 FORTRAN (                                       \
 SCOTCHFMESHORDERLIST, scotchfmeshorderlist, (   \
-const SCOTCH_Mesh * const   meshptr,            \
+SCOTCH_Mesh * const         meshptr,            \
 const SCOTCH_Num * const    listptr,            \
 const SCOTCH_Num * const    listtab,            \
 SCOTCH_Strat * const        stratptr,           \

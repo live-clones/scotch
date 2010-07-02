@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 10 sep 2006     **/
 /**                                 to     10 sep 2006     **/
+/**                # Version 5.1  : from : 30 jun 2010     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,36 +67,36 @@
 **
 */
 
-FORTRAN (                                       \
-METIS_EDGEND, metis_edgend, (                   \
-const int * const           n,                  \
-const int * const           xadj,               \
-const int * const           adjncy,             \
-const int * const           numflag,            \
-const int * const           options,            \
-int * const                 perm,               \
-int * const                 iperm),             \
+FORTRAN (                                             \
+METISNAMEU(METIS_EDGEND), METISNAMEL(metis_edgend), ( \
+const int * const           n,                        \
+const int * const           xadj,                     \
+const int * const           adjncy,                   \
+const int * const           numflag,                  \
+const int * const           options,                  \
+int * const                 perm,                     \
+int * const                 iperm),                   \
 (n, xadj, adjncy, numflag, options, perm, iperm))
 {
-  METIS_EdgeND (n, xadj, adjncy, numflag, options, perm, iperm);
+  METISNAMEU(METIS_EdgeND) (n, xadj, adjncy, numflag, options, perm, iperm);
 }
 
 /*
 **
 */
 
-FORTRAN (                                       \
-METIS_NODEND, metis_nodend, (                   \
-const int * const           n,                  \
-const int * const           xadj,               \
-const int * const           adjncy,             \
-const int * const           numflag,            \
-const int * const           options,            \
-int * const                 perm,               \
-int * const                 iperm),             \
+FORTRAN (                                             \
+METISNAMEU(METIS_NODEND), METISNAMEL(metis_nodend), ( \
+const int * const           n,                        \
+const int * const           xadj,                     \
+const int * const           adjncy,                   \
+const int * const           numflag,                  \
+const int * const           options,                  \
+int * const                 perm,                     \
+int * const                 iperm),                   \
 (n, xadj, adjncy, numflag, options, perm, iperm))
 {
-  METIS_NodeND (n, xadj, adjncy, numflag, options, perm, iperm);
+  METISNAMEU(METIS_NodeND) (n, xadj, adjncy, numflag, options, perm, iperm);
 }
 
 /* When an input stream is built from the given
@@ -105,17 +107,17 @@ int * const                 iperm),             \
 ** block read.
 */
 
-FORTRAN (                                       \
-METIS_NODEWND, metis_nodewnd, (                 \
-const int * const           n,                  \
-const int * const           xadj,               \
-const int * const           adjncy,             \
-const int * const           vwgt,               \
-const int * const           numflag,            \
-const int * const           options,            \
-int * const                 perm,               \
-int * const                 iperm),             \
+FORTRAN (                                               \
+METISNAMEU(METIS_NODEWND), METISNAMEL(metis_nodewnd), ( \
+const int * const           n,                          \
+const int * const           xadj,                       \
+const int * const           adjncy,                     \
+const int * const           vwgt,                       \
+const int * const           numflag,                    \
+const int * const           options,                    \
+int * const                 perm,                       \
+int * const                 iperm),                     \
 (n, xadj, adjncy, vwgt, numflag, options, perm, iperm))
 {
-  METIS_NodeWND (n, xadj, adjncy, vwgt, numflag, options, perm, iperm);
+  METISNAMEU(METIS_NodeWND) (n, xadj, adjncy, vwgt, numflag, options, perm, iperm);
 }

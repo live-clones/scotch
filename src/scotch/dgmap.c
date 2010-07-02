@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 12 jun 2008     **/
 /**                                 to   : 28 aug 2008     **/
 /**                # Version 5.1  : from : 26 oct 2008     **/
-/**                                 to   : 22 nov 2008     **/
+/**                                 to   : 03 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -220,8 +220,8 @@ char *                      argv[])
           }
           break;
         case 'V' :
-          fprintf (stderr, "dgmap/dgpart, version %s - F. Pellegrini\n", SCOTCH_VERSION);
-          fprintf (stderr, "Copyright 2008 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "dgmap/dgpart, version " SCOTCH_VERSION_STRING "\n");
+          fprintf (stderr, "Copyright 2008-2010 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                                /* Output control info */
@@ -287,8 +287,11 @@ char *                      argv[])
   SCOTCH_archInit (&archdat);                     /* Create architecture structure          */
   if ((flagval & C_FLAGPART) != 0)                /* If program run as the partitioner      */
     SCOTCH_archCmplt (&archdat, C_partNbr);       /* Create a complete graph of proper size */
-  else
+  else {
+    if (C_filepntrtgtinp == NULL)
+      errorPrint ("main: target architecture file not provided");
     SCOTCH_archLoad (&archdat, C_filepntrtgtinp); /* Read target architecture */
+  }
 
   clockStop (&runtime[0]);                        /* Get input time */
   clockInit (&runtime[1]);
@@ -299,6 +302,8 @@ char *                      argv[])
 #endif /* SCOTCH_DEBUG_ALL */
 
   clockStart (&runtime[1]);
+
+  SCOTCH_dgraphGhst (&grafdat);                   /* Compute it once for good */
 
   SCOTCH_dgraphMapInit    (&grafdat, &mapdat, &archdat, NULL);
   SCOTCH_dgraphMapCompute (&grafdat, &mapdat, &stradat); /* Perform mapping */

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     21 dec 2001     **/
 /**                # Version 5.1  : from : 09 jun 2009     **/
-/**                                 to     09 jun 2009     **/
+/**                                 to     09 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,13 +58,17 @@
 
 /* Change some function names. */
 
+#ifndef yylex                                     /* If no prefix renaming       */
 #define yylex                       stratParserLex /* Lexical analyzer           */
 #define yyparse                     stratParserParse2 /* Parser function name    */
 #define yyerror                     stratParserError /* Error processing routine */
-
-#define yychar                      stratparserchar /* To avoid conflicts with other parsers */
-#define yydebug                     stratparserdebug
-#define yylval                      stratparserlval
+#else /* yylex */
+#ifndef yylval
+#define yylval                      scotchyylval  /* It should be Yacc/Bison's job to redefine it! */
+#endif /* yylval */
+#define scotchyyparse               stratParserParse2 /* Parser function name    */
+#define scotchyyerror               stratParserError /* Error processing routine */
+#endif /* yylex */
 
 /*
 **  The function prototypes.

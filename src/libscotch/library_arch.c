@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 5.1  : from : 05 jun 2009     **/
-/**                                 to   : 11 aug 2009     **/
+/**                                 to   : 24 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -324,10 +324,12 @@ const SCOTCH_Num            dimzval)
 int
 SCOTCH_archTleaf (
 SCOTCH_Arch * const         archptr,
-const SCOTCH_Num            leafdep,              /*+ Maximum leaf depth                      +*/
-const SCOTCH_Num            clusdep,              /*+ Depth before reaching complete clusters +*/
-const SCOTCH_Num            linkval)              /*+ Value of extra-cluster links            +*/
+const SCOTCH_Num            levlnbr,              /*+ Number of levels in architecture            +*/
+const SCOTCH_Num * const    sizetab,              /*+ Size array, by increasing level number      +*/
+const SCOTCH_Num * const    linktab)              /*+ Link cost array, by increasing level number +*/
 {
+  Anum                levlnum;
+  Anum                sizeval;
   Arch *              tgtarchptr;
   ArchTleaf *         tgtarchdatptr;
 
@@ -336,13 +338,24 @@ const SCOTCH_Num            linkval)              /*+ Value of extra-cluster lin
     return     (1);
   }
 
-  tgtarchptr    = (Arch *) archptr;
-  tgtarchdatptr = (ArchTleaf *) (void *) (&tgtarchptr->data);
+  tgtarchptr        = (Arch *) archptr;
+  tgtarchdatptr     = (ArchTleaf *) (void *) (&tgtarchptr->data);
+  tgtarchptr->class = archClass ("tleaf");
 
-  tgtarchptr->class      = archClass ("tleaf");
-  tgtarchdatptr->leafdep = (Anum) leafdep;
-  tgtarchdatptr->clusdep = (Anum) clusdep;
-  tgtarchdatptr->linkval = (Anum) linkval;
+  if ((tgtarchdatptr->sizetab = memAlloc ((levlnbr * 2 + 1) * sizeof (Anum))) == NULL) { /* TRICK: One more slot for linktab[-1] */
+    errorPrint ("SCOTCH_archTleaf: out of memory");
+    return     (1);
+  }
+  tgtarchdatptr->levlnbr     = (Anum) levlnbr;
+  tgtarchdatptr->linktab     = tgtarchdatptr->sizetab + tgtarchdatptr->levlnbr + 1;
+  tgtarchdatptr->linktab[-1] = 0;                 /* TRICK: Dummy slot for for level-0 communication */
+
+  for (levlnum = 0, sizeval = 1; levlnum < tgtarchdatptr->levlnbr; levlnum ++) {
+    tgtarchdatptr->sizetab[levlnum] = sizetab[levlnum];
+    tgtarchdatptr->linktab[levlnum] = linktab[levlnum];
+    sizeval *= tgtarchdatptr->sizetab[levlnum];
+  }
+  tgtarchdatptr->sizeval = sizeval;
 
   return (0);
 }

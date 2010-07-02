@@ -46,7 +46,7 @@
 /**                # Version 5.0  : from : 04 aug 2007     **/
 /**                                 to     31 may 2008     **/
 /**                # Version 5.1  : from : 27 mar 2010     **/
-/**                                 to     29 mar 2010     **/
+/**                                 to     29 may 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -236,7 +236,7 @@ int * const                   revaptr),                 \
 
 FORTRAN (                                             \
 SCOTCHFGRAPHORDERCOMPUTE, scotchfgraphordercompute, ( \
-const SCOTCH_Graph * const  grafptr,                  \
+SCOTCH_Graph * const        grafptr,                  \
 SCOTCH_Ordering * const     ordeptr,                  \
 SCOTCH_Strat * const        stratptr,                 \
 int * const                 revaptr),                 \
@@ -251,7 +251,7 @@ int * const                 revaptr),                 \
 
 FORTRAN (                                                     \
 SCOTCHFGRAPHORDERCOMPUTELIST, scotchfgraphordercomputelist, ( \
-const SCOTCH_Graph * const  grafptr,                          \
+SCOTCH_Graph * const        grafptr,                          \
 SCOTCH_Ordering * const     ordeptr,                          \
 const SCOTCH_Num *          listptr,                          \
 const SCOTCH_Num * const    listtab,                          \
@@ -268,7 +268,7 @@ int * const                 revaptr),                         \
 
 FORTRAN (                                       \
 SCOTCHFGRAPHORDER, scotchfgraphorder, (         \
-const SCOTCH_Graph * const  grafptr,            \
+SCOTCH_Graph * const        grafptr,            \
 SCOTCH_Strat * const        stratptr,           \
 SCOTCH_Num * const          permtab,            \
 SCOTCH_Num * const          peritab,            \
@@ -288,7 +288,7 @@ int * const                 revaptr),           \
 
 FORTRAN (                                       \
 SCOTCHFGRAPHORDERLIST, scotchfgraphorderlist, ( \
-const SCOTCH_Graph * const  grafptr,            \
+SCOTCH_Graph * const        grafptr,            \
 const SCOTCH_Num * const    listptr,            \
 const SCOTCH_Num * const    listtab,            \
 SCOTCH_Strat * const        stratptr,           \

@@ -1,6 +1,6 @@
 /*********************************************************
 **                                                      **
-**  WARNING : THIS IS NOT THE ORIGINAL INCLUDE FILE OF  **
+**  WARNING: THIS IS NOT THE ORIGINAL INCLUDE FILE OF   **
 **  THE MeTiS SOFTWARE PACKAGE.                         **
 **  This file is a compatibility include file provided  **
 **  as part of the Scotch software distribution.        **
@@ -9,7 +9,7 @@
 **  the libScotchMeTiS library.                         **
 **                                                      **
 *********************************************************/
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,17 +52,44 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 08 sep 2006     **/
 /**                                 to     07 jun 2007     **/
+/**                # Version 5.1  : from : 30 jun 2010     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
+
+/*
+**  The defines.
+*/
+
+#ifdef SCOTCH_METIS_PREFIX
+#define SCOTCH_METIS_PREFIXL        scotch_
+#define SCOTCH_METIS_PREFIXU        SCOTCH_
+#endif /* SCOTCH_METIS_PREFIX */
+
+#ifndef SCOTCH_METIS_PREFIXL
+#define SCOTCH_METIS_PREFIXL
+#endif /* SCOTCH_METIS_PREFIXL */
+
+#ifndef SCOTCH_METIS_PREFIXU
+#define SCOTCH_METIS_PREFIXU
+#endif /* SCOTCH_METIS_PREFIXU */
+
+#ifndef METISNAMEL
+#define METISNAMEL(s)               METISNAME2(METISNAME3(SCOTCH_METIS_PREFIXL),s)
+#define METISNAMEU(s)               METISNAME2(METISNAME3(SCOTCH_METIS_PREFIXU),s)
+#define METISNAME2(p,s)             METISNAME4(p,s)
+#define METISNAME3(s)               s
+#define METISNAME4(p,s)             p##s
+#endif /* METISNAMEL */
 
 /*
 **  The function prototypes.
 */
 
-void                        METIS_EdgeND        (const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
-void                        METIS_NodeND        (const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
-void                        METIS_NodeWND       (const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
+void                        METISNAMEU(METIS_EdgeND) (const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
+void                        METISNAMEU(METIS_NodeND) (const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
+void                        METISNAMEU(METIS_NodeWND) (const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
 
-void                        METIS_PartGraphKway (const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
-void                        METIS_PartGraphRecursive (const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
-void                        METIS_PartGraphVKway (const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
+void                        METISNAMEU(METIS_PartGraphKway) (const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
+void                        METISNAMEU(METIS_PartGraphRecursive) (const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);
+void                        METISNAMEU(METIS_PartGraphVKway) (const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, const int * const, int * const, int * const);

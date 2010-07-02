@@ -158,7 +158,7 @@ int * const                     revaptr),         \
 
 FORTRAN (                                               \
 SCOTCHFDGRAPHORDERCOMPUTE, scotchfdgraphordercompute, ( \
-const SCOTCH_Dgraph * const grafptr,                    \
+SCOTCH_Dgraph * const       grafptr,                    \
 SCOTCH_Dordering * const    ordeptr,                    \
 SCOTCH_Strat * const        stratptr,                   \
 int * const                 revaptr),                   \
@@ -173,7 +173,7 @@ int * const                 revaptr),                   \
 
 FORTRAN (                                                       \
 SCOTCHFDGRAPHORDERCOMPUTELIST, scotchfdgraphordercomputelist, ( \
-const SCOTCH_Dgraph * const grafptr,                            \
+SCOTCH_Dgraph * const       grafptr,                            \
 SCOTCH_Dordering * const    ordeptr,                            \
 const SCOTCH_Num *          listptr,                            \
 const SCOTCH_Num * const    listtab,                            \

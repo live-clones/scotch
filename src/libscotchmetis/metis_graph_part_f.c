@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 10 sep 2006     **/
 /**                                 to     07 jun 2007     **/
+/**                # Version 5.1  : from : 30 jun 2010     **/
+/**                                 to     30 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,64 +67,64 @@
 **
 */
 
-FORTRAN (                                       \
-METIS_PARTGRAPHKWAY, metis_partgraphkway, (     \
-const int * const           n,                  \
-const int * const           xadj,               \
-const int * const           adjncy,             \
-const int * const           vwgt,               \
-const int * const           adjwgt,             \
-const int * const           wgtflag,            \
-const int * const           numflag,            \
-const int * const           nparts,             \
-const int * const           options,            \
-int * const                 edgecut,            \
-int * const                 part),              \
+FORTRAN (                                                           \
+METISNAMEU(METIS_PARTGRAPHKWAY), METISNAMEL(metis_partgraphkway), ( \
+const int * const           n,                                      \
+const int * const           xadj,                                   \
+const int * const           adjncy,                                 \
+const int * const           vwgt,                                   \
+const int * const           adjwgt,                                 \
+const int * const           wgtflag,                                \
+const int * const           numflag,                                \
+const int * const           nparts,                                 \
+const int * const           options,                                \
+int * const                 edgecut,                                \
+int * const                 part),                                  \
 (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part))
 {
-  METIS_PartGraphKway (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part);
+  METISNAMEU(METIS_PartGraphKway) (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part);
 }
 
 /*
 **
 */
 
-FORTRAN (                                             \
-METIS_PARTGRAPHRECURSIVE, metis_partgraphrecursive, ( \
-const int * const           n,                        \
-const int * const           xadj,                     \
-const int * const           adjncy,                   \
-const int * const           vwgt,                     \
-const int * const           adjwgt,                   \
-const int * const           wgtflag,                  \
-const int * const           numflag,                  \
-const int * const           nparts,                   \
-const int * const           options,                  \
-int * const                 edgecut,                  \
-int * const                 part),                    \
+FORTRAN (                                                                     \
+METISNAMEU(METIS_PARTGRAPHRECURSIVE), METISNAMEL(metis_partgraphrecursive), ( \
+const int * const           n,                                                \
+const int * const           xadj,                                             \
+const int * const           adjncy,                                           \
+const int * const           vwgt,                                             \
+const int * const           adjwgt,                                           \
+const int * const           wgtflag,                                          \
+const int * const           numflag,                                          \
+const int * const           nparts,                                           \
+const int * const           options,                                          \
+int * const                 edgecut,                                          \
+int * const                 part),                                            \
 (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part))
 {
-  METIS_PartGraphRecursive (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part);
+  METISNAMEU(METIS_PartGraphRecursive) (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part);
 }
 
 /*
 **
 */
 
-FORTRAN (                                       \
-METIS_PARTGRAPHVKWAY, metis_partgraphvkway, (   \
-const int * const           n,                  \
-const int * const           xadj,               \
-const int * const           adjncy,             \
-const int * const           vwgt,               \
-const int * const           vsize,              \
-const int * const           wgtflag,            \
-const int * const           numflag,            \
-const int * const           nparts,             \
-const int * const           options,            \
-int * const                 volume,             \
-int * const                 part),              \
+FORTRAN (                                                             \
+METISNAMEU(METIS_PARTGRAPHVKWAY), METISNAMEL(metis_partgraphvkway), ( \
+const int * const           n,                                        \
+const int * const           xadj,                                     \
+const int * const           adjncy,                                   \
+const int * const           vwgt,                                     \
+const int * const           vsize,                                    \
+const int * const           wgtflag,                                  \
+const int * const           numflag,                                  \
+const int * const           nparts,                                   \
+const int * const           options,                                  \
+int * const                 volume,                                   \
+int * const                 part),                                    \
 (n, xadj, adjncy, vwgt, vsize, wgtflag, numflag, nparts, options, volume, part))
 {
-  METIS_PartGraphVKway (n, xadj, adjncy, vwgt, vsize, wgtflag, numflag, nparts, options, volume, part);
+  METISNAMEU(METIS_PartGraphVKway) (n, xadj, adjncy, vwgt, vsize, wgtflag, numflag, nparts, options, volume, part);
 }

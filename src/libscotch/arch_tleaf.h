@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,7 +60,7 @@
 /**                # Version 4.0  : from : 10 dec 2003     **/
 /**                                 to     10 dec 2003     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
-/**                                 to     21 jan 2008     **/
+/**                                 to     24 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,14 +71,16 @@
 /** The Tree-Leaf graph definitions. **/
 
 typedef struct ArchTleaf_ {
-  Anum                      leafdep;              /*+ Maximum leaf depth                      +*/
-  Anum                      clusdep;              /*+ Depth before reaching complete clusters +*/
-  Anum                      linkval;              /*+ Value of extra-cluster links            +*/
+  Anum                      levlnbr;              /*+ Number of levels                             +*/
+  Anum                      sizeval;              /*+ Number of terminal domains in architecture   +*/
+  Anum *                    sizetab;              /*+ Array of cluster sizes, per descending level +*/
+  Anum *                    linktab;              /*+ Value of extra-cluster link costs            +*/
 } ArchTleaf;
 
 typedef struct ArchTleafDom_ {
-  Anum                      leaflvl;              /*+ Current leaf depth +*/
-  Anum                      leafnum;              /*+ Leaf number        +*/
+  Anum                      levlnum;              /*+ Current block level         +*/
+  Anum                      indxmin;              /*+ Minimum index in level      +*/
+  Anum                      indxnbr;              /*+ Number of indices in domain +*/
 } ArchTleafDom;
 
 /*
@@ -90,8 +92,8 @@ typedef struct ArchTleafDom_ {
 #endif
 
 int                         archTleafArchLoad   (ArchTleaf * restrict const, FILE * restrict const);
+int                         archTleafArchFree   (ArchTleaf * restrict const);
 int                         archTleafArchSave   (const ArchTleaf * const, FILE * restrict const);
-#define archTleafArchFree           NULL
 ArchDomNum                  archTleafDomNum     (const ArchTleaf * const, const ArchTleafDom * const);
 int                         archTleafDomTerm    (const ArchTleaf * const, ArchTleafDom * restrict const, const ArchDomNum);
 Anum                        archTleafDomSize    (const ArchTleaf * const, const ArchTleafDom * const);

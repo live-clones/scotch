@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 03 aug 2007     **/
 /**                # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 28 oct 2009     **/
+/**                                 to   : 06 jun 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,9 +88,6 @@
 
 #define COARPERTPRIME               31            /* Prime number */
 #define COARHASHPRIME               179           /* Prime number */
-
-#define DGRAPHBUILDRANDOM           1             /* Distribute the grid randomly  */
-#define DGRAPHBUILDSLICES           2             /* Distribute the grid by slices */
 
 /*
 ** The type and structure definitions.
@@ -195,7 +192,7 @@ int                         dgraphBuild2        (Dgraph * const, const Gnum, con
 int                         dgraphBuild3        (Dgraph * const, const Gnum, const Gnum, Gnum * const, Gnum * const, Gnum * const, const Gnum, Gnum * const, Gnum * const, const Gnum, const Gnum, Gnum * const, Gnum * const, Gnum * const, const Gnum);
 int                         dgraphBuild4        (Dgraph * const);
 int                         dgraphBuildHcub     (Dgraph * const, const Gnum, const Gnum, const Gnum);
-int                         dgraphBuildGrid3D   (Dgraph * const, const Gnum, const Gnum, const Gnum, const Gnum, const int);
+int                         dgraphBuildGrid3D   (Dgraph * const, const Gnum, const Gnum, const Gnum, const Gnum, const Gnum, const int);
 int                         dgraphCheck         (const Dgraph * const);
 int                         dgraphView          (const Dgraph * const, FILE * const);
 int                         dgraphGhst2         (Dgraph * const, const int);
