@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 10 aug 2006     **/
 /**                                 to   : 27 jun 2008     **/
 /**                # Version 5.1  : from : 12 nov 2008     **/
-/**                                 to   : 28 oct 2009     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -186,8 +186,8 @@ MPI_Datatype                  vertinfotype)
       cheklocval = 1;
     }
     else if (memAllocGroup ((void **) (void *)    /* Allocate distributed graph private data */
-                            &fldgrafptr->procdsptab, (size_t) ((fldprocglbnbr + 1) * sizeof (int)),
-                            &fldgrafptr->proccnttab, (size_t) (fldprocglbnbr       * sizeof (int)),
+                            &fldgrafptr->procdsptab, (size_t) ((fldprocglbnbr + 1) * sizeof (Gnum)),
+                            &fldgrafptr->proccnttab, (size_t) (fldprocglbnbr       * sizeof (Gnum)),
                             &fldgrafptr->procngbtab, (size_t) (fldprocglbnbr       * sizeof (int)),
                             &fldgrafptr->procrcvtab, (size_t) (fldprocglbnbr       * sizeof (int)),
                             &fldgrafptr->procsndtab, (size_t) (fldprocglbnbr       * sizeof (int)), NULL) == NULL) {

@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 28 dec 2007     **/
 /**                                 to   : 05 feb 2008     **/
 /**                # Version 5.1  : from : 28 aug 2008     **/
-/**                                 to   : 19 jan 2009     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,8 +83,9 @@ typedef struct DgraphHaloRequest_ {
 #define static
 #endif
 
+#ifdef SCOTCH_PTHREAD
 static void *               dgraphHaloAsync2    (DgraphHaloRequest * restrict);
-
+#endif /* SCOTCH_PTHREAD */
 void                        dgraphHaloAsync     (Dgraph * restrict const, void * restrict const, const MPI_Datatype, DgraphHaloRequest * restrict);
 int                         dgraphHaloWait      (DgraphHaloRequest * restrict);
 

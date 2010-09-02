@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 27 nov 2006     **/
 /**                                 to     29 may 2007     **/
 /**                # Version 5.1  : from : 26 oct 2009     **/
-/**                                 to     26 oct 2009     **/
+/**                                 to     13 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,106 +87,106 @@ static Bgraph               bgraphdummy;      /*+ Dummy active graph for offset 
 static union {
   BgraphBipartBdParam       param;
   StratNodeMethodData       padding;
-} bgraphbipartdefaultbd = { { 3, &stratdummy } };
+} bgraphbipartstdefaultbd = { { 3, &stratdummy } };
 
 static union {
   BgraphBipartDfParam       param;
   StratNodeMethodData       padding;
-} bgraphbipartdefaultdf = { { 40, 1.0F, 1.0F } };
+} bgraphbipartstdefaultdf = { { 40, 1.0F, 1.0F } };
 
 static union {                                /* Default parameters for bipartitioning methods */
   BgraphBipartFmParam       param;            /* Parameter zone                                */
   StratNodeMethodData       padding;          /* To avoid reading out of structure             */
-} bgraphbipartdefaultfm = { { 80, ~0, 0.01L } };
+} bgraphbipartstdefaultfm = { { 80, ~0, 0.01L } };
 
 static union {
   BgraphBipartGgParam       param;
   StratNodeMethodData       padding;
-} bgraphbipartdefaultgg = { { 5 } };
+} bgraphbipartstdefaultgg = { { 5 } };
 
 static union {
   BgraphBipartGpParam       param;
   StratNodeMethodData       padding;
-} bgraphbipartdefaultgp = { { 5 } };
+} bgraphbipartstdefaultgp = { { 5 } };
 
 static union {
   BgraphBipartMlParam       param;
   StratNodeMethodData       padding;
-} bgraphbipartdefaultml = { { 100, 0.8L, GRAPHCOARHEM, &stratdummy, &stratdummy } };
+} bgraphbipartstdefaultml = { { 100, 0.8L, GRAPHCOARHEM, &stratdummy, &stratdummy } };
 
 static StratMethodTab       bgraphbipartstmethtab[] = { /* Bipartitioning methods array */
-                              { BGRAPHBIPARTMETHBD, "b",  bgraphBipartBd, &bgraphbipartdefaultbd },
-                              { BGRAPHBIPARTMETHDF, "d",  bgraphBipartDf, &bgraphbipartdefaultdf },
-                              { BGRAPHBIPARTMETHEX, "x",  bgraphBipartEx, NULL },
-                              { BGRAPHBIPARTMETHFM, "f",  bgraphBipartFm, &bgraphbipartdefaultfm },
-                              { BGRAPHBIPARTMETHGG, "h",  bgraphBipartGg, &bgraphbipartdefaultgg },
-                              { BGRAPHBIPARTMETHGP, "g",  bgraphBipartGp, &bgraphbipartdefaultgp },
-                              { BGRAPHBIPARTMETHML, "m",  bgraphBipartMl, &bgraphbipartdefaultml },
-                              { BGRAPHBIPARTMETHZR, "z",  bgraphBipartZr, NULL },
-                              { -1,                 NULL, NULL,           NULL } };
+                              { BGRAPHBIPARTSTMETHBD, "b",  bgraphBipartBd, &bgraphbipartstdefaultbd },
+                              { BGRAPHBIPARTSTMETHDF, "d",  bgraphBipartDf, &bgraphbipartstdefaultdf },
+                              { BGRAPHBIPARTSTMETHEX, "x",  bgraphBipartEx, NULL },
+                              { BGRAPHBIPARTSTMETHFM, "f",  bgraphBipartFm, &bgraphbipartstdefaultfm },
+                              { BGRAPHBIPARTSTMETHGG, "h",  bgraphBipartGg, &bgraphbipartstdefaultgg },
+                              { BGRAPHBIPARTSTMETHGP, "g",  bgraphBipartGp, &bgraphbipartstdefaultgp },
+                              { BGRAPHBIPARTSTMETHML, "m",  bgraphBipartMl, &bgraphbipartstdefaultml },
+                              { BGRAPHBIPARTSTMETHZR, "z",  bgraphBipartZr, NULL },
+                              { -1,                   NULL, NULL,           NULL } };
 
 static StratParamTab        bgraphbipartstparatab[] = { /* Method parameter list */
-                              { BGRAPHBIPARTMETHBD,  STRATPARAMSTRAT,  "bnd",
-                                (byte *) &bgraphbipartdefaultbd.param,
-                                (byte *) &bgraphbipartdefaultbd.param.stratbnd,
+                              { BGRAPHBIPARTSTMETHBD,  STRATPARAMSTRAT,  "bnd",
+                                (byte *) &bgraphbipartstdefaultbd.param,
+                                (byte *) &bgraphbipartstdefaultbd.param.stratbnd,
                                 (void *) &bgraphbipartststratab },
-                              { BGRAPHBIPARTMETHBD,  STRATPARAMSTRAT,  "org",
-                                (byte *) &bgraphbipartdefaultbd.param,
-                                (byte *) &bgraphbipartdefaultbd.param.stratorg,
+                              { BGRAPHBIPARTSTMETHBD,  STRATPARAMSTRAT,  "org",
+                                (byte *) &bgraphbipartstdefaultbd.param,
+                                (byte *) &bgraphbipartstdefaultbd.param.stratorg,
                                 (void *) &bgraphbipartststratab },
-                              { BGRAPHBIPARTMETHBD,  STRATPARAMINT,    "width",
-                                (byte *) &bgraphbipartdefaultbd.param,
-                                (byte *) &bgraphbipartdefaultbd.param.distmax,
+                              { BGRAPHBIPARTSTMETHBD,  STRATPARAMINT,    "width",
+                                (byte *) &bgraphbipartstdefaultbd.param,
+                                (byte *) &bgraphbipartstdefaultbd.param.distmax,
                                 NULL },
-                              { BGRAPHBIPARTMETHDF,  STRATPARAMINT,    "pass",
-                                (byte *) &bgraphbipartdefaultdf.param,
-                                (byte *) &bgraphbipartdefaultdf.param.passnbr,
+                              { BGRAPHBIPARTSTMETHDF,  STRATPARAMINT,    "pass",
+                                (byte *) &bgraphbipartstdefaultdf.param,
+                                (byte *) &bgraphbipartstdefaultdf.param.passnbr,
                                 NULL },
-                              { BGRAPHBIPARTMETHDF,  STRATPARAMDOUBLE, "dif",
-                                (byte *) &bgraphbipartdefaultdf.param,
-                                (byte *) &bgraphbipartdefaultdf.param.cdifval,
+                              { BGRAPHBIPARTSTMETHDF,  STRATPARAMDOUBLE, "dif",
+                                (byte *) &bgraphbipartstdefaultdf.param,
+                                (byte *) &bgraphbipartstdefaultdf.param.cdifval,
                                 NULL },
-                              { BGRAPHBIPARTMETHDF,  STRATPARAMDOUBLE, "rem",
-                                (byte *) &bgraphbipartdefaultdf.param,
-                                (byte *) &bgraphbipartdefaultdf.param.cremval,
+                              { BGRAPHBIPARTSTMETHDF,  STRATPARAMDOUBLE, "rem",
+                                (byte *) &bgraphbipartstdefaultdf.param,
+                                (byte *) &bgraphbipartstdefaultdf.param.cremval,
                                 NULL },
-                              { BGRAPHBIPARTMETHFM,  STRATPARAMINT,    "move",
-                                (byte *) &bgraphbipartdefaultfm.param,
-                                (byte *) &bgraphbipartdefaultfm.param.movenbr,
+                              { BGRAPHBIPARTSTMETHFM,  STRATPARAMINT,    "move",
+                                (byte *) &bgraphbipartstdefaultfm.param,
+                                (byte *) &bgraphbipartstdefaultfm.param.movenbr,
                                 NULL },
-                              { BGRAPHBIPARTMETHFM,  STRATPARAMINT,    "pass",
-                                (byte *) &bgraphbipartdefaultfm.param,
-                                (byte *) &bgraphbipartdefaultfm.param.passnbr,
+                              { BGRAPHBIPARTSTMETHFM,  STRATPARAMINT,    "pass",
+                                (byte *) &bgraphbipartstdefaultfm.param,
+                                (byte *) &bgraphbipartstdefaultfm.param.passnbr,
                                 NULL },
-                              { BGRAPHBIPARTMETHFM,  STRATPARAMDOUBLE, "bal",
-                                (byte *) &bgraphbipartdefaultfm.param,
-                                (byte *) &bgraphbipartdefaultfm.param.deltval,
+                              { BGRAPHBIPARTSTMETHFM,  STRATPARAMDOUBLE, "bal",
+                                (byte *) &bgraphbipartstdefaultfm.param,
+                                (byte *) &bgraphbipartstdefaultfm.param.deltval,
                                 NULL },
-                              { BGRAPHBIPARTMETHGG,  STRATPARAMINT,    "pass",
-                                (byte *) &bgraphbipartdefaultgg.param,
-                                (byte *) &bgraphbipartdefaultgg.param.passnbr,
+                              { BGRAPHBIPARTSTMETHGG,  STRATPARAMINT,    "pass",
+                                (byte *) &bgraphbipartstdefaultgg.param,
+                                (byte *) &bgraphbipartstdefaultgg.param.passnbr,
                                 NULL },
-                              { BGRAPHBIPARTMETHML,  STRATPARAMSTRAT,  "asc",
-                                (byte *) &bgraphbipartdefaultml.param,
-                                (byte *) &bgraphbipartdefaultml.param.stratasc,
+                              { BGRAPHBIPARTSTMETHML,  STRATPARAMSTRAT,  "asc",
+                                (byte *) &bgraphbipartstdefaultml.param,
+                                (byte *) &bgraphbipartstdefaultml.param.stratasc,
                                 (void *) &bgraphbipartststratab },
-                              { BGRAPHBIPARTMETHML,  STRATPARAMSTRAT,  "low",
-                                (byte *) &bgraphbipartdefaultml.param,
-                                (byte *) &bgraphbipartdefaultml.param.stratlow,
+                              { BGRAPHBIPARTSTMETHML,  STRATPARAMSTRAT,  "low",
+                                (byte *) &bgraphbipartstdefaultml.param,
+                                (byte *) &bgraphbipartstdefaultml.param.stratlow,
                                 (void *) &bgraphbipartststratab },
-                              { BGRAPHBIPARTMETHML,  STRATPARAMCASE,   "type",
-                                (byte *) &bgraphbipartdefaultml.param,
-                                (byte *) &bgraphbipartdefaultml.param.matchtype,
+                              { BGRAPHBIPARTSTMETHML,  STRATPARAMCASE,   "type",
+                                (byte *) &bgraphbipartstdefaultml.param,
+                                (byte *) &bgraphbipartstdefaultml.param.coartype,
                                 (void *) "hscd" },
-                              { BGRAPHBIPARTMETHML,  STRATPARAMINT,    "vert",
-                                (byte *) &bgraphbipartdefaultml.param,
-                                (byte *) &bgraphbipartdefaultml.param.coarnbr,
+                              { BGRAPHBIPARTSTMETHML,  STRATPARAMINT,    "vert",
+                                (byte *) &bgraphbipartstdefaultml.param,
+                                (byte *) &bgraphbipartstdefaultml.param.coarnbr,
                                 NULL },
-                              { BGRAPHBIPARTMETHML,  STRATPARAMDOUBLE, "rat",
-                                (byte *) &bgraphbipartdefaultml.param,
-                                (byte *) &bgraphbipartdefaultml.param.coarrat,
+                              { BGRAPHBIPARTSTMETHML,  STRATPARAMDOUBLE, "rat",
+                                (byte *) &bgraphbipartstdefaultml.param,
+                                (byte *) &bgraphbipartstdefaultml.param.coarrat,
                                 NULL },
-                              { BGRAPHBIPARTMETHNBR, STRATPARAMINT,    NULL,
+                              { BGRAPHBIPARTSTMETHNBR, STRATPARAMINT,    NULL,
                                 NULL, NULL, NULL } };
 
 static StratParamTab        bgraphbipartstcondtab[] = { /* Active graph condition parameter table */

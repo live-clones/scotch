@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 26 may 2008     **/
 /**                                 to     26 may 2008     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,9 +91,9 @@ FILE * const                  stream)
   }
   orderRang (cordptr, rangtab);
 
-  if (fprintf (stream, "0\n%ld\t%ld\n",
-               (long) cordptr->cblknbr,
-               (long) cordptr->vnodnbr) < 0) {
+  if (fprintf (stream, "0\n" GNUMSTRING "\t" GNUMSTRING "\n",
+               (Gnum) cordptr->cblknbr,
+               (Gnum) cordptr->vnodnbr) < 0) {
     errorPrint ("dorderSaveBlock2: bad output (1)");
     return     (1);
   }

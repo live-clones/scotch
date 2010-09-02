@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -161,16 +161,16 @@ char *                      argv[])
                      &edlomin, &edlomax, &edlosum, &edloavg, &edlodlt);
 
   if (C_filepntrdatout != NULL) {
-    fprintf (C_filepntrdatout, "S\tVertex\tnbr=%ld\n",
-             (long) vertnbr);
-    fprintf (C_filepntrdatout, "S\tVertex load\tmin=%ld\tmax=%ld\tsum=%ld\tavg=%g\tdlt=%g\n",
-             (long) velomin, (long) velomax, (long) velosum, veloavg, velodlt);
-    fprintf (C_filepntrdatout, "S\tVertex degree\tmin=%ld\tmax=%ld\tsum=%ld\tavg=%g\tdlt=%g\n",
-             (long) degrmin, (long) degrmax, (long) edgenbr, degravg, degrdlt);
-    fprintf (C_filepntrdatout, "S\tEdge\tnbr=%ld\n",
-             (long) (edgenbr / 2));
-    fprintf (C_filepntrdatout, "S\tEdge load\tmin=%ld\tmax=%ld\tsum=%ld\tavg=%g\tdlt=%g\n",
-             (long) edlomin, (long) edlomax, (long) edlosum, edloavg, edlodlt);
+    fprintf (C_filepntrdatout, "S\tVertex\tnbr=" SCOTCH_NUMSTRING "\n",
+             (SCOTCH_Num) vertnbr);
+    fprintf (C_filepntrdatout, "S\tVertex load\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tsum=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
+             (SCOTCH_Num) velomin, (SCOTCH_Num) velomax, (SCOTCH_Num) velosum, veloavg, velodlt);
+    fprintf (C_filepntrdatout, "S\tVertex degree\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tsum=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
+             (SCOTCH_Num) degrmin, (SCOTCH_Num) degrmax, (SCOTCH_Num) edgenbr, degravg, degrdlt);
+    fprintf (C_filepntrdatout, "S\tEdge\tnbr=" SCOTCH_NUMSTRING "\n",
+             (SCOTCH_Num) (edgenbr / 2));
+    fprintf (C_filepntrdatout, "S\tEdge load\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tsum=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
+             (SCOTCH_Num) edlomin, (SCOTCH_Num) edlomax, (SCOTCH_Num) edlosum, edloavg, edlodlt);
   }
 
   SCOTCH_graphExit (&grafdat);

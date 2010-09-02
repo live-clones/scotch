@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,7 +61,7 @@
 /**                # Version 5.0  : from : 10 sep 2007     **/
 /**                                 to     28 feb 2008     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
-/**                                 to     28 sep 2008     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -378,18 +378,18 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if (fprintf (stream, "1\n%ld\t%ld\n",           /* Write number of domains */
-               (long) archptr->domtermnbr,
-               (long) archptr->domvertnbr) == EOF) {
+  if (fprintf (stream, "1\n" ANUMSTRING "\t" ANUMSTRING "\n", /* Write number of domains */
+               (Anum) archptr->domtermnbr,
+               (Anum) archptr->domvertnbr) == EOF) {
     errorPrint ("archDecoArchSave: bad output (1)");
     return     (1);
   }
 
   for (i = 0; i < archptr->domvertnbr; i ++) {    /* Write domain array */
-    if (fprintf (stream, "%ld\t%ld\t%ld\n",
-                 (long) archptr->domverttab[i].labl,
-                 (long) archptr->domverttab[i].size,
-                 (long) archptr->domverttab[i].wght) == EOF) {
+    if (fprintf (stream, ANUMSTRING "\t" ANUMSTRING "\t" ANUMSTRING "\n",
+                 (Anum) archptr->domverttab[i].labl,
+                 (Anum) archptr->domverttab[i].size,
+                 (Anum) archptr->domverttab[i].wght) == EOF) {
       errorPrint ("archDecoArchSave: bad output (2)");
       return     (1);
     }
@@ -397,8 +397,8 @@ FILE * restrict const       stream)
 
   j = (archptr->domvertnbr * (archptr->domvertnbr - 1)) / 2;
   for (i = 0; i < j; i ++) {                      /* Write distance array */
-    if (fprintf (stream, "%ld%c",
-                 (long) archptr->domdisttab[i],
+    if (fprintf (stream, ANUMSTRING "%c",
+                 (Anum) archptr->domdisttab[i],
                  (((i % 8) == 7) && (i != (j - 1))) ? '\n' : '\t') == EOF) {
       errorPrint ("archDecoArchSave: bad output (3)");
       return     (1);
@@ -542,8 +542,8 @@ const ArchDeco * const      archptr,
 const ArchDecoDom * const   domptr,
 FILE * restrict const       stream)
 {
-  if (fprintf (stream, "%ld ",
-               (long) domptr->num) == EOF) {
+  if (fprintf (stream, ANUMSTRING " ",
+               (Anum) domptr->num) == EOF) {
     errorPrint ("archDecoDomSave: bad output");
     return     (1);
   }

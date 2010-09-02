@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 04 feb 2007     **/
 /**                                 to     03 apr 2008     **/
 /**                # Version 5.1  : from : 27 jul 2008     **/
-/**                                 to     29 jun 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,7 +122,6 @@ FILE * const                  stream)
   Gnum                      diammin;
   Gnum                      diammax;
   Gnum                      diamsum;
-  Anum                      i;
 
   const Gnum * restrict const verttax = ((Graph *) libgrafptr)->verttax;
   const Gnum * restrict const vendtax = ((Graph *) libgrafptr)->vendtax;
@@ -206,12 +205,13 @@ FILE * const                  stream)
     tgtnbr = mapnbr;                              /* Assume it is a variable-sized architecture */
   }
 
-  fprintf (stream, "M\tProcessors %ld/%ld (%g)\n",
-           (long) mapnbr, (long) tgtnbr,
+  fprintf (stream, "M\tProcessors " GNUMSTRING "/" GNUMSTRING " (%g)\n",
+           (Gnum) mapnbr,
+           (Gnum) tgtnbr,
            (double) mapnbr / (double) tgtnbr);
-  fprintf (stream, "M\tTarget min=%ld\tmax=%ld\tavg=%g\tdlt=%g\tmaxavg=%g\n",
-           (long) mapmin,
-           (long) mapmax,
+  fprintf (stream, "M\tTarget min=" GNUMSTRING "\tmax=" GNUMSTRING "\tavg=%g\tdlt=%g\tmaxavg=%g\n",
+           (Gnum) mapmin,
+           (Gnum) mapmax,
            mapavg,
            mapdlt,
            mapmmy);
@@ -277,10 +277,10 @@ FILE * const                  stream)
     }
   }
 
-  fprintf (stream, "M\tNeighbors min=%ld\tmax=%ld\tsum=%ld\n",
-           (long) nghbmin,
-           (long) nghbmax,
-           (long) nghbsum);
+  fprintf (stream, "M\tNeighbors min=" GNUMSTRING "\tmax=" GNUMSTRING "\tsum=" GNUMSTRING "\n",
+           (Gnum) nghbmin,
+           (Gnum) nghbmax,
+           (Gnum) nghbsum);
 
   memset (commdist, 0, 256 * sizeof (Gnum));      /* Initialize the data */
   commload  =
@@ -307,17 +307,17 @@ FILE * const                  stream)
     }
   }
 
-  fprintf (stream, "M\tCommDilat=%f\t(%ld)\n",    /* Print expansion parameters */
+  fprintf (stream, "M\tCommDilat=%f\t(" GNUMSTRING ")\n", /* Print expansion parameters */
            (double) commdilat / grafptr->edgenbr,
-           (long) (commdilat / 2));
-  fprintf (stream, "M\tCommExpan=%f\t(%ld)\n",
+           (Gnum) (commdilat / 2));
+  fprintf (stream, "M\tCommExpan=%f\t(" GNUMSTRING ")\n",
            ((commload == 0) ? (double) 0.0L
                             : (double) commexpan / (double) commload),
-           (long) (commexpan / 2));
-  fprintf (stream, "M\tCommCutSz=%f\t(%ld)\n",
+           (Gnum) (commexpan / 2));
+  fprintf (stream, "M\tCommCutSz=%f\t(" GNUMSTRING ")\n",
            ((commload == 0) ? (double) 0.0L
                             : (double) (commload - commdist[0]) / (double) commload),
-           (long) ((commload - commdist[0]) / 2));
+           (Gnum) ((commload - commdist[0]) / 2));
   fprintf (stream, "M\tCommDelta=%f\n",
            (((double) commload  * (double) commdilat) == 0.0L)
            ? (double) 0.0L
@@ -328,8 +328,8 @@ FILE * const                  stream)
     if (commdist[distmax] != 0)
       break;
   for (distval = 0; distval <= distmax; distval ++) /* Print distance histogram */
-    fprintf (stream, "M\tCommLoad[%ld]=%f\n",
-             (long) distval, (double) commdist[distval] / (double) commload);
+    fprintf (stream, "M\tCommLoad[" ANUMSTRING "]=%f\n",
+             (Anum) distval, (double) commdist[distval] / (double) commload);
 
   diammin = GNUMMAX;
   diammax = 0;
@@ -344,8 +344,10 @@ FILE * const                  stream)
     if (diamval > diammax)
       diammax = diamval;
   }
-  fprintf (stream, "M\tPartDiam\tmin=%ld\tmax=%ld\tavg=%lf\n",
-           (long) diammin, (long) diammax, (double) diamsum / (double) mapnbr);
+  fprintf (stream, "M\tPartDiam\tmin=" GNUMSTRING "\tmax=" GNUMSTRING "\tavg=%lf\n",
+           (Gnum) diammin,
+           (Gnum) diammax,
+           (double) diamsum / (double) mapnbr);
 
   memFree (domntab);                              /* Free group leader */
 

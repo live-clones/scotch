@@ -44,7 +44,7 @@
 /**                # Version 5.0  : from : 25 jun 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 20 apr 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 jul 2010     **/
 /**                                                        **/
 /**   NOTES      : # The cost analysis routine leaves the  **/
 /**                  memory management to malloc and free  **/
@@ -245,8 +245,8 @@ FILE * restrict const         stream)
   }
   statdat.heigdlt /= (double) statdat.heignbr;
 
-  o = (fprintf (stream, "O\tLeaf=%ld\nO\tHeight min=%ld\tmax=%ld\tavg=%f\tdlt=%f (%5.2f)\n", /* Write tree height statistics */
-                (long) statdat.heignbr, (long) statdat.heigmin, (long) statdat.heigmax,
+  o = (fprintf (stream, "O\tLeaf=" SCOTCH_NUMSTRING "\nO\tHeight min=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tavg=%f\tdlt=%f (%5.2f)\n", /* Write tree height statistics */
+                (SCOTCH_Num) statdat.heignbr, (SCOTCH_Num) statdat.heigmin, (SCOTCH_Num) statdat.heigmax,
                 statdat.heigavg, statdat.heigdlt, ((statdat.heigdlt / statdat.heigavg) * (double) 100.0L)) == EOF);
 
   o |= (fprintf (stream, "O\tNNZ=%e\nO\tOPC=%e\n",

@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to   : 20 feb 2008     **/
 /**                # Version 5.1  : from : 30 nov 2007     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 26 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,6 +77,15 @@ typedef DUMMYIDX SCOTCH_Idx;
 typedef DUMMYINT SCOTCH_Num;
 
 #define SCOTCH_NUMMAX               DUMMYMAXINT
+#define SCOTCH_NUMSTRING            DUMMYNUMSTRING
+
+/*+ Strategy string parametrization values +*/
+
+#define SCOTCH_STRATQUALITY         1
+#define SCOTCH_STRATSPEED           2
+#define SCOTCH_STRATBALANCE         4
+#define SCOTCH_STRATSAFETY          8
+#define SCOTCH_STRATSCALABILITY     16
 
 /*+ Opaque objects. The dummy sizes of these
 objects, computed at compile-time by program
@@ -160,6 +169,7 @@ int                         SCOTCH_archVcmplt   (SCOTCH_Arch * const);
 int                         SCOTCH_archVhcub    (SCOTCH_Arch * const);
 
 #ifdef SCOTCH_PTSCOTCH
+SCOTCH_Dgraph *             SCOTCH_dgraphAlloc  (void);
 int                         SCOTCH_dgraphInit   (SCOTCH_Dgraph * const, MPI_Comm);
 void                        SCOTCH_dgraphExit   (SCOTCH_Dgraph * const);
 void                        SCOTCH_dgraphFree   (SCOTCH_Dgraph * const);
@@ -280,12 +290,17 @@ void                        SCOTCH_stratFree    (SCOTCH_Strat * const);
 int                         SCOTCH_stratSave    (const SCOTCH_Strat * const, FILE * const);
 #ifdef SCOTCH_PTSCOTCH
 int                         SCOTCH_stratDgraphMap (SCOTCH_Strat * const, const char * const);
+int                         SCOTCH_stratDgraphMapBuild (SCOTCH_Strat * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const double);
 int                         SCOTCH_stratDgraphOrder (SCOTCH_Strat * const, const char * const);
+int                         SCOTCH_stratDgraphOrderBuild (SCOTCH_Strat * const, const SCOTCH_Num, const SCOTCH_Num, const double);
 #endif /* SCOTCH_PTSCOTCH */
 int                         SCOTCH_stratGraphBipart (SCOTCH_Strat * const, const char * const);
 int                         SCOTCH_stratGraphMap (SCOTCH_Strat * const, const char * const);
+int                         SCOTCH_stratGraphMapBuild (SCOTCH_Strat * const, const SCOTCH_Num, const SCOTCH_Num, const double);
 int                         SCOTCH_stratGraphOrder (SCOTCH_Strat * const, const char * const);
+int                         SCOTCH_stratGraphOrderBuild (SCOTCH_Strat * const, const SCOTCH_Num, const double);
 int                         SCOTCH_stratMeshOrder (SCOTCH_Strat * const, const char * const);
+int                         SCOTCH_stratMeshOrderBuild (SCOTCH_Strat * const, const SCOTCH_Num, const double);
 
 void                        SCOTCH_memoryTrace  (void);
 void                        SCOTCH_memoryUntrace (void);

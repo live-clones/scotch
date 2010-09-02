@@ -48,7 +48,7 @@
 /**                # Version 5.0  : from : 19 dec 2006     **/
 /**                                 to     04 aug 2007     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to     29 may 2010     **/
+/**                                 to     14 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,29 +74,6 @@
 /* the graph ordering routines.     */
 /*                                  */
 /************************************/
-
-/*+ This routine parses the given
-*** graph ordering strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
-
-int
-SCOTCH_stratGraphOrder (
-SCOTCH_Strat * const        stratptr,
-const char * const          string)
-{
-  if (*((Strat **) stratptr) != NULL)
-    stratExit (*((Strat **) stratptr));
-
-  if ((*((Strat **) stratptr) = stratInit (&hgraphorderststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratGraphOrder: error in ordering strategy");
-    return     (1);
-  }
-
-  return (0);
-}
 
 /*+ This routine initializes an API ordering
 *** with respect to the given source graph
@@ -273,6 +250,13 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   srcgrafptr = (Graph *) grafptr;
   libordeptr = (LibOrder *) ordeptr;              /* Get ordering */
 
+#ifdef SCOTCH_DEBUG_GRAPH2
+  if (graphCheck (srcgrafptr) != 0) {
+    errorPrint ("SCOTCH_graphOrderComputeList: invalid input graph");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_GRAPH2 */
+
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if ((listnbr < 0) || (listnbr > srcgrafptr->vertnbr)) {
     errorPrint ("SCOTCH_graphOrderComputeList: invalid parameters (1)");
@@ -288,7 +272,8 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   }
 
   if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&hgraphorderststratab, "c{rat=0.7,cpr=n{sep=/(vert>240)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}};,ole=f{cmin=0,cmax=100000,frat=0.0},ose=g},unc=n{sep=/(vert>240)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=(|h{pass=10})f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
+    SCOTCH_stratGraphOrderBuild (stratptr, SCOTCH_STRATQUALITY, 0.2);
+
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hgraphorderststratab) {
     errorPrint ("SCOTCH_graphOrderComputeList: not an ordering strategy");
@@ -466,4 +451,56 @@ const SCOTCH_Graph * const    grafptr,
 const SCOTCH_Ordering * const ordeptr)            /*+ Ordering to check +*/
 {
   return (orderCheck (&((LibOrder *) ordeptr)->o));
+}
+
+/*+ This routine parses the given
+*** graph ordering strategy.
+*** It returns:
+*** - 0   : if string successfully scanned.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratGraphOrder (
+SCOTCH_Strat * const        stratptr,
+const char * const          string)
+{
+  if (*((Strat **) stratptr) != NULL)
+    stratExit (*((Strat **) stratptr));
+
+  if ((*((Strat **) stratptr) = stratInit (&hgraphorderststratab, string)) == NULL) {
+    errorPrint ("SCOTCH_stratGraphOrder: error in ordering strategy");
+    return     (1);
+  }
+
+  return (0);
+}
+
+/*+ This routine provides predefined
+*** ordering strategies.
+*** It returns:
+*** - 0   : if string successfully initialized.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratGraphOrderBuild (
+SCOTCH_Strat * const        stratptr,             /*+ Strategy to create      +*/
+const SCOTCH_Num            flagval,              /*+ Desired characteristics +*/
+const double                balrat)               /*+ Desired imbalance ratio +*/
+{
+  char                bufftab[8192];              /* Should be enough */
+  char                bbaltab[32];
+
+  strcpy (bufftab, "c{rat=0.7,cpr=n{sep=/(vert>240)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}};,ole=f{cmin=0,cmax=100000,frat=0.0},ose=g},unc=n{sep=/(vert>240)?m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}|m{type=h,rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
+
+  sprintf (bbaltab, "%lf", balrat);
+  stringSubst (bufftab, "<BBAL>", bbaltab);
+
+  if (SCOTCH_stratGraphOrder (stratptr, bufftab) != 0) {
+    errorPrint ("SCOTCH_stratGraphOrderBuild: error in sequential ordering strategy");
+    return     (1);
+  }
+
+  return (0);
 }

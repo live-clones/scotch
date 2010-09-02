@@ -43,7 +43,7 @@
 /**                # Version 5.0  : from : 13 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY,dZ) mesh   **/
 /**                  are numbered as terminals so that     **/
@@ -136,7 +136,7 @@ char *                      argv[])
         case 'b' :
           baseval = (SCOTCH_Num) atol (&argv[i][2]);
           if ((baseval < 0) || (baseval > 1)) {
-            errorPrint ("main: invalid base value (%ld)", (long) baseval);
+            errorPrint ("main: invalid base value (" SCOTCH_NUMSTRING ")", (SCOTCH_Num) baseval);
           }
           break;
         case 'G' :                                /* Output the geometry */
@@ -168,49 +168,49 @@ char *                      argv[])
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
   if (flagval & C_FLAGTORUS) {                    /* Build a torus */
-    fprintf (C_filepntrsrcout, "0\n%ld\t%ld\n%ld\t000\n",
-             (long) (d[0] * d[1] * d[2]),         /* Print number of vertices        */
-             (long) ((6 * d[0] * d[1] * d[2])      - /* Print number of edges (arcs) */
-                     ((d[0] < 3) ? (2 * d[1] * d[2]) : 0) -
-                     ((d[1] < 3) ? (2 * d[0] * d[2]) : 0) -
-                     ((d[2] < 3) ? (2 * d[0] * d[1]) : 0)),
-             (long) baseval);
+    fprintf (C_filepntrsrcout, "0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t000\n",
+             (SCOTCH_Num) (d[0] * d[1] * d[2]),   /* Print number of vertices              */
+             (SCOTCH_Num) ((6 * d[0] * d[1] * d[2])      - /* Print number of edges (arcs) */
+                           ((d[0] < 3) ? (2 * d[1] * d[2]) : 0) -
+                           ((d[1] < 3) ? (2 * d[0] * d[2]) : 0) -
+                           ((d[2] < 3) ? (2 * d[0] * d[1]) : 0)),
+             (SCOTCH_Num) baseval);
 
     for (c[2] = 0; c[2] < d[2]; c[2] ++) {        /* Output neighbor list */
       for (c[1] = 0; c[1] < d[1]; c[1] ++) {
         for (c[0] = 0; c[0] < d[0]; c[0] ++) {
-          fprintf (C_filepntrsrcout, "%ld",
-                   (long) (((d[0] > 2) ? 3 : d[0]) + /* Output number of neighbors */
-                           ((d[1] > 2) ? 3 : d[1]) +
-                           ((d[2] > 2) ? 3 : d[2]) - 3));
+          fprintf (C_filepntrsrcout, SCOTCH_NUMSTRING,
+                   (SCOTCH_Num) (((d[0] > 2) ? 3 : d[0]) + /* Output number of neighbors */
+                                 ((d[1] > 2) ? 3 : d[1]) +
+                                 ((d[2] > 2) ? 3 : d[2]) - 3));
           if (d[2] > 2)
-            fprintf (C_filepntrsrcout, "\t%ld",   /* Output the neighbors */
-                     (long) ((((c[2] + d[2] - 1) % d[2]) * d[1] + c[1]) * d[0] + c[0] + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING, /* Output the neighbors */
+                     (SCOTCH_Num) ((((c[2] + d[2] - 1) % d[2]) * d[1] + c[1]) * d[0] + c[0] + baseval));
           if (d[1] > 2)
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) ((c[2] * d[1] + ((c[1] + d[1] - 1) % d[1])) * d[0] + c[0] + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) ((c[2] * d[1] + ((c[1] + d[1] - 1) % d[1])) * d[0] + c[0] + baseval));
           if (d[0] > 2)
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) (((c[2] * d[1] + c[1]) * d[0] + (c[0] + d[0] - 1) % d[0])) + baseval);
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) (((c[2] * d[1] + c[1]) * d[0] + (c[0] + d[0] - 1) % d[0])) + baseval);
           if (d[0] > 1)
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) ((c[2] * d[1] + c[1]) * d[0] + ((c[0] + 1) % d[0]) + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) ((c[2] * d[1] + c[1]) * d[0] + ((c[0] + 1) % d[0]) + baseval));
           if (d[1] > 1)
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) ((c[2] * d[1] + ((c[1] + 1) % d[1])) * d[0] + c[0] + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) ((c[2] * d[1] + ((c[1] + 1) % d[1])) * d[0] + c[0] + baseval));
           if (d[2] > 1)
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) ((((c[2] + 1) % d[2]) * d[1] + c[1]) * d[0] + c[0] + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) ((((c[2] + 1) % d[2]) * d[1] + c[1]) * d[0] + c[0] + baseval));
           fprintf (C_filepntrsrcout, "\n");
         }
       }
     }
   }
   else {                                          /* Build a mesh */
-    fprintf (C_filepntrsrcout, "0\n%ld\t%ld\n%ld\t000\n",
-             (long) (d[0] * d[1] * d[2]),
-             (long) ((d[0] * d[1] * d[2] * 3 - (d[0] * d[1] + d[0] * d[2] + d[1] * d[2])) * 2),
-             (long) baseval);
+    fprintf (C_filepntrsrcout, "0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t000\n",
+             (SCOTCH_Num) (d[0] * d[1] * d[2]),
+             (SCOTCH_Num) ((d[0] * d[1] * d[2] * 3 - (d[0] * d[1] + d[0] * d[2] + d[1] * d[2])) * 2),
+             (SCOTCH_Num) baseval);
 
     for (c[2] = 0; c[2] < d[2]; c[2] ++) {        /* Output neighbor list */
       for (c[1] = 0; c[1] < d[1]; c[1] ++) {
@@ -223,41 +223,41 @@ char *                      argv[])
                    ((c[2] == 0)          ? 0 : 1) +
                    ((c[2] == (d[2] - 1)) ? 0 : 1));
           if (c[2] != 0)                          /* Output the neighbors */
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) (((c[2] - 1) * d[1] + c[1]) * d[0] + c[0] + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) (((c[2] - 1) * d[1] + c[1]) * d[0] + c[0] + baseval));
           if (c[1] != 0)
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) ((c[2] * d[1] + c[1] - 1) * d[0] + c[0] + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) ((c[2] * d[1] + c[1] - 1) * d[0] + c[0] + baseval));
           if (c[0] != 0)
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) ((c[2] * d[1] + c[1]) * d[0] + c[0] - 1 + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) ((c[2] * d[1] + c[1]) * d[0] + c[0] - 1 + baseval));
           if (c[0] != (d[0] - 1))
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) ((c[2] * d[1] + c[1]) * d[0] + c[0] + 1 + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) ((c[2] * d[1] + c[1]) * d[0] + c[0] + 1 + baseval));
           if (c[1] != (d[1] - 1))
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) ((c[2] * d[1] + c[1] + 1) * d[0] + c[0] + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) ((c[2] * d[1] + c[1] + 1) * d[0] + c[0] + baseval));
           if (c[2] != (d[2] - 1))
-            fprintf (C_filepntrsrcout, "\t%ld",
-                     (long) (((c[2] + 1) * d[1] + c[1]) * d[0] + c[0] + baseval));
+            fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+                     (SCOTCH_Num) (((c[2] + 1) * d[1] + c[1]) * d[0] + c[0] + baseval));
           fprintf (C_filepntrsrcout, "\n");
         }
       }
     }
   }
 
-  if (flagval & C_FLAGGEOOUT) {                   /* If geometry is wanted       */
-   fprintf (C_filepntrgeoout, "3\n%ld\n",         /* Output geometry file header */
-            (long) (d[0] * d[1] * d[2]));
+  if (flagval & C_FLAGGEOOUT) {                   /* If geometry is wanted                */
+   fprintf (C_filepntrgeoout, "3\n" SCOTCH_NUMSTRING "\n", /* Output geometry file header */
+            (SCOTCH_Num) (d[0] * d[1] * d[2]));
 
     for (c[2] = 0; c[2] < d[2]; c[2] ++) {        /* Output mesh coordinates */
       for (c[1] = 0; c[1] < d[1]; c[1] ++) {
         for (c[0] = 0; c[0] < d[0]; c[0] ++)
-          fprintf (C_filepntrgeoout, "%ld\t%ld\t%ld\t%ld\n",
-                   (long) ((c[2] * d[1] + c[1]) * d[0] + c[0] + baseval),
-                   (long) c[0],
-                   (long) (d[1] - 1 - c[1]),
-                   (long) c[2]);
+          fprintf (C_filepntrgeoout, SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n",
+                   (SCOTCH_Num) ((c[2] * d[1] + c[1]) * d[0] + c[0] + baseval),
+                   (SCOTCH_Num) c[0],
+                   (SCOTCH_Num) (d[1] - 1 - c[1]),
+                   (SCOTCH_Num) c[2]);
       }
     }
   }

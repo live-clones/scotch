@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     19 jan 2004     **/
 /**                # Version 5.0  : from : 13 sep 2006     **/
 /**                                 to     27 feb 2008     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -222,29 +224,29 @@ const char * const            dataptr)            /* No use           */
   dimnnbr = geomptr->dimnnbr;
 
   o = 0;
-  if (geomptr->geomtab != NULL) {                 /* If geometrical data present */
-    o = (fprintf (filegeoptr, "%ld\n%ld\n",       /* Output file header          */
-                  (long) geomptr->dimnnbr,
-                  (long) meshptr->vnodnbr) == EOF);
+  if (geomptr->geomtab != NULL) {                 /* If geometrical data present     */
+    o = (fprintf (filegeoptr, GNUMSTRING "\n" GNUMSTRING "\n", /* Output file header */
+                  (Gnum) geomptr->dimnnbr,
+                  (Gnum) meshptr->vnodnbr) == EOF);
 
     switch (dimnnbr) {                            /* Output geometry data */
       case 1 :
         for (vnodnum = meshptr->vnodbas; (o == 0) && (vnodnum < meshptr->vnodnnd); vnodnum ++)
-          o |= (fprintf (filegeoptr, "%ld\t%lf\n",
-                         (long) ((meshptr->vlbltax != NULL) ? meshptr->vlbltax[vnodnum] : vnodnum),
+          o |= (fprintf (filegeoptr, GNUMSTRING "\t%lf\n",
+                         (Gnum) ((meshptr->vlbltax != NULL) ? meshptr->vlbltax[vnodnum] : vnodnum),
                          (double) geomptr->geomtab[(vnodnum - meshptr->vnodbas) * dimnnbr]) == EOF);
         break;
       case 2 :
         for (vnodnum = meshptr->vnodbas; (o == 0) && (vnodnum < meshptr->vnodnnd); vnodnum ++)
-          o |= (fprintf (filegeoptr, "%ld\t%lf\t%lf\n",
-                         (long) ((meshptr->vlbltax != NULL) ? meshptr->vlbltax[vnodnum] : vnodnum),
+          o |= (fprintf (filegeoptr, GNUMSTRING "\t%lf\t%lf\n",
+                         (Gnum) ((meshptr->vlbltax != NULL) ? meshptr->vlbltax[vnodnum] : vnodnum),
                          (double) geomptr->geomtab[(vnodnum - meshptr->vnodbas) * dimnnbr],
                          (double) geomptr->geomtab[(vnodnum - meshptr->vnodbas) * dimnnbr + 1]) == EOF);
         break;
       case 3 :
         for (vnodnum = meshptr->vnodbas; (o == 0) && (vnodnum < meshptr->vnodnnd); vnodnum ++)
-          o |= (fprintf (filegeoptr, "%ld\t%lf\t%lf\t%lf\n",
-                         (long) ((meshptr->vlbltax != NULL) ? meshptr->vlbltax[vnodnum] : vnodnum),
+          o |= (fprintf (filegeoptr, GNUMSTRING "\t%lf\t%lf\t%lf\n",
+                         (Gnum) ((meshptr->vlbltax != NULL) ? meshptr->vlbltax[vnodnum] : vnodnum),
                          (double) geomptr->geomtab[(vnodnum - meshptr->vnodbas) * dimnnbr],
                          (double) geomptr->geomtab[(vnodnum - meshptr->vnodbas) * dimnnbr + 1],
                          (double) geomptr->geomtab[(vnodnum - meshptr->vnodbas) * dimnnbr + 2]) == EOF);

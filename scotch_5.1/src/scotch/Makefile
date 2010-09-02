@@ -88,6 +88,7 @@ scotch				:	clean
 
 ptscotch			:	clean
 					$(MAKE) CC="$(CCP)" SCOTCHLIB=ptscotch	\
+					dggath$(EXE)				\
 					dgmap$(EXE)				\
 					dgord$(EXE)				\
 					dgpart$(EXE)				\
@@ -100,12 +101,12 @@ install				:
 					-$(LN) $(bindir)/gmap$(EXE) $(bindir)/gpart$(EXE)
 
 ptinstall			:
-					-$(CP) dgmap$(EXE) dgord$(EXE) dgscat$(EXE) dgtst$(EXE) $(bindir)
+					-$(CP) dggath$(EXE) dgmap$(EXE) dgord$(EXE) dgscat$(EXE) dgtst$(EXE) $(bindir)
 					-$(RM) $(bindir)/dgpart$(EXE)
 					-$(LN) $(bindir)/dgmap$(EXE) $(bindir)/dgpart$(EXE)
 
 clean				:
-					-$(RM) *~ *$(OBJ) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) *gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) *gord$(EXE) gotst$(EXE) gout$(EXE) *gpart$(EXE) *gscat$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE)
+					-$(RM) *~ *$(OBJ) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) *ggath$(EXE) *gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) *gord$(EXE) gotst$(EXE) gout$(EXE) *gpart$(EXE) *gscat$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE)
 
 realclean			:	clean
 
@@ -176,6 +177,14 @@ atst$(EXE)			:	atst.c					\
 					$(libdir)/libscotch$(LIB)		\
 					$(libdir)/libscotcherrexit$(LIB)	\
 					atst.h
+
+dggath$(EXE)			:	dggath.c				\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/ptscotch.h		\
+					$(libdir)/libptscotch$(LIB)		\
+					$(libdir)/libptscotcherrexit$(LIB)	\
+					dggath.h
 
 dgmap$(EXE)			:	dgmap.c					\
 					../libscotch/module.h			\

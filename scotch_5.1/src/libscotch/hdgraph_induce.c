@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 19 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 27 jun 2008     **/
-/**                                 to   : 11 nov 2008     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -128,8 +128,8 @@ Hdgraph * restrict const    indgrafptr)
   cheklocval =
   chekglbval = 0;
   if (memAllocGroup ((void **) (void *)           /* Allocate distributed graph private data */
-                     &indgrafptr->s.procdsptab, (size_t) ((orggrafptr->s.procglbnbr + 1) * sizeof (int)),
-                     &indgrafptr->s.proccnttab, (size_t) (orggrafptr->s.procglbnbr       * sizeof (int)),
+                     &indgrafptr->s.procdsptab, (size_t) ((orggrafptr->s.procglbnbr + 1) * sizeof (Gnum)),
+                     &indgrafptr->s.proccnttab, (size_t) (orggrafptr->s.procglbnbr       * sizeof (Gnum)),
                      &indgrafptr->s.procngbtab, (size_t) (orggrafptr->s.procglbnbr       * sizeof (int)),
                      &indgrafptr->s.procrcvtab, (size_t) (orggrafptr->s.procglbnbr       * sizeof (int)),
                      &indgrafptr->s.procsndtab, (size_t) (orggrafptr->s.procglbnbr       * sizeof (int)), NULL) == NULL) {
@@ -137,8 +137,8 @@ Hdgraph * restrict const    indgrafptr)
     cheklocval = 1;
   }
   else if (memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data */
-                          &indgrafptr->s.vertloctax, (size_t) ((indlistnbr + 1) * sizeof (Gnum)), /* Compact vertex array for halo vertices */
-                          &indgrafptr->s.vendloctax, (size_t) (indlistnbr       * sizeof (Gnum)), /* Vertex end array for non-halo vertices */
+                          &indgrafptr->s.vertloctax, (size_t) ((indlistnbr + 2) * sizeof (Gnum)), /* TRICK: "+2" because never (vendloctax == (vertloctax + 1)), even for empty graphs */
+                          &indgrafptr->s.vendloctax, (size_t) (indlistnbr       * sizeof (Gnum)), /* Vertex end array for non-halo vertices                                            */
                           &indgrafptr->s.vnumloctax, (size_t) (indlistnbr       * sizeof (Gnum)),
                           &indgrafptr->s.veloloctax, (size_t) (indvelolocnbr    * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hdgraphInduceList: out of memory (2)");
@@ -164,8 +164,8 @@ Hdgraph * restrict const    indgrafptr)
 
     dummyval   = -1;
     chekglbval = 1;
-    if (MPI_Allgather (&dummyval, 1, MPI_INT,     /* Use proccnttab of orggraf as dummy receive array (will be regenerated) */
-                       orggrafptr->s.proccnttab, 1, MPI_INT, indgrafptr->s.proccomm) != MPI_SUCCESS)
+    if (MPI_Allgather (&dummyval, 1, GNUM_MPI,    /* Use proccnttab of orggraf as dummy receive array (will be regenerated) */
+                       orggrafptr->s.proccnttab, 1, GNUM_MPI, indgrafptr->s.proccomm) != MPI_SUCCESS)
       errorPrint ("hdgraphInduceList: communication error (1)");
 
     for (procngbnum = 1; procngbnum <= orggrafptr->s.procglbnbr; procngbnum ++) /* Rebuild proccnttab of orggraf */
@@ -173,9 +173,9 @@ Hdgraph * restrict const    indgrafptr)
   }
   else {
     indgrafptr->s.procvrttab = indgrafptr->s.procdsptab; /* Graph does not have holes */
-    indgrafptr->s.procdsptab[0] = (int) indlistnbr;
-    if (MPI_Allgather (&indgrafptr->s.procdsptab[0], 1, MPI_INT,
-                       &indgrafptr->s.proccnttab[0], 1, MPI_INT, indgrafptr->s.proccomm) != MPI_SUCCESS) {
+    indgrafptr->s.procdsptab[0] = indlistnbr;
+    if (MPI_Allgather (&indgrafptr->s.procdsptab[0], 1, GNUM_MPI,
+                       &indgrafptr->s.proccnttab[0], 1, GNUM_MPI, indgrafptr->s.proccomm) != MPI_SUCCESS) {
       errorPrint ("hdgraphInduceList: communication error (2)");
       chekglbval = 1;
     }

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 18 may 2004     **/
 /**                                 to     18 may 2004     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,12 +91,12 @@ Vgraph * restrict const             grafptr)      /*+ Separation graph +*/
     return     (1);
   }
 
-  fprintf (fileptr, "%ld\n",                      /* Output size of mapping; test if failure later, in main loop */
-           (long) grafptr->s.vertnbr);
+  fprintf (fileptr, GNUMSTRING "\n",              /* Output size of mapping; test if failure later, in main loop */
+           (Gnum) grafptr->s.vertnbr);
 
   for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) {
-    if (fprintf (fileptr, "%ld\t%d\n",
-                 (long) ((grafptr->s.vnumtax != NULL) ? grafptr->s.vnumtax[vertnum] : vertnum),
+    if (fprintf (fileptr, GNUMSTRING "\t%d\n",
+                 (Gnum) ((grafptr->s.vnumtax != NULL) ? grafptr->s.vnumtax[vertnum] : vertnum),
                  (int) grafptr->parttax[vertnum]) <= 0) {
       errorPrint ("vgraphSeparateVw: bad output");
       fclose     (fileptr);

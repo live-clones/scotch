@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                result obtained.                        **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 27 dec 2007     **/
-/**                                 to     26 nov 2008     **/
+/**                                 to     30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,6 +56,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "comm.h"
 #include "arch.h"
 #include "parser.h"
 #include "graph.h"
@@ -240,7 +241,7 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
   dgrfptr->commglbloadextn0 = reduloctab[7];
   dgrfptr->fronglbnbr       = reduloctab[8];
 
-  if (MPI_Scatterv (cgrfdat.parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, /* No base for sending as procdsptab holds based values */
+  if (commScatterv (cgrfdat.parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, /* No base for sending as procdsptab holds based values */
                     dgrfptr->partgsttax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GRAPHPART_MPI,
                     bestprocnum, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("bdgraphBipartSq: communication error (5)");

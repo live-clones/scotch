@@ -1,4 +1,4 @@
-## Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -32,7 +32,7 @@
 
 VERSION	= 5
 RELEASE = 1
-PATCHLEVEL = 9
+PATCHLEVEL = 10
 
 .PHONY				:	clean	default	install	ptscotch	realclean	required	scotch
 

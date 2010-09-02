@@ -47,7 +47,7 @@
 /**                # Version 3.4  : from : 03 feb 2000     **/
 /**                                 to   : 03 feb 2000     **/
 /**                # Version 5.1  : from : 16 dec 2007     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -137,7 +137,9 @@ char *                      argv[])
 
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
-  fprintf (C_filepntrtgtout, "cmpltw\t2\t%ld\t%ld\n", (long) wght[0], (long) wght[1]); /* Print target description */
+  fprintf (C_filepntrtgtout, "cmpltw\t2\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n", /* Print target description */
+           (SCOTCH_Num) wght[0],
+           (SCOTCH_Num) wght[1]);
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 

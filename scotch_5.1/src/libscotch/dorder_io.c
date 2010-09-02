@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 27 apr 2006     **/
 /**                                 to     13 jun 2008     **/
+/**                # Version 5.1  : from : 30 jul 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,6 +53,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "comm.h"
 #include "dgraph.h"
 #include "dorder.h"
 #include "order.h"
@@ -138,7 +141,7 @@ FILE * restrict const         stream)
 #endif /* SCOTCH_DEBUG_DORDER1 */
 
   if (grafptr->vlblloctax != NULL) {
-    if (MPI_Gatherv (grafptr->vlblloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI,
+    if (commGatherv (grafptr->vlblloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI,
                      vlbltax, grafptr->proccnttab, grafptr->procdsptab, GNUM_MPI, protnum, grafptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dorderSave: communication error (3)");
       return     (1);
@@ -188,7 +191,7 @@ FILE * restrict const         stream)
       return     (1);
     }
 
-    if (fprintf (stream, "%ld\n", (long) ordeptr->vnodglbnbr) == EOF) {
+    if (fprintf (stream, GNUMSTRING "\n", (Gnum) ordeptr->vnodglbnbr) == EOF) {
       errorPrint ("dorderSave: bad output (1)");
       memFree    (permtab);
       return     (1);
@@ -200,9 +203,9 @@ FILE * restrict const         stream)
       vlbltax -= ordeptr->baseval;                /* Base label array            */
 
       for (vertnum = 0; vertnum < ordeptr->vnodglbnbr; vertnum ++) {
-        if (fprintf (stream, "%ld\t%ld\n",
-                     (long) vlbltax[vertnum + ordeptr->baseval],
-                     (long) vlbltax[permtab[vertnum]]) == EOF) {
+        if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
+                     (Gnum) vlbltax[vertnum + ordeptr->baseval],
+                     (Gnum) vlbltax[permtab[vertnum]]) == EOF) {
           errorPrint ("dorderSave: bad output (2)");
           memFree    (permtab);
           return     (1);
@@ -211,9 +214,9 @@ FILE * restrict const         stream)
     }
     else {
       for (vertnum = 0; vertnum < ordeptr->vnodglbnbr; vertnum ++) {
-        if (fprintf (stream, "%ld\t%ld\n",
-                     (long) (vertnum + ordeptr->baseval),
-                     (long) permtab[vertnum]) == EOF) {
+        if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
+                     (Gnum) (vertnum + ordeptr->baseval),
+                     (Gnum) permtab[vertnum]) == EOF) {
           errorPrint ("dorderSave: bad output (3)");
           memFree    (permtab);
           return     (1);

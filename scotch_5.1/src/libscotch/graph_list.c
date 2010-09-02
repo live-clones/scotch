@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,6 +52,8 @@
 /**                                 to     15 sep 1998     **/
 /**                # Version 4.0  : from : 10 dec 2001     **/
 /**                                 to     10 dec 2001     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -225,9 +227,9 @@ FILE *              stream)
 
   o = (intSave (stream, listptr->vnumnbr) == 0);  /* Write number of vertices */
   for (vnumnum = 0; (o == 0) && (vnumnum < listptr->vnumnbr); vnumnum ++) {
-    o = (fprintf (stream, "%c%ld",
+    o = (fprintf (stream, "%c" GNUMSTRING,
                   ((vnumnum % 8) == 0) ? '\n' : '\t',
-                  (long) listptr->vnumtab[vnumnum]) == EOF);
+                  (Gnum) listptr->vnumtab[vnumnum]) == EOF);
   }
   o |= (fprintf (stream, "\n") == EOF);
 

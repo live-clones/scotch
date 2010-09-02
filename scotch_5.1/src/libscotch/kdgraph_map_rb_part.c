@@ -1,4 +1,4 @@
-/* Copyright 2008-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                processes are doing.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 21 jun 2008     **/
-/**                                 to     27 jan 2009     **/
+/**                                 to     30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,8 +100,6 @@ const Strat * restrict const            stratptr)
   Graph * restrict          cgrfptr;
   Kgraph                    kgrfdat;              /* Centralized mapping graph */
   DmappingFrag * restrict   fragptr;
-  Anum                      domnsiz;
-  int                       o;
 
   cgrfptr = &grafptr->data.cgrfdat;
   if (mapInit2 (&kgrfdat.m, cgrfptr->baseval, cgrfptr->vertnbr, &mappptr->archdat, &grafptr->domnorg) != 0) {
@@ -109,51 +107,35 @@ const Strat * restrict const            stratptr)
     return     (1);
   }
 
-  kgrfdat.s          = *cgrfptr;                  /* Clone source graph        */
-  kgrfdat.s.flagval &= ~GRAPHFREETABS;            /* Do not allow freeing      */
-  kgrfdat.s.vnumtax  = NULL;                      /* Remove index array if any */
-
-  domnsiz = archDomSize (&mappptr->archdat, &grafptr->domnorg);
-  if ((kgrfdat.comploadavg = (Gnum *) memAlloc (domnsiz * sizeof (Gnum) * 2)) == NULL) {
-    errorPrint ("kdgraphMapRbPartSequ: out of memory (1)");
-    mapExit    (&kgrfdat.m);
+  if (kgraphInit (&kgrfdat, cgrfptr, &kgrfdat.m) != 0) {
+    errorPrint ("kdgraphMapRbPartSequ: cannot initialize centralized graph");
     return     (1);
   }
-  kgrfdat.comploaddlt    = kgrfdat.comploadavg + domnsiz;
-  kgrfdat.comploadavg[0] = kgrfdat.s.velosum;
-  kgrfdat.comploaddlt[0] = 0;
-  kgrfdat.fronnbr        = 0;                     /* Frontier handling not implemented yet */
-  kgrfdat.frontab        = NULL;
-  kgrfdat.commload       = 0;
+  kgrfdat.s.flagval = cgrfptr->flagval;           /* Free sequential graph along with mapping data */
+  kgrfdat.s.vnumtax = NULL;                       /* Remove index array if any                     */
 
-  o = kgraphMapSt (&kgrfdat, stratptr);           /* Compute sequential mapping */
-
-  kgraphExit (&kgrfdat, &kgrfdat.m);
-
-  if (o != 0) {
-    mapExit (&kgrfdat.m);
-    return  (1);
+  if (kgraphMapSt (&kgrfdat, stratptr) != 0) {    /* Compute sequential mapping */
+    kgraphExit (&kgrfdat);
+    return     (1);
   }
 
   if (((fragptr = memAlloc (sizeof (DmappingFrag))) == NULL) ||
       ((fragptr->vnumtab = memAlloc (cgrfptr->vertnbr * sizeof (Gnum))) == NULL)) {
-    errorPrint ("kdgraphMapRbPartSequ: out of memory (2)");
+    errorPrint ("kdgraphMapRbPartSequ: out of memory");
     if (fragptr != NULL)
       memFree (fragptr);
-    mapExit (&kgrfdat.m);
-    return  (1);
+    kgraphExit (&kgrfdat);
+    return     (1);
   }
 
   fragptr->vertnbr = cgrfptr->vertnbr;
   fragptr->parttab = kgrfdat.m.parttax + kgrfdat.m.baseval;
   fragptr->domnnbr = kgrfdat.m.domnnbr;
   fragptr->domntab = kgrfdat.m.domntab;
-  if (kgrfdat.m.domnmax > kgrfdat.m.domnnbr)
-    fragptr->domntab = memRealloc (fragptr->domntab, kgrfdat.m.domnnbr * sizeof (ArchDom)); /* Reallocate mapping array */
-
   kgrfdat.m.parttax = NULL;                       /* Keep sequential mapping arrays for distributed mapping fragment */
   kgrfdat.m.domntab = NULL;
-  mapExit (&kgrfdat.m);                           /* Free mapping without some of its arrays */
+  if (kgrfdat.m.domnmax > kgrfdat.m.domnnbr)
+    fragptr->domntab = memRealloc (fragptr->domntab, kgrfdat.m.domnnbr * sizeof (ArchDom)); /* Reallocate mapping array */
 
   if (cgrfptr->vnumtax != NULL)
     memCpy (fragptr->vnumtab, cgrfptr->vnumtax + cgrfptr->baseval, cgrfptr->vertnbr * sizeof (Gnum));
@@ -167,7 +149,7 @@ const Strat * restrict const            stratptr)
 
   dmapAdd (mappptr, fragptr);                     /* Add mapping fragment */
 
-  graphExit (cgrfptr);                            /* Free useless graph */
+  kgraphExit (&kgrfdat);                          /* Free mapping without some of its arrays */
 
   return (0);
 }
