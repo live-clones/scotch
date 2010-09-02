@@ -61,7 +61,7 @@
 /**                # Version 4.0  : from : 10 dec 2003     **/
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
-/**                                 to     25 jun 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -183,16 +183,16 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if (fprintf (stream, "%ld",
-               (long) archptr->levlnbr) == EOF) {
+  if (fprintf (stream, ANUMSTRING,
+               (Anum) archptr->levlnbr) == EOF) {
     errorPrint ("archTleafSave: bad output (1)");
     return     (1);
   }
 
   for (levlnum = 0; levlnum < archptr->levlnbr; levlnum ++) {
-    if (fprintf (stream, " %ld %ld",
-                 (long) archptr->sizetab[levlnum],
-                 (long) archptr->linktab[levlnum]) == EOF) {
+    if (fprintf (stream, " " ANUMSTRING " " ANUMSTRING,
+                 (Anum) archptr->sizetab[levlnum],
+                 (Anum) archptr->linktab[levlnum]) == EOF) {
       errorPrint ("archTleafSave: bad output (2)");
       return     (1);
     }
@@ -381,10 +381,10 @@ const ArchTleaf * const     archptr,
 const ArchTleafDom * const  domnptr,
 FILE * const                stream)
 {
-  if (fprintf (stream, "%ld %ld %ld ",
-               (long) domnptr->levlnum,
-               (long) domnptr->indxmin,
-               (long) domnptr->indxnbr) == EOF) {
+  if (fprintf (stream, ANUMSTRING " " ANUMSTRING " " ANUMSTRING " ",
+               (Anum) domnptr->levlnum,
+               (Anum) domnptr->indxmin,
+               (Anum) domnptr->indxnbr) == EOF) {
     errorPrint ("archTleafDomSave: bad output");
     return     (1);
   }

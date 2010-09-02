@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 25 may 2007     **/
 /**                                 to     18 jun 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     01 mar 2008     **/
+/**                                 to     15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -462,7 +462,8 @@ FILE * const                stream)               /* Output stream              
   for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) {
     colnum = (mapptr->labltab[vertnum] == ~0) ? vertnum : mapptr->labltab[vertnum];
 
-    fprintf (stream, "%ld\n", (long) colnum);     /* Set column value */
+    fprintf (stream, SCOTCH_NUMSTRING "\n",       /* Set column value */
+             (SCOTCH_Num) colnum);
     memset (nonztab, 0, (colnum + 2) * sizeof (SCOTCH_Num));
     for (edgeptr = grafptr->edgetab + grafptr->verttab[colnum];
          edgeptr < grafptr->edgetab + grafptr->vendtab[colnum]; edgeptr ++) {
@@ -474,9 +475,12 @@ FILE * const                stream)               /* Output stream              
       if (nonztab[nonzfrst] != 0) {               /* A non-zero has been found */
         for (nonzlast = nonzfrst; nonztab[nonzlast] != 0; nonzlast ++) ;
         if ((nonzlast - nonzfrst) > 1)            /* Draw row block coefficient */
-          fprintf (stream, "%ld %ld b\n", (long) nonzfrst, (long) (nonzlast - nonzfrst));
+          fprintf (stream, SCOTCH_NUMSTRING " " SCOTCH_NUMSTRING " b\n",
+                   (SCOTCH_Num) nonzfrst,
+                   (SCOTCH_Num) (nonzlast - nonzfrst));
         else
-          fprintf (stream, "%ld c\n", (long) nonzfrst);
+          fprintf (stream, SCOTCH_NUMSTRING " c\n",
+                   (SCOTCH_Num) nonzfrst);
         nonzfrst = nonzlast - 1;
       }
     }
@@ -830,11 +834,11 @@ FILE * const                stream)               /* Output stream              
 
   fprintf (stream, "(nodes\n");                   /* Write node list */
   for (vertnum = 0; vertnum < (grafptr->vertnbr - 1); vertnum ++)
-    fprintf (stream, "%ld%c",
-             (long) (vertnum + grafptr->baseval),
+    fprintf (stream, SCOTCH_NUMSTRING "%c",
+             (SCOTCH_Num) (vertnum + grafptr->baseval),
              ((vertnum & 7) == 7) ? '\n' : '\t');
-  fprintf (stream, "%ld)\n",
-           (long) (vertnum + grafptr->baseval));
+  fprintf (stream, SCOTCH_NUMSTRING ")\n",
+           (SCOTCH_Num) (vertnum + grafptr->baseval));
 
   edgetax = grafptr->edgetab - grafptr->baseval;
   for (vertnum = 0, edgeidx = grafptr->baseval; vertnum < grafptr->vertnbr; vertnum ++) {
@@ -849,10 +853,10 @@ FILE * const                stream)               /* Output stream              
       if (vertend <= vertnum)                     /* True even if baseval=1 and as vertnum unbased */
         continue;
 
-      fprintf (stream, "(edge %ld\t%ld\t%ld)\n",
-               (long) (edgeidx ++),
-               (long) (vertnum + grafptr->baseval),
-               (long) vertend);
+      fprintf (stream, "(edge " SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING ")\n",
+               (SCOTCH_Num) (edgeidx ++),
+               (SCOTCH_Num) (vertnum + grafptr->baseval),
+               (SCOTCH_Num) vertend);
     }
   }
 
@@ -861,8 +865,8 @@ FILE * const                stream)               /* Output stream              
   for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) {
     if (vertnum == (grafptr->vertnbr - 1))
       c = ')';
-    fprintf (stream, "(node %ld\t\"(%lf,%lf,%lf)\")%c",
-             (long) (vertnum + grafptr->baseval),
+    fprintf (stream, "(node " SCOTCH_NUMSTRING "\t\"(%lf,%lf,%lf)\")%c",
+             (SCOTCH_Num) (vertnum + grafptr->baseval),
              (double) geomptr->verttab[vertnum].x,
              (double) geomptr->verttab[vertnum].y,
              (double) geomptr->verttab[vertnum].z,
@@ -877,8 +881,8 @@ FILE * const                stream)               /* Output stream              
       if (vertnum == (grafptr->vertnbr - 1))
         c = ')';
       outColorColor (mapptr->labltab[vertnum], color);
-      fprintf (stream, "(node %ld \"(%d,%d,%d,255)\")%c",
-               (long) (vertnum + grafptr->baseval),
+      fprintf (stream, "(node " SCOTCH_NUMSTRING " \"(%d,%d,%d,255)\")%c",
+               (SCOTCH_Num) (vertnum + grafptr->baseval),
                (int) (color[0] * 255.0),
                (int) (color[1] * 255.0),
                (int) (color[2] * 255.0),
@@ -920,8 +924,8 @@ FILE * const                stream)               /* Output stream              
           distmin = distval;
       }
       distmin = sqrt (distmin) * (0.5 * O_TULMESHDISKRATIO);
-      fprintf (stream, "(node %ld \"(%lf,%lf,%lf)\")%c",
-               (long) (vertnum + grafptr->baseval),
+      fprintf (stream, "(node " SCOTCH_NUMSTRING " \"(%lf,%lf,%lf)\")%c",
+               (SCOTCH_Num) (vertnum + grafptr->baseval),
                distmin, distmin, distmin, c);
     }
     fprintf (stream, "\n");

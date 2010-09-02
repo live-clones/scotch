@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                                 to     21 jan 2004     **/
 /**                # Version 5.0  : from : 13 dec 2006     **/
 /**                                 to     10 sep 2007     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -338,10 +340,10 @@ FILE * const                stream)
   propstr[2] = (grafptr->velotax != NULL) ? '1' : '0';
   propstr[3] = '\0';
 
-  if (fprintf (stream, "0\n%ld\t%ld\n%ld\t%3s\n", /* Write file header */
-               (long) grafptr->vertnbr,
-               (long) grafptr->edgenbr,
-               (long) grafptr->baseval,
+  if (fprintf (stream, "0\n" GNUMSTRING "\t" GNUMSTRING "\n" GNUMSTRING "\t%3s\n", /* Write file header */
+               (Gnum) grafptr->vertnbr,
+               (Gnum) grafptr->edgenbr,
+               (Gnum) grafptr->baseval,
                propstr) == EOF) {
     errorPrint ("graphSave: bad output (1)");
     return     (1);
@@ -352,11 +354,11 @@ FILE * const                stream)
     Gnum                edgenum;
 
     if (grafptr->vlbltax != NULL)                 /* Write vertex label if necessary */
-      o  = (fprintf (stream, "%ld\t", (long) grafptr->vlbltax[vertnum]) == EOF);
+      o  = (fprintf (stream, GNUMSTRING "\t", (Gnum) grafptr->vlbltax[vertnum]) == EOF);
     if (grafptr->velotax != NULL)                 /* Write vertex load if necessary */
-      o |= (fprintf (stream, "%ld\t", (long) grafptr->velotax[vertnum]) == EOF);
+      o |= (fprintf (stream, GNUMSTRING "\t", (Gnum) grafptr->velotax[vertnum]) == EOF);
 
-    o |= (fprintf (stream, "%ld", (long) (grafptr->vendtax[vertnum] - grafptr->verttax[vertnum])) == EOF); /* Write vertex degree */
+    o |= (fprintf (stream, GNUMSTRING, (Gnum) (grafptr->vendtax[vertnum] - grafptr->verttax[vertnum])) == EOF); /* Write vertex degree */
 
     for (edgenum = grafptr->verttax[vertnum];
          (edgenum < grafptr->vendtax[vertnum]) && (o == 0); edgenum ++) {
@@ -364,9 +366,9 @@ FILE * const                stream)
 
       o |= (putc ('\t', stream) == EOF);
       if (grafptr->edlotax != NULL)               /* Write edge load if necessary */
-        o |= (fprintf (stream, "%ld ", (long) grafptr->edlotax[edgenum]) == EOF);
+        o |= (fprintf (stream, GNUMSTRING "\t", (Gnum) grafptr->edlotax[edgenum]) == EOF);
       vertend = grafptr->edgetax[edgenum];
-      o |= (fprintf (stream, "%ld", (long) ((grafptr->vlbltax != NULL) ? grafptr->vlbltax[vertend] : vertend)) == EOF); /* Write edge end */
+      o |= (fprintf (stream, GNUMSTRING, (Gnum) ((grafptr->vlbltax != NULL) ? grafptr->vlbltax[vertend] : vertend)) == EOF); /* Write edge end */
     }
     o |= (putc ('\n', stream) == EOF);
   }

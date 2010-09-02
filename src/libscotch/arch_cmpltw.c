@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                complete graph target architecture.     **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 dec 2007     **/
-/**                                 to     27 aug 2008     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -268,7 +268,7 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if (fprintf (stream, "%ld", (long) archptr->vertnbr) == EOF) {
+  if (fprintf (stream, ANUMSTRING, (Anum) archptr->vertnbr) == EOF) {
     errorPrint ("archCmpltwArchSave: bad output (1)");
     return     (1);
   }
@@ -278,7 +278,7 @@ FILE * restrict const       stream)
 
     for (verttmp = 0; verttmp < archptr->vertnbr; verttmp ++) { /* For all vertex indices: O(n^2) loop but we don't really care */
       if (archptr->velotab[verttmp].vertnum == vertnum) {
-        if (fprintf (stream, " %ld", (long) archptr->velotab[verttmp].veloval) == EOF) {
+        if (fprintf (stream, " " ANUMSTRING, (Anum) archptr->velotab[verttmp].veloval) == EOF) {
           errorPrint ("archCmpltwArchSave: bad output (2)");
           return     (1);
         }
@@ -484,9 +484,9 @@ const ArchCmpltw * const    archptr,
 const ArchCmpltwDom * const domptr,
 FILE * const                stream)
 {
-  if (fprintf (stream, "%ld %ld ",
-               (long) domptr->vertmin,
-               (long) domptr->vertnbr) == EOF) {
+  if (fprintf (stream, ANUMSTRING " " ANUMSTRING " ",
+               (Anum) domptr->vertmin,
+               (Anum) domptr->vertnbr) == EOF) {
     errorPrint ("archCmpltwDomSave: bad output");
     return     (1);
   }

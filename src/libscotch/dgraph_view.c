@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to     20 jun 1998     **/
 /**                # Version 5.0  : from : 16 feb 2005     **/
 /**                                 to   : 15 aug 2006     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to   : 12 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,49 +98,49 @@ FILE * const                  stream)
     if (procngbnbr == proclocnum) {
       fprintf (stream, "Process %d:\n",
 	       proclocnum);
-      fprintf (stream, "  vertglbnbr: %ld\n  vertgstnbr: %ld\n vertgstnnd: %ld\n  vertlocnbr: %ld\n vertlocnnd: %ld\n",
-	       (long) grafptr->vertglbnbr,
-	       (long) grafptr->vertgstnbr,
-	       (long) grafptr->vertgstnnd,
-	       (long) grafptr->vertlocnbr,
-	       (long) grafptr->vertlocnnd);
+      fprintf (stream, "  vertglbnbr: " GNUMSTRING "\n  vertgstnbr: " GNUMSTRING "\n vertgstnnd: " GNUMSTRING "\n  vertlocnbr: " GNUMSTRING "\n vertlocnnd: " GNUMSTRING "\n",
+	       (Gnum) grafptr->vertglbnbr,
+	       (Gnum) grafptr->vertgstnbr,
+	       (Gnum) grafptr->vertgstnnd,
+	       (Gnum) grafptr->vertlocnbr,
+	       (Gnum) grafptr->vertlocnnd);
       fprintf (stream, "  vertloctax:");
       if (grafptr->vendloctax == grafptr->vertloctax + 1) {
 	for (vertlocnum = grafptr->baseval; vertlocnum <= grafptr->vertlocnnd; vertlocnum ++)/**/
-	  fprintf (stream, " %ld",
-		   (long) grafptr->vertloctax[vertlocnum]);
+	  fprintf (stream, " " GNUMSTRING,
+		   (Gnum) grafptr->vertloctax[vertlocnum]);
 	fprintf (stream, " x\n  vendloctax: = vertloctax + 1");
       }
       else {
 	for (vertlocnum = grafptr->baseval; vertlocnum < grafptr->vertlocnnd; vertlocnum ++)
-	  fprintf (stream, " %ld",
-		   (long) grafptr->vertloctax[vertlocnum]);
+	  fprintf (stream, " " GNUMSTRING,
+		   (Gnum) grafptr->vertloctax[vertlocnum]);
 	fprintf (stream, "  vendloctax: x");
 	for (vertlocnum = grafptr->baseval; vertlocnum < grafptr->vertlocnnd; vertlocnum ++)
-	  fprintf (stream, " %ld",
-		   (long) grafptr->vendloctax[vertlocnum]);
+	  fprintf (stream, " " GNUMSTRING,
+		   (Gnum) grafptr->vendloctax[vertlocnum]);
       }
-      fprintf (stream, "\n  edgeglbnbr: %ld\n  edgelocnbr: %ld\n",
-	       (long) grafptr->edgeglbnbr,
-	       (long) grafptr->edgelocnbr);
+      fprintf (stream, "\n  edgeglbnbr: " GNUMSTRING "\n  edgelocnbr: " GNUMSTRING "\n",
+	       (Gnum) grafptr->edgeglbnbr,
+	       (Gnum) grafptr->edgelocnbr);
       fprintf (stream, "  edgeloctax:");
       for (edgelocnum = grafptr->baseval, edgelocptr = grafptr->edgeloctax;
 	   edgelocnum < grafptr->edgelocnbr + grafptr->baseval;
 	   edgelocnum ++, edgelocptr ++)
-	fprintf (stream, " %ld",
-		 (long) *edgelocptr);
+	fprintf (stream, " " GNUMSTRING,
+		 (Gnum) *edgelocptr);
       if ((grafptr->flagval & DGRAPHHASEDGEGST) != 0) {
 	fprintf (stream, "\n  edgegsttax:");
 	for (edgelocnum = grafptr->baseval, edgelocptr = grafptr->edgegsttax;
 	     edgelocnum < grafptr->edgelocnbr + grafptr->baseval;
 	     edgelocnum ++, edgelocptr ++)
-	  fprintf (stream, " %ld",
-		   (long) *edgelocptr);
+	  fprintf (stream, " " GNUMSTRING,
+		   (Gnum) *edgelocptr);
       }
       fprintf (stream, "\n  procdsptab:");
       for (procngbnum = 0; procngbnum <= procglbnbr ; procngbnum ++)
-	fprintf (stream, " %ld",
-		 (long) grafptr->procdsptab[procngbnum]);
+	fprintf (stream, " " GNUMSTRING,
+		 (Gnum) grafptr->procdsptab[procngbnum]);
       fprintf (stream, "\n  procngbnbr: %d",
 	       grafptr->procngbnbr);
       fprintf (stream, "\n  procngbtab:");
@@ -147,16 +149,16 @@ FILE * const                  stream)
 		 grafptr->procngbtab[procngbnum]);
       fprintf (stream, "\n  procrcvtab:");
       for (procngbnum = 0; procngbnum < grafptr->procglbnbr; procngbnum ++)
-	fprintf (stream, " %ld",
-		 (long) grafptr->procrcvtab[procngbnum]);
-      fprintf (stream, "\n  procsndnbr: %ld",
-	       (long) grafptr->procsndnbr);
+	fprintf (stream, " %d",
+		 grafptr->procrcvtab[procngbnum]);
+      fprintf (stream, "\n  procsndnbr: %d",
+	       grafptr->procsndnbr);
       fprintf (stream, "\n  procsndtab:");
       for (procngbnum = 0; procngbnum < grafptr->procglbnbr; procngbnum ++)
-	fprintf (stream, " %ld",
-		 (long) grafptr->procsndtab[procngbnum]);
-      fprintf (stream, "\n  degrglbmax: %ld",
-	       (long) grafptr->degrglbmax);
+	fprintf (stream, " %d",
+		 grafptr->procsndtab[procngbnum]);
+      fprintf (stream, "\n  degrglbmax: " GNUMSTRING,
+	       (Gnum) grafptr->degrglbmax);
       fprintf (stream, "\n");
       fflush  (stream);                           /* Flush data */
     }

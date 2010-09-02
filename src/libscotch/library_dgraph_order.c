@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 25 apr 2006     **/
 /**                                 to     11 nov 2008     **/
 /**                # Version 5.1  : from : 29 mar 2010     **/
-/**                                 to     29 may 2010     **/
+/**                                 to     14 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,29 +68,6 @@
 /* routines.                        */
 /*                                  */
 /************************************/
-
-/*+ This routine parses the given
-*** distributed graph ordering strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
-
-int
-SCOTCH_stratDgraphOrder (
-SCOTCH_Strat * const        stratptr,
-const char * const          string)
-{
-  if (*((Strat **) stratptr) != NULL)
-    stratExit (*((Strat **) stratptr));
-
-  if ((*((Strat **) stratptr) = stratInit (&hdgraphorderststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratDgraphOrder: error in ordering strategy");
-    return     (1);
-  }
-
-  return (0);
-}
 
 /*+ This routine initializes an API ordering
 *** with respect to the given source graph
@@ -191,15 +168,23 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   Gnum * restrict     srclisttab;                 /* Subgraph vertex list         */
   const Strat *       ordstratptr;                /* Pointer to ordering strategy */
 
+  srcgrafptr = (Dgraph *) grafptr;
+
+#ifdef SCOTCH_DEBUG_DGRAPH2
+  if (dgraphCheck (srcgrafptr) != 0) {
+    errorPrint ("SCOTCH_dgraphOrderComputeList: invalid input graph");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+
   if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&hdgraphorderststratab, "n{sep=m{asc=b{width=3,strat=q{strat=f}},low=q{strat=h},vert=100,dvert=10,dlevl=0,proc=1,seq=q{strat=m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}}}},ole=q{strat=n{sep=/(vert>120)?m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}},ose=s,osq=n{sep=/(vert>120)?m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.2},org=h{pass=10}f{bal=0.2}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
+    SCOTCH_stratDgraphOrderBuild (stratptr, SCOTCH_STRATQUALITY, srcgrafptr->procglbnbr, 0.2);
+
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hdgraphorderststratab) {
     errorPrint ("SCOTCH_dgraphOrderComputeList: not a distributed ordering strategy");
     return     (1);
   }
-
-  srcgrafptr = (Dgraph *) grafptr;
 
   srcgrafdat.s            = *srcgrafptr;          /* Copy non-halo graph data    */
   srcgrafdat.s.edloloctax = NULL;                 /* Never mind about edge loads */
@@ -226,6 +211,66 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   srcgrafptr->edgegsttax = srcgrafdat.s.edgegsttax; /* Get edge ghost array from working graph if it gained one */
 
   *srcgrafptr = srcgrafdat.s;                     /* Get back Dgraph structure, possibly updated (additional ghost data arrays) */
+
+  return (0);
+}
+
+/*+ This routine parses the given
+*** distributed graph ordering strategy.
+*** It returns:
+*** - 0   : if string successfully scanned.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratDgraphOrder (
+SCOTCH_Strat * const        stratptr,
+const char * const          string)
+{
+  if (*((Strat **) stratptr) != NULL)
+    stratExit (*((Strat **) stratptr));
+
+  if ((*((Strat **) stratptr) = stratInit (&hdgraphorderststratab, string)) == NULL) {
+    errorPrint ("SCOTCH_stratDgraphOrder: error in ordering strategy");
+    return     (1);
+  }
+
+  return (0);
+}
+
+/*+ This routine provides predefined
+*** ordering strategies.
+*** It returns:
+*** - 0   : if string successfully initialized.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratDgraphOrderBuild (
+SCOTCH_Strat * const        stratptr,             /*+ Strategy to create              +*/
+const SCOTCH_Num            flagval,              /*+ Desired characteristics         +*/
+const SCOTCH_Num            procnbr,              /*+ Number of processes for running +*/
+const double                balrat)               /*+ Desired imbalance ratio         +*/
+{
+  char                bufftab[8192];              /* Should be enough */
+  char                bbaltab[32];
+  char                verttab[32];
+  Gnum                vertnbr;
+
+  vertnbr = MAX (2000 * procnbr, 10000);
+  vertnbr = MIN (vertnbr, 1000000);
+  sprintf (verttab, GNUMSTRING, vertnbr);
+
+  strcpy (bufftab, "n{sep=m{vert=<VERT>,asc=b{width=3,strat=q{strat=f}},low=q{strat=h},vert=100,dvert=10,dlevl=0,proc=1,seq=q{strat=m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=h{pass=10}f{bal=<BBAL>}}}}},ole=q{strat=n{sep=/(vert>120)?m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=h{pass=10}f{bal=<BBAL>}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}},ose=s,osq=n{sep=/(vert>120)?m{type=h,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=h{pass=10}f{bal=<BBAL>}}};,ole=f{cmin=15,cmax=100000,frat=0.0},ose=g}}");
+
+  sprintf (bbaltab, "%lf", balrat);
+  stringSubst (bufftab, "<BBAL>", bbaltab);
+  stringSubst (bufftab, "<VERT>", verttab);
+
+  if (SCOTCH_stratDgraphOrder (stratptr, bufftab) != 0) {
+    errorPrint ("SCOTCH_stratDgraphOrderBuild: error in parallel ordering strategy");
+    return     (1);
+  }
 
   return (0);
 }

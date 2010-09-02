@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                mappings.                               **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 13 jun 2008     **/
-/**                                 to     01 jul 2008     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,6 +51,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "comm.h"
 #include "dgraph.h"
 #include "dgraph_allreduce.h"
 #include "arch.h"
@@ -135,7 +136,7 @@ FILE * restrict const           stream)
       errorPrint ("dmapSave: out of memory (1)");
       reduloctab[0] = 1;
     }
-    else if (fprintf (stream, "%ld\n", (long) vertglbnbr) == EOF) {
+    else if (fprintf (stream, GNUMSTRING "\n", (Gnum) vertglbnbr) == EOF) {
       errorPrint ("dmapSave: bad output (1)");
       reduloctab[0] = 1;
     }
@@ -162,7 +163,7 @@ FILE * restrict const           stream)
   }
 
   if (grafptr->vlblloctax != NULL) {
-    if (MPI_Gatherv (grafptr->vlblloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI,
+    if (commGatherv (grafptr->vlblloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI,
                      vlbltax, grafptr->proccnttab, grafptr->procdsptab, GNUM_MPI, protnum, grafptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dmapSave: communication error (3)");
       return     (1);
@@ -191,9 +192,9 @@ FILE * restrict const           stream)
 #endif /* SCOTCH_DEBUG_DMAP2 */
         termnum = archDomNum (&dmapptr->archdat, &fragptr->domntab[fragptr->parttab[fraglocnum]]);
 
-        if (fprintf (stream, "%ld\t%ld\n",
-                     (long) ((grafptr->vlblloctax != NULL) ? vlbltax[vnumnum] : vnumnum),
-                     (long) termnum) == EOF) {
+        if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
+                     (Gnum) ((grafptr->vlblloctax != NULL) ? vlbltax[vnumnum] : vnumnum),
+                     (Gnum) termnum) == EOF) {
           errorPrint ("dmapSave: bad output (2)");
           reduloctab[0] = 1;
           break;
@@ -219,9 +220,9 @@ FILE * restrict const           stream)
       vnumrcvptr = termrcvtab + vertrcvnbr;       /* Vertex index array is just after terminal number array */
 
       for (termrcvptr = termrcvtab, termrcvnnd = termrcvtab + vertrcvnbr; termrcvptr < termrcvnnd; termrcvptr ++, vnumrcvptr ++) {
-        if (fprintf (stream, "%ld\t%ld\n",
-                     (long) ((grafptr->vlblloctax != NULL) ? vlbltax[*vnumrcvptr] : *vnumrcvptr),
-                     (long) *termrcvptr) == EOF) {
+        if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
+                     (Gnum) ((grafptr->vlblloctax != NULL) ? vlbltax[*vnumrcvptr] : *vnumrcvptr),
+                     (Gnum) *termrcvptr) == EOF) {
           errorPrint ("dmapSave: bad output (3)");
           reduloctab[0] = 1;
           break;

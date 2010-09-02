@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.0  : from : 16 feb 2005     **/
 /**                                 to   : 17 jul 2008     **/
 /**                # Version 5.1  : from : 21 jun 2008     **/
-/**                                 to   : 23 jun 2008     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -150,9 +150,9 @@ Dgraph * restrict const     grafptr)
   MPI_Comm            proccomm;                   /* Data for temporarily saving private data */
   int                 procglbnbr;
   int                 proclocnum;
-  int * restrict      proccnttab;                 /* Communication arrays are "int" and not "Gnum" because of MPI */
-  int * restrict      procdsptab;
-  int * restrict      procvrttab;
+  Gnum * restrict     proccnttab;                 /* Some communication arrays are "int" and not "Gnum" because of MPI */
+  Gnum * restrict     procdsptab;
+  Gnum * restrict     procvrttab;
   int * restrict      procngbtab;
   int * restrict      procrcvtab;
   int * restrict      procsndtab;

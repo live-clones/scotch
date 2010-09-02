@@ -39,7 +39,7 @@
 /**                graph from the given frontier array.    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 27 apr 2010     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version 5.0. **/
@@ -161,13 +161,13 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
     int                 procglbnum;
 
     procglbnum = grafptr->procngbtab[procngbnum];
-    procvgbtab[procngbnum] = (Gnum) grafptr->procvrttab[procglbnum];
+    procvgbtab[procngbnum] = grafptr->procvrttab[procglbnum];
     vrcvdsptab[procglbnum] = vrcvdspnum;
     vsnddsptab[procglbnum] = vsnddspnum;
     vrcvdspnum += grafptr->procsndtab[procglbnum]; /* Senders and receivers are reversed */
     vsnddspnum += grafptr->procrcvtab[procglbnum];
   }
-  procvgbtab[procngbnum] = (Gnum) grafptr->procvrttab[grafptr->procglbnbr];
+  procvgbtab[procngbnum] = grafptr->procvrttab[grafptr->procglbnbr];
 
   bandvertlvlnum =                                /* Start index of last level is start index */
   bandvertlocnnd = grafptr->baseval;              /* Reset number of band vertices, plus base */
@@ -402,13 +402,13 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
     procglbnum = grafptr->procngbtab[procngbnum];
     if ((procngbnxt == 0) && (procglbnum > grafptr->proclocnum)) /* Find index of first neighbor of higher rank */
       procngbnxt = procngbnum;
-    procvgbtab[procngbnum] = (Gnum) grafptr->procvrttab[procglbnum];
+    procvgbtab[procngbnum] = grafptr->procvrttab[procglbnum];
     nrcvdsptab[procngbnum] = nrcvdspnum;          /* Arrays are indexed per neighbor since we are doing point-to-point communication */
     nsnddsptab[procngbnum] = nsnddspnum;
     nrcvdspnum += grafptr->procsndtab[procglbnum]; /* Senders and receivers are reversed */
     nsnddspnum += grafptr->procrcvtab[procglbnum];
   }
-  procvgbtab[procngbnum] = (Gnum) grafptr->procvrttab[grafptr->procglbnbr];
+  procvgbtab[procngbnum] = grafptr->procvrttab[grafptr->procglbnbr];
   nrcvdsptab[procngbnum] = nrcvdspnum;            /* Mark end of communication index arrays */
   nsnddsptab[procngbnum] = nsnddspnum;
 
@@ -661,8 +661,8 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
 
   cheklocval = 0;
   if (memAllocGroup ((void **) (void *)           /* Allocate distributed graph private data */
-                     &bandgrafptr->procdsptab, (size_t) ((grafptr->procglbnbr + 1) * sizeof (int)),
-                     &bandgrafptr->proccnttab, (size_t) (grafptr->procglbnbr       * sizeof (int)),
+                     &bandgrafptr->procdsptab, (size_t) ((grafptr->procglbnbr + 1) * sizeof (Gnum)),
+                     &bandgrafptr->proccnttab, (size_t) (grafptr->procglbnbr       * sizeof (Gnum)),
                      &bandgrafptr->procngbtab, (size_t) (grafptr->procglbnbr       * sizeof (int)),
                      &bandgrafptr->procrcvtab, (size_t) (grafptr->procglbnbr       * sizeof (int)),
                      &bandgrafptr->procsndtab, (size_t) (grafptr->procglbnbr       * sizeof (int)), NULL) == NULL) {
@@ -705,8 +705,8 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
 
   if (cheklocval != 0) {                          /* In case of memory error */
     bandgrafptr->procdsptab[0] = -1;
-    if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, MPI_INT, /* Send received data to dummy array */
-                       bandvnumgsttax + bandgrafptr->baseval, 1, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
+    if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, GNUM_MPI, /* Send received data to dummy array */
+                       bandvnumgsttax + bandgrafptr->baseval, 1, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphBand: communication error (1)");
       return     (1);
     }
@@ -717,9 +717,9 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     return     (1);
   }
   else {
-    bandgrafptr->procdsptab[0] = (int) bandvertlocnbr;
-    if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, MPI_INT,
-                       &bandgrafptr->procdsptab[1], 1, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
+    bandgrafptr->procdsptab[0] = bandvertlocnbr;
+    if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, GNUM_MPI,
+                       &bandgrafptr->procdsptab[1], 1, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphBand: communication error (2)");
       return     (1);
     }

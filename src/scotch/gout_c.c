@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 25 may 2007     **/
 /**                                 to     25 may 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     01 jul 2010     **/
+/**                                 to     15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -325,9 +325,9 @@ FILE * const                stream)
   int                 geomsortflag;               /* Flag set if geometric data sorted by label */
   int                 geomfiletype;               /* Type of geometry file                      */
   SCOTCH_Num          geomfilenbr;                /* Number of geometric coordinates in file    */
-  long                geomfileval;                /* Value of maximum size for compatibility    */
+  SCOTCH_Num          geomfileval;                /* Value of maximum size for compatibility    */
   C_GeoVert *         geomfiletab;                /* Pointer to geometric data read from file   */
-  long                vertlablval;                /* Value of maximum size for compatibility    */
+  SCOTCH_Num          vertlablval;                /* Value of maximum size for compatibility    */
   SCOTCH_Num          i, j;
   int                 o;
 
@@ -337,7 +337,7 @@ FILE * const                stream)
     return     (1);
   }
 
-  if ((fscanf (stream, "%d%ld",                   /* Read type and number of geometry items */
+  if ((fscanf (stream, "%d" SCOTCH_NUMSTRING,     /* Read type and number of geometry items */
                &geomfiletype,
                &geomfileval) != 2) ||
       (geomfiletype < 1)           ||
@@ -365,7 +365,8 @@ FILE * const                stream)
   switch (geomfiletype) {
     case 1 :                                      /* Load 2D coordinates array */
       for (i = 0; (i < geomfilenbr) && (o == 0); i ++) {
-        if (fscanf (stream, "%ld%lf", &vertlablval,
+        if (fscanf (stream, SCOTCH_NUMSTRING "%lf",
+                    &vertlablval,
                     &geomfiletab[i].x) != 2)
           o = 1;
         geomsorttab[i].labl = (SCOTCH_Num) vertlablval;
@@ -388,7 +389,8 @@ FILE * const                stream)
       break;
     case 2 :                                      /* Load 2D coordinates array */
       for (i = 0; (i < geomfilenbr) && (o == 0); i ++) {
-        if (fscanf (stream, "%ld%lf%lf", &vertlablval,
+        if (fscanf (stream, SCOTCH_NUMSTRING "%lf%lf",
+                    &vertlablval,
                     &geomfiletab[i].x,
                     &geomfiletab[i].y) != 3)
           o = 1;
@@ -411,7 +413,8 @@ FILE * const                stream)
       break;
     case 3 :                                      /* Load 3D coordinates array */
       for (i = 0; (i < geomfilenbr) && (o == 0); i ++) {
-        if (fscanf (stream, "%ld%lf%lf%lf", &vertlablval,
+        if (fscanf (stream, SCOTCH_NUMSTRING "%lf%lf%lf",
+                    &vertlablval,
                     &geomfiletab[i].x,
                     &geomfiletab[i].y,
                     &geomfiletab[i].z) != 4)
@@ -549,8 +552,8 @@ FILE * const                stream)
   int                 vertsortflag;               /* Flag set if graph data sorted by label   */
   C_VertSort *        mapsorttab;                 /* Pointer to mapping data sorting array    */
   int                 mapsortflag;                /* Flag set if mapping data sorted by label */
-  long                mapsortval;                 /* Value of maximum size for compatibility   */
-  long                mapfileval;                 /* Value of maximum size for compatibility   */
+  SCOTCH_Num          mapsortval;                 /* Value of maximum size for compatibility   */
+  SCOTCH_Num          mapfileval;                 /* Value of maximum size for compatibility   */
   SCOTCH_Num          mapfilenbr;                 /* Number of mapping pairs in file          */
   SCOTCH_Num *        mapfiletab;                 /* Pointer to mapping data read from file   */
   SCOTCH_Num          i, j;
@@ -566,7 +569,7 @@ FILE * const                stream)
   if (stream == NULL)                             /* If stream is invalid */
     return (0);
 
-  if ((fscanf (stream, "%ld",                     /* Read number of mapping pairs */
+  if ((fscanf (stream, SCOTCH_NUMSTRING,          /* Read number of mapping pairs */
                &mapfileval) != 1) ||
       (mapfileval < 1)) {
     errorPrint ("C_mapLoad: bad input (1)");
@@ -588,8 +591,9 @@ FILE * const                stream)
 
   mapsortflag = 1;                                /* Assume mapping data sorted */
   for (i = 0; i < mapfilenbr; i ++) {
-    if (fscanf (stream, "%ld%ld",
-                &mapsortval, &mapfileval) != 2) {
+    if (fscanf (stream, SCOTCH_NUMSTRING SCOTCH_NUMSTRING,
+                &mapsortval,
+                &mapfileval) != 2) {
       errorPrint ("C_mapLoad: bad input (2)");
       memFree    (vertsorttab);
       memFree    (mapsorttab);

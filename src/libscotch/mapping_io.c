@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,6 +63,8 @@
 /**                                 to     14 nov 2005     **/
 /**                # Version 5.0  : from : 13 sep 2006     **/
 /**                                 to     27 feb 2008     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -208,15 +210,16 @@ FILE * restrict const           stream)
 
   vlbltax = (vlbltab != NULL) ? (vlbltab - mappptr->baseval) : NULL;
 
-  if (fprintf (stream, "%ld\n", (long) mappptr->vertnbr) == EOF) {
+  if (fprintf (stream, GNUMSTRING "\n",
+               (Gnum) mappptr->vertnbr) == EOF) {
     errorPrint ("mapSave: bad output (1)");
     return     (1);
   }
 
   for (vertnum = mappptr->baseval; vertnum < (mappptr->vertnbr + mappptr->baseval); vertnum ++) {
-    if (fprintf (stream, "%ld\t%ld\n",
-                 (long) ((vlbltax != NULL) ? vlbltax[vertnum] : vertnum),
-                 (long) archDomNum (&mappptr->archdat, &mappptr->domntab[mappptr->parttax[vertnum]])) == EOF) {
+    if (fprintf (stream, GNUMSTRING "\t" ANUMSTRING "\n",
+                 (Gnum) ((vlbltax != NULL) ? vlbltax[vertnum] : vertnum),
+                 (Anum) archDomNum (&mappptr->archdat, &mappptr->domntab[mappptr->parttax[vertnum]])) == EOF) {
       errorPrint ("mapSave: bad output (2)");
       return     (1);
     }

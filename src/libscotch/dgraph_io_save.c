@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to     12 may 1999     **/
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 22 apr 2008     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to   : 11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -86,14 +88,14 @@ FILE * const                stream)
   propstr[2] = (grafptr->veloloctax != NULL) ? '1' : '0';
   propstr[3] = '\0';
 
-  if (fprintf (stream, "2\n%ld\t%ld\n%ld\t%ld\n%ld\t%ld\n%ld\t%3s\n", /* Write file header */
-               (long) grafptr->procglbnbr,
-               (long) grafptr->proclocnum,
-               (long) grafptr->vertglbnbr,
-               (long) grafptr->edgeglbnbr,
-               (long) grafptr->vertlocnbr,
-               (long) grafptr->edgelocnbr,
-               (long) grafptr->baseval,
+  if (fprintf (stream, "2\n" GNUMSTRING "\t" GNUMSTRING "\n" GNUMSTRING "\t" GNUMSTRING "\n" GNUMSTRING "\t" GNUMSTRING "\n" GNUMSTRING "\t%3s\n", /* Write file header */
+               (Gnum) grafptr->procglbnbr,
+               (Gnum) grafptr->proclocnum,
+               (Gnum) grafptr->vertglbnbr,
+               (Gnum) grafptr->edgeglbnbr,
+               (Gnum) grafptr->vertlocnbr,
+               (Gnum) grafptr->edgelocnbr,
+               (Gnum) grafptr->baseval,
                propstr) == EOF) {
     errorPrint ("dgraphSave: bad output (1)");
     return     (1);
@@ -132,20 +134,20 @@ FILE * const                stream)
     Gnum                edgelocnum;
 
     if (grafptr->vlblloctax != NULL)              /* Write vertex label if necessary */
-      o  = (fprintf (stream, "%ld\t", (long) vlblgsttax[vertlocnum]) == EOF);
+      o  = (fprintf (stream, GNUMSTRING "\t", (Gnum) vlblgsttax[vertlocnum]) == EOF);
     if (grafptr->veloloctax != NULL)              /* Write vertex load if necessary */
-      o |= (fprintf (stream, "%ld\t", (long) grafptr->veloloctax[vertlocnum]) == EOF);
+      o |= (fprintf (stream, GNUMSTRING "\t", (Gnum) grafptr->veloloctax[vertlocnum]) == EOF);
 
-    o |= (fprintf (stream, "%ld", (long) (grafptr->vendloctax[vertlocnum] - grafptr->vertloctax[vertlocnum])) == EOF); /* Write vertex degree */
+    o |= (fprintf (stream, GNUMSTRING, (Gnum) (grafptr->vendloctax[vertlocnum] - grafptr->vertloctax[vertlocnum])) == EOF); /* Write vertex degree */
 
     for (edgelocnum = grafptr->vertloctax[vertlocnum];
          edgelocnum < grafptr->vendloctax[vertlocnum]; edgelocnum ++) {
       o |= (putc ('\t', stream) == EOF);
       if (grafptr->edloloctax != NULL)            /* Write edge load if necessary */
-        o |= (fprintf (stream, "\t%ld ", (long) grafptr->edloloctax[edgelocnum]) == EOF);
-      o |= (fprintf (stream, "%ld", (long) ((vlblgsttax != NULL) /* Write edge end */
-                                              ? vlblgsttax[grafptr->edgegsttax[edgelocnum]]
-                                              : grafptr->edgeloctax[edgelocnum])) == EOF);
+        o |= (fprintf (stream, "\t" GNUMSTRING " ", (Gnum) grafptr->edloloctax[edgelocnum]) == EOF);
+      o |= (fprintf (stream, GNUMSTRING, (Gnum) ((vlblgsttax != NULL) /* Write edge end */
+                                                   ? vlblgsttax[grafptr->edgegsttax[edgelocnum]]
+                                                   : grafptr->edgeloctax[edgelocnum])) == EOF);
     }
     o |= (putc ('\n', stream) == EOF);
   }

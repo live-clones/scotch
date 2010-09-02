@@ -50,7 +50,7 @@
 /**                # Version 2.0  : from : 13 jun 2005     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to   : 30 jun 2010     **/
+/**                                 to   : 11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -120,20 +120,24 @@
 #define INT                         int32_t
 #define UINT                        u_int32_t
 #define COMM_INT                    MPI_LONG
+#define INTSTRING                   "%ld"
 #else /* INTSIZE32 */
 #ifdef INTSIZE64
 #define INT                         int64_t
 #define UINT                        u_int64_t
 #define COMM_INT                    MPI_LONG_LONG
+#define INTSTRING                   "%lld"
 #else /* INTSIZE64 */
 #ifdef LONG                                       /* Better not use it */
 #define INT                         long          /* Long integer type */
 #define UINT                        unsigned long
 #define COMM_INT                    MPI_LONG
+#define INTSTRING                   "%ld"
 #else /* LONG */
 #define INT                         int           /* Default integer type */
 #define UINT                        unsigned int
 #define COMM_INT                    MPI_INT       /* Generic MPI integer type */
+#define INTSTRING                   "%d"
 #endif /* LONG      */
 #endif /* INTSIZE64 */
 #endif /* INTSIZE32 */
@@ -165,6 +169,14 @@
 #define COMM_BYTE                   MPI_BYTE
 #endif /* COMM_BYTE */
 #define COMM_PART                   COMM_BYTE
+
+/*
+**  Handling of flag arrays.
+*/
+
+#define flagSize(n)                 (((n) + (sizeof (int) << 3) - 1) / (sizeof (int) << 3))
+#define flagVal(a,n)                (((a)[(n) / (sizeof (int) << 3)] >> ((n) & ((sizeof (int) << 3) - 1))) & 1)
+#define flagSet(a,n)                (a)[(n) / (sizeof (int) << 3)] |= (1 << ((n) & ((sizeof (int) << 3) - 1)))
 
 /*
 **  Handling of timers.
@@ -227,6 +239,8 @@ INT                         intRandVal          (INT);
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
 void                        intSort2asc2        (void * const, const INT);
+void                        intSort3asc1        (void * const, const INT);
+void                        intSort3asc2        (void * const, const INT);
 INT                         intSearchDicho      (const INT * const, const INT, const INT, const INT);
 
 void                        clockInit           (Clock * const);
@@ -234,6 +248,8 @@ void                        clockStart          (Clock * const);
 void                        clockStop           (Clock * const);
 double                      clockVal            (Clock * const);
 double                      clockGet            (void);
+
+void                        stringSubst         (char * const, const char * const, const char * const);
 
 /*
 **  Macro definitions.

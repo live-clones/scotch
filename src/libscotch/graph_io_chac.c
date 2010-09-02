@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 04 feb 2007     **/
 /**                                 to     21 may 2008     **/
 /**                # Version 5.1  : from : 02 dec 2008     **/
-/**                                 to     02 dec 2008     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -281,9 +281,9 @@ const char * const            dataptr)            /* No use           */
 
   baseadj = 1 - grafptr->baseval;                 /* Output base is always 1 */
 
-  o = (fprintf (filesrcptr, "%ld\t%ld\t%c%c%c\n", /* Write graph header */
-                (long)  grafptr->vertnbr,
-                (long) (grafptr->edgenbr / 2),
+  o = (fprintf (filesrcptr, GNUMSTRING "\t" GNUMSTRING "\t%c%c%c\n", /* Write graph header */
+                (Gnum)  grafptr->vertnbr,
+                (Gnum) (grafptr->edgenbr / 2),
                 ((grafptr->vlbltax != NULL) ? '1' : '0'),
                 ((grafptr->velotax != NULL) ? '1' : '0'),
                 ((grafptr->edlotax != NULL) ? '1' : '0')) < 0);
@@ -292,29 +292,29 @@ const char * const            dataptr)            /* No use           */
     sepaptr = "";                                 /* Start lines as is */
 
     if (grafptr->vlbltax != NULL) {
-      o |= (fprintf (filesrcptr, "%ld", (long) (grafptr->vlbltax[vertnum] + baseadj)) < 0);
+      o |= (fprintf (filesrcptr, GNUMSTRING, (Gnum) (grafptr->vlbltax[vertnum] + baseadj)) < 0);
       sepaptr = "\t";
     }
     if (grafptr->velotax != NULL) {
-      o |= (fprintf (filesrcptr, "%s%ld",
+      o |= (fprintf (filesrcptr, "%s" GNUMSTRING,
                      sepaptr,
-                     (long) grafptr->velotax[vertnum]) < 0);
+                     (Gnum) grafptr->velotax[vertnum]) < 0);
       sepaptr = "\t";
     }
 
     for (edgenum = grafptr->verttax[vertnum];
          (o == 0) && (edgenum < grafptr->vendtax[vertnum]); edgenum ++) {
       if (grafptr->vlbltax != NULL)
-        o |= (fprintf (filesrcptr, "%s%ld",
+        o |= (fprintf (filesrcptr, "%s" GNUMSTRING,
                        sepaptr,
-                       (long) (grafptr->vlbltax[grafptr->edgetax[edgenum]] + baseadj)) < 0);
+                       (Gnum) (grafptr->vlbltax[grafptr->edgetax[edgenum]] + baseadj)) < 0);
       else
-        o |= (fprintf (filesrcptr, "%s%ld",
+        o |= (fprintf (filesrcptr, "%s" GNUMSTRING,
                        sepaptr,
-                       (long) (grafptr->edgetax[edgenum] + baseadj)) < 0);
+                       (Gnum) (grafptr->edgetax[edgenum] + baseadj)) < 0);
 
       if (grafptr->edlotax != NULL)
-        o |= (fprintf (filesrcptr, " %ld", (long) grafptr->edlotax[edgenum]) < 0);
+        o |= (fprintf (filesrcptr, " " GNUMSTRING, (Gnum) grafptr->edlotax[edgenum]) < 0);
 
       sepaptr = "\t";
     }

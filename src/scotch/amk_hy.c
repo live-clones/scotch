@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -152,21 +152,21 @@ char *                      argv[])
   hnbr =  1 << hdim;                              /* Compute number of terminals */
   hmax = (1 << (hdim + 1)) - 1;                   /* Maximum terminal value      */
 
-  fprintf (C_filepntrtgtout, "deco\n0\n%ld\t%ld\n", /* Print the file header:         */
-           (long) hnbr,                           /* Print number of terminal domains */
-           (long) hmax);                          /* Print the biggest terminal value */
+  fprintf (C_filepntrtgtout, "deco\n0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n", /* Print the file header */
+           (SCOTCH_Num) hnbr,                     /* Print number of terminal domains */
+           (SCOTCH_Num) hmax);                    /* Print the biggest terminal value */
 
   for (i = 0; i < hnbr; i ++)                     /* For all vertices */
-    fprintf (C_filepntrtgtout, "%ld\t1\t%ld\n",
-             (long) i,                            /* Print terminal label  */
-             (long) (hnbr + i));                  /* Print terminal number */
+    fprintf (C_filepntrtgtout, SCOTCH_NUMSTRING "\t1\t" SCOTCH_NUMSTRING "\n",
+             (SCOTCH_Num) i,                      /* Print terminal label  */
+             (SCOTCH_Num) (hnbr + i));            /* Print terminal number */
 
   for (hv0 = 1; hv0 < hnbr; hv0 ++) {             /* For all vertices */
     for (hv1 = 0; hv1 < hv0; hv1 ++) {
       for (i = hv0 ^ hv1, j = 0; i > 0; i >>=1)
         j += (i & 1);
       fprintf (C_filepntrtgtout,
-               (hv1 == 0) ? "%ld" : " %ld", (long) j);
+               (hv1 == 0) ? SCOTCH_NUMSTRING : " " SCOTCH_NUMSTRING, (SCOTCH_Num) j);
     }
     fprintf (C_filepntrtgtout, "\n");
   }

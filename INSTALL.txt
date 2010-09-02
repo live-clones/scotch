@@ -70,6 +70,9 @@ If some of these are missing, please:
   The Makefile of the libScotch library has been designed so as
   to copy the last_resort/* files automatically when the lex or
   yacc tools are not found.
+  In this case, depending on your platform, you may also have to set
+  the "-DSCOTCH_RENAME_PARSER" flag in order for all symbols to be
+  properly redefined (see Section 2.2).
 
 
 2) Configuration
@@ -110,7 +113,21 @@ Make.inc directory. This is for instance the case for the mingw32
 platform.
 
 
-2.2) Integer size issues
+2.2) Parser symbol conflicts
+----------------------------
+
+Since Scotch uses a parser to analyze its strategy strings, it may
+happen that the symbols of this parser conflict with the ones of
+another parser used in a third-party library. All "Makefile.inc.*"
+platform configuration files which base on flex / bison are already
+tailored so as to prevent such conflicts. If you use other parsing
+tools, you may have to provide other options. Another solution is to
+use the pre-processed parser files of the "src/libscotch/last_resort"
+subdirectory (corresponding operation instructions are given in
+Section 1).
+
+
+2.3) Integer size issues
 ------------------------
 
 By default, all integers used in Scotch and PT-Scotch are of the "int"
@@ -141,10 +158,21 @@ your C and Fortran compilers to make them interpret all "int" and
 "INTEGER" types as 64 bit values. This solution is the simplest one,
 as there is no need to use any of the aforementioned flags, nor to
 hard-code type lengths in user's code. Yet, it prevents mixing 32 and
-64-bit features.
+64-bit features, and may create problems when linking PT-Scotch if a
+corresponding MPI library is not available.
+
+Be careful not to mismatch the 32-bit and 64-bit versions of the
+"scotch.h" and "ptscotch.h" include files that are generated at
+compile time. When several versions of Scotch are simultaneously
+present on a system, Make sure to place the corresponding include and
+library files in separate directories. Since some of their fields are
+of different sizes, most Scotch data structures have different sizes,
+depending on integer or pointer sizes. Consequently, compiling a
+64-bit executable with the 32-bit version of "scotch.h" may lead to
+unpredictable behavior because of memory overflow.
 
 
-2.3) Compression libraries
+2.4) Compression libraries
 --------------------------
 
 The binaries of the Scotch distribution can handle compressed
@@ -164,7 +192,7 @@ extensions ".bz2", ".gz" and ".lzma", recognized and handled by
 Scotch.
 
 
-2.4) Threads issues
+2.5) Threads issues
 -------------------
 
 Scotch can also take advantage of Posix threads when they are
@@ -196,7 +224,7 @@ available. They are used in two places:
   an older MPICH2 version, do not set the SCOTCH_PTHREAD flag.
 
 
-2.5) Monitoring memory allocation
+2.6) Monitoring memory allocation
 ---------------------------------
 
 Some memory allocation information can be aggregated if PT-Scotch is
@@ -205,7 +233,7 @@ compiled with the -DCOMMON_MEMORY_TRACE flag. If it is the case, the
 maximum and average peak amount of memory used over all processors.
 
 
-2.6) Deterministic behavior
+2.7) Deterministic behavior
 ---------------------------
 
 To ease the tracking down of bugs, it is possible to coerce PT-Scotch
@@ -219,7 +247,7 @@ this flag is also equivalent to setting the -DCOMMON_RANDOM_FIXED_SEED
 flag in the sequential routines.
 
 
-2.7) Point-to-point or collective communications
+2.8) Point-to-point or collective communications
 ------------------------------------------------
 
 Since distributed graph vertices can have any initial distribution
@@ -236,7 +264,7 @@ numbers of processors. To disable it, set the -DSCOTCH_PTOP flag at
 compile time.
 
 
-2.8) MeTiS compatibility library
+2.9) MeTiS compatibility library
 --------------------------------
 
 In order to ease the adoption of Scotch/PT-Scotch by people who

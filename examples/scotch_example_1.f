@@ -1,6 +1,6 @@
 ************************************************************
 **                                                        **
-**   NAME       : scotch_example.f                        **
+**   NAME       : scotch_example_1.f                      **
 **                                                        **
 **   AUTHOR     : Francois PELLEGRINI                     **
 **                                                        **
@@ -11,6 +11,15 @@
 **                                 to     07 feb 2000     **
 **                # Version 4.0  : from : 13 mar 2005     **
 **                                 to     13 mar 2005     **
+**                # Version 5.1  : from : 24 jul 2010     **
+**                                 to     24 jul 2010     **
+**                                                        **
+**   NOTES      : # This program is to be compiled with   **
+**                  the 32-bit version of the libScotch.  **
+**                  It can be deduced from the fact that  **
+**                  indices to be returned by the         **
+**                  SCOTCHFGRAPHDATA routine are plain    **
+**                  "integer" and not "integer*8".        **
 **                                                        **
 *234567*****************************************************
 

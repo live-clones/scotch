@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 20 feb 2008     **/
 /**                                 to     20 feb 2008     **/
 /**                # Version 5.1  : from : 22 oct 2008     **/
-/**                                 to     11 nov 2008     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -239,7 +239,7 @@ FILE * const                stream)
                             ((char *) paratab[i].datasltr)[*((unsigned int *) paraofft)]) == EOF);
               break;
             case STRATPARAMINT :                  /* Integer value */
-              o = (fprintf (stream, "%ld", (long) *((INT *) paraofft)) == EOF);
+              o = (fprintf (stream, INTSTRING, *((INT *) paraofft)) == EOF);
               break;
             case STRATPARAMDOUBLE :               /* Double value */
               o = (fprintf (stream, "%g", *((double *) paraofft)) == EOF);
@@ -607,7 +607,7 @@ FILE * const                stream)
           o = (fprintf (stream, "%lf", test->data.val.valdbl) == EOF);
           break;
         case STRATPARAMINT :
-          o = (fprintf (stream, "%ld", (long) test->data.val.valint) == EOF);
+          o = (fprintf (stream, INTSTRING, (INT) test->data.val.valint) == EOF);
           break;
 #ifdef SCOTCH_DEBUG_PARSER2
         default :

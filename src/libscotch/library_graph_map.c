@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     13 nov 2005     **/
 /**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     30 jun 2010     **/
+/**                                 to     14 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,29 +74,6 @@
 /* the mapping routines.            */
 /*                                  */
 /************************************/
-
-/*+ This routine parses the given
-*** mapping strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
-
-int
-SCOTCH_stratGraphMap (
-SCOTCH_Strat * const        stratptr,
-const char * const          string)
-{
-  if (*((Strat **) stratptr) != NULL)
-    stratExit (*((Strat **) stratptr));
-
-  if ((*((Strat **) stratptr) = stratInit (&kgraphmapststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratGraphMap: error in mapping strategy");
-    return     (1);
-  }
-
-  return (0);
-}
 
 /*+ This routine initializes an API opaque
 *** mapping with respect to the given source
@@ -208,9 +185,21 @@ SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
   LibMapping * restrict lmapptr;
   int                   o;
 
+#ifdef SCOTCH_DEBUG_GRAPH2
+  if (graphCheck ((Graph *) grafptr) != 0) {
+    errorPrint ("SCOTCH_graphMapCompute: invalid input graph");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_GRAPH2 */
+
   lmapptr = (LibMapping *) mappptr;
-  if (*((Strat **) stratptr) == NULL)             /* Set default mapping strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&kgraphmapststratab, "r{job=t,map=t,poli=S,sep=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=(d{dif=1,rem=1,pass=40}|)f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=(d{dif=1,rem=1,pass=40}|)f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}");
+  if (*((Strat **) stratptr) == NULL) {           /* Set default mapping strategy if necessary */
+    ArchDom             archdomnorg;
+
+    archDomFrst (&lmapptr->m.archdat, &archdomnorg);
+    SCOTCH_stratGraphMapBuild (stratptr, SCOTCH_STRATQUALITY, archDomSize (&lmapptr->m.archdat, &archdomnorg), 0.01);
+  }
+
   mapstratptr = *((Strat **) stratptr);
   if (mapstratptr->tabl != &kgraphmapststratab) {
     errorPrint ("SCOTCH_graphMapCompute: not a graph mapping strategy");
@@ -220,7 +209,14 @@ SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
   if (kgraphInit (&mapgrafdat, (Graph *) grafptr, &lmapptr->m) != 0)
     return (1);
   o = kgraphMapSt (&mapgrafdat, mapstratptr);     /* Perform mapping */
-  kgraphExit (&mapgrafdat, &lmapptr->m);
+
+  lmapptr->m.domnmax = mapgrafdat.m.domnmax;      /* Do not free the mapping, as it has been cloned */
+  lmapptr->m.domnnbr = mapgrafdat.m.domnnbr;
+  lmapptr->m.domntab = mapgrafdat.m.domntab;      /* Update pointer to domntab in case it has changed */
+
+  mapgrafdat.m.parttax = NULL;                    /* Prevent mapping arrays from being freed by graph */
+  mapgrafdat.m.domntab = NULL;
+  kgraphExit (&mapgrafdat);
 
   if (lmapptr->parttax != NULL) {                 /* Propagate mapping data to user partition array */
     Gnum                vertnum;
@@ -284,4 +280,80 @@ SCOTCH_Num * const          maptab)               /*+ Mapping array    +*/
   SCOTCH_archExit  (&archdat);
 
   return (o);
+}
+
+/*+ This routine parses the given
+*** mapping strategy.
+*** It returns:
+*** - 0   : if string successfully scanned.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratGraphMap (
+SCOTCH_Strat * const        stratptr,
+const char * const          string)
+{
+  if (*((Strat **) stratptr) != NULL)
+    stratExit (*((Strat **) stratptr));
+
+  if ((*((Strat **) stratptr) = stratInit (&kgraphmapststratab, string)) == NULL) {
+    errorPrint ("SCOTCH_stratGraphMap: error in mapping strategy");
+    return     (1);
+  }
+
+  return (0);
+}
+
+/*+ This routine provides predefined
+*** mapping strategies.
+*** It returns:
+*** - 0   : if string successfully initialized.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratGraphMapBuild (
+SCOTCH_Strat * const        stratptr,             /*+ Strategy to create              +*/
+const SCOTCH_Num            flagval,              /*+ Desired characteristics         +*/
+const SCOTCH_Num            partnbr,              /*+ Number of expected parts/size   +*/
+const double                balrat)               /*+ Desired imbalance ratio         +*/
+{
+  char                bufftab[8192];              /* Should be enough */
+  char                bbaltab[64];
+  double              bbalval;
+  Gunum               parttmp;                    /* "Unsigned" so that ">>" will always insert "0"s */
+  int                 blogval;
+  double              blogtmp;
+  char *              difsptr;
+  char *              exasptr;
+
+  for (parttmp = partnbr, blogval = 1; parttmp != 0; parttmp >>= 1, blogval ++) ; /* Get log2 of number of parts */
+
+  blogtmp = 1.0 / (double) blogval;               /* Taylor development of (1 + balrat) ^ (1 / blogval) */
+  bbalval = (balrat * blogtmp) * (1.0 + (blogtmp - 1.0) * (balrat * 0.5 * (1.0 + (blogtmp - 2.0) * balrat / 3.0)));
+  sprintf (bbaltab, "%lf", bbalval);
+
+  strcpy (bufftab, "r{job=t,map=t,poli=S,sep=(m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>}");
+
+  if ((flagval & SCOTCH_STRATBALANCE) != 0)
+    exasptr = "f{bal=0}";
+  else
+    exasptr = "";
+
+  if ((flagval & SCOTCH_STRATSAFETY) != 0)
+    difsptr = "";
+  else
+    difsptr = "(d{dif=1,rem=1,pass=40}|)";
+
+  stringSubst (bufftab, "<EXAS>", exasptr);
+  stringSubst (bufftab, "<DIFS>", difsptr);
+  stringSubst (bufftab, "<BBAL>", bbaltab);
+
+  if (SCOTCH_stratGraphMap (stratptr, bufftab) != 0) {
+    errorPrint ("SCOTCH_stratGraphMapBuild: error in sequential mapping strategy");
+    return     (1);
+  }
+
+  return (0);
 }

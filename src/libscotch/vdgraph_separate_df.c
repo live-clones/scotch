@@ -362,9 +362,11 @@ abort :                                           /* If overflow occured, resume
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
 
 if (grafptr->s.proclocnum == 0)
-fprintf (stderr, "BROL %ld,%ld,%ld (%ld)\n",
-         (long) grafptr->compglbload[0], (long) grafptr->compglbload[1], (long)
-grafptr->compglbload[2], (long) grafptr->compglbloaddlt);
+fprintf (stderr, "BROL " GNUMSTRING "," GNUMSTRING "," GNUMSTRING "(" GNUMSTRING ")\n",
+         (Gnum) grafptr->compglbload[0],
+         (Gnum) grafptr->compglbload[1],
+         (Gnum) grafptr->compglbload[2],
+         (Gnum) grafptr->compglbloaddlt);
 
   return (0);
 }

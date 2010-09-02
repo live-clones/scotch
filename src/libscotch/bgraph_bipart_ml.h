@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to     01 oct 1998     **/
 /**                # Version 4.0  : from : 12 dec 2003     **/
 /**                                 to     20 mar 2005     **/
+/**                # Version 5.1  : from : 13 jul 2010     **/
+/**                                 to     13 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,7 +62,7 @@
 typedef struct BgraphBipartMlParam_ {
   INT                       coarnbr;              /*+ Minimum number of vertices   +*/
   double                    coarrat;              /*+ Coarsening ratio             +*/
-  GraphCoarsenType          matchtype;            /*+ Edge matching function type  +*/
+  GraphCoarsenType          coartype;             /*+ Edge matching function type  +*/
   Strat *                   stratlow;             /*+ Strategy at lowest level     +*/
   Strat *                   stratasc;             /*+ Strategy at ascending levels +*/
 } BgraphBipartMlParam;
@@ -74,7 +76,7 @@ typedef struct BgraphBipartMlParam_ {
 #endif
 
 static int                  bgraphBipartMlCoarsen (const Bgraph * const, Bgraph * restrict const, GraphCoarsenMulti * restrict * const, const BgraphBipartMlParam * const);
-static int                  bgraphBipartMlUncoarsen (Bgraph * restrict const, const Bgraph * const, const GraphCoarsenMulti * const);
+static int                  bgraphBipartMlUncoarsen (Bgraph * restrict const, const Bgraph * restrict const, const GraphCoarsenMulti * const);
 
 int                         bgraphBipartMl      (Bgraph * restrict const, const BgraphBipartMlParam * const);
 static int                  bgraphBipartMl2     (Bgraph * restrict const, const BgraphBipartMlParam * const);

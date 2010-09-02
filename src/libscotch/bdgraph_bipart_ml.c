@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                graph using a multi-level scheme.       **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 29 oct 2009     **/
+/**                                 to   : 26 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -134,6 +134,7 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
   else                                            /* If fine graph does not have external gains */
     coargrafptr->veexloctax = NULL;               /* Coarse graph does not have external gains  */
 
+  coargrafptr->veexglbsum       = finegrafptr->veexglbsum;
   coargrafptr->compglbload0avg  = finegrafptr->compglbload0avg; /* Only set constant partition parameters as others will be set on uncoarsening */
   coargrafptr->commglbloadextn0 = finegrafptr->commglbloadextn0;
   coargrafptr->commglbgainextn0 = finegrafptr->commglbgainextn0;
@@ -182,7 +183,7 @@ const MPI_Datatype * const  typedat)              /* MPI datatype ; not used    
 
   if ((in[3] < inout[3]) ||                       /* Select best partition */
       ((in[3] == inout[3]) && ((in[4] < inout[4]) ||
-			       ((in[4] == inout[4]) && (in[1] < inout[1]))))) {
+                               ((in[4] == inout[4]) && (in[1] < inout[1]))))) {
     inout[1] = in[1];
     inout[2] = in[2];
     inout[3] = in[3];
@@ -243,7 +244,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   Gnum * restrict                 finefronloctab;
 
   const int                   fineprocglbnbr = finegrafptr->s.procglbnbr;
-  const int * restrict const  fineprocvrttab = finegrafptr->s.procvrttab;
+  const Gnum * restrict const fineprocvrttab = finegrafptr->s.procvrttab;
   const Gnum * restrict const fineedgegsttax = finegrafptr->s.edgegsttax;
   const Gnum * restrict const finevertloctax = finegrafptr->s.vertloctax;
   const Gnum * restrict const finevendloctax = finegrafptr->s.vendloctax;
@@ -293,7 +294,8 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     reduloctab[4] = 0;
   }
   else {
-    reduloctab[0] = (coargrafptr->fronglbnbr <= 0) ? 1 : 0; /* Empty frontiers are deemed invalid                       */
+    reduloctab[0] = ((coargrafptr->compglbload0 == 0) || /* Empty subdomains are deemed invalid */
+                     (coargrafptr->compglbload0 == coargrafptr->s.veloglbsum)) ? 1 : 0;
     reduloctab[1] = finegrafptr->s.proclocnum;    /* Set rank and color key according to coarse graph (sub)communicator */
     reduloctab[2] = finegrafptr->s.prockeyval;
     reduloctab[3] = coargrafptr->commglbload;
@@ -730,23 +732,36 @@ const BdgraphBipartMlParam * const  paraptr)      /* Method parameters */
 
   if (grafptr->s.procglbnbr <= 1) {               /* Enter into sequential mode          */
     if (((o = bdgraphBipartMlUncoarsen (grafptr, NULL, NULL)) == 0) && /* Finalize graph */
-        ((o = bdgraphBipartSt (grafptr, paraptr->stratseq)) != 0))
-      errorPrint ("bdgraphBipartMl2: cannot apply seq strategy");
+        ((o = bdgraphBipartSt (grafptr, paraptr->stratseq)) != 0)) {
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+      errorPrintW ("bdgraphBipartMl2: cannot apply sequential strategy");
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
+    }
     return (o);
   }
 
   if (bdgraphBipartMlCoarsen (grafptr, &coargrafdat, &coarmulttax, paraptr) == 0) {
     o = (coargrafdat.s.procglbnbr == 0) ? 0 : bdgraphBipartMl2 (&coargrafdat, paraptr); /* Apply recursion on coarsened graph if it exists */
+
     if ((o == 0) &&
         ((o = bdgraphBipartMlUncoarsen (grafptr, &coargrafdat, coarmulttax)) == 0) &&
-        ((o = bdgraphBipartSt          (grafptr, paraptr->stratasc))         != 0)) /* Apply ascending strategy */
-      errorPrint ("bdgraphBipartMl2: cannot apply ascending strategy");
+        ((o = bdgraphBipartSt          (grafptr, paraptr->stratasc)) != 0)) { /* Apply ascending strategy if uncoarsening worked */
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+      errorPrintW ("bdgraphBipartMl2: cannot apply ascending strategy");
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
+    }
+
     bdgraphExit (&coargrafdat);
+
+    if (o == 0)                                   /* If multi-level failed, apply low strategy as fallback */
+      return (o);
   }
-  else {                                          /* Cannot coarsen due to lack of memory or error */
-    if (((o = bdgraphBipartMlUncoarsen (grafptr, NULL, NULL)) == 0) && /* Finalize graph           */
-        ((o = bdgraphBipartSt          (grafptr, paraptr->stratlow)) != 0)) /* Apply low strategy  */
-      errorPrint ("bdgraphBipartMl2: cannot apply low strategy");
+
+  if (((o = bdgraphBipartMlUncoarsen (grafptr, NULL, NULL)) == 0) && /* Finalize graph            */
+      ((o = bdgraphBipartSt          (grafptr, paraptr->stratlow)) != 0)) { /* Apply low strategy */
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+    errorPrintW ("bdgraphBipartMl2: cannot apply low strategy");
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
   }
 
   return (o);

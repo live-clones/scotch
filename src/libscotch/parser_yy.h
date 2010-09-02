@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     21 dec 2001     **/
 /**                # Version 5.1  : from : 09 jun 2009     **/
-/**                                 to     09 jun 2010     **/
+/**                                 to     07 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,17 +58,17 @@
 
 /* Change some function names. */
 
-#ifndef yylex                                     /* If no prefix renaming       */
+#if ((defined SCOTCH_RENAME_PARSER) || (defined yylex)) /* If prefix renaming    */
+#define scotchyyparse               stratParserParse2 /* Parser function name    */
+#define scotchyyerror               stratParserError /* Error processing routine */
+#ifndef yylval
+#define yylval                      scotchyylval  /* It should be Yacc/Bison's job to redefine it! */
+#endif /* yylval              */
+#else /* SCOTCH_RENAME_PARSER */
 #define yylex                       stratParserLex /* Lexical analyzer           */
 #define yyparse                     stratParserParse2 /* Parser function name    */
 #define yyerror                     stratParserError /* Error processing routine */
-#else /* yylex */
-#ifndef yylval
-#define yylval                      scotchyylval  /* It should be Yacc/Bison's job to redefine it! */
-#endif /* yylval */
-#define scotchyyparse               stratParserParse2 /* Parser function name    */
-#define scotchyyerror               stratParserError /* Error processing routine */
-#endif /* yylex */
+#endif /* SCOTCH_RENAME_PARSER */
 
 /*
 **  The function prototypes.
@@ -77,6 +77,8 @@
 #ifndef PARSER_YY
 #define static
 #endif
+
+int                         yylex               (void);
 
 Strat *                     stratParserParse    (const StratTab * const, const char * const);
 int                         stratParserParse2   (void);

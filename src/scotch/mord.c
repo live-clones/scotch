@@ -43,7 +43,7 @@
 /**                # Version 5.0  : from : 22 jan 2008     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 08 sep 2008     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 25 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,6 +71,11 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 
 static const char *         C_usageList[] = {
   "mord [<input source mesh file> [<output ordering file> [<output log file>]]] <options>",
+  "  -c<opt>    : Choose default ordering strategy according to one or several of <opt>:",
+  "                 b  : enforce load balance as much as possible",
+  "                 q  : privilege quality over speed (default)",
+  "                 s  : privilege speed over quality",
+  "                 t  : enforce safety",
   "  -h         : Display this help",
   "  -m<file>   : Save column block mapping data to <file>",
   "  -o<strat>  : Use mesh ordering strategy <strat> (see user's manual)",
@@ -95,11 +100,13 @@ char *                      argv[])
 {
   SCOTCH_Num          vnodnbr;                    /* Number of nodes   */
   SCOTCH_Mesh         meshdat;                    /* Source graph      */
-  SCOTCH_Strat        ordestrat;                  /* Ordering strategy */
   SCOTCH_Ordering     ordedat;                    /* Graph ordering    */
   SCOTCH_Num *        permtab;                    /* Permutation array */
+  SCOTCH_Strat        stradat;                    /* Ordering strategy */
+  SCOTCH_Num          straval;
+  char *              straptr;
+  int                 flagval;
   Clock               runtime[2];                 /* Timing variables  */
-  int                 flag;
   int                 i, j;
 
   errorProg ("mord");
@@ -111,8 +118,10 @@ char *                      argv[])
     return     (0);
   }
 
-  flag = C_FLAGNONE;
-  SCOTCH_stratInit (&ordestrat);
+  flagval = C_FLAGNONE;                           /* Default behavior  */
+  straval = 0;                                    /* No strategy flags */
+  straptr = NULL;
+  SCOTCH_stratInit (&stradat);
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
@@ -127,21 +136,47 @@ char *                      argv[])
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
+        case 'C' :
+        case 'c' :                                /* Strategy selection parameters */
+          for (j = 2; argv[i][j] != '\0'; j ++) {
+            switch (argv[i][j]) {
+              case 'B' :
+              case 'b' :
+                straval |= SCOTCH_STRATBALANCE;
+                break;
+              case 'Q' :
+              case 'q' :
+                straval |= SCOTCH_STRATQUALITY;
+                break;
+              case 'S' :
+              case 's' :
+                straval |= SCOTCH_STRATSPEED;
+                break;
+              case 'T' :
+              case 't' :
+                straval |= SCOTCH_STRATSAFETY;
+                break;
+              default :
+                errorPrint ("main: invalid strategy selection option (\"%c\")", argv[i][j]);
+            }
+          }
+          break;
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
           return     (0);
         case 'M' :                                /* Output separator mapping */
         case 'm' :
-          flag |= C_FLAGMAPOUT;
+          flagval |= C_FLAGMAPOUT;
           if (argv[i][2] != '\0')
             C_filenamemapout = &argv[i][2];
           break;
         case 'O' :                                /* Ordering strategy */
         case 'o' :
-          SCOTCH_stratExit (&ordestrat);
-          SCOTCH_stratInit (&ordestrat);
-          if ((SCOTCH_stratMeshOrder (&ordestrat, &argv[i][2])) != 0) {
+          straptr = &argv[i][2];
+          SCOTCH_stratExit (&stradat);
+          SCOTCH_stratInit (&stradat);
+          if ((SCOTCH_stratMeshOrder (&stradat, straptr)) != 0) {
             errorPrint ("main: invalid ordering strategy");
             return     (1);
           }
@@ -157,11 +192,11 @@ char *                      argv[])
             switch (argv[i][j]) {
               case 'S' :
               case 's' :
-                flag |= C_FLAGVERBSTR;
+                flagval |= C_FLAGVERBSTR;
                 break;
               case 'T' :
               case 't' :
-                flag |= C_FLAGVERBTIM;
+                flagval |= C_FLAGVERBTIM;
                 break;
               default :
                 errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"",
@@ -186,6 +221,13 @@ char *                      argv[])
   SCOTCH_meshLoad (&meshdat, C_filepntrsrcinp, -1); /* Read source mesh    */
   SCOTCH_meshSize (&meshdat, NULL, &vnodnbr, NULL); /* Get number of nodes */
 
+  if (straval != 0) {
+    if (straptr != NULL)
+      errorPrint ("main: options '-c' and '-o' are exclusive");
+
+    SCOTCH_stratMeshOrderBuild (&stradat, straval, 0.1);
+  }
+
   clockStop  (&runtime[0]);                       /* Get input time */
   clockInit  (&runtime[1]);
   clockStart (&runtime[1]);
@@ -195,7 +237,7 @@ char *                      argv[])
     return     (1);
   }
   SCOTCH_meshOrderInit    (&meshdat, &ordedat, permtab, NULL, NULL, NULL, NULL); /* Create ordering */
-  SCOTCH_meshOrderCompute (&meshdat, &ordedat, &ordestrat); /* Perform ordering */
+  SCOTCH_meshOrderCompute (&meshdat, &ordedat, &stradat); /* Perform ordering */
 
   clockStop (&runtime[1]);                        /* Get ordering time */
 
@@ -207,17 +249,17 @@ char *                      argv[])
   clockStart (&runtime[0]);
 
   SCOTCH_meshOrderSave (&meshdat, &ordedat, C_filepntrordout); /* Write ordering     */
-  if (flag & C_FLAGMAPOUT)                        /* If mapping wanted               */
+  if (flagval & C_FLAGMAPOUT)                     /* If mapping wanted               */
     SCOTCH_meshOrderSaveMap (&meshdat, &ordedat, C_filepntrmapout); /* Write mapping */
 
   clockStop  (&runtime[0]);                       /* Get output time */
 
-  if (flag & C_FLAGVERBSTR) {
+  if (flagval & C_FLAGVERBSTR) {
     fprintf (C_filepntrlogout, "S\tStrat=");
-    SCOTCH_stratSave (&ordestrat, C_filepntrlogout);
+    SCOTCH_stratSave (&stradat, C_filepntrlogout);
     putc ('\n', C_filepntrlogout);
   }
-  if (flag & C_FLAGVERBTIM) {
+  if (flagval & C_FLAGVERBTIM) {
     fprintf (C_filepntrlogout, "T\tOrder\t\t%g\nT\tI/O\t\t%g\nT\tTotal\t\t%g\n",
              (double) clockVal (&runtime[1]),
              (double) clockVal (&runtime[0]),
@@ -228,7 +270,7 @@ char *                      argv[])
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
   SCOTCH_meshOrderExit (&meshdat, &ordedat);
-  SCOTCH_stratExit     (&ordestrat);
+  SCOTCH_stratExit     (&stradat);
   SCOTCH_meshExit      (&meshdat);
   memFree              (permtab);
 

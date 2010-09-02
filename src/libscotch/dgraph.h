@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 03 aug 2007     **/
 /**                # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 06 jun 2010     **/
+/**                                 to   : 21 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,6 +98,7 @@
 #ifndef GNUMMAX                                   /* If graph.h not included */
 typedef INT                 Gnum;                 /* Vertex or edge number   */
 #define GNUMMAX                     (INTVALMAX)   /* Maximum Gnum value      */
+#define GNUMSTRING                  INTSTRING     /* String to printf a Gnum */
 #endif /* GNUMMAX */
 
 #define GNUM_MPI                    COMM_INT      /* MPI type for Gnum is MPI type for INT */
@@ -165,13 +166,13 @@ typedef struct Dgraph_ {
   int                       prockeyval;           /*+ Communicator key value: folded communicators are distinct +*/
   int                       procglbnbr;           /*+ Number of processes sharing graph data                    +*/
   int                       proclocnum;           /*+ Number of this process                                    +*/
-  int * restrict            procvrttab;           /*+ Global array of vertex number ranges [+1,based]           +*/
-  int * restrict            proccnttab;           /*+ Count array for local number of vertices                  +*/
-  int * restrict            procdsptab;           /*+ Displacement array with respect to proccnttab [+1,based]  +*/
+  Gnum *                    procvrttab;           /*+ Global array of vertex number ranges [+1,based]           +*/
+  Gnum *                    proccnttab;           /*+ Count array for local number of vertices                  +*/
+  Gnum *                    procdsptab;           /*+ Displacement array with respect to proccnttab [+1,based]  +*/
   int                       procngbnbr;           /*+ Number of neighboring processes                           +*/
   int                       procngbmax;           /*+ Maximum number of neighboring processes                   +*/
-  int * restrict            procngbtab;           /*+ Array of neighbor process numbers [sorted]                +*/
-  int * restrict            procrcvtab;           /*+ Number of vertices to receive in ghost vertex sub-arrays  +*/
+  int *                     procngbtab;           /*+ Array of neighbor process numbers [sorted]                +*/
+  int *                     procrcvtab;           /*+ Number of vertices to receive in ghost vertex sub-arrays  +*/
   int                       procsndnbr;           /*+ Overall size of local send array                          +*/
   int * restrict            procsndtab;           /*+ Number of vertices to send in ghost vertex sub-arrays     +*/
   int * restrict            procsidtab;           /*+ Array of indices to build communication vectors (send)    +*/

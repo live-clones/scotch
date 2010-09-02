@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                frontier to the original graph.         **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 06 mar 2008     **/
+/**                                 to   : 16 aug 2010     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -228,7 +228,7 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
   reduloctab[1] = (Gnum) bndgrafdat.partgsttax[bndvertancnnd + 1];
   reduloctab[2] = complocsizeadj0;
   reduloctab[3] = 0;                              /* Assume memory allocation is all right */
-  if ((orgflagloctab = memAlloc (bdgraphBipartBdFlagSize (orggrafptr->s.vertlocnnd) * sizeof (int))) == NULL) { /* Eventually keep space for based indices */
+  if ((orgflagloctab = memAlloc (flagSize (orggrafptr->s.vertlocnnd) * sizeof (int))) == NULL) { /* Eventually keep space for based indices */
     errorPrint ("bdgraphBipartBd: out of memory (2)");
     reduloctab[3] = 1;
   }
@@ -246,7 +246,12 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
     bdgraphExit (&bndgrafdat);                    /* Apply original strategy to full graph */
     return      (bdgraphBipartSt (orggrafptr, paraptr->stratorg));
   }
-  
+
+  if (dgraphGhst (&bndgrafdat.s) != 0) {          /* Compute ghost edge array if not already present */
+    errorPrint ("bdgraphBipartBd: cannot compute ghost edge array");
+    return     (1);
+  }
+
   if (reduglbtab[0] == orggrafptr->s.procglbnbr) { /* If all anchors swapped parts, swap all parts of original vertices */
     Gnum                orgvertnum;
 
@@ -317,7 +322,7 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
     }
   }
 
-  memSet (orgflagloctab, 0, bdgraphBipartBdFlagSize (orggrafptr->s.vertlocnnd) * sizeof (int)); /* Set vertices as not already considered */
+  memSet (orgflagloctab, 0, flagSize (orggrafptr->s.vertlocnnd) * sizeof (int)); /* Set vertices as not already considered */
 
   for (bndfronlocnum = orgfronlocnum = 0; bndfronlocnum < bndgrafdat.fronlocnbr; bndfronlocnum ++) { /* Project back separator except for last layer */
     Gnum                bndvertlocnum;
@@ -327,7 +332,7 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
       Gnum                orgvertlocnum;
 
       orgvertlocnum = bndgrafdat.s.vnumloctax[bndvertlocnum];
-      bdgraphBipartBdFlagSet (orgflagloctab, orgvertlocnum); /* Set vertex as processed */
+      flagSet (orgflagloctab, orgvertlocnum);     /* Set vertex as processed */
       orggrafptr->fronloctab[orgfronlocnum ++] = orgvertlocnum;
     }
   }
@@ -364,17 +369,17 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
         orgedlolocval = orggrafptr->s.edloloctax[orgedgelocnum];
       orgflagval       |= orgflagtmp;
       commlocloadintn2 += orgflagtmp * orgedlolocval; /* Internal load to band and original graph vertices are accounted for twice */
-      if ((orgflagtmp != 0) && (orgvertlocend < orggrafptr->s.vertlocnnd) && (bdgraphBipartBdFlagVal (orgflagloctab, orgvertlocend) == 0)) {
+      if ((orgflagtmp != 0) && (orgvertlocend < orggrafptr->s.vertlocnnd) && (flagVal (orgflagloctab, orgvertlocend) == 0)) {
         orggrafptr->fronloctab[orgfronlocnum ++] = orgvertlocend;
-        bdgraphBipartBdFlagSet (orgflagloctab, orgvertlocend);
+        flagSet (orgflagloctab, orgvertlocend);
       }
     }
-    if ((orgflagval != 0) && (bdgraphBipartBdFlagVal (orgflagloctab, orgvertlocnum) == 0))
+    if ((orgflagval != 0) && (flagVal (orgflagloctab, orgvertlocnum) == 0))
       orggrafptr->fronloctab[orgfronlocnum ++] = orgvertlocnum;
 
-    bdgraphBipartBdFlagSet (orgflagloctab, orgvertlocnum); /* Set vertex as processed anyway */
+    flagSet (orgflagloctab, orgvertlocnum);       /* Set vertex as processed anyway */
   }
-  commlocloadintn += 2 * commlocloadintn2; /* Add twice the internal load of original graph edges and once the one of band edges (one removed before) */
+  commlocloadintn += 2 * commlocloadintn2;        /* Add twice the internal load of original graph edges and once the one of band edges (one removed before) */
 
   orggrafptr->complocload0    = bndgrafdat.complocload0 - bndvertlocancadj;
   orggrafptr->compglbload0    = bndgrafdat.compglbload0 - bndvertglbancadj;
@@ -393,7 +398,7 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
       orgprocsidval  = orgprocsidtab[orgprocsidnum ++];  
     }
 
-    if (bdgraphBipartBdFlagVal (orgflagloctab, orgvertlocnum) == 0) { /* If vertex not already processed */
+    if (flagVal (orgflagloctab, orgvertlocnum) == 0) { /* If vertex not already processed */
       Gnum                orgedgelocnum;
       Gnum                orgedgelocnnd;
       GraphPart           orgpartval;

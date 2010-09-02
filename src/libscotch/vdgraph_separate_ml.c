@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 07 mar 2006     **/
 /**                                 to   : 01 mar 2008     **/
 /**                # Version 5.1  : from : 14 dec 2008     **/
-/**                                 to   : 29 oct 2009     **/
+/**                                 to   : 26 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -398,7 +398,8 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     reduloctab[4] = 0;
   }
   else {
-    reduloctab[0] = (coargrafptr->compglbsize[2] <= 0) ? 1 : 0; /* Empty separators are deemed invalid                  */
+    reduloctab[0] = ((coargrafptr->compglbsize[0] == 0) || /* Empty separated parts are deemed invalid */
+                     (coargrafptr->compglbsize[1] == 0)) ? 1 : 0;
     reduloctab[1] = finegrafptr->s.proclocnum;    /* Set rank and color key according to coarse graph (sub)communicator */
     reduloctab[2] = finegrafptr->s.prockeyval;
     reduloctab[3] = coargrafptr->compglbsize[2];
@@ -744,8 +745,11 @@ const VdgraphSeparateMlParam * const paraptr)     /* Method parameters       */
 
   if (grafptr->s.procglbnbr <= paraptr->seqnbr) { /* We must enter in another mode         */
     if (((o = vdgraphSeparateMlUncoarsen (grafptr, NULL, NULL)) == 0) && /* Finalize graph */
-        ((o = vdgraphSeparateSt (grafptr, paraptr->stratseq)) != 0))
-      errorPrint ("vdgraphSeparateMl2: cannot apply seq strategy");
+        ((o = vdgraphSeparateSt (grafptr, paraptr->stratseq)) != 0)) {
+#ifdef SCOTCH_DEBUG_VDGRAPH2
+      errorPrintW ("vdgraphSeparateMl2: cannot apply sequential strategy");
+#endif /* SCOTCH_DEBUG_VDGRAPH2 */
+    }
     return (o);
   }
 
@@ -753,16 +757,25 @@ const VdgraphSeparateMlParam * const paraptr)     /* Method parameters       */
     o = (coargrafdat.s.procglbnbr == 0) ? 0 : vdgraphSeparateMl2 (&coargrafdat, paraptr); /* Apply recursion on coarsened graph if it exists */
     if ((o == 0) &&
         ((o = vdgraphSeparateMlUncoarsen (grafptr, &coargrafdat, coarmulttax)) == 0) &&
-        ((o = vdgraphSeparateSt          (grafptr, paraptr->stratasc))         != 0)) /* Apply ascending strategy */
-      errorPrint ("vdgraphSeparateMl2: cannot apply ascending strategy");
+        ((o = vdgraphSeparateSt          (grafptr, paraptr->stratasc))         != 0)) { /* Apply ascending strategy if uncoarsening worked */
+#ifdef SCOTCH_DEBUG_VDGRAPH2
+      errorPrintW ("vdgraphSeparateMl2: cannot apply ascending strategy");
+#endif /* SCOTCH_DEBUG_VDGRAPH2 */
+    }
+
     if (coargrafdat.fronloctab == grafptr->fronloctab) /* If coarse graph shares fronloctab with fine graph */
       coargrafdat.fronloctab = NULL;              /* Prevent fronloctab of fine graph from being freed      */
     vdgraphExit (&coargrafdat);
+
+    if (o == 0)                                   /* If multi-level failed, apply low strategy as fallback */
+      return (o);
   }
-  else {                                          /* Cannot coarsen due to lack of memory or error  */
-    if (((o = vdgraphSeparateMlUncoarsen (grafptr, NULL, NULL)) == 0) && /* Finalize graph          */
-        ((o = vdgraphSeparateSt          (grafptr, paraptr->stratlow)) != 0)) /* Apply low strategy */
-      errorPrint ("vdgraphSeparateMl2: cannot apply low strategy");
+
+  if (((o = vdgraphSeparateMlUncoarsen (grafptr, NULL, NULL)) == 0) && /* Finalize graph            */
+      ((o = vdgraphSeparateSt          (grafptr, paraptr->stratlow)) != 0)) { /* Apply low strategy */
+#ifdef SCOTCH_DEBUG_VDGRAPH2
+    errorPrintW ("vdgraphSeparateMl2: cannot apply low strategy");
+#endif /* SCOTCH_DEBUG_VDGRAPH2 */
   }
 
   return (o);

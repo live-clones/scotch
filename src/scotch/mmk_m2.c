@@ -43,7 +43,7 @@
 /**                # Version 5.0  : from : 13 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /**   NOTES      : # The nodes and elements of the         **/
 /**                  (dX,dY) mesh are numbered so that     **/
@@ -159,19 +159,19 @@ char *                      argv[])
   n[1] = e[1] + 1;
   velmnbr = e[0] * e[1];
 
-  fprintf (C_filepntrmshout, "1\n%ld\t%ld\t%ld\n0\t%ld\t000\n", /* Print mesh file header */
-             (long) velmnbr,
-             (long) (n[0] * n[1]),
-             (long) (((velmnbr + n[0] * n[1]) - (e[0] + e[1] + 1)) * 4),
-             (long) velmnbr);
+  fprintf (C_filepntrmshout, "1\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n0\t" SCOTCH_NUMSTRING "\t000\n", /* Print mesh file header */
+             (SCOTCH_Num) velmnbr,
+             (SCOTCH_Num) (n[0] * n[1]),
+             (SCOTCH_Num) (((velmnbr + n[0] * n[1]) - (e[0] + e[1] + 1)) * 4),
+             (SCOTCH_Num) velmnbr);
 
   for (c[1] = 0; c[1] < e[1]; c[1] ++) {          /* Output element neighbor list */
     for (c[0] = 0; c[0] < e[0]; c[0] ++) {
-      fprintf (C_filepntrmshout, "4\t%ld\t%ld\t%ld\t%ld\n", /* Output neighbors of element */
-                (long) (c[1] * n[0] + c[0]),
-                (long) (c[1] * n[0] + c[0] + 1),
-                (long) ((c[1] + 1) * n[0] + c[0]),
-                (long) ((c[1] + 1) * n[0] + c[0] + 1));
+      fprintf (C_filepntrmshout, "4\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n", /* Output neighbors of element */
+                (SCOTCH_Num) (c[1] * n[0] + c[0]),
+                (SCOTCH_Num) (c[1] * n[0] + c[0] + 1),
+                (SCOTCH_Num) ((c[1] + 1) * n[0] + c[0]),
+                (SCOTCH_Num) ((c[1] + 1) * n[0] + c[0] + 1));
     }
   }
   for (c[1] = 0; c[1] < n[1]; c[1] ++) {          /* Output node neighbor list */
@@ -181,41 +181,41 @@ char *                      argv[])
                           (((c[1] != 0) && (c[1] != e[1])) ? 0 : 1)]);
       if (c[1] != 0) {                            /* Output neighbors of nodes */
         if (c[0] != 0)
-          fprintf (C_filepntrmshout, "\t%ld",
-                    (long) ((c[1] - 1) * e[0] + (c[0] - 1)));
+          fprintf (C_filepntrmshout, "\t" SCOTCH_NUMSTRING,
+                    (SCOTCH_Num) ((c[1] - 1) * e[0] + (c[0] - 1)));
         if (c[0] != e[0])
-          fprintf (C_filepntrmshout, "\t%ld",
-                    (long) ((c[1] - 1) * e[0] + c[0]));
+          fprintf (C_filepntrmshout, "\t" SCOTCH_NUMSTRING,
+                    (SCOTCH_Num) ((c[1] - 1) * e[0] + c[0]));
       }
       if (c[1] != e[1]) {
         if (c[0] != 0)
-          fprintf (C_filepntrmshout, "\t%ld",
-                    (long) (c[1] * e[0] + (c[0] - 1)));
+          fprintf (C_filepntrmshout, "\t" SCOTCH_NUMSTRING,
+                    (SCOTCH_Num) (c[1] * e[0] + (c[0] - 1)));
         if (c[0] != e[0])
-          fprintf (C_filepntrmshout, "\t%ld",
-                    (long) (c[1] * e[0] + c[0]));
+          fprintf (C_filepntrmshout, "\t" SCOTCH_NUMSTRING,
+                    (SCOTCH_Num) (c[1] * e[0] + c[0]));
       }
       fprintf (C_filepntrmshout, "\n");
     }
   }
 
-  if (flagval & C_FLAGGEOOUT) {                   /* If geometry is wanted       */
-    fprintf (C_filepntrgeoout, "2\n%ld\n",        /* Output geometry file header */
-              (long) (velmnbr + n[0] * n[1]));
+  if (flagval & C_FLAGGEOOUT) {                   /* If geometry is wanted                 */
+    fprintf (C_filepntrgeoout, "2\n" SCOTCH_NUMSTRING "\n", /* Output geometry file header */
+              (SCOTCH_Num) (velmnbr + n[0] * n[1]));
 
     for (c[1] = 0; c[1] < e[1]; c[1] ++) {        /* Output element coordinates */
       for (c[0] = 0; c[0] < e[0]; c[0] ++)
-        fprintf (C_filepntrgeoout, "%ld\t%ld.5\t%ld.5\n",
-                  (long) (c[1] * e[0] + c[0]),
-                  (long) c[0],
-                  (long) (e[1] - 1 - c[1]));
+        fprintf (C_filepntrgeoout, SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING ".5\t" SCOTCH_NUMSTRING ".5\n",
+                  (SCOTCH_Num) (c[1] * e[0] + c[0]),
+                  (SCOTCH_Num) c[0],
+                  (SCOTCH_Num) (e[1] - 1 - c[1]));
     }
     for (c[1] = 0; c[1] < n[1]; c[1] ++) {        /* Output node coordinates */
       for (c[0] = 0; c[0] < n[0]; c[0] ++)
-        fprintf (C_filepntrgeoout, "%ld\t%ld\t%ld\n",
-                  (long) (velmnbr + c[1] * n[0] + c[0]),
-                  (long) c[0],
-                  (long) (e[1] - c[1]));
+        fprintf (C_filepntrgeoout, SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n",
+                  (SCOTCH_Num) (velmnbr + c[1] * n[0] + c[0]),
+                  (SCOTCH_Num) c[0],
+                  (SCOTCH_Num) (e[1] - c[1]));
     }
   }
 

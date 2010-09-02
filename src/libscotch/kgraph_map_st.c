@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.1  : from : 04 oct 2009     **/
-/**                                 to     11 oct 2009     **/
+/**                                 to     14 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,6 +68,7 @@
 #include "bgraph.h"
 #include "bgraph_bipart_st.h"
 #include "kgraph.h"
+#include "kgraph_map_ml.h"
 #include "kgraph_map_rb.h"
 #include "kgraph_map_st.h"
 
@@ -76,15 +77,41 @@
 */
 
 static union {
+  KgraphMapMlParam          param;
+  StratNodeMethodData       padding;
+} kgraphmapstdefaultml = { { 100, 0.8L, GRAPHCOARHEM, &stratdummy, &stratdummy } };
+
+static union {
   KgraphMapRbParam          param;
   StratNodeMethodData       padding;
 } kgraphmapstdefaultrb = { { 1, 1, KGRAPHMAPRBPOLINGSIZE, &stratdummy } };
 
 static StratMethodTab       kgraphmapstmethtab[] = { /* Mapping methods array */
+                              { KGRAPHMAPSTMETHML, "m",  kgraphMapMl, &kgraphmapstdefaultml },
                               { KGRAPHMAPSTMETHRB, "r",  kgraphMapRb, &kgraphmapstdefaultrb },
                               { -1,                NULL, NULL,        NULL } };
 
 static StratParamTab        kgraphmapstparatab[] = { /* Method parameter list */
+                              { KGRAPHMAPSTMETHML,  STRATPARAMSTRAT,  "asc",
+                                (byte *) &kgraphmapstdefaultml.param,
+                                (byte *) &kgraphmapstdefaultml.param.stratasc,
+                                (void *) &kgraphmapststratab },
+                              { KGRAPHMAPSTMETHML,  STRATPARAMSTRAT,  "low",
+                                (byte *) &kgraphmapstdefaultml.param,
+                                (byte *) &kgraphmapstdefaultml.param.stratlow,
+                                (void *) &kgraphmapststratab },
+                              { KGRAPHMAPSTMETHML,  STRATPARAMCASE,   "type",
+                                (byte *) &kgraphmapstdefaultml.param,
+                                (byte *) &kgraphmapstdefaultml.param.coartype,
+                                (void *) "hscd" },
+                              { KGRAPHMAPSTMETHML,  STRATPARAMINT,    "vert",
+                                (byte *) &kgraphmapstdefaultml.param,
+                                (byte *) &kgraphmapstdefaultml.param.coarnbr,
+                                NULL },
+                              { KGRAPHMAPSTMETHML,  STRATPARAMDOUBLE, "rat",
+                                (byte *) &kgraphmapstdefaultml.param,
+                                (byte *) &kgraphmapstdefaultml.param.coarrat,
+                                NULL },
                               { KGRAPHMAPSTMETHRB,  STRATPARAMCASE,   "job",
                                 (byte *) &kgraphmapstdefaultrb.param,
                                 (byte *) &kgraphmapstdefaultrb.param.flagjobtie,
