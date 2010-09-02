@@ -1,4 +1,4 @@
-/* Copyright 2008,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 26 jul 2008     **/
-/**                                 to     28 apr 2009     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -216,12 +216,13 @@ FILE * const                  stream)
   mapmmy = (mapnbr != 0) ? (double) mapmax / (double) mapavg : 0.0L;
 
   if (stream != NULL) {
-    fprintf (stream, "M\tProcessors %ld/%ld (%g)\n",
-             (long) mapnbr, (long) tgtnbr,
+    fprintf (stream, "M\tProcessors " GNUMSTRING "/" GNUMSTRING "(%g)\n",
+             (Gnum) mapnbr,
+             (Gnum) tgtnbr,
              (double) mapnbr / (double) tgtnbr);
-    fprintf (stream, "M\tTarget min=%ld\tmax=%ld\tavg=%g\tdlt=%g\tmaxavg=%g\n",
-             (long) mapmin,
-             (long) mapmax,
+    fprintf (stream, "M\tTarget min=" GNUMSTRING "\tmax=" GNUMSTRING "\tavg=%g\tdlt=%g\tmaxavg=%g\n",
+             (Gnum) mapmin,
+             (Gnum) mapmax,
              mapavg,
              mapdlt,
              mapmmy);
@@ -289,10 +290,10 @@ FILE * const                  stream)
   }
 
   if (stream != NULL) {
-    fprintf (stream, "M\tNeighbors min=%ld\tmax=%ld\tsum=%ld\n",
-             (long) ngbmin,
-             (long) ngbmax,
-             (long) ngbsum);
+    fprintf (stream, "M\tNeighbors min=" GNUMSTRING "\tmax=" GNUMSTRING "\tsum=" GNUMSTRING "\n",
+             (Gnum) ngbmin,
+             (Gnum) ngbmax,
+             (Gnum) ngbsum);
   }
 
   memSet (commlocdist, 0, 256 * sizeof (Gnum));   /* Initialize the data */
@@ -350,17 +351,17 @@ FILE * const                  stream)
     Gnum                commglbload;
 
     commglbload = commglbdist[256];
-    fprintf (stream, "M\tCommDilat=%f\t(%ld)\n",  /* Print expansion parameters */
+    fprintf (stream, "M\tCommDilat=%f\t(" GNUMSTRING ")\n", /* Print expansion parameters */
            (double) commglbdist[256 + 1] / grafptr->edgeglbnbr,
-           (long) (commglbdist[256 + 1] / 2));
-    fprintf (stream, "M\tCommExpan=%f\t(%ld)\n",
+           (Gnum) (commglbdist[256 + 1] / 2));
+    fprintf (stream, "M\tCommExpan=%f\t(" GNUMSTRING ")\n",
              ((commglbload == 0) ? (double) 0.0L
                                  : (double) commglbdist[256 + 2] / (double) commglbload),
-             (long) (commglbdist[256 + 2] / 2));
-    fprintf (stream, "M\tCommCutSz=%f\t(%ld)\n",
+             (Gnum) (commglbdist[256 + 2] / 2));
+    fprintf (stream, "M\tCommCutSz=%f\t(" GNUMSTRING ")\n",
              ((commglbload == 0) ? (double) 0.0L
                                  : (double) (commglbload - commglbdist[0]) / (double) commglbload),
-             (long) ((commglbload - commglbdist[0]) / 2));
+             (Gnum) ((commglbload - commglbdist[0]) / 2));
     fprintf (stream, "M\tCommDelta=%f\n",
              (((double) commglbload  * (double) commglbdist[256 + 1]) == 0.0L)
              ? (double) 0.0L
@@ -371,8 +372,9 @@ FILE * const                  stream)
       if (commglbdist[distmax] != 0)
         break;
     for (distval = 0; distval <= distmax; distval ++) /* Print distance histogram */
-      fprintf (stream, "M\tCommLoad[%ld]=%f\n",
-               (long) distval, (double) commglbdist[distval] / (double) commglbload);
+      fprintf (stream, "M\tCommLoad[" ANUMSTRING "]=%f\n",
+               (Anum) distval,
+               (double) commglbdist[distval] / (double) commglbload);
   }
 
   memFree (nmskloctab);                           /* Free group leader */

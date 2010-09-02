@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 12 jun 2008     **/
 /**                                 to   : 28 aug 2008     **/
 /**                # Version 5.1  : from : 26 oct 2008     **/
-/**                                 to   : 03 jul 2010     **/
+/**                                 to   : 28 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,6 +78,13 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 static const char *         C_usageList[] = {     /* Usage */
   "dgmap [<input source file> [<input target file> [<output mapping file> [<output log file>]]]] <options>",
   "dgpart [<nparts>] [<input source file> [<output mapping file> [<output log file>]]] <options>",
+  "  -b<val>    : Load imbalance tolerance (default: 0.01)",
+  "  -c<opt>    : Choose default mapping strategy according to one or several of <opt>:",
+  "                 b  : enforce load balance as much as possible",
+  "                 q  : privilege quality over speed (default)",
+  "                 s  : privilege speed over quality",
+  "                 t  : enforce safety",
+  "                 x  : enforce scalability",
   "  -h         : Display this help",
   "  -m<strat>  : Set parallel mapping strategy (see user's manual)",
   "  -r<num>    : Set root process for centralized files (default is 0)",
@@ -105,27 +112,33 @@ main (
 int                         argc,
 char *                      argv[])
 {
-  SCOTCH_Dgraph       grafdat;                    /* Source graph            */
-  SCOTCH_Num          grafflag;                   /* Source graph properties */
-  SCOTCH_Arch         archdat;                    /* Target architecture     */
-  SCOTCH_Strat        stradat;                    /* Mapping strategy        */
-  SCOTCH_Dmapping     mapdat;                     /* Mapping data            */
+  SCOTCH_Dgraph       grafdat;                    /* Source graph              */
+  SCOTCH_Num          grafflag;                   /* Source graph properties   */
+  SCOTCH_Arch         archdat;                    /* Target architecture       */
+  SCOTCH_Dmapping     mappdat;                    /* Mapping data              */
+  SCOTCH_Strat        stradat;                    /* Mapping strategy          */
+  SCOTCH_Num          straval;
+  char *              straptr;
+  int                 flagval;
+  double              kbalval;                    /* Imbalance tolerance value */
   int                 procglbnbr;
   int                 proclocnum;
-  int                 protglbnum;                 /* Root process        */
-  Clock               runtime[2];                 /* Timing variables    */
-  double              reduloctab[12];             /* 3 * (min, max, sum) */
+  int                 protglbnum;                 /* Root process              */
+  Clock               runtime[2];                 /* Timing variables          */
+  double              reduloctab[12];             /* 3 * (min, max, sum)       */
   double              reduglbtab[12];
   MPI_Datatype        redutype;
   MPI_Op              reduop;
-  int                 flagval;
   int                 i, j;
 #ifdef SCOTCH_PTHREAD
   int                 thrdlvlreqval;
   int                 thrdlvlproval;
 #endif /* SCOTCH_PTHREAD */
 
-  flagval = C_FLAGNONE;                           /* Default behavior */
+  flagval = C_FLAGNONE;                           /* Default behavior  */
+  straval = 0;                                    /* No strategy flags */
+  straptr = NULL;
+
   i = strlen (argv[0]);
   if ((i >= 5) && (strncmp (argv[0] + i - 5, "gpart", 5) == 0)) {
     flagval |= C_FLAGPART;
@@ -161,6 +174,8 @@ char *                      argv[])
   grafflag = 0;                                   /* Use vertex and edge weights */
   SCOTCH_stratInit (&stradat);
 
+  kbalval = 0.01;                                 /* Set default load imbalance value */
+
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
@@ -178,6 +193,46 @@ char *                      argv[])
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
+        case 'B' :
+        case 'b' :
+          flagval |= C_FLAGKBALVAL;
+          kbalval = atof (&argv[i][2]);
+          if ((kbalval < 0.0) ||
+              (kbalval > 1.0) ||
+              ((kbalval == 0.0) &&
+               ((argv[i][2] != '0') && (argv[i][2] != '.')))) {
+            errorPrint ("main: invalid load imbalance ratio");
+          }
+          break;
+        case 'C' :
+        case 'c' :                                /* Strategy selection parameters */
+          for (j = 2; argv[i][j] != '\0'; j ++) {
+            switch (argv[i][j]) {
+              case 'B' :
+              case 'b' :
+                straval |= SCOTCH_STRATBALANCE;
+                break;
+              case 'Q' :
+              case 'q' :
+                straval |= SCOTCH_STRATQUALITY;
+                break;
+              case 'S' :
+              case 's' :
+                straval |= SCOTCH_STRATSPEED;
+                break;
+              case 'T' :
+              case 't' :
+                straval |= SCOTCH_STRATSAFETY;
+                break;
+              case 'X' :
+              case 'x' :
+                straval |= SCOTCH_STRATSCALABILITY;
+                break;
+              default :
+                errorPrint ("main: invalid strategy selection option (\"%c\")", argv[i][j]);
+            }
+          }
+          break;
 #ifdef SCOTCH_DEBUG_ALL
         case 'D' :
         case 'd' :
@@ -190,9 +245,10 @@ char *                      argv[])
           return     (0);
         case 'M' :
         case 'm' :
+          straptr = &argv[i][2];
           SCOTCH_stratExit (&stradat);
           SCOTCH_stratInit (&stradat);
-          SCOTCH_stratDgraphMap (&stradat, &argv[i][2]);
+          SCOTCH_stratDgraphMap (&stradat, straptr);
           break;
         case 'R' :                                /* Root process (if necessary) */
         case 'r' :
@@ -291,6 +347,14 @@ char *                      argv[])
     if (C_filepntrtgtinp == NULL)
       errorPrint ("main: target architecture file not provided");
     SCOTCH_archLoad (&archdat, C_filepntrtgtinp); /* Read target architecture */
+    C_partNbr = SCOTCH_archSize (&archdat);
+  }
+
+  if ((straval != 0) || ((flagval & C_FLAGKBALVAL) != 0)) {
+    if (straptr != NULL)
+      errorPrint ("main: options '-b' / '-c' and '-m' are exclusive");
+
+    SCOTCH_stratDgraphMapBuild (&stradat, straval, (SCOTCH_Num) procglbnbr, (SCOTCH_Num) C_partNbr, kbalval);
   }
 
   clockStop (&runtime[0]);                        /* Get input time */
@@ -305,8 +369,8 @@ char *                      argv[])
 
   SCOTCH_dgraphGhst (&grafdat);                   /* Compute it once for good */
 
-  SCOTCH_dgraphMapInit    (&grafdat, &mapdat, &archdat, NULL);
-  SCOTCH_dgraphMapCompute (&grafdat, &mapdat, &stradat); /* Perform mapping */
+  SCOTCH_dgraphMapInit    (&grafdat, &mappdat, &archdat, NULL);
+  SCOTCH_dgraphMapCompute (&grafdat, &mappdat, &stradat); /* Perform mapping */
 
   clockStop (&runtime[1]);                        /* Get computation time */
 
@@ -317,7 +381,7 @@ char *                      argv[])
 
   clockStart (&runtime[0]);
 
-  SCOTCH_dgraphMapSave (&grafdat, &mapdat, (proclocnum == protglbnum) ? C_filepntrmapout : NULL); /* Write mapping */
+  SCOTCH_dgraphMapSave (&grafdat, &mappdat, (proclocnum == protglbnum) ? C_filepntrmapout : NULL); /* Write mapping */
 
   clockStop (&runtime[0]);                        /* Get output time */
 
@@ -373,11 +437,11 @@ char *                      argv[])
 #endif /* COMMON_MEMORY_TRACE */
   }
   if (flagval & C_FLAGVERBMAP)
-    SCOTCH_dgraphMapView (&grafdat, &mapdat, C_filepntrlogout);
+    SCOTCH_dgraphMapView (&grafdat, &mappdat, C_filepntrlogout);
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
-  SCOTCH_dgraphMapExit (&grafdat, &mapdat);
+  SCOTCH_dgraphMapExit (&grafdat, &mappdat);
   SCOTCH_dgraphExit    (&grafdat);
   SCOTCH_stratExit     (&stradat);
   SCOTCH_archExit      (&archdat);

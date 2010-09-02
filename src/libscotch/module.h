@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 24 feb 2007     **/
 /**                                 to     24 jul 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     01 jul 2010     **/
+/**                                 to     14 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -145,8 +145,6 @@
 
 #define commonStubDummy             _SCOTCHcommonStubDummy
 
-#define usagePrint                  _SCOTCHusagePrint
-
 #define errorPrint                  SCOTCH_errorPrint
 #define errorPrintW                 SCOTCH_errorPrintW
 #define errorProg                   SCOTCH_errorProg
@@ -171,10 +169,15 @@
 #define intSort2asc1                _SCOTCHintSort2asc1
 #define intSort2asc2                _SCOTCHintSort2asc2
 #define intSort3asc1                _SCOTCHintSort3asc1
+#define intSort3asc2                _SCOTCHintSort3asc2
 
 #define memAllocGroup               _SCOTCHmemAllocGroup
 #define memReallocGroup             _SCOTCHmemReallocGroup
 #define memOffset                   _SCOTCHmemOffset
+
+#define stringSubst                 _SCOTCHstringSubst
+
+#define usagePrint                  _SCOTCHusagePrint
 #endif /* ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) */
 
 #ifdef SCOTCH_RENAME
@@ -362,6 +365,7 @@
 #define bdgraphGatherAll            _SCOTCHbdgraphGatherAll
 #define bdgraphBipartBd             _SCOTCHbdgraphBipartBd
 #define bdgraphBipartDf             _SCOTCHbdgraphBipartDf
+#define bdgraphBipartEx             _SCOTCHbdgraphBipartEx
 #define bdgraphBipartMl             _SCOTCHbdgraphBipartMl
 #define bdgraphBipartSq             _SCOTCHbdgraphBipartSq
 #define bdgraphBipartSt             _SCOTCHbdgraphBipartSt
@@ -393,6 +397,12 @@
 #define bgraphStoreExit             _SCOTCHbgraphStoreExit
 #define bgraphStoreSave             _SCOTCHbgraphStoreSave
 #define bgraphStoreUpdt             _SCOTCHbgraphStoreUpdt
+
+#ifdef INTSIZE64
+#define commAllgatherv              _SCOTCHcommAllgatherv
+#define commGatherv                 _SCOTCHcommGatherv
+#define commScatterv                _SCOTCHcommScatterv
+#endif /* INTSIZE64 */
 
 #define dgraphAllreduceMaxSum2      _SCOTCHdgraphAllreduceMaxSum2
 #define dgraphBuild                 _SCOTCHdgraphBuild
@@ -568,6 +578,9 @@
 #define kgraphmapststratab          _SCOTCHkgraphmapststratab
 #define kgraphInit                  _SCOTCHkgraphInit
 #define kgraphExit                  _SCOTCHkgraphExit
+#define kgraphCheck                 _SCOTCHkgraphCheck
+#define kgraphFrst                  _SCOTCHkgraphFrst
+#define kgraphMapMl                 _SCOTCHkgraphMapMl
 #define kgraphMapRb                 _SCOTCHkgraphMapRb
 #define kgraphMapRbMap              _SCOTCHkgraphMapRbMap
 #define kgraphMapRbPart             _SCOTCHkgraphMapRbPart

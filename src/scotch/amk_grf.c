@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 11 dec 2008     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,10 +80,10 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 
 static const char *         C_usageList[] = {     /* Usage */
   "amk_grf [<input source file> [<output target file>]] <options>",
-  "  -b<strat>[{<params>}]  : Apply bipartitioning strategy <strat>",
-  "  -h                     : Display this help",
-  "  -l<file>               : Load vertex list from <file>",
-  "  -V                     : Print program version and copyright",
+  "  -b<strat>  : Apply bipartitioning strategy <strat>",
+  "  -h         : Display this help",
+  "  -l<file>   : Load vertex list from <file>",
+  "  -V         : Print program version and copyright",
   "",
   "Default option set is : '-Bhf{move=1000}/((load0=load)|(load0=0))?x;'",
   NULL };
@@ -221,7 +221,7 @@ char *                      argv[])
           vertnum ++;                             /* Search vertex graph with corresponding label */
         if ((vertnum >= vertnbr) ||               /* If label not found                           */
             (sorttab[vertnum].labl > listtab[listnum])) {
-          errorPrint ("main: list label not in graph (%ld)", (long) listtab[listnum]);
+          errorPrint ("main: list label not in graph (" SCOTCH_NUMSTRING ")", (SCOTCH_Num) listtab[listnum]);
           memFree    (sorttab);
           memFree    (listtab);
           return     (1);

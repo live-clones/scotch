@@ -52,7 +52,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -187,10 +187,10 @@ char *              argv[];
   if (deco->domtermnbr > 1)
     dstdlt /= (double) (deco->domtermnbr * (deco->domtermnbr - 1) / 2);
 
-  fprintf (C_filepntrlogout, "A\tTerminals\tnbr=%ld\n",
-           (long) deco->domtermnbr);
-  fprintf (C_filepntrlogout, "A\tDistance\tmin=%ld\tmax=%ld\tavg=%g\tdlt=%g\n",
-           (long) dstmin, (long) dstmax, dstavg, dstdlt);
+  fprintf (C_filepntrlogout, "A\tTerminals\tnbr=" SCOTCH_NUMSTRING "\n",
+           (SCOTCH_Num) deco->domtermnbr);
+  fprintf (C_filepntrlogout, "A\tDistance\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
+           (SCOTCH_Num) dstmin, (SCOTCH_Num) dstmax, dstavg, dstdlt);
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 

@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,8 +43,8 @@
 /**                computing, and projecting back the      **/
 /**                best result obtained.                   **/
 /**                                                        **/
-/**   DATES      : # Version 5.0  : from : 15 feb 2006     **/
-/**                                 to     26 nov 2008     **/
+/**   DATES      : # Version 5.1  : from : 15 feb 2006     **/
+/**                                 to     30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,10 +53,10 @@
 */
 
 #define VDGRAPH_SEPARATE_SQ
-#define VDGRAPH_H
 
 #include "module.h"
 #include "common.h"
+#include "comm.h"
 #include "parser.h"
 #include "graph.h"
 #include "vgraph.h"
@@ -219,7 +219,7 @@ const VdgraphSeparateSqParam * const  paraptr)    /*+ Method parameters +*/
   dgrfptr->compglbsize[1] = reduloctab[5];
   dgrfptr->compglbsize[2] = reduloctab[6];
 
-  if (MPI_Scatterv (cgrfdat.parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, /* No base for sending as procdsptab holds based values */
+  if (commScatterv (cgrfdat.parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, /* No base for sending as procdsptab holds based values */
                     dgrfptr->partgsttax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GRAPHPART_MPI,
                     bestprocnum, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphSeparateSq: communication error (6)");

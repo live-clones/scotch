@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 04 jul 2005     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 20 nov 2008     **/
-/**                                 to   : 02 jan 2009     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,7 +91,7 @@ const Dgraph * restrict const grafptr)
   int                 procsndnum;                 /* Number of process to which to send           */
   int                 procngbsel;                 /* Value of the currently used neighbor buffers */
   int                 procngbnum;                 /* Number of current neighbor process           */
-  int *               procngbtab;                 /* Array of neighbor vertex ranges              */
+  Gnum *              procngbtab;                 /* Array of neighbor vertex ranges              */
   Gnum                vertlocnum;
   Gnum                vertngbmin;                 /* Smallest vertex number of neighbor process   */
   Gnum                vertngbmax;                 /* Largest vertex number of neighbor process    */
@@ -163,7 +163,7 @@ const Dgraph * restrict const grafptr)
   procrcvnum = (proclocnum + 1) % procglbnbr;     /* Compute indices of neighbors */
   procsndnum = (proclocnum - 1 + procglbnbr) % procglbnbr;
 
-  if ((procngbtab = (int *) memAlloc ((procglbnbr + 1) * sizeof (int))) == NULL) {
+  if ((procngbtab = (Gnum *) memAlloc ((procglbnbr + 1) * sizeof (Gnum))) == NULL) {
     errorPrint ("dgraphCheck: out of memory (1)");
     cheklocval = 1;
   }
@@ -177,8 +177,8 @@ const Dgraph * restrict const grafptr)
     return (1);
   }
 
-  MPI_Sendrecv (grafptr->procdsptab, procglbnbr + 1, MPI_INT, procsndnum, TAGPROCVRTTAB, /* Check vertex range array */
-                procngbtab,          procglbnbr + 1, MPI_INT, procrcvnum, TAGPROCVRTTAB,
+  MPI_Sendrecv (grafptr->procdsptab, procglbnbr + 1, GNUM_MPI, procsndnum, TAGPROCVRTTAB, /* Check vertex range array */
+                procngbtab,          procglbnbr + 1, GNUM_MPI, procrcvnum, TAGPROCVRTTAB,
                 proccomm, &statloctab[0]);
   for (procngbnum = 0; procngbnum <= procglbnbr; procngbnum ++) {
     if (grafptr->procdsptab[procngbnum] != procngbtab[procngbnum]) {
@@ -188,8 +188,8 @@ const Dgraph * restrict const grafptr)
     }
   }
 
-  MPI_Sendrecv (grafptr->procvrttab, procglbnbr + 1, MPI_INT, procsndnum, TAGPROCVRTTAB, /* Check vertex range array */
-                procngbtab,          procglbnbr + 1, MPI_INT, procrcvnum, TAGPROCVRTTAB,
+  MPI_Sendrecv (grafptr->procvrttab, procglbnbr + 1, GNUM_MPI, procsndnum, TAGPROCVRTTAB, /* Check vertex range array */
+                procngbtab,          procglbnbr + 1, GNUM_MPI, procrcvnum, TAGPROCVRTTAB,
                 proccomm, &statloctab[0]);
   for (procngbnum = 0; procngbnum <= procglbnbr; procngbnum ++) {
     if (grafptr->procvrttab[procngbnum] != procngbtab[procngbnum]) {

@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 26 jul 2007     **/
 /**                                 to     26 jul 2007     **/
+/**                # Version 5.1  : from : 30 jul 2010     **/
+/**                                 to     30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,6 +53,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "comm.h"
 #include "dgraph.h"
 #include "order.h"
 #include "dorder.h"
@@ -123,7 +126,7 @@ int                        (* funcptr) (const Order * const, const Gnum * const,
 #endif /* SCOTCH_DEBUG_DORDER1 */
     if (cheklocval != 0)
       return (1);
-    if (MPI_Gatherv (grafptr->vlblloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI,
+    if (commGatherv (grafptr->vlblloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI,
                      vlbltab, grafptr->proccnttab, grafptr->procdsptab, GNUM_MPI, protnum, grafptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dorderSaveTree2: communication error (3)");
       return     (1);

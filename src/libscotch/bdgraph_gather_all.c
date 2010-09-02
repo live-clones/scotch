@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                a distributed Bdgraph.                  **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 21 dec 2007     **/
-/**                                 to     25 oct 2008     **/
+/**                                 to     30 jul 2010     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -62,6 +62,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "comm.h"
 #include "arch.h"
 #include "graph.h"
 #include "bgraph.h"
@@ -190,14 +191,14 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
     return     (0);
   }
 
-  if (MPI_Allgatherv (dgrfptr->partgsttax + dgrfptr->s.baseval, (int) dgrfptr->s.vertlocnbr, GRAPHPART_MPI, /* Get parttax of distributed graph */
+  if (commAllgatherv (dgrfptr->partgsttax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GRAPHPART_MPI, /* Get parttax of distributed graph */
                       cgrfptr->parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("bdgraphGatherAll: communication error (4)");
     return     (1);
   }
   
   if (dgrfptr->veexloctax != NULL) {
-    if (MPI_Allgatherv (dgrfptr->veexloctax + dgrfptr->s.baseval, (int) dgrfptr->s.vertlocnbr, GNUM_MPI, /* Get veextax of distributed graph */
+    if (commAllgatherv (dgrfptr->veexloctax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GNUM_MPI, /* Get veextax of distributed graph */
                         cgrfptr->veextax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GNUM_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
       errorPrint ("bdgraphGatherAll: communication error (5)");
       return     (1);

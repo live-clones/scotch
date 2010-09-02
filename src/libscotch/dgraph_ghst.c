@@ -164,7 +164,7 @@ const int                   flagval)              /* Replacement flag */
       vertlocend = edgeloctax[edgelocnum];
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if ((vertlocend < grafptr->baseval) || (vertlocend >= (grafptr->procvrttab[grafptr->procglbnbr]))) {
-        errorPrint  ("dgraphGhst: invalid edge array");
+        errorPrint ("dgraphGhst: invalid edge array");
         if (MPI_Allreduce (reduloctab, reduglbtab, 2, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS)
           errorPrint ("dgraphGhst: communication error (2)");
         memFree (procsidtab);                     /* Free group leader */

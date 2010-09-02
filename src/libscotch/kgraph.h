@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,10 +48,20 @@
 /**                                 to     16 feb 2005     **/
 /**                # Version 5.0  : from : 17 jun 2008     **/
 /**                                 to     17 jun 2008     **/
+/**                # Version 5.1  : from : 13 jul 2010     **/
+/**                                 to     08 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
 #define KGRAPH_H
+
+/*
+**  The defines.
+*/
+
+/*+ Graph option flags. +*/
+
+#define KGRAPHFREEPART              (GRAPHBITSNOTUSED) /* Free part array */
 
 /*
 **  The type and structure definitions.
@@ -62,11 +72,12 @@
 typedef struct Kgraph_ {
   Graph                     s;                    /*+ Source graph                      +*/
   Mapping                   m;                    /*+ Current mapping of graph vertices +*/
-  INT                       fronnbr;              /*+ Number of frontier vertices       +*/
+  Gnum                      fronnbr;              /*+ Number of frontier vertices       +*/
   Gnum * restrict           frontab;              /*+ Array of frontier vertex numbers  +*/
   Gnum * restrict           comploadavg;          /*+ Array of target average loads     +*/
   Gnum * restrict           comploaddlt;          /*+ Array of target imbalances        +*/
   Gnum                      commload;             /*+ Communication load                +*/
+  INT                       levlnum;              /*+ Coarsening level                  +*/
 } Kgraph;
 
 /*
@@ -78,6 +89,8 @@ typedef struct Kgraph_ {
 #endif
 
 int                         kgraphInit          (Kgraph * const, const Graph * restrict const, const Mapping * restrict const);
-void                        kgraphExit          (Kgraph * const, Mapping * restrict const);
+void                        kgraphExit          (Kgraph * const);
+void                        kgraphFrst          (Kgraph * const);
+int                         kgraphCheck         (const Kgraph * restrict const);
 
 #undef static

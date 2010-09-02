@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to   : 02 feb 2000     **/
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 10 sep 2007     **/
+/**                # Version 5.1  : from : 30 jul 2010     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -155,6 +157,7 @@ Gnum * const                edloloctax,           /* Local edge load array (if a
 const Gnum                  degrlocmax)
 {
   Gnum                  procnum;
+  int                   reduloctab[2];
   int                   cheklocval;               /* Local consistency flag */
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
@@ -171,9 +174,9 @@ const Gnum                  degrlocmax)
 
     procglbnbr = grafptr->procglbnbr;
     if (memAllocGroup ((void **) (void *)         /* Allocate distributed graph private data */
-                       &grafptr->procdsptab, (size_t) ((procglbnbr + 1) * sizeof (int)),
-                       &grafptr->procvrttab, (size_t) ((procglbnbr + 1) * sizeof (int)),
-                       &grafptr->proccnttab, (size_t) (procglbnbr       * sizeof (int)),
+                       &grafptr->procdsptab, (size_t) ((procglbnbr + 1) * sizeof (Gnum)),
+                       &grafptr->procvrttab, (size_t) ((procglbnbr + 1) * sizeof (Gnum)),
+                       &grafptr->proccnttab, (size_t) (procglbnbr       * sizeof (Gnum)),
                        &grafptr->procngbtab, (size_t) (procglbnbr       * sizeof (int)),
                        &grafptr->procrcvtab, (size_t) (procglbnbr       * sizeof (int)),
                        &grafptr->procsndtab, (size_t) (procglbnbr       * sizeof (int)), NULL) == NULL) {
@@ -190,9 +193,9 @@ const Gnum                  degrlocmax)
     }
   }
 
-  grafptr->procdsptab[0] = (int) vertlocnbr;      /* Use procdsptab as allreduce send array */
-  grafptr->procdsptab[1] = (int) vertlocmax;
-  if (MPI_Allgather (grafptr->procdsptab, 2, MPI_INT, /* Use procngbtab and procrcvtab as a joint allreduce receive array */
+  reduloctab[0] = (int) vertlocnbr;
+  reduloctab[1] = (int) vertlocmax;
+  if (MPI_Allgather (reduloctab,          2, MPI_INT, /* Use procngbtab and procrcvtab as a joint allreduce receive array */
                      grafptr->procngbtab, 2, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphBuild2: communication error (2)");
     return     (1);
@@ -207,9 +210,9 @@ const Gnum                  degrlocmax)
       return (1);
     }
 
-    grafptr->procdsptab[procnum + 1] = grafptr->procngbtab[2 * procnum]     + grafptr->procdsptab[procnum];
-    grafptr->procvrttab[procnum + 1] = grafptr->procngbtab[2 * procnum + 1] + grafptr->procvrttab[procnum];
-    grafptr->proccnttab[procnum]     = grafptr->procdsptab[procnum + 1]     - grafptr->procdsptab[procnum];
+    grafptr->procdsptab[procnum + 1] = grafptr->procdsptab[procnum] + (Gnum) grafptr->procngbtab[2 * procnum];
+    grafptr->procvrttab[procnum + 1] = grafptr->procvrttab[procnum] + (Gnum) grafptr->procngbtab[2 * procnum + 1];
+    grafptr->proccnttab[procnum]     = grafptr->procdsptab[procnum + 1] - grafptr->procdsptab[procnum];
   }
 
   grafptr->flagval |= DGRAPHFREEPRIV;

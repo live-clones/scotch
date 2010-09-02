@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     28 jun 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to     27 feb 2008     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -141,7 +143,8 @@ FILE * restrict const         stream)
     return     (1);
   }
 
-  if (fprintf (stream, "%ld\n", (long) ordeptr->vnodnbr) == EOF) {
+  if (fprintf (stream, GNUMSTRING "\n",
+               (Gnum) ordeptr->vnodnbr) == EOF) {
     errorPrint ("orderSave: bad output (1)");
     memFree    (permtab);
     return     (1);
@@ -151,9 +154,9 @@ FILE * restrict const         stream)
 
   if (vlbltax != NULL) {                          /* If ordering has label array */
     for (vertnum = 0; vertnum < ordeptr->vnodnbr; vertnum ++) {
-      if (fprintf (stream, "%ld\t%ld\n",
-                   (long) vlbltax[vertnum + ordeptr->baseval],
-                   (long) vlbltax[permtab[vertnum]]) == EOF) {
+      if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
+                   (Gnum) vlbltax[vertnum + ordeptr->baseval],
+                   (Gnum) vlbltax[permtab[vertnum]]) == EOF) {
         errorPrint ("orderSave: bad output (2)");
         memFree    (permtab);
         return     (1);
@@ -162,9 +165,9 @@ FILE * restrict const         stream)
   }
   else {
     for (vertnum = 0; vertnum < ordeptr->vnodnbr; vertnum ++) {
-      if (fprintf (stream, "%ld\t%ld\n",
-                   (long) (vertnum + ordeptr->baseval),
-                   (long) permtab[vertnum]) == EOF) {
+      if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
+                   (Gnum) (vertnum + ordeptr->baseval),
+                   (Gnum) permtab[vertnum]) == EOF) {
         errorPrint ("orderSave: bad output (3)");
         memFree    (permtab);
         return     (1);
@@ -198,7 +201,8 @@ FILE * const                  stream)
   Gnum                  cblknum;
   int                   o;
 
-  if (fprintf (stream, "%ld\n", (long) ordeptr->vnodnbr) == EOF) {
+  if (fprintf (stream, GNUMSTRING "\n",
+               (Gnum) ordeptr->vnodnbr) == EOF) {
     errorPrint ("orderSaveMap: bad output (1)");
     return     (1);
   }
@@ -222,9 +226,9 @@ FILE * const                  stream)
 
   vlbltax = (vlbltab != NULL) ? (vlbltab - ordeptr->baseval) : NULL;
   for (vnodnum = ordeptr->baseval, o = 0; vnodnum < vnodnnd; vnodnum ++) {
-    if (fprintf (stream, "%ld\t%ld\n",
-                 (long) ((vlbltax != NULL) ? vlbltax[vnodnum] : vnodnum),
-                 (long) cblktax[vnodnum]) == EOF) {
+    if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
+                 (Gnum) ((vlbltax != NULL) ? vlbltax[vnodnum] : vnodnum),
+                 (Gnum) cblktax[vnodnum]) == EOF) {
       errorPrint ("orderSaveMap: bad output (2)");
       o = 1;
       break;
@@ -258,7 +262,8 @@ FILE * const                  stream)
   Gnum                  cblknum;
   int                   o;
 
-  if (fprintf (stream, "%ld\n", (long) ordeptr->vnodnbr) == EOF) {
+  if (fprintf (stream, GNUMSTRING "\n",
+               (Gnum) ordeptr->vnodnbr) == EOF) {
     errorPrint ("orderSaveTree: bad output (1)");
     return     (1);
   }
@@ -284,9 +289,9 @@ FILE * const                  stream)
 
   vlbltax = (vlbltab != NULL) ? (vlbltab - ordeptr->baseval) : NULL;
   for (vnodnum = ordeptr->baseval, o = 0; vnodnum < vnodnnd; vnodnum ++) {
-    if (fprintf (stream, "%ld\t%ld\n",
-                 (long) ((vlbltax != NULL) ? vlbltax[vnodnum] : vnodnum),
-                 (long) cblktax[vnodnum]) == EOF) {
+    if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
+                 (Gnum) ((vlbltax != NULL) ? vlbltax[vnodnum] : vnodnum),
+                 (Gnum) cblktax[vnodnum]) == EOF) {
       errorPrint ("orderSaveMap: bad output (2)");
       o = 1;
       break;

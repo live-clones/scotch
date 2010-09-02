@@ -106,7 +106,18 @@ kgraphMapRb (
 Kgraph * restrict const                 grafptr,
 const KgraphMapRbParam * restrict const paraptr)
 {
-  return (archPart (&grafptr->m.archdat)
-          ? kgraphMapRbPart (grafptr, paraptr)
-          : kgraphMapRbMap  (grafptr, paraptr));
+  int                 o;
+
+  o = (archPart (&grafptr->m.archdat) ? kgraphMapRbPart : kgraphMapRbMap) (grafptr, paraptr);
+  if (o != 0)
+    return (o);
+
+#ifdef SCOTCH_DEBUG_KGRAPH2
+  if (kgraphCheck (grafptr) != 0) {
+    errorPrint ("kgraphMapRb: inconsistent graph data");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
+
+  return (o);
 }

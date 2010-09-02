@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 26 jan 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 25 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,6 +79,11 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 
 static const char *         C_usageList[] = {
   "gord [<input source file> [<output ordering file> [<output log file>]]] <options>",
+  "  -c<opt>    : Choose default ordering strategy according to one or several of <opt>:",
+  "                 b  : enforce load balance as much as possible",
+  "                 q  : privilege quality over speed (default)",
+  "                 s  : privilege speed over quality",
+  "                 t  : enforce safety",
   "  -h         : Display this help",
   "  -m<file>   : Save column block mapping data to <file>",
   "  -o<strat>  : Set ordering strategy (see user's manual)",
@@ -104,11 +109,13 @@ char *                      argv[])
 {
   SCOTCH_Num          vertnbr;                    /* Number of vertices */
   SCOTCH_Graph        grafdat;                    /* Source graph       */
-  SCOTCH_Strat        ordestrat;                  /* Ordering strategy  */
   SCOTCH_Ordering     ordedat;                    /* Graph ordering     */
   SCOTCH_Num *        permtab;                    /* Permutation array  */
-  Clock               runtime[2];                 /* Timing variables   */
+  SCOTCH_Strat        stradat;                    /* Ordering strategy  */
+  SCOTCH_Num          straval;
+  char *              straptr;
   int                 flagval;
+  Clock               runtime[2];                 /* Timing variables   */
   int                 i, j;
 
   errorProg ("gord");
@@ -120,8 +127,10 @@ char *                      argv[])
     return     (0);
   }
 
-  flagval = C_FLAGNONE;
-  SCOTCH_stratInit (&ordestrat);
+  flagval = C_FLAGNONE;                           /* Default behavior  */
+  straval = 0;                                    /* No strategy flags */
+  straptr = NULL;
+  SCOTCH_stratInit (&stradat);
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
@@ -134,6 +143,31 @@ char *                      argv[])
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
+        case 'C' :
+        case 'c' :                                /* Strategy selection parameters */
+          for (j = 2; argv[i][j] != '\0'; j ++) {
+            switch (argv[i][j]) {
+              case 'B' :
+              case 'b' :
+                straval |= SCOTCH_STRATBALANCE;
+                break;
+              case 'Q' :
+              case 'q' :
+                straval |= SCOTCH_STRATQUALITY;
+                break;
+              case 'S' :
+              case 's' :
+                straval |= SCOTCH_STRATSPEED;
+                break;
+              case 'T' :
+              case 't' :
+                straval |= SCOTCH_STRATSAFETY;
+                break;
+              default :
+                errorPrint ("main: invalid strategy selection option (\"%c\")", argv[i][j]);
+            }
+          }
+          break;
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
@@ -146,9 +180,10 @@ char *                      argv[])
           break;
         case 'O' :                                /* Ordering strategy */
         case 'o' :
-          SCOTCH_stratExit (&ordestrat);
-          SCOTCH_stratInit (&ordestrat);
-          SCOTCH_stratGraphOrder (&ordestrat, &argv[i][2]);
+          straptr = &argv[i][2];
+          SCOTCH_stratExit (&stradat);
+          SCOTCH_stratInit (&stradat);
+          SCOTCH_stratGraphOrder (&stradat, straptr);
           break;
         case 'T' :                                /* Output separator tree */
         case 't' :
@@ -192,6 +227,13 @@ char *                      argv[])
   SCOTCH_graphLoad (&grafdat, C_filepntrsrcinp, -1, 2); /* Read source graph   */
   SCOTCH_graphSize (&grafdat, &vertnbr, NULL);    /* Get graph characteristics */
 
+  if (straval != 0) {
+    if (straptr != NULL)
+      errorPrint ("main: options '-c' and '-o' are exclusive");
+
+    SCOTCH_stratGraphOrderBuild (&stradat, straval, 0.2);
+  }
+
   clockStop  (&runtime[0]);                       /* Get input time */
   clockInit  (&runtime[1]);
   clockStart (&runtime[1]);
@@ -201,7 +243,7 @@ char *                      argv[])
     return     (1);
   }
   SCOTCH_graphOrderInit    (&grafdat, &ordedat, permtab, NULL, NULL, NULL, NULL); /* Create ordering */
-  SCOTCH_graphOrderCompute (&grafdat, &ordedat, &ordestrat); /* Perform ordering */
+  SCOTCH_graphOrderCompute (&grafdat, &ordedat, &stradat); /* Perform ordering */
 
   clockStop (&runtime[1]);                        /* Get ordering time */
 
@@ -222,7 +264,7 @@ char *                      argv[])
 
   if (flagval & C_FLAGVERBSTR) {
     fprintf (C_filepntrlogout, "S\tStrat=");
-    SCOTCH_stratSave (&ordestrat, C_filepntrlogout);
+    SCOTCH_stratSave (&stradat, C_filepntrlogout);
     putc ('\n', C_filepntrlogout);
   }
   if (flagval & C_FLAGVERBTIM) {
@@ -236,7 +278,7 @@ char *                      argv[])
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
   SCOTCH_graphOrderExit (&grafdat, &ordedat);
-  SCOTCH_stratExit      (&ordestrat);
+  SCOTCH_stratExit      (&stradat);
   SCOTCH_graphExit      (&grafdat);
   memFree               (permtab);
 

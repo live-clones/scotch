@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 07 feb 2006     **/
 /**                                 to     17 jun 2008     **/
+/**                # Version 5.1  : from : 30 jul 2010     **/
+/**                                 to     30 jul 2010     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -63,6 +65,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "comm.h"
 #include "graph.h"
 #include "dgraph.h"
 
@@ -80,18 +83,18 @@
 static
 int
 dgraphGatherAll3 (
-Gnum * const                sendbuf,
-const Gnum                  sendcount,
-Gnum * const                recvbuf,
-int * const                 recvcounts,           /* These should be Gnums but MPI handles ints only */
-int * const                 recvdispls,
-const int                   root,
+Gnum * const                senddattab,
+const Gnum                  sendcntnbr,
+Gnum * const                recvdattab,
+Gnum * const                recvcnttab,
+Gnum * const                recvdsptab,
+const int                   rootnum,
 MPI_Comm                    comm)
 {
-  if (root == -1)                                 /* If collective communication wanted */
-    return (MPI_Allgatherv (sendbuf, sendcount, GNUM_MPI, recvbuf, recvcounts, recvdispls, GNUM_MPI, comm));
+  if (rootnum == -1)                              /* If collective communication wanted */
+    return (commAllgatherv (senddattab, sendcntnbr, GNUM_MPI, recvdattab, recvcnttab, recvdsptab, GNUM_MPI, comm));
   else
-    return (MPI_Gatherv (sendbuf, sendcount, GNUM_MPI, recvbuf, recvcounts, recvdispls, GNUM_MPI, root, comm));
+    return (commGatherv (senddattab, sendcntnbr, GNUM_MPI, recvdattab, recvcnttab, recvdsptab, GNUM_MPI, rootnum, comm));
 }
 
 int
@@ -112,8 +115,8 @@ const int                     protnum)            /* -1 means allgather */
   Gnum * restrict     vertloctax;                 /* Temporary vertex array if graph is not compact           */
   Gnum                edgelocnbr;                 /* Size of temporary distributed edge array                 */
   Gnum * restrict     edgeloctab;                 /* Temporary edge array if distributed graph is not compact */
-  int * restrict      recvcnttab;                 /* Count array for gather operations                        */
-  int * restrict      recvdsptab;                 /* Displacement array for gather operations                 */
+  Gnum * restrict     recvcnttab;                 /* Count array for gather operations                        */
+  Gnum * restrict     recvdsptab;                 /* Displacement array for gather operations                 */
   int                 cheklocval;
   int                 chekglbval;
 
@@ -182,8 +185,8 @@ const int                     protnum)            /* -1 means allgather */
 
   if (cheklocval == 0) {
     if (memAllocGroup ((void **) (void *)
-                       &recvcnttab, (size_t) (dgrfptr->procglbnbr * sizeof (int)), /* Allocated for non-roots too but don't care as these are very small */
-                       &recvdsptab, (size_t) (dgrfptr->procglbnbr * sizeof (int)),
+                       &recvcnttab, (size_t) (dgrfptr->procglbnbr * sizeof (Gnum)), /* Allocated for non-roots too but don't care as these are very small */
+                       &recvdsptab, (size_t) (dgrfptr->procglbnbr * sizeof (Gnum)),
                        &vertloctax, (size_t) (vertlocnbr          * sizeof (Gnum)),
                        &edgeloctab, (size_t) (edgelocnbr          * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("dgraphGatherAll2: out of memory (3)");

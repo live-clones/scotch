@@ -119,7 +119,6 @@ const HmeshOrderNdParam * const   paraptr)
     vmeshExit (&nspmeshdat);
     return    (1);
   }
-printf ("HN Sepa\tsize=%ld\tload=%ld\tbal=%ld\n", (long) nspmeshdat.fronnbr, (long) nspmeshdat.ncmpload[2], (long) nspmeshdat.ncmploaddlt);
 
   if ((nspmeshdat.ncmpsize[0] == 0) ||            /* If could not separate more */
       (nspmeshdat.ncmpsize[1] == 0)) {

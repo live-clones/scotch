@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,7 +62,7 @@
 /**                # Version 4.0  : from : 01 jan 2002     **/
 /**                                 to     07 dec 2004     **/
 /**                # Version 5.1  : from : 11 dec 2007     **/
-/**                                 to     04 apr 2009     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,7 +85,7 @@
 typedef INT Anum;                                 /*+ Generic integer +*/
 
 #define ANUMMAX                     INTVALMAX
-
+#define ANUMSTRING                  INTSTRING
 #define ANUM_MPI                    COMM_INT      /*+ MPI type for Gnum is MPI type for INT +*/
 
 /*+ The domain number type. +*/

@@ -63,7 +63,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 18 jun 2008     **/
 /**                # Version 5.1  : from : 30 jun 2010     **/
-/**                                 to   : 30 jun 2010     **/
+/**                                 to   : 28 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,6 +96,13 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 static const char *         C_usageList[] = {     /* Usage */
   "gmap [<input source file> [<input target file> [<output mapping file> [<output log file>]]]] <options>",
   "gpart [<nparts>] [<input source file> [<output mapping file> [<output log file>]]] <options>",
+  "  -b<val>    : Load imbalance tolerance (default: 0.01)",
+  "  -c<opt>    : Choose default mapping strategy according to one or several of <opt>:",
+  "                 b  : enforce load balance as much as possible",
+  "                 q  : privilege quality over speed (default)",
+  "                 s  : privilege speed over quality",
+  "                 t  : enforce safety",
+  "  -V         : Print program version and copyright",
   "  -h         : Display this help",
   "  -m<strat>  : Set mapping strategy (see user's manual)",
   "  -s<obj>    : Force unity weights on <obj>:",
@@ -121,16 +128,22 @@ main (
 int                         argc,
 char *                      argv[])
 {
-  SCOTCH_Graph        grafdat;                    /* Source graph            */
-  SCOTCH_Num          grafflag;                   /* Source graph properties */
-  SCOTCH_Arch         archdat;                    /* Target architecture     */
-  SCOTCH_Strat        stradat;                    /* Mapping strategy        */
-  SCOTCH_Mapping      mapdat;                     /* Mapping data            */
-  Clock               runtime[2];                 /* Timing variables        */
+  SCOTCH_Graph        grafdat;                    /* Source graph              */
+  SCOTCH_Num          grafflag;                   /* Source graph properties   */
+  SCOTCH_Arch         archdat;                    /* Target architecture       */
+  SCOTCH_Strat        stradat;                    /* Mapping strategy          */
+  SCOTCH_Mapping      mapdat;                     /* Mapping data              */
+  Clock               runtime[2];                 /* Timing variables          */
+  double              kbalval;                    /* Imbalance tolerance value */
   int                 flagval;
+  SCOTCH_Num          straval;
+  char *              straptr;
   int                 i, j;
 
-  flagval = C_FLAGNONE;                           /* Default behavior */
+  flagval = C_FLAGNONE;                           /* Default behavior  */
+  straval = 0;                                    /* No strategy flags */
+  straptr = NULL;
+
   i = strlen (argv[0]);
   if ((i >= 5) && (strncmp (argv[0] + i - 5, "gpart", 5) == 0)) {
     flagval |= C_FLAGPART;
@@ -151,6 +164,8 @@ char *                      argv[])
   grafflag = 0;                                   /* Use vertex and edge weights  */
   SCOTCH_stratInit (&stradat);                    /* Set default mapping strategy */
 
+  kbalval = 0.01;                                 /* Set default load imbalance value */
+
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
@@ -168,15 +183,52 @@ char *                      argv[])
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
+        case 'B' :
+        case 'b' :
+          flagval |= C_FLAGKBALVAL;
+          kbalval = atof (&argv[i][2]);
+          if ((kbalval < 0.0) ||
+              (kbalval > 1.0) ||
+              ((kbalval == 0.0) &&
+               ((argv[i][2] != '0') && (argv[i][2] != '.')))) {
+            errorPrint ("main: invalid load imbalance ratio");
+          }
+          break;
+        case 'C' :
+        case 'c' :                                /* Strategy selection parameters */
+          for (j = 2; argv[i][j] != '\0'; j ++) {
+            switch (argv[i][j]) {
+              case 'B' :
+              case 'b' :
+                straval |= SCOTCH_STRATBALANCE;
+                break;
+              case 'Q' :
+              case 'q' :
+                straval |= SCOTCH_STRATQUALITY;
+                break;
+              case 'S' :
+              case 's' :
+                straval |= SCOTCH_STRATSPEED;
+                break;
+              case 'T' :
+              case 't' :
+                straval |= SCOTCH_STRATSAFETY;
+                break;
+              default :
+                errorPrint ("main: invalid strategy selection option (\"%c\")", argv[i][j]);
+            }
+          }
+          break;
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
           return     (0);
         case 'M' :
         case 'm' :
+          straptr = &argv[i][2];
           SCOTCH_stratExit (&stradat);
           SCOTCH_stratInit (&stradat);
-          SCOTCH_stratGraphMap (&stradat, &argv[i][2]);
+          SCOTCH_stratGraphMap (&stradat, straptr);
           break;
         case 'S' :
         case 's' :                                /* Source graph parameters */
@@ -225,6 +277,7 @@ char *                      argv[])
       }
     }
   }
+
   if ((flagval & C_FLAGPART) != 0) {              /* If program run as the partitioner            */
     C_fileTab[3].name = C_fileTab[2].name;        /* Put provided file names at their right place */
     C_fileTab[2].name = C_fileTab[1].name;
@@ -242,8 +295,17 @@ char *                      argv[])
   SCOTCH_archInit (&archdat);                     /* Create architecture structure          */
   if ((flagval & C_FLAGPART) != 0)                /* If program run as the partitioner      */
     SCOTCH_archCmplt (&archdat, C_partNbr);       /* Create a complete graph of proper size */
-  else
+  else {
     SCOTCH_archLoad (&archdat, C_filepntrtgtinp); /* Read target architecture */
+    C_partNbr = SCOTCH_archSize (&archdat);
+  }
+
+  if ((straval != 0) || ((flagval & C_FLAGKBALVAL) != 0)) {
+    if (straptr != NULL)
+      errorPrint ("main: options '-b' / '-c' and '-m' are exclusive");
+
+    SCOTCH_stratGraphMapBuild (&stradat, straval, (SCOTCH_Num) C_partNbr, kbalval);
+  }
 
   clockStop  (&runtime[0]);                       /* Get input time */
   clockInit  (&runtime[1]);

@@ -40,19 +40,9 @@
 /**                routine for distributed graphs.         **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 26 dec 2007     **/
+/**                                 to   : 15 jul 2010     **/
 /**                                                        **/
 /************************************************************/
-
-/*
-**  The defines.
-*/
-
-/*+ Flag array accessors. +*/
-
-#define bdgraphBipartBdFlagSize(n)  (((n) + (sizeof (int) << 3) - 1) / (sizeof (int) << 3))
-#define bdgraphBipartBdFlagVal(a,n) (((a)[(n) / (sizeof (int) << 3)] >> ((n) & ((sizeof (int) << 3) - 1))) & 1)
-#define bdgraphBipartBdFlagSet(a,n) (a)[(n) / (sizeof (int) << 3)] |= (1 << ((n) & ((sizeof (int) << 3) - 1)))
 
 /*
 **  The type and structure definitions.

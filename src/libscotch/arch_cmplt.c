@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,7 +59,7 @@
 /**                # Version 4.0  : from : 09 jan 2004     **/
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.1  : from : 19 jan 2008     **/
-/**                                 to     21 jan 2008     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -132,7 +132,7 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if (fprintf (stream, "%ld ", (long) archptr->numnbr) == EOF) {
+  if (fprintf (stream, ANUMSTRING " ", (Anum) archptr->numnbr) == EOF) {
     errorPrint ("archCmpltArchSave: bad output");
     return     (1);
   }
@@ -266,9 +266,9 @@ const ArchCmplt * const     archptr,
 const ArchCmpltDom * const  domptr,
 FILE * const                stream)
 {
-  if (fprintf (stream, "%ld %ld ",
-               (long) domptr->nummin,
-               (long) domptr->numnbr) == EOF) {
+  if (fprintf (stream, ANUMSTRING " " ANUMSTRING " ",
+               (Anum) domptr->nummin,
+               (Anum) domptr->numnbr) == EOF) {
     errorPrint ("archCmpltDomSave: bad output");
     return     (1);
   }

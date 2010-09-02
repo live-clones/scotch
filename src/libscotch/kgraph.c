@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : map.c                                   **/
+/**   NAME       : kgraph.c                                **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 24 jun 2004     **/
 /**                                 to     16 feb 2005     **/
 /**                # Version 5.1  : from : 28 sep 2008     **/
-/**                                 to     28 sep 2008     **/
+/**                                 to     14 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,13 +91,15 @@ const Mapping * restrict const  mappptr)          /* Mapping      */
 
   actgrafptr->s          = *srcgrafptr;           /* Clone source graph   */
   actgrafptr->s.flagval &= ~GRAPHFREETABS;        /* Do not allow freeing */
-  actgrafptr->m          = *mappptr;              /* Clone mapping        */
 
-  if ((actgrafptr->comploadavg = (Gnum *) memAlloc (actgrafptr->m.domnnbr * sizeof (Gnum) * 2)) == NULL) {
+  if (mappptr != &actgrafptr->m)
+    actgrafptr->m = *mappptr;                     /* Clone mapping */
+
+  if ((actgrafptr->comploadavg = (Gnum *) memAlloc (actgrafptr->m.domnmax * sizeof (Gnum) * 2)) == NULL) {
     errorPrint ("kgraphInit: out of memory");
     return     (1);
   }
-  actgrafptr->comploaddlt = actgrafptr->comploadavg + actgrafptr->m.domnnbr;
+  actgrafptr->comploaddlt = actgrafptr->comploadavg + actgrafptr->m.domnnbr; /* TRICK: can send both arrays in one piece */
 
   archptr = &mappptr->archdat;
   archDomFrst (archptr, &domfrst);                /* Get first, largest domain */
@@ -113,6 +115,7 @@ const Mapping * restrict const  mappptr)          /* Mapping      */
   actgrafptr->fronnbr  = 0;                       /* No frontier yet */
   actgrafptr->frontab  = NULL;
   actgrafptr->commload = 0;
+  actgrafptr->levlnum  = 0;
 
   return (0);
 }
@@ -126,14 +129,32 @@ const Mapping * restrict const  mappptr)          /* Mapping      */
 
 void
 kgraphExit (
-Kgraph * restrict const     actgrafptr,           /* Active graph      */
-Mapping * restrict const    mappptr)              /* Mapping to update */
+Kgraph * restrict const     grafptr)
 {
-  mappptr->domnmax = actgrafptr->m.domnmax;      /* Do not free the mapping, as it has been cloned */
-  mappptr->domnnbr = actgrafptr->m.domnnbr;
-  mappptr->domntab = actgrafptr->m.domntab;       /* Update pointer to domntab in case it has changed */
+  if ((grafptr->m.parttax != NULL) &&
+      ((grafptr->s.flagval & KGRAPHFREEPART) != 0))
+    memFree (grafptr->m.parttax + grafptr->m.baseval);
+  if (grafptr->frontab != NULL)                   /* Free frontier if it exists */
+    memFree (grafptr->frontab);
+  if (grafptr->comploadavg != NULL)               /* Free load array if it exists */
+    memFree (grafptr->comploadavg);
 
-  memFree (actgrafptr->comploadavg);              /* Free load structures       */
-  if (actgrafptr->frontab != NULL)                /* Free frontier if it exists */
-    memFree (actgrafptr->frontab);
+  graphExit (&grafptr->s);
+}
+
+/* This routine moves all of the graph
+** vertices to the first subdomain, and
+** computes the resulting gains.
+** It returns:
+** - VOID  : in all cases.
+*/
+
+void
+kgraphFrst (
+Kgraph * restrict const     grafptr)
+{
+  memSet (grafptr->m.parttax + grafptr->m.baseval, 0, grafptr->m.vertnbr * sizeof (Anum)); /* Set all vertices to subdomain 0 */
+
+  grafptr->m.domntab[0] = grafptr->m.domnorg;     /* Point to first domain */
+  grafptr->fronnbr      = 0;                      /* No frontier vertices  */
 }

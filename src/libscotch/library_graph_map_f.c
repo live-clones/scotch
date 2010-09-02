@@ -44,7 +44,7 @@
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     12 dec 2005     **/
 /**                # Version 5.1  : from : 27 mar 2010     **/
-/**                                 to     29 may 2010     **/
+/**                                 to     25 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,32 +64,6 @@
 /* for the mapping routines.          */
 /*                                    */
 /**************************************/
-
-/* String lengths are passed at the very
-** end of the argument list.
-*/
-
-FORTRAN (                                       \
-SCOTCHFSTRATGRAPHMAP, scotchfstratgraphmap, (   \
-SCOTCH_Strat * const        stratptr,           \
-const char * const          string,             \
-int * const                 revaptr,            \
-const int                   strnbr),            \
-(stratptr, string, revaptr, strnbr))
-{
-  char * restrict     strtab;                     /* Pointer to null-terminated string */
-
-  if ((strtab = (char *) memAlloc (strnbr + 1)) == NULL) { /* Allocate temporary space */
-    errorPrint ("SCOTCHFSTRATGRAPHMAP: out of memory (1)");
-    *revaptr = 1;
-  }
-  memCpy (strtab, string, strnbr);                /* Copy string contents */
-  strtab[strnbr] = '\0';                          /* Terminate string     */
-
-  *revaptr = SCOTCH_stratGraphMap (stratptr, strtab); /* Call original routine */
-
-  memFree (strtab);
-}
 
 /*
 **
@@ -237,4 +211,46 @@ int * const                 revaptr),           \
 (grafptr, partptr, stratptr, maptab, revaptr))
 {
   *revaptr = SCOTCH_graphPart (grafptr, *partptr, stratptr, maptab);
+}
+
+/* String lengths are passed at the very
+** end of the argument list.
+*/
+
+FORTRAN (                                       \
+SCOTCHFSTRATGRAPHMAP, scotchfstratgraphmap, (   \
+SCOTCH_Strat * const        stratptr,           \
+const char * const          string,             \
+int * const                 revaptr,            \
+const int                   strnbr),            \
+(stratptr, string, revaptr, strnbr))
+{
+  char * restrict     strtab;                     /* Pointer to null-terminated string */
+
+  if ((strtab = (char *) memAlloc (strnbr + 1)) == NULL) { /* Allocate temporary space */
+    errorPrint ("SCOTCHFSTRATGRAPHMAP: out of memory (1)");
+    *revaptr = 1;
+  }
+  memCpy (strtab, string, strnbr);                /* Copy string contents */
+  strtab[strnbr] = '\0';                          /* Terminate string     */
+
+  *revaptr = SCOTCH_stratGraphMap (stratptr, strtab); /* Call original routine */
+
+  memFree (strtab);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                               \
+SCOTCHFSTRATGRAPHMAPBUILD, scotchfstratgraphmapbuild, ( \
+SCOTCH_Strat * const        stratptr,                   \
+const SCOTCH_Num * const    flagval,                    \
+const SCOTCH_Num * const    partnbr,                    \
+const double * const        balrat,                     \
+int * const                 revaptr),                   \
+(stratptr, flagval, partnbr, balrat, revaptr))
+{
+  *revaptr = SCOTCH_stratGraphMapBuild (stratptr, *flagval, *partnbr, *balrat);
 }

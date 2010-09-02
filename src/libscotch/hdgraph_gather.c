@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 19 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
+/**                # Version 5.1  : from : 30 jul 2010     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,6 +55,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "comm.h"
 #include "graph.h"
 #include "hgraph.h"
 #include "dgraph.h"
@@ -216,15 +219,15 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
       Gnum               vertnum;
 
       cgrfptr->s.verttax[dgrfptr->s.baseval] = dgrfptr->s.baseval;
-      if (MPI_Gatherv (dgrfptr->s.vertloctax + 1 + dgrfptr->s.baseval, /* Do not send first index, it is always equal to baseval */
-                       (int) dgrfptr->s.vertlocnbr, GNUM_MPI,
+      if (commGatherv (dgrfptr->s.vertloctax + 1 + dgrfptr->s.baseval, /* Do not send first index, it is always equal to baseval */
+                       dgrfptr->s.vertlocnbr, GNUM_MPI,
                        cgrfptr->s.verttax + 1,      /* First index will always be equal to baseval too, and procdsptab holds based values */
                        dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GNUM_MPI, rootnum, dgrfptr->s.proccomm) != MPI_SUCCESS) {
         errorPrint ("hdgraphGather: communication error (3)");
         return     (1);
       }
-      if (MPI_Gatherv (dgrfptr->s.vendloctax + dgrfptr->s.baseval,
-                       (int) dgrfptr->s.vertlocnbr, GNUM_MPI, cgrfptr->vnhdtax, /* procdsptab holds based values */
+      if (commGatherv (dgrfptr->s.vendloctax + dgrfptr->s.baseval,
+                       dgrfptr->s.vertlocnbr, GNUM_MPI, cgrfptr->vnhdtax, /* procdsptab holds based values */
                        dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GNUM_MPI, rootnum, dgrfptr->s.proccomm) != MPI_SUCCESS) {
         errorPrint ("hdgraphGather: communication error (4)");
         return     (1);
@@ -380,7 +383,7 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
     Gnum               edgeadj;
 
     if (dgrfptr->s.veloloctax != NULL) {            /* Get vertex loads if any */
-      if (MPI_Gatherv (dgrfptr->s.veloloctax + dgrfptr->s.baseval, (int) dgrfptr->s.vertlocnbr, GNUM_MPI,
+      if (commGatherv (dgrfptr->s.veloloctax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GNUM_MPI,
                        cgrfptr->s.velotax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GNUM_MPI,
                        rootnum, dgrfptr->s.proccomm) != MPI_SUCCESS) {
         errorPrint ("hdgraphGather: communication error (15)");
@@ -391,7 +394,7 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
         cgrfptr->s.velotax[vertnum] = 1;
     }
     if (dgrfptr->s.vnumloctax != NULL) {            /* Get vertex numbers if any */
-      if (MPI_Gatherv (dgrfptr->s.vnumloctax + dgrfptr->s.baseval, (int) dgrfptr->s.vertlocnbr, GNUM_MPI,
+      if (commGatherv (dgrfptr->s.vnumloctax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GNUM_MPI,
                        cgrfptr->s.vnumtax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GNUM_MPI,
                        rootnum, dgrfptr->s.proccomm) != MPI_SUCCESS) {
         errorPrint ("hdgraphGather: communication error (16)");

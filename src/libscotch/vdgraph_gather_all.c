@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 5.0  : from : 29 apr 2006     **/
 /**                                 to     01 mar 2008     **/
 /**                # Version 5.1  : from : 18 apr 2009     **/
-/**                                 to     23 apr 2009     **/
+/**                                 to     30 jul 2010     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -66,6 +66,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "comm.h"
 #include "graph.h"
 #include "vgraph.h"
 #include "dgraph.h"
@@ -165,7 +166,7 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
 
-  if (MPI_Allgatherv (dgrfptr->partgsttax + dgrfptr->s.baseval, (int) dgrfptr->s.vertlocnbr, GRAPHPART_MPI, /* Get parttax of distributed graph */
+  if (commAllgatherv (dgrfptr->partgsttax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GRAPHPART_MPI, /* Get parttax of distributed graph */
                       cgrfptr->parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (4)");
     return     (1);

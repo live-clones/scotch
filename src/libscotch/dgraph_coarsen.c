@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**   DATES      : # Version 5.0  : from : 27 jul 2005     **/
 /**                                 to   : 15 may 2008     **/
 /**                # Version 5.1  : from : 23 jun 2008     **/
-/**                                 to   : 25 may 2009     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -97,8 +97,8 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
   vertsndnbr = finegrafptr->procsndnbr;
 
   if ((coarptr->coarprivptr = memAllocGroup ((void **) (void *) /* Allocate distributed coarse graph private data */
-                                             &coargrafptr->procdsptab, (size_t) ((procglbnbr + 1) * sizeof (int)),
-                                             &coargrafptr->proccnttab, (size_t) (procglbnbr       * sizeof (int)),
+                                             &coargrafptr->procdsptab, (size_t) ((procglbnbr + 1) * sizeof (Gnum)),
+                                             &coargrafptr->proccnttab, (size_t) (procglbnbr       * sizeof (Gnum)),
                                              &coargrafptr->procngbtab, (size_t) (procglbnbr       * sizeof (int)),
                                              &coargrafptr->procrcvtab, (size_t) (procglbnbr       * sizeof (int)),
                                              &coargrafptr->procsndtab, (size_t) (procglbnbr       * sizeof (int)), NULL)) == NULL) {
@@ -982,7 +982,7 @@ const double                          coarrat)    /*+ Maximum contraction ratio 
   edgercvnbr = 0;
   coargrafptr->procdsptab[0] = finegrafptr->baseval; /* Build vertex-to-process array */
   for (procnum = 0; procnum < finegrafptr->procglbnbr; procnum ++) {
-    int                 proccntval;
+    Gnum                proccntval;
 
     vertrcvnbr += matedat.c.dcntglbtab[procnum].vertsndnbr;
     edgercvnbr += matedat.c.dcntglbtab[procnum].edgesndnbr;

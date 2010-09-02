@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                # Version 5.0  : from : 31 dec 2006     **/
 /**                                 to     05 feb 2008     **/
 /**                # Version 5.1  : from : 28 aug 2008     **/
-/**                                 to     15 jan 2009     **/
+/**                                 to     29 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,7 +70,7 @@ byte ** restrict const        attrdsptab)         /* Temporary address displacem
 
     procsidval = *procsidptr;
     if (procsidval < 0)
-      attrgstptr -= procsidval * DGRAPHHALOFILLSIZE;
+      attrgstptr -= ((Gnum) procsidval) * DGRAPHHALOFILLSIZE;
     else {
       byte *              attrdspptr;
 

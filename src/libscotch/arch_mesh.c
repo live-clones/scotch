@@ -59,7 +59,7 @@
 /**                # Version 4.0  : from : 09 jan 2004     **/
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
-/**                                 to     30 jun 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -136,9 +136,9 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if (fprintf (stream, "%ld %ld ",
-               (long) archptr->c[0],
-               (long) archptr->c[1]) == EOF) {
+  if (fprintf (stream, ANUMSTRING " " ANUMSTRING " ",
+               (Anum) archptr->c[0],
+               (Anum) archptr->c[1]) == EOF) {
     errorPrint ("archMesh2ArchSave: bad output");
     return     (1);
   }
@@ -273,9 +273,9 @@ const ArchMesh2 * const     archptr,
 const ArchMesh2Dom * const  domptr,
 FILE * restrict const       stream)
 {
-  if (fprintf (stream, "%ld %ld %ld %ld ",
-               (long) domptr->c[0][0], (long) domptr->c[1][0],
-               (long) domptr->c[0][1], (long) domptr->c[1][1]) == EOF) {
+  if (fprintf (stream, ANUMSTRING " " ANUMSTRING " " ANUMSTRING " " ANUMSTRING " ",
+               (Anum) domptr->c[0][0], (Anum) domptr->c[1][0],
+               (Anum) domptr->c[0][1], (Anum) domptr->c[1][1]) == EOF) {
     errorPrint ("archMesh2DomSave: bad output");
     return     (1);
   }
@@ -471,8 +471,8 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if (fprintf (stream, "%ld %ld %ld ",
-               (long) archptr->c[0], (long) archptr->c[1], (long) archptr->c[2]) == EOF) {
+  if (fprintf (stream, ANUMSTRING " " ANUMSTRING " " ANUMSTRING " ",
+               (Anum) archptr->c[0], (Anum) archptr->c[1], (Anum) archptr->c[2]) == EOF) {
     errorPrint ("archMesh3ArchSave: bad output");
     return     (1);
   }
@@ -618,9 +618,9 @@ const ArchMesh3 * const     archptr,
 const ArchMesh3Dom * const  domptr,
 FILE * restrict const       stream)
 {
-  if (fprintf (stream, "%ld %ld %ld %ld %ld %ld ",
-               (long) domptr->c[0][0], (long) domptr->c[1][0], (long) domptr->c[2][0],
-               (long) domptr->c[0][1], (long) domptr->c[1][1], (long) domptr->c[2][1]) == EOF) {
+  if (fprintf (stream, ANUMSTRING " " ANUMSTRING " " ANUMSTRING " " ANUMSTRING " " ANUMSTRING " " ANUMSTRING " ",
+               (Anum) domptr->c[0][0], (Anum) domptr->c[1][0], (Anum) domptr->c[2][0],
+               (Anum) domptr->c[0][1], (Anum) domptr->c[1][1], (Anum) domptr->c[2][1]) == EOF) {
     errorPrint ("archMesh3DomSave: bad output");
     return     (1);
   }

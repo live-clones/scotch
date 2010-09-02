@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 5.1  : from : 05 jun 2009     **/
-/**                                 to   : 24 jun 2010     **/
+/**                                 to   : 29 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -435,7 +435,7 @@ SCOTCH_Arch * const         archptr)
 
   tgtarchptr = (Arch *) archptr;
 
-  tgtarchptr->class = archClass ("vcmplt");
+  tgtarchptr->class = archClass ("varcmplt");
 
   return (0);
 }
