@@ -50,7 +50,7 @@
 /**                # Version 2.0  : from : 13 jun 2005     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to   : 11 aug 2010     **/
+/**                                 to   : 02 sep 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,8 +119,8 @@
 #ifdef INTSIZE32
 #define INT                         int32_t
 #define UINT                        u_int32_t
-#define COMM_INT                    MPI_LONG
-#define INTSTRING                   "%ld"
+#define COMM_INT                    MPI_INTEGER4
+#define INTSTRING                   "%d"
 #else /* INTSIZE32 */
 #ifdef INTSIZE64
 #define INT                         int64_t
