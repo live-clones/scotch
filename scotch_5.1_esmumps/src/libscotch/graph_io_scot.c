@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to     22 dec 2005     **/
 /**                # Version 5.0  : from : 13 sep 2006     **/
 /**                                 to     27 feb 2008     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -227,29 +229,29 @@ const char * const            dataptr)            /* No use           */
   dimnnbr = geomptr->dimnnbr;
 
   o = 0;
-  if (geomptr->geomtab != NULL) {                 /* If geometrical data present */
-    o = (fprintf (filegeoptr, "%ld\n%ld\n",       /* Output file header          */
-                  (long) geomptr->dimnnbr,
-                  (long) grafptr->vertnbr) == EOF);
+  if (geomptr->geomtab != NULL) {                 /* If geometrical data present     */
+    o = (fprintf (filegeoptr, GNUMSTRING "\n" GNUMSTRING "\n", /* Output file header */
+                  (Gnum) geomptr->dimnnbr,
+                  (Gnum) grafptr->vertnbr) == EOF);
 
     switch (dimnnbr) {                            /* Output geometry data */
       case 1 :
         for (vertnum = grafptr->baseval; (o == 0) && (vertnum < grafptr->vertnnd); vertnum ++)
-          o |= (fprintf (filegeoptr, "%ld\t%lf\n",
-                         (long) ((grafptr->vlbltax != NULL) ? grafptr->vlbltax[vertnum] : vertnum),
+          o |= (fprintf (filegeoptr, GNUMSTRING "\t%lf\n",
+                         (Gnum) ((grafptr->vlbltax != NULL) ? grafptr->vlbltax[vertnum] : vertnum),
                          (double) geomptr->geomtab[(vertnum - grafptr->baseval) * dimnnbr]) == EOF);
         break;
       case 2 :
         for (vertnum = grafptr->baseval; (o == 0) && (vertnum < grafptr->vertnnd); vertnum ++)
-          o |= (fprintf (filegeoptr, "%ld\t%lf\t%lf\n",
-                         (long) ((grafptr->vlbltax != NULL) ? grafptr->vlbltax[vertnum] : vertnum),
+          o |= (fprintf (filegeoptr, GNUMSTRING "\t%lf\t%lf\n",
+                         (Gnum) ((grafptr->vlbltax != NULL) ? grafptr->vlbltax[vertnum] : vertnum),
                          (double) geomptr->geomtab[(vertnum - grafptr->baseval) * dimnnbr],
                          (double) geomptr->geomtab[(vertnum - grafptr->baseval) * dimnnbr + 1]) == EOF);
         break;
       case 3 :
         for (vertnum = grafptr->baseval; (o == 0) && (vertnum < grafptr->vertnnd); vertnum ++)
-          o |= (fprintf (filegeoptr, "%ld\t%lf\t%lf\t%lf\n",
-                         (long) ((grafptr->vlbltax != NULL) ? grafptr->vlbltax[vertnum] : vertnum),
+          o |= (fprintf (filegeoptr, GNUMSTRING "\t%lf\t%lf\t%lf\n",
+                         (Gnum) ((grafptr->vlbltax != NULL) ? grafptr->vlbltax[vertnum] : vertnum),
                          (double) geomptr->geomtab[(vertnum - grafptr->baseval) * dimnnbr],
                          (double) geomptr->geomtab[(vertnum - grafptr->baseval) * dimnnbr + 1],
                          (double) geomptr->geomtab[(vertnum - grafptr->baseval) * dimnnbr + 2]) == EOF);

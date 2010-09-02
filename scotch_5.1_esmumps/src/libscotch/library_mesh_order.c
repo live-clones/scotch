@@ -48,7 +48,7 @@
 /**                # Version 5.0  : from : 04 aug 2007     **/
 /**                                 to     31 may 2008     **/
 /**                # Version 5.1  : from : 29 mar 2010     **/
-/**                                 to     29 may 2010     **/
+/**                                 to     14 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,29 +75,6 @@
 /* the mesh ordering routines.      */
 /*                                  */
 /************************************/
-
-/*+ This routine parses the given
-*** mesh ordering strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
-
-int
-SCOTCH_stratMeshOrder (
-SCOTCH_Strat * const        stratptr,
-const char * const          string)
-{
-  if (*((Strat **) stratptr) != NULL)
-    stratExit (*((Strat **) stratptr));
-
-  if ((*((Strat **) stratptr) = stratInit (&hmeshorderststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratMeshOrder: error in ordering strategy");
-    return     (1);
-  }
-
-  return (0);
-}
 
 /*+ This routine initializes an API ordering
 *** with respect to the given source graph
@@ -242,15 +219,24 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   VertList *          srclistptr;                 /* Pointer to subgraph vertex list */
   const Strat *       ordstratptr;                /* Pointer to ordering strategy    */
 
+  srcmeshptr = (Mesh *) meshptr;
+
+#ifdef SCOTCH_DEBUG_MESH2
+  if (meshCheck (srcmeshptr) != 0) {
+    errorPrint ("SCOTCH_meshOrderComputeList: invalid input mesh");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_MESH2 */
+
   if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&hmeshorderststratab, "c{rat=0.7,cpr=n{sep=/(vnod>120)?m{vnod=100,low=h{pass=10},asc=f{bal=0.1}}:;,ole=v{strat=d{cmin=0,cmax=10000000,frat=0}},ose=g},unc=n{sep=/(vnod>120)?m{vnod=100,low=h{pass=10},asc=f{bal=0.1}}:;,ole=v{strat=d{cmin=0,cmax=10000000,frat=0}},ose=g}}");
+    SCOTCH_stratMeshOrderBuild (stratptr, SCOTCH_STRATQUALITY, 0.1);
+
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hmeshorderststratab) {
     errorPrint ("SCOTCH_meshOrderComputeList: not a mesh ordering strategy");
     return     (1);
   }
 
-  srcmeshptr = (Mesh *) meshptr;
   memCpy (&srcmeshdat.m, srcmeshptr, sizeof (Mesh)); /* Copy non-halo mesh data  */
   srcmeshdat.m.flagval &= ~MESHFREETABS;          /* Do not allow to free arrays */
   srcmeshdat.vehdtax    = srcmeshdat.m.vendtax;   /* End of non-halo vertices    */
@@ -365,4 +351,56 @@ const SCOTCH_Mesh * const     meshptr,
 const SCOTCH_Ordering * const ordeptr)            /*+ Ordering to check +*/
 {
   return (orderCheck (&((LibOrder *) ordeptr)->o));
+}
+
+/*+ This routine parses the given
+*** mesh ordering strategy.
+*** It returns:
+*** - 0   : if string successfully scanned.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratMeshOrder (
+SCOTCH_Strat * const        stratptr,
+const char * const          string)
+{
+  if (*((Strat **) stratptr) != NULL)
+    stratExit (*((Strat **) stratptr));
+
+  if ((*((Strat **) stratptr) = stratInit (&hmeshorderststratab, string)) == NULL) {
+    errorPrint ("SCOTCH_stratMeshOrder: error in ordering strategy");
+    return     (1);
+  }
+
+  return (0);
+}
+
+/*+ This routine provides predefined
+*** ordering strategies.
+*** It returns:
+*** - 0   : if string successfully initialized.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratMeshOrderBuild (
+SCOTCH_Strat * const        stratptr,             /*+ Strategy to create      +*/
+const SCOTCH_Num            flagval,              /*+ Desired characteristics +*/
+const double                balrat)               /*+ Desired imbalance ratio +*/
+{
+  char                bufftab[8192];              /* Should be enough */
+  char                bbaltab[32];
+
+  strcpy (bufftab, "c{rat=0.7,cpr=n{sep=/(vnod>120)?m{vnod=100,low=h{pass=10},asc=f{bal=<BBAL>}}:;,ole=v{strat=d{cmin=0,cmax=10000000,frat=0}},ose=g},unc=n{sep=/(vnod>120)?m{vnod=100,low=h{pass=10},asc=f{bal=<BBAL>}}:;,ole=v{strat=d{cmin=0,cmax=10000000,frat=0}},ose=g}}");
+
+  sprintf (bbaltab, "%lf", balrat);
+  stringSubst (bufftab, "<BBAL>", bbaltab);
+
+  if (SCOTCH_stratMeshOrder (stratptr, bufftab) != 0) {
+    errorPrint ("SCOTCH_stratMeshOrderBuild: error in sequential ordering strategy");
+    return     (1);
+  }
+
+  return (0);
 }

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,15 +56,15 @@
 /** Method types. **/
 
 typedef enum BgraphBipartStMethodType_ {
-  BGRAPHBIPARTMETHBD = 0,                         /*+ Band                   +*/
-  BGRAPHBIPARTMETHDF,                             /*+ Diffusion              +*/
-  BGRAPHBIPARTMETHEX,                             /*+ Exactifying            +*/
-  BGRAPHBIPARTMETHFM,                             /*+ Fiduccia-Mattheyses    +*/
-  BGRAPHBIPARTMETHGG,                             /*+ Greedy Graph Growing   +*/
-  BGRAPHBIPARTMETHGP,                             /*+ Gibbs-Poole-Stockmeyer +*/
-  BGRAPHBIPARTMETHML,                             /*+ Multi-level (strategy) +*/
-  BGRAPHBIPARTMETHZR,                             /*+ Move all to part zero  +*/
-  BGRAPHBIPARTMETHNBR                             /*+ Number of methods      +*/
+  BGRAPHBIPARTSTMETHBD = 0,                       /*+ Band                   +*/
+  BGRAPHBIPARTSTMETHDF,                           /*+ Diffusion              +*/
+  BGRAPHBIPARTSTMETHEX,                           /*+ Exactifying            +*/
+  BGRAPHBIPARTSTMETHFM,                           /*+ Fiduccia-Mattheyses    +*/
+  BGRAPHBIPARTSTMETHGG,                           /*+ Greedy Graph Growing   +*/
+  BGRAPHBIPARTSTMETHGP,                           /*+ Gibbs-Poole-Stockmeyer +*/
+  BGRAPHBIPARTSTMETHML,                           /*+ Multi-level (strategy) +*/
+  BGRAPHBIPARTSTMETHZR,                           /*+ Move all to part zero  +*/
+  BGRAPHBIPARTSTMETHNBR                           /*+ Number of methods      +*/
 } BgraphBipartStMethodType;
 
 /*

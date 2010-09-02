@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to   : 03 apr 2008     **/
 /**                # Version 5.1  : from : 16 jun 2008     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -205,19 +205,21 @@ char *                      argv[])
   substab[3][1] = EXPAND (INT);
   substab[4][0] = "DUMMYMAXINT";
   substab[4][1] = EXPAND (INTVALMAX);
-  substab[5][0] = "DUMMYPTFLAG";
+  substab[5][0] = "DUMMYNUMSTRING";
+  substab[5][1] = "\"" GNUMSTRING "\"";
+  substab[6][0] = "DUMMYPTFLAG";
 #ifdef SCOTCH_PTSCOTCH
-  substab[5][1] = "PTSCOTCH";
+  substab[6][1] = "PTSCOTCH";
 #else /* SCOTCH_PTSCOTCH */
-  substab[5][1] = "SEQSCOTCH";
+  substab[6][1] = "SEQSCOTCH";
 #endif /* SCOTCH_PTSCOTCH */
-  substab[6][0] = "DUMMYVERSION";
-  substab[6][1] = EXPAND (SCOTCH_VERSION);
-  substab[7][0] = "DUMMYRELEASE";
-  substab[7][1] = EXPAND (SCOTCH_RELEASE);
-  substab[8][0] = "DUMMYPATCHLEVEL";
-  substab[8][1] = EXPAND (SCOTCH_PATCHLEVEL);
-  subsnbr = 9;
+  substab[7][0] = "DUMMYVERSION";
+  substab[7][1] = EXPAND (SCOTCH_VERSION);
+  substab[8][0] = "DUMMYRELEASE";
+  substab[8][1] = EXPAND (SCOTCH_RELEASE);
+  substab[9][0] = "DUMMYPATCHLEVEL";
+  substab[9][1] = EXPAND (SCOTCH_PATCHLEVEL);
+  subsnbr = 10;
   subsFill (substab[subsnbr ++], "DUMMYSIZEARCH",          sizeof (Arch));
   subsFill (substab[subsnbr ++], "DUMMYSIZEGEOM",          sizeof (Geom));
   subsFill (substab[subsnbr ++], "DUMMYSIZEGRAPH",         sizeof (Graph));

@@ -47,7 +47,7 @@
 /**                # Version 2.0  : from : 26 feb 2008     **/
 /**                                 to   : 26 feb 2008     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to   : 27 jun 2010     **/
+/**                                 to   : 16 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -128,7 +128,7 @@ intSave (
 FILE * const                stream,               /*+ Stream to write to +*/
 const INT                   val)                  /*+ Value to write     +*/
 {
-  return ((fprintf (stream, "%ld", (long) val) == EOF) ? 0 : 1);
+  return ((fprintf (stream, INTSTRING, (INT) val) == EOF) ? 0 : 1);
 }
 
 /**********************************/
@@ -282,7 +282,25 @@ intRandReset (void)
 #undef INTSORTSWAP
 #undef INTSORTCMP
 
-/* This routine sorts an array of 3-tuples of
+/* This routine sorts an array of pairs of
+** INT values in ascending order by both
+** of their values, used as primary and
+** secondary keys.
+** It returns:
+** - VOID  : in all cases.
+*/
+
+#define INTSORTNAME                 intSort2asc2
+#define INTSORTSIZE                 (2 * sizeof (INT))
+#define INTSORTSWAP(p,q)            do { INT t, u; t = *((INT *) (p)); u = *((INT *) (p) + 1); *((INT *) (p)) = *((INT *) (q)); *((INT *) (p) + 1) = *((INT *) (q) + 1); *((INT *) (q)) = t; *((INT *) (q) + 1) = u; } while (0)
+#define INTSORTCMP(p,q)             ((*((INT *) (p)) < *((INT *) (q))) || ((*((INT *) (p)) == *((INT *) (q))) && (*((INT *) (p) + 1) < *((INT *) (q) + 1))))
+#include "common_sort.c"
+#undef INTSORTNAME
+#undef INTSORTSIZE
+#undef INTSORTSWAP
+#undef INTSORTCMP
+
+/* This routine sorts an array of 3-uples of
 ** INT values in ascending order by their
 ** first value, used as key.
 ** It returns:
@@ -299,17 +317,17 @@ intRandReset (void)
 #undef INTSORTSWAP
 #undef INTSORTCMP
 
-/* This routine sorts an array of pairs of
-** INT values in ascending order by both
-** of their values, used as primary and
-** secondary keys.
+/* This routine sorts an array of 3-uples of
+** INT values in ascending order by their
+** first and second values, used as primary
+** and secondary keys.
 ** It returns:
 ** - VOID  : in all cases.
 */
 
-#define INTSORTNAME                 intSort2asc2
-#define INTSORTSIZE                 (2 * sizeof (INT))
-#define INTSORTSWAP(p,q)            do { INT t, u; t = *((INT *) (p)); u = *((INT *) (p) + 1); *((INT *) (p)) = *((INT *) (q)); *((INT *) (p) + 1) = *((INT *) (q) + 1); *((INT *) (q)) = t; *((INT *) (q) + 1) = u; } while (0)
+#define INTSORTNAME                 intSort3asc2
+#define INTSORTSIZE                 (3 * sizeof (INT))
+#define INTSORTSWAP(p,q)            do { INT t, u, v; t = *((INT *) (p)); u = *((INT *) (p) + 1); v = *((INT *) (p) + 2); *((INT *) (p)) = *((INT *) (q)); *((INT *) (p) + 1) = *((INT *) (q) + 1); *((INT *) (p) + 2) = *((INT *) (q) + 2); *((INT *) (q)) = t; *((INT *) (q) + 1) = u; *((INT *) (q) + 2) = v; } while (0)
 #define INTSORTCMP(p,q)             ((*((INT *) (p)) < *((INT *) (q))) || ((*((INT *) (p)) == *((INT *) (q))) && (*((INT *) (p) + 1) < *((INT *) (q) + 1))))
 #include "common_sort.c"
 #undef INTSORTNAME

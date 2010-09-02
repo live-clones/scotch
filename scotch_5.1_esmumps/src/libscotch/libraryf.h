@@ -1,4 +1,4 @@
-!* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
+!* Copyright 2004,2007,2009,2010 ENSEIRB, INRIA & CNRS
 !*
 !* This file is part of the Scotch software package for static mapping,
 !* graph partitioning and sparse matrix ordering.
@@ -47,9 +47,23 @@
 !*                # Version 5.0  : from : 26 apr 2006     **
 !*                                 to     26 apr 2006     **
 !*                # Version 5.1  : from : 26 mar 2009     **
-!*                                 to     10 may 2009     **
+!*                                 to     24 jul 2010     **
 !*                                                        **
 !***********************************************************
+
+!* Flag definitions for the strategy
+!* string selection routines.
+
+        INTEGER SCOTCH_STRATQUALITY
+        INTEGER SCOTCH_STRATSPEED
+        INTEGER SCOTCH_STRATBALANCE
+        INTEGER SCOTCH_STRATSCALABILITY
+        INTEGER SCOTCH_STRATSAFETY
+        PARAMETER (SCOTCH_STRATQUALITY     = 1)
+        PARAMETER (SCOTCH_STRATSPEED       = 2)
+        PARAMETER (SCOTCH_STRATBALANCE     = 4)
+        PARAMETER (SCOTCH_STRATSAFETY      = 8)
+        PARAMETER (SCOTCH_STRATSCALABILITY = 16)
 
 !* Size definitions for the SCOTCH opaque
 !* structures. These structures must be

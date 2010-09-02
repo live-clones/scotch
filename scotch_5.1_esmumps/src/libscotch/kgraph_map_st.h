@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to     09 dec 1998     **/
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     12 jan 2004     **/
+/**                # Version 5.1  : from : 13 jul 2010     **/
+/**                                 to     13 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,7 +58,8 @@
 /*+ Method types. +*/
 
 typedef enum KgraphMapStMethodType_ {
-  KGRAPHMAPSTMETHRB = 0,                          /*+ Dual Recursive Bipartitioning +*/
+  KGRAPHMAPSTMETHML = 0,                          /*+ Multi-level                   +*/
+  KGRAPHMAPSTMETHRB,                              /*+ Dual Recursive Bipartitioning +*/
   KGRAPHMAPSTMETHNBR                              /*+ Number of methods             +*/
 } KgraphMapStMethodType;
 

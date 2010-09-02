@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 17 jan 2008     **/
 /**                                 to   : 21 mar 2008     **/
 /**                # Version 5.1  : from : 27 apr 2010     **/
-/**                                 to   : 27 apr 2010     **/
+/**                                 to   : 11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -269,18 +269,19 @@ const char * const            dataptr)            /* No use           */
 
   baseadj = 1 - grafptr->baseval;                 /* Output base is always 1 */
 
-  o = (fprintf (filesrcptr, "%%%%MatrixMarket matrix coordinate pattern symmetric\n%% Produced by Scotch graphGeomSaveMmkt\n%ld %ld %ld\n", /* Write graph header */
-                (long) grafptr->vertnbr,
-                (long) grafptr->vertnbr,
-                (long) ((grafptr->edgenbr / 2) + grafptr->vertnbr)) == EOF);
+  o = (fprintf (filesrcptr, "%%%%MatrixMarket matrix coordinate pattern symmetric\n%% Produced by Scotch graphGeomSaveMmkt\n" GNUMSTRING " " GNUMSTRING " " GNUMSTRING "\n", /* Write graph header */
+                (Gnum) grafptr->vertnbr,
+                (Gnum) grafptr->vertnbr,
+                (Gnum) ((grafptr->edgenbr / 2) + grafptr->vertnbr)) == EOF);
 
   for (vertnum = grafptr->baseval; (o == 0) && (vertnum < grafptr->vertnnd); vertnum ++) {
     Gnum              vlblnum;                    /* Vertex label to output */
 
     vlblnum = ((grafptr->vlbltax != NULL) ? grafptr->vlbltax[vertnum] : vertnum) + baseadj;
 
-    if (fprintf (filesrcptr, "%ld %ld\n",         /* Write diagonal term */
-                 (long) vlblnum, (long) vlblnum) < 0) {
+    if (fprintf (filesrcptr, GNUMSTRING " " GNUMSTRING "\n", /* Write diagonal term */
+                 (Gnum) vlblnum,
+                 (Gnum) vlblnum) < 0) {
       o = 1;
       break;
     }
@@ -294,8 +295,9 @@ const char * const            dataptr)            /* No use           */
       vlblend += baseadj;
 
       if (vlblend < vlblnum) {
-        if (fprintf (filesrcptr, "%ld %ld\n",
-                     (long) vlblnum, (long) vlblend) < 0) {
+        if (fprintf (filesrcptr, GNUMSTRING " " GNUMSTRING "\n",
+                     (Gnum) vlblnum,
+                     (Gnum) vlblend) < 0) {
           o = 1;
           break;
         }

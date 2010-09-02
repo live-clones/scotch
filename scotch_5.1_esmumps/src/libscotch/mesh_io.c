@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     06 may 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to     27 feb 2008     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -333,12 +335,12 @@ FILE * restrict const       stream)
   propstr[2] = ((meshptr->velotax != NULL) || (meshptr->vnlotax != NULL)) ? '1' : '0';
   propstr[3] = '\0';
 
-  if (fprintf (stream, "1\n%ld\t%ld\t%ld\n%ld\t%ld\t%3s\n", /* Write file header */
-               (long) meshptr->velmnbr,
-               (long) meshptr->vnodnbr,
-               (long) meshptr->edgenbr,
-               (long) meshptr->velmbas,
-               (long) meshptr->vnodbas,
+  if (fprintf (stream, "1\n" GNUMSTRING "\t" GNUMSTRING "\t" GNUMSTRING "\n" GNUMSTRING "\t" GNUMSTRING "\t%3s\n", /* Write file header */
+               (Gnum) meshptr->velmnbr,
+               (Gnum) meshptr->vnodnbr,
+               (Gnum) meshptr->edgenbr,
+               (Gnum) meshptr->velmbas,
+               (Gnum) meshptr->vnodbas,
                propstr) == EOF) {
     errorPrint ("meshSave: bad output (1)");
     return     (1);
@@ -378,10 +380,10 @@ FILE * restrict const       stream)
       Gnum                edgenum;
 
       if (meshptr->vlbltax != NULL)               /* Write vertex label if necessary */
-        o  = (fprintf (stream, "%ld\t", (long) meshptr->vlbltax[vertnum]) == EOF);
+        o  = (fprintf (stream, GNUMSTRING "\t", (Gnum) meshptr->vlbltax[vertnum]) == EOF);
       if (propstr[2] != '0')                      /* Write vertex load if necessary */
-        o |= (fprintf (stream, "%ld\t", (long) ((velotax != NULL) ? velotax[vertnum] : 1)) == EOF);
-      o |= (fprintf (stream, "%ld", (long) (meshptr->vendtax[vertnum] - meshptr->verttax[vertnum])) == EOF); /* Write vertex degree */
+        o |= (fprintf (stream, GNUMSTRING "\t", (Gnum) ((velotax != NULL) ? velotax[vertnum] : 1)) == EOF);
+      o |= (fprintf (stream, GNUMSTRING, (Gnum) (meshptr->vendtax[vertnum] - meshptr->verttax[vertnum])) == EOF); /* Write vertex degree */
 
       for (edgenum = meshptr->verttax[vertnum];
            (edgenum < meshptr->vendtax[vertnum]) && (o == 0); edgenum ++) {

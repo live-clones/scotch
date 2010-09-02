@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 08 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 31 mar 2008     **/
-/**                                 to   : 01 jan 2009     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -123,8 +123,8 @@ Dgraph * restrict const       indgrafptr)
   cheklocval =
   chekglbval = 0;
   if (memAllocGroup ((void **) (void *)           /* Allocate distributed graph private data */
-                     &indgrafptr->procdsptab, (size_t) ((orggrafptr->procglbnbr + 1) * sizeof (int)),
-                     &indgrafptr->proccnttab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)),
+                     &indgrafptr->procdsptab, (size_t) ((orggrafptr->procglbnbr + 1) * sizeof (Gnum)),
+                     &indgrafptr->proccnttab, (size_t) (orggrafptr->procglbnbr       * sizeof (Gnum)),
                      &indgrafptr->procngbtab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)),
                      &indgrafptr->procrcvtab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)),
                      &indgrafptr->procsndtab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)), NULL) == NULL) {
@@ -156,8 +156,8 @@ Dgraph * restrict const       indgrafptr)
 
     dummyval   = -1;
     chekglbval = 1;
-    if (MPI_Allgather (&dummyval, 1, MPI_INT,     /* Use proccnttab of orggraf as dummy receive array (will be regenerated) */
-                       orggrafptr->proccnttab, 1, MPI_INT, indgrafptr->proccomm) != MPI_SUCCESS)
+    if (MPI_Allgather (&dummyval, 1, GNUM_MPI,    /* Use proccnttab of orggraf as dummy receive array (will be regenerated) */
+                       orggrafptr->proccnttab, 1, GNUM_MPI, indgrafptr->proccomm) != MPI_SUCCESS)
       errorPrint ("dgraphInduceList: communication error (1)");
 
     for (procngbnum = 1; procngbnum <= orggrafptr->procglbnbr; procngbnum ++) /* Rebuild proccnttab of orggraf */
@@ -165,9 +165,9 @@ Dgraph * restrict const       indgrafptr)
   }
   else {
     indgrafptr->procvrttab = indgrafptr->procdsptab; /* Graph does not have holes */
-    indgrafptr->procdsptab[0] = (int) indlistnbr;
-    if (MPI_Allgather (&indgrafptr->procdsptab[0], 1, MPI_INT,
-                       &indgrafptr->proccnttab[0], 1, MPI_INT, indgrafptr->proccomm) != MPI_SUCCESS) {
+    indgrafptr->procdsptab[0] = indlistnbr;
+    if (MPI_Allgather (&indgrafptr->procdsptab[0], 1, GNUM_MPI,
+                       &indgrafptr->proccnttab[0], 1, GNUM_MPI, indgrafptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphInduceList: communication error (2)");
       chekglbval = 1;
     }
@@ -351,8 +351,8 @@ Dgraph * restrict const           indgrafptr)
   cheklocval =
   chekglbval = 0;
   if (memAllocGroup ((void **) (void *)           /* Allocate distributed graph private data */
-                     &indgrafptr->procdsptab, (size_t) ((orggrafptr->procglbnbr + 1) * sizeof (int)),
-                     &indgrafptr->proccnttab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)),
+                     &indgrafptr->procdsptab, (size_t) ((orggrafptr->procglbnbr + 1) * sizeof (Gnum)),
+                     &indgrafptr->proccnttab, (size_t) (orggrafptr->procglbnbr       * sizeof (Gnum)),
                      &indgrafptr->procngbtab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)),
                      &indgrafptr->procrcvtab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)),
                      &indgrafptr->procsndtab, (size_t) (orggrafptr->procglbnbr       * sizeof (int)), NULL) == NULL) {
@@ -384,8 +384,8 @@ Dgraph * restrict const           indgrafptr)
 
     dummyval   = -1;
     chekglbval = 1;
-    if (MPI_Allgather (&dummyval, 1, MPI_INT,     /* Use proccnttab of orggraf as dummy receive array (will be regenerated) */
-                       orggrafptr->proccnttab, 1, MPI_INT, indgrafptr->proccomm) != MPI_SUCCESS)
+    if (MPI_Allgather (&dummyval, 1, GNUM_MPI,    /* Use proccnttab of orggraf as dummy receive array (will be regenerated) */
+                       orggrafptr->proccnttab, 1, GNUM_MPI, indgrafptr->proccomm) != MPI_SUCCESS)
       errorPrint ("dgraphInducePart: communication error (1)");
 
     for (procngbnum = 1; procngbnum <= orggrafptr->procglbnbr; procngbnum ++) /* Rebuild proccnttab of orggraf */
@@ -393,9 +393,9 @@ Dgraph * restrict const           indgrafptr)
   }
   else {
     indgrafptr->procvrttab = indgrafptr->procdsptab; /* Graph does not have holes */
-    indgrafptr->procdsptab[0] = (int) indvertnbr;
-    if (MPI_Allgather (&indgrafptr->procdsptab[0], 1, MPI_INT,
-                       &indgrafptr->proccnttab[0], 1, MPI_INT, indgrafptr->proccomm) != MPI_SUCCESS) {
+    indgrafptr->procdsptab[0] = indvertnbr;
+    if (MPI_Allgather (&indgrafptr->procdsptab[0], 1, GNUM_MPI,
+                       &indgrafptr->proccnttab[0], 1, GNUM_MPI, indgrafptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphInducePart: communication error (2)");
       chekglbval = 1;
     }

@@ -51,7 +51,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 map 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -149,16 +149,16 @@ char *                      argv[])
   hnbr = 1 <<  hdim;                              /* Compute number of vertices */
   hbit = 1 << (hdim - 1);                         /* Compute highest bit value  */
 
-  fprintf (C_filepntrsrcout, "0\n%ld\t%ld\n0\t000\n",
-           (long) hnbr,                           /* Print number of vertices     */
-           (long) (hdim * hnbr));                 /* Print number of edges (arcs) */
+  fprintf (C_filepntrsrcout, "0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n0\t000\n",
+           (SCOTCH_Num) hnbr,                     /* Print number of vertices     */
+           (SCOTCH_Num) (hdim * hnbr));           /* Print number of edges (arcs) */
 
   for (hvrt = 0; hvrt < hnbr; hvrt ++) {          /* For all vertices */
-    fprintf (C_filepntrsrcout, "%ld",
-             (long) hdim);                        /* Output number of neighbors   */
-    for (hngb = hbit; hngb > 0; hngb >>= 1)       /* For all vertex bits          */
-      fprintf (C_filepntrsrcout, "\t%ld",         /* Write corresponding neighbor */
-               (long) (hvrt ^ hngb));
+    fprintf (C_filepntrsrcout, "" SCOTCH_NUMSTRING "",
+             (SCOTCH_Num) hdim);                  /* Output number of neighbors         */
+    for (hngb = hbit; hngb > 0; hngb >>= 1)       /* For all vertex bits                */
+      fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING, /* Write corresponding neighbor */
+               (SCOTCH_Num) (hvrt ^ hngb));
     fprintf (C_filepntrsrcout, "\n");
   }
 

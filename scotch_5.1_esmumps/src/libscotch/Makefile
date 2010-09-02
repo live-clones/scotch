@@ -89,6 +89,7 @@ realclean			:	clean
 LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
 			bdgraph_bipart_bd$(OBJ)			\
 			bdgraph_bipart_df$(OBJ)			\
+			bdgraph_bipart_ex$(OBJ)			\
 			bdgraph_bipart_ml$(OBJ)			\
 			bdgraph_bipart_sq$(OBJ)			\
 			bdgraph_bipart_st$(OBJ)			\
@@ -96,6 +97,7 @@ LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
 			bdgraph_check$(OBJ)			\
 			bdgraph_gather_all$(OBJ)		\
 			bdgraph_store$(OBJ)			\
+			comm$(OBJ)				\
 			dgraph$(OBJ)				\
 			dgraph_allreduce$(OBJ)			\
 			dgraph_band$(OBJ)			\
@@ -219,6 +221,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			common_file_uncompress$(OBJ)		\
 			common_integer$(OBJ)			\
 			common_memory$(OBJ)			\
+			common_string$(OBJ)			\
 			common_stub$(OBJ)			\
 			gain$(OBJ)				\
 			geom$(OBJ)				\
@@ -264,6 +267,8 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			hmesh_order_si$(OBJ)			\
 			hmesh_order_st$(OBJ)			\
 			kgraph$(OBJ)				\
+			kgraph_check$(OBJ)			\
+			kgraph_map_ml$(OBJ)			\
 			kgraph_map_rb$(OBJ)			\
 			kgraph_map_rb_map$(OBJ)			\
 			kgraph_map_rb_part$(OBJ)		\
@@ -388,6 +393,11 @@ common_memory$(OBJ)		:	common_memory.c				\
 					common.h
 					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
+common_string$(OBJ)		:	common_string.c				\
+					module.h				\
+					common.h
+					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+
 common_stub$(OBJ)		:	common_stub.c				\
 					module.h				\
 					common.h
@@ -494,11 +504,18 @@ bdgraph_bipart_bd$(OBJ)		:	bdgraph_bipart_bd.c			\
 bdgraph_bipart_df$(OBJ)		:	bdgraph_bipart_df.c			\
 					module.h				\
 					common.h				\
-					parser.h				\
 					arch.h					\
 					dgraph.h				\
 					bdgraph.h				\
 					bdgraph_bipart_df.h
+
+bdgraph_bipart_ex$(OBJ)		:	bdgraph_bipart_ex.c			\
+					module.h				\
+					common.h				\
+					arch.h					\
+					dgraph.h				\
+					bdgraph.h				\
+					bdgraph_bipart_ex.h
 
 bdgraph_bipart_ml$(OBJ)		:	bdgraph_bipart_ml.c			\
 					module.h				\
@@ -514,6 +531,7 @@ bdgraph_bipart_ml$(OBJ)		:	bdgraph_bipart_ml.c			\
 bdgraph_bipart_sq$(OBJ)		:	bdgraph_bipart_sq.c			\
 					module.h				\
 					common.h				\
+					comm.h					\
 					parser.h				\
 					arch.h					\
 					graph.h					\
@@ -537,6 +555,7 @@ bdgraph_bipart_st$(OBJ)		:	bdgraph_bipart_st.c			\
 					bdgraph.h				\
 					bdgraph_bipart_bd.h			\
 					bdgraph_bipart_df.h			\
+					bdgraph_bipart_ex.h			\
 					bdgraph_bipart_ml.h			\
 					bdgraph_bipart_sq.h			\
 					bdgraph_bipart_st.h			\
@@ -560,6 +579,7 @@ bdgraph_check$(OBJ)		:	bdgraph_check.c				\
 bdgraph_gather_all$(OBJ)	:	bdgraph_gather_all.c			\
 					module.h				\
 					common.h				\
+					comm.h					\
 					arch.h					\
 					graph.h					\
 					bgraph.h				\
@@ -687,6 +707,11 @@ bgraph_store$(OBJ)		:	bgraph_store.c				\
 					arch.h					\
 					bgraph.h
 
+comm$(OBJ)			:	comm.c					\
+					module.h				\
+					common.h				\
+					comm.h
+
 dgraph$(OBJ)			:	dgraph.c				\
 					module.h				\
 					common.h				\
@@ -736,6 +761,7 @@ dgraph_coarsen$(OBJ)		:	dgraph_coarsen.c			\
 dgraph_fold$(OBJ)		:	dgraph_fold.c				\
 					module.h				\
 					common.h				\
+					comm.h					\
 					dgraph.h				\
 					dgraph_fold.h				\
 					dgraph_fold_comm.h
@@ -743,6 +769,7 @@ dgraph_fold$(OBJ)		:	dgraph_fold.c				\
 dgraph_fold_comm$(OBJ)		:	dgraph_fold_comm.c			\
 					module.h				\
 					common.h				\
+					comm.h					\
 					dgraph.h				\
 					dgraph_fold_comm.h
 
@@ -761,6 +788,7 @@ dgraph_gather$(OBJ)		:	dgraph_gather.c				\
 dgraph_gather_all$(OBJ)		:	dgraph_gather_all.c			\
 					module.h				\
 					common.h				\
+					comm.h					\
 					graph.h					\
 					dgraph.h
 
@@ -845,6 +873,7 @@ dmapping$(OBJ)			:	dmapping.c				\
 dmapping_io$(OBJ)		:	dmapping_io.c				\
 					module.h				\
 					common.h				\
+					comm.h					\
 					arch.h					\
 					dgraph.h				\
 					dgraph_allreduce.h			\
@@ -867,6 +896,7 @@ dorder_gather$(OBJ)		:	dorder_gather.c				\
 dorder_io$(OBJ)			:	dorder_io.c				\
 					module.h				\
 					common.h				\
+					comm.h					\
 					dgraph.h				\
 					dorder.h				\
 					order.h
@@ -881,6 +911,7 @@ dorder_io_block$(OBJ)		:	dorder_io_block.c			\
 dorder_io_tree$(OBJ)		:	dorder_io_tree.c			\
 					module.h				\
 					common.h				\
+					comm.h					\
 					dgraph.h				\
 					dorder.h				\
 					order.h
@@ -1006,6 +1037,7 @@ hdgraph_check$(OBJ)		:	hdgraph_check.c				\
 hdgraph_fold$(OBJ)		:	hdgraph_fold.c				\
 					module.h				\
 					common.h				\
+					comm.h					\
 					dgraph.h				\
 					dgraph_fold_comm.h			\
 					hdgraph.h				\
@@ -1014,6 +1046,7 @@ hdgraph_fold$(OBJ)		:	hdgraph_fold.c				\
 hdgraph_gather$(OBJ)		:	hdgraph_gather.c			\
 					module.h				\
 					common.h				\
+					comm.h					\
 					graph.h					\
 					hgraph.h				\
 					dgraph.h				\
@@ -1439,6 +1472,25 @@ kgraph$(OBJ)			:	kgraph.c				\
 					mapping.h				\
 					kgraph.h
 
+kgraph_check$(OBJ)		:	kgraph_check.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch.h					\
+					mapping.h				\
+					kgraph.h
+
+kgraph_map_ml$(OBJ)		:	kgraph_map_ml.c				\
+					module.h				\
+					common.h				\
+					parser.h				\
+					graph.h					\
+					arch.h					\
+					mapping.h				\
+					kgraph.h				\
+					kgraph_map_ml.h				\
+					kgraph_map_st.h
+
 kgraph_map_rb$(OBJ)		:	kgraph_map_rb.c				\
 					module.h				\
 					common.h				\
@@ -1489,7 +1541,9 @@ kgraph_map_st$(OBJ)		:	kgraph_map_st.c				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
 					kgraph.h				\
-					kgraph_map_rb.h
+					kgraph_map_ml.h				\
+					kgraph_map_rb.h				\
+					kgraph_map_st.h
 
 library_arch$(OBJ)		:	library_arch.c				\
 					module.h				\
@@ -2123,6 +2177,7 @@ vdgraph_check$(OBJ)		:	vdgraph_check.c				\
 vdgraph_gather_all$(OBJ)	:	vdgraph_gather_all.c			\
 					module.h				\
 					common.h				\
+					comm.h					\
 					graph.h					\
 					vgraph.h				\
 					dgraph.h				\
@@ -2157,6 +2212,7 @@ vdgraph_separate_ml$(OBJ)	:	vdgraph_separate_ml.c			\
 vdgraph_separate_sq$(OBJ)	:	vdgraph_separate_sq.c			\
 					module.h				\
 					common.h				\
+					comm.h					\
 					parser.h				\
 					graph.h					\
 					vgraph.h				\

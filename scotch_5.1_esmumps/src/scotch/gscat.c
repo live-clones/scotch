@@ -40,7 +40,7 @@
 /**                distributed source graph.               **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 26 apr 2009     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 29 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -198,14 +198,14 @@ char * const                nameptr)
 
     vertlocnbr = DATASIZE (vertglbnbr, procnbr, procnum);
 
-    if (fprintf (ostream, "2\n%ld\t%ld\n%ld\t%ld\n%ld\t%015ld\n%ld\t%3s\n", /* Write file header */
-                 (long) procnbr,
-                 (long) procnum,
-                 (long) vertglbnbr,
-                 (long) edgeglbnbr,
-                 (long) vertlocnbr,
-                 (long) 0,                        /* Number of edges not yet known */
-                 (long) baseval,
+    if (fprintf (ostream, "2\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t%015d\n" SCOTCH_NUMSTRING "\t%3s\n", /* Write file header */
+                 (SCOTCH_Num) procnbr,
+                 (SCOTCH_Num) procnum,
+                 (SCOTCH_Num) vertglbnbr,
+                 (SCOTCH_Num) edgeglbnbr,
+                 (SCOTCH_Num) vertlocnbr,
+                 0,                               /* Number of edges not yet known */
+                 (SCOTCH_Num) baseval,
                  proptab) == EOF) {
       errorPrint ("C_graphScat: bad output (1)");
       return     (1);
@@ -243,12 +243,12 @@ char * const                nameptr)
       edgelocnbr += degrval;
 
       for ( ; degrval > 0; degrval --) {
-        SCOTCH_Num          edgeval;            /* Value where to read edge end */
+        SCOTCH_Num          edgeval;              /* Value where to read edge end */
 
         if (flagtab[1] != 0) {                    /* If must read edge load        */
           SCOTCH_Num          edloval;            /* Value where to read edge load */
 
-          if (intLoad (stream, &edloval) != 1) {    /* Read edge load data    */
+          if (intLoad (stream, &edloval) != 1) {  /* Read edge load data    */
             errorPrint ("C_graphScat: bad input (6)");
             return     (1);
           }
@@ -268,14 +268,14 @@ char * const                nameptr)
 
     rewind (ostream);
 
-    if (fprintf (ostream, "2\n%ld\t%ld\n%ld\t%ld\n%ld\t%015ld\n%ld\t%3s\n", /* Write file header */
-                 (long) procnbr,
-                 (long) procnum,
-                 (long) vertglbnbr,
-                 (long) edgeglbnbr,
-                 (long) vertlocnbr,
-                 (long) edgelocnbr,               /* Now we know the exact number of edges */
-                 (long) baseval,
+    if (fprintf (ostream, "2\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t%015lld\n" SCOTCH_NUMSTRING "\t%3s\n", /* Write file header */
+                 (SCOTCH_Num) procnbr,
+                 (SCOTCH_Num) procnum,
+                 (SCOTCH_Num) vertglbnbr,
+                 (SCOTCH_Num) edgeglbnbr,
+                 (SCOTCH_Num) vertlocnbr,
+                 (long long)  edgelocnbr,         /* Now we know the exact number of edges */
+                 (SCOTCH_Num) baseval,
                  proptab) == EOF) {
       errorPrint ("C_graphScat: bad output (2)");
       return     (1);

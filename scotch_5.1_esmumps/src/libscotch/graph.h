@@ -58,6 +58,8 @@
 /**                                 to     03 mar 2006     **/
 /**                # Version 5.0  : from : 03 mar 2006     **/
 /**                                 to     01 jun 2008     **/
+/**                # Version 5.1  : from : 11 aug 2010     **/
+/**                                 to     11 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,6 +95,7 @@
 typedef INT                   Gnum;               /* Vertex and edge numbers     */
 typedef UINT                  Gunum;              /* Unsigned type of same width */
 #define GNUMMAX                     (INTVALMAX)   /* Maximum signed Gnum value   */
+#define GNUMSTRING                  INTSTRING     /* String to printf a Gnum     */
 #endif /* GNUMMAX */
 
 /*+ The vertex part type, in compressed form. +*/

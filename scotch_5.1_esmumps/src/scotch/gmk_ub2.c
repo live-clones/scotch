@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 22 jan 2008     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,9 +163,9 @@ char *                      argv[])
   ubnbr = 1 <<  ubdim;                            /* Compute number of vertices */
   ubbit = 1 << (ubdim - 1);                       /* Bit to add on the left     */
 
-  fprintf (C_filepntrsrcout, "0\n%ld\t%ld\n0\t000\n",
-           (long) ubnbr,                          /* Print number of vertices     */
-           (long) (4 * ubnbr - 6));               /* Print number of edges (arcs) */
+  fprintf (C_filepntrsrcout, "0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n0\t000\n",
+           (SCOTCH_Num) ubnbr,                    /* Print number of vertices     */
+           (SCOTCH_Num) (4 * ubnbr - 6));         /* Print number of edges (arcs) */
 
   for (vertnum = 0; vertnum < ubnbr; vertnum ++) { /* For all vertices         */
     ngbnbr = 0;                                   /* No neighbors defined yet  */
@@ -176,7 +176,8 @@ char *                      argv[])
 
     fprintf (C_filepntrsrcout, "%d", ngbnbr);     /* Output number of neighbors */
     for (j = 0; j < ngbnbr; j ++)
-      fprintf (C_filepntrsrcout, "\t%ld", (long) ngbtab[j]);
+      fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
+               (SCOTCH_Num) ngbtab[j]);
     fprintf (C_filepntrsrcout, "\n");
   }
 

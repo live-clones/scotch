@@ -43,7 +43,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -150,18 +150,18 @@ char *                      argv[])
                     &edegmin, &edegmax, &edegavg, &edegdlt,
                     &ndegmin, &ndegmax, &ndegavg, &ndegdlt);
 
-  fprintf (C_filepntrdatout, "S\tElements\tnbr=%ld\n",
-           (long) velmnbr);
-  fprintf (C_filepntrdatout, "S\tNodes\tnbr=%ld\n",
-           (long) vnodnbr);
-  fprintf (C_filepntrdatout, "S\tNode load\tmin=%ld\tmax=%ld\tsum=%ld\tavg=%g\tdlt=%g\n",
-           (long) vnlomin, (long) vnlomax, (long) vnlosum, vnloavg, vnlodlt);
-  fprintf (C_filepntrdatout, "S\tElement degree\tmin=%ld\tmax=%ld\tsum=%ld\tavg=%g\tdlt=%g\n",
-           (long) edegmin, (long) edegmax, (long) (edgenbr / 2), edegavg, edegdlt);
-  fprintf (C_filepntrdatout, "S\tNode degree\tmin=%ld\tmax=%ld\tsum=%ld\tavg=%g\tdlt=%g\n",
-           (long) ndegmin, (long) ndegmax, (long) (edgenbr / 2), ndegavg, ndegdlt);
-  fprintf (C_filepntrdatout, "S\tEdge\tnbr=%ld\n",
-           (long) (edgenbr / 2));
+  fprintf (C_filepntrdatout, "S\tElements\tnbr=" SCOTCH_NUMSTRING "\n",
+           (SCOTCH_Num) velmnbr);
+  fprintf (C_filepntrdatout, "S\tNodes\tnbr=" SCOTCH_NUMSTRING "\n",
+           (SCOTCH_Num) vnodnbr);
+  fprintf (C_filepntrdatout, "S\tNode load\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tsum=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
+           (SCOTCH_Num) vnlomin, (SCOTCH_Num) vnlomax, (SCOTCH_Num) vnlosum, vnloavg, vnlodlt);
+  fprintf (C_filepntrdatout, "S\tElement degree\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tsum=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
+           (SCOTCH_Num) edegmin, (SCOTCH_Num) edegmax, (SCOTCH_Num) (edgenbr / 2), edegavg, edegdlt);
+  fprintf (C_filepntrdatout, "S\tNode degree\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tsum=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
+           (SCOTCH_Num) ndegmin, (SCOTCH_Num) ndegmax, (SCOTCH_Num) (edgenbr / 2), ndegavg, ndegdlt);
+  fprintf (C_filepntrdatout, "S\tEdge\tnbr=" SCOTCH_NUMSTRING "\n",
+           (SCOTCH_Num) (edgenbr / 2));
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 

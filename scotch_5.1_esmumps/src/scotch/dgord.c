@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 30 apr 2006     **/
 /**                                 to   : 16 jun 2008     **/
 /**                # Version 5.1  : from : 26 oct 2008     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 25 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,6 +76,12 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 static const char *         C_usageList[] = {
   "dgord [<input source file> [<output ordering file> [<output log file>]]] <options>",
   "  -b         : Output block ordering data instead of plain ordering data",
+  "  -c<opt>    : Choose default ordering strategy according to one or several of <opt>:",
+  "                 b  : enforce load balance as much as possible",
+  "                 q  : privilege quality over speed (default)",
+  "                 s  : privilege speed over quality",
+  "                 t  : enforce safety",
+  "                 x  : enforce scalability",
   "  -h         : Display this help",
   "  -m<file>   : Save column block mapping data to <file>",
   "  -o<strat>  : Set parallel ordering strategy (see user's manual)",
@@ -101,9 +107,12 @@ main (
 int                 argc,
 char *              argv[])
 {
-  SCOTCH_Strat        stradat;
   SCOTCH_Dgraph       grafdat;
   SCOTCH_Dordering    ordedat;
+  SCOTCH_Strat        stradat;
+  SCOTCH_Num          straval;
+  char *              straptr;
+  int                 flagval;
   int                 procglbnbr;
   int                 proclocnum;
   int                 protglbnum;                 /* Root process        */
@@ -112,7 +121,6 @@ char *              argv[])
   double              reduglbtab[12];
   MPI_Datatype        redutype;
   MPI_Op              reduop;
-  int                 flagval;
   int                 i, j;
 #ifdef SCOTCH_PTHREAD
   int                 thrdlvlreqval;
@@ -143,7 +151,9 @@ char *              argv[])
     return     (0);
   }
 
-  flagval = C_FLAGNONE;
+  flagval = C_FLAGNONE;                           /* Default behavior  */
+  straval = 0;                                    /* No strategy flags */
+  straptr = NULL;
   SCOTCH_stratInit (&stradat);
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
@@ -160,6 +170,35 @@ char *              argv[])
         case 'B' :
         case 'b' :
           flagval |= C_FLAGBLOCK;
+          break;
+        case 'C' :
+        case 'c' :                                /* Strategy selection parameters */
+          for (j = 2; argv[i][j] != '\0'; j ++) {
+            switch (argv[i][j]) {
+              case 'B' :
+              case 'b' :
+                straval |= SCOTCH_STRATBALANCE;
+                break;
+              case 'Q' :
+              case 'q' :
+                straval |= SCOTCH_STRATQUALITY;
+                break;
+              case 'S' :
+              case 's' :
+                straval |= SCOTCH_STRATSPEED;
+                break;
+              case 'T' :
+              case 't' :
+                straval |= SCOTCH_STRATSAFETY;
+                break;
+              case 'X' :
+              case 'x' :
+                straval |= SCOTCH_STRATSCALABILITY;
+                break;
+              default :
+                errorPrint ("main: invalid strategy selection option (\"%c\")", argv[i][j]);
+            }
+          }
           break;
 #ifdef SCOTCH_DEBUG_ALL
         case 'D' :
@@ -179,9 +218,10 @@ char *              argv[])
           break;
         case 'O' :                                /* Ordering strategy */
         case 'o' :
+          straptr = &argv[i][2];
           SCOTCH_stratExit (&stradat);
           SCOTCH_stratInit (&stradat);
-          SCOTCH_stratDgraphOrder (&stradat, &argv[i][2]);
+          SCOTCH_stratDgraphOrder (&stradat, straptr);
           break;
         case 'R' :                                /* Root process (if necessary) */
         case 'r' :
@@ -252,6 +292,13 @@ char *              argv[])
 
   SCOTCH_dgraphInit (&grafdat, MPI_COMM_WORLD);
   SCOTCH_dgraphLoad (&grafdat, C_filepntrsrcinp, -1, 0);
+
+  if (straval != 0) {
+    if (straptr != NULL)
+      errorPrint ("main: options '-c' and '-o' are exclusive");
+
+    SCOTCH_stratDgraphOrderBuild (&stradat, straval, (SCOTCH_Num) procglbnbr, 0.2);
+  }
 
   clockStop (&runtime[0]);                        /* Get input time */
   clockInit (&runtime[1]);

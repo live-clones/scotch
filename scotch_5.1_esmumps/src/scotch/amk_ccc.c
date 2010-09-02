@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -164,9 +164,9 @@ char *                      argv[])
        i >>= 1)
     ccmax = (ccmax << 1) | (i & 1);
 
-  fprintf (C_filepntrarcout, "deco\n0\n%ld\t%ld\n", /* Print the file header          */
-           (long) ccnbr,                          /* Print number of terminal domains */
-           (long) ccmax);                         /* Print biggest terminal value     */
+  fprintf (C_filepntrarcout, "deco\n0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n", /* Print the file header */
+           (SCOTCH_Num) ccnbr,                    /* Print number of terminal domains */
+           (SCOTCH_Num) ccmax);                   /* Print biggest terminal value     */
 
   for (v.lvl = 0; v.lvl < ccdim; v.lvl ++) {      /* For all levels                    */
     for (v.pos = 0; v.pos <= ccbit; v.pos ++) {   /* For all positions in these levels */
@@ -182,9 +182,9 @@ char *                      argv[])
         else                                      /* If lower (biggest) half */
           j = k;
       }
-      fprintf (C_filepntrarcout, "%ld\t1\t%ld\n",
-               (long) C_vertLabl (&v),            /* Print terminal label  */
-               (long) t);                         /* Print terminal number */
+      fprintf (C_filepntrarcout, SCOTCH_NUMSTRING "\t1\t" SCOTCH_NUMSTRING "\n",
+               (SCOTCH_Num) C_vertLabl (&v),      /* Print terminal label  */
+               (SCOTCH_Num) t);                   /* Print terminal number */
     }
   }
 
@@ -216,11 +216,11 @@ char *                      argv[])
       }
 
       if (v.lvl + v.pos > 0) {                    /* Print distance triangular map line */
-        fprintf (C_filepntrarcout, "%ld",
-                 (long) C_distaTab[0].dist);
+        fprintf (C_filepntrarcout, SCOTCH_NUMSTRING,
+                 (SCOTCH_Num) C_distaTab[0].dist);
         for (i = 1; i < C_vertLabl (&v); i ++)
-          fprintf (C_filepntrarcout, " %ld",
-                   (long) C_distaTab[i].dist);
+          fprintf (C_filepntrarcout, " " SCOTCH_NUMSTRING,
+                   (SCOTCH_Num) C_distaTab[i].dist);
         fprintf (C_filepntrarcout, "\n");
       }
     }

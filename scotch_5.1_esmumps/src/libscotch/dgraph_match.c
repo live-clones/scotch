@@ -1,4 +1,4 @@
-/* Copyright 2008,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**    DATES     : # Version 5.1  : from : 01 dec 2008     **/
-/**                                 to   : 20 mar 2009     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,7 +89,7 @@ const float                         probval)
 
   Dgraph * restrict const     grafptr    = mateptr->c.finegrafptr;
   const int * restrict const  procngbtab = grafptr->procngbtab;
-  const int * restrict const  procvrttab = grafptr->procvrttab;
+  const Gnum * restrict const procvrttab = grafptr->procvrttab;
 
   vertlocnbr = grafptr->vertlocnbr;
   vertgstnbr = grafptr->vertgstnbr;

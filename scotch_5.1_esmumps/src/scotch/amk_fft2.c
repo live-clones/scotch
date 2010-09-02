@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 01 jul 2010     **/
+/**                                 to   : 15 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -159,9 +159,9 @@ char *                      argv[])
   fmax = (1 << (fdim * 2 - 1)) - 1;               /* Compute maximum terminal number */
   fmsk = (1 << fdim) - 1;                         /* Get maximum position number     */
 
-  fprintf (C_filepntrarcout, "deco\n0\n%ld\t%ld\n", /* Print file header              */
-           (long) fnbr,                           /* Print number of terminal domains */
-           (long) fmax);                          /* Print the biggest terminal value */
+  fprintf (C_filepntrarcout, "deco\n0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n", /* Print file header */
+           (SCOTCH_Num) fnbr,                     /* Print number of terminal domains */
+           (SCOTCH_Num) fmax);                    /* Print the biggest terminal value */
 
   for (v.lvl = 0; v.lvl <= fdim; v.lvl ++) {      /* For all vertices */
     for (v.pos = 0; v.pos <= fmsk; v.pos ++) {
@@ -219,11 +219,11 @@ char *                      argv[])
       }
 
       if (v.lvl + v.pos > 0) {                    /* Print the distance triangular map line */
-        fprintf (C_filepntrarcout, "%ld",
-                 (long) C_distaTab[0].dist);
+        fprintf (C_filepntrarcout, SCOTCH_NUMSTRING,
+                 (SCOTCH_Num) C_distaTab[0].dist);
         for (i = 1; i < (v.lvl << fdim) + v.pos; i ++)
-          fprintf (C_filepntrarcout, " %ld",
-                   (long) C_distaTab[i].dist);
+          fprintf (C_filepntrarcout, " " SCOTCH_NUMSTRING,
+                   (SCOTCH_Num) C_distaTab[i].dist);
         fprintf (C_filepntrarcout, "\n");
       }
     }

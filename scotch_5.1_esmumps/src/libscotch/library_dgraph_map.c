@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 12 jun 2008     **/
-/**                                 to     29 may 2010     **/
+/**                                 to     14 aug 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,29 +67,6 @@
 /* the parallel mapping routines.   */
 /*                                  */
 /************************************/
-
-/*+ This routine parses the given
-*** mapping strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
-
-int
-SCOTCH_stratDgraphMap (
-SCOTCH_Strat * const        stratptr,
-const char * const          string)
-{
-  if (*((Strat **) stratptr) != NULL)
-    stratExit (*((Strat **) stratptr));
-
-  if ((*((Strat **) stratptr) = stratInit (&kdgraphmapststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratDgraphMap: error in parallel mapping strategy");
-    return     (1);
-  }
-
-  return (0);
-}
 
 /*+ This routine initializes an API opaque
 *** mapping with respect to the given source
@@ -167,18 +144,32 @@ SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
   Kdmapping               mapmappdat;             /* Initial mapping domain      */
   const Strat *           mapstratptr;            /* Pointer to mapping strategy */
   LibDmapping * restrict  srcmappptr;
+  Dgraph *                srcgrafptr;
   int                     o;
 
-  if (*((Strat **) stratptr) == NULL)             /* Set default mapping strategy if necessary */
-    *((Strat **) stratptr) = stratInit (&kdgraphmapststratab, "r{sep=m{asc=b{bnd=q{strat=f},org=q{strat=f}},low=q{strat=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}},seq=q{strat=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}},seq=r{job=t,map=t,poli=S,sep=m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=0.0005,move=80},asc=b{bnd=d{dif=1,rem=1,pass=40}f{bal=0.005,move=80},org=f{bal=0.005,move=80}}}}}");
+  srcgrafptr = (Dgraph *) grafptr;
+  srcmappptr = (LibDmapping *) mappptr;
+
+#ifdef SCOTCH_DEBUG_DGRAPH2
+  if (dgraphCheck (srcgrafptr) != 0) {
+    errorPrint ("SCOTCH_dgraphMapCompute: invalid input graph");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+
+  if (*((Strat **) stratptr) == NULL) {           /* Set default mapping strategy if necessary */
+    ArchDom             archdomnorg;
+
+    archDomFrst (&srcmappptr->m.archdat, &archdomnorg);
+    SCOTCH_stratDgraphMapBuild (stratptr, SCOTCH_STRATQUALITY, srcgrafptr->procglbnbr, archDomSize (&srcmappptr->m.archdat, &archdomnorg), 0.01);
+  }
   mapstratptr = *((Strat **) stratptr);
   if (mapstratptr->tabl != &kdgraphmapststratab) {
     errorPrint ("SCOTCH_dgraphMapCompute: not a parallel graph mapping strategy");
     return     (1);
   }
 
-  srcmappptr = (LibDmapping *) mappptr;
-  if (kdgraphInit (&mapgrafdat, (Dgraph *) grafptr, &srcmappptr->m) != 0)
+  if (kdgraphInit (&mapgrafdat, srcgrafptr, &srcmappptr->m) != 0)
     return (1);
   mapmappdat.mappptr = &srcmappptr->m;
 
@@ -240,4 +231,103 @@ SCOTCH_Num * const          termloctab)           /*+ Mapping array    +*/
   SCOTCH_archExit  (&archdat);
 
   return (o);
+}
+
+/*+ This routine parses the given
+*** mapping strategy.
+*** It returns:
+*** - 0   : if string successfully scanned.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratDgraphMap (
+SCOTCH_Strat * const        stratptr,
+const char * const          string)
+{
+  if (*((Strat **) stratptr) != NULL)
+    stratExit (*((Strat **) stratptr));
+
+  if ((*((Strat **) stratptr) = stratInit (&kdgraphmapststratab, string)) == NULL) {
+    errorPrint ("SCOTCH_stratDgraphMap: error in parallel mapping strategy");
+    return     (1);
+  }
+
+  return (0);
+}
+
+/*+ This routine provides predefined
+*** mapping strategies.
+*** It returns:
+*** - 0   : if string successfully initialized.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratDgraphMapBuild (
+SCOTCH_Strat * const        stratptr,             /*+ Strategy to create              +*/
+const SCOTCH_Num            flagval,              /*+ Desired characteristics         +*/
+const SCOTCH_Num            procnbr,              /*+ Number of processes for running +*/
+const SCOTCH_Num            partnbr,              /*+ Number of expected parts/size   +*/
+const double                balrat)               /*+ Desired imbalance ratio         +*/
+{
+  char                bufftab[8192];              /* Should be enough */
+  char                bbaltab[32];
+  double              bbalval;
+  char                verttab[32];
+  Gnum                vertnbr;
+  int                 parttmp;
+  int                 blogval;
+  double              blogtmp;
+  char *              difpptr;
+  char *              difsptr;
+  char *              exapptr;
+  char *              exasptr;
+  char *              muceptr;
+
+  for (parttmp = partnbr, blogval = 1; parttmp != 0; parttmp >>= 1, blogval ++) ; /* Get log2 of number of parts */
+
+  vertnbr = MAX (2000 * procnbr, 10000);
+  vertnbr = MIN (vertnbr, 100000);
+  sprintf (verttab, GNUMSTRING, vertnbr);
+
+  blogtmp = 1.0 / (double) blogval;               /* Taylor development of (1 + balrat) ^ (1 / blogval) */
+  bbalval = (balrat * blogtmp) * (1.0 + (blogtmp - 1.0) * (balrat * 0.5 * (1.0 + (blogtmp - 2.0) * balrat / 3.0)));
+  sprintf (bbaltab, "%lf", bbalval);
+
+  strcpy (bufftab, "r{sep=m{vert=<VERT>,asc=b{bnd=<DIFP><MUCE><EXAP>,org=<MUCE><EXAP>},low=q{strat=(m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>},seq=q{strat=(m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>}},seq=r{sep=(m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>}}");
+
+  muceptr = "/(edge<1000000)?q{strat=f};";        /* Multi-centralization */
+  exapptr = "x{bal=<BBAL>}";                      /* Parallel exactifier  */
+
+  if ((flagval & SCOTCH_STRATBALANCE) != 0) {
+    exapptr = "x{bal=0}";
+    exasptr = "f{bal=0}";
+  }
+  else
+    exasptr = "";
+
+  if ((flagval & SCOTCH_STRATSAFETY) != 0) {
+    difpptr = "";
+    difsptr = "";
+  }
+  else {
+    difpptr = "(d{dif=1,rem=1,pass=40}|)";
+    difsptr = "(d{dif=1,rem=1,pass=40}|)";
+  }
+
+  stringSubst (bufftab, "<MUCE>", muceptr);
+  stringSubst (bufftab, "<EXAP>", exapptr);
+  stringSubst (bufftab, "<EXAS>", exasptr);
+  stringSubst (bufftab, "<DIFP>", difpptr);
+  stringSubst (bufftab, "<DIFS>", difsptr);
+  stringSubst (bufftab, "<BBAL>", bbaltab);
+  stringSubst (bufftab, "<VERT>", verttab);
+
+  if (SCOTCH_stratDgraphMap (stratptr, bufftab) != 0) {
+    errorPrint ("SCOTCH_stratDgraphMapBuild: error in parallel mapping strategy");
+    return     (1);
+  }
+
+  return (0);
 }

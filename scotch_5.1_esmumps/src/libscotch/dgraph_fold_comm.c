@@ -1,4 +1,4 @@
-/* Copyright 2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2009,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 23 may 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 18 jan 2009     **/
-/**                                 to   : 05 may 2009     **/
+/**                                 to   : 30 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,7 +70,7 @@ const int                           partval,      /* 0 for first half, 1 for sec
 int * restrict const                commtypval,   /* Process will be sender or receiver                      */
 DgraphFoldCommData * restrict       commdattab,   /* Slots for communication                                 */
 Gnum * restrict const               commvrttab,   /* Slots of starting global vertex send indices            */
-int * restrict const                proccnttab,   /* Receive count array, for receivers                      */
+Gnum * restrict const               proccnttab,   /* Receive count array, for receivers                      */
 int * restrict const                vertadjptr,   /* Number of adjustment ranges, for receivers              */
 Gnum * restrict const               vertadjtab,   /* Pointer to global index adjustment array, for receivers */
 Gnum * restrict const               vertdlttab)   /* Pointer to global delta adjustment array, for receivers */

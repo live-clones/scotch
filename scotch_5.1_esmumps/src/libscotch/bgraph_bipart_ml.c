@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 4.0  : from : 12 dec 2003     **/
 /**                                 to     20 mar 2005     **/
 /**                # Version 5.1  : from : 28 sep 2008     **/
-/**                                 to     18 nov 2009     **/
+/**                                 to     13 jul 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,7 +94,8 @@ Bgraph * restrict const               coargrafptr, /*+ Coarser graph to build   
 GraphCoarsenMulti * restrict * const  coarmultptr, /*+ Pointer to multinode table to build +*/
 const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters                    +*/
 {
-  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->coarnbr, paraptr->coarrat, paraptr->matchtype) != 0)
+  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr,
+                    paraptr->coarnbr, paraptr->coarrat, paraptr->coartype) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   if (finegrafptr->veextax != NULL) {             /* Merge external gains for coarsened vertices */
@@ -162,7 +163,7 @@ const Bgraph * const            coargrafptr,      /*+ Coarser graph             
 const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array +*/
 {
   GraphPart * restrict        fineparttax;
-  Gnum                        finefronnum;
+  Gnum                        finefronnbr;
   Gnum                        finecompsize1;
   const GraphPart * restrict  coarparttax;
   Gnum                        coarvertnum;
@@ -213,7 +214,7 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
   finegrafptr->commload     = coargrafptr->commload;
   finegrafptr->commgainextn = coargrafptr->commgainextn;
 
-  for (coarfronnum = 0, finefronnum = coargrafptr->fronnbr; /* Re-cycle frontier array from coarse to fine graph */
+  for (coarfronnum = 0, finefronnbr = coargrafptr->fronnbr; /* Re-cycle frontier array from coarse to fine graph */
        coarfronnum < coargrafptr->fronnbr; coarfronnum ++) {
     Gnum                coarvertnum;
     Gnum                finevertnum0;             /* First multinode vertex  */
@@ -224,7 +225,7 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
     finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
       
     if (finevertnum0 != finevertnum1) {           /* If multinode si made of two distinct vertices */
-      Gnum                coarpartval;
+      GraphPart           coarpartval;
       Gnum                fineedgenum;
 
       coarpartval = coarparttax[coarvertnum];
@@ -248,7 +249,7 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
       for (fineedgenum = fineverttax[finevertnum1]; /* Check if second vertex belong to frontier too */
            fineedgenum < finevendtax[finevertnum1]; fineedgenum ++) {
         if (fineparttax[fineedgetax[fineedgenum]] != coarpartval) { /* If second vertex belongs to frontier  */
-          coarfrontab[finefronnum ++] = finevertnum1; /* Record it at the end of the recycled frontier array */
+          coarfrontab[finefronnbr ++] = finevertnum1; /* Record it at the end of the recycled frontier array */
           break;
         }
       }
@@ -263,7 +264,7 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
     else                                          /* If coarse vertex is single node */
       coarfrontab[coarfronnum] = finevertnum0;    /* Then it belongs to the frontier */
   }
-  finegrafptr->fronnbr = finefronnum;
+  finegrafptr->fronnbr = finefronnbr;
 
 #ifdef SCOTCH_DEBUG_BGRAPH2
   if (bgraphCheck (finegrafptr) != 0) {
