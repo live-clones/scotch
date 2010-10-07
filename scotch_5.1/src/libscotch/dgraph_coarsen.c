@@ -45,7 +45,7 @@
 /**   DATES      : # Version 5.0  : from : 27 jul 2005     **/
 /**                                 to   : 15 may 2008     **/
 /**                # Version 5.1  : from : 23 jun 2008     **/
-/**                                 to   : 30 jul 2010     **/
+/**                                 to   : 10 sep 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -837,8 +837,8 @@ DgraphCoarsenData * restrict const  coarptr)
     }
     coarvelolocsum += coarvelolocval;
     coarveloloctax[coarvertlocnum] = coarvelolocval;
-    if (coardegrlocmax < (coaredgelocnum - coargrafptr->vertloctax[coarvertlocnum]))
-      coardegrlocmax = (coaredgelocnum - coargrafptr->vertloctax[coarvertlocnum]);
+    if (coardegrlocmax < (coaredgelocnum - coarvertloctax[coarvertlocnum]))
+      coardegrlocmax = (coaredgelocnum - coarvertloctax[coarvertlocnum]);
   }
   coarvertloctax[coarvertlocnum] = coaredgelocnum; /* Set end of compact edge array */
   coargrafptr->velolocsum = coarvelolocsum;
