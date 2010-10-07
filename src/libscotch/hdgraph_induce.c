@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 19 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 27 jun 2008     **/
-/**                                 to   : 30 jul 2010     **/
+/**                                 to   : 07 oct 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -120,9 +120,9 @@ Hdgraph * restrict const    indgrafptr)
     indvelolocnbr = 0;
     indvelolocsum = indlistnbr;
   }
-  indedgelocmax = indlistnbr * orggrafptr->s.degrglbmax; /* Compute upper bound of number of non-halo edges */
-  if (indedgelocmax > orggrafptr->s.edgelocnbr)
-    indedgelocmax = orggrafptr->s.edgelocnbr;
+  indedgelocmax = orggrafptr->s.edgelocnbr;       /* Choose best upper bound on number of edges (avoid multiply overflow) */
+  if ((orggrafptr->s.degrglbmax > 0) && (indlistnbr < (indedgelocmax / orggrafptr->s.degrglbmax)))
+    indedgelocmax = indlistnbr * orggrafptr->s.degrglbmax;
   indedgelocmax += orggrafptr->ehallocnbr;
 
   cheklocval =
