@@ -1,4 +1,4 @@
-/* Copyright 2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2009,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 17 jul 2007     **/
 /**                                 to     02 aug 2007     **/
 /**                # Version 5.1  : from : 02 jul 2008     **/
-/**                                 to     10 may 2009     **/
+/**                                 to     17 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -156,4 +156,18 @@ SCOTCH_dgraphHaloWait (
 SCOTCH_DgraphHaloReq * const  requptr)
 {
   return (dgraphHaloWait ((DgraphHaloRequest *) requptr));
+}
+
+/*+ This routine reserves a memory area
+*** of a size sufficient to store a
+*** halo request structure.
+*** It returns:
+*** - !NULL  : if the initialization succeeded.
+*** - NULL   : on error.
++*/
+
+SCOTCH_DgraphHaloReq *
+SCOTCH_dgraphHaloReqAlloc ()
+{
+  return ((SCOTCH_DgraphHaloReq *) memAlloc (sizeof (SCOTCH_DgraphHaloReq)));
 }

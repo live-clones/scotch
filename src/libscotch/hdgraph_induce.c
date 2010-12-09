@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 19 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 27 jun 2008     **/
-/**                                 to   : 07 oct 2010     **/
+/**                                 to   : 22 oct 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,14 +83,23 @@ const Gnum                  indlistnbr,
 const Gnum * restrict const indlisttab,           /* Local list of kept vertices */
 Hdgraph * restrict const    indgrafptr)
 {
+  const Gnum * restrict orgvertloctax;
+  const Gnum * restrict orgvendloctax;
+  const Gnum * restrict orgveloloctax;
+  const Gnum * restrict orgedgegsttax;
+  const Gnum * restrict orgedgeloctax;
   Gnum * restrict       orgindxgsttax;            /* Based access to vertex translation array       */
   Gnum * restrict       orgindxhaltax;            /* Based access to halo vertex translation array  */
+  Gnum * restrict       indvertloctax;
+  Gnum * restrict       indveloloctax;
   Gnum                  indvertlocnnd;            /* Based index of end of local vertex array       */
   Gnum                  indvertlocnum;            /* Number of current vertex in induced graph      */
   Gnum                  indvertglbnum;            /* Number of current vertex in global ordering    */
+  Gnum * restrict       indvendloctax;
   Gnum                  indvelolocnbr;            /* Size of local vertex load array                */
   Gnum                  indvelolocsum;            /* Sum of vertex loads                            */
   Gnum                  indvhallocnum;            /* Number of halo vertex to be declared           */
+  Gnum * restrict       indedgeloctax;
   Gnum                  indedgelocmax;            /* (Approximate) number of edges in induced graph */
   Gnum                  indedgelocsiz;            /* Real size of edge array, including halo        */
   Gnum                  indedgelocnbr;            /* Real number of edges in induced graph          */
@@ -137,8 +146,8 @@ Hdgraph * restrict const    indgrafptr)
     cheklocval = 1;
   }
   else if (memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data */
-                          &indgrafptr->s.vertloctax, (size_t) ((indlistnbr + 2) * sizeof (Gnum)), /* TRICK: "+2" because never (vendloctax == (vertloctax + 1)), even for empty graphs */
-                          &indgrafptr->s.vendloctax, (size_t) (indlistnbr       * sizeof (Gnum)), /* Vertex end array for non-halo vertices                                            */
+                          &indgrafptr->s.vertloctax, (size_t) ((indlistnbr + 1) * sizeof (Gnum)), /* Compact vertex arrays                  */
+                          &indgrafptr->s.vendloctax, (size_t) (indlistnbr       * sizeof (Gnum)), /* Vertex end array for non-halo vertices */
                           &indgrafptr->s.vnumloctax, (size_t) (indlistnbr       * sizeof (Gnum)),
                           &indgrafptr->s.veloloctax, (size_t) (indvelolocnbr    * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hdgraphInduceList: out of memory (2)");
@@ -214,6 +223,15 @@ Hdgraph * restrict const    indgrafptr)
     return      (1);
   }
 
+  orgvertloctax = orggrafptr->s.vertloctax;
+  orgvendloctax = orggrafptr->s.vendloctax;
+  orgveloloctax = orggrafptr->s.veloloctax;
+  orgedgegsttax = orggrafptr->s.edgegsttax;
+  orgedgeloctax = orggrafptr->s.edgeloctax;
+  indvertloctax = indgrafptr->s.vertloctax;
+  indvendloctax = indgrafptr->s.vendloctax;
+  indveloloctax = indgrafptr->s.veloloctax;
+  indedgeloctax = indgrafptr->s.edgeloctax;
   inddegrlocmax = 0;
   for (indvertlocnum = indedgelocnum = indvhallocnum = orggrafptr->s.baseval, indedgelocnbr = 0;
        indvertlocnum < indvertlocnnd; indvertlocnum ++) {
@@ -224,12 +242,12 @@ Hdgraph * restrict const    indgrafptr)
     Gnum                indedgelocnnd;
 
     orgvertlocnum  = indlisttax[indvertlocnum];
-    orgdegrlocval  = orggrafptr->s.vendloctax[orgvertlocnum] - orggrafptr->s.vertloctax[orgvertlocnum];
+    orgdegrlocval  = orgvendloctax[orgvertlocnum] - orgvertloctax[orgvertlocnum];
 
-    indgrafptr->s.vertloctax[indvertlocnum] = indedgelocnum;
-    if (orggrafptr->s.veloloctax != NULL) {       /* If graph has vertex weights */
+    indvertloctax[indvertlocnum] = indedgelocnum;
+    if (orgveloloctax != NULL) {                  /* If graph has vertex weights */
       indvelolocsum +=                            /* Accumulate vertex loads     */
-      indgrafptr->s.veloloctax[indvertlocnum] = orggrafptr->s.veloloctax[orgvertlocnum];
+      indveloloctax[indvertlocnum] = orgveloloctax[orgvertlocnum];
     }
     indedgelocnnd = indedgelocnum + orgdegrlocval;
 #ifdef SCOTCH_DEBUG_HDGRAPH2
@@ -238,12 +256,12 @@ Hdgraph * restrict const    indgrafptr)
       return      (1);
     }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
-    for (orgedgelocnum = orggrafptr->s.vertloctax[orgvertlocnum]; /* Process local and ghost non-halo vertices */
-         orgedgelocnum < orggrafptr->s.vendloctax[orgvertlocnum]; orgedgelocnum ++) {
+    for (orgedgelocnum = orgvertloctax[orgvertlocnum]; /* Process local and ghost non-halo vertices */
+         orgedgelocnum < orgvendloctax[orgvertlocnum]; orgedgelocnum ++) {
       Gnum                orgvertlocend;
       Gnum                indvertgstend;
 
-      orgvertlocend = orggrafptr->s.edgegsttax[orgedgelocnum];
+      orgvertlocend = orgedgegsttax[orgedgelocnum];
 #ifdef SCOTCH_DEBUG_HDGRAPH2
       if ((orgvertlocend < orggrafptr->s.baseval) || (orgvertlocend > orggrafptr->s.vertgstnnd)) {
         errorPrint  ("hdgraphInduceList: internal error (2)");
@@ -252,11 +270,11 @@ Hdgraph * restrict const    indgrafptr)
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
       indvertgstend = orgindxgsttax[orgvertlocend];
       if (indvertgstend >= 0)                    /* If edge is local or halo                           */
-        indgrafptr->s.edgeloctax[indedgelocnum ++] = indvertgstend; /* Keep it as regular edge         */
+        indedgeloctax[indedgelocnum ++] = indvertgstend; /* Keep it as regular edge                    */
       else {                                     /* If edge is halo edge                               */
         if (indvertgstend == ~0)                 /* If halo vertex not assigned yet                    */
           orgindxgsttax[orgvertlocend] = indvertgstend = -2 - indvhallocnum ++; /* Set new halo number */
-        indgrafptr->s.edgeloctax[-- indedgelocnnd] = -2 - indvertgstend;
+        indedgeloctax[-- indedgelocnnd] = -2 - indvertgstend;
       }
     }
 #ifdef SCOTCH_DEBUG_HDGRAPH2
@@ -265,18 +283,18 @@ Hdgraph * restrict const    indgrafptr)
       return      (1);
     }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
-    indgrafptr->s.vendloctax[indvertlocnum] = indedgelocnum;
-    inddegrlocval  = indedgelocnum - indgrafptr->s.vertloctax[indvertlocnum];
+    indvendloctax[indvertlocnum] = indedgelocnum;
+    inddegrlocval  = indedgelocnum - indvertloctax[indvertlocnum];
     indedgelocnbr += inddegrlocval;
     if (inddegrlocmax < inddegrlocval)
       inddegrlocmax = inddegrlocval;
 
-    for (indedgelocnum = indgrafptr->s.vertloctax[indvertlocnum] + orgdegrlocval; /* Process local halo vertices */
+    for (indedgelocnum = indvertloctax[indvertlocnum] + orgdegrlocval; /* Process local halo vertices */
          orgedgelocnum < orggrafptr->vhndloctax[orgvertlocnum]; orgedgelocnum ++) {
       Gnum                orgvhallocend;
       Gnum                indvhallocend;
 
-      orgvhallocend = orggrafptr->s.edgeloctax[orgedgelocnum]; /* Halo vertices only exist in the edgeloctab array */
+      orgvhallocend = orgedgeloctax[orgedgelocnum]; /* Halo vertices only exist in the edgeloctab array */
 #ifdef SCOTCH_DEBUG_HDGRAPH2
       if ((orgvhallocend < orggrafptr->s.baseval) || (orgvhallocend >= (orggrafptr->vhallocnbr + orggrafptr->s.baseval))) {
         errorPrint  ("hdgraphInduceList: inconsistent halo vertex numbers");
@@ -294,7 +312,7 @@ Hdgraph * restrict const    indgrafptr)
       indgrafptr->s.edgeloctax[indedgelocnum ++] = indvhallocend;
     }
   }
-  indgrafptr->s.vertloctax[indvertlocnum] = indedgelocnum; /* Mark end of edge array for vhndloctax        */
+  indvertloctax[indvertlocnum] = indedgelocnum;   /* Mark end of edge array for vhndloctax                 */
   indedgelocsiz = indedgelocnum - orggrafptr->s.baseval; /* Global number of edges, both non-halo and halo */
 
   indgrafptr->s.edgeloctax = memRealloc (indgrafptr->s.edgeloctax + orggrafptr->s.baseval,

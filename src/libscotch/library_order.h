@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 08 oct 1998     **/
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to     25 dec 2004     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,9 +56,9 @@
 
 typedef struct LibOrder_ {
   Order                     o;                    /*+ Ordering data                      +*/
-  Gnum * restrict           permtab;              /*+ Direct permutation array           +*/
-  Gnum * restrict           peritab;              /*+ Inverse permutation array          +*/
-  Gnum * restrict           cblkptr;              /*+ Pointer to number of column blocks +*/
-  Gnum * restrict           rangtab;              /*+ Column block range array           +*/
-  Gnum * restrict           treetab;              /*+ Separator tree array               +*/
+  Gnum *                    permtab;              /*+ Direct permutation array           +*/
+  Gnum *                    peritab;              /*+ Inverse permutation array          +*/
+  Gnum *                    cblkptr;              /*+ Pointer to number of column blocks +*/
+  Gnum *                    rangtab;              /*+ Column block range array           +*/
+  Gnum *                    treetab;              /*+ Separator tree array               +*/
 } LibOrder;

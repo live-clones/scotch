@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 15 apr 2006     **/
 /**                                 to     16 jun 2007     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,7 +84,7 @@
 typedef struct Hdgraph_ {
   Dgraph                    s;                    /*+ Source distributed graph                       +*/
   Gnum                      vhallocnbr;           /*+ Local number of halo end vertices              +*/
-  Gnum * restrict           vhndloctax;           /*+ End vertex array including halo vertex indices +*/
+  Gnum *                    vhndloctax;           /*+ End vertex array including halo vertex indices +*/
   Gnum                      ehallocnbr;           /*+ Local number of halo edges                     +*/
   Gnum                      levlnum;              /*+ Nested dissection level                        +*/
 } Hdgraph;

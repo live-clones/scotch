@@ -50,7 +50,7 @@
 /**                # Version 2.0  : from : 13 jun 2005     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to   : 02 sep 2010     **/
+/**                                 to   : 23 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,25 +60,40 @@
 ** The includes.
 */
 
+#ifndef _XOPEN_SOURCE
+#define _XOPEN_SOURCE               600
+#endif /* _XOPEN_SOURCE */
+
 #include            <ctype.h>
 #include            <math.h>
 #include            <memory.h>
 #include            <stdio.h>
 #include            <stdarg.h>
 #include            <stdlib.h>
+#if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H))
+#include            <stdint.h>
+#endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
 #ifdef HAVE_MALLOC_H
 #include            <malloc.h>                    /* Deprecated, but required on some old systems */
 #endif /* HAVE_MALLOC_H */
 #include            <string.h>
+#include            <strings.h>
 #include            <time.h>                      /* For the effective calls to clock () */
 #include            <limits.h>
 #include            <float.h>
 #include            <sys/types.h>
+#if ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_TIME_H))
 #include            <sys/time.h>
-#ifdef COMMON_TIMING_OLD
+#endif /* ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_TIME_H)) */
+#if ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H))
 #include            <sys/resource.h>
-#endif /* COMMON_TIMING_OLD */
+#endif /* ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H)) */
+#if ((defined COMMON_WINDOWS) || (defined HAVE_WINDOWS_H))
+#include            <windows.h>
+#endif /* ((defined COMMON_WINDOWS) || (defined HAVE_WINDOWS_H)) */
+#if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
 #include            <unistd.h>
+#endif /* ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
 
 #ifdef SCOTCH_PTSCOTCH
 #include            <mpi.h>
@@ -280,3 +295,6 @@ void FORTRAN4(nl,__) pl                          \
 void nu pl
 #define FORTRAN3(s)                 s
 #define FORTRAN4(p,s)               p##s
+
+#define STRINGIFY2(n)               #n
+#define STRINGIFY(n)                STRINGIFY2(n)

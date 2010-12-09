@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 5.1  : from : 05 jun 2009     **/
-/**                                 to   : 29 jul 2010     **/
+/**                                 to   : 17 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,6 +80,20 @@
 /* the architecture handling routines. */
 /*                                     */
 /***************************************/
+
+/*+ This routine reserves a memory area
+*** of a size sufficient to store a
+*** target architecture.
+*** It returns:
+*** - !NULL  : if the initialization succeeded.
+*** - NULL   : on error.
++*/
+
+SCOTCH_Arch *
+SCOTCH_archAlloc ()
+{
+  return ((SCOTCH_Arch *) memAlloc (sizeof (SCOTCH_Arch)));
+}
 
 /*+ This routine initializes the opaque
 *** architecture structure used to handle

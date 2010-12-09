@@ -1,4 +1,4 @@
-/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,39 +31,46 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : kgraph_map_rb_part.h                    **/
+/**   NAME       : library_order.c                         **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : These lines are the data declaration    **/
-/**                for the Dual Recursive Bipartitioning   **/
-/**                mapping algorithm.                      **/
+/**   FUNCTION   : This module contains miscellaneous      **/
+/**                routines for handling centralized       **/
+/**                graph orderings.                        **/
 /**                                                        **/
-/**   DATES      : # Version 5.2  : from : 22 sep 2008     **/
-/**                                 to     04 nov 2010     **/
+/**   DATES      : # Version 5.1  : from : 17 nov 2010     **/
+/**                                 to     17 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The type and structure definitions.
+**  The defines and includes.
 */
 
-typedef struct KgraphMapRbPartData_ {
-  const Graph *             topgrafptr;           /*+ Pointer to top-level graph          +*/
-  Gnum *                    topfrontab;           /*+ Pointer to top-level frontier array +*/
-  Gnum                      topfronnbr;           /*+ Current number of frontier vertices +*/
-  Mapping *                 mappptr;
-  const KgraphMapRbParam *  paraptr;
-} KgraphMapRbPartData;
+#define LIBRARY
 
-/*
-**  The function prototypes.
-*/
+#include "module.h"
+#include "common.h"
+#include "scotch.h"
 
-#ifndef KGRAPH_MAP_RB_PART
-#define static
-#endif
+/*****************************************/
+/*                                       */
+/* These routines are the C API for      */
+/* ordering structure handling routines. */
+/*                                       */
+/*****************************************/
 
-int                         kgraphMapRbPart     (Kgraph * const, const KgraphMapRbParam * const);
+/*+ This routine reserves a memory area
+*** of a size sufficient to store a
+*** graph ordering structure.
+*** It returns:
+*** - !NULL  : if the initialization succeeded.
+*** - NULL   : on error.
++*/
 
-#undef static
+SCOTCH_Ordering *
+SCOTCH_orderAlloc ()
+{
+  return ((SCOTCH_Ordering *) memAlloc (sizeof (SCOTCH_Ordering)));
+}

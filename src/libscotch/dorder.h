@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 15 apr 2006     **/
 /**                                 to     14 oct 2007     **/
 /**                # Version 5.1  : from : 28 nov 2007     **/
-/**                                 to     31 may 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,9 +122,9 @@ typedef struct DorderCblk_ {
     struct {                                      /*+ Fragment of inverse permutation                +*/
       Gnum                          ordelocval;   /*+ Starting index of inverse permutation          +*/
       Gnum                          vnodlocnbr;   /*+ Number of node vertices in fragment            +*/
-      Gnum * restrict               periloctab;   /*+ Pointer to inverse permutation fragment        +*/
+      Gnum *                        periloctab;   /*+ Pointer to inverse permutation fragment        +*/
       Gnum                          nodelocnbr;   /*+ Number of local column blocks                  +*/
-      DorderNode * restrict         nodeloctab;   /*+ Array of local column blocks                   +*/
+      DorderNode *                  nodeloctab;   /*+ Array of local column blocks                   +*/
       Gnum                          cblklocnum;   /*+ Local number of first local column block       +*/
     } leaf;
     struct {                                      /*+ Fragment of inverse permutation                +*/

@@ -1,4 +1,4 @@
-/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,39 +31,46 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : kgraph_map_rb_part.h                    **/
+/**   NAME       : library_version_f.c                     **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : These lines are the data declaration    **/
-/**                for the Dual Recursive Bipartitioning   **/
-/**                mapping algorithm.                      **/
+/**   FUNCTION   : This file contains the Fortran API for  **/
+/**                handling API- and version-related       **/
+/**                routines in the libSCOTCH library.      **/
 /**                                                        **/
-/**   DATES      : # Version 5.2  : from : 22 sep 2008     **/
-/**                                 to     04 nov 2010     **/
+/**   DATES      : # Version 5.1  : from : 16 nov 2010     **/
+/**                                 to     16 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The type and structure definitions.
+**  The defines and includes.
 */
 
-typedef struct KgraphMapRbPartData_ {
-  const Graph *             topgrafptr;           /*+ Pointer to top-level graph          +*/
-  Gnum *                    topfrontab;           /*+ Pointer to top-level frontier array +*/
-  Gnum                      topfronnbr;           /*+ Current number of frontier vertices +*/
-  Mapping *                 mappptr;
-  const KgraphMapRbParam *  paraptr;
-} KgraphMapRbPartData;
+#define LIBRARY
+
+#include "module.h"
+#include "common.h"
+#include "scotch.h"
+
+/**************************************/
+/*                                    */
+/* These routines are the Fortran API */
+/* for the version-related routines.  */
+/*                                    */
+/**************************************/
 
 /*
-**  The function prototypes.
+**
 */
 
-#ifndef KGRAPH_MAP_RB_PART
-#define static
-#endif
-
-int                         kgraphMapRbPart     (Kgraph * const, const KgraphMapRbParam * const);
-
-#undef static
+FORTRAN (                                       \
+SCOTCHFVERSION, scotchfversion, (               \
+int * const                 versptr,            \
+int * const                 relaptr,            \
+int * const                 patcptr),           \
+(versptr, relaptr, patcptr))
+{
+  SCOTCH_version (versptr, relaptr, patcptr);
+}

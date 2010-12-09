@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     01 nov 2001     **/
 /**                # Version 4.0  : from : 18 dec 2001     **/
 /**                                 to     19 jan 2004     **/
+/**                # Version 5.1  : from : 17 nov 2010     **/
+/**                                 to     17 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +66,20 @@
 /* graph geometry handling routines.    */
 /*                                      */
 /****************************************/
+
+/*+ This routine reserves a memory area
+*** of a size sufficient to store a
+*** geometry structure.
+*** It returns:
+*** - !NULL  : if the initialization succeeded.
+*** - NULL   : on error.
++*/
+
+SCOTCH_Geom *
+SCOTCH_geomAlloc ()
+{
+  return ((SCOTCH_Geom *) memAlloc (sizeof (SCOTCH_Geom)));
+}
 
 /*+ This routine initializes the opaque
 *** geom structure used to handle graph

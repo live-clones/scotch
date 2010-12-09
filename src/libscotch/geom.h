@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to     12 oct 1999     **/
 /**                # Version 4.0  : from : 24 nov 2001     **/
 /**                                 to     18 jan 2004     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,7 +60,7 @@
 
 typedef struct Geom_ {
   int                       dimnnbr;              /*+ Geometry type (1, 2, or 3D) +*/
-  double * restrict         geomtab;              /*+ Geometrical vertex array    +*/
+  double *                  geomtab;              /*+ Geometrical vertex array    +*/
 } Geom;
 
 /*

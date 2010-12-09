@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to     09 dec 2005     **/
 /**                # Version 5.0  : from : 10 sep 2006     **/
 /**                                 to     03 apr 2008     **/
+/**                # Version 5.1  : from : 17 nov 2010     **/
+/**                                 to     17 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,6 +70,20 @@
 /* the graph handling routines.     */
 /*                                  */
 /************************************/
+
+/*+ This routine reserves a memory area
+*** of a size sufficient to store a
+*** centralized graph structure.
+*** It returns:
+*** - !NULL  : if the initialization succeeded.
+*** - NULL   : on error.
++*/
+
+SCOTCH_Graph *
+SCOTCH_graphAlloc ()
+{
+  return ((SCOTCH_Graph *) memAlloc (sizeof (SCOTCH_Graph)));
+}
 
 /*+ This routine initializes the opaque
 *** graph structure used to handle graphs

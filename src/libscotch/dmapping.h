@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                the parallel mapping handling routines. **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 31 mar 2008     **/
-/**                                 to     25 jun 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,10 +55,10 @@
 typedef struct DmappingFrag_ {
   struct DmappingFrag_ *    nextptr;              /*+ Pointer to next fragment            +*/
   Gnum                      vertnbr;              /*+ Number of local vertices in mapping +*/
-  Gnum * restrict           vnumtab;              /*+ Vertex index array                  +*/
-  Anum * restrict           parttab;              /*+ Mapping array [vertlocnbr]          +*/
+  Gnum *                    vnumtab;              /*+ Vertex index array                  +*/
+  Anum *                    parttab;              /*+ Mapping array [vertlocnbr]          +*/
   Anum                      domnnbr;              /*+ Local number of domains             +*/
-  ArchDom * restrict        domntab;              /*+ Array of domains [domnnbr]          +*/
+  ArchDom *                 domntab;              /*+ Array of domains [domnnbr]          +*/
 } DmappingFrag;
 
 /*+ This structure defines an (eventually

@@ -181,6 +181,8 @@ LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
 			library_dgraph_scatter_f$(OBJ)		\
 			library_dgraph_stat$(OBJ)		\
 			library_dgraph_stat_f$(OBJ)		\
+			library_dmapping$(OBJ)			\
+			library_dorder$(OBJ)			\
 			vdgraph$(OBJ)				\
 			vdgraph_check$(OBJ)			\
 			vdgraph_gather_all$(OBJ)		\
@@ -299,6 +301,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_graph_map_view_f$(OBJ)		\
 			library_graph_order$(OBJ)		\
 			library_graph_order_f$(OBJ)		\
+			library_mapping$(OBJ)			\
 			library_mesh$(OBJ)			\
 			library_mesh_f$(OBJ)			\
 			library_mesh_graph$(OBJ)		\
@@ -309,10 +312,14 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_mesh_io_scot_f$(OBJ)		\
 			library_mesh_order$(OBJ)		\
 			library_mesh_order_f$(OBJ)		\
+			library_order$(OBJ)			\
 			library_parser$(OBJ)			\
 			library_parser_f$(OBJ)			\
 			library_random$(OBJ)			\
 			library_random_f$(OBJ)			\
+			library_strat$(OBJ)			\
+			library_version$(OBJ)			\
+			library_version_f$(OBJ)			\
 			mapping$(OBJ)				\
 			mapping_io$(OBJ)			\
 			mesh$(OBJ)				\
@@ -352,7 +359,6 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			vmesh_separate_st$(OBJ)			\
 			vmesh_store$(OBJ)
 
-
 ##
 ##  Todo list.
 ##
@@ -360,48 +366,48 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 common$(OBJ)			:	common.c				\
 					module.h				\
 					common.h
-					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file$(OBJ)		:	common_file.c				\
 					module.h				\
 					common.h				\
 					common_file.h
-					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file_compress$(OBJ)	:	common_file_compress.c			\
 					module.h				\
 					common.h				\
 					common_file.h				\
 					common_file_compress.h
-					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file_uncompress$(OBJ)	:	common_file_uncompress.c		\
 					module.h				\
 					common.h				\
 					common_file.h				\
 					common_file_compress.h
-					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_integer$(OBJ)		:	common_integer.c			\
 					module.h				\
 					common.h				\
 					common_sort.c
-					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_memory$(OBJ)		:	common_memory.c				\
 					module.h				\
 					common.h
-					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_string$(OBJ)		:	common_string.c				\
 					module.h				\
 					common.h
-					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_stub$(OBJ)		:	common_stub.c				\
 					module.h				\
 					common.h
-					$(CC) $(CFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 arch$(OBJ)			:	arch.c					\
 					module.h				\
@@ -1802,6 +1808,16 @@ library_dgraph_stat_f$(OBJ)	:	library_dgraph_stat_f.c			\
 					common.h				\
 					scotch.h
 
+library_dmapping$(OBJ)		:	library_dmapping.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_dorder$(OBJ)		:	library_dorder.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
 library_error$(OBJ)		:	library_error.c				\
 					module.h				\
 					common.h				\
@@ -1930,7 +1946,8 @@ library_graph_map_view$(OBJ)	:	library_graph_map_view.c		\
 					arch.h					\
 					mapping.h				\
 					kgraph.h				\
-					kgraph_map_st.h				\
+					library_mapping.h			\
+					library_graph_map_view.h		\
 					scotch.h
 
 library_graph_map_view_f$(OBJ)	:	library_graph_map_view_f.c		\
@@ -1950,6 +1967,11 @@ library_graph_order$(OBJ)	:	library_graph_order.c			\
 					scotch.h
 
 library_graph_order_f$(OBJ)	:	library_graph_order_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_mapping$(OBJ)		:	library_mapping.c			\
 					module.h				\
 					common.h				\
 					scotch.h
@@ -2021,6 +2043,11 @@ library_mesh_order_f$(OBJ)	:	library_mesh_order_f.c			\
 					common.h				\
 					scotch.h
 
+library_order$(OBJ)		:	library_order.c				\
+					module.h				\
+					common.h				\
+					scotch.h
+
 library_parser$(OBJ)		:	library_parser.c			\
 					module.h				\
 					common.h				\
@@ -2038,6 +2065,21 @@ library_random$(OBJ)		:	library_random.c			\
 					scotch.h
 
 library_random_f$(OBJ)		:	library_random_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_strat$(OBJ)		:	library_strat.c				\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_version$(OBJ)		:	library_version.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_version_f$(OBJ)		:	library_version_f.c			\
 					module.h				\
 					common.h				\
 					scotch.h

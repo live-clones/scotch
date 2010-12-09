@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 03 jan 1999     **/
 /**                # Version 4.0  : from : 01 jan 2003     **/
 /**                                 to   : 01 jan 2003     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,8 +66,8 @@
 
 typedef struct HgraphOrderCpParam_ {
   double                    comprat;              /*+ Compression ratio threshold             +*/
-  Strat * restrict          stratcpr;             /*+ Compressed subgraph ordering strategy   +*/
-  Strat * restrict          stratunc;             /*+ Uncompressed subgraph ordering strategy +*/
+  Strat *                   stratcpr;             /*+ Compressed subgraph ordering strategy   +*/
+  Strat *                   stratunc;             /*+ Uncompressed subgraph ordering strategy +*/
 } HgraphOrderCpParam;
 
 /*+ This structure holds fine neighbor hashing data. +*/

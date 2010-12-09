@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                lized ordering algorithm.               **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2008     **/
-/**                                 to     11 nov 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,7 +51,7 @@
 /*+ This structure holds the method parameters. +*/
 
 typedef struct HdgraphOrderSqParam_ {
-  Strat * restrict          ordstratseq;          /*+ Sequential ordering strategy +*/
+  Strat *                   ordstratseq;          /*+ Sequential ordering strategy +*/
 } HdgraphOrderSqParam;
 
 /*
