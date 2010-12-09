@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 17 jun 2008     **/
 /**                                 to     17 jun 2008     **/
 /**                # Version 5.1  : from : 13 jul 2010     **/
-/**                                 to     08 aug 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,9 +73,9 @@ typedef struct Kgraph_ {
   Graph                     s;                    /*+ Source graph                      +*/
   Mapping                   m;                    /*+ Current mapping of graph vertices +*/
   Gnum                      fronnbr;              /*+ Number of frontier vertices       +*/
-  Gnum * restrict           frontab;              /*+ Array of frontier vertex numbers  +*/
-  Gnum * restrict           comploadavg;          /*+ Array of target average loads     +*/
-  Gnum * restrict           comploaddlt;          /*+ Array of target imbalances        +*/
+  Gnum *                    frontab;              /*+ Array of frontier vertex numbers  +*/
+  Gnum *                    comploadavg;          /*+ Array of target average loads     +*/
+  Gnum *                    comploaddlt;          /*+ Array of target imbalances        +*/
   Gnum                      commload;             /*+ Communication load                +*/
   INT                       levlnum;              /*+ Coarsening level                  +*/
 } Kgraph;

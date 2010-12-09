@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 06 feb 2006     **/
 /**                                 to   : 29 apr 2006     **/
 /**                # Version 5.1  : from : 07 nov 2007     **/
-/**                                 to   : 01 mar 2008     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,13 +54,13 @@
 
 typedef struct Vdgraph_ {
   Dgraph                    s;                    /*+ Source distributed graph                                                 +*/
-  GraphPart * restrict      partgsttax;           /*+ Based local part array: 0,1: part; 2: separator                          +*/
+  GraphPart *               partgsttax;           /*+ Based local part array: 0,1: part; 2: separator                          +*/
   Gnum                      compglbloaddlt;       /*+ Load difference between both parts                                       +*/
   Gnum                      compglbload[3];       /*+ Global loads of both parts and of separator; TRICK: before compglbsize[] +*/
   Gnum                      compglbsize[3];       /*+ Number of vertices in parts; compglbsize[2] is fronglbnbr, the separator +*/
   Gnum                      complocload[3];       /*+ Local loads of both parts and of separator; TRICK: before complocsize[]  +*/
   Gnum                      complocsize[3];       /*+ Number of vertices in parts; complocsize[2] is fronlocnbr, the separator +*/
-  Gnum * restrict           fronloctab;           /*+ Array of local frontier vertex numbers                                   +*/
+  Gnum *                    fronloctab;           /*+ Array of local frontier vertex numbers                                   +*/
   Gnum                      levlnum;              /*+ Nested dissection or coarsening level                                    +*/
 } Vdgraph;
 

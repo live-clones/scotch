@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                ing structures and routines.            **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 31 mar 2008     **/
-/**                                 to     01 jul 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,7 +53,7 @@
 /*+ The dynamic mapping structure. +*/
 
 typedef struct Kdmapping_ {
-  Dmapping * restrict       mappptr;              /*+ Resulting mapping +*/
+  Dmapping *                mappptr;              /*+ Resulting mapping +*/
   ArchDom                   domnorg;              /*+ Initial domain    +*/
 } Kdmapping;
 

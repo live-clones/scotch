@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                Bipartitioning mapping algorithm.       **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 apr 2008     **/
-/**                                 to     26 jun 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,8 +52,8 @@
 /*+ Method parameters. +*/
 
 typedef struct KdgraphMapRbParam_ {
-  Strat * restrict          stratsep;             /*+ Bipartitioning strategy used +*/
-  Strat * restrict          stratseq;             /*+ Sequential mapping strategy  +*/
+  Strat *                   stratsep;             /*+ Bipartitioning strategy used +*/
+  Strat *                   stratseq;             /*+ Sequential mapping strategy  +*/
 } KdgraphMapRbParam;
 
 /*

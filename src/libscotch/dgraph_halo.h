@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 28 dec 2007     **/
 /**                                 to   : 05 feb 2008     **/
 /**                # Version 5.1  : from : 28 aug 2008     **/
-/**                                 to   : 30 jul 2010     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,8 +63,8 @@
 typedef struct DgraphHaloRequest_ {
   int                       flagval;
 #ifdef SCOTCH_PTHREAD
-  Dgraph * restrict         grafptr;              /* Pointer to graph data       */
-  void * restrict           attrgsttab;           /* Attribute array to share    */
+  Dgraph *                  grafptr;              /* Pointer to graph data       */
+  void *                    attrgsttab;           /* Attribute array to share    */
   MPI_Datatype              attrglbtype;          /* Attribute datatype          */
   pthread_t                 thrdval;              /* Data of asynchronous thread */
 #else /* SCOTCH_PTHREAD */

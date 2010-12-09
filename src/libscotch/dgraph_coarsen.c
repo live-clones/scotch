@@ -58,11 +58,11 @@
 #include "dgraph_coarsen.h"
 #include "dgraph_match.h"
 
-/*****************************/
-/*                           */
-/* Memory handling routines. */
-/*                           */
-/*****************************/
+/******************************/
+/*                            */
+/* Graph coarsening routines. */
+/*                            */
+/******************************/
 
 static
 int

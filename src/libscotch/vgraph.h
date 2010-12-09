@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 13 mar 1999     **/
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to   : 07 jan 2002     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,12 +59,12 @@
 
 typedef struct Vgraph_ {
   Graph                     s;                    /*+ Source graph                                       +*/
-  GraphPart * restrict      parttax;              /*+ Based part array: 0,1: part; 2: separator          +*/
+  GraphPart *               parttax;              /*+ Based part array: 0,1: part; 2: separator          +*/
   Gnum                      compload[3];          /*+ Size of both parts and separator                   +*/
   Gnum                      comploaddlt;          /*+ Load difference between both parts                 +*/
   Gnum                      compsize[2];          /*+ Number of vertices in parts (separator is fronnbr) +*/
   Gnum                      fronnbr;              /*+ Number of frontier vertices; TRICK: compsize[2]    +*/
-  Gnum * restrict           frontab;              /*+ Array of frontier vertex numbers                   +*/
+  Gnum *                    frontab;              /*+ Array of frontier vertex numbers                   +*/
   Gnum                      levlnum;              /*+ Nested dissection or coarsening level              +*/
 } Vgraph;
 

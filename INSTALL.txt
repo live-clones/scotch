@@ -216,12 +216,18 @@ available. They are used in two places:
   MPI_THREAD_MULTIPLE level. The use of threads within Scotch itself
   is controlled by the SCOTCH_PTHREAD flag, which is completely
   independent from the COMMON_PTHREAD flag. Any of them can be set
-  without setting the other. If you have doubts on the stability
-  of your MPI implementation, it is better not to set -DSCOTCH_PTHREAD.
-  For instance, on Linux platforms, concurrency problems have been
-  experienced with MPICH2 versions prior to 1.0.7 using TCP;
-  consequently, if the MPI implementation on your platform is based on
-  an older MPICH2 version, do not set the SCOTCH_PTHREAD flag.
+  without setting the other.
+  Note that if you compile Scotch with the -DSCOTCH_PTHREAD flag,
+  you will have to initialize your communication subsystem by using
+  the MPI_Init_thread() MPI call, not MPI_Init(), and the provided
+  thread support level value returned by the routine must be
+  checked carefully.
+  If you have doubts on the stability of your MPI implementation, it
+  is better not to set -DSCOTCH_PTHREAD. For instance, on Linux
+  platforms, concurrency problems have been experienced with MPICH2
+  versions prior to 1.0.7 using TCP; consequently, if the MPI
+  implementation on your platform is based on an older MPICH2 version,
+  do not set the SCOTCH_PTHREAD flag.
 
 
 2.6) Monitoring memory allocation

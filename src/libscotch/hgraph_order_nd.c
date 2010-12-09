@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to     24 dec 2004     **/
 /**                # Version 5.0  : from : 19 dec 2006     **/
 /**                                 to     25 jul 2007     **/
+/**                # Version 5.1  : from : 24 oct 2010     **/
+/**                                 to     24 oct 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -220,6 +222,7 @@ const HgraphOrderNdParam * restrict const paraptr)
     indgrafdat.vnhdtax = indgrafdat.s.vendtax;
     indgrafdat.vnlosum = indgrafdat.s.velosum;
     indgrafdat.enohnbr = indgrafdat.s.edgenbr;
+    indgrafdat.enohsum = indgrafdat.s.edlosum;
     indgrafdat.levlnum = grafptr->levlnum;        /* Separator graph is at level of original graph */
 
     o = hgraphOrderSt (&indgrafdat, ordeptr, ordenum + vsplisttab[0].vnumnbr + vsplisttab[1].vnumnbr,

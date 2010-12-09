@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 23 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 27 jun 2008     **/
-/**                                 to   : 30 jul 2010     **/
+/**                                 to   : 22 oct 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -136,7 +136,7 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
     errorPrint ("hdgraphFold2: halo graph must be compact");
     return     (1);
   }
-  if (orggrafptr->s.vendloctax == (orggrafptr->s.vertloctax + 1)) { /* MPI_Isend calls should not overlap */
+  if (orggrafptr->s.vendloctax < (orggrafptr->s.vertloctax + orggrafptr->s.vertlocnbr)) { /* MPI_Isend calls should not overlap */
     errorPrint ("hdgraphFold2: halo graph must have distinct arrays");
     return     (1);
   }
@@ -404,7 +404,7 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
         fldedgeidxtab[i] = fldedgelocbas;
         fldedgelocbas += fldedgecnttab[i];
 
-        if (MPI_Irecv (fldgrafptr->s.edgeloctax + fldedgeidxtab[i], fldedgecnttab[i], GNUM_MPI, fldcommdattab[i].procnum,
+        if (MPI_Irecv (fldedgeloctax + fldedgeidxtab[i], fldedgecnttab[i], GNUM_MPI, fldcommdattab[i].procnum,
                        TAGFOLD + TAGEDGELOCTAB, orggrafptr->s.proccomm, &requtab[HDGRAPHFOLDTAGEDGE * DGRAPHFOLDCOMMNBR + i]) != MPI_SUCCESS) {
           errorPrint ("hdgraphFold2: communication error (11)");
           cheklocval = 1;
@@ -500,8 +500,8 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
         fldvertlocnum ++;
         for ( ; fldedgelocnum < orgvertloctax[fldvertlocnum]; fldedgelocnum ++) { /* Copy halo part as is */
 #ifdef SCOTCH_DEBUG_HDGRAPH2
-          if ((orggrafptr->s.edgeloctax[fldedgelocnum] < orggrafptr->s.baseval) ||
-              (orggrafptr->s.edgeloctax[fldedgelocnum] >= (orggrafptr->vhallocnbr + orggrafptr->s.baseval))) {
+          if ((orgedgeloctax[fldedgelocnum] < orggrafptr->s.baseval) ||
+              (orgedgeloctax[fldedgelocnum] >= (orggrafptr->vhallocnbr + orggrafptr->s.baseval))) {
             errorPrint  ("hdgraphFold2: internal error (2)");
             return      (1);
           }

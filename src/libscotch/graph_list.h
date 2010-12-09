@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,6 +56,8 @@
 /**                                 to     20 mar 2000     **/
 /**                # Version 4.0  : from : 24 nov 2001     **/
 /**                                 to     27 sep 2002     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,7 +75,7 @@
 
 typedef struct VertList_ {
   Gnum                      vnumnbr;              /*+ Number of vertices in list +*/
-  Gnum * restrict           vnumtab;              /*+ Pointer to vertex array    +*/
+  Gnum *                    vnumtab;              /*+ Pointer to vertex array    +*/
 } VertList;
 
 /*

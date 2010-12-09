@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,7 +60,7 @@
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     05 may 2006     **/
 /**                # Version 5.1  : from : 30 sep 2008     **/
-/**                                 to     07 oct 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,14 +104,14 @@ typedef struct KgraphMapRbMapJob_ {
 
 typedef struct KgraphMapRbMapPoolData_ {
   int                       flagval;              /*+ Pool flag value                              +*/
-  Graph * restrict          grafptr;              /*+ Pointer to top graph                         +*/
+  Graph *                   grafptr;              /*+ Pointer to top graph                         +*/
   KgraphMapRbMapPoolLink    linktab[2];           /*+ Lists of jobs in pools                       +*/
   KgraphMapRbMapPoolLink *  pooltab[2];           /*+ Pointer to pools (same if tied)              +*/
   KgraphMapRbPolicy         polival;              /*+ Job selection policy                         +*/
   KgraphMapRbMapJob *       jobtab;               /*+ Job table                                    +*/
-  Mapping * restrict        mappptr;              /*+ Pointer to original mapping: current state   +*/
-  ArchDom * restrict        domntab;              /*+ Secondary domain array if untied mapping     +*/
-  ArchDom * restrict        domntmp;              /*+ Pointer to original domain array for exiting +*/
+  Mapping *                 mappptr;              /*+ Pointer to original mapping: current state   +*/
+  ArchDom *                 domntab;              /*+ Secondary domain array if untied mapping     +*/
+  ArchDom *                 domntmp;              /*+ Pointer to original domain array for exiting +*/
 } KgraphMapRbMapPoolData;
 
 /*

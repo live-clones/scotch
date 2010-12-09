@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      :   Version 5.0  : from : 27 nov 2006     **/
 /**                                 to   : 29 may 2007     **/
+/**                  Version 5.1  : from : 04 nov 2010     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,9 +61,9 @@ typedef struct BgraphBipartBdParam_ {
 /*+ Neighbor queue. +*/
 
 typedef struct BgraphBipartBdQueue_ {
-  Gnum * restrict           head;                 /*+ Head of distance queue  +*/
-  Gnum * restrict           tail;                 /*+ Tail of distance queue  +*/
-  Gnum * restrict           qtab;                 /*+ Array of queue elements +*/
+  Gnum *                    head;                 /*+ Head of distance queue  +*/
+  Gnum *                    tail;                 /*+ Tail of distance queue  +*/
+  Gnum *                    qtab;                 /*+ Array of queue elements +*/
 } BgraphBipartBdQueue;
 
 /*

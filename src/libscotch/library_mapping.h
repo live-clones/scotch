@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 28 jun 2004     **/
 /**                                 to     28 jun 2004     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,5 +54,5 @@
 
 typedef struct LibMapping_ {
   Mapping                   m;                    /*+ Mapping data    +*/
-  Gnum * restrict           parttax;              /*+ Partition array +*/
+  Gnum *                    parttax;              /*+ Partition array +*/
 } LibMapping;

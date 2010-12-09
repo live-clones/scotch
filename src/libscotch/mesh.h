@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 29 dec 2001     **/
 /**                                 to     11 may 2004     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,16 +108,16 @@ typedef struct Mesh_ {
   Gnum                      vnodnbr;              /*+ Number of node vertices in mesh          +*/
   Gnum                      vnodbas;              /*+ Based number of first node               +*/
   Gnum                      vnodnnd;              /*+ Based number of first non-node vertex    +*/
-  Gnum * restrict           verttax;              /*+ Vertex array [based]                     +*/
-  Gnum * restrict           vendtax;              /*+ End vertex array [based]                 +*/
-  Gnum * restrict           velotax;              /*+ Element vertex load array (if present)   +*/
-  Gnum * restrict           vnlotax;              /*+ Node vertex load array (if present)      +*/
+  Gnum *                    verttax;              /*+ Vertex array [based]                     +*/
+  Gnum *                    vendtax;              /*+ End vertex array [based]                 +*/
+  Gnum *                    velotax;              /*+ Element vertex load array (if present)   +*/
+  Gnum *                    vnlotax;              /*+ Node vertex load array (if present)      +*/
   Gnum                      velosum;              /*+ Sum of element vertex weights            +*/
   Gnum                      vnlosum;              /*+ Sum of node vertex weights               +*/
-  Gnum * restrict           vnumtax;              /*+ Vertex number in ancestor graph          +*/
-  Gnum * restrict           vlbltax;              /*+ Vertex label (from file)                 +*/
+  Gnum *                    vnumtax;              /*+ Vertex number in ancestor graph          +*/
+  Gnum *                    vlbltax;              /*+ Vertex label (from file)                 +*/
   Gnum                      edgenbr;              /*+ Number of edges (arcs) in graph          +*/
-  Gnum * restrict           edgetax;              /*+ Edge array [based]                       +*/
+  Gnum *                    edgetax;              /*+ Edge array [based]                       +*/
   Gnum                      degrmax;              /*+ Maximum degree                           +*/
 } Mesh;
 
