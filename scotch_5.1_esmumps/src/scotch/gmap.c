@@ -63,7 +63,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 18 jun 2008     **/
 /**                # Version 5.1  : from : 30 jun 2010     **/
-/**                                 to   : 28 aug 2010     **/
+/**                                 to   : 17 oct 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,7 +102,6 @@ static const char *         C_usageList[] = {     /* Usage */
   "                 q  : privilege quality over speed (default)",
   "                 s  : privilege speed over quality",
   "                 t  : enforce safety",
-  "  -V         : Print program version and copyright",
   "  -h         : Display this help",
   "  -m<strat>  : Set mapping strategy (see user's manual)",
   "  -s<obj>    : Force unity weights on <obj>:",

@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to     14 apr 2008     **/
 /**                # Version 5.1  : from : 26 mar 2009     **/
-/**                                 to     26 aug 2010     **/
+/**                                 to     17 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,7 +67,7 @@
 
 /*+ This routine reserves a memory area
 *** of a size sufficient to store a
-***  distributed graph structure.
+*** distributed graph structure.
 *** It returns:
 *** - !NULL  : if the initialization succeeded.
 *** - NULL   : on error.
@@ -76,7 +76,7 @@
 SCOTCH_Dgraph *
 SCOTCH_dgraphAlloc ()
 {
-  return ((SCOTCH_Dgraph *) memAlloc (sizeof (Dgraph)));
+  return ((SCOTCH_Dgraph *) memAlloc (sizeof (SCOTCH_Dgraph)));
 }
 
 /*+ This routine initializes the opaque
@@ -93,10 +93,22 @@ SCOTCH_dgraphInit (
 SCOTCH_Dgraph * const       grafptr,
 MPI_Comm                    proccomm)             /* Communicator to be used for all communications */
 {
+#ifdef SCOTCH_PTHREAD
+  int                 thrdlvlval;
+#endif /* SCOTCH_PTHREAD */
+
   if (graphPtscotch () != 1) {
     errorPrint ("SCOTCH_dgraphInit: linking with both libScotch and libPTScotch is not allowed");
     return     (1);
   }
+#ifdef SCOTCH_PTHREAD
+  MPI_Query_thread (&thrdlvlval);
+  if (thrdlvlval < MPI_THREAD_MULTIPLE) {
+    errorPrint ("SCOTCH_dgraphInit: Scotch compiled with SCOTCH_PTHREAD and program not launched with MPI_THREAD_MULTIPLE");
+    return     (1);
+  }
+#endif /* SCOTCH_PTHREAD */
+
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint ("SCOTCH_dgraphInit: internal error (1)");
     return     (1);

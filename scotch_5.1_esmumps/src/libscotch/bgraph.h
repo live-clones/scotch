@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,7 +60,7 @@
 /**                # Version 5.0  : from : 30 nov 2006     **/
 /**                                 to     30 nov 2006     **/
 /**                # Version 5.1  : from : 08 jan 2008     **/
-/**                                 to     08 jan 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,9 +80,9 @@
 
 typedef struct Bgraph_ {
   Graph                     s;                    /*+ Source graph data                         +*/
-  Gnum * restrict           veextax;              /*+ Vertex external gain array if moved to 1  +*/
-  GraphPart * restrict      parttax;              /*+ Array of parts for every vertex           +*/
-  Gnum * restrict           frontab;              /*+ Array of frontier vertex numbers          +*/
+  Gnum *                    veextax;              /*+ Vertex external gain array if moved to 1  +*/
+  GraphPart *               parttax;              /*+ Array of parts for every vertex           +*/
+  Gnum *                    frontab;              /*+ Array of frontier vertex numbers          +*/
   Gnum                      fronnbr;              /*+ Number of frontier vertices               +*/
   Gnum                      compload0;            /*+ Load in part 0 (strategy variable)        +*/
   Gnum                      compload0avg;         /*+ Average load of part 0                    +*/

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to     13 mar 1999     **/
 /**                # Version 4.0  : from : 03 jan 2002     **/
 /**                                 to     24 apr 2004     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,9 +57,9 @@
 /*+ This structure holds the method parameters. +*/
 
 typedef struct HgraphOrderNdParam_ {
-  Strat * restrict          sepstrat;             /*+ Separation strategy         +*/
-  Strat * restrict          ordstratlea;          /*+ Leaf ordering strategy      +*/
-  Strat * restrict          ordstratsep;          /*+ Separator ordering strategy +*/
+  Strat *                   sepstrat;             /*+ Separation strategy         +*/
+  Strat *                   ordstratlea;          /*+ Leaf ordering strategy      +*/
+  Strat *                   ordstratsep;          /*+ Separator ordering strategy +*/
 } HgraphOrderNdParam;
 
 /*

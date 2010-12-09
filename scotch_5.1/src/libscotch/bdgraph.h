@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                ing routines.                           **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 10 sep 2007     **/
-/**                                 to   : 21 jun 2008     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,10 +59,10 @@
 
 typedef struct Bdgraph_ {
   Dgraph                    s;                    /*+ Distributed source graph                         +*/
-  Gnum * restrict           veexloctax;           /*+ Local vertex external gain array if moved to 1   +*/
+  Gnum *                    veexloctax;           /*+ Local vertex external gain array if moved to 1   +*/
   Gnum                      veexglbsum;           /*+ Global sum of veexloctax array cells             +*/
-  GraphPart * restrict      partgsttax;           /*+ Based local part array: 0,1: part                +*/
-  Gnum * restrict           fronloctab;           /*+ Array of local frontier vertex numbers           +*/
+  GraphPart *               partgsttax;           /*+ Based local part array: 0,1: part                +*/
+  Gnum *                    fronloctab;           /*+ Array of local frontier vertex numbers           +*/
   Gnum                      fronlocnbr;           /*+ Number of local frontier vertices                +*/
   Gnum                      fronglbnbr;           /*+ Number of global frontier vertices               +*/
   Gnum                      complocload0;         /*+ Local load of part 0                             +*/

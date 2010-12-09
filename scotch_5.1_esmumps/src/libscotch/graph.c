@@ -152,7 +152,8 @@ Graph * const               grafptr)
 ** resulting from a mixed use of the libscotch
 ** and libptscotch libraries.
 ** It returns:
-** - int  : in all cases.
+** - 0  : if not compiled as part of the PT-Scotch library.
+** - 1  : if compiled as part of the PT-Scotch library.
 */
 
 int

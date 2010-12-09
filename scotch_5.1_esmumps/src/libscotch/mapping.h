@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,7 +61,7 @@
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to     13 nov 2005     **/
 /**                # Version 5.1  : from : 25 jun 2008     **/
-/**                                 to     28 sep 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /**   NOTES      : # While Anum and Gnum are different     **/
 /**                  types, because architectures are      **/
@@ -88,8 +88,8 @@
 typedef struct Mapping_ {
   Gnum                      baseval;              /*+ Base value for structures     +*/
   Gnum                      vertnbr;              /*+ Number of vertices in mapping +*/
-  Anum * restrict           parttax;              /*+ Mapping array [vertnbr]       +*/
-  ArchDom * restrict        domntab;              /*+ Array of domains [termmax]    +*/
+  Anum *                    parttax;              /*+ Mapping array [vertnbr]       +*/
+  ArchDom *                 domntab;              /*+ Array of domains [termmax]    +*/
   Anum                      domnnbr;              /*+ Current number of domains     +*/
   Anum                      domnmax;              /*+ Maximum number of domains     +*/
   Arch                      archdat;              /*+ Architecture data             +*/

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to     17 jan 2003     **/
 /**                # Version 5.0  : from : 19 dec 2006     **/
 /**                                 to     19 dec 2006     **/
+/**                # Version 5.1  : from : 24 oct 2010     **/
+/**                                 to     24 oct 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -116,7 +118,7 @@ Hgraph * restrict const       indgrafptr)         /* Pointer to induced halo gra
     }
 #ifdef SCOTCH_DEBUG_HGRAPH2
     if (indedgenum != indedhdnum) {
-      errorPrint ("HGRAPHINDUCE2NAME: internal error (1)");
+      errorPrint (STRINGIFY (HGRAPHINDUCE2NAME) ": internal error (1)");
       return;
     }
 #endif /* SCOTCH_DEBUG_HGRAPH2 */
@@ -179,7 +181,7 @@ Hgraph * restrict const       indgrafptr)         /* Pointer to induced halo gra
   }
 #ifdef SCOTCH_DEBUG_HGRAPH2
   if ((indedgenum - indgrafptr->s.baseval) != indedgenbs) {
-    errorPrint ("HGRAPHINDUCE2NAME: internal error (2)");
+    errorPrint (STRINGIFY (HGRAPHINDUCE2NAME) ": internal error (2)");
     return;
   }
 #endif /* SCOTCH_DEBUG_HGRAPH2 */

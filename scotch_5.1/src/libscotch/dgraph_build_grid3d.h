@@ -40,7 +40,7 @@
 /**                grid graph building routine.            **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 06 jun 2010     **/
-/**                                 to   : 06 jun 2010     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,8 +57,8 @@ typedef struct DgraphBuildGrid3DData_ {
   Gnum                      dimxval;
   Gnum                      dimyval;
   Gnum                      dimzval;
-  Gnum * restrict           edgeloctax;
-  Gnum * restrict           edloloctax;
+  Gnum *                    edgeloctax;
+  Gnum *                    edloloctax;
   Gnum                   (* funcvrtptr) (const struct DgraphBuildGrid3DData_ * restrict const, const Gnum, Gnum, const Gnum, const Gnum, const Gnum);
   struct {                                        /* Pre-computed data for 26-neighbor torus */
     Gnum                    ngbxmin;

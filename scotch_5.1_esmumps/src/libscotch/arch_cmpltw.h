@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                architecture functions.                 **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 dec 2007     **/
-/**                                 to     21 jan 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,7 +65,7 @@ typedef struct ArchCmpltwLoad_ {
 
 typedef struct ArchCmpltw_ {
   Anum                      vertnbr;              /*+ Number of vertices +*/
-  ArchCmpltwLoad * restrict velotab;              /*+ Vertex index array +*/
+  ArchCmpltwLoad *          velotab;              /*+ Vertex index array +*/
   Anum                      velosum;              /*+ Sum of all weights +*/
 } ArchCmpltw;
 

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 03 feb 2002     **/
 /**                                 to   : 01 dec 2003     **/
 /**                # Version 5.1  : from : 01 oct 2009     **/
-/**                                 to   : 01 oct 2009     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,9 +70,9 @@ typedef struct HgraphOrgerGpVertex_ {
 /*+ Neighbor queue. +*/
 
 typedef struct HgraphOrgerGpQueue_ {
-  Gnum * restrict           head;                 /*+ Head of distance queue  +*/
-  Gnum * restrict           tail;                 /*+ Tail of distance queue  +*/
-  Gnum * restrict           qtab;                 /*+ Array of queue elements +*/
+  Gnum *                    head;                 /*+ Head of distance queue  +*/
+  Gnum *                    tail;                 /*+ Tail of distance queue  +*/
+  Gnum *                    qtab;                 /*+ Array of queue elements +*/
 } HgraphOrgerGpQueue;
 
 /*

@@ -39,7 +39,7 @@
 /**                graph from the given frontier array.    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 30 jul 2010     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version 5.0. **/
@@ -619,22 +619,25 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
   Gnum                    bandvertlocnbr;         /* Number of local band vertices (including anchor vertices) */
   Gnum                    bandvertlocnbr1;        /* Number of band graph vertices in part 1 except anchor 1   */
   Gnum                    bandvertlvlnum;         /* Index of first band vertex belonging to last level        */
+  Gnum * restrict         bandvertloctax;
   Gnum                    bandvertlocadj;         /* Ajust value for local-to-global band vertex indices       */
   Gnum                    bandvertlocancadj;      /* Flag set when anchor(s) represent unexistent vertices     */
   Gnum                    bandvertlocnum;
   Gnum                    bandvelolocsum;
   Gnum                    bandvelolocsum1;
-  Gnum * restrict         bandfronloctab;
-  GraphPart * restrict    bandpartgsttax;
-  Gnum * restrict         bandvnumgsttax;         /* Indices of selected band vertices in band graph           */
+  Gnum * restrict         bandedgeloctax;
   Gnum                    bandedgelocnum;
   Gnum                    bandedgeloctmp;
   Gnum                    bandedgelocnbr;         /* Number of local edges in band graph                       */
+  Gnum * restrict         bandedloloctax;
   Gnum                    bandedlolocnbr;         /* Size of local band edge load array                        */
-  Gnum * restrict         bandedloloctab;
+  Gnum * restrict         bandfronloctab;
+  GraphPart * restrict    bandpartgsttax;
+  Gnum * restrict         bandvnumgsttax;         /* Indices of selected band vertices in band graph           */
   Gnum                    banddegrlocmax;
   Gnum                    degrval;
   Gnum                    veloval;
+  const Gnum * restrict   edgegsttax;
   Gnum                    fronlocnum;
   int                     cheklocval;
   int                     procngbnum;
@@ -669,8 +672,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     errorPrint ("dgraphBand: out of memory (1)");
     cheklocval = 1;
   }
-  else if (bandgrafptr->procvrttab = bandgrafptr->procdsptab, /* Graph does not have holes  */
-           memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data */
+  else if (memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data */
                           &bandgrafptr->vertloctax, (size_t) ((bandvertlocnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
                           &bandgrafptr->vnumloctax, (size_t) (bandvertlocnbr       * sizeof (Gnum)),
                           &bandgrafptr->veloloctax, (size_t) (bandvertlocnbr       * sizeof (Gnum)), NULL) == NULL) {
@@ -681,15 +683,14 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
            bandgrafptr->veloloctax -= bandgrafptr->baseval,
            bandgrafptr->vnumloctax -= bandgrafptr->baseval,
            (memAllocGroup ((void **) (void *)
-                           &bandgrafptr->edgeloctax, (size_t) (bandedgelocnbr * sizeof (Gnum)),
-                           &bandedloloctab,          (size_t) (bandedlolocnbr * sizeof (Gnum)), NULL) == NULL)) {
+                           &bandedgeloctax, (size_t) (bandedgelocnbr * sizeof (Gnum)),
+                           &bandedloloctax, (size_t) (bandedlolocnbr * sizeof (Gnum)), NULL) == NULL)) {
     errorPrint ("dgraphBand: out of memory (3)");
     cheklocval = 1;
   }
   else {
-    bandgrafptr->edgeloctax -= bandgrafptr->baseval;
-    if (grafptr->edloloctax != NULL)
-      bandgrafptr->edloloctax = bandedloloctab - bandgrafptr->baseval;
+    bandedgeloctax -= bandgrafptr->baseval;
+    bandedloloctax  = (grafptr->edloloctax != NULL) ? (bandedloloctax - bandgrafptr->baseval) : NULL;
 
     if ((bandfronloctab = memAlloc (bandvertlocnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("dgraphBand: out of memory (4)");
@@ -768,7 +769,10 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     return     (1);
   }
 
+  edgegsttax = grafptr->edgegsttax;
+
   veloval = 1;
+  bandvertloctax  = bandgrafptr->vertloctax;
   bandvertlocnbr1 = 0;
   bandvelolocsum  = 0;
   bandvelolocsum1 = 0;
@@ -792,7 +796,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     partval1 = partval & 1;
     bandvertlocnbr1 += partval1;                  /* Count vertices in part 1 */
     bandpartgsttax[bandvertlocnum] = partval;
-    bandgrafptr->vertloctax[bandvertlocnum] = bandedgelocnum;
+    bandvertloctax[bandvertlocnum] = bandedgelocnum;
     if (grafptr->veloloctax != NULL) {
       veloval = grafptr->veloloctax[vertlocnum];
       bandvelolocsum  += veloval;
@@ -807,12 +811,12 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     for (edgelocnum = grafptr->vertloctax[vertlocnum]; /* For all original edges */
          edgelocnum < grafptr->vendloctax[vertlocnum]; edgelocnum ++) {
 #ifdef SCOTCH_DEBUG_DGRAPH2
-      if (bandvnumgsttax[grafptr->edgegsttax[edgelocnum]] == ~0) { /* All ends should belong to the band graph too */
+      if (bandvnumgsttax[edgegsttax[edgelocnum]] == ~0) { /* All ends should belong to the band graph too */
         errorPrint ("dgraphBand: internal error (2)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
-      bandgrafptr->edgeloctax[bandedgelocnum ++] = bandvnumgsttax[grafptr->edgegsttax[edgelocnum]];
+      bandedgeloctax[bandedgelocnum ++] = bandvnumgsttax[edgegsttax[edgelocnum]];
     }
   }
   for ( ; bandvertlocnum < bandvertlocnnd; bandvertlocnum ++) { /* For all vertices that belong to the last level except anchors */
@@ -833,7 +837,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     partval1 = partval & 1;
     bandvertlocnbr1 += partval1;                  /* Count vertices in part 1 */
     bandpartgsttax[bandvertlocnum] = partval;
-    bandgrafptr->vertloctax[bandvertlocnum] = bandedgelocnum;
+    bandvertloctax[bandvertlocnum] = bandedgelocnum;
     if (grafptr->veloloctax != NULL) {
       veloval = grafptr->veloloctax[vertlocnum];
       bandvelolocsum  += veloval;
@@ -845,18 +849,18 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
          edgelocnum < grafptr->vendloctax[vertlocnum]; edgelocnum ++) {
       Gnum              bandvertlocend;
 
-      bandvertlocend = bandvnumgsttax[grafptr->edgegsttax[edgelocnum]];
+      bandvertlocend = bandvnumgsttax[edgegsttax[edgelocnum]];
       if (bandvertlocend != ~0) {                 /* If end vertex belongs to band graph  */
-        if (bandgrafptr->edloloctax != NULL)      /* If graph has edge weights, copy load */
-          bandgrafptr->edloloctax[bandedgelocnum] = grafptr->edloloctax[edgelocnum];
-        bandgrafptr->edgeloctax[bandedgelocnum ++] = bandvertlocend;
+        if (bandedloloctax != NULL)               /* If graph has edge weights, copy load */
+          bandedloloctax[bandedgelocnum] = grafptr->edloloctax[edgelocnum];
+        bandedgeloctax[bandedgelocnum ++] = bandvertlocend;
       }
     }
-    if (bandgrafptr->edloloctax != NULL)          /* If graph has edge weights  */
-      bandgrafptr->edloloctax[bandedgelocnum] = 1; /* Edge to anchor has load 1 */
-    bandgrafptr->edgeloctax[bandedgelocnum ++] = bandvertlocnnd + bandvertlocadj + partval1; /* Add edge to anchor of proper part */
+    if (bandedloloctax != NULL)                   /* If graph has edge weights */
+      bandedloloctax[bandedgelocnum] = 1;         /* Edge to anchor has load 1 */
+    bandedgeloctax[bandedgelocnum ++] = bandvertlocnnd + bandvertlocadj + partval1; /* Add edge to anchor of proper part */
 
-    degrval = bandedgelocnum - bandgrafptr->vertloctax[bandvertlocnum];
+    degrval = bandedgelocnum - bandvertloctax[bandvertlocnum];
     if (banddegrlocmax < degrval)
       banddegrlocmax = degrval;
   }
@@ -865,34 +869,34 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
 
   bandpartgsttax[bandvertlocnnd]     = 0;         /* Set parts of anchor vertices */
   bandpartgsttax[bandvertlocnnd + 1] = 1;
-  bandgrafptr->vertloctax[bandvertlocnum] = bandedgelocnum; /* Process anchor vertex in part 0                 */
+  bandvertloctax[bandvertlocnum] = bandedgelocnum; /* Process anchor vertex in part 0                 */
   for (procngbnum = 0; procngbnum < grafptr->proclocnum; procngbnum ++) /* Build clique with anchors of part 0 */
-    bandgrafptr->edgeloctax[bandedgelocnum ++] = bandgrafptr->procdsptab[procngbnum + 1] - 2;
+    bandedgeloctax[bandedgelocnum ++] = bandgrafptr->procdsptab[procngbnum + 1] - 2;
   for (procngbnum ++; procngbnum < grafptr->procglbnbr; procngbnum ++) /* Build clique with anchors of part 0 */
-    bandgrafptr->edgeloctax[bandedgelocnum ++] = bandgrafptr->procdsptab[procngbnum + 1] - 2;
+    bandedgeloctax[bandedgelocnum ++] = bandgrafptr->procdsptab[procngbnum + 1] - 2;
   bandedgeloctmp = bandedgelocnum + (bandvertlocnnd - bandvertlvlnum);
   for (procngbnum = 0; procngbnum < grafptr->proclocnum; procngbnum ++) /* Build clique with anchors of part 1 */
-    bandgrafptr->edgeloctax[bandedgeloctmp ++] = bandgrafptr->procdsptab[procngbnum + 1] - 1;
+    bandedgeloctax[bandedgeloctmp ++] = bandgrafptr->procdsptab[procngbnum + 1] - 1;
   for (procngbnum ++; procngbnum < grafptr->procglbnbr; procngbnum ++) /* Build clique with anchors of part 1 */
-    bandgrafptr->edgeloctax[bandedgeloctmp ++] = bandgrafptr->procdsptab[procngbnum + 1] - 1;
-  bandgrafptr->vertloctax[bandvertlocnnd + 2] = bandedgeloctmp;
+    bandedgeloctax[bandedgeloctmp ++] = bandgrafptr->procdsptab[procngbnum + 1] - 1;
+  bandvertloctax[bandvertlocnnd + 2] = bandedgeloctmp;
   bandedgelocnbr = bandedgeloctmp - bandgrafptr->baseval; /* Set real number of edges */
   for (bandvertlocnum = bandvertlvlnum, bandedgeloctmp = bandedgelocnum + (bandvertlocnnd - bandvertlvlnum); /* Link vertices of last level to anchors */
        bandvertlocnum < bandvertlocnnd; bandvertlocnum ++) {
     if (bandpartgsttax[bandvertlocnum] == 0)
-      bandgrafptr->edgeloctax[bandedgelocnum ++] = bandvertlocnum + bandvertlocadj;
+      bandedgeloctax[bandedgelocnum ++] = bandvertlocnum + bandvertlocadj;
     else
-      bandgrafptr->edgeloctax[-- bandedgeloctmp] = bandvertlocnum + bandvertlocadj;
+      bandedgeloctax[-- bandedgeloctmp] = bandvertlocnum + bandvertlocadj;
   }
-  bandgrafptr->vertloctax[bandvertlocnnd + 1] = bandedgeloctmp;
-  degrval = bandgrafptr->vertloctax[bandvertlocnnd + 1] - bandgrafptr->vertloctax[bandvertlocnnd];
+  bandvertloctax[bandvertlocnnd + 1] = bandedgeloctmp;
+  degrval = bandvertloctax[bandvertlocnnd + 1] - bandvertloctax[bandvertlocnnd];
   if (banddegrlocmax < degrval)
     banddegrlocmax = degrval;
-  degrval = bandgrafptr->vertloctax[bandvertlocnnd + 2] - bandgrafptr->vertloctax[bandvertlocnnd + 1];
+  degrval = bandvertloctax[bandvertlocnnd + 2] - bandvertloctax[bandvertlocnnd + 1];
   if (banddegrlocmax < degrval)
     banddegrlocmax = degrval;
 
-  if (bandgrafptr->edloloctax != NULL) {          /* If graph has edge weights */
+  if (bandedloloctax != NULL) {                   /* If graph has edge weights */
     Gnum              edgelocnum;
     Gnum              edgelocnnd;
 
@@ -902,15 +906,15 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
       Gnum              bandedgelocnum;
 
       vertlocnum     = bandgrafptr->vnumloctax[bandvertlocnum];
-      bandedgelocnum = bandgrafptr->vertloctax[bandvertlocnum];
-      memCpy (&bandgrafptr->edloloctax[bandedgelocnum], /* Copy edge load array */
+      bandedgelocnum = bandvertloctax[bandvertlocnum];
+      memCpy (bandedloloctax + bandedgelocnum,    /* Copy edge load array */
               &grafptr->edloloctax[grafptr->vertloctax[vertlocnum]],
-              (bandgrafptr->vertloctax[bandvertlocnum + 1] - bandedgelocnum) * sizeof (Gnum));
-    }                                             /* Vertices of last level have been processed before  */
-    for (edgelocnum = bandgrafptr->vertloctax[bandvertlocnnd], /* Loads of anchor edges are all 1's too */
-         edgelocnnd = bandgrafptr->vertloctax[bandvertlocnnd + 2];
+              (bandvertloctax[bandvertlocnum + 1] - bandedgelocnum) * sizeof (Gnum));
+    }                                             /* Vertices of last level have been processed before */
+    for (edgelocnum = bandvertloctax[bandvertlocnnd], /* Loads of anchor edges are all 1's too         */
+         edgelocnnd = bandvertloctax[bandvertlocnnd + 2];
          edgelocnum < edgelocnnd; edgelocnum ++)
-      bandgrafptr->edloloctax[edgelocnum] = 1;
+      bandedloloctax[edgelocnum] = 1;
   }
 
   if (grafptr->veloloctax == NULL) {              /* If original graph is not weighted */
@@ -929,10 +933,13 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     bandgrafptr->veloloctax[bandvertlocnnd + 1] ++;
   }
 
+  bandgrafptr->procvrttab = bandgrafptr->procdsptab; /* Graph does not have holes */
   bandgrafptr->vertlocnbr = bandvertlocnbr;
   bandgrafptr->vertlocnnd = bandvertlocnbr + bandgrafptr->baseval;
-  bandgrafptr->vendloctax = bandgrafptr->vertloctax + 1; /* Band graph is compact */
+  bandgrafptr->vendloctax = bandvertloctax + 1;   /* Band graph is compact */
   bandgrafptr->velolocsum = grafptr->velolocsum + 2 * bandvertlocancadj;
+  bandgrafptr->edgeloctax = bandedgeloctax;
+  bandgrafptr->edloloctax = bandedloloctax;
   bandgrafptr->edgelocnbr = bandedgelocnbr;
   bandgrafptr->edgelocsiz = bandedgelocnbr;
   bandgrafptr->degrglbmax = banddegrlocmax;       /* Local maximum degree will be turned into global maximum degree */

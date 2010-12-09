@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                mapping algorithm.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.2  : from : 22 sep 2008     **/
-/**                                 to     22 sep 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -49,11 +49,11 @@
 */
 
 typedef struct KgraphMapRbPartData_ {
-  const Graph * restrict            topgrafptr;   /*+ Pointer to top-level graph          +*/
-  Gnum * restrict                   topfrontab;   /*+ Pointer to top-level frontier array +*/
-  Gnum                              topfronnbr;   /*+ Current number of frontier vertices +*/
-  Mapping * restrict                mappptr;
-  const KgraphMapRbParam * restrict paraptr;
+  const Graph *             topgrafptr;           /*+ Pointer to top-level graph          +*/
+  Gnum *                    topfrontab;           /*+ Pointer to top-level frontier array +*/
+  Gnum                      topfronnbr;           /*+ Current number of frontier vertices +*/
+  Mapping *                 mappptr;
+  const KgraphMapRbParam *  paraptr;
 } KgraphMapRbPartData;
 
 /*

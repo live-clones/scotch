@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 16 apr 2006     **/
 /**                                 to     16 jun 2007     **/
 /**                # Version 5.1  : from : 11 nov 2008     **/
-/**                                 to     11 nov 2008     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,10 +53,10 @@
 /*+ This structure holds the method parameters. +*/
 
 typedef struct HdgraphOrderNdParam_ {
-  Strat * restrict          sepstrat;             /*+ Separation strategy          +*/
-  Strat * restrict          ordstratlea;          /*+ Leaf ordering strategy       +*/
-  Strat * restrict          ordstratsep;          /*+ Separator ordering strategy  +*/
-  Strat * restrict          ordstratseq;          /*+ Sequential ordering strategy +*/
+  Strat *                   sepstrat;             /*+ Separation strategy          +*/
+  Strat *                   ordstratlea;          /*+ Leaf ordering strategy       +*/
+  Strat *                   ordstratsep;          /*+ Separator ordering strategy  +*/
+  Strat *                   ordstratseq;          /*+ Sequential ordering strategy +*/
 } HdgraphOrderNdParam;
 
 /*+ Method types. +*/
@@ -79,10 +79,10 @@ typedef struct HdgraphOrderNdGraph_ {
 /*+ This structure holds the data passed to the subgraph building threads. +*/
 
 typedef struct HdgraphOrderNdData_ {
-  Hdgraph * restrict              orggrafptr;     /*+ Pointer to original graph                     +*/
+  Hdgraph *                       orggrafptr;     /*+ Pointer to original graph                     +*/
   Gnum                            indlistnbr;     /*+ Local number of vertices in subgraph          +*/
-  const Gnum * restrict           indlisttab;     /*+ Local list of vertices in subgraph            +*/
-  HdgraphOrderNdGraph * restrict  fldgrafptr;     /*+ Pointer to folded graph union area            +*/
+  const Gnum *                    indlisttab;     /*+ Local list of vertices in subgraph            +*/
+  HdgraphOrderNdGraph *           fldgrafptr;     /*+ Pointer to folded graph union area            +*/
   int                             fldpartval;     /*+ Part of processor array to which to fold to   +*/
   int                             fldprocnbr;     /*+ Number of processes in folded communicator    +*/
   int                             fldprocnum;     /*+ Rank of process in folded communicator, or -1 +*/

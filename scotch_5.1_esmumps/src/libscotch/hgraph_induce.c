@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     25 feb 2004     **/
 /**                # Version 5.0  : from : 19 dec 2006     **/
 /**                                 to     11 jun 2008     **/
+/**                # Version 5.1  : from : 24 oct 2010     **/
+/**                                 to     24 oct 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,10 +89,9 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
   Gnum * restrict     indedgetab;                 /* Origin of induced graph edge arrays             */
   Gnum                indvertnbr;                 /* Number of vertices in induced graph             */
   Gnum                indvertnum;                 /* Number of current vertex in induced graph       */
+  Gnum                indvelosiz;
   Gnum                indedgenbr;                 /* (Approximate) number of edges in induced graph  */
   Gnum                indedgesiz;                 /* (Approximate) size of edge and edge load arrays */
-
-/* TODO: Ne pas allouer/copier vnumtax si elle reste copie conforme de orglistptr->vnumtab (premier graphe) */
 
   memSet (indgrafptr, 0, sizeof (Hgraph));        /* Pre-initialize graph fields */
 
@@ -98,31 +99,17 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
   indgrafptr->s.baseval = orggrafptr->s.baseval;
 
   indvertnbr = orglistptr->vnumnbr + orghalonbr;  /* Compute upper bound on number of vertices */
-
-  {
-    void *              dataptr;
-
-    if (orggrafptr->s.velotax != NULL) {
-      dataptr = memAllocGroup ((void **) (void *)
-                               &indgrafptr->s.verttax, (size_t) ((indvertnbr + 1)     * sizeof (Gnum)),
-                               &indgrafptr->vnhdtax,   (size_t) ( orglistptr->vnumnbr * sizeof (Gnum)), /* Put closest to beginning of array because no padding after */
-                               &indgrafptr->s.velotax, (size_t) ( indvertnbr          * sizeof (Gnum)),
-                               &indgrafptr->s.vnumtax, (size_t) ( indvertnbr          * sizeof (Gnum)), NULL);
-      indgrafptr->s.velotax -= indgrafptr->s.baseval;
-    }
-    else {
-      dataptr = memAllocGroup ((void **) (void *)
-                               &indgrafptr->s.verttax, (size_t) ((indvertnbr + 1)     * sizeof (Gnum)),
-                               &indgrafptr->vnhdtax,   (size_t) ( orglistptr->vnumnbr * sizeof (Gnum)),
-                               &indgrafptr->s.vnumtax, (size_t) ( indvertnbr          * sizeof (Gnum)), NULL);
-    }
-    if (dataptr == NULL) {
-      errorPrint ("hgraphInduceList: out of memory (1)"); /* Allocate induced graph structure */
-      return     (1);
-    }
+  indvelosiz = (orggrafptr->s.velotax != NULL) ? indvertnbr : 0;
+  if (memAllocGroup ((void **) (void *)
+                     &indgrafptr->s.verttax, (size_t) ((indvertnbr + 1)     * sizeof (Gnum)),
+                     &indgrafptr->vnhdtax,   (size_t) ( orglistptr->vnumnbr * sizeof (Gnum)), /* Put closest to beginning of array because no padding after */
+                     &indgrafptr->s.velotax, (size_t) ( indvertnbr          * sizeof (Gnum)),
+                     &indgrafptr->s.vnumtax, (size_t) ( indvertnbr          * sizeof (Gnum)), NULL) == NULL) {
+    errorPrint ("hgraphInduceList: out of memory (1)"); /* Allocate induced graph structure */
+    return     (1);
   }
   memCpy (indgrafptr->s.vnumtax, orglistptr->vnumtab, orglistptr->vnumnbr * sizeof (Gnum)); /* Copy vertex number array from list */
-
+  indgrafptr->s.velotax  = (orggrafptr->s.velotax != NULL) ? (indgrafptr->s.velotax - indgrafptr->s.baseval) : NULL;
   indgrafptr->s.verttax -= indgrafptr->s.baseval;
   indgrafptr->s.vnumtax -= indgrafptr->s.baseval;
   indgrafptr->vnhdtax   -= indgrafptr->s.baseval;

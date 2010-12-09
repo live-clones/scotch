@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 23 nov 2001     **/
 /**                # Version 4.0  : from : 10 jan 2003     **/
 /**                                 to   : 29 aug 2007     **/
+/**                # Version 5.1  : from : 08 dec 2010     **/
+/**                                 to   : 08 dec 2010     **/
 /**                                                        **/
 /**   NOTES      : # This module contains pieces of code   **/
 /**                  that belong to other people; see      **/
@@ -923,7 +925,7 @@ L240:
             rmf = (float) deg * (float) (deg - 1 + (2 * degme)) - (float) wf[i];
           }
 
-          wf[i] = (int) (rmf / (float) (nvi + 1) + 0.5);
+          wf[i] = (Gnum) (rmf / (float) (nvi + 1) + 0.5F); /* Patch 08/12/2010 <FP> */
           wf[i] = MAX (0, wf[i]);
           deg   = wf[i];
           if (deg > n)
@@ -935,7 +937,7 @@ L240:
           last[i]   = 0;
           head[deg] = i;
 
-          mindeg    = MIN (mindeg, deg);
+          mindeg = MIN (mindeg, deg);
         }
 
         iw[p ++] = i;

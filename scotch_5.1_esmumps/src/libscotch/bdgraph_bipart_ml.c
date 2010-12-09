@@ -40,7 +40,7 @@
 /**                graph using a multi-level scheme.       **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 26 aug 2010     **/
+/**                                 to   : 16 oct 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -642,7 +642,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   }
 #ifdef SCOTCH_DEBUG_BDGRAPH2
   for (finevertlocnum = baseval; finevertlocnum < finevertlocnnd; finevertlocnum ++) {
-    if (finepartgsttax[finevertlocnum] == ~0) {
+    if (finepartgsttax[finevertlocnum] == ((GraphPart) ~0)) {
       errorPrint ("bdgraphBipartMlUncoarsen: internal error (8)");
       return     (1);
     }

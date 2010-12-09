@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 10 sep 2002     **/
 /**                                 to   : 10 sep 2002     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,13 +54,13 @@
 
 typedef struct Vmesh_ {
   Mesh                      m;                    /*+ Source mesh                                        +*/
-  GraphPart * restrict      parttax;              /*+ Based part array: 0,1: part; 2: separator          +*/
+  GraphPart *               parttax;              /*+ Based part array: 0,1: part; 2: separator          +*/
   Gnum                      ecmpsize[2];          /*+ Number of elements in each part (not in separator) +*/
   Gnum                      ncmpload[3];          /*+ Loads of nodes in both parts and separator         +*/
   Gnum                      ncmploaddlt;          /*+ Node load difference between both parts            +*/
   Gnum                      ncmpsize[2];          /*+ Number of nodes in parts (separator is fronnbr)    +*/
   Gnum                      fronnbr;              /*+ Number of frontier nodes; TRICK: ncmpsize[2]       +*/
-  Gnum * restrict           frontab;              /*+ Array of frontier node numbers                     +*/
+  Gnum *                    frontab;              /*+ Array of frontier node numbers                     +*/
   Gnum                      levlnum;              /*+ Nested dissection or coarsening level              +*/
 } Vmesh;
 

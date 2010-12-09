@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 03 aug 2007     **/
 /**                # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 21 aug 2010     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -146,21 +146,21 @@ typedef struct Dgraph_ {
   Gnum                      vertgstnnd;           /*+ vertgstnbr + baseval                                      +*/
   Gnum                      vertlocnbr;           /*+ Local number of vertices                                  +*/
   Gnum                      vertlocnnd;           /*+ Local number of vertices + baseval                        +*/
-  Gnum * restrict           vertloctax;           /*+ Local vertex beginning index array [based]                +*/
-  Gnum * restrict           vendloctax;           /*+ Local vertex end index array [based]                      +*/
-  Gnum * restrict           veloloctax;           /*+ Local vertex load array if present                        +*/
+  Gnum *                    vertloctax;           /*+ Local vertex beginning index array [based]                +*/
+  Gnum *                    vendloctax;           /*+ Local vertex end index array [based]                      +*/
+  Gnum *                    veloloctax;           /*+ Local vertex load array if present                        +*/
   Gnum                      velolocsum;           /*+ Local sum of all vertex loads                             +*/
   Gnum                      veloglbsum;           /*+ Global sum of all vertex loads                            +*/
-  Gnum * restrict           vnumloctax;           /*+ Arrays of global vertex numbers in original graph         +*/
-  Gnum * restrict           vlblloctax;           /*+ Arrays of vertex labels (when read from file)             +*/
+  Gnum *                    vnumloctax;           /*+ Arrays of global vertex numbers in original graph         +*/
+  Gnum *                    vlblloctax;           /*+ Arrays of vertex labels (when read from file)             +*/
   Gnum                      edgeglbnbr;           /*+ Global number of arcs                                     +*/
   Gnum                      edgeglbmax;           /*+ Maximum number of local edges over all processes          +*/
   Gnum                      edgelocnbr;           /*+ Number of local edges                                     +*/
   Gnum                      edgelocsiz;           /*+ Size of local edge array (= edgelocnbr when compact)      +*/
   Gnum                      edgeglbsmx;           /*+ Maximum size of local edge arrays over all processes      +*/
-  Gnum * restrict           edgegsttax;           /*+ Edge array holding local indices of neighbors [based]     +*/
-  Gnum * restrict           edgeloctax;           /*+ Edge array holding global neighbor numbers [based]        +*/
-  Gnum * restrict           edloloctax;           /*+ Edge load array                                           +*/
+  Gnum *                    edgegsttax;           /*+ Edge array holding local indices of neighbors [based]     +*/
+  Gnum *                    edgeloctax;           /*+ Edge array holding global neighbor numbers [based]        +*/
+  Gnum *                    edloloctax;           /*+ Edge load array                                           +*/
   Gnum                      degrglbmax;           /*+ Maximum degree over all processes                         +*/
   MPI_Comm                  proccomm;             /*+ Graph communicator                                        +*/
   int                       prockeyval;           /*+ Communicator key value: folded communicators are distinct +*/
@@ -174,8 +174,8 @@ typedef struct Dgraph_ {
   int *                     procngbtab;           /*+ Array of neighbor process numbers [sorted]                +*/
   int *                     procrcvtab;           /*+ Number of vertices to receive in ghost vertex sub-arrays  +*/
   int                       procsndnbr;           /*+ Overall size of local send array                          +*/
-  int * restrict            procsndtab;           /*+ Number of vertices to send in ghost vertex sub-arrays     +*/
-  int * restrict            procsidtab;           /*+ Array of indices to build communication vectors (send)    +*/
+  int *                     procsndtab;           /*+ Number of vertices to send in ghost vertex sub-arrays     +*/
+  int *                     procsidtab;           /*+ Array of indices to build communication vectors (send)    +*/
   int                       procsidnbr;           /*+ Size of the send index array                              +*/
 } Dgraph;
 

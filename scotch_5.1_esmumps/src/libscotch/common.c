@@ -37,6 +37,7 @@
 /**                David GOUDIN                            **/
 /**                Pascal HENON                            **/
 /**                Pierre RAMET                            **/
+/**                Yves SECRETAN (v 5.1)                   **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel direct block solver. **/
 /**                These lines are common routines used    **/
@@ -47,7 +48,7 @@
 /**                # Version 2.0  : from : 27 sep 2004     **/
 /**                                 to     27 sep 2004     **/
 /**                # Version 5.1  : from : 27 jun 2010     **/
-/**                                 to     27 jun 2010     **/
+/**                                 to     23 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,7 +61,6 @@
 #ifndef COMMON_NOMODULE
 #include "module.h"
 #endif /* COMMON_NOMODULE */
-#include <time.h>
 #include "common.h"
 
 /*******************/
@@ -75,7 +75,26 @@ clockGet (void)
 #ifdef MPI_INT
   return (MPI_Wtime ());
 #else /* MPI_INT */
-#ifdef COMMON_TIMING_OLD                          /* Old timing routine */
+#if defined COMMON_WINDOWS
+  double              res = 0.0;
+  LARGE_INTEGER       fq;
+  if (QueryPerformanceFrequency (&fq) == 0) {
+    FILETIME            ft;
+    ULARGE_INTEGER      t;
+
+    GetSystemTimeAsFileTime (&ft);
+    t.LowPart  = ft.dwLowDateTime;
+    t.HighPart = ft.dwHighDateTime;
+    res = (double) t.QuadPart / 10000000.0;
+  }
+  else {
+    LARGE_INTEGER       pc;
+
+    QueryPerformanceCounter (&pc);
+    res = (double) pc.QuadPart / (double) fq.QuadPart;
+  }
+  return (res);
+#elif defined COMMON_TIMING_OLD                   /* Old Unix timing routine */
   struct rusage       data;
 
   getrusage (RUSAGE_SELF, &data);

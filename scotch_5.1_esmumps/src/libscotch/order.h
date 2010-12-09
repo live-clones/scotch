@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to     28 dec 2004     **/
 /**                # Version 5.0  : from : 25 jul 2007     **/
 /**                                 to     25 jul 2007     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,10 +83,10 @@
     traversal.                              +*/
 
 typedef struct OrderCblk_ {
-  int                           typeval;          /*+ Type of tree node                  +*/
-  Gnum                          vnodnbr;          /*+ Number of node vertices in subtree +*/
-  Gnum                          cblknbr;          /*+ Number of descendent column blocks +*/
-  struct OrderCblk_ * restrict  cblktab;          /*+ Sub-array of column-blocks         +*/
+  int                       typeval;              /*+ Type of tree node                  +*/
+  Gnum                      vnodnbr;              /*+ Number of node vertices in subtree +*/
+  Gnum                      cblknbr;              /*+ Number of descendent column blocks +*/
+  struct OrderCblk_ *       cblktab;              /*+ Sub-array of column-blocks         +*/
 } OrderCblk;
 
 /*+ Ordering structure. A block ordering is
@@ -103,7 +105,7 @@ typedef struct Order_ {
   Gnum                      treenbr;              /*+ Number of column block tree nodes   +*/
   Gnum                      cblknbr;              /*+ Number of column blocks             +*/
   OrderCblk                 cblktre;              /*+ Root of column block tree           +*/
-  Gnum * restrict           peritab;              /*+ Inverse permutation array [vnodnbr] +*/
+  Gnum *                    peritab;              /*+ Inverse permutation array [vnodnbr] +*/
 } Order;
 
 /*

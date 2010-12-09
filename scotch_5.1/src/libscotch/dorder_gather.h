@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 20 jul 2007     **/
 /**                                 to   : 27 jul 2007     **/
+/**                # Version 5.1  : from : 04 nov 2010     **/
+/**                                 to   : 04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,5 +81,5 @@ typedef struct DorderGatherNode_ {
 
 typedef struct DorderGatherCblk_ {
   Gnum                      cblknbr;              /*+ Number of sons       +*/
-  OrderCblk * restrict      cblktab;              /*+ Pointer to sub-array +*/
+  OrderCblk *               cblktab;              /*+ Pointer to sub-array +*/
 } DorderGatherCblk;

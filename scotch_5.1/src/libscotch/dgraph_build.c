@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 22 jul 2005     **/
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 30 jul 2010     **/
-/**                                 to   : 30 jul 2010     **/
+/**                                 to   : 03 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -180,14 +180,13 @@ const Gnum                  degrlocmax)
                        &grafptr->procngbtab, (size_t) (procglbnbr       * sizeof (int)),
                        &grafptr->procrcvtab, (size_t) (procglbnbr       * sizeof (int)),
                        &grafptr->procsndtab, (size_t) (procglbnbr       * sizeof (int)), NULL) == NULL) {
-      Gnum                dummyval[2];
-      Gnum                dummytab[procglbnbr * 2];
+      int                 dummytab[procglbnbr * 2];
 
       errorPrint ("dgraphBuild2: out of memory");
-      dummyval[0] =
-      dummyval[1] = -1;
-      if (MPI_Allgather (dummyval, 2, MPI_INT,    /* Use dummy receive array (if can be allocated too) */
-                         dummytab, 2, MPI_INT, grafptr->proccomm) != MPI_SUCCESS)
+      reduloctab[0] =
+      reduloctab[1] = -1;
+      if (MPI_Allgather (reduloctab, 2, MPI_INT,  /* Use dummy receive array (if can be allocated too) */
+                         dummytab,   2, MPI_INT, grafptr->proccomm) != MPI_SUCCESS)
         errorPrint ("dgraphBuild2: communication error (1)");
       return (1);
     }

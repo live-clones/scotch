@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -33,10 +33,10 @@
 /**                                                        **/
 /**   NAME       : symbol.h                                **/
 /**                                                        **/
-/**   AUTHORS    : David GOUDIN                            **/
-/**                Pascal HENON                            **/
-/**                Francois PELLEGRINI                     **/
-/**                Pierre RAMET                            **/
+/**   AUTHORS    : Francois PELLEGRINI                     **/
+/**                David GOUDIN (v0.0)                     **/
+/**                Pascal HENON (v0.0)                     **/
+/**                Pierre RAMET (v0.0)                     **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel direct block solver. **/
 /**                These lines are the data declarations   **/
@@ -52,6 +52,8 @@
 /**                                 to     10 jun 2003     **/
 /**                # Version 3.0  : from : 28 feb 2004     **/
 /**                                 to     03 mar 2005     **/
+/**                # Version 5.1  : from : 05 nov 2010     **/
+/**                                 to     05 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,8 +87,8 @@ typedef struct SymbolMatrix_ {
   INT                       baseval;              /*+ Base value for numberings         +*/
   INT                       cblknbr;              /*+ Number of column blocks           +*/
   INT                       bloknbr;              /*+ Number of blocks                  +*/
-  SymbolCblk * restrict     cblktab;              /*+ Array of column blocks [+1,based] +*/
-  SymbolBlok * restrict     bloktab;              /*+ Array of blocks [based]           +*/
+  SymbolCblk *              cblktab;              /*+ Array of column blocks [+1,based] +*/
+  SymbolBlok *              bloktab;              /*+ Array of blocks [based]           +*/
   INT                       nodenbr;              /*+ Number of nodes in matrix         +*/
 } SymbolMatrix;
 
@@ -115,13 +117,13 @@ typedef struct SymbolKeep_ {
   INT                       ctrimax;
   INT                       ctromax;
   INT                       hghtmax;
-  byte * restrict           keeptab;              /*+ Flag array for kept blocks      +*/
-  SymbolKeepBlok * restrict kblktab;              /*+ Block parameter array           +*/
-  double * restrict         levftab;              /*+ Area arrays for selected blocks +*/
-  double * restrict         nupdtab;
-  double * restrict         ctritab;
-  double * restrict         ctrotab;
-  double * restrict         hghttab;
+  byte *                    keeptab;              /*+ Flag array for kept blocks      +*/
+  SymbolKeepBlok *          kblktab;              /*+ Block parameter array           +*/
+  double *                  levftab;              /*+ Area arrays for selected blocks +*/
+  double *                  nupdtab;
+  double *                  ctritab;
+  double *                  ctrotab;
+  double *                  hghttab;
 } SymbolKeep;
 
 /*

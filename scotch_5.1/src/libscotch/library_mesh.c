@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 23 sep 2002     **/
 /**                                 to     11 may 2004     **/
+/**                # Version 5.1  : from : 17 nov 2010     **/
+/**                                 to     17 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,6 +64,20 @@
 /* the mesh handling routines.      */
 /*                                  */
 /************************************/
+
+/*+ This routine reserves a memory area
+*** of a size sufficient to store a
+*** centralized mesh structure.
+*** It returns:
+*** - !NULL  : if the initialization succeeded.
+*** - NULL   : on error.
++*/
+
+SCOTCH_Mesh *
+SCOTCH_meshAlloc ()
+{
+  return ((SCOTCH_Mesh *) memAlloc (sizeof (SCOTCH_Mesh)));
+}
 
 /*+ This routine initializes the opaque
 *** mesh structure used to handle meshes

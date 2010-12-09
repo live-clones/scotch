@@ -164,7 +164,6 @@ Dgraph * restrict const       indgrafptr)
       orggrafptr->proccnttab[procngbnum - 1] = orggrafptr->procdsptab[procngbnum] - orggrafptr->procdsptab[procngbnum - 1];
   }
   else {
-    indgrafptr->procvrttab = indgrafptr->procdsptab; /* Graph does not have holes */
     indgrafptr->procdsptab[0] = indlistnbr;
     if (MPI_Allgather (&indgrafptr->procdsptab[0], 1, GNUM_MPI,
                        &indgrafptr->proccnttab[0], 1, GNUM_MPI, indgrafptr->proccomm) != MPI_SUCCESS) {
@@ -183,6 +182,7 @@ Dgraph * restrict const       indgrafptr)
         indgrafptr->procdsptab[procngbnum + 1] = indgrafptr->procdsptab[procngbnum] + indgrafptr->proccnttab[procngbnum];
       }
     }
+    indgrafptr->procvrttab = indgrafptr->procdsptab; /* Graph does not have holes */
   }
   if (chekglbval != 0) {                          /* If something went wrong in all of the above */
     dgraphExit (indgrafptr);
@@ -392,7 +392,6 @@ Dgraph * restrict const           indgrafptr)
       orggrafptr->proccnttab[procngbnum - 1] = orggrafptr->procdsptab[procngbnum] - orggrafptr->procdsptab[procngbnum - 1];
   }
   else {
-    indgrafptr->procvrttab = indgrafptr->procdsptab; /* Graph does not have holes */
     indgrafptr->procdsptab[0] = indvertnbr;
     if (MPI_Allgather (&indgrafptr->procdsptab[0], 1, GNUM_MPI,
                        &indgrafptr->proccnttab[0], 1, GNUM_MPI, indgrafptr->proccomm) != MPI_SUCCESS) {
@@ -411,6 +410,7 @@ Dgraph * restrict const           indgrafptr)
         indgrafptr->procdsptab[procngbnum + 1] = indgrafptr->procdsptab[procngbnum] + indgrafptr->proccnttab[procngbnum];
       }
     }
+    indgrafptr->procvrttab = indgrafptr->procdsptab; /* Graph does not have holes */
   }
   if (chekglbval != 0) {                          /* If something went wrong in all of the above */
     dgraphExit (indgrafptr);

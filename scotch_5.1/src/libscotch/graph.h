@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,7 +59,7 @@
 /**                # Version 5.0  : from : 03 mar 2006     **/
 /**                                 to     01 jun 2008     **/
 /**                # Version 5.1  : from : 11 aug 2010     **/
-/**                                 to     11 aug 2010     **/
+/**                                 to     04 nov 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,7 +110,7 @@ typedef byte GraphPart;
 
 typedef struct VertList_ {
   Gnum                      vnumnbr;              /*+ Number of vertices in list +*/
-  Gnum * restrict           vnumtab;              /*+ Pointer to vertex array    +*/
+  Gnum *                    vnumtab;              /*+ Pointer to vertex array    +*/
 } VertList;
 
 /*+ The graph flag type. +*/
@@ -124,15 +124,15 @@ typedef struct Graph_ {
   Gnum                      baseval;              /*+ Base index for edge/vertex arrays         +*/
   Gnum                      vertnbr;              /*+ Nmber of vertices in graph                +*/
   Gnum                      vertnnd;              /*+ Number of vertices in graph, plus baseval +*/
-  Gnum * restrict           verttax;              /*+ Vertex array [based]                      +*/
-  Gnum * restrict           vendtax;              /*+ End vertex array [based]                  +*/
-  Gnum * restrict           velotax;              /*+ Vertex load array (if present)            +*/
+  Gnum *                    verttax;              /*+ Vertex array [based]                      +*/
+  Gnum *                    vendtax;              /*+ End vertex array [based]                  +*/
+  Gnum *                    velotax;              /*+ Vertex load array (if present)            +*/
   Gnum                      velosum;              /*+ Overall graph vertex load                 +*/
-  Gnum * restrict           vnumtax;              /*+ Vertex number in ancestor graph           +*/
-  Gnum * restrict           vlbltax;              /*+ Vertex label (from file)                  +*/
+  Gnum *                    vnumtax;              /*+ Vertex number in ancestor graph           +*/
+  Gnum *                    vlbltax;              /*+ Vertex label (from file)                  +*/
   Gnum                      edgenbr;              /*+ Number of edges (arcs) in graph           +*/
-  Gnum * restrict           edgetax;              /*+ Edge array [based]                        +*/
-  Gnum * restrict           edlotax;              /*+ Edge load array (if present)              +*/
+  Gnum *                    edgetax;              /*+ Edge array [based]                        +*/
+  Gnum *                    edlotax;              /*+ Edge load array (if present)              +*/
   Gnum                      edlosum;              /*+ Sum of edge (in fact arc) loads           +*/
   Gnum                      degrmax;              /*+ Maximum degree                            +*/
 #ifdef SCOTCH_PTSCOTCH

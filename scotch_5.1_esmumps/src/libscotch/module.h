@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 24 feb 2007     **/
 /**                                 to     24 jul 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     14 aug 2010     **/
+/**                                 to     17 oct 2010     **/
 /**                                                        **/
 /************************************************************/
 
@@ -398,11 +398,11 @@
 #define bgraphStoreSave             _SCOTCHbgraphStoreSave
 #define bgraphStoreUpdt             _SCOTCHbgraphStoreUpdt
 
-#ifdef INTSIZE64
+#if ((defined INTSIZE64) || (defined COMM))
 #define commAllgatherv              _SCOTCHcommAllgatherv
 #define commGatherv                 _SCOTCHcommGatherv
 #define commScatterv                _SCOTCHcommScatterv
-#endif /* INTSIZE64 */
+#endif /* ((defined INTSIZE64) || (defined COMM)) */
 
 #define dgraphAllreduceMaxSum2      _SCOTCHdgraphAllreduceMaxSum2
 #define dgraphBuild                 _SCOTCHdgraphBuild
