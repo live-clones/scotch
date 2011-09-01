@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,7 +60,7 @@
 /**                # Version 5.0  : from : 12 jun 2008     **/
 /**                                 to   : 18 jun 2008     **/
 /**                # Version 5.1  : from : 28 aug 2010     **/
-/**                                 to   : 28 aug 2010     **/
+/**                                 to   : 18 jul 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,3 +90,4 @@
 #define C_FLAGVERBTIM               0x0004
 #define C_FLAGVERBMAP               0x0008
 #define C_FLAGKBALVAL               0x0010        /* Imbalance tolerance */
+#define C_FLAGCLUSTER               0x0020        /* Clustering          */

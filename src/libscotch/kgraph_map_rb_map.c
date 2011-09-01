@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,7 +63,7 @@
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     06 mar 2005     **/
 /**                # Version 5.1  : from : 22 nov 2007     **/
-/**                                 to     04 feb 2009     **/
+/**                                 to     31 aug 2011     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -135,7 +135,7 @@ const KgraphMapRbParam * restrict const paraptr)
   poolptr->linktab[1].next = &kgraphmaprbmappooldummy;
   poolptr->pooltab[0] = &poolptr->linktab[0];
   poolptr->pooltab[1] = (paraptr->flagjobtie != 0) ? &poolptr->linktab[0] : &poolptr->linktab[1];
-  poolptr->polival = ((flagval & KGRAPHMAPRBMAPARCHCMPLT) != 0) ? KGRAPHMAPRBPOLILEVEL : paraptr->poli;
+  poolptr->polival = ((flagval & KGRAPHMAPRBMAPARCHCMPLT) != 0) ? KGRAPHMAPRBPOLILEVEL : paraptr->polival;
   poolptr->mappptr = &grafptr->m;                 /* Will be used at exiting time */
   if ((poolptr->jobtab = (KgraphMapRbMapJob *) memAlloc (grafptr->m.domnmax * sizeof (KgraphMapRbMapJob))) == NULL) {
     errorPrint ("kgraphMapRbMapPoolInit: out of memory (1)");
@@ -307,9 +307,6 @@ const GraphPart                 partval)
 {
   KgraphMapRbMapJob * restrict  jobtab;
   const Anum * restrict         mapparttax;       /* Based pointer to mapping part array */
-  const Gnum * restrict         jobverttax;
-  const Gnum * restrict         jobvendtax;
-  const Gnum * restrict         jobvnumtax;
   const Gnum * restrict         topverttax;
   const Gnum * restrict         topvendtax;
   const Gnum * restrict         topedgetax;
@@ -356,7 +353,11 @@ const GraphPart                 partval)
   
     prioold = joboldptr->prioval;
 
-    if (joboldptr->grafdat.vertnbr < poolptr->grafptr->vertnbr) { /* If subgraph is not top graph   */
+    if (joboldptr->grafdat.vertnbr < poolptr->grafptr->vertnbr) { /* If subgraph is not top graph */
+      const Gnum * restrict jobvnumtax;
+      const Gnum * restrict jobverttax;
+      const Gnum * restrict jobvendtax;
+
       jobvnumtax = joboldptr->grafdat.vnumtax;    /* Change priority of neighboring jobs of old job */
       jobverttax = joboldptr->grafdat.verttax;
       jobvendtax = joboldptr->grafdat.vendtax;
@@ -390,33 +391,39 @@ const GraphPart                 partval)
       jobnewptr->poolflag = 1;                    /* TRICK: new job is active again */
     }
 
-    jobvnumtax = jobnewptr->grafdat.vnumtax;      /* Now update priority of neighbors of new job only */
-    jobverttax = jobnewptr->grafdat.verttax;
-    jobvendtax = jobnewptr->grafdat.vendtax;
+    if (jobnewptr->grafdat.vertnbr < poolptr->grafptr->vertnbr) { /* If subgraph is not top graph, update priority of neighbors of new job only */
+      const Gnum * restrict jobvnumtax;
+      const Gnum * restrict jobverttax;
+      const Gnum * restrict jobvendtax;
 
-    for (jobvertnum = jobnewptr->grafdat.baseval; jobvertnum < jobnewptr->grafdat.vertnnd; jobvertnum ++) {
-      Gnum                          topvertnum;
-      Gnum                          topedgenum;
+      jobvnumtax = jobnewptr->grafdat.vnumtax;
+      jobverttax = jobnewptr->grafdat.verttax;
+      jobvendtax = jobnewptr->grafdat.vendtax;
 
-      topvertnum = jobvnumtax[jobvertnum];        /* For subjobs jobvnumtax always exists */
+      for (jobvertnum = jobnewptr->grafdat.baseval; jobvertnum < jobnewptr->grafdat.vertnnd; jobvertnum ++) {
+        Gnum                          topvertnum;
+        Gnum                          topedgenum;
 
-      if ((topvendtax[topvertnum] - topverttax[topvertnum]) == /* If vertex is internal, skip it */
-          (jobvendtax[jobvertnum] - jobverttax[jobvertnum]))
-        continue;
+        topvertnum = jobvnumtax[jobvertnum];      /* For subjobs jobvnumtax always exists */
 
-      for (topedgenum = topverttax[topvertnum]; topedgenum < topvendtax[topvertnum]; topedgenum ++) {
-        KgraphMapRbMapJob * restrict  jobnghbptr; /* (Old ?) job of neighbor vertex */
-
-        jobnghbptr = &jobtab[mapparttax[topedgetax[topedgenum]]]; /* Get pointer to neighboring job     */
-        if (jobnghbptr == jobnewptr)              /* If it is the current job, do not consider the edge */
+        if ((topvendtax[topvertnum] - topverttax[topvertnum]) == /* If vertex is internal, skip it */
+            (jobvendtax[jobvertnum] - jobverttax[jobvertnum]))
           continue;
 
-        if ((jobnghbptr->poolflag == 0) ||        /* If neighbor is not active          */
-            (prioval > jobnghbptr->prioval))      /* Or if we have higher priority      */
-          priolvl ++;                             /* Increase our priority              */
-        else if ((prioval <  jobnghbptr->prioval) && /* Else if neighbor has higher one */
-                 (prioold >= jobnghbptr->prioval)) /* Which it did not already have     */
-          jobnghbptr->priolvl ++;                 /* Update neighbor priority           */
+        for (topedgenum = topverttax[topvertnum]; topedgenum < topvendtax[topvertnum]; topedgenum ++) {
+          KgraphMapRbMapJob * restrict  jobnghbptr; /* (Old ?) job of neighbor vertex */
+
+          jobnghbptr = &jobtab[mapparttax[topedgetax[topedgenum]]]; /* Get pointer to neighboring job   */
+          if (jobnghbptr == jobnewptr)            /* If it is the current job, do not consider the edge */
+            continue;
+
+          if ((jobnghbptr->poolflag == 0) ||      /* If neighbor is not active            */
+              (prioval > jobnghbptr->prioval))    /* Or if we have higher priority        */
+            priolvl ++;                           /* Increase our priority                */
+          else if ((prioval <  jobnghbptr->prioval) && /* Else if neighbor has higher one */
+                   (prioold >= jobnghbptr->prioval)) /* Which it did not already have     */
+            jobnghbptr->priolvl ++;               /* Update neighbor priority             */
+        }
       }
     }
   }
@@ -682,6 +689,8 @@ const KgraphMapRbParam * restrict const paraptr)
   Anum                    jobsubnum[2];           /* Number of subjob slots in job array  */
   Gnum                    jobsubsiz[2];           /* Sizes of subjobs                     */
   Bgraph                  bipgrafdat;             /* Bipartition graph                    */
+  double                  comploadmin;            /* Minimum vertex load per target load  */
+  double                  comploadmax;            /* Maximum vertex load per target load  */
   int                     i;
 
 #ifdef SCOTCH_DEBUG_KGRAPH2
@@ -701,6 +710,9 @@ const KgraphMapRbParam * restrict const paraptr)
   pooldat.jobtab[0].grafdat = grafptr->s;         /* Clone original graph as first job graph */
   pooldat.jobtab[0].grafdat.flagval &= ~GRAPHFREETABS; /* Do not free its arrays on exit     */
   kgraphMapRbMapPoolFrst (&pooldat, &pooldat.jobtab[0]); /* Add initial job                  */
+
+  comploadmin = (1.0 - paraptr->kbalval) * grafptr->comploadrat; /* Ratio can have been tilted when working on subgraph */
+  comploadmax = (1.0 + paraptr->kbalval) * grafptr->comploadrat;
 
   while (! kgraphMapRbMapPoolEmpty (&pooldat)) {  /* For all non-empty pools */
     KgraphMapRbMapJob * joborgptr;                /* Pointer to current job  */
@@ -725,6 +737,18 @@ const KgraphMapRbParam * restrict const paraptr)
       }
       bipgrafdat.s.flagval |= (joborgdat.grafdat.flagval & GRAPHFREETABS); /* Bipartition graph is responsible for freeing the cloned graph data fields */
       joborgptr->poolflag = 0;                    /* Original slot is now considered unused so that cloned graph data will not be freed twice           */
+
+      if ((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) == 0) { /* If not variable-sized, impose constraints on bipartition */
+        double              comploadavg;
+
+        comploadavg = (double) bipgrafdat.s.velosum / (double) archDomWght (&grafptr->m.archdat, &joborgdat.domnorg);
+        bipgrafdat.compload0min = bipgrafdat.compload0avg -
+                                  (Gnum) MIN ((comploadmax - comploadavg) * (double) bipgrafdat.domwght[0],
+                                              (comploadavg - comploadmin) * (double) bipgrafdat.domwght[1]);
+        bipgrafdat.compload0max = bipgrafdat.compload0avg +
+                                  (Gnum) MIN ((comploadavg - comploadmin) * (double) bipgrafdat.domwght[0],
+                                              (comploadmax - comploadavg) * (double) bipgrafdat.domwght[1]);
+      }
 
       if (bgraphBipartSt (&bipgrafdat, paraptr->strat) != 0) { /* Perform bipartitioning */
         errorPrint             ("kgraphMapRbMap: cannot bipartition job");

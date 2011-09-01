@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                a distributed Bdgraph.                  **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 21 dec 2007     **/
-/**                                 to     30 jul 2010     **/
+/**                                 to     14 apr 2011     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -177,7 +177,9 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
   }
 #endif /* SCOTCH_DEBUG_BDGRAPH1 */
 
-  cgrfptr->compload0avg  = dgrfptr->compglbload0avg; /* Set constant fields of the centralized graph as those of the distibuted graph */
+  cgrfptr->compload0min  = dgrfptr->compglbload0min; /* Set constant fields of the centralized graph as those of the distibuted graph */
+  cgrfptr->compload0max  = dgrfptr->compglbload0max;
+  cgrfptr->compload0avg  = dgrfptr->compglbload0avg;
   cgrfptr->commloadextn0 = dgrfptr->commglbloadextn0; 
   cgrfptr->commgainextn0 = dgrfptr->commglbgainextn0;
   cgrfptr->domdist       = dgrfptr->domdist; 

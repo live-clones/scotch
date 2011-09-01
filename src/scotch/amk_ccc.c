@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 01 jul 2010     **/
-/**                                 to   : 15 aug 2010     **/
+/**                                 to   : 14 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -124,7 +124,7 @@ char *                      argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_paraNum < 1) {                        /* If number of parameters not reached              */
         if ((ccdim = atoi (argv[i])) < 1) {       /* Get the dimension                                */
-          errorPrint ("main: invalid dimension (\"%s\")", argv[i]);
+          errorPrint ("main: invalid dimension '%s'", argv[i]);
           return     (1);
         }
         C_paraNum ++;
@@ -145,11 +145,11 @@ char *                      argv[])
           return     (0);
         case 'V' :
           fprintf (stderr, "amk_ccc, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
-          errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
+          errorPrint ("main: unprocessed option '%s'", argv[i]);
           return     (1);
       }
     }

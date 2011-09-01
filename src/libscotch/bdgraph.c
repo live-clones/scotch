@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                handling routines.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 10 sep 2007     **/
-/**                                 to     03 jul 2008     **/
+/**                                 to     14 apr 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,10 +117,12 @@ const Anum                      domdist,          /* Distance between both subdo
 const Anum                      domwght0,         /* Processor workforce in each domain */
 const Anum                      domwght1)
 {
-  actgrafptr->fronlocnbr       =                      /* No frontier vertices */
+  actgrafptr->fronlocnbr       =                  /* No frontier vertices */
   actgrafptr->fronglbnbr       = 0;
   actgrafptr->complocload0     = actgrafptr->s.velolocsum;
   actgrafptr->compglbload0     = actgrafptr->s.veloglbsum;
+  actgrafptr->compglbload0min  = 0;               /* No external constraints on bipartition (yet) */
+  actgrafptr->compglbload0max  = actgrafptr->s.veloglbsum;
   actgrafptr->compglbload0avg  = (Gnum) (((double) actgrafptr->s.veloglbsum * (double) domwght0) / (double) (domwght0 + domwght1));
   actgrafptr->compglbload0dlt  = actgrafptr->s.veloglbsum - actgrafptr->compglbload0avg;
   actgrafptr->complocsize0     = actgrafptr->s.vertlocnbr;

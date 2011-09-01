@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                graph.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 nov 2007     **/
-/**                                 to   : 09 nov 2008     **/
+/**                                 to   : 19 jul 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,11 +163,10 @@ const BdgraphBipartDfParam * const  paraptr)      /*+ Method parameters +*/
     return  (0);
   }
 
-  vanclocval[0] = (float) grafptr->compglbload0;
-  if (vanclocval[0] < (grafptr->compglbload0avg * (1.0F - (float) paraptr->deltval))) /* Enforce balance constraint */
-    vanclocval[0] = grafptr->compglbload0avg * (1.0F - (float) paraptr->deltval);
-  else if (vanclocval[0] > (grafptr->compglbload0avg * (1.0F + (float) paraptr->deltval)))
-    vanclocval[0] = grafptr->compglbload0avg * (1.0F + (float) paraptr->deltval);
+  vanclocval[0] = (float) ((paraptr->typeval == BDGRAPHBIPARTDFTYPEBAL) /* If balanced parts wanted */
+                           ? grafptr->compglbload0avg /* Target is average                          */
+                           : ( (grafptr->compglbload0 < grafptr->compglbload0min) ? grafptr->compglbload0min : /* Else keep load if not off balance */
+                              ((grafptr->compglbload0 > grafptr->compglbload0max) ? grafptr->compglbload0max : grafptr->compglbload0)));
   vanclocval[1] = (float) grafptr->s.veloglbsum - vanclocval[0];
   vanclocval[0] = - vanclocval[0];                /* Part 0 holds negative values                         */
   valolocval[0] = (float) reduglbtab[2];          /* Compute values to remove from anchor vertices        */

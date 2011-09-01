@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,7 +60,7 @@
 /**                # Version 5.0  : from : 17 dec 2006     **/
 /**                                 to     10 sep 2007     **/
 /**                # Version 5.1  : from : 08 oct 2008     **/
-/**                                 to     08 oct 2008     **/
+/**                                 to     18 mar 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -150,9 +150,11 @@ const Anum                      domwght0,         /* Processor workforce in each
 const Anum                      domwght1)
 {
   actgrafptr->fronnbr       = 0;                  /* No frontier since all vertices set to part 0 */
-  actgrafptr->compload0     = actgrafptr->s.velosum;
+  actgrafptr->compload0min  = 0;                  /* No external constraints on bipartition (yet) */
+  actgrafptr->compload0max  = actgrafptr->s.velosum;
   actgrafptr->compload0avg  = (Gnum) (((double) actgrafptr->s.velosum * (double) domwght0) / (double) (domwght0 + domwght1));
   actgrafptr->compload0dlt  = actgrafptr->s.velosum - actgrafptr->compload0avg;
+  actgrafptr->compload0     = actgrafptr->s.velosum;
   actgrafptr->compsize0     = actgrafptr->s.vertnbr;
   actgrafptr->commload      = 0;
   actgrafptr->commloadextn0 = 0;
@@ -354,4 +356,5 @@ Bgraph * restrict const     grafptr)
   grafptr->compsize0    = grafptr->s.vertnbr;
   grafptr->commload     = grafptr->commloadextn0; /* Initialize communication load */
   grafptr->commgainextn = grafptr->commgainextn0;
+  grafptr->bbalval      = (double) grafptr->compload0dlt / (double) grafptr->compload0avg;
 }

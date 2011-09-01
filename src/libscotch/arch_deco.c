@@ -186,7 +186,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
                                               archDecoArchDistE (archptr, i, 2 * j + 1) + 1) / 2;
 #ifdef SCOTCH_DEBUG_ARCH1
         else {                                    /* If both domain are terminals                  */
-          if (archDecoArchDist (archptr, i, j) == 0) { /* Distance value must br greater than zero */
+          if (archDecoArchDist (archptr, i, j) == 0) { /* Distance value must be greater than zero */
             errorPrint       ("archDecoArchBuild: invalid null distance");
             archDecoArchFree (archptr);
             return           (1);

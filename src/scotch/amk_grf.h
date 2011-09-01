@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 02 jun 1997     **/
 /**                # Version 3.3  : from : 15 may 1999     **/
 /**                                 to   : 15 may 1999     **/
+/**                # Version 5.1  : from : 17 jul 2011     **/
+/**                                 to   : 17 jul 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,6 +82,6 @@
 /*+ The sort structure, used to sort graph vertices by label. +*/
 
 typedef struct C_VertSort_ {
-  SCOTCH_Num                labl;                 /*+ Vertex label  +*/
-  SCOTCH_Num                num;                  /*+ Vertex number +*/
+  SCOTCH_Num                vlblnum;              /*+ Vertex label  +*/
+  SCOTCH_Num                vertnum;              /*+ Vertex number +*/
 } C_VertSort;

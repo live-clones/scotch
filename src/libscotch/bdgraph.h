@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                ing routines.                           **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 10 sep 2007     **/
-/**                                 to   : 04 nov 2010     **/
+/**                                 to   : 14 apr 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,26 +58,28 @@
 /*+ Active graph structure. +*/
 
 typedef struct Bdgraph_ {
-  Dgraph                    s;                    /*+ Distributed source graph                         +*/
-  Gnum *                    veexloctax;           /*+ Local vertex external gain array if moved to 1   +*/
-  Gnum                      veexglbsum;           /*+ Global sum of veexloctax array cells             +*/
-  GraphPart *               partgsttax;           /*+ Based local part array: 0,1: part                +*/
-  Gnum *                    fronloctab;           /*+ Array of local frontier vertex numbers           +*/
-  Gnum                      fronlocnbr;           /*+ Number of local frontier vertices                +*/
-  Gnum                      fronglbnbr;           /*+ Number of global frontier vertices               +*/
-  Gnum                      complocload0;         /*+ Local load of part 0                             +*/
-  Gnum                      compglbload0;         /*+ Global load of part 0                            +*/
-  Gnum                      compglbload0avg;      /*+ Global average load of part 0                    +*/
-  Gnum                      compglbload0dlt;      /*+ Load difference from the average                 +*/
-  Gnum                      complocsize0;         /*+ Number of local vertices in part 0               +*/
-  Gnum                      compglbsize0;         /*+ Number of global vertices in part 0              +*/
-  Gnum                      commglbload;          /*+ Global communication load                        +*/
-  Gnum                      commglbgainextn;      /*+ Global external gain if all swapped              +*/
-  Gnum                      commglbloadextn0;     /*+ Global communication load if all moved to part 0 +*/
-  Gnum                      commglbgainextn0;     /*+ Global external gain if all swapped from part 0  +*/
-  Anum                      domdist;              /*+ Distance between subdomains                      +*/
-  Anum                      domwght[2];           /*+ Weights for each subdomain                       +*/
-  INT                       levlnum;              /*+ Graph coarsening level                           +*/
+  Dgraph                    s;                    /*+ Distributed source graph                           +*/
+  Gnum *                    veexloctax;           /*+ Local vertex external gain array if moved to 1     +*/
+  Gnum                      veexglbsum;           /*+ Global sum of veexloctax array cells               +*/
+  GraphPart *               partgsttax;           /*+ Based local part array: 0,1: part                  +*/
+  Gnum *                    fronloctab;           /*+ Array of local frontier vertex numbers             +*/
+  Gnum                      fronlocnbr;           /*+ Number of local frontier vertices                  +*/
+  Gnum                      fronglbnbr;           /*+ Number of global frontier vertices                 +*/
+  Gnum                      complocload0;         /*+ Local load of part 0                               +*/
+  Gnum                      compglbload0;         /*+ Global load of part 0                              +*/
+  Gnum                      compglbload0min;      /*+ Minimum allowed load in part 0 (strategy variable) +*/
+  Gnum                      compglbload0max;      /*+ Maximum allowed load in part 0 (strategy variable) +*/
+  Gnum                      compglbload0avg;      /*+ Global average load of part 0                      +*/
+  Gnum                      compglbload0dlt;      /*+ Load difference from the average                   +*/
+  Gnum                      complocsize0;         /*+ Number of local vertices in part 0                 +*/
+  Gnum                      compglbsize0;         /*+ Number of global vertices in part 0                +*/
+  Gnum                      commglbload;          /*+ Global communication load                          +*/
+  Gnum                      commglbgainextn;      /*+ Global external gain if all swapped                +*/
+  Gnum                      commglbloadextn0;     /*+ Global communication load if all moved to part 0   +*/
+  Gnum                      commglbgainextn0;     /*+ Global external gain if all swapped from part 0    +*/
+  Anum                      domdist;              /*+ Distance between subdomains                        +*/
+  Anum                      domwght[2];           /*+ Weights for each subdomain                         +*/
+  INT                       levlnum;              /*+ Graph coarsening level                             +*/
 } Bdgraph;
 
 /*+ The distributed save graph structure. +*/

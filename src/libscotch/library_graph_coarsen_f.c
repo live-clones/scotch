@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,61 +31,49 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : bgraph_bipart_df.h                      **/
+/**   NAME       : library_graph_coarsen_f.c               **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module contains the function       **/
-/**                declarations for the diffusion scheme   **/
-/**                bipartitioning method.                  **/
+/**   FUNCTION   : This module is the Fortran API for the  **/
+/**                graph coarsening routine of the         **/
+/**                libSCOTCH library.                      **/
 /**                                                        **/
-/**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
-/**                                 to     28 may 2007     **/
-/**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     28 mar 2011     **/
+/**   DATES      : # Version 5.1  : from : 07 aug 2011     **/
+/**                                 to     07 aug 2011     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The defines.
+**  The defines and includes.
 */
 
-/* Small non-zero float value. */
+#define LIBRARY
 
-#define BGRAPHBIPARTDFEPSILON       (1.0F / (float) (GNUMMAX))
+#include "module.h"
+#include "common.h"
+#include "scotch.h"
 
-/*+ Sign masking operator. +*/
-
-#define BGRAPHBIPARTDFGNUMSGNMSK(i) ((Gnum) 0 - (((Gunum) (i)) >> (sizeof (Gnum) * 8 - 1)))
+/**************************************/
+/*                                    */
+/* These routines are the Fortran API */
+/* for the mapping routines.          */
+/*                                    */
+/**************************************/
 
 /*
-**  The type and structure definitions.
+**
 */
 
-/*+ Job selection policy types. +*/
-
-typedef enum BgraphBipartDfType_ {
-  BGRAPHBIPARTDFTYPEBAL = 0,                      /*+ Balance to average         +*/
-  BGRAPHBIPARTDFTYPEKEEP                          /*+ Preserve current imbalance +*/
-} BgraphBipartDfType;
-
-/*+ Method parameters. +*/
-
-typedef struct BgraphBipartDfParam_ {
-  INT                       passnbr;              /*+ Number of passes to do        +*/
-  double                    cdifval;              /*+ Coefficient of diffused load  +*/
-  double                    cremval;              /*+ Coefficient of remaining load +*/
-  BgraphBipartDfType        typeval;              /*+ Type of balance to reach      +*/
-} BgraphBipartDfParam;
-
-/*
-**  The function prototypes.
-*/
-
-#ifndef BGRAPH_BIPART_DF
-#define static
-#endif
-
-int                         bgraphBipartDf      (Bgraph * restrict const, const BgraphBipartDfParam * const);
-
-#undef static
+FORTRAN (                                   \
+SCOTCHFGRAPHCOARSEN, scotchfgraphcoarsen, ( \
+SCOTCH_Graph * const        finegrafptr,    \
+SCOTCH_Graph * const        coargrafptr,    \
+SCOTCH_Num * const          coarmulttab,    \
+SCOTCH_Num * const          coarnbrptr,     \
+double * const              coarratptr,     \
+int * const                 revaptr),       \
+(finegrafptr, coargrafptr, coarmulttab, coarnbrptr, coarratptr, revaptr))
+{
+  *revaptr = SCOTCH_graphCoarsen (finegrafptr, coargrafptr, coarmulttab, *coarnbrptr, *coarratptr);
+}

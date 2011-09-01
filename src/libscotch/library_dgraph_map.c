@@ -1,4 +1,4 @@
-/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 12 jun 2008     **/
-/**                                 to     14 aug 2010     **/
+/**                                 to     31 aug 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -161,7 +161,10 @@ SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
     ArchDom             archdomnorg;
 
     archDomFrst (&srcmappptr->m.archdat, &archdomnorg);
-    SCOTCH_stratDgraphMapBuild (stratptr, SCOTCH_STRATQUALITY, srcgrafptr->procglbnbr, archDomSize (&srcmappptr->m.archdat, &archdomnorg), 0.01);
+    if (archVar (&srcmappptr->m.archdat))
+      SCOTCH_stratDgraphClusterBuild (stratptr, 0, srcgrafptr->procglbnbr, 1, 1.0, 0.05);
+    else
+      SCOTCH_stratDgraphMapBuild (stratptr, 0, srcgrafptr->procglbnbr, archDomSize (&srcmappptr->m.archdat, &archdomnorg), 0.05);
   }
   mapstratptr = *((Strat **) stratptr);
   if (mapstratptr->tabl != &kdgraphmapststratab) {
@@ -268,52 +271,52 @@ SCOTCH_stratDgraphMapBuild (
 SCOTCH_Strat * const        stratptr,             /*+ Strategy to create              +*/
 const SCOTCH_Num            flagval,              /*+ Desired characteristics         +*/
 const SCOTCH_Num            procnbr,              /*+ Number of processes for running +*/
-const SCOTCH_Num            partnbr,              /*+ Number of expected parts/size   +*/
-const double                balrat)               /*+ Desired imbalance ratio         +*/
+const SCOTCH_Num            partnbr,              /*+ Number of expected parts        +*/
+const double                kbalval)              /*+ Desired imbalance ratio         +*/
 {
   char                bufftab[8192];              /* Should be enough */
   char                bbaltab[32];
-  double              bbalval;
+  char                kbaltab[32];
   char                verttab[32];
   Gnum                vertnbr;
-  int                 parttmp;
-  int                 blogval;
-  double              blogtmp;
   char *              difpptr;
   char *              difsptr;
   char *              exapptr;
   char *              exasptr;
   char *              muceptr;
 
-  for (parttmp = partnbr, blogval = 1; parttmp != 0; parttmp >>= 1, blogval ++) ; /* Get log2 of number of parts */
+  sprintf (kbaltab, "%lf", kbalval);
+  sprintf (bbaltab, "%lf", kbalval);
 
   vertnbr = MAX (2000 * procnbr, 10000);
   vertnbr = MIN (vertnbr, 100000);
   sprintf (verttab, GNUMSTRING, vertnbr);
 
-  blogtmp = 1.0 / (double) blogval;               /* Taylor development of (1 + balrat) ^ (1 / blogval) */
-  bbalval = (balrat * blogtmp) * (1.0 + (blogtmp - 1.0) * (balrat * 0.5 * (1.0 + (blogtmp - 2.0) * balrat / 3.0)));
-  sprintf (bbaltab, "%lf", bbalval);
+  strcpy (bufftab, "r{bal=<KBAL>,sep=m{vert=<VERT>,asc=b{bnd=<DIFP><MUCE><EXAP>,org=<MUCE><EXAP>},low=q{strat=(<BIPA>m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>},seq=q{strat=(<BIPA>m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>}},seq=r{bal=<KBAL>,poli=S,sep=(<BIPA>m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>}}");
+  stringSubst (bufftab, "<BIPA>", ((flagval & SCOTCH_STRATSPEED) != 0) ? ""
+               : "m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|");
 
-  strcpy (bufftab, "r{sep=m{vert=<VERT>,asc=b{bnd=<DIFP><MUCE><EXAP>,org=<MUCE><EXAP>},low=q{strat=(m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>},seq=q{strat=(m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>}},seq=r{sep=(m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>}}");
-
-  muceptr = "/(edge<1000000)?q{strat=f};";        /* Multi-centralization */
-  exapptr = "x{bal=<BBAL>}";                      /* Parallel exactifier  */
+  if ((flagval & SCOTCH_STRATSCALABILITY) != 0)
+    muceptr = "/(edge<10000000)?q{strat=f};";     /* Multi-centralization */
+  else
+    muceptr = "q{strat=f}";
 
   if ((flagval & SCOTCH_STRATBALANCE) != 0) {
     exapptr = "x{bal=0}";
     exasptr = "f{bal=0}";
   }
-  else
+  else {
+    exapptr = "x{bal=<KBAL>}";                    /* Parallel exactifier  */
     exasptr = "";
+  }
 
   if ((flagval & SCOTCH_STRATSAFETY) != 0) {
     difpptr = "";
     difsptr = "";
   }
   else {
-    difpptr = "(d{dif=1,rem=1,pass=40}|)";
-    difsptr = "(d{dif=1,rem=1,pass=40}|)";
+    difpptr = "(d{dif=1,rem=0,pass=40}|)";
+    difsptr = "(d{dif=1,rem=0,pass=40}|)";
   }
 
   stringSubst (bufftab, "<MUCE>", muceptr);
@@ -322,10 +325,92 @@ const double                balrat)               /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<DIFP>", difpptr);
   stringSubst (bufftab, "<DIFS>", difsptr);
   stringSubst (bufftab, "<BBAL>", bbaltab);
+  stringSubst (bufftab, "<KBAL>", kbaltab);
   stringSubst (bufftab, "<VERT>", verttab);
 
   if (SCOTCH_stratDgraphMap (stratptr, bufftab) != 0) {
     errorPrint ("SCOTCH_stratDgraphMapBuild: error in parallel mapping strategy");
+    return     (1);
+  }
+
+  return (0);
+}
+
+/*+ This routine provides predefined
+*** clustering strategies.
+*** It returns:
+*** - 0   : if string successfully initialized.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_stratDgraphClusterBuild (
+SCOTCH_Strat * const        stratptr,             /*+ Strategy to create              +*/
+const SCOTCH_Num            flagval,              /*+ Desired characteristics         +*/
+const SCOTCH_Num            procnbr,              /*+ Number of processes for running +*/
+const SCOTCH_Num            pwgtval,              /*+ Threshold part load             +*/
+const double                densval,              /*+ Threshold density value         +*/
+const double                bbalval)              /*+ Maximum imbalance ratio         +*/
+{
+  char                bufftab[8192];              /* Should be enough */
+  char                bbaltab[32];
+  char                denstab[32];
+  char                pwgttab[32];
+  char                verttab[32];
+  Gnum                vertnbr;
+  char *              difpptr;
+  char *              difsptr;
+  char *              exapptr;
+  char *              exasptr;
+  char *              muceptr;
+
+  sprintf (bbaltab, "%lf", bbalval);
+  sprintf (denstab, "%lf", densval);
+  sprintf (pwgttab, GNUMSTRING, pwgtval);
+
+  vertnbr = MAX (2000 * procnbr, 10000);
+  vertnbr = MIN (vertnbr, 100000);
+  sprintf (verttab, GNUMSTRING, vertnbr);
+
+  strcpy (bufftab, "r{sep=/((load><PWGT>)&!(edge>vert*<DENS>*(vert-1)))?m{vert=<VERT>,asc=b{bnd=<DIFP><MUCE><EXAP>,org=<MUCE><EXAP>},low=q{strat=(<BIPA>m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>},seq=q{strat=/((load><PWGT>)&!(edge>vert*<DENS>*(vert-1)))?(<BIPA>m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>;}};,seq=r{sep=/((load><PWGT>)&!(edge>vert*<DENS>*(vert-1)))?(<BIPA>m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>;}}");
+  stringSubst (bufftab, "<BIPA>", ((flagval & SCOTCH_STRATSPEED) != 0) ? ""
+               : "m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|");
+
+  if ((flagval & SCOTCH_STRATSCALABILITY) != 0)
+    muceptr = "/(edge<10000000)?q{strat=f};";     /* Multi-centralization */
+  else
+    muceptr = "q{strat=f}";
+
+  if ((flagval & SCOTCH_STRATBALANCE) != 0) {
+    exapptr = "x{bal=0}";
+    exasptr = "f{bal=0}";
+  }
+  else {
+    exapptr = "x{bal=<BBAL>}";                    /* Parallel exactifier  */
+    exasptr = "";
+  }
+
+  if ((flagval & SCOTCH_STRATSAFETY) != 0) {
+    difpptr = "";
+    difsptr = "";
+  }
+  else {
+    difpptr = "(d{dif=1,rem=0,pass=40}|)";
+    difsptr = "(d{dif=1,rem=0,pass=40}|)";
+  }
+
+  stringSubst (bufftab, "<MUCE>", muceptr);
+  stringSubst (bufftab, "<EXAP>", exapptr);
+  stringSubst (bufftab, "<EXAS>", exasptr);
+  stringSubst (bufftab, "<DIFP>", difpptr);
+  stringSubst (bufftab, "<DIFS>", difsptr);
+  stringSubst (bufftab, "<BBAL>", bbaltab);
+  stringSubst (bufftab, "<DENS>", denstab);
+  stringSubst (bufftab, "<PWGT>", pwgttab);
+  stringSubst (bufftab, "<VERT>", verttab);
+
+  if (SCOTCH_stratDgraphMap (stratptr, bufftab) != 0) {
+    errorPrint ("SCOTCH_stratDgraphClusterBuild: error in parallel mapping strategy");
     return     (1);
   }
 

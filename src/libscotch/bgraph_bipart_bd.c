@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 27 nov 2006     **/
 /**                                 to   : 23 dec 2007     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to   : 28 may 2010     **/
+/**                                 to   : 26 mar 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -503,6 +503,8 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
 
   bndgrafdat.fronnbr       = orggrafptr->fronnbr;
   bndgrafdat.compload0     = orggrafptr->compload0;
+  bndgrafdat.compload0min  = orggrafptr->compload0min;
+  bndgrafdat.compload0max  = orggrafptr->compload0max;
   bndgrafdat.compload0avg  = orggrafptr->compload0avg;
   bndgrafdat.compload0dlt  = orggrafptr->compload0dlt;
   bndgrafdat.compsize0     = bndvertnbr - bndcompsize1 + 1; /* "+ 1" for anchor vertex in part 0 */
@@ -514,6 +516,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   bndgrafdat.domwght[0]    = orggrafptr->domwght[0];
   bndgrafdat.domwght[1]    = orggrafptr->domwght[1];
   bndgrafdat.levlnum       = orggrafptr->levlnum;
+  bndgrafdat.bbalval       = orggrafptr->bbalval;
 
 #ifdef SCOTCH_DEBUG_BGRAPH2
   if ((graphCheck (&bndgrafdat.s) != 0) ||        /* Check band graph consistency */
@@ -542,6 +545,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   orggrafptr->compload0dlt = bndgrafdat.compload0dlt;
   orggrafptr->commload     = bndgrafdat.commload;
   orggrafptr->commgainextn = bndgrafdat.commgainextn;
+  orggrafptr->bbalval      = bndgrafdat.bbalval;
 
   if (bndgrafdat.parttax[bndvertnnd] != 0) {      /* If anchors swapped parts, swap all parts of original vertices */
     Gnum                orgvertnum;

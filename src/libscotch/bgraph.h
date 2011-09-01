@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,7 +60,7 @@
 /**                # Version 5.0  : from : 30 nov 2006     **/
 /**                                 to     30 nov 2006     **/
 /**                # Version 5.1  : from : 08 jan 2008     **/
-/**                                 to     04 nov 2010     **/
+/**                                 to     18 mar 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,22 +79,25 @@
 /*+ The bipartition graph structure. +*/
 
 typedef struct Bgraph_ {
-  Graph                     s;                    /*+ Source graph data                         +*/
-  Gnum *                    veextax;              /*+ Vertex external gain array if moved to 1  +*/
-  GraphPart *               parttax;              /*+ Array of parts for every vertex           +*/
-  Gnum *                    frontab;              /*+ Array of frontier vertex numbers          +*/
-  Gnum                      fronnbr;              /*+ Number of frontier vertices               +*/
-  Gnum                      compload0;            /*+ Load in part 0 (strategy variable)        +*/
-  Gnum                      compload0avg;         /*+ Average load of part 0                    +*/
-  Gnum                      compload0dlt;         /*+ Difference from the average               +*/
-  Gnum                      compsize0;            /*+ Number of vertices in part 0              +*/
-  Gnum                      commload;             /*+ Communication load                        +*/
-  Gnum                      commgainextn;         /*+ External gain if all swapped              +*/
-  Gnum                      commloadextn0;        /*+ Communication load if all moved to part 0 +*/
-  Gnum                      commgainextn0;        /*+ External gain if all swapped from part 0  +*/
-  Anum                      domdist;              /*+ Distance between subdomains               +*/
-  Gnum                      domwght[2];           /*+ Weights of the two subdomains             +*/
-  INT                       levlnum;              /*+ Coarsening level                          +*/
+  Graph                     s;                    /*+ Source graph data                                  +*/
+  Gnum *                    veextax;              /*+ Vertex external gain array if moved to 1           +*/
+  GraphPart *               parttax;              /*+ Array of parts for every vertex                    +*/
+  Gnum *                    frontab;              /*+ Array of frontier vertex numbers                   +*/
+  Gnum                      fronnbr;              /*+ Number of frontier vertices                        +*/
+  Gnum                      compload0min;         /*+ Minimum allowed load in part 0 (strategy variable) +*/
+  Gnum                      compload0max;         /*+ Maximum allowed load in part 0 (strategy variable) +*/
+  Gnum                      compload0avg;         /*+ Average load of part 0                             +*/
+  Gnum                      compload0dlt;         /*+ Difference from the average                        +*/
+  Gnum                      compload0;            /*+ Load in part 0 (strategy variable)                 +*/
+  Gnum                      compsize0;            /*+ Number of vertices in part 0                       +*/
+  Gnum                      commload;             /*+ Communication load                                 +*/
+  Gnum                      commloadextn0;        /*+ Communication load if all moved to part 0          +*/
+  Gnum                      commgainextn0;        /*+ External gain if all swapped from part 0           +*/
+  Gnum                      commgainextn;         /*+ External gain if all swapped                       +*/
+  Anum                      domdist;              /*+ Distance between subdomains                        +*/
+  Gnum                      domwght[2];           /*+ Weights of the two subdomains                      +*/
+  INT                       levlnum;              /*+ Coarsening level                                   +*/
+  double                    bbalval;              /*+ Bipartitioning imbalance ratio (strategy variable) +*/
 } Bgraph;
 
 /*+ The save graph structure. +*/

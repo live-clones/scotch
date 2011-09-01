@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**   DATES      : # Version 5.0  : from : 09 jan 2007     **/
 /**                                 to     10 sep 2007     **/
 /**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     09 nov 2008     **/
+/**                                 to     27 mar 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -97,6 +97,7 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
   float                 cdifval;
   float                 cremval;
   Gnum                  fronnum;
+  Gnum                  compload0;
   Gnum                  compload1;
   Gnum                  compsize1;
   Gnum                  commloadintn;
@@ -129,9 +130,14 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
   difntax -= grafptr->s.baseval;
   veextax  = (grafptr->veextax != NULL) ? veextax - grafptr->s.baseval : NULL;
 
-  vancval0 = (float) - grafptr->compload0avg;     /* Values to be injected to anchor vertices at every iteration */
-  vancval1 = (float) (grafptr->s.velosum - grafptr->compload0avg);
-  if (grafptr->s.edlotax == NULL) {               /* If graph has no edge weights */
+  compload0 = (paraptr->typeval == BGRAPHBIPARTDFTYPEBAL) /* If balanced parts wanted */
+              ? grafptr->compload0avg             /* Target is average                */
+              : ( (grafptr->compload0 < grafptr->compload0min) ? grafptr->compload0min : /* Else keep load if not off balance */
+                 ((grafptr->compload0 > grafptr->compload0max) ? grafptr->compload0max : grafptr->compload0));
+  vancval0 = (float) - compload0;                 /* Values to be injected to anchor vertices at every iteration */
+  vancval1 = (float) (grafptr->s.velosum - compload0);
+
+  if (grafptr->s.edlotax == NULL) {               /* If graph doesn't have edge weights */
     Gnum                vertnum;
 
     for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) {
@@ -308,6 +314,7 @@ abort :                                           /* If overflow occured, resume
   grafptr->compsize0    = grafptr->s.vertnbr - compsize1;
   grafptr->commload     = commloadextn + (commloadintn / 2) * grafptr->domdist;
   grafptr->commgainextn = commgainextn;
+  grafptr->bbalval      = (double) ((grafptr->compload0dlt < 0) ? (- grafptr->compload0dlt) : grafptr->compload0dlt) / (double) grafptr->compload0avg;
 
   memFree (edlstax + grafptr->s.baseval);
 

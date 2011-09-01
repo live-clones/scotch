@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 28 feb 2006     **/
 /**                                 to     05 feb 2008     **/
 /**                # Version 5.1  : from : 28 aug 2008     **/
-/**                                 to     19 jan 2009     **/
+/**                                 to     22 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -125,7 +125,7 @@ const int * restrict const    sendcnttab)         /* Count array                
     dgraphHaloFillGnum (grafptr, attrgsttab, attrglbsiz, attrdsptab);
   else if (attrglbsiz == sizeof (GraphPart))
     dgraphHaloFillGraphPart (grafptr, attrgsttab, attrglbsiz, attrdsptab);
-  else if (attrglbsiz == sizeof (int))            /* In case Gnum is not int */
+  else if (attrglbsiz == sizeof (int))            /* In case Gnum is not int (suitable for float's too) */
     dgraphHaloFillInt (grafptr, attrgsttab, attrglbsiz, attrdsptab);
   else                                            /* Generic but slower fallback routine */
     dgraphHaloFillGeneric (grafptr, attrgsttab, attrglbsiz, attrdsptab);
@@ -186,34 +186,43 @@ static
 int
 dgraphHaloSync2 (
 Dgraph * restrict const       grafptr,
-void * restrict const         attrgsttab,         /* Attribute array to share                      */
-const MPI_Datatype            attrglbtype,        /* Attribute datatype                            */
-byte ** const                 attrsndptr,         /* Pointer to array for packing data to send     */
-int ** const                  senddspptr,         /* Pointers to communication displacement arrays */
-int ** const                  recvdspptr)
+void * restrict const         attrgsttab,         /* Attribute array to share                          */
+const MPI_Datatype            attrglbtype,        /* Attribute datatype                                */
+byte ** const                 attrsndptr,         /* Pointer to array for packing data to send         */
+int ** const                  senddspptr,         /* Pointers to communication displacement arrays     */
+int ** const                  recvdspptr,
+MPI_Request ** const          requptr)            /* Pointer to local request array for point-to-point */
 {
-  MPI_Aint            attrglbsiz;                 /* Extent of attribute datatype */
-  int                 procngbnum;
+  MPI_Aint              attrglbsiz;               /* Extent of attribute datatype                            */
+  int                   procngbsiz;               /* Size of request array for point-to-point communications */
+  int                   procngbnum;
+  int * restrict        recvdsptab;
+  const int * restrict  procrcvtab;
 
   if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
     errorPrint ("dgraphHaloSync2: cannot compute ghost edge array");
     return     (1);
   }
 
+  procngbsiz = ((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? grafptr->procngbnbr : 0;
+
   MPI_Type_extent (attrglbtype, &attrglbsiz);     /* Get type extent */
   if (memAllocGroup ((void **) (void *)
                      attrsndptr, (size_t) (grafptr->procsndnbr * attrglbsiz),
                      senddspptr, (size_t) (grafptr->procglbnbr * MAX (sizeof (int), sizeof (byte *))), /* TRICK: use senddsptab (int *) as attrdsptab (byte **) */
-                     recvdspptr, (size_t) (grafptr->procglbnbr * sizeof (int)), NULL) == NULL) {
+                     recvdspptr, (size_t) (grafptr->procglbnbr * sizeof (int)),
+                     requptr,    (size_t) (procngbsiz * 2      * sizeof (MPI_Request)), NULL) == NULL) {
     errorPrint ("dgraphHaloSync2: out of memory");
     return     (1);
   }
 
   dgraphHaloFill (grafptr, attrgsttab, attrglbsiz, *attrsndptr, *senddspptr, grafptr->procsndtab); /* Fill data arrays */
 
-  (*recvdspptr)[0] = grafptr->vertlocnbr;
+  recvdsptab = *recvdspptr;
+  procrcvtab = grafptr->procrcvtab;
+  recvdsptab[0] = grafptr->vertlocnbr;
   for (procngbnum = 1; procngbnum < grafptr->procglbnbr; procngbnum ++)
-    (*recvdspptr)[procngbnum] = (*recvdspptr)[procngbnum - 1] + grafptr->procrcvtab[procngbnum - 1];
+    recvdsptab[procngbnum] = recvdsptab[procngbnum - 1] + procrcvtab[procngbnum - 1];
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphHaloCheck (grafptr) != 0) {
@@ -234,17 +243,64 @@ const MPI_Datatype            attrglbtype)        /* Attribute datatype       */
   byte *              attrsndtab;                 /* Array for packing data to send */
   int *               senddsptab;
   int *               recvdsptab;
+  MPI_Request *       requtab;
   int                 o;
 
-  if (dgraphHaloSync2 (grafptr, attrgsttab, attrglbtype, &attrsndtab, &senddsptab, &recvdsptab) != 0) /* Prepare communication arrays */
+  if (dgraphHaloSync2 (grafptr, attrgsttab, attrglbtype, &attrsndtab, &senddsptab, &recvdsptab, &requtab) != 0) /* Prepare communication arrays */
     return (1);
 
-  o = 0;                                          /* Assume success */
-  if (MPI_Alltoallv (attrsndtab, grafptr->procsndtab, senddsptab, attrglbtype, /* Perform diffusion */
-                     attrgsttab, grafptr->procrcvtab, recvdsptab, attrglbtype,
-                     grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("dgraphHaloSync: communication error");
-    o = 1;
+  o = 0;                                          /* Assume success               */
+  if ((grafptr->flagval & DGRAPHCOMMPTOP) != 0) { /* If point-to-point exchange   */
+    MPI_Aint              attrglbsiz;             /* Extent of attribute datatype */
+    const int * restrict  procrcvtab;
+    const int * restrict  procsndtab;
+    const int * restrict  procngbtab;
+    int                   procngbnbr;
+    int                   procngbnum;
+    MPI_Comm              proccomm;
+    int                   requnbr;
+
+    proccomm   = grafptr->proccomm;
+    procngbtab = grafptr->procngbtab;
+    procngbnbr = grafptr->procngbnbr;
+    procrcvtab = grafptr->procrcvtab;
+    MPI_Type_extent (attrglbtype, &attrglbsiz);   /* Get type extent */
+    for (procngbnum = procngbnbr - 1, requnbr = 0; procngbnum >= 0; procngbnum --, requnbr ++) { /* Post receives first */
+      int                 procglbnum;
+
+      procglbnum = procngbtab[procngbnum];
+      if (MPI_Irecv ((byte *) attrgsttab + recvdsptab[procglbnum] * attrglbsiz, procrcvtab[procglbnum],
+                     attrglbtype, procglbnum, TAGHALO, proccomm, requtab + requnbr) != MPI_SUCCESS) {
+        errorPrint ("dgraphHaloSync: communication error (1)");
+        o = 1;
+        break;
+      }
+    }
+
+    procsndtab = grafptr->procsndtab;
+    for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++, requnbr ++) { /* Post sends afterwards */
+      int                 procglbnum;
+
+      procglbnum = procngbtab[procngbnum];
+      if (MPI_Isend (attrsndtab + senddsptab[procglbnum] * attrglbsiz, procsndtab[procglbnum],
+                     attrglbtype, procglbnum, TAGHALO, proccomm, requtab + requnbr) != MPI_SUCCESS) {
+        errorPrint ("dgraphHaloSync: communication error (2)");
+        o = 1;
+        break;
+      }
+    }
+    if (MPI_Waitall (requnbr, requtab, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
+      errorPrint ("dgraphHaloSync: communication error (3)");
+      o = 1;
+    }
+  }
+  else {                                          /* Collective communication */
+    if (MPI_Alltoallv (attrsndtab, grafptr->procsndtab, senddsptab, attrglbtype, /* Perform diffusion */
+                       attrgsttab, grafptr->procrcvtab, recvdsptab, attrglbtype,
+                       grafptr->proccomm) != MPI_SUCCESS) {
+      errorPrint ("dgraphHaloSync: communication error (4)");
+      o = 1;
+    }
   }
 
   memFree (attrsndtab);                           /* Free group leader */
