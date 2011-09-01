@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.1  : from : 04 oct 2009     **/
-/**                                 to     14 jul 2010     **/
+/**                                 to     29 mar 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,7 +84,7 @@ static union {
 static union {
   KgraphMapRbParam          param;
   StratNodeMethodData       padding;
-} kgraphmapstdefaultrb = { { 1, 1, KGRAPHMAPRBPOLINGSIZE, &stratdummy } };
+} kgraphmapstdefaultrb = { { 1, 1, KGRAPHMAPRBPOLINGSIZE, &stratdummy, 0.05 } };
 
 static StratMethodTab       kgraphmapstmethtab[] = { /* Mapping methods array */
                               { KGRAPHMAPSTMETHML, "m",  kgraphMapMl, &kgraphmapstdefaultml },
@@ -116,13 +116,17 @@ static StratParamTab        kgraphmapstparatab[] = { /* Method parameter list */
                                 (byte *) &kgraphmapstdefaultrb.param,
                                 (byte *) &kgraphmapstdefaultrb.param.flagjobtie,
                                 (void *) "ut" },
+                              { KGRAPHMAPSTMETHRB,  STRATPARAMDOUBLE, "bal",
+                                (byte *) &kgraphmapstdefaultrb.param,
+                                (byte *) &kgraphmapstdefaultrb.param.kbalval,
+                                NULL },
                               { KGRAPHMAPSTMETHRB,  STRATPARAMCASE,   "map",
                                 (byte *) &kgraphmapstdefaultrb.param,
                                 (byte *) &kgraphmapstdefaultrb.param.flagmaptie,
                                 (void *) "ut" },
                               { KGRAPHMAPSTMETHRB,  STRATPARAMCASE,   "poli",
                                 (byte *) &kgraphmapstdefaultrb.param,
-                                (byte *) &kgraphmapstdefaultrb.param.poli,
+                                (byte *) &kgraphmapstdefaultrb.param.polival,
                                 (void *) "rls LS" },
                               { KGRAPHMAPSTMETHRB,  STRATPARAMSTRAT,  "sep",
                                 (byte *) &kgraphmapstdefaultrb.param,

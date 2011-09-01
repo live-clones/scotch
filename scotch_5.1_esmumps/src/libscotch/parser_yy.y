@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     11 jun 2004     **/
 /**                # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to     09 jun 2009     **/
+/**                                 to     24 jul 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -112,8 +112,8 @@ extern unsigned int         parsermethtokentab[]; /* Pre-definition for stupid c
 %type <TEST>         TESTEXPR4     TESTVAL       TESTVAR
 %type <TESTOP>       TESTRELOP     TESTEXPR1OP   TESTEXPR2OP   TESTEXPR3OP
 %type <CASEVAL>      VALCASE
-%type <DOUBLE>       VALDOUBLE
-%type <INTEGER>      VALINT
+%type <DOUBLE>       VALDOUBLE     VALSDOUBLE
+%type <INTEGER>      VALINT        VALSINT
 %type <STRING>       VALSTRING
 %type <STRAT>        STRATCONCAT   STRATTEST     STRATTESTELSE STRATEMPTY
 %type <STRAT>        STRATGROUP    STRATMETHOD   STRATSELECT
@@ -390,7 +390,7 @@ PARAMVAL      : VALCASE
                            (parserparamcurr->dataofft -
                             parserparamcurr->database))) = i;
               }
-              | VALDOUBLE
+              | VALSDOUBLE
               {
 #ifdef SCOTCH_DEBUG_PARSER2
                 if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (double)) > sizeof (StratNodeMethodData)) {
@@ -403,7 +403,7 @@ PARAMVAL      : VALCASE
                               (parserparamcurr->dataofft -
                                parserparamcurr->database))) = ($1);
               }
-              | VALINT
+              | VALSINT
               {
 #ifdef SCOTCH_DEBUG_PARSER2
                 if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (INT)) > sizeof (StratNodeMethodData)) {
@@ -649,7 +649,7 @@ TESTEXPR4     : '(' TESTEXPR1 ')'
               | TESTVAR
               ;
 
-TESTVAL       : VALDOUBLE
+TESTVAL       : VALSDOUBLE
               {
                 StratTest *       test;
 
@@ -664,7 +664,7 @@ TESTVAL       : VALDOUBLE
 
                 ($$) = test;
               }
-              | VALINT
+              | VALSINT
               {
                 StratTest *       test;
 
@@ -720,6 +720,20 @@ TESTVAR       : PARAMNAME
 
                 ($$) = test;
               }
+              ;
+
+VALSDOUBLE    : TESTEXPR1OP VALDOUBLE
+              {
+                ($$) = (($1) == STRATTESTSUB) ? - ($2) : ($2);
+              }
+              | VALDOUBLE
+              ;
+
+VALSINT       : TESTEXPR1OP VALINT
+              {
+                ($$) = (($1) == STRATTESTSUB) ? - ($2) : ($2);
+              }
+              | VALINT
               ;
 
 %%

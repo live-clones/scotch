@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 17 jun 2008     **/
 /**                                 to     17 jun 2008     **/
 /**                # Version 5.1  : from : 13 jul 2010     **/
-/**                                 to     04 nov 2010     **/
+/**                                 to     31 aug 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,14 +70,15 @@
 /*+ The graph structure. +*/
 
 typedef struct Kgraph_ {
-  Graph                     s;                    /*+ Source graph                      +*/
-  Mapping                   m;                    /*+ Current mapping of graph vertices +*/
-  Gnum                      fronnbr;              /*+ Number of frontier vertices       +*/
-  Gnum *                    frontab;              /*+ Array of frontier vertex numbers  +*/
-  Gnum *                    comploadavg;          /*+ Array of target average loads     +*/
-  Gnum *                    comploaddlt;          /*+ Array of target imbalances        +*/
-  Gnum                      commload;             /*+ Communication load                +*/
-  INT                       levlnum;              /*+ Coarsening level                  +*/
+  Graph                     s;                    /*+ Source graph                       +*/
+  Mapping                   m;                    /*+ Current mapping of graph vertices  +*/
+  Gnum                      fronnbr;              /*+ Number of frontier vertices        +*/
+  Gnum *                    frontab;              /*+ Array of frontier vertex numbers   +*/
+  Gnum *                    comploadavg;          /*+ Array of target average loads      +*/
+  Gnum *                    comploaddlt;          /*+ Array of target imbalances         +*/
+  double                    comploadrat;          /*+ Ideal load balance per weight unit +*/
+  Gnum                      commload;             /*+ Communication load                 +*/
+  INT                       levlnum;              /*+ Coarsening level                   +*/
 } Kgraph;
 
 /*

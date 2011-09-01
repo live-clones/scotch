@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 16 mar 2008     **/
 /**                # Version 5.1  : from : 11 dec 2008     **/
-/**                                 to   : 15 aug 2010     **/
+/**                                 to   : 17 jul 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -108,9 +108,7 @@ char *                      argv[])
   SCOTCH_Num *        listtab;                    /* Pointer to list array                     */
   C_VertSort *        sorttab;                    /* Vertex label sort area                    */
   SCOTCH_Num          baseval;
-  SCOTCH_Num          vertnum;
-  SCOTCH_Num          listnum;
-  int                 flag;                       /* Process flags */
+  int                 flagval;                    /* Process flags                             */
   int                 i;
 
   errorProg ("amk_grf");
@@ -122,7 +120,7 @@ char *                      argv[])
     return     (0);
   }
 
-  flag = C_FLAGNONE;
+  flagval = C_FLAGNONE;
   SCOTCH_stratInit (&bipastrat);
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
@@ -153,17 +151,17 @@ char *                      argv[])
           return     (0);
         case 'L' :                                /* Input vertex list */
         case 'l' :
-          flag |= C_FLAGVRTINP;
+          flagval |= C_FLAGVRTINP;
           if (argv[i][2] != '\0')
             C_filenamevrtinp = &argv[i][2];
           break;
         case 'V' :
           fprintf (stderr, "amk_grf, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
-          errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
+          errorPrint ("main: unprocessed option '%s'", argv[i]);
           return     (1);
       }
     }
@@ -171,33 +169,35 @@ char *                      argv[])
 
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
-  SCOTCH_graphInit (&grafdat);                    /* Create graph structure            */
-  SCOTCH_graphLoad (&grafdat, C_filepntrgrfinp, -1, 0); /* Load source graph           */
-  SCOTCH_graphData (&grafdat,  &baseval, &vertnbr, NULL, NULL, NULL, /* Get graph data */
+  SCOTCH_graphInit (&grafdat);                    /* Create graph structure           */
+  SCOTCH_graphLoad (&grafdat, C_filepntrgrfinp, -1, 0); /* Load source graph          */
+  SCOTCH_graphData (&grafdat, &baseval, &vertnbr, NULL, NULL, NULL, /* Get graph data */
                     &vlbltab, NULL, NULL, NULL);
 
   listnbr = 0;                                    /* Initialize vertex list */
   listtab = NULL;
-  if (flag & C_FLAGVRTINP) {                      /* If list of vertices provided */
-    if ((intLoad (C_filepntrvrtinp, &listnbr) != 1) || /* Read list size          */
+  if (flagval & C_FLAGVRTINP) {                   /* If list of vertices provided */
+    SCOTCH_Num          listnum;
+
+    if ((intLoad (C_filepntrvrtinp, &listnbr) != 1) || /* Read list size */
         (listnbr < 0)                               ||
         (listnbr > vertnbr)) {
       errorPrint ("main: bad list input (1)");
       return     (1);
     }
-    if ((listtab = (SCOTCH_Num *) memAlloc (vertnbr * sizeof (SCOTCH_Num) + 1)) == NULL) {
+    if ((listtab = (SCOTCH_Num *) memAlloc (listnbr * sizeof (SCOTCH_Num) + 1)) == NULL) {
       errorPrint ("main: out of memory (1)");
       return     (1);
     }
-    for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Read list data */
-      if (intLoad (C_filepntrvrtinp, &listtab[vertnum]) != 1) {
+    for (listnum = 0; listnum < listnbr; listnum ++) { /* Read list data */
+      if (intLoad (C_filepntrvrtinp, &listtab[listnum]) != 1) {
         errorPrint ("main: bad list input (2)");
         return     (1);
       }
     }
-    intSort1asc1 (listtab, vertnbr);
-    for (vertnum = 0; vertnum < vertnbr - 1; vertnum ++) { /* Search for duplicates */
-      if (listtab[vertnum] == listtab[vertnum + 1]) {
+    intSort1asc1 (listtab, listnbr);
+    for (listnum = 0; listnum < listnbr - 1; listnum ++) { /* Search for duplicates */
+      if (listtab[listnum] == listtab[listnum + 1]) {
         errorPrint ("main: duplicate list labels");
         memFree    (listtab);
         return     (1);
@@ -205,28 +205,30 @@ char *                      argv[])
     }
 
     if (vlbltab != NULL) {                        /* If graph has vertex labels */
+      SCOTCH_Num          vertnum;
+
       if ((sorttab = (C_VertSort *) memAlloc (vertnbr * sizeof (C_VertSort))) == NULL) {
         errorPrint ("main: out of memory (2)");
         memFree    (listtab);
         return     (1);
       }
       for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Initialize sort area */
-        sorttab[vertnum].labl = vlbltab[vertnum];
-        sorttab[vertnum].num  = vertnum;
+        sorttab[vertnum].vlblnum = vlbltab[vertnum];
+        sorttab[vertnum].vertnum = vertnum;
       }
       intSort2asc1 (sorttab, vertnbr);            /* Sort by ascending labels */
 
       for (listnum = 0, vertnum = 0; listnum < listnbr; listnum ++) {  /* For all labels in list */
-        while ((vertnum < vertnbr) && (sorttab[vertnum].labl < listtab[listnum]))
+        while ((vertnum < vertnbr) && (sorttab[vertnum].vlblnum < listtab[listnum]))
           vertnum ++;                             /* Search vertex graph with corresponding label */
         if ((vertnum >= vertnbr) ||               /* If label not found                           */
-            (sorttab[vertnum].labl > listtab[listnum])) {
-          errorPrint ("main: list label not in graph (" SCOTCH_NUMSTRING ")", (SCOTCH_Num) listtab[listnum]);
+            (sorttab[vertnum].vlblnum > listtab[listnum])) {
+          errorPrint ("main: list label '" SCOTCH_NUMSTRING "' not in graph", (SCOTCH_Num) listtab[listnum]);
           memFree    (sorttab);
           memFree    (listtab);
           return     (1);
         }
-        listtab[listnum] = sorttab[vertnum ++].num; /* Replace label by number */
+        listtab[listnum] = sorttab[vertnum ++].vertnum; /* Replace label by number */
       }
       memFree (sorttab);                          /* Free sort area */
     }
@@ -236,7 +238,7 @@ char *                      argv[])
   SCOTCH_archBuild (&archdat, &grafdat, listnbr, listtab, &bipastrat); /* Compute architecture */
   SCOTCH_archSave  (&archdat, C_filepntrtgtout);  /* Write target architecture                 */
 
-  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
+  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end potential (un)compression tasks */
 
   SCOTCH_graphExit (&grafdat);                    /* Free target graph        */
   SCOTCH_archExit  (&archdat);                    /* Free target architecture */

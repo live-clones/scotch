@@ -1,4 +1,4 @@
-/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,8 +39,8 @@
 /**                for the Dual Recursive Bipartitioning   **/
 /**                mapping algorithm.                      **/
 /**                                                        **/
-/**   DATES      : # Version 5.2  : from : 22 sep 2008     **/
-/**                                 to     04 nov 2010     **/
+/**   DATES      : # Version 5.1  : from : 22 sep 2008     **/
+/**                                 to     14 apr 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -48,12 +48,16 @@
 **  The type and structure definitions.
 */
 
+/*+ This structure holds the data passed to each bipartitioning job. +*/
+
 typedef struct KgraphMapRbPartData_ {
   const Graph *             topgrafptr;           /*+ Pointer to top-level graph          +*/
   Gnum *                    topfrontab;           /*+ Pointer to top-level frontier array +*/
   Gnum                      topfronnbr;           /*+ Current number of frontier vertices +*/
   Mapping *                 mappptr;
   const KgraphMapRbParam *  paraptr;
+  double                    comploadmin;          /*+ Minimum vertex load per target load +*/
+  double                    comploadmax;          /*+ Maximum vertex load per target load +*/
 } KgraphMapRbPartData;
 
 /*

@@ -40,7 +40,7 @@
 /**                for the main routine.                   **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 12 jun 2008     **/
-/**                                 to   : 28 aug 2010     **/
+/**                                 to   : 18 jul 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,6 +72,7 @@
 #define C_FLAGVERBMEM               0x0010
 #define C_FLAGDEBUG                 0x0020        /* Debugging           */
 #define C_FLAGKBALVAL               0x0040        /* Imbalance tolerance */
+#define C_FLAGCLUSTER               0x0080        /* Clustering          */
 
 /*
 **  The function prototypes.

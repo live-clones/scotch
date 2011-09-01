@@ -250,7 +250,7 @@ const GraphCoarsenMulti * restrict const  coarmulttax) /*+ Multinode array +*/
 
 /* This routine recursively performs the partitioning.
 ** It returns:
-** - 0   : if separator could be computed.
+** - 0   : if mapping could be computed.
 ** - !0  : on error.
 */
 

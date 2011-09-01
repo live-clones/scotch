@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 5.1  : from : 05 jun 2009     **/
-/**                                 to   : 17 nov 2010     **/
+/**                                 to   : 13 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -192,6 +192,20 @@ const SCOTCH_Arch * const   archptr)
 
   archDomFrst ((Arch *) archptr, &domdat);        /* Get first domain     */
   return (archDomSize ((Arch *) archptr, &domdat)); /* Return domain size */
+}
+
+/*+ This routine tells if the given architecture
+*** is a variable-sized architecture or not.
+*** It returns:
+*** - 0  : if the architecture is not variable-sized.
+*** - 1  : if the architecture is variable-sized.
++*/
+
+int
+SCOTCH_archVar (
+const SCOTCH_Arch * const   archptr)
+{
+  return ((archVar ((Arch *) archptr) != 0) ? 1 : 0);
 }
 
 /*+ These routines fill the contents of the given

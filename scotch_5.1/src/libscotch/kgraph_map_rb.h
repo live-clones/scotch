@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,7 +60,7 @@
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     05 may 2006     **/
 /**                # Version 5.1  : from : 07 oct 2008     **/
-/**                                 to     07 oct 2008     **/
+/**                                 to     28 mar 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,8 +85,9 @@ typedef enum KgraphMapRbPolicy_ {
 typedef struct KgraphMapRbParam_ {
   int                       flagjobtie;           /*+ Flag set of job pools are tied +*/
   int                       flagmaptie;           /*+ Flag set if mappings are tied  +*/
-  KgraphMapRbPolicy         poli;                 /*+ Job selection policy           +*/
+  KgraphMapRbPolicy         polival;              /*+ Job selection policy           +*/
   Strat *                   strat;                /*+ Bipartitioning strategy used   +*/
+  double                    kbalval;              /*+ K-way imbalance ratio          +*/
 } KgraphMapRbParam;
 
 /*

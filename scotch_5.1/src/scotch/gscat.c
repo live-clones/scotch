@@ -1,4 +1,4 @@
-/* Copyright 2009,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2009-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                distributed source graph.               **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 26 apr 2009     **/
-/**                                 to   : 29 aug 2010     **/
+/**                                 to   : 14 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,7 +100,7 @@ char *                      argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_paraNum < 1) {                        /* If number of parameters not reached              */
         if ((p[C_paraNum ++] = atoi (argv[i])) < 1) { /* Get number of parts                          */
-          errorPrint ("main: invalid number of parts (\"%s\")", argv[i]);
+          errorPrint ("main: invalid number of parts '%s'", argv[i]);
           return     (1);
         }
         continue;                                 /* Process the other parameters */
@@ -120,11 +120,11 @@ char *                      argv[])
           return     (0);
         case 'V' :
           fprintf (stderr, "gscat, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2009,2010 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2009-2011 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
-          errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
+          errorPrint ("main: unprocessed option '%s'", argv[i]);
           return     (1);
       }
     }

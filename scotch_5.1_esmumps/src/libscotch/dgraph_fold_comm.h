@@ -1,4 +1,4 @@
-/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                # Version 5.0  : from : 23 may 2006     **/
 /**                                 to     19 aug 2006     **/
 /**                # Version 5.1  : from : 30 jul 2010     **/
-/**                                 to     30 jul 2010     **/
+/**                                 to     03 jan 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,9 +50,9 @@
 **  The defines.
 */
 
-/*+ Maximum number of communications per process +*/
+/*+ Starting maximum number of communications per process +*/
 
-#define DGRAPHFOLDCOMMNBR           4             /* Maximum number of communications per process */
+#define DGRAPHFOLDCOMMNBR           4             /* Starting maximum number of communications per process */
 
 /*
 **  The type and structure definitions.
@@ -79,4 +79,4 @@ typedef struct DgraphFoldCommData_ {
 ** The function prototypes.
 */
 
-int                         dgraphFoldComm      (const Dgraph * restrict const, const int, int * restrict const, DgraphFoldCommData * restrict const, Gnum * restrict const, Gnum * restrict const, int * restrict const, Gnum * restrict const, Gnum * restrict const);
+int                         dgraphFoldComm      (const Dgraph * restrict const, const int, int * restrict const, int * restrict const, DgraphFoldCommData * restrict * restrict const, Gnum * restrict * restrict const, Gnum * restrict const, int * restrict const, Gnum * restrict * restrict const, Gnum * restrict * restrict const);

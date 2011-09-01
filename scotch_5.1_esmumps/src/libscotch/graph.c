@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                                 to     31 dec 1998     **/
 /**                # Version 4.0  : from : 24 nov 2001     **/
 /**                                 to     22 apr 2004     **/
+/**                # Version 5.1  : from : 08 mar 2011     **/
+/**                                 to     08 mar 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -135,7 +137,8 @@ Graph * const               grafptr)
     if ((grafptr->velotax != NULL) &&             /* Free graph tables             */
         ((grafptr->flagval & GRAPHVERTGROUP) == 0))
       memFree (grafptr->velotax + grafptr->baseval);
-    if (grafptr->vlbltax != NULL)
+    if ((grafptr->vlbltax != NULL) &&
+        ((grafptr->flagval & GRAPHVERTGROUP) == 0))
       memFree (grafptr->vlbltax + grafptr->baseval);
     if ((grafptr->edlotax != NULL) &&
         ((grafptr->flagval & GRAPHEDGEGROUP) == 0))

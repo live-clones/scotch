@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 4.0  : from : 12 jan 2004     **/
 /**                                 to     12 dec 2005     **/
 /**                # Version 5.1  : from : 27 mar 2010     **/
-/**                                 to     25 jul 2010     **/
+/**                                 to     31 aug 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -253,4 +253,21 @@ int * const                 revaptr),                   \
 (stratptr, flagval, partnbr, balrat, revaptr))
 {
   *revaptr = SCOTCH_stratGraphMapBuild (stratptr, *flagval, *partnbr, *balrat);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                                       \
+SCOTCHFSTRATGRAPHCLUSTERBUILD, scotchfstratgraphclusterbuild, ( \
+SCOTCH_Strat * const        stratptr,                           \
+const SCOTCH_Num * const    flagval,                            \
+const SCOTCH_Num * const    pwgtval,                            \
+const double * const        densval,                            \
+const double * const        bbalval,                            \
+int * const                 revaptr),                           \
+(stratptr, flagval, pwgtval, densval, bbalval, revaptr))
+{
+  *revaptr = SCOTCH_stratGraphClusterBuild (stratptr, *flagval, *pwgtval, *densval, *bbalval);
 }

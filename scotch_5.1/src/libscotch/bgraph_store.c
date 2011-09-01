@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     17 oct 1998     **/
 /**                # Version 4.0  : from : 18 dec 2001     **/
 /**                                 to     16 jun 2004     **/
+/**                # Version 5.1  : from : 22 feb 2011     **/
+/**                                 to     22 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -153,6 +155,7 @@ const BgraphStore * const   storptr)
   grafptr->compsize0    = storptr->compsize0;
   grafptr->commload     = storptr->commload;
   grafptr->commgainextn = storptr->commgainextn;
+  grafptr->bbalval      = (double) ((grafptr->compload0dlt < 0) ? (- grafptr->compload0dlt) : grafptr->compload0dlt) / (double) grafptr->compload0avg;
 
   frontab = storptr->datatab;                     /* Compute data offsets within save structure */
   parttab = frontab + grafptr->fronnbr * sizeof (Gnum);

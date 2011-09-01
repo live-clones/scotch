@@ -1,4 +1,4 @@
-/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.0  : from : 30 apr 2006     **/
 /**                                 to   : 16 jun 2008     **/
 /**                # Version 5.1  : from : 26 oct 2008     **/
-/**                                 to   : 25 jul 2010     **/
+/**                                 to   : 14 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -196,7 +196,7 @@ char *              argv[])
                 straval |= SCOTCH_STRATSCALABILITY;
                 break;
               default :
-                errorPrint ("main: invalid strategy selection option (\"%c\")", argv[i][j]);
+                errorPrint ("main: invalid strategy selection option '%c'", argv[i][j]);
             }
           }
           break;
@@ -239,7 +239,7 @@ char *              argv[])
           break;
         case 'V' :
           fprintf (stderr, "dgord, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2007-2010 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2007-2011 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                                /* Output control info */
@@ -262,12 +262,12 @@ char *              argv[])
                 flagval |= C_FLAGVERBTIM;
                 break;
               default :
-                errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"", argv[i][j], argv[i]);
+                errorPrint ("main: unprocessed parameter '%c' in '%s'", argv[i][j], argv[i]);
             }
           }
           break;
         default :
-          errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
+          errorPrint ("main: unprocessed option '%s'", argv[i]);
       }
     }
   }

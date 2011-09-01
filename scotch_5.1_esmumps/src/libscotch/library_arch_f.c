@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     13 jan 2004     **/
 /**                # Version 5.1  : from : 27 mar 2010     **/
-/**                                 to     24 jun 2010     **/
+/**                                 to     13 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -193,6 +193,19 @@ int * const                 sizeptr),           \
 (archptr, sizeptr))
 {
   *sizeptr = SCOTCH_archSize (archptr);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                       \
+SCOTCHFARCHVAR, scotchfarchvar, (               \
+const SCOTCH_Arch * const   archptr,            \
+int * const                 flagptr),           \
+(archptr, flagptr))
+{
+  *flagptr = SCOTCH_archVar (archptr);
 }
 
 /*

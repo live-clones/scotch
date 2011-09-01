@@ -1,4 +1,4 @@
-/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                graph from the given frontier array.    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 04 nov 2010     **/
+/**                                 to   : 20 feb 2011     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version 5.0. **/
@@ -647,7 +647,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     return     (1);
   }
 
-  if (((SCOTCH_COLLECTIVE_TEST) ? dgraphBandColl : dgraphBandPtop)
+  if ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphBandPtop : dgraphBandColl)
       (grafptr, fronlocnbr, fronloctab, distmax, &bandvnumgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocnbr) != 0)
     return (1);
 

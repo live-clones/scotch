@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 28 feb 2006     **/
 /**                                 to     10 sep 2007     **/
 /**                # Version 5.1  : from : 02 jul 2008     **/
-/**                                 to     24 apr 2009     **/
+/**                                 to     20 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,6 +63,7 @@
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
+#include "dgraph_allreduce.h"
 #include "dgraph_ghst.h"
 #include "dgraph_halo.h"
 
@@ -79,6 +80,8 @@
 ** - 0   : on success.
 ** - !0  : on error.
 */
+
+DGRAPHALLREDUCEMAXSUMOP (2, 1)
 
 int
 dgraphGhst2 (
@@ -101,8 +104,8 @@ const int                   flagval)              /* Replacement flag */
   Gnum                      sortlocnum;
   Gnum *                    edgeloctax;           /* Pointer to original edgeloctax array          */
   Gnum *                    edgegsttax;           /* Pointer to ghost edge array, maybe the same   */
-  int                       reduloctab[2];
-  int                       reduglbtab[2];
+  Gnum                      reduloctab[3];        /* Gnum to perform a maxsum operator             */
+  Gnum                      reduglbtab[3];
   int                       cheklocval;
 
   if ((grafptr->flagval & DGRAPHHASEDGEGST) != 0) /* If ghost edge array already computed, do nothing */
@@ -138,11 +141,13 @@ const int                   flagval)              /* Replacement flag */
   }
 
   reduloctab[0] = 1;                              /* Assume memory error and prepare data for aborting */
-  reduloctab[1] = 0;
+  reduloctab[1] =
+  reduloctab[2] = 0;
   if (cheklocval != 0) {                          /* TRICK: Processes not on error will perform collective communication at end of routine */
-    if (MPI_Allreduce (reduloctab, reduglbtab, 2, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS)
+    if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 2, 1, grafptr->proccomm) != 0) {
       errorPrint ("dgraphGhst: communication error (1)");
-    return (1);
+      return (1);
+    }
   }
 
   vertlocmin = grafptr->procvrttab[grafptr->proclocnum];
@@ -165,7 +170,7 @@ const int                   flagval)              /* Replacement flag */
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if ((vertlocend < grafptr->baseval) || (vertlocend >= (grafptr->procvrttab[grafptr->procglbnbr]))) {
         errorPrint ("dgraphGhst: invalid edge array");
-        if (MPI_Allreduce (reduloctab, reduglbtab, 2, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS)
+        if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 2, 1, grafptr->proccomm) != 0)
           errorPrint ("dgraphGhst: communication error (2)");
         memFree (procsidtab);                     /* Free group leader */
         return  (1);
@@ -231,7 +236,7 @@ const int                   flagval)              /* Replacement flag */
         if ((procngbnum > grafptr->procglbnbr) || /* If we have skipped a neighbor to which we have to send something */
             (grafptr->procsndtab[procngbnum] != 0)) {
           errorPrint ("dgraphGhst: internal error (1)");
-          if (MPI_Allreduce (reduloctab, reduglbtab, 2, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS)
+          if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 2, 1, grafptr->proccomm) != 0)
             errorPrint ("dgraphGhst: communication error (3)");
           memFree (procsidtab);                   /* Free group leader */
           return (1);
@@ -241,7 +246,7 @@ const int                   flagval)              /* Replacement flag */
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if (grafptr->procsndtab[procngbnum] == 0) { /* If we had in fact no edges to send to this neighbor */
         errorPrint ("dgraphGhst: internal error (2)");
-        if (MPI_Allreduce (reduloctab, reduglbtab, 2, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS)
+        if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 2, 1, grafptr->proccomm) != 0)
           errorPrint ("dgraphGhst: communication error (4)");
         return (1);
       }
@@ -273,16 +278,23 @@ const int                   flagval)              /* Replacement flag */
   grafptr->procsidnbr = procsidnbr;
 
   reduloctab[0] = 0;                              /* No memory error                 */
-  reduloctab[1] = grafptr->procngbnbr;            /* Set maximum number of neighbors */
-  if (MPI_Allreduce (reduloctab, reduglbtab, 2, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS) {
+  reduloctab[1] =                                 /* Set maximum number of neighbors */
+  reduloctab[2] = grafptr->procngbnbr;
+  if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 2, 1, grafptr->proccomm) != 0) {
     errorPrint ("dgraphGhst: communication error (5)");
     return     (1);
   }
   if (reduglbtab[0] != 0)                         /* If error, propagated by some previous reduction operator */
     return (1);
 
-  grafptr->flagval   |= DGRAPHFREEPSID | DGRAPHHASEDGEGST; /* Graph now has a valid ghost edge array */
   grafptr->procngbmax = reduglbtab[1];
+  grafptr->flagval   |= DGRAPHFREEPSID | DGRAPHHASEDGEGST; /* Graph now has a valid ghost edge array */
+#ifndef SCOTCH_COMM_COLL
+#ifndef SCOTCH_COMM_PTOP
+  if (((float) reduglbtab[2]) <= ((float) grafptr->procglbnbr * (float) (grafptr->procglbnbr - 1) * (float) SCOTCH_COMM_PTOP_RAT))
+#endif /* SCOTCH_COMM_PTOP */
+    grafptr->flagval |= DGRAPHCOMMPTOP;           /* If too few communications, use point-to-point instead */
+#endif /* SCOTCH_COMM_COLL */
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphHaloCheck (grafptr) != 0) {

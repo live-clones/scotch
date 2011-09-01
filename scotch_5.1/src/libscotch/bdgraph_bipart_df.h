@@ -1,4 +1,4 @@
-/* Copyright 2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2009,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                ing routine for distributed graphs.     **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 nov 2007     **/
-/**                                 to   : 12 oct 2009     **/
+/**                                 to   : 14 apr 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,13 +60,20 @@
 **  The type and structure definitions.
 */
 
+/*+ Job selection policy types. +*/
+
+typedef enum BdgraphBipartDfType_ {
+  BDGRAPHBIPARTDFTYPEBAL = 0,                     /*+ Balance to average         +*/
+  BDGRAPHBIPARTDFTYPEKEEP                         /*+ Preserve current imbalance +*/
+} BdgraphBipartDfType;
+
 /*+ Method parameters. +*/
 
 typedef struct BdgraphBipartDfParam_ {
-  INT                       passnbr;              /*+ Number of passes to do         +*/
-  double                    cdifval;              /*+ Coefficient of diffused load   +*/
-  double                    cremval;              /*+ Coefficient of remaining load  +*/
-  double                    deltval;              /*+ Maximum imbalance ratio        +*/
+  INT                       passnbr;              /*+ Number of passes to do        +*/
+  double                    cdifval;              /*+ Coefficient of diffused load  +*/
+  double                    cremval;              /*+ Coefficient of remaining load +*/
+  BdgraphBipartDfType       typeval;              /*+ Type of balance to reach      +*/
 } BdgraphBipartDfParam;
 
 /*

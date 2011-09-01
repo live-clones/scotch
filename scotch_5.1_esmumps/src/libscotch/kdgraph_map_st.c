@@ -1,4 +1,4 @@
-/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                multi-way static mapping routines.      **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 jun 2008     **/
-/**                                 to     29 mar 2010     **/
+/**                                 to     14 apr 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,7 +75,7 @@
 static union {
   KdgraphMapRbParam         param;
   StratNodeMethodData       padding;
-} kdgraphmapstdefaultrb = { { &stratdummy } };
+} kdgraphmapstdefaultrb = { { &stratdummy, &stratdummy, 0.05 } };
 
 static StratMethodTab       kdgraphmapstmethtab[] = { /* Mapping methods array */
                               { KDGRAPHMAPSTMETHRB, "r",  kdgraphMapRb, &kdgraphmapstdefaultrb },
@@ -90,6 +90,10 @@ static StratParamTab        kdgraphmapstparatab[] = { /* Method parameter list *
                                 (byte *) &kdgraphmapstdefaultrb.param,
                                 (byte *) &kdgraphmapstdefaultrb.param.stratseq,
                                 (void *) &kgraphmapststratab },
+                              { KDGRAPHMAPSTMETHRB,  STRATPARAMDOUBLE, "bal",
+                                (byte *) &kdgraphmapstdefaultrb.param,
+                                (byte *) &kdgraphmapstdefaultrb.param.kbalval,
+                                NULL },
                               { KDGRAPHMAPSTMETHNBR, STRATPARAMINT,    NULL,
                                 NULL, NULL, NULL } };
 

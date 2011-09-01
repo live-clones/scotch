@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 5.0  : from : 06 mar 2008     **/
 /**                                 to     24 may 2008     **/
 /**                # Version 5.1  : from : 27 sep 2008     **/
-/**                                 to     20 jan 2009     **/
+/**                                 to     17 jul 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -120,6 +120,8 @@ const char * const          errstr,               /*+ printf-like variable argum
       (proclocnum != 0)                              &&
       (MPI_Comm_rank (MPI_COMM_WORLD, &proclocnum) == MPI_SUCCESS))
     fprintf (stderr, "(%d): ", proclocnum);
+  else
+    fprintf (stderr, ": ");
 #else /* SCOTCH_PTSCOTCH */
   if (_SCOTCHerrorProgName[0] != '\0')
     fprintf  (stderr, ": ");
@@ -161,6 +163,8 @@ const char * const          errstr,               /*+ printf-like variable argum
       (proclocnum != 0)                              &&
       (MPI_Comm_rank (MPI_COMM_WORLD, &proclocnum) == MPI_SUCCESS))
     fprintf (stderr, "(%d): ", proclocnum);
+  else
+    fprintf (stderr, ": ");
 #else /* SCOTCH_PTSCOTCH */
   if (_SCOTCHerrorProgName[0] != '\0')
     fprintf  (stderr, ": ");

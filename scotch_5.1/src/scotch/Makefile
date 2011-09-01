@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007-2011 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -96,14 +96,10 @@ ptscotch			:	clean
 					dgtst$(EXE)
 
 install				:
-					-$(CP) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) gord$(EXE) gotst$(EXE) gout$(EXE) *gtst$(EXE) gscat$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE) $(bindir)
-					-$(RM) $(bindir)/gpart$(EXE)
-					-$(LN) $(bindir)/gmap$(EXE) $(bindir)/gpart$(EXE)
+					-$(CP) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) gord$(EXE) gotst$(EXE) gout$(EXE) gpart$(EXE) *gtst$(EXE) gscat$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE) $(bindir)
 
 ptinstall			:
-					-$(CP) dggath$(EXE) dgmap$(EXE) dgord$(EXE) dgscat$(EXE) dgtst$(EXE) $(bindir)
-					-$(RM) $(bindir)/dgpart$(EXE)
-					-$(LN) $(bindir)/dgmap$(EXE) $(bindir)/dgpart$(EXE)
+					-$(CP) dggath$(EXE) dgmap$(EXE) dgord$(EXE) dgpart$(EXE) dgscat$(EXE) dgtst$(EXE) $(bindir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) acpl$(EXE) amk_ccc$(EXE) amk_fft2$(EXE) amk_grf$(EXE) amk_hy$(EXE) amk_m2$(EXE) amk_p2$(EXE) atst$(EXE) gbase$(EXE) gcv$(EXE) *ggath$(EXE) *gmap$(EXE) gmk_hy$(EXE) gmk_m2$(EXE) gmk_m3$(EXE) gmk_msh$(EXE) gmk_ub2$(EXE) gmtst$(EXE) *gord$(EXE) gotst$(EXE) gout$(EXE) *gpart$(EXE) *gscat$(EXE) *gtst$(EXE) mcv$(EXE) mmk_m2$(EXE) mmk_m3$(EXE) mord$(EXE) mtst$(EXE)
@@ -202,9 +198,14 @@ dgord$(EXE)			:	dgord.c					\
 					$(libdir)/libptscotcherrexit$(LIB)	\
 					dgord.h
 
-dgpart$(EXE)			:	dgmap$(EXE)
-					-$(RM) dgpart$(EXE)
-					-$(LN) dgmap$(EXE) dgpart$(EXE)
+dgpart$(EXE)			:	dgmap.c					\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/ptscotch.h		\
+					$(libdir)/libptscotch$(LIB)		\
+					$(libdir)/libptscotcherrexit$(LIB)	\
+					dgmap.h
+			 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(<) -DSCOTCH_COMPILE_PART -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
 dgscat$(EXE)			:	dgscat.c				\
 					../libscotch/module.h			\
@@ -316,9 +317,15 @@ gout$(EXE)			:	gout_c.c				\
 					$(libdir)/libscotch$(LIB)
 					$(CC) $(CFLAGS) -I../libscotch -I$(includedir) gout_c.c gout_o.c -o $(@) -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
 
-gpart$(EXE)			:	gmap$(EXE)
-					-$(RM) gpart$(EXE)
-					-$(LN) gmap$(EXE) gpart$(EXE)
+gpart$(EXE)			:	gmap.c					\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)	\
+					gmap.h
+			 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(<) -DSCOTCH_COMPILE_PART -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
+
 
 gscat$(EXE)			:	gscat.c					\
 					../libscotch/module.h			\
