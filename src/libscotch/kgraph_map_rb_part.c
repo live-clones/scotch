@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                target architectures.                   **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 sep 2008     **/
-/**                                 to     09 nov 2008     **/
+/**                                 to     31 aug 2011     **/
 /**                                                        **/
 /**   NOTES      : # This is a rewrite of kgraphMapRb()    **/
 /**                  for complete-graph target topologies. **/
@@ -130,24 +130,25 @@ KgraphMapRbPartData * restrict const  topdataptr, /* Top-level graph and partiti
 Graph * restrict const                orggrafptr, /* Graph to induce and bipartition          */
 const GraphPart * restrict const      orgparttax, /* Part array of original graph to consider */
 const GraphPart                       indpartval, /* Part of graph to consider                */
-const int                             indvertnbr, /* Number of vertices in part or in graph   */
-const int                             domnnum)    /* Index of domain onto which map the part  */
+const Gnum                            indvertnbr, /* Number of vertices in part or in graph   */
+const Anum                            domnnum)    /* Index of domain onto which map the part  */
 {
-  Graph                  indgrafdat;
-  Graph *                indgrafptr;
-  Bgraph                 actgrafdat;
-  Anum                   domnsubidx;
-  Anum                   domnsubdlt;
-  ArchDom                domnsubtab[2];           /* Target subdomains              */
-  Anum                   domnsubnum[2];           /* Index of subdomains in mapping */
-  Gnum                   grafsubsiz[2];
-  Mapping * restrict     mappptr;
-  int                    i;
-  int                    o;
+  Graph               indgrafdat;
+  Graph *             indgrafptr;
+  Bgraph              actgrafdat;
+  Anum                domnsubidx;
+  Anum                domnsubdlt;
+  ArchDom             domnsubtab[2];              /* Target subdomains              */
+  Anum                domnsubnum[2];              /* Index of subdomains in mapping */
+  Gnum                grafsubsiz[2];
+  Mapping * restrict  mappptr;
+  int                 avarval;                    /* Flag set if variable-sized */
+  int                 i;
+  int                 o;
 
   mappptr = topdataptr->mappptr;
-  o = ((archVar (&mappptr->archdat)) &&           /* If architecture is variable-sized    */
-       (indvertnbr <= 1))                         /* And source subgraph is of minimal size */
+  avarval = archVar (&mappptr->archdat);
+  o = (avarval && (indvertnbr <= 1))              /* If architecture is variable-sized and source subgraph of minimal size */
       ? 1                                         /* Then do not bipartition target more    */
       : archDomBipart (&mappptr->archdat, &mappptr->domntab[domnnum], &domnsubtab[0], &domnsubtab[1]);
 
@@ -172,6 +173,19 @@ const int                             domnnum)    /* Index of domain onto which 
     errorPrint ("kgraphMapRbPart2: cannot create bipartition graph");
     return     (1);
   }
+
+  if (! avarval) {                                /* If not variable-sized, impose constraints on bipartition */
+    double              comploadavg;
+
+    comploadavg = (double) actgrafdat.s.velosum / (double) archDomWght (&mappptr->archdat, &mappptr->domntab[domnnum]);
+    actgrafdat.compload0min = actgrafdat.compload0avg -
+                              (Gnum) MIN ((topdataptr->comploadmax - comploadavg) * (double) actgrafdat.domwght[0],
+                                          (comploadavg - topdataptr->comploadmin) * (double) actgrafdat.domwght[1]);
+    actgrafdat.compload0max = actgrafdat.compload0avg +
+                              (Gnum) MIN ((comploadavg - topdataptr->comploadmin) * (double) actgrafdat.domwght[0],
+                                          (topdataptr->comploadmax - comploadavg) * (double) actgrafdat.domwght[1]);
+  }
+
   if (bgraphBipartSt (&actgrafdat, topdataptr->paraptr->strat) != 0) { /* Perform bipartitioning */
     errorPrint ("kgraphMapRbPart2: cannot bipartition graph");
     bgraphExit (&actgrafdat);
@@ -240,11 +254,13 @@ const KgraphMapRbParam * restrict const paraptr)
 {
   KgraphMapRbPartData   topdatadat;
 
-  topdatadat.topgrafptr = &grafptr->s;
-  topdatadat.topfrontab = NULL;
-  topdatadat.topfronnbr = 0;
-  topdatadat.mappptr    = &grafptr->m;
-  topdatadat.paraptr    = paraptr;
+  topdatadat.topgrafptr  = &grafptr->s;
+  topdatadat.topfrontab  = NULL;
+  topdatadat.topfronnbr  = 0;
+  topdatadat.mappptr     = &grafptr->m;
+  topdatadat.paraptr     = paraptr;
+  topdatadat.comploadmin = (1.0 - paraptr->kbalval) * grafptr->comploadrat; /* Ratio can have been tilted when working on subgraph */
+  topdatadat.comploadmax = (1.0 + paraptr->kbalval) * grafptr->comploadrat;
 
   grafptr->m.domnnbr    = 1;                      /* Reset mapping to original (sub)domain */
   grafptr->m.domntab[0] = grafptr->m.domnorg;

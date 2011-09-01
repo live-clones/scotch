@@ -1,4 +1,4 @@
-/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                graph using a multi-level scheme.       **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
-/**                                 to   : 16 oct 2010     **/
+/**                                 to   : 14 apr 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -135,7 +135,9 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
     coargrafptr->veexloctax = NULL;               /* Coarse graph does not have external gains  */
 
   coargrafptr->veexglbsum       = finegrafptr->veexglbsum;
-  coargrafptr->compglbload0avg  = finegrafptr->compglbload0avg; /* Only set constant partition parameters as others will be set on uncoarsening */
+  coargrafptr->compglbload0min  = finegrafptr->compglbload0min; /* Only set constant partition parameters as others will be set on uncoarsening */
+  coargrafptr->compglbload0max  = finegrafptr->compglbload0max;
+  coargrafptr->compglbload0avg  = finegrafptr->compglbload0avg;
   coargrafptr->commglbloadextn0 = finegrafptr->commglbloadextn0;
   coargrafptr->commglbgainextn0 = finegrafptr->commglbgainextn0;
   coargrafptr->domdist          = finegrafptr->domdist;
@@ -144,7 +146,7 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
   coargrafptr->levlnum          = finegrafptr->levlnum + 1;
 
   return (0);
-} 
+}
 
 /* This routine is the reduction-loc operator which
 ** returns in inout[2] the rank of the process which

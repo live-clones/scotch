@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 4.0  : from : 12 dec 2003     **/
 /**                                 to     20 mar 2005     **/
 /**                # Version 5.1  : from : 28 sep 2008     **/
-/**                                 to     13 jul 2010     **/
+/**                                 to     27 mar 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -133,7 +133,9 @@ const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters         
   coargrafptr->parttax    = NULL;                 /* Do not allocate partition data yet                           */
   coargrafptr->frontab    = finegrafptr->frontab; /* Use frontier array of finer graph as coarse frontier array   */
 
-  coargrafptr->compload0avg  = finegrafptr->compload0avg; /* Only set constant partition parameters as others will be set on uncoarsening */
+  coargrafptr->compload0min  = finegrafptr->compload0min; /* Only set constant partition parameters as others will be set on uncoarsening */
+  coargrafptr->compload0max  = finegrafptr->compload0max;
+  coargrafptr->compload0avg  = finegrafptr->compload0avg;
   coargrafptr->commloadextn0 = finegrafptr->commloadextn0;
   coargrafptr->commgainextn0 = finegrafptr->commgainextn0;
   coargrafptr->domdist       = finegrafptr->domdist;
@@ -213,6 +215,7 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
   finegrafptr->compsize0    = finegrafptr->s.vertnbr - finecompsize1;
   finegrafptr->commload     = coargrafptr->commload;
   finegrafptr->commgainextn = coargrafptr->commgainextn;
+  finegrafptr->bbalval      = coargrafptr->bbalval;
 
   for (coarfronnum = 0, finefronnbr = coargrafptr->fronnbr; /* Re-cycle frontier array from coarse to fine graph */
        coarfronnum < coargrafptr->fronnbr; coarfronnum ++) {

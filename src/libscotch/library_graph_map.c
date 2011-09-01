@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 13 jan 2004     **/
 /**                                 to     13 nov 2005     **/
 /**                # Version 5.1  : from : 29 oct 2007     **/
-/**                                 to     14 aug 2010     **/
+/**                                 to     24 jul 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -197,7 +197,10 @@ SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
     ArchDom             archdomnorg;
 
     archDomFrst (&lmapptr->m.archdat, &archdomnorg);
-    SCOTCH_stratGraphMapBuild (stratptr, SCOTCH_STRATQUALITY, archDomSize (&lmapptr->m.archdat, &archdomnorg), 0.01);
+    if (archVar (&lmapptr->m.archdat))
+      SCOTCH_stratGraphClusterBuild (stratptr, 0, 1, 0.0, 0.05);
+    else
+      SCOTCH_stratGraphMapBuild (stratptr, 0, archDomSize (&lmapptr->m.archdat, &archdomnorg), 0.05);
   }
 
   mapstratptr = *((Strat **) stratptr);
@@ -305,7 +308,7 @@ const char * const          string)
   return (0);
 }
 
-/*+ This routine provides predefined
+/*+ This routine provides predefined static
 *** mapping strategies.
 *** It returns:
 *** - 0   : if string successfully initialized.
@@ -314,27 +317,23 @@ const char * const          string)
 
 int
 SCOTCH_stratGraphMapBuild (
-SCOTCH_Strat * const        stratptr,             /*+ Strategy to create              +*/
-const SCOTCH_Num            flagval,              /*+ Desired characteristics         +*/
-const SCOTCH_Num            partnbr,              /*+ Number of expected parts/size   +*/
-const double                balrat)               /*+ Desired imbalance ratio         +*/
+SCOTCH_Strat * const        stratptr,             /*+ Strategy to create       +*/
+const SCOTCH_Num            flagval,              /*+ Desired characteristics  +*/
+const SCOTCH_Num            partnbr,              /*+ Number of expected parts +*/
+const double                kbalval)              /*+ Desired imbalance ratio  +*/
 {
   char                bufftab[8192];              /* Should be enough */
-  char                bbaltab[64];
-  double              bbalval;
-  Gunum               parttmp;                    /* "Unsigned" so that ">>" will always insert "0"s */
-  int                 blogval;
-  double              blogtmp;
+  char                kbaltab[32];
+  char                bbaltab[32];
   char *              difsptr;
   char *              exasptr;
 
-  for (parttmp = partnbr, blogval = 1; parttmp != 0; parttmp >>= 1, blogval ++) ; /* Get log2 of number of parts */
+  sprintf (kbaltab, "%lf", kbalval);
+  sprintf (bbaltab, "%lf", kbalval);
 
-  blogtmp = 1.0 / (double) blogval;               /* Taylor development of (1 + balrat) ^ (1 / blogval) */
-  bbalval = (balrat * blogtmp) * (1.0 + (blogtmp - 1.0) * (balrat * 0.5 * (1.0 + (blogtmp - 2.0) * balrat / 3.0)));
-  sprintf (bbaltab, "%lf", bbalval);
-
-  strcpy (bufftab, "r{job=t,map=t,poli=S,sep=(m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>}");
+  strcpy (bufftab, "r{job=t,map=t,poli=S,bal=<KBAL>,sep=(<BIPA>m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>}");
+  stringSubst (bufftab, "<BIPA>", ((flagval & SCOTCH_STRATSPEED) != 0) ? ""
+               : "m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|");
 
   if ((flagval & SCOTCH_STRATBALANCE) != 0)
     exasptr = "f{bal=0}";
@@ -344,14 +343,68 @@ const double                balrat)               /*+ Desired imbalance ratio   
   if ((flagval & SCOTCH_STRATSAFETY) != 0)
     difsptr = "";
   else
-    difsptr = "(d{dif=1,rem=1,pass=40}|)";
+    difsptr = "(d{dif=1,rem=0,pass=40}|)";
+
+  stringSubst (bufftab, "<EXAS>", exasptr);
+  stringSubst (bufftab, "<DIFS>", difsptr);
+  stringSubst (bufftab, "<KBAL>", kbaltab);
+  stringSubst (bufftab, "<BBAL>", kbaltab);
+
+  if (SCOTCH_stratGraphMap (stratptr, bufftab) != 0) {
+    errorPrint ("SCOTCH_stratGraphMapBuild: error in sequential mapping strategy");
+    return     (1);
+  }
+
+  return (0);
+}
+
+/*+ This routine provides predefined
+*** clustering strategies.
+*** It returns:
+*** - 0   : if string successfully initialized.
+*** - !0  : on error.
++*/
+
+SCOTCH_stratGraphClusterBuild (
+SCOTCH_Strat * const        stratptr,             /*+ Strategy to create      +*/
+const SCOTCH_Num            flagval,              /*+ Desired characteristics +*/
+const SCOTCH_Num            pwgtval,              /*+ Threshold part weight   +*/
+const double                densval,              /*+ Threshold density value +*/
+const double                bbalval)              /*+ Maximum imbalance ratio +*/
+{
+  char                bufftab[8192];              /* Should be enough */
+  char                bbaltab[32];
+  char                pwgttab[32];
+  char                denstab[32];
+  char *              difsptr;
+  char *              exasptr;
+
+  sprintf (bbaltab, "%lf", bbalval);
+  sprintf (denstab, "%lf", densval);
+  sprintf (pwgttab, GNUMSTRING, pwgtval);
+
+  strcpy (bufftab, "r{job=u,map=t,poli=L,sep=/((load><PWGT>)&!(edge>vert*<DENS>*(vert-1)))?(<BIPA>m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>;}");
+  stringSubst (bufftab, "<BIPA>", ((flagval & SCOTCH_STRATSPEED) != 0) ? ""
+               : "m{type=h,vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|");
+
+  if ((flagval & SCOTCH_STRATBALANCE) != 0)
+    exasptr = "f{bal=0}";
+  else
+    exasptr = "";
+
+  if ((flagval & SCOTCH_STRATSAFETY) != 0)
+    difsptr = "";
+  else
+    difsptr = "(d{dif=1,rem=0,pass=40}|)";
 
   stringSubst (bufftab, "<EXAS>", exasptr);
   stringSubst (bufftab, "<DIFS>", difsptr);
   stringSubst (bufftab, "<BBAL>", bbaltab);
+  stringSubst (bufftab, "<DENS>", denstab);
+  stringSubst (bufftab, "<PWGT>", pwgttab);
 
   if (SCOTCH_stratGraphMap (stratptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratGraphMapBuild: error in sequential mapping strategy");
+    errorPrint ("SCOTCH_stratGraphClusterBuild: error in sequential mapping strategy");
     return     (1);
   }
 

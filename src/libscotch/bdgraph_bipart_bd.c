@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                frontier to the original graph.         **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
-/**                                 to   : 16 aug 2010     **/
+/**                                 to   : 14 apr 2011     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -188,6 +188,8 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
   bndgrafdat.fronglbnbr       = orggrafptr->fronglbnbr;
   bndgrafdat.complocload0     = orggrafptr->complocload0    + bndvertlocancadj; /* All loads are kept in band graph */
   bndgrafdat.compglbload0     = orggrafptr->compglbload0    + bndvertglbancadj;
+  bndgrafdat.compglbload0min  = orggrafptr->compglbload0min + bndvertglbancadj; /* Tilt extrema loads according to adjustments */
+  bndgrafdat.compglbload0max  = orggrafptr->compglbload0max + bndvertglbancadj;
   bndgrafdat.compglbload0avg  = orggrafptr->compglbload0avg + bndvertglbancadj; /* Tilt average load according to adjustments */
   bndgrafdat.compglbload0dlt  = orggrafptr->compglbload0dlt;
   bndgrafdat.compglbsize0     = reduglbtab[3];

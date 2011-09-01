@@ -31,7 +31,7 @@ executables, you can try to locate it using the which command:
 
 %prompt% which make
 
-If several occurences of make are found, one might be GNU Make,
+If several occurrences of make are found, one might be GNU Make,
 so try to figure out which of them.
 
 To see if lex and yacc are present, type
@@ -122,7 +122,7 @@ another parser used in a third-party library. All "Makefile.inc.*"
 platform configuration files which base on flex / bison are already
 tailored so as to prevent such conflicts. If you use other parsing
 tools, you may have to provide other options. Another solution is to
-use the pre-processed parser files of the "src/libscotch/last_resort"
+use the preprocessed parser files of the "src/libscotch/last_resort"
 subdirectory (corresponding operation instructions are given in
 Section 1).
 
@@ -205,13 +205,13 @@ available. They are used in two places:
   will be used, else fork() calls will be performed. For systems
   which do not support the fork() system call, such as the MinGW32
   platform, one can set the -DCOMMON_STUB_FORK flag, which creates
-  a stub fork() routine which always return an error. Therefore,
+  a stub fork() routine which always returns an error. Therefore,
   without both fork() and threads, one must set the COMMON_STUB_FORK
   flag without setting COMMON_PTHREAD, so that compilation will
   successfully complete; however, in this case, compressed graphs
   shall not be handled in practice.
 
-- to create distributed graphs in parallel. Since this taks involves
+- to create distributed graphs in parallel. Since this task involves
   concurrent MPI communications, the MPI library must support the
   MPI_THREAD_MULTIPLE level. The use of threads within Scotch itself
   is controlled by the SCOTCH_PTHREAD flag, which is completely
@@ -256,18 +256,30 @@ flag in the sequential routines.
 2.8) Point-to-point or collective communications
 ------------------------------------------------
 
-Since distributed graph vertices can have any initial distribution
-across processes, communication rounds are likely to involve all of
-the processes in an almost all-to-all scheme. In order to speed-up
-running time, most of these communications are performed by means of
-asynchronous sends and receives, which allows computations to overlap
-with communications. However, for large numbers of processes, this can
-lead to the saturation of the communication network of the target
-parallel machine. To avoid this, communication consuming routines also
-have a collective communication based version. The use of this version
-is enabled by default, as it greatly improves scalability for large
-numbers of processors. To disable it, set the -DSCOTCH_PTOP flag at
-compile time.
+In order to decrease run time, many distributed computation routines
+are coded so as to overlap communication with computation whenever
+possible, most often by means of asynchronous sends and receives.
+However, since distributed graph vertices can have any initial
+distribution across processes, communication rounds may involve all of
+the processes in an almost all-to-all scheme. For large numbers of
+processes, this may lead to the saturation of the communication
+network of the target parallel machine. To avoid this, communication
+intensive routines such as graph coarsening or halo exchange also have
+a collective communication based version. The choice of the proper
+version depends on several flags. If the -DSCOTCH_COMM_PTOP flag is
+set at compile time, all major distributed computation routines will
+exclusively use point-to-point communication, save for global
+reduction operations that will always be collective. Conversely, if
+the -DSCOTCH_COMM_COLL flag is set at compile time, all major
+distributed computation routines will exclusively rely on collective
+communication. If none of them are set, point-to-point communication
+will be used on a case-by-case basis: if the number of messages to be
+exchanged is less than a fraction of the maximum number of messages to
+be exchanged (that is, a bit less than the square of the number of
+processes), point-to-point communication will be used; else,
+collective communication will be used. The selection ratio can be set
+by defining the SCOTCH_COMM_PTOP_RAT value at compile time. By
+default, it is equal to 0.25.
 
 
 2.9) MeTiS compatibility library
@@ -317,7 +329,7 @@ as "mpicc" which automatically refer to "mpi.h". Yet, on some
 platforms, programs compiled for parallel execution cannot be run
 interactively. Moreover, "dummysizes" itself does not contain any MPI
 calls, as it just wants to know the sizes of the data structures, and
-the communication susbystem of the platform may not want to run it. In
+the communication subsystem of the platform may not want to run it. In
 any of these cases, compilation will break. It is possible to solve
 this problem by specifying, in the CCD variable of "Makefile.inc", how
 to compile "dummysizes" sequentially but with knowledge of the

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,6 +57,8 @@
 /**                                 to     12 mar 1999     **/
 /**                # Version 4.0  : from : 27 aug 2004     **/
 /**                                 to     27 aug 2004     **/
+/**                # Version 5.1  : from : 27 mar 2011     **/
+/**                                 to     27 mar 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,7 +124,7 @@ typedef struct BgraphBipartFmSave_ {
 #define static
 #endif
 
-static BgraphBipartFmVertex * bgraphBipartFmTablGet (GainTabl * restrict const, const Gnum, const Gnum);
+static BgraphBipartFmVertex * bgraphBipartFmTablGet (GainTabl * restrict const, const Gnum, const Gnum, const Gnum);
 
 int                         bgraphBipartFm      (Bgraph * restrict const, const BgraphBipartFmParam * const);
 

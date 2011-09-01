@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
+## Copyright 2004,2007-2011 ENSEIRB, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -153,6 +153,8 @@ LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
 			library_dgraph_build_grid3d_f$(OBJ)	\
 			library_dgraph_check$(OBJ)		\
 			library_dgraph_check_f$(OBJ)		\
+			library_dgraph_coarsen$(OBJ)		\
+			library_dgraph_coarsen_f$(OBJ)		\
 			library_dgraph_gather$(OBJ)		\
 			library_dgraph_gather_f$(OBJ)		\
 			library_dgraph_halo$(OBJ)		\
@@ -287,6 +289,8 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_graph_base_f$(OBJ)		\
 			library_graph_check$(OBJ)		\
 			library_graph_check_f$(OBJ)		\
+			library_graph_coarsen$(OBJ)		\
+			library_graph_coarsen_f$(OBJ)		\
 			library_graph_io_chac$(OBJ)		\
 			library_graph_io_chac_f$(OBJ)		\
 			library_graph_io_habo$(OBJ)		\
@@ -1626,6 +1630,18 @@ library_dgraph_check_f$(OBJ)	:	library_dgraph_check_f.c		\
 					common.h				\
 					scotch.h
 
+library_dgraph_coarsen$(OBJ)	:	library_dgraph_coarsen.c		\
+					module.h				\
+					common.h				\
+					dgraph.h				\
+					dgraph_coarsen.h			\
+					scotch.h
+
+library_dgraph_coarsen_f$(OBJ)	:	library_dgraph_coarsen_f.c		\
+					module.h				\
+					common.h				\
+					scotch.h
+
 library_dgraph_gather$(OBJ)	:	library_dgraph_gather.c			\
 					module.h				\
 					common.h				\
@@ -1870,6 +1886,18 @@ library_graph_check$(OBJ)	:	library_graph_check.c			\
 					scotch.h
 
 library_graph_check_f$(OBJ)	:	library_graph_check_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_graph_coarsen$(OBJ)	:	library_graph_coarsen.c			\
+					module.h				\
+					common.h				\
+					graph.h					\
+					graph_coarsen.h				\
+					scotch.h
+
+library_graph_coarsen_f$(OBJ)	:	library_graph_coarsen_f.c		\
 					module.h				\
 					common.h				\
 					scotch.h

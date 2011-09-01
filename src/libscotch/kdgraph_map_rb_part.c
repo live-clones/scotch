@@ -1,4 +1,4 @@
-/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                processes are doing.                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 21 jun 2008     **/
-/**                                 to     30 jul 2010     **/
+/**                                 to     31 aug 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,13 +89,12 @@
 ** - !0  : on error.
 */
 
-
 static
 int
 kdgraphMapRbPartSequ (
-KdgraphMapRbPartGraph * restrict const  grafptr,
-Dmapping * restrict const               mappptr,
-const Strat * restrict const            stratptr)
+KdgraphMapRbPartGraph * restrict const      grafptr,
+Dmapping * restrict const                   mappptr,
+const KdgraphMapRbPartData * restrict const dataptr)
 {
   Graph * restrict          cgrfptr;
   Kgraph                    kgrfdat;              /* Centralized mapping graph */
@@ -111,10 +110,11 @@ const Strat * restrict const            stratptr)
     errorPrint ("kdgraphMapRbPartSequ: cannot initialize centralized graph");
     return     (1);
   }
-  kgrfdat.s.flagval = cgrfptr->flagval;           /* Free sequential graph along with mapping data */
-  kgrfdat.s.vnumtax = NULL;                       /* Remove index array if any                     */
+  kgrfdat.s.flagval   = cgrfptr->flagval;         /* Free sequential graph along with mapping data    */
+  kgrfdat.s.vnumtax   = NULL;                     /* Remove index array if any                        */
+  kgrfdat.comploadrat = dataptr->comploadrat;     /* Use ideal load of full graph and not of subgraph */
 
-  if (kgraphMapSt (&kgrfdat, stratptr) != 0) {    /* Compute sequential mapping */
+  if (kgraphMapSt (&kgrfdat, dataptr->paraptr->stratseq) != 0) { /* Compute sequential mapping */
     kgraphExit (&kgrfdat);
     return     (1);
   }
@@ -166,12 +166,12 @@ void *
 kdgraphMapRbPartFold2 (
 void * const                    dataptr)          /* Pointer to thread data */
 {
-  KdgraphMapRbPartData *            fldthrdptr;   /* Thread input parameters      */
+  KdgraphMapRbPartThread *          fldthrdptr;   /* Thread input parameters      */
   KdgraphMapRbPartGraph * restrict  fldgrafptr;   /* Pointer to folded graph area */
   Dgraph                            indgrafdat;   /* Induced distributed graph    */
   void *                            o;
 
-  fldthrdptr = (KdgraphMapRbPartData *) dataptr;
+  fldthrdptr = (KdgraphMapRbPartThread *) dataptr;
   fldgrafptr = fldthrdptr->fldgrafptr;
 
   if (fldthrdptr->fldprocnbr == 0)                /* If recursion stopped, build mapping of graph part */
@@ -205,24 +205,24 @@ Dmapping * restrict const               mappptr,
 const ArchDom * restrict const          domsubtab,
 KdgraphMapRbPartGraph * restrict const  fldgrafptr)
 {
-  KdgraphMapRbPartData  fldthrdtab[2];
-  int                   fldprocnbr;               /* Number of processes in part of this process  */
-  int                   fldprocnbr0;              /* Number of processes in first part            */
-  int                   fldprocnum;
-  int                   fldproccol;
-  int                   fldpartval;
-  Gnum                  indvertlocmax;            /* Local number of vertices in biggest subgraph */
-  int                   indconttab[2];            /* Array of subjob continuation flags           */
-  int                   indpartmax;               /* Induced part having most vertices            */
+  KdgraphMapRbPartThread  fldthrdtab[2];
+  int                     fldprocnbr;             /* Number of processes in part of this process  */
+  int                     fldprocnbr0;            /* Number of processes in first part            */
+  int                     fldprocnum;
+  int                     fldproccol;
+  int                     fldpartval;
+  Gnum                    indvertlocmax;          /* Local number of vertices in biggest subgraph */
+  int                     indconttab[2];          /* Array of subjob continuation flags           */
+  int                     indpartmax;             /* Induced part having most vertices            */
 #ifdef SCOTCH_PTHREAD
-  Dgraph                orggrafdat;               /* Structure for copying graph fields except communicator */
-  pthread_t             thrdval;                  /* Data of second thread                                  */
+  Dgraph                  orggrafdat;             /* Structure for copying graph fields except communicator */
+  pthread_t               thrdval;                /* Data of second thread                                  */
 #endif /* SCOTCH_PTHREAD */
   int                       o;
 
   indconttab[0] =                                 /* Assume both jobs will not continue */
   indconttab[1] = 0;
-  if ((actgrafptr->compglbsize0 != 0) &&           /* If graph has been bipartitioned */
+  if ((actgrafptr->compglbsize0 != 0) &&          /* If graph has been bipartitioned */
       (actgrafptr->compglbsize0 != actgrafptr->s.vertglbnbr)) {
     if (archVar (&mappptr->archdat)) {            /* If architecture is variable-sized    */
       if (actgrafptr->compglbsize0 > 1)           /* If graph is not single vertex, go on */
@@ -335,18 +335,29 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
 static
 int 
 kdgraphMapRbPart2 (
-KdgraphMapRbPartGraph * restrict const   grafptr,
-Dmapping * restrict const                mappptr,
-const KdgraphMapRbParam * restrict const paraptr)
+KdgraphMapRbPartGraph * restrict const      grafptr,
+const KdgraphMapRbPartData * restrict const dataptr)
 {
   ArchDom               domsubtab[2];             /* Temporary subdomains        */
   Bdgraph               actgrafdat;               /* Active bipartitioning graph */
   KdgraphMapRbPartGraph indgrafdat;               /* Induced folded graph area   */
+  Gnum                  comploadavg;
+  Dmapping *            mappptr;
   int                   o;
 
-  if (archDomBipart (&mappptr->archdat, &grafptr->domnorg, &domsubtab[0], &domsubtab[1]) != 0) {
-    errorPrint ("kdgraphMapRbPart2: cannot bipartition domain");
-    return     (1);
+  mappptr = dataptr->mappptr;
+
+  o = ((archVar (&mappptr->archdat)) &&           /* If architecture is variable-sized      */
+       (grafptr->data.dgrfdat.vertglbnbr <= 1))   /* And source subgraph is of minimal size */
+      ? 1                                         /* Then do not bipartition target more    */
+      : archDomBipart (&mappptr->archdat, &grafptr->domnorg, &domsubtab[0], &domsubtab[1]);
+
+  switch (o) {
+    case 1 :                                      /* If target domain is terminal */
+      return (kdgraphMapRbAddOne (&grafptr->data.dgrfdat, mappptr, &grafptr->domnorg)); /* Update mapping and return */
+    case 2 :                                      /* On error */
+      errorPrint ("kdgraphMapRbPart2: cannot bipartition domain");
+      return     (1);
   }
 
   if (dgraphGhst (&grafptr->data.dgrfdat) != 0) { /* Compute ghost edge array if not already present, to have vertgstnbr (and procsidtab) */
@@ -356,7 +367,16 @@ const KdgraphMapRbParam * restrict const paraptr)
   
   o = bdgraphInit (&actgrafdat, &grafptr->data.dgrfdat, NULL, &mappptr->archdat, domsubtab); /* Create active graph */
   actgrafdat.levlnum = grafptr->levlnum;          /* Initial level of bipartition graph is DRB recursion level      */
-  if ((o != 0) || (bdgraphBipartSt (&actgrafdat, paraptr->stratsep) != 0)) { /* Bipartition edge-separation graph   */
+
+  comploadavg = (double) actgrafdat.s.veloglbsum / (double) archDomWght (&mappptr->archdat, &grafptr->domnorg);
+  actgrafdat.compglbload0min = actgrafdat.compglbload0avg -
+                               (Gnum) MIN ((dataptr->comploadmax - comploadavg) * actgrafdat.domwght[0],
+                                           (comploadavg - dataptr->comploadmin) * actgrafdat.domwght[1]);
+  actgrafdat.compglbload0max = actgrafdat.compglbload0avg +
+                               (Gnum) MIN ((comploadavg - dataptr->comploadmin) * actgrafdat.domwght[0],
+                                           (dataptr->comploadmax - comploadavg) * actgrafdat.domwght[1]);
+
+  if ((o != 0) || (bdgraphBipartSt (&actgrafdat, dataptr->paraptr->stratsep) != 0)) { /* Bipartition edge-separation graph   */
     bdgraphExit (&actgrafdat);
     return      (1);
   }
@@ -368,37 +388,42 @@ const KdgraphMapRbParam * restrict const paraptr)
 
   if (o == 0) {
     if (indgrafdat.procnbr == 1)                  /* If sequential job */
-      o = kdgraphMapRbPartSequ (&indgrafdat, mappptr, paraptr->stratseq);
+      o = kdgraphMapRbPartSequ (&indgrafdat, mappptr, dataptr);
     else if (indgrafdat.procnbr > 1)              /* If distributed job */
-      o = kdgraphMapRbPart2 (&indgrafdat, mappptr, paraptr);
+      o = kdgraphMapRbPart2 (&indgrafdat, dataptr);
   }
   return (o);
 }
 
 int 
 kdgraphMapRbPart (
-Kdgraph * restrict const                 grafptr,
-Kdmapping * restrict const               mappptr,
-const KdgraphMapRbParam * restrict const paraptr)
+Kdgraph * restrict const                  grafptr,
+Kdmapping * restrict const                mappptr,
+const KdgraphMapRbParam * restrict const  paraptr)
 {
-  KdgraphMapRbPartGraph   grafdat;
+  KdgraphMapRbPartGraph grafdat;
+  KdgraphMapRbPartData  datadat;
 
-  if (archDomSize (&mappptr->mappptr->archdat, &grafptr->m.domnorg) <= 1) /* If only one terminal domain in the target   */
-    return (kdgraphMapRbAddOne (&grafptr->s, mappptr->mappptr, &grafptr->m.domnorg)); /* Map all vertices to that domain */
-
-  grafdat.domnorg = grafptr->m.domnorg;
+  grafdat.domnorg = grafptr->m.domnorg;           /* Used in all cases */
   grafdat.procnbr = grafptr->s.procglbnbr;
   grafdat.levlnum = 0;                            /* Set initial DRB level to zero */
+
+  datadat.mappptr = mappptr->mappptr;
+  datadat.paraptr = paraptr;
+  datadat.comploadrat = (double) grafptr->s.veloglbsum / (double) archDomWght (&mappptr->mappptr->archdat, &grafptr->m.domnorg);
+  datadat.comploadmin = (1.0 - paraptr->kbalval) * datadat.comploadrat;
+  datadat.comploadmax = (1.0 + paraptr->kbalval) * datadat.comploadrat;
 
   if (grafptr->s.procglbnbr <= 1) {               /* If single process, switch immediately to sequential mode */
     if (dgraphGather (&grafptr->s, &grafdat.data.cgrfdat) != 0) {
       errorPrint ("kdgraphMapRbPart: cannot centralize graph");
       return     (1);
     }
-    return (kdgraphMapRbPartSequ (&grafdat, mappptr->mappptr, paraptr->stratseq));
+    return (kdgraphMapRbPartSequ (&grafdat, mappptr->mappptr, &datadat));
   }
 
   grafdat.data.dgrfdat = grafptr->s;              /* Create a clone graph that will never be freed */
   grafdat.data.dgrfdat.flagval &= ~DGRAPHFREEALL;
-  return (kdgraphMapRbPart2 (&grafdat, mappptr->mappptr, paraptr)); /* Perform DRB */
+
+  return (kdgraphMapRbPart2 (&grafdat, &datadat)); /* Perform DRB */
 }

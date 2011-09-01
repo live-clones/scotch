@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 5.0  : from : 25 may 2007     **/
 /**                                 to     25 may 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     15 aug 2010     **/
+/**                                 to     14 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -164,7 +164,7 @@ char *                      argv[])
         case 'G' :                                /* Geometry parameters */
         case 'g' :
           if ((j = C_geoParse (&argv[i][2])) != 0)
-            errorPrint ("main: error in geometry option string (%d)", j);
+            errorPrint ("main: error in geometry option string '%d'", j);
           break;
         case 'H' :                                /* Give the usage message */
         case 'h' :
@@ -173,7 +173,7 @@ char *                      argv[])
         case 'M' :                                /* No-mapping flag */
         case 'm' :
           if (((argv[i][2] != 'N') && (argv[i][2] != 'n')) || (argv[i][3] != '\0'))
-            errorPrint ("main: error in mapping option string (%s)", &argv[i][2]);
+            errorPrint ("main: error in mapping option string '%s'", &argv[i][2]);
           C_filenamemapinp = "-";                 /* Default name to avoid opening   */
           C_filepntrmapinp = NULL;                /* NULL file pointer means no file */
           break;
@@ -184,11 +184,11 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "gout, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
-          errorPrint ("main: Unprocessed option (\"%s\")", argv[i]);
+          errorPrint ("main: Unprocessed option '%s'", argv[i]);
       }
     }
   }
@@ -486,7 +486,7 @@ FILE * const                stream)
     while ((j < geomfilenbr) && (geomsorttab[j].labl < vertsorttab[i].labl))
       j ++;                                       /* Search geometry vertex with same label             */
     if ((j >= geomfilenbr) || (geomsorttab[j].labl > vertsorttab[i].labl)) { /* If label does not exist */
-      errorPrint ("C_geoLoad: vertex geometry data not found (%d)",
+      errorPrint ("C_geoLoad: vertex geometry data not found for label '" SCOTCH_NUMSTRING "'",
                   vertsorttab[i].labl);
       memFree    (vertsorttab);
       memFree    (geomsorttab);

@@ -1,4 +1,4 @@
-/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**   DATES      : # Version 5.0  : from : 27 jul 2005     **/
 /**                                 to   : 15 may 2008     **/
 /**                # Version 5.1  : from : 23 jun 2008     **/
-/**                                 to   : 10 sep 2010     **/
+/**                                 to   : 20 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -521,7 +521,7 @@ DgraphCoarsenData * restrict const  coarptr)
 
   coarptr->multloctab = memRealloc (coarptr->multloctab, coarptr->multlocnbr * sizeof (DgraphCoarsenMulti)); /* In the mean time, resize multinode array */
 
-  if (((SCOTCH_COLLECTIVE_TEST) ? dgraphCoarsenBuildColl : dgraphCoarsenBuildPtop) (coarptr) != 0)
+  if ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphCoarsenBuildPtop : dgraphCoarsenBuildColl) (coarptr) != 0)
     return (1);
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
@@ -623,7 +623,7 @@ DgraphCoarsenData * restrict const  coarptr)
 
   memSet (coarhashtab, ~0, coarhashnbr * sizeof (DgraphCoarsenHash));
 
-  coargrafptr->baseval = grafptr->baseval;
+  coargrafptr->baseval     = grafptr->baseval;
   coargrafptr->vertlocnnd  = coargrafptr->baseval + coargrafptr->vertlocnbr;
   coargrafptr->vertloctax -= coargrafptr->baseval;
   coargrafptr->vendloctax  = coargrafptr->vertloctax + 1; /* Graph is compact */
@@ -893,7 +893,7 @@ Dgraph * restrict const               coargrafptr, /*+ Coarse graph to build    
 DgraphCoarsenMulti * restrict * const multlocptr, /*+ Pointer to based multinode table     +*/
 const Gnum                            passnbr,    /*+ Number of coarsening passes to go    +*/
 const Gnum                            coarnbr,    /*+ Minimum number of coarse vertices    +*/
-const int                             foldval,    /*+ Allow fold/dup or fold or nofold     +*/
+const int                             foldval,    /*+ Allow fold/dup or fold or no fold    +*/
 const Gnum                            dupmax,     /*+ Minimum number of vertices to do dup +*/
 const double                          coarrat)    /*+ Maximum contraction ratio            +*/
 {
@@ -943,7 +943,7 @@ const double                          coarrat)    /*+ Maximum contraction ratio 
 
   for (passnum = 0; passnum < passnbr; passnum ++) {
     dgraphMatchHy (&matedat);
-    if (((SCOTCH_COLLECTIVE_TEST) ? dgraphMatchSyncColl : dgraphMatchSyncPtop) (&matedat) != 0) {
+    if ((((finegrafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphMatchSyncPtop : dgraphMatchSyncColl) (&matedat) != 0) {
       errorPrint        ("dgraphCoarsen: cannot perform matching");
       dgraphMatchExit   (&matedat);
       dgraphCoarsenExit (&matedat.c);

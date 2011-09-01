@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.0  : from : 02 jan 2007     **/
 /**                                 to     04 feb 2007     **/
 /**                # Version 5.1  : from : 21 nov 2007     **/
-/**                                 to     28 jan 2010     **/
+/**                                 to     22 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -300,10 +300,11 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
     compsize1    += partval;
     commgainextn -= partval * 2 * *veexptr;
   }
+  grafptr->fronnbr      = fronnum;
   grafptr->compload0    = grafptr->compload0avg + grafptr->compload0dlt;
   grafptr->compsize0    = grafptr->s.vertnbr - compsize1;
   grafptr->commgainextn = commgainextn;
-  grafptr->fronnbr      = fronnum;
+  grafptr->bbalval      = (double) ((grafptr->compload0dlt < 0) ? (- grafptr->compload0dlt) : grafptr->compload0dlt) / (double) grafptr->compload0avg;
 
   if (permtab != NULL)                            /* Free work arrays */
     memFree (permtab);

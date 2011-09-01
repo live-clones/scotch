@@ -1,4 +1,4 @@
-/* Copyright 2008-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2008-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 12 jun 2008     **/
 /**                                 to   : 28 aug 2008     **/
 /**                # Version 5.1  : from : 26 oct 2008     **/
-/**                                 to   : 28 aug 2010     **/
+/**                                 to   : 31 aug 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,12 +64,12 @@
 **  The static variables.
 */
 
-static int                  C_partNbr = 2;        /* Default number of parts     */
-static int                  C_paraNum = 0;        /* Number of parameters        */
-static int                  C_paraNbr = 0;        /* No parameters for mapping   */
-static int                  C_fileNum = 0;        /* Number of file in arg list  */
-static int                  C_fileNbr = 4;        /* Number of files for mapping */
-static File                 C_fileTab[C_FILENBR] = { /* File array               */
+static int                  C_partNbr = 1;        /* Default number of parts / cluster load */
+static int                  C_paraNum = 0;        /* Number of parameters                   */
+static int                  C_paraNbr = 0;        /* No parameters for mapping              */
+static int                  C_fileNum = 0;        /* Number of file in arg list             */
+static int                  C_fileNbr = 4;        /* Number of files for mapping            */
+static File                 C_fileTab[C_FILENBR] = { /* File array                          */
                               { "-", NULL, "r" },
                               { "-", NULL, "r" },
                               { "-", NULL, "w" },
@@ -77,8 +77,8 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 
 static const char *         C_usageList[] = {     /* Usage */
   "dgmap [<input source file> [<input target file> [<output mapping file> [<output log file>]]]] <options>",
-  "dgpart [<nparts>] [<input source file> [<output mapping file> [<output log file>]]] <options>",
-  "  -b<val>    : Load imbalance tolerance (default: 0.01)",
+  "dgpart [<nparts/pwght>] [<input source file> [<output mapping file> [<output log file>]]] <options>",
+  "  -b<val>    : Load imbalance tolerance (default: 0.05)",
   "  -c<opt>    : Choose default mapping strategy according to one or several of <opt>:",
   "                 b  : enforce load balance as much as possible",
   "                 q  : privilege quality over speed (default)",
@@ -87,6 +87,8 @@ static const char *         C_usageList[] = {     /* Usage */
   "                 x  : enforce scalability",
   "  -h         : Display this help",
   "  -m<strat>  : Set parallel mapping strategy (see user's manual)",
+  "  -q         : Do graph clustering instead of graph partitioning (for dgpart)",
+  "  -q<pwght>  : Do graph clustering instead of static mapping (for dgmap)",
   "  -r<num>    : Set root process for centralized files (default is 0)",
   "  -s<obj>    : Force unity weights on <obj>:",
   "                 e  : edges",
@@ -136,18 +138,18 @@ char *                      argv[])
 #endif /* SCOTCH_PTHREAD */
 
   flagval = C_FLAGNONE;                           /* Default behavior  */
+  kbalval = 0.05;                                 /* Default imbalance */
   straval = 0;                                    /* No strategy flags */
   straptr = NULL;
 
-  i = strlen (argv[0]);
-  if ((i >= 5) && (strncmp (argv[0] + i - 5, "gpart", 5) == 0)) {
-    flagval |= C_FLAGPART;
-    C_paraNbr = 1;                                /* One more parameter       */
-    C_fileNbr = 3;                                /* One less file to provide */
-    errorProg ("dgpart");
-  }
-  else
-    errorProg ("dgmap");
+#ifdef SCOTCH_COMPILE_PART
+  flagval |= C_FLAGPART;
+  C_paraNbr = 1;                                  /* One more parameter       */
+  C_fileNbr = 3;                                  /* One less file to provide */
+  errorProg ("dgpart");
+#else
+  errorProg ("dgmap");
+#endif /* SCOTCH_COMPILE_PART */
 
 #ifdef SCOTCH_PTHREAD
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
@@ -174,15 +176,13 @@ char *                      argv[])
   grafflag = 0;                                   /* Use vertex and edge weights */
   SCOTCH_stratInit (&stradat);
 
-  kbalval = 0.01;                                 /* Set default load imbalance value */
-
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
     C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_paraNum < C_paraNbr) {                /* If number of parameters not reached              */
         if ((C_partNbr = atoi (argv[i])) < 1)     /* Get the number of parts                          */
-          errorPrint ("main: invalid number of parts (\"%s\")", argv[i]);
+          errorPrint ("main: invalid number of parts '%s'", argv[i]);
         C_paraNum ++;
         continue;                                 /* Process the other parameters */
       }
@@ -229,7 +229,7 @@ char *                      argv[])
                 straval |= SCOTCH_STRATSCALABILITY;
                 break;
               default :
-                errorPrint ("main: invalid strategy selection option (\"%c\")", argv[i][j]);
+                errorPrint ("main: invalid strategy selection option '%c'", argv[i][j]);
             }
           }
           break;
@@ -249,6 +249,20 @@ char *                      argv[])
           SCOTCH_stratExit (&stradat);
           SCOTCH_stratInit (&stradat);
           SCOTCH_stratDgraphMap (&stradat, straptr);
+          break;
+        case 'Q' :
+        case 'q' :
+          flagval |= C_FLAGCLUSTER;
+          if ((flagval & C_FLAGPART) != 0) {      /* If partitioning program */
+            if (argv[i][2] != '\0')
+              errorPrint ("main: invalid parameter '%s' after '-q' for dgpart", argv[i] + 2);
+          }
+          else {
+            if (argv[i][1] == '\0')
+              errorPrint ("main: missing parameter after '-q' for dgmap");
+            if ((C_partNbr = atoi (argv[i] + 2)) < 1) /* Get maximum cluster load */
+              errorPrint ("main: invalid cluster load '%s'", argv[i] + 2);
+          }
           break;
         case 'R' :                                /* Root process (if necessary) */
         case 'r' :
@@ -271,13 +285,13 @@ char *                      argv[])
                 grafflag |= 1;                    /* Do not load vertex weights */
                 break;
               default :
-                errorPrint ("main: invalid source graph option (\"%c\")", argv[i][j]);
+                errorPrint ("main: invalid source graph option '%c'", argv[i][j]);
             }
           }
           break;
         case 'V' :
           fprintf (stderr, "dgmap/dgpart, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2008-2010 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2008-2011 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                                /* Output control info */
@@ -304,12 +318,12 @@ char *                      argv[])
                 flagval |= C_FLAGVERBTIM;
                 break;
               default :
-                errorPrint ("main: unprocessed parameter \"%c\" in \"%s\"", argv[i][j], argv[i]);
+                errorPrint ("main: unprocessed parameter '%c' in '%s'", argv[i][j], argv[i]);
             }
           }
           break;
         default :
-          errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
+          errorPrint ("main: unprocessed option '%s'", argv[i]);
       }
     }
   }
@@ -340,22 +354,32 @@ char *                      argv[])
   SCOTCH_dgraphInit (&grafdat, MPI_COMM_WORLD);   /* Initialize distributed source graph */
   SCOTCH_dgraphLoad (&grafdat, C_filepntrsrcinp, -1, 0);
 
-  SCOTCH_archInit (&archdat);                     /* Create architecture structure          */
-  if ((flagval & C_FLAGPART) != 0)                /* If program run as the partitioner      */
-    SCOTCH_archCmplt (&archdat, C_partNbr);       /* Create a complete graph of proper size */
+  SCOTCH_archInit (&archdat);                     /* Create architecture structure             */
+  if ((flagval & C_FLAGPART) != 0) {              /* If program run as the partitioner         */
+    if ((flagval & C_FLAGCLUSTER) != 0)           /* If program run as graph clustering        */
+      SCOTCH_archVcmplt (&archdat);               /* Create a variable-sized complete graph    */
+    else                                          /* Program is run as plain graph partitioner */
+      SCOTCH_archCmplt (&archdat, C_partNbr);     /* Create a complete graph of proper size    */
+  }
   else {
     if (C_filepntrtgtinp == NULL)
       errorPrint ("main: target architecture file not provided");
-    SCOTCH_archLoad (&archdat, C_filepntrtgtinp); /* Read target architecture */
-    C_partNbr = SCOTCH_archSize (&archdat);
+    SCOTCH_archLoad (&archdat, C_filepntrtgtinp); /* Read target architecture         */
+    if ((flagval & C_FLAGCLUSTER) == 0)           /* If part size not to be preserved */
+      C_partNbr = SCOTCH_archSize (&archdat);
+    else {
+      if (SCOTCH_archVar (&archdat) == 0)
+        errorPrint ("main: non variable-sized architecture provided while '-q' flag set");
+    }
   }
 
-  if ((straval != 0) || ((flagval & C_FLAGKBALVAL) != 0)) {
-    if (straptr != NULL)
-      errorPrint ("main: options '-b' / '-c' and '-m' are exclusive");
+  if (((straval != 0) || ((flagval & C_FLAGKBALVAL) != 0)) && (straptr != NULL))
+    errorPrint ("main: options '-b' / '-c' and '-m' are exclusive");
 
+  if ((flagval & C_FLAGCLUSTER) != 0)             /* If clustering wanted */
+    SCOTCH_stratDgraphClusterBuild (&stradat, straval, (SCOTCH_Num) procglbnbr, (SCOTCH_Num) C_partNbr, 1.0, kbalval);
+  else
     SCOTCH_stratDgraphMapBuild (&stradat, straval, (SCOTCH_Num) procglbnbr, (SCOTCH_Num) C_partNbr, kbalval);
-  }
 
   clockStop (&runtime[0]);                        /* Get input time */
   clockInit (&runtime[1]);

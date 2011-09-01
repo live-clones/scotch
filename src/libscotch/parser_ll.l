@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 20 dec 2001     **/
 /**                                 to     23 dec 2001     **/
 /**                # Version 5.1  : from : 09 jun 2009     **/
-/**                                 to     09 jun 2009     **/
+/**                                 to     24 jul 2011     **/
 /**                                                        **/
 /**   NOTES      : # In order for flex to read its input   **/
 /**                  with getc() instead of fread, we set  **/
@@ -106,8 +106,8 @@ static const char *         stratparserstringptr; /* Pointer to the string to pa
 %}
 
 IDENT                       [A-Za-z][0-9A-Za-z]*
-INTEGER                     [-+]?[0-9]+
-FLOAT                       [-+]?[0-9]+(\.[0-9]+)?([Ee][-+]?[0-9]+)?
+INTEGER                     [0-9]+
+FLOAT                       [0-9]+(\.[0-9]+)?([Ee][-+]?[0-9]+)?
 STRING                      \"[^\"]*\"
 
 %s lstrat

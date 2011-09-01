@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,7 +62,7 @@
 /**                # Version 5.0  : from : 24 mar 2008     **/
 /**                                 to   : 22 may 2008     **/
 /**                # Version 5.1  : from : 30 oct 2008     **/
-/**                                 to   : 12 nov 2008     **/
+/**                                 to   : 14 apr 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,6 +99,7 @@ BgraphBipartFmVertex *
 bgraphBipartFmTablGet (
 GainTabl * restrict const   tablptr,              /*+ Gain table        +*/
 const Gnum                  deltcur,              /*+ Current imbalance +*/
+const Gnum                  deltmin,              /*+ Minimum imbalance +*/
 const Gnum                  deltmax)              /*+ Maximum imbalance +*/
 {
   BgraphBipartFmVertex *  vexxptr;
@@ -117,8 +118,10 @@ const Gnum                  deltmax)              /*+ Maximum imbalance +*/
        vexxptr = (BgraphBipartFmVertex *) gainTablNext (tablptr, &vexxptr->gainlink)) {
     Gnum                deltnew;
 
-    deltnew = abs (deltcur + vexxptr->compgain);
-    if (deltnew <= deltmax) {                     /* If vertex enforces balance  */
+    deltnew = deltcur + vexxptr->compgain;
+    if ((deltnew >= deltmin) &&                   /* If vertex enforces balance */
+        (deltnew <= deltmax)) {
+      deltnew = abs (deltnew);
       if ((vexxptr->commgain < gainbest) ||       /* And if it gives better gain */
           ((vexxptr->commgain == gainbest) &&     /* Or if it gives better load  */
            (deltnew < deltbest))) {
@@ -166,9 +169,11 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
   BgraphBipartFmVertex * restrict hashtab;        /* Extended vertex array                    */
   Gnum                            hashmax;
   Gnum                            hashnbr;
-  Gnum                            compload0dltmat; /* Theoretical latgest unbalance allowed   */
-  Gnum                            compload0dltmax; /* Largest unbalance allowed               */
-  Gnum                            compload0dltbst; /* Best unbalance value found to date      */
+  Gnum                            compload0dltmit; /* Theoretical smallest imbalance allowed  */
+  Gnum                            compload0dltmat; /* Theoretical largest imbalance allowed   */
+  Gnum                            compload0dltmin; /* Smallest imbalance allowed              */
+  Gnum                            compload0dltmax; /* Largest imbalance allowed               */
+  Gnum                            compload0dltbst; /* Best imbalance value found to date      */
   Gnum                            compload0dlt;   /* Current imbalance                        */
   Gnum                            compsize0dlt;   /* Update of size of part 0                 */
   Gnum                            commgainextn;   /* Current external communication gain      */
@@ -185,11 +190,17 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
   const Gnum * restrict const edgetax = grafptr->s.edgetax;
   const Gnum * restrict const edlotax = grafptr->s.edlotax;
 
-  compload0dltmat = (paraptr->deltval > 0.0L) ? ((Gnum) (paraptr->deltval * (double) grafptr->s.velosum) + 1) : 0;
-  compload0dltmax = MAX (compload0dltmat, abs (grafptr->compload0dlt)); /* Set current maximum distance */
+  compload0dltmat = (paraptr->deltval <= 0.0L) ? 0
+                    : ((Gnum) ((double) grafptr->s.velosum * paraptr->deltval /
+                               (double) MAX (grafptr->domwght[0], grafptr->domwght[1])) + 1);
+  compload0dltmit = MAX ((grafptr->compload0min - grafptr->compload0avg), - compload0dltmat);
+  compload0dltmat = MIN ((grafptr->compload0max - grafptr->compload0avg), compload0dltmat);
+  compload0dltmin = MIN (grafptr->compload0dlt, compload0dltmit); /* Set current maximum distance */
+  compload0dltmax = MAX (grafptr->compload0dlt, compload0dltmat);
 
-  if (grafptr->fronnbr == 0) {                    /* If no current frontier      */
-    if (abs (grafptr->compload0dlt) <= compload0dltmat) /* If balance is correct */
+  if (grafptr->fronnbr == 0) {                    /* If no current frontier    */
+    if ((grafptr->compload0dlt >= compload0dltmit) && /* If balance is correct */
+        (grafptr->compload0dlt <= compload0dltmat))
       return (0);                                 /* Nothing to do               */
     else {                                        /* Imbalance must be fought    */
       BgraphBipartGgParam   paradat;
@@ -199,7 +210,8 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
         return (1);
       if (grafptr->fronnbr == 0)                  /* If new partition has no frontier */
         return (0);                               /* This algorithm is still useless  */
-      compload0dltmax = MAX (compload0dltmat, abs (grafptr->compload0dlt));
+      compload0dltmin = MIN (compload0dltmit, grafptr->compload0dlt);
+      compload0dltmax = MAX (compload0dltmat, grafptr->compload0dlt);
     }
   }
 
@@ -350,7 +362,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
     savenbr  = 0;                                 /* Back up to beginning of table     */
 
     while ((movenbr < paraptr->movenbr) &&        /* As long as we can find effective vertices */
-           ((vexxptr = (BgraphBipartFmVertex *) bgraphBipartFmTablGet (tablptr, compload0dlt, compload0dltmax)) != NULL)) {
+           ((vexxptr = (BgraphBipartFmVertex *) bgraphBipartFmTablGet (tablptr, compload0dlt, compload0dltmin, compload0dltmax)) != NULL)) {
       Gnum               vertnum;                 /* Number of current vertex */
       int                partval;                 /* Part of current vertex   */
       Gnum               edgenum;
@@ -517,14 +529,13 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
           mswpnum ++;
         }
       }
-      if (compload0dltmax > compload0dltmat) {    /* If must restrict distance bounds */
-        Gnum                compload0dlttmp;
-
-        compload0dlttmp = compload0dltmax;        /* Save old working compdeltmax value */
-        compload0dltmax = MAX (compload0dltmat,   /* Restrict at most to maximum        */
-                               abs (compload0dlt));
-        if (compload0dltmax < compload0dlttmp) {  /* If we have done something useful */
-          compload0dltbst = compload0dlt;         /* Then record best move done       */
+      if ((compload0dltmin < compload0dltmit) ||  /* If must restrict distance bounds */
+          (compload0dltmax > compload0dltmat)) {
+        if ((compload0dlt > compload0dltmin) &&   /* If we have done something useful */
+            (compload0dlt < compload0dltmax)) {
+          compload0dltmin = MIN (compload0dltmit, compload0dlt); /* Update bounds */
+          compload0dltmax = MAX (compload0dltmat, compload0dlt);
+          compload0dltbst = compload0dlt;         /* Record best move done */
           commloadbst     = commload;
           commgainextnbst = commgainextn;
           swapvalbst      = swapval;
@@ -671,6 +682,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
   grafptr->compsize0   += compsize0dlt;
   grafptr->commload     = commload;
   grafptr->commgainextn = commgainextn;
+  grafptr->bbalval      = (double) ((grafptr->compload0dlt < 0) ? (- grafptr->compload0dlt) : grafptr->compload0dlt) / (double) grafptr->compload0avg;
 
 #ifdef SCOTCH_DEBUG_BGRAPH2
   if (bgraphCheck (grafptr) != 0) {

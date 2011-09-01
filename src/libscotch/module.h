@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 5.0  : from : 24 feb 2007     **/
 /**                                 to     24 jul 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     17 oct 2010     **/
+/**                                 to     20 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,19 +62,6 @@
 #define SCOTCH_VERSION_STRING       SCOTCH_VERSION_STRING2(SCOTCH_VERSION) "." SCOTCH_VERSION_STRING2(SCOTCH_RELEASE) "." SCOTCH_VERSION_STRING2(SCOTCH_PATCHLEVEL)
 #define SCOTCH_VERSION_STRING2(x)   SCOTCH_VERSION_STRING3(x)
 #define SCOTCH_VERSION_STRING3(x)   #x
-
-/*
-** Collective communication handling.
-*/
-
-#ifdef SCOTCH_PTOP
-#ifndef SCOTCH_COLLECTIVE_TEST
-#define SCOTCH_COLLECTIVE_TEST      0             /* Never perform collective communication for data exchange */
-#endif /* SCOTCH_COLLECTIVE_TEST */
-#endif /* SCOTCH_PTOP */
-#ifndef SCOTCH_COLLECTIVE_TEST
-#define SCOTCH_COLLECTIVE_TEST      1             /* Always perform collective communication for data exchange */
-#endif /* SCOTCH_COLLECTIVE_TEST */
 
 /*
 ** Debug values.

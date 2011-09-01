@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 24 jun 2004     **/
 /**                                 to     16 feb 2005     **/
 /**                # Version 5.1  : from : 28 sep 2008     **/
-/**                                 to     14 jul 2010     **/
+/**                                 to     31 aug 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -112,10 +112,11 @@ const Mapping * restrict const  mappptr)          /* Mapping      */
     actgrafptr->comploaddlt[termnum] = - actgrafptr->comploadavg[termnum];
   }
 
-  actgrafptr->fronnbr  = 0;                       /* No frontier yet */
-  actgrafptr->frontab  = NULL;
-  actgrafptr->commload = 0;
-  actgrafptr->levlnum  = 0;
+  actgrafptr->fronnbr     = 0;                    /* No frontier yet */
+  actgrafptr->frontab     = NULL;
+  actgrafptr->comploadrat = (double) actgrafptr->s.velosum / (double) domfrstload;
+  actgrafptr->commload    = 0;
+  actgrafptr->levlnum     = 0;
 
   return (0);
 }

@@ -1,4 +1,4 @@
-/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010,2011 ENSEIRB, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                This module contains the main function. **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 26 oct 2008     **/
-/**                                 to   : 26 oct 2008     **/
+/**                                 to   : 14 feb 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -162,11 +162,11 @@ char *              argv[])
         case 'V' :
         case 'v' :
           fprintf (stderr, "dggath, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2008,2010 ENSEIRB, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2008,2010,2011 ENSEIRB, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
-          errorPrint ("main: unprocessed option (\"%s\")", argv[i]);
+          errorPrint ("main: unprocessed option '%s'", argv[i]);
       }
     }
   }
