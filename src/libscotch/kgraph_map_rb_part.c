@@ -148,8 +148,9 @@ const Anum                            domnnum)    /* Index of domain onto which 
 
   mappptr = topdataptr->mappptr;
   avarval = archVar (&mappptr->archdat);
-  o = (avarval && (indvertnbr <= 1))              /* If architecture is variable-sized and source subgraph of minimal size */
-      ? 1                                         /* Then do not bipartition target more    */
+  o = (avarval &&                                 /* If architecture is variable-sized   */
+       (indvertnbr <= 1))                         /* And source subgraph of minimal size */
+      ? 1                                         /* Then do not bipartition target more */
       : archDomBipart (&mappptr->archdat, &mappptr->domntab[domnnum], &domnsubtab[0], &domnsubtab[1]);
 
   switch (o) {

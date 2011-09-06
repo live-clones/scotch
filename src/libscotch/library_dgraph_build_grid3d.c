@@ -34,7 +34,7 @@
 /**   NAME       : library_dgraph_build_grid3d.c           **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER (5.0)                  **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the distributed source  **/
 /**                graph building routines for 3D grid     **/

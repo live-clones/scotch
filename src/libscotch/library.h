@@ -50,7 +50,7 @@
 /**                # Version 5.0  : from : 26 apr 2006     **/
 /**                                 to   : 20 feb 2008     **/
 /**                # Version 5.1  : from : 30 nov 2007     **/
-/**                                 to   : 07 aug 2011     **/
+/**                                 to   : 06 sep 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -176,7 +176,7 @@ int                         SCOTCH_dgraphSave   (SCOTCH_Dgraph * const, FILE * c
 int                         SCOTCH_dgraphCheck  (const SCOTCH_Dgraph * const);
 int                         SCOTCH_dgraphBuild  (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         SCOTCH_dgraphBuildGrid3D (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const int);
-int                         SCOTCH_dgraphCoarsen (SCOTCH_Dgraph * restrict const, SCOTCH_Dgraph * restrict const, SCOTCH_Num * restrict const, const SCOTCH_Num, const double);
+int                         SCOTCH_dgraphCoarsen (SCOTCH_Dgraph * const, SCOTCH_Dgraph * const, SCOTCH_Num * const, const SCOTCH_Num, const double);
 int                         SCOTCH_dgraphGather (const SCOTCH_Dgraph * const, SCOTCH_Graph * const);
 int                         SCOTCH_dgraphScatter (SCOTCH_Dgraph * const, const SCOTCH_Graph * const);
 void                        SCOTCH_dgraphSize   (const SCOTCH_Dgraph * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
@@ -231,7 +231,7 @@ void                        SCOTCH_graphFree    (SCOTCH_Graph * const);
 int                         SCOTCH_graphLoad    (SCOTCH_Graph * const, FILE * const, const SCOTCH_Num, const SCOTCH_Num);
 int                         SCOTCH_graphSave    (const SCOTCH_Graph * const, FILE * const);
 int                         SCOTCH_graphBuild   (SCOTCH_Graph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const);
-int                         SCOTCH_graphCoarsen (const SCOTCH_Graph * restrict const, SCOTCH_Graph * restrict const, SCOTCH_Num * restrict const, const SCOTCH_Num, const double);
+int                         SCOTCH_graphCoarsen (const SCOTCH_Graph * const, SCOTCH_Graph * const, SCOTCH_Num * const, const SCOTCH_Num, const double);
 SCOTCH_Num                  SCOTCH_graphBase    (SCOTCH_Graph * const, const SCOTCH_Num baseval);
 int                         SCOTCH_graphCheck   (const SCOTCH_Graph * const);
 void                        SCOTCH_graphSize    (const SCOTCH_Graph * const, SCOTCH_Num * const, SCOTCH_Num * const);

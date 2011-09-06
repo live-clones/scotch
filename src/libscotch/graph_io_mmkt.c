@@ -34,7 +34,7 @@
 /**   NAME       : graph_io_mmkt.c                         **/
 /**                                                        **/
 /**   AUTHORS    : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : This module contains the input/output   **/
 /**                routines for handling the Matrix Market **/

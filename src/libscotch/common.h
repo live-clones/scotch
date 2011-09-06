@@ -37,7 +37,7 @@
 /**                David GOUDIN                            **/
 /**                Pascal HENON                            **/
 /**                Pierre RAMET                            **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel direct block solver. **/
 /**                These lines are the common data         **/

@@ -66,7 +66,7 @@ typedef struct KgraphMapMlParam_ {
 #define static
 #endif
 
-static int                  kgraphMapMlCoarsen (const Kgraph * const, Kgraph * restrict const, GraphCoarsenMulti * restrict * const, const KgraphMapMlParam * const);
+static int                  kgraphMapMlCoarsen  (const Kgraph * const, Kgraph * restrict const, GraphCoarsenMulti * restrict * const, const KgraphMapMlParam * const);
 static int                  kgraphMapMlUncoarsen (Kgraph * restrict const, Kgraph * restrict const, const GraphCoarsenMulti * const);
 
 int                         kgraphMapMl         (Kgraph * restrict const, const KgraphMapMlParam * const);
