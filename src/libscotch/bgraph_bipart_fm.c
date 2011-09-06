@@ -228,7 +228,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
   hashmax = hashsiz >> 2;
 
   if ((tablptr = gainTablInit (GAIN_LINMAX, BGRAPHBIPARTFMSUBBITS)) != NULL) {
-    void *                          hashtmp;      /* Temporary variable for vertex array to avoid problems wirh "restrict" */
+    void *                          hashtmp;      /* Temporary variable for vertex array to avoid problems with "restrict" */
 
     if (memAllocGroup ((void **)
                        &hashtmp, (size_t) (hashsiz * sizeof (BgraphBipartFmVertex)),

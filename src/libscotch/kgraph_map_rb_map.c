@@ -862,7 +862,7 @@ int
 kgraphMapRbMapPoolResize (
 KgraphMapRbMapPoolData * restrict const poolptr)
 {
-  KgraphMapRbMapJob * restrict  joboldtab;        /* Pointer to old job array         */
+  KgraphMapRbMapJob * restrict  joboldtab;        /* Pointer to old job array          */
   ArchDom *                     domnoldtab;       /* Temporary pointer to domain array */
   Anum                          domnmax;
 

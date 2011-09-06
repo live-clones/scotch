@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : kgraph_map_rb.c                         **/
+/**   NAME       : kgraph_map_ml.c                         **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
@@ -74,7 +74,7 @@
 ** yet computed.
 ** It returns:
 ** - 0  : if the coarse graph has been built.
-** - 1  : if threshold achieved or on error.
+** - 1  : if threshold reached or on error.
 */
 
 static

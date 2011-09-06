@@ -33,7 +33,7 @@
 /**                                                        **/
 /**   NAME       : graph_io_mmkt.h                         **/
 /**                                                        **/
-/**   AUTHORS    : Cedric CHEVALIER                        **/
+/**   AUTHORS    : Cedric CHEVALIER (v5.0)                 **/
 /**                Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module contains the Input routines **/
