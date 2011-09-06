@@ -133,7 +133,7 @@ int                         bgraphCheck         (const Bgraph * restrict const);
 
 int                         bgraphStoreInit     (const Bgraph * const, BgraphStore * const);
 void                        bgraphStoreExit     (BgraphStore * const);
-void                        bgraphStoreSave     (const Bgraph * const , BgraphStore * const);
+void                        bgraphStoreSave     (const Bgraph * const, BgraphStore * const);
 void                        bgraphStoreUpdt     (Bgraph * const, const BgraphStore * const);
 
 #undef static

@@ -37,7 +37,7 @@
 /**                David GOUDIN                            **/
 /**                Pascal HENON                            **/
 /**                Pierre RAMET                            **/
-/**                Yves SECRETAN (v 5.1)                   **/
+/**                Yves SECRETAN (v5.1)                    **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel direct block solver. **/
 /**                These lines are common routines used    **/

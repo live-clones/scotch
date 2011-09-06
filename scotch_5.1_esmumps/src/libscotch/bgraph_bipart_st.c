@@ -277,12 +277,12 @@ const Strat * restrict const  strat)              /*+ Bipartitioning strategy   
   switch (strat->type) {
     case STRATNODECONCAT :
       o = bgraphBipartSt (grafptr, strat->data.concat.strat[0]); /* Apply the first strategy      */
-      if (o == 0)                                 /* If it worked all right                         */
+      if (o == 0)                                 /* If it worked all right                       */
         o |= bgraphBipartSt (grafptr, strat->data.concat.strat[1]); /* Then apply second strategy */
       break;
     case STRATNODECOND :
       o = stratTestEval (strat->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                              */
+      if (o == 0) {                               /* If evaluation was correct                  */
 #ifdef SCOTCH_DEBUG_VGRAPH2
         if ((val.typetest != STRATTESTVAL) ||
             (val.typenode != STRATPARAMLOG)) {
