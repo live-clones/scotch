@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,76 +63,112 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     21 jan 2008     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     14 fev 2011     **/
+/**                                 to     01 jul 2014     **/
 /**                                                        **/
 /************************************************************/
+
+/*
+**  The defines.
+*/
+
+#ifndef ARCH_TORUS_H_STRUCT
+#define ARCH_TORUS_H_STRUCT
+
+/*+ Maximum dimension. +*/
+
+#define ARCHTORUSDIMMAX             5             /* Maximum dimension (at least 3) */
+
+/*+ Data structure equivalence for target architecture array. +*/
+
+#ifdef ARCH
+#define ArchTorus2Dom               ArchTorusXDom
+#define ArchTorus3Dom               ArchTorusXDom
+#endif /* ARCH */
 
 /*
 **  The type and structure definitions.
 */
 
-/*+ The 2D-torus definitions. +*/
+/*+ The xD-torus definitions. +*/
 
-typedef struct ArchTorus2_ {
-  Anum                      c[2];                 /*+ Mesh dimensions +*/
-} ArchTorus2;
+typedef struct ArchTorusX_ {
+  Anum                      dimmax;               /*+ Number of torus dimensions +*/
+  Anum                      c[ARCHTORUSDIMMAX];   /*+ Mesh dimensions            +*/
+} ArchTorusX;
 
-typedef struct ArchTorus2Dom_ {
-  Anum                      c[2][2];              /*+ Inclusive X and Y coordinates +*/
-} ArchTorus2Dom;
+typedef struct ArchTorusXDom_ {
+  Anum                      c[ARCHTORUSDIMMAX][2]; /*+ Inclusive X and Y coordinates +*/
+} ArchTorusXDom;
 
-/*+ The 3D-torus definitions. +*/
-
-typedef struct ArchTorus3_ {
-  Anum                      c[3];                 /*+ Mesh dimensions +*/
-} ArchTorus3;
-
-typedef struct ArchTorus3Dom_ {
-  Anum                      c[3][2];              /*+ Inclusive X, Y, and Z coordinates +*/
-} ArchTorus3Dom;
+#endif /* ARCH_TORUS_H_STRUCT */
 
 /*
 **  The function prototypes.
 */
 
+#ifndef ARCH_NOPROTO
+#ifndef ARCH_TORUS_H_PROTO
+#define ARCH_TORUS_H_PROTO
+
 #ifndef ARCH_TORUS
 #define static
 #endif
 
-int                         archTorus2ArchLoad  (ArchTorus2 * restrict const, FILE * restrict const);
-int                         archTorus2ArchSave  (const ArchTorus2 * const, FILE * restrict const);
+int                         archTorus2ArchLoad  (ArchTorusX * restrict const, FILE * restrict const);
+int                         archTorus2ArchSave  (const ArchTorusX * const, FILE * restrict const);
 #define archTorus2ArchFree          NULL
-ArchDomNum                  archTorus2DomNum    (const ArchTorus2 * const, const ArchTorus2Dom * const);
-int                         archTorus2DomTerm   (const ArchTorus2 * const, ArchTorus2Dom * restrict const, const ArchDomNum);
-Anum                        archTorus2DomSize   (const ArchTorus2 * const, const ArchTorus2Dom * const);
+ArchDomNum                  archTorus2DomNum    (const ArchTorusX * const, const ArchTorusXDom * const);
+int                         archTorus2DomTerm   (const ArchTorusX * const, ArchTorusXDom * restrict const, const ArchDomNum);
+Anum                        archTorus2DomSize   (const ArchTorusX * const, const ArchTorusXDom * const);
 #define archTorus2DomWght           archTorus2DomSize
-Anum                        archTorus2DomDist   (const ArchTorus2 * const, const ArchTorus2Dom * const, const ArchTorus2Dom * const);
-int                         archTorus2DomFrst   (const ArchTorus2 * const, ArchTorus2Dom * const);
-int                         archTorus2DomLoad   (const ArchTorus2 * const, ArchTorus2Dom * const, FILE * restrict const);
-int                         archTorus2DomSave   (const ArchTorus2 * const, const ArchTorus2Dom * const, FILE * restrict const);
-int                         archTorus2DomBipart (const ArchTorus2 * const, const ArchTorus2Dom * const, ArchTorus2Dom * restrict const, ArchTorus2Dom * restrict const);
-int                         archTorus2DomBipartO (const ArchTorus2 * const, const ArchTorus2Dom * const, ArchTorus2Dom * restrict const, ArchTorus2Dom * restrict const);
-int                         archTorus2DomBipartU (const ArchTorus2 * const, const ArchTorus2Dom * const, ArchTorus2Dom * restrict const, ArchTorus2Dom * restrict const);
-int                         archTorus2DomIncl   (const ArchTorus2 * const, const ArchTorus2Dom * const, const ArchTorus2Dom * const);
+Anum                        archTorus2DomDist   (const ArchTorusX * const, const ArchTorusXDom * const, const ArchTorusXDom * const);
+#define archTorus2DomFrst           archTorusXDomFrst
+#define archTorus2DomLoad           archTorusXDomLoad
+#define archTorus2DomSave           archTorusXDomSave
+int                         archTorus2DomBipart (const ArchTorusX * const, const ArchTorusXDom * const, ArchTorusXDom * restrict const, ArchTorusXDom * restrict const);
+int                         archTorus2DomBipartO (const ArchTorusX * const, const ArchTorusXDom * const, ArchTorusXDom * restrict const, ArchTorusXDom * restrict const);
+int                         archTorus2DomBipartU (const ArchTorusX * const, const ArchTorusXDom * const, ArchTorusXDom * restrict const, ArchTorusXDom * restrict const);
+int                         archTorus2DomIncl   (const ArchTorusX * const, const ArchTorusXDom * const, const ArchTorusXDom * const);
 #ifdef SCOTCH_PTSCOTCH
-int                         archTorus2DomMpiType (const ArchTorus2 * const, MPI_Datatype * const);
+#define archTorus2DomMpiType        archTorusXDomMpiType
 #endif /* SCOTCH_PTSCOTCH */
 
-int                         archTorus3ArchLoad  (ArchTorus3 * restrict const, FILE * restrict const);
-int                         archTorus3ArchSave  (const ArchTorus3 * const, FILE * restrict const);
+int                         archTorus3ArchLoad  (ArchTorusX * restrict const, FILE * restrict const);
+int                         archTorus3ArchSave  (const ArchTorusX * const, FILE * restrict const);
 #define archTorus3ArchFree          NULL
-ArchDomNum                  archTorus3DomNum    (const ArchTorus3 * const, const ArchTorus3Dom * const);
-int                         archTorus3DomTerm   (const ArchTorus3 * const, ArchTorus3Dom * restrict const, const ArchDomNum);
-Anum                        archTorus3DomSize   (const ArchTorus3 * const, const ArchTorus3Dom * const);
+ArchDomNum                  archTorus3DomNum    (const ArchTorusX * const, const ArchTorusXDom * const);
+int                         archTorus3DomTerm   (const ArchTorusX * const, ArchTorusXDom * restrict const, const ArchDomNum);
+Anum                        archTorus3DomSize   (const ArchTorusX * const, const ArchTorusXDom * const);
 #define archTorus3DomWght           archTorus3DomSize
-Anum                        archTorus3DomDist   (const ArchTorus3 * const, const ArchTorus3Dom * const, const ArchTorus3Dom * const);
-int                         archTorus3DomFrst   (const ArchTorus3 * const, ArchTorus3Dom * const);
-int                         archTorus3DomLoad   (const ArchTorus3 * const, ArchTorus3Dom * const, FILE * restrict const);
-int                         archTorus3DomSave   (const ArchTorus3 * const, const ArchTorus3Dom * const, FILE * restrict const);
-int                         archTorus3DomBipart (const ArchTorus3 * const, const ArchTorus3Dom * const, ArchTorus3Dom * restrict const, ArchTorus3Dom * restrict const);
-int                         archTorus3DomIncl   (const ArchTorus3 * const, const ArchTorus3Dom * const, const ArchTorus3Dom * const);
+Anum                        archTorus3DomDist   (const ArchTorusX * const, const ArchTorusXDom * const, const ArchTorusXDom * const);
+#define archTorus3DomFrst           archTorusXDomFrst
+#define archTorus3DomLoad           archTorusXDomLoad
+#define archTorus3DomSave           archTorusXDomSave
+int                         archTorus3DomBipart (const ArchTorusX * const, const ArchTorusXDom * const, ArchTorusXDom * restrict const, ArchTorusXDom * restrict const);
+int                         archTorus3DomIncl   (const ArchTorusX * const, const ArchTorusXDom * const, const ArchTorusXDom * const);
 #ifdef SCOTCH_PTSCOTCH
-int                         archTorus3DomMpiType (const ArchTorus3 * const, MPI_Datatype * const);
+#define archTorus3DomMpiType        archTorusXDomMpiType
+#endif /* SCOTCH_PTSCOTCH */
+
+int                         archTorusXArchLoad  (ArchTorusX * restrict const, FILE * restrict const);
+int                         archTorusXArchSave  (const ArchTorusX * const, FILE * restrict const);
+#define archTorusXArchFree          NULL
+ArchDomNum                  archTorusXDomNum    (const ArchTorusX * const, const ArchTorusXDom * const);
+int                         archTorusXDomTerm   (const ArchTorusX * const, ArchTorusXDom * restrict const, const ArchDomNum);
+Anum                        archTorusXDomSize   (const ArchTorusX * const, const ArchTorusXDom * const);
+#define archTorusXDomWght           archTorusXDomSize
+Anum                        archTorusXDomDist   (const ArchTorusX * const, const ArchTorusXDom * const, const ArchTorusXDom * const);
+int                         archTorusXDomFrst   (const ArchTorusX * const, ArchTorusXDom * const);
+int                         archTorusXDomLoad   (const ArchTorusX * const, ArchTorusXDom * const, FILE * restrict const);
+int                         archTorusXDomSave   (const ArchTorusX * const, const ArchTorusXDom * const, FILE * restrict const);
+int                         archTorusXDomBipart (const ArchTorusX * const, const ArchTorusXDom * const, ArchTorusXDom * restrict const, ArchTorusXDom * restrict const);
+int                         archTorusXDomIncl   (const ArchTorusX * const, const ArchTorusXDom * const, const ArchTorusXDom * const);
+#ifdef SCOTCH_PTSCOTCH
+int                         archTorusXDomMpiType (const ArchTorusX * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
 
 #undef static
+
+#endif /* ARCH_TORUS_H_PROTO */
+#endif /* ARCH_NOPROTO       */
+

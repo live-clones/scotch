@@ -1,4 +1,4 @@
-/* Copyright 2011,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_dgraphBand() routine.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 10 nov 2011     **/
-/**                                 to     26 sep 2012     **/
+/**                                 to     25 jun 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,34 +75,37 @@ main (
 int                 argc,
 char *              argv[])
 {
-  int                   thrdlvlreqval;
-  int                   thrdlvlproval;
-  MPI_Comm              proccomm;
-  int                   procglbnbr;               /* Number of processes sharing graph data */
-  int                   proclocnum;               /* Number of this process                 */
-  SCOTCH_Num            vertglbnbr;
-  SCOTCH_Num            vertlocnbr;
-  SCOTCH_Num *          fronloctab;
-  SCOTCH_Num            baseval;
-  SCOTCH_Dgraph         grafdat;
-  SCOTCH_Dgraph         bandgrafdat;
-  SCOTCH_Num            bandvertglbnbr;
-  SCOTCH_Num            bandvertlocnbr;
-  SCOTCH_Num *          bandvlblloctab;
-  FILE *                file;
-  int                   procnum;
+  MPI_Comm            proccomm;
+  int                 procglbnbr;                 /* Number of processes sharing graph data */
+  int                 proclocnum;                 /* Number of this process                 */
+  SCOTCH_Num          vertglbnbr;
+  SCOTCH_Num          vertlocnbr;
+  SCOTCH_Num *        fronloctab;
+  SCOTCH_Num          baseval;
+  SCOTCH_Dgraph       grafdat;
+  SCOTCH_Dgraph       bandgrafdat;
+  SCOTCH_Num          bandvertglbnbr;
+  SCOTCH_Num          bandvertlocnbr;
+  SCOTCH_Num *        bandvlblloctab;
+  FILE *              file;
+  int                 procnum;
+#ifdef SCOTCH_PTHREAD
+  int                 thrdlvlreqval;
+  int                 thrdlvlproval;
+#endif /* SCOTCH_PTHREAD */
 
   errorProg (argv[0]);
 
+#ifdef SCOTCH_PTHREAD
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
-  if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS) {
+  if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (1)");
-    exit       (1);
-  }
-  if (thrdlvlreqval > thrdlvlproval) {
+  if (thrdlvlreqval > thrdlvlproval)
+    errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
+#else /* SCOTCH_PTHREAD */
+  if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (2)");
-    exit       (1);
-  }
+#endif /* SCOTCH_PTHREAD */
 
   if (argc != 2) {
     errorPrint ("main: invalid number of parameters");

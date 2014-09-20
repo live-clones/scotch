@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 17 oct 2012     **/
 /**                                 to   : 17 oct 2012     **/
+/**                # Version 6.0  : from : 23 aug 2014     **/
+/**                                 to   : 23 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,7 +56,6 @@
 #include "parser.h"
 #include "graph.h"
 #include "arch.h"
-#include "arch_cmplt.h"
 #include "mapping.h"
 #include "order.h"
 #include "hgraph.h"
@@ -62,6 +63,7 @@
 #include "hgraph_order_si.h"
 #include "kgraph.h"
 #include "kgraph_map_st.h"
+#include "scotch.h"
 
 /*****************************/
 /*                           */
@@ -86,7 +88,6 @@ const HgraphOrderKpParam * restrict const paraptr)
   Kgraph              actgrafdat;
   Gnum * restrict     ordetab;
   Gnum                ordeadj;
-  Anum * restrict     parttab;
   Anum * restrict     parttax;
   Gnum                partnbr;
   Gnum                partnum;
@@ -99,34 +100,36 @@ const HgraphOrderKpParam * restrict const paraptr)
       ((partnbr = grafptr->vnohnbr / paraptr->partsiz) <= 1))
     return (hgraphOrderSi (grafptr, ordeptr, ordenum, cblkptr));
 
-  if ((cblkptr->cblktab = (OrderCblk *) memAlloc (partnbr * sizeof (OrderCblk))) == NULL) {
+  if ((cblkptr->cblktab = (OrderCblk *) memAlloc (partnbr * sizeof (OrderCblk))) == NULL) { /* Allocate first as it will remain */
     errorPrint ("hgraphOrderKp: out of memory (1)");
     return     (1);
-  }
-  if (memAllocGroup ((void **) (void *)
-                     &parttab, (size_t) (grafptr->vnohnbr * sizeof (Anum)), /* Group leader will be freed along with mapping */
-                     &ordetab, (size_t) (partnbr          * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint ("hgraphOrderKp: out of memory (2)");
-    memFree    (cblkptr->cblktab);
-    cblkptr->cblktab = NULL;
-    return (1);
   }
 
   hgraphUnhalo (grafptr, &actgrafdat.s);          /* Extract non-halo part of given graph       */
   actgrafdat.s.vnumtax = NULL;                    /* Do not keep numbers from nested dissection */
 
-  actgrafdat.a.class    = archClass ("cmplt");    /* Build complete graph architecture */
-  actgrafdat.a.flagval  = actgrafdat.a.class->flagval; /* Copy architecture flag       */
-  ((ArchCmplt *) &actgrafdat.a.data)->numnbr = (Anum) partnbr;
+  SCOTCH_archCmplt ((SCOTCH_Arch *) &actgrafdat.a, (SCOTCH_Num) partnbr); /* Build complete graph architecture */
 
-  if (kgraphInit (&actgrafdat, &actgrafdat.s, &actgrafdat.a, NULL, parttab - actgrafdat.s.baseval, NULL, 1, 1, NULL, NULL) != 0)
+  if ((kgraphInit (&actgrafdat, &actgrafdat.s, &actgrafdat.a, NULL, 0, NULL, NULL, 1, 1, NULL) != 0) ||
+      (kgraphMapSt (&actgrafdat, paraptr->strat) != 0)) {
+    errorPrint ("hgraphOrderKp: cannot compute partition");
+    memFree    (cblkptr->cblktab);
+    cblkptr->cblktab = NULL;
     return (1);
-  actgrafdat.m.flagval |= MAPPINGFREEPART;        /* Group leader will be freed along with mapping */
+  }
 
-  if (kgraphMapSt (&actgrafdat, paraptr->strat) != 0)
+  if (memAllocGroup ((void **) (void *)
+                     &ordetab, (size_t) (partnbr          * sizeof (Gnum)),
+                     &parttax, (size_t) (grafptr->vnohnbr * sizeof (Anum)), NULL) == NULL) {
+    errorPrint ("hgraphOrderKp: out of memory (2)");
+    memFree    (cblkptr->cblktab);
+    cblkptr->cblktab = NULL;
     return (1);
+  }
+  parttax -= actgrafdat.s.baseval;
 
-  parttax = parttab - actgrafdat.s.baseval;
+  mapTerm (&actgrafdat.m, parttax);               /* Get result of partitioning as terminal part array */
+
   memSet (ordetab, 0, partnbr * sizeof (Gnum));   /* Reset part count array */
   for (vertnum = actgrafdat.s.baseval, vertnnd = actgrafdat.s.vertnnd;
        vertnum < vertnnd; vertnum ++) {
@@ -166,6 +169,7 @@ const HgraphOrderKpParam * restrict const paraptr)
       peritab[ordetab[parttax[vertnum]] ++] = vnumtax[vertnum];
   }
 
+  memFree    (ordetab);                           /* Free group leader */
   kgraphExit (&actgrafdat);
 
   return (0);

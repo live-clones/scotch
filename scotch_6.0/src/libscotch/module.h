@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     14 nov 2012     **/
+/**                                 to     01 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -165,7 +165,9 @@
 #define intRandInit                 _SCOTCHintRandInit
 #define intRandReset                _SCOTCHintRandReset
 #define intRandSeed                 _SCOTCHintRandSeed
+#ifndef COMMON_RANDOM_SYSTEM
 #define intRandVal                  _SCOTCHintRandVal
+#endif /* COMMON_RANDOM_SYSTEM */
 #define intSort1asc1                _SCOTCHintSort1asc1
 #define intSort2asc1                _SCOTCHintSort2asc1
 #define intSort2asc2                _SCOTCHintSort2asc2
@@ -348,11 +350,11 @@
 #define archTorus2DomSize           _SCOTCHarchTorus2DomSize
 /* #define archTorus2DomWght           _SCOTCHarchTorus2DomWght Already a macro */
 #define archTorus2DomDist           _SCOTCHarchTorus2DomDist
-#define archTorus2DomFrst           _SCOTCHarchTorus2DomFrst
+/* #define archTorus2DomFrst           _SCOTCHarchTorus2DomFrst Already a macro */
 #define archTorus2DomIncl           _SCOTCHarchTorus2DomIncl
 #define archTorus2DomBipart         _SCOTCHarchTorus2DomBipart
-#define archTorus2DomLoad           _SCOTCHarchTorus2DomLoad
-#define archTorus2DomSave           _SCOTCHarchTorus2DomSave
+/* #define archTorus2DomLoad           _SCOTCHarchTorus2DomLoad Already a macro */
+/* #define archTorus2DomSave           _SCOTCHarchTorus2DomSave Already a macro */
 #define archTorus2DomBipart         _SCOTCHarchTorus2DomBipart
 #define archTorus2DomMpiType        _SCOTCHarchTorus2DomMpiType
 #define archTorus3ArchLoad          _SCOTCHarchTorus3ArchLoad
@@ -362,12 +364,25 @@
 #define archTorus3DomSize           _SCOTCHarchTorus3DomSize
 /* #define archTorus3DomWght           _SCOTCHarchTorus3DomWght Already a macro */
 #define archTorus3DomDist           _SCOTCHarchTorus3DomDist
-#define archTorus3DomFrst           _SCOTCHarchTorus3DomFrst
+/* #define archTorus3DomFrst           _SCOTCHarchTorus3DomFrst Already a macro */
 #define archTorus3DomIncl           _SCOTCHarchTorus3DomIncl
-#define archTorus3DomLoad           _SCOTCHarchTorus3DomLoad
-#define archTorus3DomSave           _SCOTCHarchTorus3DomSave
+/* #define archTorus3DomLoad           _SCOTCHarchTorus3DomLoad Already a macro */
+/* #define archTorus3DomSave           _SCOTCHarchTorus3DomSave Already a macro */
 #define archTorus3DomBipart         _SCOTCHarchTorus3DomBipart
 #define archTorus3DomMpiType        _SCOTCHarchTorus3DomMpiType
+#define archTorusXArchLoad          _SCOTCHarchTorusXArchLoad
+#define archTorusXArchSave          _SCOTCHarchTorusXArchSave
+#define archTorusXDomNum            _SCOTCHarchTorusXDomNum
+#define archTorusXDomTerm           _SCOTCHarchTorusXDomTerm
+#define archTorusXDomSize           _SCOTCHarchTorusXDomSize
+/* #define archTorusXDomWght           _SCOTCHarchTorusXDomWght Already a macro */
+#define archTorusXDomDist           _SCOTCHarchTorusXDomDist
+#define archTorusXDomFrst           _SCOTCHarchTorusXDomFrst
+#define archTorusXDomIncl           _SCOTCHarchTorusXDomIncl
+#define archTorusXDomLoad           _SCOTCHarchTorusXDomLoad
+#define archTorusXDomSave           _SCOTCHarchTorusXDomSave
+#define archTorusXDomBipart         _SCOTCHarchTorusXDomBipart
+#define archTorusXDomMpiType        _SCOTCHarchTorusXDomMpiType
 /* #define archVcmpltArchLoad          _SCOTCHarchVcmpltArchLoad Already a macro */
 /* #define archVcmpltArchSave          _SCOTCHarchVcmpltArchSave Already a macro */
 #define archVcmpltDomNum            _SCOTCHarchVcmpltDomNum
@@ -428,6 +443,7 @@
 #define bgraphBipartBd              _SCOTCHbgraphBipartBd
 #define bgraphBipartDf              _SCOTCHbgraphBipartDf
 #define bgraphBipartDf2             _SCOTCHbgraphBipartDf2
+#define bgraphBipartDfJoin          _SCOTCHbgraphBipartDfJoin
 #define bgraphBipartEx              _SCOTCHbgraphBipartEx
 #define bgraphBipartFm              _SCOTCHbgraphBipartFm
 #define bgraphBipartGg              _SCOTCHbgraphBipartGg
@@ -479,6 +495,7 @@
 #define dgraphHaloCheck             _SCOTCHdgraphHaloCheck
 #define dgraphInduceList            _SCOTCHdgraphInduceList
 #define dgraphInducePart            _SCOTCHdgraphInducePart
+#define dgraphInduce2               _SCOTCHdgraphInduce2
 #define dgraphInit                  _SCOTCHdgraphInit
 #define dgraphLoad                  _SCOTCHdgraphLoad
 #define dgraphMatchInit             _SCOTCHdgraphMatchInit
@@ -487,10 +504,12 @@
 #define dgraphMatchSyncColl         _SCOTCHdgraphMatchSyncColl
 #define dgraphMatchSyncPtop         _SCOTCHdgraphMatchSyncPtop
 #define dgraphMatchCheck            _SCOTCHdgraphMatchCheck
-#define dgraphMatchSc               _SCOTCHdgraphMatchSc
+#define dgraphMatchHl               _SCOTCHdgraphMatchHl
 #define dgraphMatchHy               _SCOTCHdgraphMatchHy
 #define dgraphMatchLc               _SCOTCHdgraphMatchLc
 #define dgraphMatchLy               _SCOTCHdgraphMatchLy
+#define dgraphMatchSc               _SCOTCHdgraphMatchSc
+#define dgraphRedist                _SCOTCHdgraphRedist
 #define dgraphSave                  _SCOTCHdgraphSave
 #define dgraphScatter               _SCOTCHdgraphScatter
 #define dgraphView                  _SCOTCHdgraphView
@@ -625,6 +644,7 @@
 #define kdgraphmapststratab         _SCOTCHkdgraphmapststratab
 #define kdgraphInit                 _SCOTCHkdgraphInit
 #define kdgraphExit                 _SCOTCHkdgraphExit
+#define kdgraphGather               _SCOTCHkdgraphGather
 #define kdgraphMapRb                _SCOTCHkdgraphMapRb
 #define kdgraphMapRbAdd2            _SCOTCHkdgraphMapRbAdd2
 #define kdgraphMapRbAddBoth         _SCOTCHkdgraphMapRbAddBoth
@@ -640,7 +660,6 @@
 #define kgraphCheck                 _SCOTCHkgraphCheck
 #define kgraphBand                  _SCOTCHkgraphBand
 #define kgraphCost                  _SCOTCHkgraphCost
-#define kgraphFree                  _SCOTCHkgraphFree
 #define kgraphFron                  _SCOTCHkgraphFron
 #define kgraphFrst                  _SCOTCHkgraphFrst
 #define kgraphMapBd                 _SCOTCHkgraphMapBd
@@ -651,7 +670,11 @@
 #define kgraphMapMl                 _SCOTCHkgraphMapMl
 #define kgraphMapRb                 _SCOTCHkgraphMapRb
 #define kgraphMapRbMap              _SCOTCHkgraphMapRbMap
+#define kgraphMapRbBgraph           _SCOTCHkgraphMapRbBgraph
 #define kgraphMapRbPart             _SCOTCHkgraphMapRbPart
+#define kgraphMapRbVfloBuild        _SCOTCHkgraphMapRbVfloBuild
+#define kgraphMapRbVfloMerge        _SCOTCHkgraphMapRbVfloMerge
+#define kgraphMapRbVfloSplit        _SCOTCHkgraphMapRbVfloSplit
 #define kgraphMapSt                 _SCOTCHkgraphMapSt
 #define kgraphStoreInit             _SCOTCHkgraphStoreInit
 #define kgraphStoreExit             _SCOTCHkgraphStoreExit
@@ -670,9 +693,17 @@
 #define mapInit                     _SCOTCHmapInit
 #define mapInit2                    _SCOTCHmapInit2
 #define mapExit                     _SCOTCHmapExit
+#define mapAlloc                    _SCOTCHmapAlloc
+#define mapBuild                    _SCOTCHmapBuild
+#define mapCopy                     _SCOTCHmapCopy
 #define mapFree                     _SCOTCHmapFree
+#define mapFrst                     _SCOTCHmapFrst
 #define mapLoad                     _SCOTCHmapLoad
+#define mapMerge                    _SCOTCHmapMerge
+#define mapResize                   _SCOTCHmapResize
+#define mapResize2                  _SCOTCHmapResize2
 #define mapSave                     _SCOTCHmapSave
+#define mapTerm                     _SCOTCHmapTerm
 
 #define meshInit                    _SCOTCHmeshInit
 #define meshExit                    _SCOTCHmeshExit
@@ -726,6 +757,8 @@
 #define stratTestSave               _SCOTCHstratTestSave
 
 #define threadLaunch                _SCOTCHthreadLaunch
+#define threadReduce                _SCOTCHthreadReduce
+#define threadScan                  _SCOTCHthreadScan
 
 #define vdgraphseparateststratab    _SCOTCHvdgraphseparateststratab
 #define vdgraphCheck                _SCOTCHvdgraphCheck

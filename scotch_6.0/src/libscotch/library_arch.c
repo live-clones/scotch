@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009-2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 05 jun 2009     **/
 /**                                 to   : 13 feb 2011     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     01 jul 2012     **/
+/**                                 to     19 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -449,7 +449,7 @@ const SCOTCH_Num            dimxval,
 const SCOTCH_Num            dimyval)
 {
   Arch *              tgtarchptr;
-  ArchTorus2 *        tgtarchdatptr;
+  ArchTorusX *        tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint ("SCOTCH_archTorus2: internal error");
@@ -457,12 +457,13 @@ const SCOTCH_Num            dimyval)
   }
 
   tgtarchptr    = (Arch *) archptr;
-  tgtarchdatptr = (ArchTorus2 *) (void *) (&tgtarchptr->data);
+  tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class   = archClass ("torus2D");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
-  tgtarchdatptr->c[0] = (Anum) dimxval;
-  tgtarchdatptr->c[1] = (Anum) dimyval;
+  tgtarchptr->class     = archClass ("torus2D");
+  tgtarchptr->flagval   = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchdatptr->dimmax = 2;
+  tgtarchdatptr->c[0]   = (Anum) dimxval;
+  tgtarchdatptr->c[1]   = (Anum) dimyval;
 
   return (0);
 }
@@ -479,7 +480,7 @@ const SCOTCH_Num            dimyval,
 const SCOTCH_Num            dimzval)
 {
   Arch *              tgtarchptr;
-  ArchTorus3 *        tgtarchdatptr;
+  ArchTorusX *        tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint ("SCOTCH_archTorus3: internal error");
@@ -487,13 +488,47 @@ const SCOTCH_Num            dimzval)
   }
 
   tgtarchptr    = (Arch *) archptr;
-  tgtarchdatptr = (ArchTorus3 *) (void *) (&tgtarchptr->data);
+  tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class   = archClass ("torus3D");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
-  tgtarchdatptr->c[0] = (Anum) dimxval;
-  tgtarchdatptr->c[1] = (Anum) dimyval;
-  tgtarchdatptr->c[2] = (Anum) dimzval;
+  tgtarchptr->class     = archClass ("torus3D");
+  tgtarchptr->flagval   = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchdatptr->dimmax = 3;
+  tgtarchdatptr->c[0]   = (Anum) dimxval;
+  tgtarchdatptr->c[1]   = (Anum) dimyval;
+  tgtarchdatptr->c[2]   = (Anum) dimzval;
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archTorusX (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            dimnbr,               /*+ Number of dimensions in architecture +*/
+const SCOTCH_Num * const    dimtab)               /*+ Array of dimensions                  +*/
+{
+  Arch *              tgtarchptr;
+  ArchTorusX *        tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archTorusX: internal error");
+    return     (1);
+  }
+  if (dimnbr > ARCHTORUSDIMMAX) {
+    errorPrint ("SCOTCH_archTorusX: too many dimensions");
+    return     (1);
+  }
+
+  tgtarchptr    = (Arch *) archptr;
+  tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class     = archClass ("torusXD");
+  tgtarchptr->flagval   = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchdatptr->dimmax = dimnbr;
+  memCpy (tgtarchdatptr->c, dimtab, dimnbr * sizeof (SCOTCH_Num)); /* Copy dimension array */
 
   return (0);
 }
@@ -538,7 +573,7 @@ SCOTCH_Arch * const         archptr)
 
   tgtarchptr = (Arch *) archptr;
 
-  tgtarchptr->class   = archClass ("vhcub");
+  tgtarchptr->class   = archClass ("varhcub");
   tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
 
   return (0);

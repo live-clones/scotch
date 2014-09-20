@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2013 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                strategy building routines.             **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 08 jan 2012     **/
-/**                                 to     26 sep 2012     **/
+/**                                 to     11 oct 2013     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +52,7 @@
 #if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H))
 #include <stdint.h>
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
+#include <stdlib.h>
 
 #include "ptscotch.h"
 

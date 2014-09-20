@@ -1,4 +1,4 @@
-/* Copyright 2004,2010-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                method.                                 **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 03 mar 2011     **/ 
-/**                                 to     19 sep 2012     **/
+/**                                 to     23 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -283,7 +283,7 @@ Gnum * restrict                     flagval)
 ** - !0  : in case of error.
 */
 
-#ifdef SCOTCH_DEBUG_KGRAPH2
+#ifdef SCOTCH_DEBUG_KGRAPH3
 
 static
 int
@@ -429,9 +429,9 @@ Gnum * const                                chektab)
       }
     }
     if ((vexxtab[vexxidx].domoptr != NULL) &&
-        (vexxtab[vexxidx].cmigload != (archDomIncl (grafptr->r.m.archptr, &grafptr->m.domntab[domnorg], vexxtab[vexxidx].domoptr) == 1) ? 0
+        (vexxtab[vexxidx].cmigload != (archDomIncl (grafptr->m.archptr, &grafptr->m.domntab[domnorg], vexxtab[vexxidx].domoptr) == 1) ? 0
                                        : grafptr->r.cmloval * ((vmlotax != NULL) ? vmlotax[vertnum] : 1)
-                                       * archDomDist (grafptr->r.m.archptr, &grafptr->m.domntab[domnorg], vexxtab[vexxidx].domoptr))) {
+                                       * archDomDist (grafptr->m.archptr, &grafptr->m.domntab[domnorg], vexxtab[vexxidx].domoptr))) {
       errorPrint ("kgraphMapFmCheck: invalid migration communication load for extended vertex");
       return     (1);
     }
@@ -502,7 +502,7 @@ Gnum * const                                chektab)
   return (0);
 }
 
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
+#endif /* SCOTCH_DEBUG_KGRAPH3 */
 
 /*****************************/
 /*                           */
@@ -669,9 +669,10 @@ KgraphMapFmTabl * restrict const            tablptr)
   oldvertnum = ((grafptr->s.vnumtax != NULL) &&   /* If there is ancestor graph vertex numbers           */
                 (grafptr->s.flagval & KGRAPHHASANCHORS) == 0) /* That are not the ones of the band graph */
              ? grafptr->s.vnumtax[vertnum] : vertnum; /* Get vertex number in original graph             */
-  if ((grafptr->r.m.parttax != NULL) &&           /* We are doing a repartitioning                                          */
-      (grafptr->r.m.parttax[oldvertnum] != -1))   /* Vertex was mapped to an old domain                                     */
-    vexxtab[vexxidx].domoptr = mapDomain (&grafptr->r.m, oldvertnum); /* Domain in which the vertex was previously mapped   */
+
+  if ((grafptr->r.m.parttax != NULL) &&           /* If we are doing a repartitioning                                     */
+      (grafptr->r.m.parttax[oldvertnum] != -1))   /* And if vertex was mapped to an old domain                            */
+    vexxtab[vexxidx].domoptr = mapDomain (&grafptr->r.m, oldvertnum); /* Domain in which the vertex was previously mapped */
   else
     vexxtab[vexxidx].domoptr = NULL;
 
@@ -990,9 +991,9 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
   Gnum                            hashnum;        /* Hash value                                     */
   Gnum                            hashmax;        /* Maximum number of entries in vertex hash table */
   Gnum                            hashnbr;        /* Current number of entries in vertex hash table */
-#ifdef SCOTCH_DEBUG_KGRAPH2
+#ifdef SCOTCH_DEBUG_KGRAPH3
   Gnum *                          chektab;        /* Extra memory needed for the check routine      */
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
+#endif /* SCOTCH_DEBUG_KGRAPH3 */
 
   Anum * restrict const           parttax = grafptr->m.parttax;
   const Gnum * restrict const     verttax = grafptr->s.verttax;
@@ -1001,12 +1002,12 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
   const Gnum * restrict const     edlotax = grafptr->s.edlotax;
   const Gnum * restrict const     pfixtax = grafptr->pfixtax;
 
-#ifdef SCOTCH_DEBUG_KGRAPH2                       /* Allocation of extra memory needed for the check routine */
+#ifdef SCOTCH_DEBUG_KGRAPH3                       /* Allocation of extra memory needed for the check routine */
   if ((chektab = memAlloc (grafptr->m.domnnbr * 3 * sizeof(Gnum))) == NULL) {
     errorPrint ("kgraphMapFm: out of memory (1)");
     return     (1);
   }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
+#endif /* SCOTCH_DEBUG_KGRAPH3 */
   tablptr = &tabldat;
 
   grafptr->kbalval = paraptr->deltval;            /* Store last k-way imbalance ratio */
@@ -1091,8 +1092,8 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
       return (1);
     }
   }
-  memset (vexxtab, ~0, hashsiz * sizeof (KgraphMapFmVertex)); /* Set all vertex numbers to ~0 */
-  memset (edxxtab, ~0, edxxsiz * sizeof (KgraphMapFmEdge));   /* Set all edge numbers to ~0   */
+  memSet (vexxtab, ~0, hashsiz * sizeof (KgraphMapFmVertex)); /* Set all vertex numbers to ~0 */
+  memSet (edxxtab, ~0, edxxsiz * sizeof (KgraphMapFmEdge));   /* Set all edge numbers to ~0   */
 
   hashnbr = grafptr->fronnbr;
   while (hashnbr >= hashmax) {
@@ -1132,12 +1133,12 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
   commloadbst = grafptr->commload;                /* Start from initial situation                              */
   cmigloadbst = 0;                                /* Do not take initial migration cost situation into account */
 
-#ifdef SCOTCH_DEBUG_KGRAPH2
+#ifdef SCOTCH_DEBUG_KGRAPH3
   if (kgraphMapFmCheck (tablptr, grafptr, vexxtab, edxxtab, hashmsk, commloadbst, chektab) != 0) {
     errorPrint ("kgraphMapFm: internal error (2)");
     return     (1);
   }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
+#endif /* SCOTCH_DEBUG_KGRAPH3 */
 
   passnbr = paraptr->passnbr;                     /* Set remaining number of passes    */
   savenbr = 0;                                    /* For empty backtrack of first pass */
@@ -1304,12 +1305,12 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
     cmigload = cmigloadbst;
     mswpnum ++;                                   /* Forget all recorded moves */
 
-#ifdef SCOTCH_DEBUG_KGRAPH2
+#ifdef SCOTCH_DEBUG_KGRAPH3
     if (kgraphMapFmCheck (tablptr, grafptr, vexxtab, edxxtab, hashmsk, commload, chektab) != 0) {
       errorPrint ("kgraphMapFm: internal error (6)");
       return     (1);
     }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
+#endif /* SCOTCH_DEBUG_KGRAPH3 */
 
     moveflag     = 0;                              /* No useful moves made              */
     movenbr      = 0;                              /* No ineffective moves recorded yet */
@@ -1707,28 +1708,28 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
         flagval     = 0;
         mswpnum ++;
       }
-#ifdef SCOTCH_DEBUG_KGRAPH2
+#ifdef SCOTCH_DEBUG_KGRAPH3
       if (kgraphMapFmCheck (tablptr, grafptr, vexxtab, edxxtab, hashmsk, commload, chektab) != 0) {
         errorPrint ("kgraphMapFm: internal error (16)");
         return     (1);
       }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
+#endif /* SCOTCH_DEBUG_KGRAPH3 */
     }
-#ifdef SCOTCH_DEBUG_KGRAPH2
+#ifdef SCOTCH_DEBUG_KGRAPH3
     if (kgraphMapFmCheck (tablptr, grafptr, vexxtab, edxxtab, hashmsk, commload, chektab) != 0) {
       errorPrint ("kgraphMapFm: internal error (17)");
       return     (1);
     }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
+#endif /* SCOTCH_DEBUG_KGRAPH3 */
   } while ((moveflag != 0) &&                     /* As long as vertices are moved                          */
            (-- passnbr != 0));                    /* And we are allowed to loop (TRICK for negative values) */
 
-#ifdef SCOTCH_DEBUG_KGRAPH2
+#ifdef SCOTCH_DEBUG_KGRAPH3
   if (kgraphMapFmCheck (tablptr, grafptr, vexxtab, edxxtab, hashmsk, commload, chektab) != 0) {
     errorPrint ("kgraphMapFm: internal error (18)");
     return     (1);
   }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
+#endif /* SCOTCH_DEBUG_KGRAPH3 */
 
   while (savenbr -- > 0) {                        /* Delete exceeding moves */
     Gnum                vexxidx;
@@ -1838,9 +1839,9 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
   for (domnnum = 0; domnnum < grafptr->m.domnnbr; domnnum ++)  /* Update graph information */
     grafptr->comploaddlt[domnnum] = comploaddlt[domnnum];
 
-#ifdef SCOTCH_DEBUG_KGRAPH2
+#ifdef SCOTCH_DEBUG_KGRAPH3
   memFree (chektab);                              /* Free group leader */
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
+#endif /* SCOTCH_DEBUG_KGRAPH3 */
   memFree (comploadmax);                          /* Free group leader */
   memFree (vexxtab);
   memFree (savetab);

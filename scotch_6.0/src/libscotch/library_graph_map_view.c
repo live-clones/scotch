@@ -340,7 +340,7 @@ FILE * const                  stream)             /*+ Output stream             
              (Gnum) nghbsum);
   }
 
-  memset (commdist, 0, 256 * sizeof (Gnum));      /* Initialize the data */
+  memSet (commdist, 0, 256 * sizeof (Gnum));      /* Initialize the data */
   commload  =
   commdilat =
   commexpan = 0;

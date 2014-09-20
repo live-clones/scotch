@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,7 +67,7 @@
 /**                # Version 5.1  : from : 11 aug 2010     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     03 mar 2011     **/
+/**                                 to     22 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -206,24 +206,30 @@ FILE * restrict const           stream)
 int
 mapSave (
 const Mapping * restrict const  mappptr,
-const Gnum * restrict const     vlbltab,
 FILE * restrict const           stream)
 {
-  const Gnum * restrict vlbltax;
+
+  Gnum                  vertnnd;
   Gnum                  vertnum;
 
-  vlbltax = (vlbltab != NULL) ? (vlbltab - mappptr->grafptr->baseval) : NULL;
+  const Arch * restrict const     archptr = mappptr->archptr;
+  const ArchDom * restrict const  domntab = mappptr->domntab;
+  const Anum * restrict const     parttax = mappptr->parttax;
+  const Gnum * restrict const     vlbltax = mappptr->grafptr->vlbltax;
+
+  vertnum = mappptr->grafptr->baseval;
+  vertnnd = mappptr->grafptr->vertnbr;            /* Un-based number at first */
 
   if (fprintf (stream, GNUMSTRING "\n",
-               (Gnum) mappptr->grafptr->vertnbr) == EOF) {
+               (Gnum) vertnnd) == EOF) {
     errorPrint ("mapSave: bad output (1)");
     return     (1);
   }
 
-  for (vertnum = mappptr->grafptr->baseval; vertnum < (mappptr->grafptr->vertnbr + mappptr->grafptr->baseval); vertnum ++) {
+  for (vertnnd += vertnum; vertnum < vertnnd; vertnum ++) {
     if (fprintf (stream, GNUMSTRING "\t" ANUMSTRING "\n",
                  (Gnum) ((vlbltax != NULL) ? vlbltax[vertnum] : vertnum),
-                 (Anum) archDomNum (mappptr->archptr, &mappptr->domntab[mappptr->parttax[vertnum]])) == EOF) {
+                 (Anum) (parttax != NULL) ? archDomNum (archptr, &domntab[parttax[vertnum]]) : -1) == EOF) {
       errorPrint ("mapSave: bad output (2)");
       return     (1);
     }

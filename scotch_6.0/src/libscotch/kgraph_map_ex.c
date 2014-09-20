@@ -1,4 +1,4 @@
-/* Copyright 2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2011,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                it can.                                 **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 27 may 2011     **/
-/**                                 to     22 dec 2011     **/
+/**                                 to     21 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,7 +82,7 @@ const KgraphMapExParam * const  paraptr)          /*+ Method parameters +*/
   KgraphMapExTree * restrict  treetab;
   Anum * restrict             parttax;
   Anum                        treenbr;            /* Number of nodes in tree structure       */
-  Arch *                      archptr;
+  const Arch * restrict       archptr;
   ArchDom                     domndat;            /* Root domain                             */
   Anum                        domnnbr;
   Anum                        domnnum;
@@ -123,7 +123,7 @@ const KgraphMapExParam * const  paraptr)          /*+ Method parameters +*/
     if (archDomSize (archptr, domnptr) <= 1) {    /* If domain is a terminal (even variable-sized) */
       Anum                termnum;
 
-      wghttmp +=                                  /* Accumulate subdomain loads in case of variable-sized architectures */
+      wghttmp                     +=              /* Accumulate subdomain loads in case of variable-sized architectures */
       doextab[domnnum].domnwght    = archDomWght (archptr, domnptr);
       doextab[domnnum].compload    = 0;
       doextab[domnnum].comploadmax = ((double) doextab[domnnum].domnwght * velosum * (1.0 + paraptr->kbalval)) / wghtsum;
@@ -163,38 +163,29 @@ const KgraphMapExParam * const  paraptr)          /*+ Method parameters +*/
   treenbr = 0;                                    /* Prepare to fill tree array; next slot to fill                  */
   kgraphMapExTree (archptr, termtab, termnbr, doextab, treetab, &treenbr, &domndat); /* Recursively fill tree array */
 
+  parttax = grafptr->m.parttax;
   for (vertnum = grafptr->s.baseval, vertnnd = grafptr->s.vertnnd, sortnbr = 0; /* Get vertex weights */
        vertnum < vertnnd; vertnum ++) {
     Gnum                veloval;
-    Anum                partval;
 
     veloval = (velotax != NULL) ? velotax[vertnum] : 1;
-    partval = (pfixtax != NULL) ? pfixtax[vertnum] : -1;
-    if (partval < 0) {                            /* If vertex is not fixed */
-      sorttab[sortnbr].veloval = veloval;         /* Record it for sorting  */
+    if ((pfixtax == NULL) || (pfixtax[vertnum] < 0)) { /* If vertex is not fixed */
+      sorttab[sortnbr].veloval = veloval;         /* Record it for sorting       */
       sorttab[sortnbr].vertnum = vertnum;
       sortnbr ++;
     }
-    else {
-#ifdef SCOTCH_DEBUG_KGRAPH2
-      if (partval != grafptr->m.parttax[vertnum]) {
-        errorPrint ("kgraphMapEx: internal error (1)");
-        return     (1);
-      }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-      doextab[partval].comploadmax -= veloval;    /* Reduce available room in domain for non-fixed vertices */
-    }
+    else
+      doextab[parttax[vertnum]].comploadmax -= veloval; /* Reduce available room in domain for non-fixed vertices */
   }
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (sortnbr != (grafptr->s.vertnbr - grafptr->vfixnbr)) {
-    errorPrint ("kgraphMapEx: internal error (2)");
+    errorPrint ("kgraphMapEx: internal error");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
   if (velotax != NULL)                            /* If vertices are weighted, sort them in ascending order */
     intSort2asc1 (sorttab, sortnbr);
 
-  parttax = grafptr->m.parttax;
   for (sortnum = sortnbr - 1; sortnum >= 0; sortnum --) { /* For all sorted vertex indices, by descending weights */
     Gnum                  vertnum;
     Gnum                  veloval;

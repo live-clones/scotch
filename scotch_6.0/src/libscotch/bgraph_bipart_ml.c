@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 28 sep 2008     **/
 /**                                 to     27 mar 2011     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     22 dec 2011     **/
+/**                                 to     08 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -147,9 +147,11 @@ const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters         
   coargrafptr->compload0avg  = finegrafptr->compload0avg;
   coargrafptr->commloadextn0 = finegrafptr->commloadextn0;
   coargrafptr->commgainextn0 = finegrafptr->commgainextn0;
-  coargrafptr->domdist       = finegrafptr->domdist;
-  coargrafptr->domwght[0]    = finegrafptr->domwght[0];
-  coargrafptr->domwght[1]    = finegrafptr->domwght[1];
+  coargrafptr->domndist      = finegrafptr->domndist;
+  coargrafptr->domnwght[0]   = finegrafptr->domnwght[0];
+  coargrafptr->domnwght[1]   = finegrafptr->domnwght[1];
+  coargrafptr->vfixload[0]   = finegrafptr->vfixload[0];
+  coargrafptr->vfixload[1]   = finegrafptr->vfixload[1];
   coargrafptr->levlnum       = finegrafptr->levlnum + 1;
 
   return (0);

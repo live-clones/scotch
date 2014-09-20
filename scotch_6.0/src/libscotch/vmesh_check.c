@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 21 mar 2003     **/
 /**                                 to     11 may 2004     **/
+/**                # Version 6.0  : from : 02 jun 2014     **/
+/**                                 to     02 jun 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,6 +82,7 @@ const Vmesh * const         meshptr)
   Gnum                ecmpsize[2];                /* Elements never in separator       */
   Gnum                ncmpsize[3];
   Gnum                ncmpload[3];
+  int                 o;
 
   if ((meshptr->ecmpsize[0] + meshptr->ecmpsize[1]) > meshptr->m.velmnbr) {
     errorPrint ("vmeshCheck: invalid element balance");
@@ -203,6 +206,7 @@ const Vmesh * const         meshptr)
   memSet (frontax, 0, meshptr->m.vnodnbr * sizeof (int));
   frontax -= meshptr->m.vnodbas;
 
+  o = 1;                                          /* Assume failure when checking */
   for (fronnum = 0; fronnum < meshptr->fronnbr; fronnum ++) {
     Gnum                vnodnum;
 
@@ -211,22 +215,23 @@ const Vmesh * const         meshptr)
     if ((vnodnum <  meshptr->m.vnodbas) ||
         (vnodnum >= meshptr->m.vnodnnd)) {
       errorPrint ("vmeshCheck: invalid vertex in frontier array");
-      memFree    (frontax + meshptr->m.vnodbas);
-      return     (1);
+      goto fail;
     }
     if (meshptr->parttax[vnodnum] != 2) {
       errorPrint ("vmeshCheck: invalid frontier array");
-      memFree    (frontax + meshptr->m.vnodbas);
-      return     (1);
+      goto fail;
     }
     if (frontax[vnodnum] != 0) {
       errorPrint ("vmeshCheck: duplicate node in frontier array");
-      memFree    (frontax + meshptr->m.vnodbas);
-      return     (1);
+      goto fail;
     }
     frontax[vnodnum] = 1;
   }
+
+  o = 0;                                          /* Everything turned well */
+
+fail :
   memFree (frontax + meshptr->m.vnodbas);
 
-  return (0);
+  return (o);
 }

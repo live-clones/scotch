@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     24 nov 2012     **/
+/**                                 to     28 mar 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,6 +71,7 @@
 #endif /* __USE_XOPEN2K */
 
 #include            <ctype.h>
+#include            <fcntl.h>                     /* Fow Windows _pipe () call */
 #include            <math.h>
 #include            <memory.h>
 #include            <stdio.h>
@@ -233,6 +234,14 @@ typedef struct Clock_ {
 } Clock;
 
 /*
+**  Handling of Windows constructs.
+*/
+
+#if defined COMMON_WINDOWS
+#define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
+#endif /* COMMON_WINDOWS */
+
+/*
 **  Handling of threads.
 */
 
@@ -374,7 +383,9 @@ void                        intPerm             (INT * const, const INT);
 void                        intRandInit         (void);
 void                        intRandReset        (void);
 void                        intRandSeed         (INT);
+#ifndef COMMON_RANDOM_SYSTEM
 INT                         intRandVal          (INT);
+#endif /* COMMON_RANDOM_SYSTEM */
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
 void                        intSort2asc2        (void * const, const INT);
@@ -405,6 +416,14 @@ void                        threadScan          (void * const, void * const, Thr
 #define clockStart(clk)             ((clk)->time[0]  = clockGet ())
 #define clockStop(clk)              ((clk)->time[1] += (clockGet () - (clk)->time[0]))
 #define clockVal(clk)               ((clk)->time[1])
+
+#ifdef COMMON_RANDOM_SYSTEM
+#ifdef COMMON_RANDOM_RAND
+#define intRandVal(ival)            ((INT) (((UINT) rand ()) % ((UINT) (ival))))
+#else /* COMMON_RANDOM_RAND */
+#define intRandVal(ival)            ((INT) (((UINT) random ()) % ((UINT) (ival))))
+#endif /* COMMON_RANDOM_RAND */
+#endif /* COMMON_RANDOM_SYSTEM */
 
 #define DATASIZE(n,p,i)             ((INT) (((n) + ((p) - 1 - (i))) / (p)))
 #define DATASCAN(n,p,i)             ((i) * ((INT) (n) / (INT) (p)) + (((i) > ((n) % (p))) ? ((n) % (p)) : (i)))

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 28 sep 2008     **/
 /**                                 to     28 jun 2011     **/
 /**                # Version 6.0  : from : 28 jun 2011     **/
-/**                                 to     28 jun 2011     **/
+/**                                 to     05 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -191,13 +191,13 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
   archDomFrst (&archdat, &mappdat.domntab[0]);    /* Get initial domain               */
   mappdat.domnnbr = 1;
 
-  jobtab[0].domnum = 0;                           /* All vertices mapped to first domain        */
-  if ((tgtlistptr != NULL) && (tgtlistptr->vnumtab != NULL)) /* If vertex list given            */
-    graphInduceList (tgtgrafptr, tgtlistptr, &jobtab[0].grafdat, NULL); /* Restrict initial job */
-  else {                                          /* If no vertex list given                    */
-    memCpy (&jobtab[0].grafdat, tgtgrafptr, sizeof (Graph)); /* Job takes whole graph           */
-    jobtab[0].grafdat.flagval &= ~GRAPHFREETABS;  /* Graph is a clone                           */
-    jobtab[0].grafdat.vnumtax  = NULL;            /* Assume we have no vertex index array       */
+  jobtab[0].domnum = 0;                           /* All vertices mapped to first domain  */
+  if ((tgtlistptr != NULL) && (tgtlistptr->vnumtab != NULL)) /* If vertex list given      */
+    graphInduceList (tgtgrafptr, tgtlistptr, &jobtab[0].grafdat); /* Restrict initial job */
+  else {                                          /* If no vertex list given              */
+    memCpy (&jobtab[0].grafdat, tgtgrafptr, sizeof (Graph)); /* Job takes whole graph     */
+    jobtab[0].grafdat.flagval &= ~GRAPHFREETABS;  /* Graph is a clone                     */
+    jobtab[0].grafdat.vnumtax  = NULL;            /* Assume we have no vertex index array */
   }
 
   if (tgtedlotax != NULL) {                       /* If architecture graph has edge loads */
@@ -332,13 +332,13 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
 
     if (actpartnbr < (actgrafdat.s.vertnbr - 1)) { /* If part 1 splittable */
       graphInducePart (&actgrafdat.s, actgrafdat.parttax, actgrafdat.s.vertnbr - actpartnbr,
-                       1 - actpartval, &jobsubptr->grafdat, NULL);
+                       1 - actpartval, &jobsubptr->grafdat);
       jobsubptr->joblink = joblink;               /* Link subjobs in list */
       joblink            = jobsubptr;
     }
     if (actpartnbr > 1) {                         /* If part 0 splittable */
       graphInducePart (&actgrafdat.s, actgrafdat.parttax, actpartnbr,
-                       actpartval, &joborgptr->grafdat, NULL);
+                       actpartval, &joborgptr->grafdat);
       joborgptr->joblink = joblink;               /* Link subjobs in list */
       joblink            = joborgptr;
     }

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2013 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,7 +62,7 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     14 fev 2011     **/
+/**                                 to     30 nov 2013     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,12 +92,13 @@
 
 int
 archTorus2ArchLoad (
-ArchTorus2 * restrict const archptr,
+ArchTorusX * restrict const archptr,
 FILE * restrict const       stream)
 {
 #ifdef SCOTCH_DEBUG_ARCH1
-  if ((sizeof (ArchTorus2)    > sizeof (ArchDummy)) ||
-      (sizeof (ArchTorus2Dom) > sizeof (ArchDomDummy))) {
+  if ((ARCHTORUSDIMMAX        < 2)                  ||
+      (sizeof (ArchTorusX)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchTorusXDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archTorus2ArchLoad: invalid type specification");
     return     (1);
   }
@@ -109,6 +110,8 @@ FILE * restrict const       stream)
     errorPrint ("archTorus2ArchLoad: bad input");
     return     (1);
   }
+
+  archptr->dimmax = 2;
 
   return (0);
 }
@@ -122,12 +125,13 @@ FILE * restrict const       stream)
 
 int
 archTorus2ArchSave (
-const ArchTorus2 * const    archptr,
+const ArchTorusX * const    archptr,
 FILE * restrict const       stream)
 {
 #ifdef SCOTCH_DEBUG_ARCH1
-  if ((sizeof (ArchTorus2)    > sizeof (ArchDummy)) ||
-      (sizeof (ArchTorus2Dom) > sizeof (ArchDomDummy))) {
+  if ((ARCHTORUSDIMMAX        < 2)                  ||
+      (sizeof (ArchTorusX)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchTorusXDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archTorus2ArchSave: invalid type specification");
     return     (1);
   }
@@ -150,8 +154,8 @@ FILE * restrict const       stream)
 
 ArchDomNum
 archTorus2DomNum (
-const ArchTorus2 * const    archptr,
-const ArchTorus2Dom * const domptr)
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const domptr)
 {
   return ((domptr->c[1][0] * archptr->c[0]) + domptr->c[0][0]); /* Return vertex number */
 }
@@ -166,8 +170,8 @@ const ArchTorus2Dom * const domptr)
 
 int
 archTorus2DomTerm (
-const ArchTorus2 * const    archptr,
-ArchTorus2Dom * const       domptr,
+const ArchTorusX * const    archptr,
+ArchTorusXDom * const       domptr,
 const ArchDomNum            domnum)
 {
   if (domnum < (archptr->c[0] * archptr->c[1])) { /* If valid label */
@@ -188,8 +192,8 @@ const ArchDomNum            domnum)
 
 Anum 
 archTorus2DomSize (
-const ArchTorus2 * const    archptr,
-const ArchTorus2Dom * const domptr)
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const domptr)
 {
   return ((domptr->c[0][1] - domptr->c[0][0] + 1) *
           (domptr->c[1][1] - domptr->c[1][0] + 1));
@@ -203,9 +207,9 @@ const ArchTorus2Dom * const domptr)
 
 Anum 
 archTorus2DomDist (
-const ArchTorus2 * const    archptr,
-const ArchTorus2Dom * const dom0ptr,
-const ArchTorus2Dom * const dom1ptr)
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const dom0ptr,
+const ArchTorusXDom * const dom1ptr)
 {
   Anum               dc0, dc1;
   Anum               ds0, ds1;
@@ -221,73 +225,6 @@ const ArchTorus2Dom * const dom1ptr)
   return ((ds0 + ds1) >> 1);
 }
 
-/* This function sets the biggest
-** domain available for this
-** architecture.
-** It returns:
-** - 0   : on success.
-** - !0  : on error.
-*/
-
-int
-archTorus2DomFrst (
-const ArchTorus2 * const        archptr,
-ArchTorus2Dom * restrict const  domptr)
-{
-  domptr->c[0][0] =
-  domptr->c[1][0] = 0;
-  domptr->c[0][1] = archptr->c[0] - 1;
-  domptr->c[1][1] = archptr->c[1] - 1;
-
-  return (0);
-}
-
-/* This routine reads domain information
-** from the given stream.
-** It returns:
-** - 0   : on success.
-** - !0  : on error.
-*/
-
-int
-archTorus2DomLoad (
-const ArchTorus2 * const        archptr,
-ArchTorus2Dom * restrict const  domptr,
-FILE * restrict const           stream)
-{
-  if ((intLoad (stream, &domptr->c[0][0]) != 1) ||
-      (intLoad (stream, &domptr->c[1][0]) != 1) ||
-      (intLoad (stream, &domptr->c[0][1]) != 1) ||
-      (intLoad (stream, &domptr->c[1][1]) != 1)) {
-    errorPrint ("archTorus2DomLoad: bad input");
-    return     (1);
-  }
-
-  return (0);
-}
-
-/* This routine saves domain information
-** to the given stream.
-** - 0   : on success.
-** - !0  : on error.
-*/
-
-int
-archTorus2DomSave (
-const ArchTorus2 * const    archptr,
-const ArchTorus2Dom * const domptr,
-FILE * restrict const       stream)
-{
-  if (fprintf (stream, ANUMSTRING " " ANUMSTRING " " ANUMSTRING " " ANUMSTRING " ",
-               (Anum) domptr->c[0][0], (Anum) domptr->c[1][0],
-               (Anum) domptr->c[0][1], (Anum) domptr->c[1][1]) == EOF) {
-    errorPrint ("archTorus2DomSave: bad output");
-    return     (1);
-  }
-
-  return (0);
-}
-
 /* This function tries to split a rectangular
 ** domain into two subdomains.
 ** It returns:
@@ -298,40 +235,41 @@ FILE * restrict const       stream)
 
 int
 archTorus2DomBipart (
-const ArchTorus2 * const        archptr,
-const ArchTorus2Dom * const     domptr,
-ArchTorus2Dom * restrict const  dom0ptr,
-ArchTorus2Dom * restrict const  dom1ptr)
+const ArchTorusX * const        archptr,
+const ArchTorusXDom * const     domptr,
+ArchTorusXDom * restrict const  dom0ptr,
+ArchTorusXDom * restrict const  dom1ptr)
 {
-  Anum                dimsiz[2];
-  int                 dimval;                     /* Dimension along which to split */
+  Anum                dimsiz0;
+  Anum                dimsiz1;
+  int                 dimnum;                     /* Dimension along which to split */
 
-  dimsiz[0] = domptr->c[0][1] - domptr->c[0][0];
-  dimsiz[1] = domptr->c[1][1] - domptr->c[1][0];
+  dimsiz0 = domptr->c[0][1] - domptr->c[0][0];
+  dimsiz1 = domptr->c[1][1] - domptr->c[1][0];
 
-  if ((dimsiz[0] | dimsiz[1]) == 0)               /* Return if cannot bipartition more */
+  if ((dimsiz0 | dimsiz1) == 0)                   /* Return if cannot bipartition more */
     return (1);
 
-  dimval = 1;
-  if ((dimsiz[0] > dimsiz[1]) ||                  /* Split domain in two along largest dimension */
-      ((dimsiz[0] == dimsiz[1]) && (archptr->c[0] > archptr->c[1])))
-    dimval = 0;
+  dimnum = 1;
+  if ((dimsiz0 > dimsiz1) ||                      /* Split domain in two along largest dimension */
+      ((dimsiz0 == dimsiz1) && (archptr->c[0] > archptr->c[1])))
+    dimnum = 0;
 
-  if (dimval == 0) {                              /* Split across the X dimension */
-    dom0ptr->c[0][0] = domptr->c[0][0];
+  dom0ptr->c[0][0] = domptr->c[0][0];
+  dom1ptr->c[1][1] = domptr->c[1][1];
+  if (dimnum == 0) {                              /* Split across the X dimension */
     dom0ptr->c[0][1] = (domptr->c[0][0] + domptr->c[0][1]) / 2;
     dom1ptr->c[0][0] = dom0ptr->c[0][1] + 1;
     dom1ptr->c[0][1] = domptr->c[0][1];
     dom0ptr->c[1][0] = dom1ptr->c[1][0] = domptr->c[1][0];
-    dom0ptr->c[1][1] = dom1ptr->c[1][1] = domptr->c[1][1];
+    dom0ptr->c[1][1] = domptr->c[1][1];
   }
   else {                                          /* Split across the Y dimension */
-    dom0ptr->c[0][0] = dom1ptr->c[0][0] = domptr->c[0][0];
+    dom1ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = dom1ptr->c[0][1] = domptr->c[0][1];
     dom0ptr->c[1][0] = domptr->c[1][0];
     dom0ptr->c[1][1] = (domptr->c[1][0] + domptr->c[1][1]) / 2;
     dom1ptr->c[1][0] = dom0ptr->c[1][1] + 1;
-    dom1ptr->c[1][1] = domptr->c[1][1];
   }
 
   return (0);
@@ -347,9 +285,9 @@ ArchTorus2Dom * restrict const  dom1ptr)
 
 int
 archTorus2DomIncl (
-const ArchTorus2 * const    archptr,
-const ArchTorus2Dom * const dom0ptr,
-const ArchTorus2Dom * const dom1ptr)
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const dom0ptr,
+const ArchTorusXDom * const dom1ptr)
 {
   if ((dom0ptr->c[0][0] <= dom1ptr->c[0][0]) &&
       (dom0ptr->c[0][1] >= dom1ptr->c[0][1]) &&
@@ -359,25 +297,6 @@ const ArchTorus2Dom * const dom1ptr)
 
   return (0);
 }
-
-/* This function creates the MPI_Datatype for
-** 2D torus domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archTorus2DomMpiType (
-const ArchTorus2 * const      archptr,
-MPI_Datatype * const          typeptr)
-{
-  MPI_Type_contiguous (4, ANUM_MPI, typeptr);
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */
 
 /***********************************************/
 /*                                             */
@@ -394,12 +313,13 @@ MPI_Datatype * const          typeptr)
 
 int
 archTorus3ArchLoad (
-ArchTorus3 * restrict const archptr,
+ArchTorusX * restrict const archptr,
 FILE * restrict const       stream)
 {
 #ifdef SCOTCH_DEBUG_ARCH1
-  if ((sizeof (ArchTorus3)    > sizeof (ArchDummy)) ||
-      (sizeof (ArchTorus3Dom) > sizeof (ArchDomDummy))) {
+  if ((ARCHTORUSDIMMAX        < 3)                  ||
+      (sizeof (ArchTorusX)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchTorusXDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archTorus3ArchLoad: invalid type specification");
     return     (1);
   }
@@ -413,6 +333,8 @@ FILE * restrict const       stream)
     return     (1);
   }
 
+  archptr->dimmax = 3;
+
   return (0);
 }
 
@@ -425,12 +347,12 @@ FILE * restrict const       stream)
 
 int
 archTorus3ArchSave (
-const ArchTorus3 * const    archptr,
+const ArchTorusX * const    archptr,
 FILE * restrict const       stream)
 {
 #ifdef SCOTCH_DEBUG_ARCH1
-  if ((sizeof (ArchTorus3)    > sizeof (ArchDummy)) ||
-      (sizeof (ArchTorus3Dom) > sizeof (ArchDomDummy))) {
+  if ((sizeof (ArchTorusX)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchTorusXDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archTorus3ArchSave: invalid type specification");
     return     (1);
   }
@@ -452,10 +374,10 @@ FILE * restrict const       stream)
 
 ArchDomNum
 archTorus3DomNum (
-const ArchTorus3 * const    archptr,
-const ArchTorus3Dom * const domptr)
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const domptr)
 {
-  return ((((domptr->c[2][0]  * archptr->c[1]) +  /* Return the vertex number */
+  return ((((domptr->c[2][0]  * archptr->c[1]) +  /* Return vertex number */
              domptr->c[1][0]) * archptr->c[0]) +
              domptr->c[0][0]);
 }
@@ -470,8 +392,8 @@ const ArchTorus3Dom * const domptr)
 
 int
 archTorus3DomTerm (
-const ArchTorus3 * const    archptr,
-ArchTorus3Dom * const       domptr,
+const ArchTorusX * const    archptr,
+ArchTorusXDom * const       domptr,
 const ArchDomNum            domnum)
 {
   if (domnum < (archptr->c[0] * archptr->c[1] * archptr->c[2])) { /* If valid label */
@@ -494,8 +416,8 @@ const ArchDomNum            domnum)
 
 Anum 
 archTorus3DomSize (
-const ArchTorus3 * const    archptr,
-const ArchTorus3Dom * const domptr)
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const domptr)
 {
   return ((domptr->c[0][1] - domptr->c[0][0] + 1) *
           (domptr->c[1][1] - domptr->c[1][0] + 1) *
@@ -509,9 +431,9 @@ const ArchTorus3Dom * const domptr)
 
 Anum 
 archTorus3DomDist (
-const ArchTorus3 * const    archptr,
-const ArchTorus3Dom * const dom0ptr,
-const ArchTorus3Dom * const dom1ptr)
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const dom0ptr,
+const ArchTorusXDom * const dom1ptr)
 {
   Anum               dc0, dc1, dc2;
   Anum               ds0, ds1, ds2;
@@ -531,78 +453,6 @@ const ArchTorus3Dom * const dom1ptr)
   return ((ds0 + ds1 + ds2) >> 1);
 }
 
-/* This function sets the biggest
-** domain available for this
-** architecture.
-** It returns:
-** - 0   : on success.
-** - !0  : on error.
-*/
-
-int
-archTorus3DomFrst (
-const ArchTorus3 * const        archptr,
-ArchTorus3Dom * restrict const  domptr)
-{
-  domptr->c[0][0] =
-  domptr->c[1][0] =
-  domptr->c[2][0] = 0;
-  domptr->c[0][1] = archptr->c[0] - 1;
-  domptr->c[1][1] = archptr->c[1] - 1;
-  domptr->c[2][1] = archptr->c[2] - 1;
-
-  return (0);
-}
-
-/* This routine reads domain information
-** from the given stream.
-** It returns:
-** - 0   : on success.
-** - !0  : on error.
-*/
-
-int
-archTorus3DomLoad (
-const ArchTorus3 * const        archptr,
-ArchTorus3Dom * restrict const  domptr,
-FILE * restrict const           stream)
-{
-  if ((intLoad (stream, &domptr->c[0][0]) != 1) ||
-      (intLoad (stream, &domptr->c[1][0]) != 1) ||
-      (intLoad (stream, &domptr->c[2][0]) != 1) ||
-      (intLoad (stream, &domptr->c[0][1]) != 1) ||
-      (intLoad (stream, &domptr->c[1][1]) != 1) ||
-      (intLoad (stream, &domptr->c[2][1]) != 1)) {
-    errorPrint ("archTorus3DomLoad: bad input");
-    return     (1);
-  }
-
-  return (0);
-}
-
-/* This routine saves domain information
-** to the given stream.
-** It returns:
-** - 0   : on success.
-** - !0  : on error.
-*/
-
-int
-archTorus3DomSave (
-const ArchTorus3 * const    archptr,
-const ArchTorus3Dom * const domptr,
-FILE * restrict const       stream)
-{
-  if (fprintf (stream, ANUMSTRING " " ANUMSTRING " " ANUMSTRING " " ANUMSTRING " " ANUMSTRING " " ANUMSTRING " ",
-               (Anum) domptr->c[0][0], (Anum) domptr->c[1][0], (Anum) domptr->c[2][0],
-               (Anum) domptr->c[0][1], (Anum) domptr->c[1][1], (Anum) domptr->c[2][1]) == EOF) {
-    errorPrint ("archTorus3DomSave: bad output");
-    return     (1);
-  }
-
-  return (0);
-}
-
 /* This function tries to split a cubic
 ** domain into two subdomains.
 ** It returns:
@@ -613,14 +463,13 @@ FILE * restrict const       stream)
 
 int
 archTorus3DomBipart (
-const ArchTorus3 * const        archptr,
-const ArchTorus3Dom * const     domptr,
-ArchTorus3Dom * restrict const  dom0ptr,
-ArchTorus3Dom * restrict const  dom1ptr)
+const ArchTorusX * const        archptr,
+const ArchTorusXDom * const     domptr,
+ArchTorusXDom * restrict const  dom0ptr,
+ArchTorusXDom * restrict const  dom1ptr)
 {
   Anum                dimsiz[3];
-  int                 dimtmp;
-  int                 dimval;
+  int                 dimnum;
 
   dimsiz[0] = domptr->c[0][1] - domptr->c[0][0];
   dimsiz[1] = domptr->c[1][1] - domptr->c[1][0];
@@ -629,18 +478,17 @@ ArchTorus3Dom * restrict const  dom1ptr)
   if ((dimsiz[0] | dimsiz[1] | dimsiz[2]) == 0)   /* Return if cannot bipartition more */
     return (1);
 
-  dimval = (archptr->c[1] > archptr->c[0]) ? 1 : 0; /* Assume all subdomain dimensions are equal */
-  if (archptr->c[2] > archptr->c[dimval])         /* Find priviledged dimension                  */
-    dimval = 2;
+  dimnum = ((dimsiz[1] > dimsiz[2]) ||            /* Find largest or priviledged subdomain dimension */
+            ((dimsiz[1] == dimsiz[2]) &&
+             (archptr->c[1] > archptr->c[2]))) ? 1 : 2;
+  if ((dimsiz[0] > dimsiz[dimnum]) ||
+      ((dimsiz[0] == dimsiz[dimnum]) &&
+       (archptr->c[0] > archptr->c[dimnum])))
+    dimnum = 0;
 
-  dimtmp = dimval;                                /* Find best dimension */
-  if (dimsiz[(dimtmp + 1) % 3] > dimsiz[dimval])
-    dimval = (dimtmp + 1) % 3;
-  if (dimsiz[(dimtmp + 2) % 3] > dimsiz[dimval])
-    dimval = (dimtmp + 2) % 3;
-
-  if (dimval == 0) {                              /* Split domain in two along largest dimension */
-    dom0ptr->c[0][0] = domptr->c[0][0];
+  dom0ptr->c[0][0] = domptr->c[0][0];
+  dom1ptr->c[2][1] = domptr->c[2][1];
+  if (dimnum == 0) {                              /* Split domain in two along largest dimension */
     dom0ptr->c[0][1] = (domptr->c[0][0] + domptr->c[0][1]) / 2;
     dom1ptr->c[0][0] = dom0ptr->c[0][1] + 1;
     dom1ptr->c[0][1] = domptr->c[0][1];
@@ -649,10 +497,10 @@ ArchTorus3Dom * restrict const  dom1ptr)
     dom0ptr->c[1][1] = dom1ptr->c[1][1] = domptr->c[1][1];
 
     dom0ptr->c[2][0] = dom1ptr->c[2][0] = domptr->c[2][0];
-    dom0ptr->c[2][1] = dom1ptr->c[2][1] = domptr->c[2][1];
+    dom0ptr->c[2][1] = domptr->c[2][1];
   }
-  else if (dimval == 1) {
-    dom0ptr->c[0][0] = dom1ptr->c[0][0] = domptr->c[0][0];
+  else if (dimnum == 1) {
+    dom1ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = dom1ptr->c[0][1] = domptr->c[0][1];
 
     dom0ptr->c[1][0] = domptr->c[1][0];
@@ -661,10 +509,10 @@ ArchTorus3Dom * restrict const  dom1ptr)
     dom1ptr->c[1][1] = domptr->c[1][1];
 
     dom0ptr->c[2][0] = dom1ptr->c[2][0] = domptr->c[2][0];
-    dom0ptr->c[2][1] = dom1ptr->c[2][1] = domptr->c[2][1];
+    dom0ptr->c[2][1] = domptr->c[2][1];
   }
   else {
-    dom0ptr->c[0][0] = dom1ptr->c[0][0] = domptr->c[0][0];
+    dom1ptr->c[0][0] = domptr->c[0][0];
     dom0ptr->c[0][1] = dom1ptr->c[0][1] = domptr->c[0][1];
 
     dom0ptr->c[1][0] = dom1ptr->c[1][0] = domptr->c[1][0];
@@ -673,7 +521,6 @@ ArchTorus3Dom * restrict const  dom1ptr)
     dom0ptr->c[2][0] = domptr->c[2][0];
     dom0ptr->c[2][1] = (domptr->c[2][0] + domptr->c[2][1]) / 2;
     dom1ptr->c[2][0] = dom0ptr->c[2][1] + 1;
-    dom1ptr->c[2][1] = domptr->c[2][1];
   }
 
   return (0);
@@ -689,9 +536,9 @@ ArchTorus3Dom * restrict const  dom1ptr)
 
 int
 archTorus3DomIncl (
-const ArchTorus3 * const    archptr,
-const ArchTorus3Dom * const dom0ptr,
-const ArchTorus3Dom * const dom1ptr)
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const dom0ptr,
+const ArchTorusXDom * const dom1ptr)
 {
   if ((dom0ptr->c[0][0] <= dom1ptr->c[0][0]) &&
       (dom0ptr->c[0][1] >= dom1ptr->c[0][1]) &&
@@ -704,8 +551,344 @@ const ArchTorus3Dom * const dom1ptr)
   return (0);
 }
 
+/***********************************************/
+/*                                             */
+/* These are the x-dimensional torus routines. */
+/*                                             */
+/***********************************************/
+
+/* This routine loads the
+** tridimensional torus architecture.
+** It returns:
+** - 0   : if the architecture has been successfully read.
+** - !0  : on error.
+*/
+
+int
+archTorusXArchLoad (
+ArchTorusX * restrict const archptr,
+FILE * restrict const       stream)
+{
+  Anum                dimnum;
+
+#ifdef SCOTCH_DEBUG_ARCH1
+  if ((sizeof (ArchTorusX)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchTorusXDom) > sizeof (ArchDomDummy))) {
+    errorPrint ("archTorusXArchLoad: invalid type specification");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_ARCH1 */
+
+  if ((intLoad (stream, &archptr->dimmax) != 1) ||
+      (archptr->dimmax > ARCHTORUSDIMMAX)) {
+    errorPrint ("archTorusXArchLoad: bad input (1)");
+    return     (1);
+  }
+
+  for (dimnum = 0; dimnum < archptr->dimmax; dimnum ++) {
+    if ((intLoad (stream, &archptr->c[dimnum]) != 1) ||
+        (archptr->c[dimnum] < 1)) {
+      errorPrint ("archTorusXArchLoad: bad input (2)");
+      return     (1);
+    }
+  }
+
+  return (0);
+}
+
+/* This routine saves the
+** tridimensional torus architecture.
+** It returns:
+** - 0   : if the architecture has been successfully written.
+** - !0  : on error.
+*/
+
+int
+archTorusXArchSave (
+const ArchTorusX * const    archptr,
+FILE * restrict const       stream)
+{
+  Anum                dimnum;
+
+#ifdef SCOTCH_DEBUG_ARCH1
+  if ((sizeof (ArchTorusX)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchTorusXDom) > sizeof (ArchDomDummy))) {
+    errorPrint ("archTorusXArchSave: invalid type specification");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_ARCH1 */
+
+  if (fprintf (stream, ANUMSTRING " ",
+               (Anum) archptr->dimmax) == EOF) {
+    errorPrint ("archTorusXArchSave: bad output (1)");
+    return     (1);
+  }
+
+  for (dimnum = 0; dimnum < archptr->dimmax; dimnum ++) {
+    if (fprintf (stream, ANUMSTRING " ",
+               (Anum) archptr->c[dimnum]) == EOF) {
+      errorPrint ("archTorusXArchSave: bad output (2)");
+      return     (1);
+    }
+  }
+
+  return (0);
+}
+
+/* This function returns the smallest number
+** of terminal domain included in the given
+** domain.
+*/
+
+ArchDomNum
+archTorusXDomNum (
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const domptr)
+{
+  Anum                dimnum;
+  Anum                domnum;
+
+  for (dimnum = archptr->dimmax - 2, domnum = domptr->c[archptr->dimmax - 1][0]; dimnum >= 0; dimnum --)
+    domnum = (domnum * archptr->c[dimnum]) + domptr->c[dimnum][0];
+
+  return (domnum);                                /* Return vertex number */
+}
+
+/* This function returns the terminal domain associated
+** with the given terminal number in the architecture.
+** It returns:
+** - 0  : if label is valid and domain has been updated.
+** - 1  : if label is invalid.
+** - 2  : on error.
+*/
+
+int
+archTorusXDomTerm (
+const ArchTorusX * const    archptr,
+ArchTorusXDom * const       domptr,
+const ArchDomNum            domnum)
+{
+  Anum                dimnum;
+  Anum                domtmp;
+
+  for (dimnum = 0, domtmp = domnum; dimnum < archptr->dimmax; dimnum ++) { /* Set the domain */
+    domptr->c[dimnum][0] =
+    domptr->c[dimnum][1] = domtmp % archptr->c[dimnum];
+    domtmp /= archptr->c[dimnum];
+  }
+
+  if (domtmp > 0)                                 /* If residual is not zero, terminal domain number is invalid since too high */
+    return (1);
+
+  return (0);
+}
+
+/* This function returns the number of
+** elements in the cubic domain.
+*/
+
+Anum 
+archTorusXDomSize (
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const domptr)
+{
+  Anum                dimnum;
+  Anum                domsiz;
+
+  for (dimnum = 0, domsiz = 1; dimnum < archptr->dimmax; dimnum ++)
+    domsiz *= domptr->c[dimnum][1] - domptr->c[dimnum][0] + 1;
+
+  return (domsiz);
+}
+
+/* This function returns the average distance
+** between two cubic domains (in fact the
+** distance between the centers of the domains).
+*/
+
+Anum 
+archTorusXDomDist (
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const dom0ptr,
+const ArchTorusXDom * const dom1ptr)
+{
+  Anum                dimnum;
+  Anum                distval;
+  Anum                disttmp;
+
+  for (dimnum = 0, distval = 0; dimnum < archptr->dimmax; dimnum ++) {
+    disttmp = abs (dom0ptr->c[dimnum][0] + dom0ptr->c[dimnum][1] -
+                   dom1ptr->c[dimnum][0] - dom1ptr->c[dimnum][1]);
+    distval += (disttmp > archptr->c[dimnum]) ? (2 * archptr->c[dimnum] - disttmp) : disttmp;
+  }
+
+  return (distval >> 1);
+}
+
+/* This function sets the biggest
+** domain available for this
+** architecture.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
+
+int
+archTorusXDomFrst (
+const ArchTorusX * const        archptr,
+ArchTorusXDom * restrict const  domptr)
+{
+  Anum                dimnum;
+
+  for (dimnum = 0; dimnum < archptr->dimmax; dimnum ++) {
+    domptr->c[dimnum][0] = 0;
+    domptr->c[dimnum][1] = archptr->c[dimnum] - 1;
+  }
+
+  return (0);
+}
+
+/* This routine reads domain information
+** from the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
+
+int
+archTorusXDomLoad (
+const ArchTorusX * const        archptr,
+ArchTorusXDom * restrict const  domptr,
+FILE * restrict const           stream)
+{
+  Anum                dimnum;
+
+  for (dimnum = 0; dimnum < archptr->dimmax; dimnum ++) {
+    if ((intLoad (stream, &domptr->c[dimnum][0]) != 1) ||
+        (intLoad (stream, &domptr->c[dimnum][1]) != 1) ||
+        (domptr->c[dimnum][0] > domptr->c[dimnum][1])  ||
+        (domptr->c[dimnum][0] < 0)) {
+      errorPrint ("archTorusXDomLoad: bad input");
+      return     (1);
+    }
+  }
+
+  return (0);
+}
+
+/* This routine saves domain information
+** to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
+
+int
+archTorusXDomSave (
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const domptr,
+FILE * restrict const       stream)
+{
+  Anum                dimnum;
+
+  for (dimnum = 0; dimnum < archptr->dimmax; dimnum ++) {
+    if (fprintf (stream, ANUMSTRING " " ANUMSTRING " ",
+                 (Anum) domptr->c[dimnum][0],
+                 (Anum) domptr->c[dimnum][1]) == EOF) {
+      errorPrint ("archTorusXDomSave: bad output");
+      return     (1);
+    }
+  }
+
+  return (0);
+}
+
+/* This function tries to split a cubic
+** domain into two subdomains.
+** It returns:
+** - 0  : if bipartitioning succeeded.
+** - 1  : if bipartitioning could not be performed.
+** - 2  : on error.
+*/
+
+int
+archTorusXDomBipart (
+const ArchTorusX * const        archptr,
+const ArchTorusXDom * const     domptr,
+ArchTorusXDom * restrict const  dom0ptr,
+ArchTorusXDom * restrict const  dom1ptr)
+{
+  Anum                archdimsizmax;              /* Maximum span on largest architecture dimension */
+  Anum                domndimsizmax;              /* Maximum span on largest domain dimension       */
+  Anum                domndimval;                 /* Dimension to be split                          */
+  Anum                domndimflg;                 /* Flag set if subdomain can be bipartitioned     */
+  Anum                domndimtmp;
+  Anum                dimnum;
+
+  for (dimnum = domndimval = archptr->dimmax - 1, archdimsizmax = domndimflg = 0, domndimsizmax = -1;
+       dimnum >= 0; dimnum --) {
+    Anum                archdimsiz;
+    Anum                domndimsiz;
+    Anum                domndim0;
+    Anum                domndim1;
+
+    dom0ptr->c[dimnum][0] =                       /* Set up subdomain data as copy of original domain data */
+    dom1ptr->c[dimnum][0] = domndim0 = domptr->c[dimnum][0];
+    dom0ptr->c[dimnum][1] =
+    dom1ptr->c[dimnum][1] = domndim1 = domptr->c[dimnum][1];
+
+    domndimsiz  = domndim1 - domndim0;            /* Span on current dimension            */
+    domndimflg |= domndimsiz;                     /* Flag set if at least one is not zero */
+
+    if (domndimsiz < domndimsizmax)               /* If dimension is too small, skip it */
+      continue;
+    archdimsiz = archptr->c[dimnum];
+    if ((domndimsiz == domndimsizmax) &&          /* If dimension to split is not priviledged, skip it */
+        (archdimsiz <= archdimsizmax))
+      continue;
+
+    archdimsizmax = archdimsiz;                   /* Record dimension to split */
+    domndimsizmax = domndimsiz;
+    domndimval    = dimnum;
+  }
+
+  if (domndimflg == 0)                            /* Return if cannot bipartition more */
+    return (1);
+
+  domndimtmp = (domptr->c[domndimval][0] + domptr->c[domndimval][1]) / 2;
+  dom0ptr->c[domndimval][1] = domndimtmp;
+  dom1ptr->c[domndimval][0] = domndimtmp + 1;
+
+  return (0);
+}
+
+/* This function checks if dom1 is
+** included in dom0.
+** It returns:
+** - 0  : if dom1 is not included in dom0.
+** - 1  : if dom1 is included in dom0.
+** - 2  : on error.
+*/
+
+int
+archTorusXDomIncl (
+const ArchTorusX * const    archptr,
+const ArchTorusXDom * const dom0ptr,
+const ArchTorusXDom * const dom1ptr)
+{
+  Anum                dimnum;
+
+  for (dimnum = 0; dimnum < archptr->dimmax; dimnum ++) {
+    if ((dom1ptr->c[dimnum][0] < dom0ptr->c[dimnum][0]) ||
+        (dom1ptr->c[dimnum][1] > dom1ptr->c[dimnum][1]))
+      return (0);
+  }
+
+  return (1);
+}
+
 /* This function creates the MPI_Datatype for
-** 3D torus domains.
+** xD torus domains.
 ** It returns:
 ** - 0  : if type could be created.
 ** - 1  : on error.
@@ -713,11 +896,11 @@ const ArchTorus3Dom * const dom1ptr)
 
 #ifdef SCOTCH_PTSCOTCH
 int
-archTorus3DomMpiType (
-const ArchTorus3 * const      archptr,
+archTorusXDomMpiType (
+const ArchTorusX * const      archptr,
 MPI_Datatype * const          typeptr)
 {
-  MPI_Type_contiguous (6, ANUM_MPI, typeptr);
+  MPI_Type_contiguous (2 * archptr->dimmax, ANUM_MPI, typeptr);
 
   return (0);
 }

@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,13 +43,16 @@
 /**   DATES      : # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     14 fev 2011     **/
+/**                                 to     01 jul 2014     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The type and structure definitions.
 */
+
+#ifndef ARCH_CMPLTW_H_STRUCT
+#define ARCH_CMPLTW_H_STRUCT
 
 /*+ The weighted target vertex. They are coded as Gnum
     rather than as Anum because this array needs to be
@@ -80,9 +83,15 @@ typedef struct ArchCmpltwDom_ {
   Anum                      veloval;              /*+ Weight of subdomain   +*/
 } ArchCmpltwDom;
 
+#endif /* ARCH_CMPLTW_H_STRUCT */
+
 /*
 **  The function prototypes.
 */
+
+#ifndef ARCH_NOPROTO
+#ifndef ARCH_CMPLTW_H_PROTO
+#define ARCH_CMPLTW_H_PROTO
 
 #ifndef ARCH_CMPLTW
 #define static
@@ -107,3 +116,6 @@ int                         archCmpltwDomMpiType (const ArchCmpltw * const, MPI_
 #endif /* SCOTCH_PTSCOTCH */
 
 #undef static
+
+#endif /* ARCH_CMPLTW_H_PROTO */
+#endif /* ARCH_NOPROTO        */

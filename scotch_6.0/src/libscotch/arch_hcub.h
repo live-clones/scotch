@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,13 +60,16 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     21 jan 2008     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     14 fev 2011     **/
+/**                                 to     01 jul 2014     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The type and structure definitions.
 */
+
+#ifndef ARCH_HCUB_H_STRUCT
+#define ARCH_HCUB_H_STRUCT
 
 /*+ The binary hypercube definitions. +*/
 
@@ -79,9 +82,15 @@ typedef struct ArchHcubDom_ {
   Anum                      bitset;               /*+ Bit set of set dimensions   +*/
 } ArchHcubDom;
 
+#endif /* ARCH_HCUB_H_STRUCT */
+
 /*
 **  The function prototypes.
 */
+
+#ifndef ARCH_NOPROTO
+#ifndef ARCH_HCUB_H_PROTO
+#define ARCH_HCUB_H_PROTO
 
 #ifndef ARCH_HCUB
 #define static
@@ -105,3 +114,6 @@ int                         archHcubDomMpiType  (const ArchHcub * const, MPI_Dat
 #endif /* SCOTCH_PTSCOTCH */
 
 #undef static
+
+#endif /* ARCH_HCUB_H_PROTO */
+#endif /* ARCH_NOPROTO      */
