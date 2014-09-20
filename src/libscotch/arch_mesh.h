@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,13 +63,16 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     21 jan 2008     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     14 fev 2011     **/
+/**                                 to     01 jul 2014     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The type and structure definitions.
 */
+
+#ifndef ARCH_MESH_H_STRUCT
+#define ARCH_MESH_H_STRUCT
 
 /*+ The 2D-mesh definitions. +*/
 
@@ -91,9 +94,15 @@ typedef struct ArchMesh3Dom_ {
   Anum                      c[3][2];              /*+ Inclusive X, Y, and Z coordinates +*/
 } ArchMesh3Dom;
 
+#endif /* ARCH_MESH_H_STRUCT */
+
 /*
 **  The function prototypes.
 */
+
+#ifndef ARCH_NOPROTO
+#ifndef ARCH_MESH_H_PROTO
+#define ARCH_MESH_H_PROTO
 
 #ifndef ARCH_MESH
 #define static
@@ -136,3 +145,6 @@ int                         archMesh3DomMpiType (const ArchMesh3 * const, MPI_Da
 #endif /* SCOTCH_PTSCOTCH */
 
 #undef static
+
+#endif /* ARCH_MESH_H_PROTO */
+#endif /* ARCH_NOPROTO      */

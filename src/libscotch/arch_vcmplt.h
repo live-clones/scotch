@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,13 +54,16 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     21 jan 2008     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     14 fev 2011     **/
+/**                                 to     26 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The type and structure definitions.
 */
+
+#ifndef ARCH_VCMPLT_H_STRUCT
+#define ARCH_VCMPLT_H_STRUCT
 
 /*+ The variable-sized complete graph bipartitioning definitions. +*/
 
@@ -69,12 +72,19 @@ typedef struct ArchVcmplt_ {
 } ArchVcmplt;
 
 typedef struct ArchVcmpltDom_ {
+  Anum                      termlvl;              /*+ Terminal depth  +*/
   Anum                      termnum;              /*+ Terminal number +*/
 } ArchVcmpltDom;
+
+#endif /* ARCH_VCMPLT_H_STRUCT */
 
 /*
 **  The function prototypes.
 */
+
+#ifndef ARCH_NOPROTO
+#ifndef ARCH_VCMPLT_H_PROTO
+#define ARCH_VCMPLT_H_PROTO
 
 #ifndef ARCH_VCMPLT
 #define static
@@ -98,3 +108,6 @@ int                         archVcmpltDomMpiType (const ArchVcmplt * const, MPI_
 #endif /* SCOTCH_PTSCOTCH */
 
 #undef static
+
+#endif /* ARCH_VCMPLT_H_PROTO */
+#endif /* ARCH_NOPROTO        */

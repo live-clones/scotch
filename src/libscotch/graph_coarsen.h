@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011-2013 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -74,6 +74,14 @@
 /*
 **  The type and structure definitions.
 */
+
+/*+ Here are the edge matching function types for coarsening. +*/
+
+typedef enum GraphCoarsenType_ {
+  GRAPHCOARHEM,                                   /*+ Heavy-edge matching       +*/
+  GRAPHCOARSCN,                                   /*+ Scanning (first) matching +*/
+  GRAPHCOARNBR                                    /*+ Number of matching types  +*/
+} GraphCoarsenType;
 
 /*+ The multinode table element, which contains
     pairs of based indices of collapsed vertices.

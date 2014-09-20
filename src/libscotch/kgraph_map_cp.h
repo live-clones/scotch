@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB
+/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -33,33 +33,17 @@
 /**                                                        **/
 /**   NAME       : kgraph_map_cp.h                         **/
 /**                                                        **/
-/**   AUTHOR     : Sebastien FOURESTIER (v6.0)             **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Sebastien FOURESTIER (v6.0)             **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the data declaration    **/
 /**                for the mapping method that copy the    **/
 /**                old mapping has a mapping result.       **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 jan 2012     **/
-/**                                 to     16 jan 2012     **/
+/**                                 to     23 aug 2014     **/
 /**                                                        **/
 /************************************************************/
-
-/*
-**  The type and structure definitions.
-*/
-
-/*+ Job selection policy types. +*/
-
-typedef enum KgraphMapCpType_ {
-  KGRAPHMAPCPTYPEPART = 0,                        /*+ Do not keep old partition data +*/
-  KGRAPHMAPCPTYPEREPART                           /*+ Do a repartitioning            +*/
-} KgraphMapCpType;
-
-/*+ This structure holds the method parameters. +*/
-
-typedef struct KgraphMapCpParam_ {
-  KgraphMapCpType           typeval;              /*+ Type of copy to do +*/
-} KgraphMapCpParam;
 
 /*
 **  The function prototypes.
@@ -69,7 +53,6 @@ typedef struct KgraphMapCpParam_ {
 #define static
 #endif
 
-int                         kgraphMapCp         (Kgraph * restrict const, const KgraphMapCpParam * const);
+int                         kgraphMapCp         (Kgraph * restrict const);
 
 #undef static
-

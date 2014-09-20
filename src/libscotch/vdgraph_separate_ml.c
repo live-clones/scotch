@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 14 dec 2008     **/
 /**                                 to   : 26 aug 2010     **/
 /**                # Version 6.0  : from : 11 sep 2012     **/
-/**                                 to   : 12 sep 2012     **/
+/**                                 to   : 03 may 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -700,8 +700,6 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
   finegrafptr->complocsize[2] = finecomplocsize2;
 
   memFree (vsndcnttab);                           /* Free group leader */
-  if (coargrafptr->s.procglbnbr != 0)
-    memFree ((void *) (coarmulttax + coargrafptr->s.baseval));
 
   reduloctab[0] = finegrafptr->complocload[0];
   reduloctab[1] = finegrafptr->complocload[1];
@@ -760,8 +758,10 @@ const VdgraphSeparateMlParam * const paraptr)     /* Method parameters       */
     return (o);
   }
 
+  coarmulttax = NULL;                             /* Assume multinode array is not allocated */
   if (vdgraphSeparateMlCoarsen (grafptr, &coargrafdat, &coarmulttax, paraptr) == 0) {
     o = (coargrafdat.s.procglbnbr == 0) ? 0 : vdgraphSeparateMl2 (&coargrafdat, paraptr); /* Apply recursion on coarsened graph if it exists */
+
     if ((o == 0) &&
         ((o = vdgraphSeparateMlUncoarsen (grafptr, &coargrafdat, coarmulttax)) == 0) &&
         ((o = vdgraphSeparateSt          (grafptr, paraptr->stratasc))         != 0)) { /* Apply ascending strategy if uncoarsening worked */
@@ -773,6 +773,9 @@ const VdgraphSeparateMlParam * const paraptr)     /* Method parameters       */
     if (coargrafdat.fronloctab == grafptr->fronloctab) /* If coarse graph shares fronloctab with fine graph */
       coargrafdat.fronloctab = NULL;              /* Prevent fronloctab of fine graph from being freed      */
     vdgraphExit (&coargrafdat);
+
+    if (coarmulttax != NULL)                      /* If multinode array has been allocated */
+      memFree (coarmulttax + grafptr->s.baseval); /* Free array                            */
 
     if (o == 0)                                   /* If multi-level failed, apply low strategy as fallback */
       return (o);

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2013 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,7 +64,7 @@
 /**                # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     25 jun 2010     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     01 jul 2012     **/
+/**                                 to     26 nov 2013     **/
 /**                                                        **/
 /************************************************************/
 
@@ -107,6 +107,7 @@ static const ArchClass      archClassTab[] = { ARCHCLASSBLOCK ("cmplt",    Cmplt
                                                ARCHCLASSBLOCK ("mesh3D",   Mesh3,  ARCHNONE),
                                                ARCHCLASSBLOCK ("torus2D",  Torus2, ARCHNONE),
                                                ARCHCLASSBLOCK ("torus3D",  Torus3, ARCHNONE),
+                                               ARCHCLASSBLOCK ("torusXD",  TorusX, ARCHNONE),
                                                ARCHCLASSBLOCK ("varcmplt", Vcmplt, ARCHPART | ARCHVAR),
                                                ARCHCLASSBLOCK ("varhcub",  Vhcub,  ARCHVAR),
                                                ARCHCLASSBLOCKNULL };
@@ -131,7 +132,7 @@ int
 archInit (
 Arch * restrict const       archptr)
 {
-  memset (archptr, 0, sizeof (Arch));             /* Initialize architecture body (arch->class = NULL) */
+  memSet (archptr, 0, sizeof (Arch));             /* Initialize architecture body (arch->class = NULL) */
 
   return (0);
 }
@@ -165,7 +166,7 @@ Arch * restrict const       archptr)
   if ((archptr->class           != NULL) &&
       (archptr->class->archFree != NULL))         /* If there is a specific freeing routing                */
     o = archptr->class->archFree (&archptr->data); /* Call it                                              */
-  memset (archptr, 0, sizeof (Arch));             /* Initialize the architecture body (arch->class = NULL) */
+  memSet (archptr, 0, sizeof (Arch));             /* Initialize the architecture body (arch->class = NULL) */
 
   return (o);
 }
@@ -199,7 +200,7 @@ FILE * const                stream)
     if (class->archLoad (&archptr->data, stream) != 0) { /* Load class data        */
       errorPrint ("archLoad: cannot load architecture data");
       class->archFree (&archptr->data);           /* Perform clean-up             */
-      memset (archptr, 0, sizeof (Arch));         /* Initialize architecture body */
+      memSet (archptr, 0, sizeof (Arch));         /* Initialize architecture body */
       return (1);
     }
   }

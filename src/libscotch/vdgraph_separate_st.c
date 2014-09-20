@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to     01 aug 2007     **/
 /**                # Version 5.1  : from : 05 nov 2007     **/
 /**                                 to     26 may 2009     **/
+/**                # Version 6.0  : from : 01 may 2014     **/
+/**                                 to     01 may 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -236,6 +238,7 @@ const Strat * restrict const  strat)              /*+ Separation strategy       
 {
   StratTest           val;
   VdgraphStore        savetab[2];                 /* Results of the two strategies */
+  Gnum                compglbload2;               /* Saved global separator load   */
   int                 o;
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   MPI_Comm            proccommold;                /* Save area for old communicator */
@@ -307,8 +310,9 @@ const Strat * restrict const  strat)              /*+ Separation strategy       
       if (vdgraphSeparateSt (grafptr, strat->data.select.strat[1]) != 0) /* If second strategy didn't work */
         vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition as its result             */
 
-      if ( (savetab[0].fronglbnbr <  grafptr->compglbsize[2]) || /* If first strategy is better */
-          ((savetab[0].fronglbnbr == grafptr->compglbsize[2]) &&
+      compglbload2 = grafptr->s.veloglbsum - savetab[0].compglbload[0] - savetab[0].compglbload[1]; /* Compute saved separator load */
+      if ( (compglbload2 <  grafptr->compglbload[2]) || /* If first strategy is better */
+          ((compglbload2 == grafptr->compglbload[2]) &&
            (abs (savetab[0].compglbloaddlt) < abs (grafptr->compglbloaddlt))))
         vdgraphStoreUpdt (grafptr, &savetab[0]);  /* Restore its result */
 

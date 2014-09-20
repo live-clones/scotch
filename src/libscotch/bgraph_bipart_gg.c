@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009,2011,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@
 /**                # Version 5.1  : from : 21 nov 2007     **/
 /**                                 to     22 feb 2011     **/
 /**                # Version 6.0  : from : 23 fev 2011     **/
-/**                                 to     09 nov 2011     **/
+/**                                 to     08 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -126,31 +126,31 @@ bgraphBipartGg (
 Bgraph * restrict const           grafptr,        /*+ Active graph      +*/
 const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
 {
-  BgraphBipartGgTabl              tabldat;        /* Gain table                                 */
-  BgraphBipartGgVertex * restrict vexxtax;        /* Extended vertex array                      */
-  BgraphBipartGgVertex *          vexxptr;        /* Pointer to current vertex to swap          */
-  const Gnum * restrict           veexptr;        /* Pointer to external gain of current vertex */
-  Gnum * restrict                 permtab;        /* Permutation table for finding new roots    */
-  Gnum                            permnum;        /* Current permutation index                  */
-  const Gnum * restrict           velobax;        /* Data for handling of optional arrays       */
-  Gnum                            velomsk;
-  const byte * restrict           veexbab;        /* Un-based array for external gains          */
-  int                             veexsiz;
-  const Gnum * restrict           edlobax;
-  Gnum                            edlomsk;
-  byte * restrict                 flagtax;
-  Gnum                            vertnum;
-  Gnum                            fronnum;
-  Gnum                            compsize1;
-  Gnum                            commgainextn;
-  unsigned int                    passnum;
-  Anum                            domdist;
-  Anum                            domdist2;       /* Two times domdist */
+  BgraphBipartGgTabl      tabldat;                /* Gain table                                   */
+  BgraphBipartGgVertex *  vexxtax;                /* Extended vertex array [norestrict]           */
+  BgraphBipartGgVertex *  vexxptr;                /* Pointer to current vertex to swap            */
+  const Gnum * restrict   veexptr;                /* Pointer to external gain of current vertex   */
+  Gnum * restrict         permtab;                /* Permutation table for finding new roots      */
+  Gnum                    permnum;                /* Current permutation index                    */
+  const Gnum * restrict   velobax;                /* Data for handling of optional arrays         */
+  Gnum                    velomsk;
+  const byte * restrict   veexbab;                /* Un-based array for external gains            */
+  int                     veexsiz;
+  const Gnum *            edlobax;                /* Pointer to array or dummy value [norestrict] */
+  Gnum                    edlomsk;
+  byte * restrict         flagtax;
+  Gnum                    vertnum;
+  Gnum                    fronnum;
+  Gnum                    compsize1;
+  Gnum                    commgainextn;
+  unsigned int            passnum;
+  Anum                    domndist;
+  Anum                    domndist2;              /* Two times domndist */
 
   const Gnum * restrict const verttax = grafptr->s.verttax; /* Fast accesses */
   const Gnum * restrict const vendtax = grafptr->s.vendtax;
   const Gnum * restrict const edgetax = grafptr->s.edgetax;
-  const Gnum * restrict const edlotax = grafptr->s.edlotax;
+  const Gnum * const          edlotax = grafptr->s.edlotax; /* [norestrict] */
   const Gnum * restrict const veextax = grafptr->veextax;
 
   if ((bgraphBipartGgTablInit (&tabldat) != 0) ||
@@ -162,8 +162,8 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
   vexxtax -= grafptr->s.baseval;                  /* Base access to vexxtax                */
   permtab  = NULL;                                /* Do not allocate permutation array yet */
 
-  domdist  = grafptr->domdist;
-  domdist2 = grafptr->domdist * 2;
+  domndist  = grafptr->domndist;
+  domndist2 = grafptr->domndist * 2;
 
   if (edlotax == NULL) {                          /* If graph has no edge weights */
     Gnum                vertnum;
@@ -171,7 +171,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
     for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) {
       Gnum                commload;
 
-      commload = (vendtax[vertnum] - verttax[vertnum]) * domdist;
+      commload = (vendtax[vertnum] - verttax[vertnum]) * domndist;
       vexxtax[vertnum].commgain0 = (veextax == NULL) ? commload : commload + veextax[vertnum];
     }
 
@@ -188,13 +188,13 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
       for (edgenum = verttax[vertnum], commload = 0;
            edgenum < vendtax[vertnum]; edgenum ++)
         commload += edlotax[edgenum];
-      commload *= domdist;
+      commload *= domndist;
 
       vexxtax[vertnum].commgain0 = (veextax == NULL) ? commload : commload + veextax[vertnum];
     }
 
     edlobax = edlotax;
-    edlomsk = ~((Gnum) 0);                        /* TRICK: will assume that ~0 is -1 */
+    edlomsk = ~((Gnum) 0);                        /* TRICK: assume that ~0 is -1 */
   }
   if (grafptr->s.velotax == NULL) {               /* Set accesses to optional arrays             */
     velobax = &bgraphbipartggloadone;             /* In case vertices not weighted (least often) */
@@ -273,7 +273,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
 
           vexxend = vexxtax + *edgeptr;           /* Point to end vertex            */
           if (! bgraphBipartGgIsUsed (vexxend)) { /* If vertex needs to be updated  */
-            vexxend->commgain -= *edloptr * domdist2; /* Adjust gain value          */
+            vexxend->commgain -= *edloptr * domndist2; /* Adjust gain value         */
             if (bgraphBipartGgIsTabl (vexxend))   /* If vertex is linked            */
               bgraphBipartGgTablDel (&tabldat, vexxend); /* Remove it from table    */
             bgraphBipartGgTablAdd (&tabldat, vexxend); /* (Re-)link vertex in table */

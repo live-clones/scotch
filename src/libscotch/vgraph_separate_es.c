@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2013 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -144,7 +144,7 @@ Gnum * const                  sepaptr)            /* Pointer to size of the arra
   }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
   if (memAllocGroup ((void **) (void *)
-                     &travtax, (size_t) (grafptr->vertnbr * sizeof (VgraphSeparateEsTrav)),
+                     &travtax, (size_t) (grafptr->vertnbr * sizeof (VgraphSeparateEsTrav)), /* TRICK: VgraphSeparateEsType should also fit */
                      &matetax, (size_t) (grafptr->vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("vgraphSeparateEsCover: out of memory (1)");
     return     (1);
@@ -186,7 +186,7 @@ Gnum * const                  sepaptr)            /* Pointer to size of the arra
     queutail = queutab;
     listnbr  = 0;
     memSet (levltax + grafptr->baseval, 0, grafptr->vertnbr * sizeof (Gnum));
-    memSet (travtax + grafptr->baseval, 0, grafptr->vertnbr * sizeof (Gnum));
+    memSet (travtax + grafptr->baseval, 0, grafptr->vertnbr * sizeof (VgraphSeparateEsTrav));
     levlmax = ~0;
 
     for (vertnum = grafptr->baseval;              /* Enqueue unmatched column nodes */

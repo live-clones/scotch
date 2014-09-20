@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2013 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -500,7 +500,7 @@ arch_build$(OBJ)		:	arch_build.c				\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					arch_deco.h				\
 					arch_vcmplt.h				\
 					mapping.h				\
@@ -571,7 +571,7 @@ arch_vhcub$(OBJ)		:	arch_vhcub.c				\
 bdgraph$(OBJ)			:	bdgraph.c				\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					dmapping.h				\
 					bdgraph.h
@@ -580,7 +580,7 @@ bdgraph_bipart_bd$(OBJ)		:	bdgraph_bipart_bd.c			\
 					module.h				\
 					common.h				\
 					parser.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					dgraph_halo.h				\
 					bdgraph.h				\
@@ -590,7 +590,7 @@ bdgraph_bipart_bd$(OBJ)		:	bdgraph_bipart_bd.c			\
 bdgraph_bipart_df$(OBJ)		:	bdgraph_bipart_df.c			\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					bdgraph.h				\
 					bdgraph_bipart_df.h
@@ -598,7 +598,7 @@ bdgraph_bipart_df$(OBJ)		:	bdgraph_bipart_df.c			\
 bdgraph_bipart_ex$(OBJ)		:	bdgraph_bipart_ex.c			\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					bdgraph.h				\
 					bdgraph_bipart_ex.h
@@ -607,7 +607,7 @@ bdgraph_bipart_ml$(OBJ)		:	bdgraph_bipart_ml.c			\
 					module.h				\
 					common.h				\
 					parser.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					dgraph_coarsen.h			\
 					bdgraph.h				\
@@ -619,7 +619,7 @@ bdgraph_bipart_sq$(OBJ)		:	bdgraph_bipart_sq.c			\
 					common.h				\
 					comm.h					\
 					parser.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					graph.h					\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
@@ -633,7 +633,7 @@ bdgraph_bipart_st$(OBJ)		:	bdgraph_bipart_st.c			\
 					gain.h					\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
 					dgraph.h				\
@@ -650,7 +650,7 @@ bdgraph_bipart_st$(OBJ)		:	bdgraph_bipart_st.c			\
 bdgraph_bipart_zr$(OBJ)		:	bdgraph_bipart_zr.c			\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					bdgraph.h				\
 					bdgraph_bipart_zr.h
@@ -658,7 +658,7 @@ bdgraph_bipart_zr$(OBJ)		:	bdgraph_bipart_zr.c			\
 bdgraph_check$(OBJ)		:	bdgraph_check.c				\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					bdgraph.h
 
@@ -666,7 +666,7 @@ bdgraph_gather_all$(OBJ)	:	bdgraph_gather_all.c			\
 					module.h				\
 					common.h				\
 					comm.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					graph.h					\
 					bgraph.h				\
 					dgraph.h				\
@@ -675,7 +675,7 @@ bdgraph_gather_all$(OBJ)	:	bdgraph_gather_all.c			\
 bdgraph_store$(OBJ)		:	bdgraph_store.c				\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					bdgraph.h
 
@@ -683,15 +683,8 @@ bgraph$(OBJ)			:	bgraph.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
-					bgraph.h
-
-bgraph_check$(OBJ)		:	bgraph_check.c				\
-					module.h				\
-					common.h				\
-					graph.h					\
-					arch.h					\
 					bgraph.h
 
 bgraph_bipart_bd$(OBJ)		:	bgraph_bipart_bd.c			\
@@ -699,7 +692,7 @@ bgraph_bipart_bd$(OBJ)		:	bgraph_bipart_bd.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_bd.h			\
 					bgraph_bipart_st.h
@@ -709,7 +702,7 @@ bgraph_bipart_df$(OBJ)		:	bgraph_bipart_df.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_df.h
 
@@ -718,7 +711,7 @@ bgraph_bipart_ex$(OBJ)		:	bgraph_bipart_ex.c			\
 					common.h				\
 					gain.h					\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_ex.h			\
 					bgraph_bipart_fm.h			\
@@ -730,7 +723,7 @@ bgraph_bipart_fm$(OBJ)		:	bgraph_bipart_fm.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_fm.h
 
@@ -740,7 +733,7 @@ bgraph_bipart_gg$(OBJ)		:	bgraph_bipart_gg.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_gg.h
 
@@ -748,7 +741,7 @@ bgraph_bipart_gp$(OBJ)		:	bgraph_bipart_gp.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_gp.h
 
@@ -758,7 +751,7 @@ bgraph_bipart_ml$(OBJ)		:	bgraph_bipart_ml.c			\
 					parser.h				\
 					graph.h					\
 					graph_coarsen.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_ml.h			\
 					bgraph_bipart_st.h
@@ -770,7 +763,7 @@ bgraph_bipart_st$(OBJ)		:	bgraph_bipart_st.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_bd.h			\
 					bgraph_bipart_df.h			\
@@ -786,15 +779,22 @@ bgraph_bipart_zr$(OBJ)		:	bgraph_bipart_zr.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h				\
 					bgraph_bipart_zr.h
+
+bgraph_check$(OBJ)		:	bgraph_check.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch$(OBJ)				\
+					bgraph.h
 
 bgraph_store$(OBJ)		:	bgraph_store.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					bgraph.h
 
 comm$(OBJ)			:	comm.c					\
@@ -963,7 +963,7 @@ dgraph_view$(OBJ)		:	dgraph_view.c				\
 dmapping$(OBJ)			:	dmapping.c				\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					dmapping.h
 
@@ -971,7 +971,7 @@ dmapping_io$(OBJ)		:	dmapping_io.c				\
 					module.h				\
 					common.h				\
 					comm.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					dgraph_allreduce.h			\
 					dmapping.h
@@ -1307,6 +1307,22 @@ hgraph_order_hx$(OBJ)		:	hgraph_order_hx.c			\
 					hgraph.h				\
 					hgraph_order_hx.h
 
+hgraph_order_kp$(OBJ)		:	hgraph_order_kp.c			\
+					module.h				\
+					common.h				\
+					parser.h				\
+					graph.h					\
+					arch.h					\
+					mapping.h				\
+					order.h					\
+					hgraph.h				\
+					hgraph_order_kp.h			\
+					hgraph_order_si.h			\
+					hgraph_order_st.h			\
+					kgraph.h				\
+					kgraph_map_st.h				\
+					scotch.h
+
 hgraph_order_nd$(OBJ)		:	hgraph_order_nd.c			\
 					module.h				\
 					common.h				\
@@ -1332,7 +1348,7 @@ hgraph_order_st$(OBJ)		:	hgraph_order_st.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					order.h					\
 					hgraph.h				\
@@ -1504,7 +1520,7 @@ hmesh_order_st$(OBJ)		:	hmesh_order_st.c			\
 kdgraph$(OBJ)			:	kdgraph.c				\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					dmapping.h				\
 					kdgraph.h
@@ -1512,7 +1528,7 @@ kdgraph$(OBJ)			:	kdgraph.c				\
 kdgraph_gather$(OBJ)		:	kdgraph_gather.c			\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					graph.h					\
 					mapping.h				\
 					kgraph.h				\
@@ -1523,7 +1539,7 @@ kdgraph_map_rb$(OBJ)		:	kdgraph_map_rb.c			\
 					module.h				\
 					common.h				\
 					parser.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					graph.h					\
 					dgraph.h				\
 					dmapping.h				\
@@ -1536,7 +1552,7 @@ kdgraph_map_rb_map$(OBJ)	:	kdgraph_map_rb_map.c			\
 					module.h				\
 					common.h				\
 					parser.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					graph.h					\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
@@ -1556,7 +1572,7 @@ kdgraph_map_rb_part$(OBJ)	:	kdgraph_map_rb_part.c			\
 					module.h				\
 					common.h				\
 					parser.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					graph.h					\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
@@ -1576,7 +1592,7 @@ kdgraph_map_st$(OBJ)		:	kdgraph_map_st.c			\
 					module.h				\
 					common.h				\
 					parser.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					graph.h					\
 					dgraph.h				\
 					dgraph_coarsen.h			\
@@ -1594,14 +1610,14 @@ kgraph$(OBJ)			:	kgraph.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h
 
 kgraph_band$(OBJ)		:	kgraph_band.c		   		\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					graph.h			        	\
 					mapping.h				\
 					kgraph.h
@@ -1610,7 +1626,7 @@ kgraph_check$(OBJ)		:	kgraph_check.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h
 
@@ -1619,7 +1635,7 @@ kgraph_map_bd$(OBJ)		:	kgraph_map_bd.c				\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h				\
 					kgraph_map_bd.h
@@ -1629,7 +1645,7 @@ kgraph_map_cp$(OBJ)		:	kgraph_map_cp.c				\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h				\
 					kgraph_map_cp.h
@@ -1640,7 +1656,7 @@ kgraph_map_df$(OBJ)		:	kgraph_map_df.c				\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h				\
 					kgraph_map_df.h
@@ -1649,7 +1665,7 @@ kgraph_map_ex$(OBJ)		:	kgraph_map_ex.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h				\
 					kgraph_map_ex.h
@@ -1659,7 +1675,7 @@ kgraph_map_fm$(OBJ)		:	kgraph_map_fm.c				\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h				\
 					kgraph_map_fm.h                         \
@@ -1671,7 +1687,7 @@ kgraph_map_ml$(OBJ)		:	kgraph_map_ml.c				\
 					parser.h				\
 					graph.h					\
 					graph_coarsen.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h				\
 					kgraph_map_ml.h
@@ -1681,7 +1697,7 @@ kgraph_map_rb$(OBJ)		:	kgraph_map_rb.c				\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
@@ -1695,7 +1711,7 @@ kgraph_map_rb_map$(OBJ)		:	kgraph_map_rb_map.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
@@ -1708,7 +1724,7 @@ kgraph_map_rb_part$(OBJ)	:	kgraph_map_rb_part.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
@@ -1721,7 +1737,7 @@ kgraph_map_st$(OBJ)		:	kgraph_map_st.c				\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
@@ -1737,7 +1753,7 @@ kgraph_store$(OBJ)		:	kgraph_store.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h
 
@@ -1745,7 +1761,7 @@ library_arch$(OBJ)		:	library_arch.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					arch_cmplt.h				\
 					scotch.h
 
@@ -1759,7 +1775,7 @@ library_arch_build$(OBJ)	:	library_arch_build.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					arch_build.h				\
 					mapping.h				\
 					bgraph.h				\
@@ -1910,7 +1926,7 @@ library_dgraph_map$(OBJ)	:	library_dgraph_map.c			\
 					module.h				\
 					common.h				\
 					parser.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dgraph.h				\
 					dmapping.h				\
 					kdgraph.h				\
@@ -1929,7 +1945,7 @@ library_dgraph_map_view$(OBJ)	:	library_dgraph_map_view.c		\
 					parser.h				\
 					dgraph.h				\
 					dgraph_halo.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					dmapping.h				\
 					kdgraph.h				\
 					library_dmapping.h			\
@@ -2205,7 +2221,7 @@ library_graph_map$(OBJ)		:	library_graph_map.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h				\
 					kgraph_map_st.h				\
@@ -2221,7 +2237,7 @@ library_graph_map_io$(OBJ)	:	library_graph_map_io.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					library_mapping.h			\
 					library_graph_map_io.h			\
 					scotch.h
@@ -2236,7 +2252,7 @@ library_graph_map_view$(OBJ)	:	library_graph_map_view.c		\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h				\
 					library_mapping.h			\
@@ -2395,14 +2411,14 @@ mapping$(OBJ)			:	mapping.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h
 
 mapping_io$(OBJ)		:	mapping_io.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					mapping_io.h
 
@@ -2639,7 +2655,7 @@ vgraph_separate_es$(OBJ)	:	vgraph_separate_es.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
@@ -2706,7 +2722,7 @@ vgraph_separate_st$(OBJ)	:	vgraph_separate_st.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\
@@ -2865,7 +2881,8 @@ wgraph_part_rb$(OBJ)		:	wgraph_part_rb.c			\
 					vgraph_separate_st.h                    \
 					vgraph_separate_zr.h                    \
 					wgraph.h                                \
-					wgraph_part_rb.h
+					wgraph_part_rb.h			\
+					scotch.h
 
 wgraph_part_st$(OBJ)		:	wgraph_part_st.c			\
 					gain.h					\
@@ -2901,7 +2918,7 @@ wgraph_store$(OBJ)		:	wgraph_store.c				\
 dummysizes$(EXE)		:	dummysizes.c				\
 					module.h				\
 					common.h				\
-					arch.h					\
+					arch$(OBJ)				\
 					graph.h					\
 					geom.h					\
 					mesh.h					\

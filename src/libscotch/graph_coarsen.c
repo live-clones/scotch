@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2011,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2011-2013 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 30 oct 2009     **/
 /**                                 to     30 oct 2009     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     21 nov 2012     **/
+/**                                 to     30 dec 2013     **/
 /**                                                        **/
 /************************************************************/
 
@@ -329,7 +329,6 @@ Gnum * restrict const                 coarvfixptr)
   GraphCoarsenData              coardat;          /* Graph coarsening global data             */
   Gnum                          coarvertnbr;      /* Number of coarse vertices                */
   Gnum                          coarvertnum;      /* Number of current multinode vertex       */
-  Gnum                          coarvelomax;      /* Maximum vertex weight allowed            */
   Gnum                          coarvfixnbr;      /* Coarse number of fixed vertices          */
   GraphCoarsenMulti * restrict  coarmulttax;      /* Multinode array                          */
   Gnum *                        finecoartab;      /* Fine vertex mating / indexing array      */
@@ -449,7 +448,7 @@ Gnum * restrict const                 coarvfixptr)
   coarmulttax           = (GraphCoarsenMulti *) (coargrafptr->verttax + coarmultoftval);
   *coarmultptr          = coarmulttax;            /* Return pointer to multinode array */
   if (coarvfixptr != NULL)
-    *coarvfixptr = coarvfixnbr = finevfixnbr; /* TODO : compute real number ! */
+    *coarvfixptr = coarvfixnbr = finevfixnbr;     /* TODO : compute real number ! */
 
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (graphCheck (coargrafptr) != 0) {            /* Check graph consistency */

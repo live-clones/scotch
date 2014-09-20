@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 01 jan 2012     **/
+/**                                 to   : 01 jul 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -154,7 +154,7 @@ char *              argv[];
     errorPrint ("main: architecture is not decomposition-defined");
     return     (1);
   }
-  deco = (ArchDeco *) (void *) &archdat.data.dummy; /* Point to the decomposition */
+  deco = (ArchDeco *) (void *) &archdat.data;     /* Point to the decomposition */
 
   dstmin = (Anum) (((unsigned long) ((Anum) -1)) >> 1); /* Set to maximum number in Anum */
   dstmax = 0;

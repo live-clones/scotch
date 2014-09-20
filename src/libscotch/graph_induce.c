@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,7 +58,7 @@
 /**                # Version 5.1  : from : 01 jan 2009     **/
 /**                                 to     01 jan 2009     **/
 /**                # Version 6.0  : from : 29 mar 2011     **/
-/**                                 to     29 mar 2011     **/
+/**                                 to     01 aug 2014     **/
 /**                                                        **/
 /**   NOTES      : # Several algorithms, such as the       **/
 /**                  active graph building routine of      **/
@@ -94,10 +94,6 @@
 ** array if the original graph does not have
 ** a vnumtab, or the proper subset of the
 ** original vnumtab else.
-** if rvnutax (reverse vnumtax) is not NULL
-** (and of size vertnbr), it will be filled
-** by new vertex numbers of ~0 if the vertex
-** is not in the induced graph.
 ** It returns:
 ** - 0   : on success.
 ** - !0  : on error.
@@ -107,8 +103,7 @@ int
 graphInduceList (
 const Graph * restrict const    orggrafptr,
 const VertList * restrict const indlistptr,
-Graph * restrict const          indgrafptr,
-Gnum * restrict const           rvnutax)
+Graph * restrict const          indgrafptr)
 {
   Gnum * restrict     orgindxtax;                 /* Based access to vertex translation array       */
   Gnum                indvertnbr;                 /* Number of vertices in induced graph            */
@@ -116,17 +111,17 @@ Gnum * restrict const           rvnutax)
   Gnum * restrict     indedgetab;                 /* Pointer to pre-allocated edge array            */
   Gnum                indedgenbr;                 /* (Approximate) number of edges in induced graph */
 
+  indvertnbr = indlistptr->vnumnbr;
+
   memSet (indgrafptr, 0, sizeof (Graph));         /* Initialize graph fields */
   indgrafptr->flagval = GRAPHFREETABS | GRAPHVERTGROUP | GRAPHEDGEGROUP;
   indgrafptr->baseval = orggrafptr->baseval;
 
-  indvertnbr = indlistptr->vnumnbr;
-
   if (orggrafptr->velotax != NULL) {
     if (memAllocGroup ((void **) (void *)
-          &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
-          &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)),
-          &indgrafptr->velotax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
+                       &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
+                       &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)),
+                       &indgrafptr->velotax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("graphInduceList: out of memory (1)");
       return     (1);                             /* Nothing to free because group allocation failed */
     }
@@ -134,8 +129,8 @@ Gnum * restrict const           rvnutax)
   }
   else {
     if (memAllocGroup ((void **) (void *)
-          &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
-          &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
+                       &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
+                       &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("graphInduceList: out of memory (2)");
       return     (1);
     }
@@ -151,26 +146,14 @@ Gnum * restrict const           rvnutax)
   if (orggrafptr->edlotax != NULL)                /* If graph has edge weights */
     indedgenbr *= 2;                              /* Account for edge weights  */
 
-  if (rvnutax == NULL) {
-    if (memAllocGroup ((void *)
-          &indedgetab, (size_t) (indedgenbr          * sizeof (Gnum)), /* Pre-allocate space for edgetab (and edlotab)          */
-          &orgindxtax, (size_t) (orggrafptr->vertnbr * sizeof (Gnum)), NULL) == NULL) { /* orgindxtab is at the end of the heap */
-      errorPrint ("graphInduceList: out of memory (3)");
-      graphExit  (indgrafptr);
-      return     (1);
-    }
-    orgindxtax -= orggrafptr->baseval;
+  if (memAllocGroup ((void *)
+                     &indedgetab, (size_t) (indedgenbr          * sizeof (Gnum)), /* Pre-allocate space for edgetab (and edlotab)          */
+                     &orgindxtax, (size_t) (orggrafptr->vertnbr * sizeof (Gnum)), NULL) == NULL) { /* orgindxtab is at the end of the heap */
+    errorPrint ("graphInduceList: out of memory (3)");
+    graphExit  (indgrafptr);
+    return     (1);
   }
-  else {
-    if ((indedgetab = memAlloc (indedgenbr * sizeof (Gnum))) == NULL) { /* Pre-allocate space for edgetab (and edlotab) */
-      errorPrint ("graphInduceList: out of memory (4)");
-      graphExit  (indgrafptr);
-      return     (1);
-    }
-    orgindxtax = rvnutax;
-  }
-
-/* TODO: Vertex list can be kept as it is the one of *graphOrderNd */
+  orgindxtax -= orggrafptr->baseval;
 
   memCpy (indgrafptr->vnumtax + indgrafptr->baseval, /* Copy vertex number array from list */
           indlistptr->vnumtab, indvertnbr * sizeof (Gnum));
@@ -197,10 +180,6 @@ Gnum * restrict const           rvnutax)
 ** selected vertices if the original graph
 ** does not have a vnumtab, or the proper
 ** subset of the original vnumtab else.
-** if rvnutax (reverse vnumtax) is not NULL
-** (and of size vertnbr), it will be filled
-** by new vertex numbers of ~0 if the vertex
-** is not in the induced graph.
 ** It returns:
 ** - 0   : on success.
 ** - !0  : on error.
@@ -212,29 +191,23 @@ const Graph * restrict const  orggrafptr,         /* Pointer to original graph  
 const GraphPart * const       orgparttax,         /* Based array of vertex partition flags */
 const Gnum                    indvertnbr,         /* Number of vertices in selected part   */
 const GraphPart               indpartval,         /* Partition value of vertices to keep   */
-Graph * restrict const        indgrafptr,         /* Pointer to induced subgraph           */
-Gnum * restrict const         rvnutax)
+Graph * restrict const        indgrafptr)         /* Pointer to induced subgraph           */
 {
-  Gnum * restrict             orgindxtax;         /* Based access to vertex translation array       */
-  Gnum                        indvertnum;         /* Number of current vertex in induced graph      */
-  Gnum * restrict             indedgetab;         /* Pointer to pre-allocated edge array            */
-  Gnum                        indedgenbr;         /* (Approximate) number of edges in induced graph */
-  Gnum                        orgvertnum;
+  Gnum * restrict     orgindxtax;                 /* Based access to vertex translation array       */
+  Gnum                indvertnum;                 /* Number of current vertex in induced graph      */
+  Gnum * restrict     indedgetab;                 /* Pointer to pre-allocated edge array            */
+  Gnum                indedgenbr;                 /* (Approximate) number of edges in induced graph */
+  Gnum                orgvertnum;
 
   memSet (indgrafptr, 0, sizeof (Graph));         /* Initialize graph fields */
   indgrafptr->flagval = GRAPHFREETABS | GRAPHVERTGROUP | GRAPHEDGEGROUP;
   indgrafptr->baseval = orggrafptr->baseval;
 
-  indedgenbr = ((orggrafptr->degrmax > 0) && (indvertnbr < (orggrafptr->edgenbr / orggrafptr->degrmax))) /* Choose best upper bound on number of edges (avoid multiply overflow) */
-               ? (indvertnbr * orggrafptr->degrmax) : orggrafptr->edgenbr;
-  if (orggrafptr->edlotax != NULL)                /* If graph has edge weights */
-    indedgenbr *= 2;                              /* Account for edge weights  */
-
   if (orggrafptr->velotax != NULL) {
     if (memAllocGroup ((void **) (void *)
-          &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
-          &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)),
-          &indgrafptr->velotax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
+                       &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
+                       &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)),
+                       &indgrafptr->velotax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("graphInducePart: out of memory (1)");
       return     (1);                             /* Nothing to free because group allocation failed */
     }
@@ -242,8 +215,8 @@ Gnum * restrict const         rvnutax)
   }
   else {
     if (memAllocGroup ((void **) (void *)
-          &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
-          &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
+                       &indgrafptr->verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
+                       &indgrafptr->vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("graphInducePart: out of memory (2)");
       return     (1);
     }
@@ -253,24 +226,20 @@ Gnum * restrict const         rvnutax)
   indgrafptr->vertnbr  = indvertnbr;
   indgrafptr->vertnnd  = indvertnbr + indgrafptr->baseval;
 
-  if (rvnutax == NULL) {
-    if (memAllocGroup ((void *)
-          &indedgetab, (size_t) (indedgenbr          * sizeof (Gnum)), /* Pre-allocate space for edgetab (and edlotab)          */
-          &orgindxtax, (size_t) (orggrafptr->vertnbr * sizeof (Gnum)), NULL) == NULL) { /* orgindxtab is at the end of the heap */
-      errorPrint ("graphInducePart: out of memory (3)");
-      graphExit  (indgrafptr);
-      return     (1);
-    }
-    orgindxtax -= orggrafptr->baseval;
+  indedgenbr = orggrafptr->edgenbr;               /* Choose best upper bound on number of edges (avoid multiply overflow) */
+  if ((orggrafptr->degrmax > 0) && (indvertnbr < (indedgenbr / orggrafptr->degrmax)))
+    indedgenbr = indvertnbr * orggrafptr->degrmax;
+  if (orggrafptr->edlotax != NULL)                /* If graph has edge weights */
+    indedgenbr *= 2;                              /* Account for edge weights  */
+
+  if (memAllocGroup ((void *)
+                     &indedgetab, (size_t) (indedgenbr          * sizeof (Gnum)), /* Pre-allocate space for edgetab (and edlotab)          */
+                     &orgindxtax, (size_t) (orggrafptr->vertnbr * sizeof (Gnum)), NULL) == NULL) { /* orgindxtab is at the end of the heap */
+    errorPrint ("graphInducePart: out of memory (3)");
+    graphExit  (indgrafptr);
+    return     (1);
   }
-  else {
-    if ((indedgetab = memAlloc (indedgenbr * sizeof (Gnum))) == NULL) { /* Pre-allocate space for edgetab (and edlotab) */
-      errorPrint ("graphInduceList: out of memory (4)");
-      graphExit  (indgrafptr);
-      return     (1);
-    }
-    orgindxtax = rvnutax;
-  }
+  orgindxtax -= orggrafptr->baseval;
 
   for (indvertnum = indgrafptr->baseval, indedgenbr = 0, orgvertnum = orggrafptr->baseval; /* Fill index array */
        orgvertnum < orggrafptr->vertnnd; orgvertnum ++) {
@@ -309,7 +278,7 @@ const Graph * restrict const  orggrafptr,         /* Pointer to original graph  
 Graph * restrict const        indgrafptr,         /* Pointer to induced graph                           */
 const Gnum                    indvertnbr,         /* Number of vertices in induced graph                */
 const Gnum                    indedgenbr,         /* (Upper bound of) number of edges in induced graph  */
-Gnum * restrict const         indedgetab,         /* Pointer to pre-allocated edge and edge load arrays */
+Gnum * const                  indedgetab,         /* Pointer to pre-allocated edge and edge load arrays */
 const Gnum * restrict const   orgindxtax)         /* Array of numbers of selected vertices              */
 {
   Gnum                indvertnum;                 /* Current induced vertex number              */
@@ -319,74 +288,86 @@ const Gnum * restrict const   orgindxtax)         /* Array of numbers of selecte
   Gnum                orgvertnum;                 /* Number of current vertex in original graph */
   Gnum                orgedgenum;                 /* Number of current edge in original graph   */
 
-  if (orggrafptr->edlotax != NULL) {
-    memOffset ((void *) indedgetab,
-               &indgrafptr->edgetax, (size_t) (indedgenbr * sizeof (Gnum)),
-               &indgrafptr->edlotax, (size_t) (indedgenbr * sizeof (Gnum)), NULL);
-    indgrafptr->edgetax -= indgrafptr->baseval;
-    indgrafptr->edlotax -= indgrafptr->baseval;
-  }
-  else
-    indgrafptr->edgetax = indedgetab - indgrafptr->baseval;
+  const Gnum * restrict const orgverttax = orggrafptr->verttax;
+  const Gnum * restrict const orgvendtax = orggrafptr->vendtax;
+  const Gnum * restrict const orgvelotax = orggrafptr->velotax;
+  const Gnum * restrict const orgvnumtax = orggrafptr->vnumtax;
+  const Gnum * restrict const orgedgetax = orggrafptr->edgetax;
+  const Gnum * restrict const orgedlotax = orggrafptr->edlotax;
+  Gnum * restrict const       indverttax = indgrafptr->verttax;
+  Gnum * restrict const       indvelotax = indgrafptr->velotax;
+  Gnum * restrict const       indvnumtax = indgrafptr->vnumtax;
+  Gnum * restrict             indedgetax;
+  Gnum * restrict             indedlotax;
 
-  indvelosum = (indgrafptr->velotax == NULL) ? indgrafptr->vertnbr : 0;
+  if (orgedlotax != NULL) {
+    memOffset ((void *) indedgetab,
+               &indedgetax, (size_t) (indedgenbr * sizeof (Gnum)),
+               &indedlotax, (size_t) (indedgenbr * sizeof (Gnum)), NULL);
+    indedgetax -= indgrafptr->baseval;
+    indedlotax -= indgrafptr->baseval;
+  }
+  else {
+    indedgetax = indedgetab - indgrafptr->baseval;
+    indedlotax = NULL;
+  }
+
+  indvelosum = (indvelotax == NULL) ? indgrafptr->vertnbr : 0;
   indedlosum = 0;
   for (indvertnum = indedgenum = indgrafptr->baseval;
        indvertnum < indgrafptr->vertnnd; indvertnum ++) {
-    orgvertnum = indgrafptr->vnumtax[indvertnum];
-    indgrafptr->verttax[indvertnum] = indedgenum;
-    if (indgrafptr->velotax != NULL) {            /* If graph has vertex weights */
+    orgvertnum = indvnumtax[indvertnum];
+    indverttax[indvertnum] = indedgenum;
+    if (indvelotax != NULL) {                     /* If graph has vertex weights */
       indvelosum +=                               /* Accumulate vertex loads     */
-      indgrafptr->velotax[indvertnum] = orggrafptr->velotax[orgvertnum];
+      indvelotax[indvertnum] = orgvelotax[orgvertnum];
     }
 
-    if (indgrafptr->edlotax != NULL) {            /* If graph has edge weights */
-      for (orgedgenum = orggrafptr->verttax[orgvertnum];
-           orgedgenum < orggrafptr->vendtax[orgvertnum]; orgedgenum ++) {
-        if (orgindxtax[orggrafptr->edgetax[orgedgenum]] != ~0) { /* If edge should be kept */
+    if (indedlotax != NULL) {                     /* If graph has edge weights */
+      for (orgedgenum = orgverttax[orgvertnum];
+           orgedgenum < orgvendtax[orgvertnum]; orgedgenum ++) {
+        if (orgindxtax[orgedgetax[orgedgenum]] != ~0) { /* If edge should be kept */
           indedlosum                     +=
-          indgrafptr->edlotax[indedgenum] = orggrafptr->edlotax[orgedgenum];
-          indgrafptr->edgetax[indedgenum] = orgindxtax[orggrafptr->edgetax[orgedgenum]];
+          indedlotax[indedgenum] = orgedlotax[orgedgenum];
+          indedgetax[indedgenum] = orgindxtax[orgedgetax[orgedgenum]];
           indedgenum ++;
         }
       }
     }
     else {
-      for (orgedgenum = orggrafptr->verttax[orgvertnum];
-           orgedgenum < orggrafptr->vendtax[orgvertnum]; orgedgenum ++) {
-        if (orgindxtax[orggrafptr->edgetax[orgedgenum]] != ~0) { /* If edge should be kept */
-          indgrafptr->edgetax[indedgenum] = orgindxtax[orggrafptr->edgetax[orgedgenum]];
+      for (orgedgenum = orgverttax[orgvertnum];
+           orgedgenum < orgvendtax[orgvertnum]; orgedgenum ++) {
+        if (orgindxtax[orgedgetax[orgedgenum]] != ~0) { /* If edge should be kept */
+          indedgetax[indedgenum] = orgindxtax[orgedgetax[orgedgenum]];
           indedgenum ++;
         }
       }
     }
   }
-  indgrafptr->verttax[indvertnum] = indedgenum;   /* Mark end of edge array                      */
-  indgrafptr->vendtax  = indgrafptr->verttax + 1; /* Use compact representation of vertex arrays */
+  indverttax[indvertnum] = indedgenum;            /* Mark end of edge array */
+
+  indgrafptr->vendtax = indgrafptr->verttax + 1;  /* Use compact representation of vertex arrays */
   indgrafptr->vertnbr = indvertnum - indgrafptr->baseval;
   indgrafptr->vertnnd = indvertnum;
   indgrafptr->velosum = indvelosum;
   indgrafptr->edgenbr = indedgenum - indgrafptr->baseval; /* Set actual number of edges */
-  indgrafptr->edlosum = (indgrafptr->edlotax != NULL) ? indedlosum : indgrafptr->edgenbr;
+  indgrafptr->edlosum = (indedlotax != NULL) ? indedlosum : indgrafptr->edgenbr;
   indgrafptr->degrmax = orggrafptr->degrmax;      /* Induced maximum degree is likely to be the one of the original graph */
-
-  if (indgrafptr->edlotax != NULL) {              /* Re-allocate arrays and delete orgindxtab             */
-    size_t              indedlooftval;            /* Offset of edge load array with respect to edge array */
-
-    indedlooftval = indgrafptr->edlotax - indgrafptr->edgetax;
-    indgrafptr->edgetax  = memRealloc (indgrafptr->edgetax + indgrafptr->baseval, (indedlooftval + indgrafptr->edgenbr) * sizeof (Gnum));
-    indgrafptr->edgetax -= indgrafptr->baseval;
-    indgrafptr->edlotax  = indgrafptr->edgetax + indedlooftval; /* Use old index into old array as new index */
-  }
-  else {
-    indgrafptr->edgetax  = memRealloc (indgrafptr->edgetax + indgrafptr->baseval, indgrafptr->edgenbr * sizeof (Gnum));
-    indgrafptr->edgetax -= indgrafptr->baseval;
-  }
 
   if (orggrafptr->vnumtax != NULL) {              /* Adjust vnumtax */
     for (indvertnum = indgrafptr->baseval; indvertnum < indgrafptr->vertnnd; indvertnum ++)
-      indgrafptr->vnumtax[indvertnum] = orggrafptr->vnumtax[indgrafptr->vnumtax[indvertnum]];
+      indvnumtax[indvertnum] = orgvnumtax[indvnumtax[indvertnum]];
   }
+
+  if (indedlotax != NULL) {                       /* Re-allocate arrays and delete orgindxtab             */
+    size_t              indedlooftval;            /* Offset of edge load array with respect to edge array */
+
+    indedlooftval = indedlotax - indedgetax;
+    indgrafptr->edgetax = (Gnum *) memRealloc (indedgetab, (indedlooftval + indgrafptr->edgenbr) * sizeof (Gnum)) - indgrafptr->baseval;
+    indgrafptr->edlotax = indgrafptr->edgetax + indedlooftval; /* Use old index into old array as new index */
+  }
+  else
+    indgrafptr->edgetax = (Gnum *) memRealloc (indedgetab, indgrafptr->edgenbr * sizeof (Gnum)) - indgrafptr->baseval;
 
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (graphCheck (indgrafptr) != 0) {             /* Check graph consistency */

@@ -195,7 +195,7 @@ const INT                   permnbr)              /*+ Number of entries in array
 /*************************************/
 
 static volatile int         intrandflag = 0;      /*+ Flag set if generator already initialized +*/
-static UINT32               intrandseed = 0xDEADBEEF; /*+ Random seed                           +*/
+static UINT32               intrandseed = 1;      /*+ Random seed                               +*/
 static IntRandState         intrandstat;          /*+ Random state value                        +*/
 
 /* This routine initializes the pseudo-random
@@ -209,6 +209,7 @@ static IntRandState         intrandstat;          /*+ Random state value        
 ** - VOID  : in all cases.
 */
 
+#ifndef COMMON_RANDOM_SYSTEM
 static
 void
 intRandInit2 (
@@ -225,6 +226,7 @@ int                         randval)
     randptr->randtab[i] = randtmp;
   }
 }
+#endif /* COMMON_RANDOM_SYSTEM */
 
 void
 intRandInit (void)
@@ -236,7 +238,15 @@ intRandInit (void)
     intrandseed = time (NULL);                    /* Set random seed if needed */
 #endif /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED)) */
 
+#ifdef COMMON_RANDOM_SYSTEM
+#ifdef COMMON_RANDOM_RAND
+    srand (intrandseed);
+#else /* COMMON_RANDOM_RAND */
+    srandom (intrandseed);
+#endif /* COMMON_RANDOM_RAND */
+#else /* COMMON_RANDOM_SYSTEM */
     intRandInit2 (&intrandstat, intrandseed);     /* Initialize state vector from random seed */
+#endif /* COMMON_RANDOM_SYSTEM */
   }
 }
 
@@ -250,8 +260,17 @@ intRandInit (void)
 void
 intRandReset (void)
 {
-  if (intrandflag != 0)                           /* Keep seed computed during first initialization */
+  if (intrandflag != 0) {                         /* Keep seed computed during first initialization */
+#ifdef COMMON_RANDOM_SYSTEM
+#ifdef COMMON_RANDOM_RAND
+    srand (intrandseed);
+#else /* COMMON_RANDOM_RAND */
+    srandom (intrandseed);
+#endif /* COMMON_RANDOM_RAND */
+#else /* COMMON_RANDOM_SYSTEM */
     intRandInit2 (&intrandstat, intrandseed);
+#endif /* COMMON_RANDOM_SYSTEM */
+  }
   else
     intRandInit ();
 }
@@ -270,7 +289,15 @@ INT                         seedval)
   intrandseed = (UINT32) seedval;
   intrandflag = 1;                                /* Generator has been initialized */
 
+#ifdef COMMON_RANDOM_SYSTEM
+#ifdef COMMON_RANDOM_RAND
+  srand (intrandseed);
+#else /* COMMON_RANDOM_RAND */
+  srandom (intrandseed);
+#endif /* COMMON_RANDOM_RAND */
+#else /* COMMON_RANDOM_SYSTEM */
   intRandInit2 (&intrandstat, intrandseed);       /* Initialize state vector from random seed */
+#endif /* COMMON_RANDOM_SYSTEM */
 }
 
 /* This routine computes a new pseudo-random
@@ -280,6 +307,7 @@ INT                         seedval)
 ** - x  : pseudo-random value.
 */
 
+#ifndef COMMON_RANDOM_SYSTEM
 static
 UINT32
 intRandVal2 (
@@ -320,6 +348,7 @@ IntRandState * restrict     randptr)
 
   return (randval);
 }
+#endif /* COMMON_RANDOM_SYSTEM */
 
 /* This routine returns a pseudo-random integer
 ** value in the range [0..randmax[. This routine
@@ -329,12 +358,14 @@ IntRandState * restrict     randptr)
 ** - x  : pseudo-random value.
 */
 
+#ifndef COMMON_RANDOM_SYSTEM
 INT
 intRandVal (
 INT                         randmax)
 {
   return (((UINT) intRandVal2 (&intrandstat)) % randmax);
 }
+#endif /* COMMON_RANDOM_SYSTEM */
 
 /*********************/
 /*                   */

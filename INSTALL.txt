@@ -192,9 +192,15 @@ Makefile.inc configuration file, to have these formats and their
 respective extensions ".bz2", ".gz" and ".lzma", recognized and
 handled by Scotch.
 
+Compression and decompression are handled either by extra threads
+or by fork'ed child processes if threads are not available. On
+systems which do not provide a functional fork() system call,
+compressed files cannot be handled when the "-DCOMMON_PTHREAD" flag
+is not set (see below).
 
-2.5) Threads issues
--------------------
+
+2.5) Multi-threading
+--------------------
 
 Scotch can also take advantage of Posix threads when they are
 available. They are used in several places:
@@ -278,6 +284,14 @@ allows one to run sequential algorithms instead of multi-threaded
 ones, while benefitting from multi-threading for file compression and
 distributed graph handling.
 
+When compiling under mingw32 on Windows systems, it is possible to
+benefit from multi-threading by including the "semaphore.h" and
+"pthread.h" files, included in the "src/misc" subdirectory, at compile
+time. These files have been kindly provided by Samuel Thibault, under
+a BSD 2-Clause License. These files will not work for Cygwin. This is
+not a problem, as Cygwin provides its own implementation of Posix
+threads.
+
 
 2.6) Monitoring memory allocation
 ---------------------------------
@@ -300,14 +314,47 @@ memory checking should be enabled by default, and 0 else. This
 mechanism is absolutely NOT thread-safe at the time being.
 
 
-2.7) Deterministic behavior
+2.7) Randomness
+---------------
+
+Many algorithms in Scotch and PT-Scotch are based on the random
+selection of vertices (e.g. seed vertices for graph growing
+algorithms, vertices to be mated for coarsening algorithms,
+etc.). This selection is performed by using integer pseudo-random
+generators to produce seemingly uncorrelated vertex indices.
+
+The advantage of pseudo-randomness over pure randomness is that the
+same pseudo-random seed will always yield the same sequence of
+pseudo-random numbers. Consequently, while using a different random
+seed for each run is likely to explore better the solution space,
+using a fixed random seed eases the debugging of programs, because
+algorithms behave identically across multiple runs (save for
+asynchronousness issues, see next section). By default, Scotch is
+compiled with the "-DCOMMON_RANDOM_FIXED_SEED" flag set, so that
+multiple executions of the same sequential programs will always yield
+the same results.
+
+Prior to version 6.0, Scotch relied on the operating system
+pseudo-random generator. While this posed no problem for most
+sequential programs, parallel runs of PT-Scotch were not reproducible
+on some systems, because the MPI implementation also used this
+pseudo-random generator for its own purposes. In order to avoid this
+problem, Scotch now uses its own pseudo-random generator. Users that
+want to go on using the operating system pseudo-random generator
+(e.g. for regression testing with respect to version 5.x) can still do
+so, by compiling with the "-DCOMMON_RANDOM_SYSTEM" flag set. In this
+case, the "-DCOMMON_RANDOM_RAND" flag allows one to use the srand()
+routine instead of the default srandom() routine.
+
+
+2.8) Deterministic behavior
 ---------------------------
 
-By default, Scotch is compiled with the "-DCOMMON_RANDOM_FIXED_SEED"
-flag set, so that multiple executions of the same sequential programs
+When Scotch is compiled with the "-DCOMMON_RANDOM_FIXED_SEED"
+flag set, multiple executions of the same sequential programs
 will always yield the same results. Yet, non-deterministic
-multi-threaded and/or parallel algorithms may still introduce some
-variability in the produced results, due to operating system
+multi-threaded and/or parallel algorithms may still introduce
+some variability in the produced results, due to operating system
 artifacts.
 
 To ease the tracking down of bugs, it is possible to coerce Scotch to
@@ -331,10 +378,13 @@ messages will be received in a fixed order rather than being processed
 on a first-come, first-serve basis.
 
 Setting this flag automatically results in setting the
-"-DCOMMON_RANDOM_FIXED_SEED" flag in the sequential routines.
+"-DCOMMON_RANDOM_FIXED_SEED" flag. Users are also strongly advised to
+compile without setting the "-DCOMMON_RANDOM_SYSTEM" flag, in order to
+avoid any interference with third-party libraries that might use the
+operating system pseudo-random generator.
 
 
-2.8) Point-to-point or collective communications
+2.9) Point-to-point or collective communications
 ------------------------------------------------
 
 Since distributed graph vertices can have any initial distribution
@@ -351,8 +401,8 @@ numbers of processes. To disable it, set the "-DSCOTCH_PTOP" flag at
 compile time.
 
 
-2.9) MeTiS compatibility library
---------------------------------
+2.10) MeTiS compatibility library
+---------------------------------
 
 In order to ease the adoption of Scotch/PT-Scotch by people who
 already developed code based on the MeTiS/ParMeTiS interface, a MeTiS

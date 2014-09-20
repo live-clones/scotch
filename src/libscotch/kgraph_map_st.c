@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 04 oct 2009     **/
 /**                                 to     29 mar 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     20 feb 2012     **/
+/**                                 to     23 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,9 +94,8 @@ static union {
 } kgraphmapstdefaultbd = { { 3, &stratdummy, &stratdummy } };
 
 static union {
-  KgraphMapCpParam          param;
   StratNodeMethodData       padding;
-} kgraphmapstdefaultcp = { { KGRAPHMAPCPTYPEREPART } };
+} kgraphmapstdefaultcp;
 
 static union {
   KgraphMapDfParam          param;
@@ -146,10 +145,6 @@ static StratParamTab        kgraphmapstparatab[] = { /* Method parameter list */
                                 (byte *) &kgraphmapstdefaultbd.param,
                                 (byte *) &kgraphmapstdefaultbd.param.stratorg,
                                 (void *) &kgraphmapststratab },
-                              { KGRAPHMAPSTMETHCP,  STRATPARAMCASE,   "type",
-                                (byte *) &kgraphmapstdefaultcp.param,
-                                (byte *) &kgraphmapstdefaultcp.param.typeval,
-                                (void *) "pr" },
                               { KGRAPHMAPSTMETHDF,  STRATPARAMINT,    "pass",
                                 (byte *) &kgraphmapstdefaultdf.param,
                                 (byte *) &kgraphmapstdefaultdf.param.passnbr,
