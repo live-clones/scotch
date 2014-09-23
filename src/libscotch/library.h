@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     01 dec 2012     **/
+/**                                 to     23 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -164,6 +164,8 @@ void                        SCOTCH_errorProg    (const char * const);
 void                        SCOTCH_errorPrint   (const char * const, ...);
 void                        SCOTCH_errorPrintW  (const char * const, ...);
 
+void                        SCOTCH_free         (void * const);
+
 SCOTCH_Geom *               SCOTCH_geomAlloc    (void);
 int                         SCOTCH_geomInit     (SCOTCH_Geom * const);
 void                        SCOTCH_geomExit     (SCOTCH_Geom * const);
@@ -261,6 +263,8 @@ SCOTCH_Ordering *           SCOTCH_orderAlloc   (void);
 
 void                        SCOTCH_randomReset  (void);
 void                        SCOTCH_randomSeed   (SCOTCH_Num);
+
+int                         SCOTCH_numSizeof    (void);
 
 SCOTCH_Strat *              SCOTCH_stratAlloc   (void);
 int                         SCOTCH_stratInit    (SCOTCH_Strat * const);

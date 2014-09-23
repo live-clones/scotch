@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     01 jul 2014     **/
+/**                                 to     23 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,17 +54,13 @@
 #ifndef ARCH_CMPLTW_H_STRUCT
 #define ARCH_CMPLTW_H_STRUCT
 
-/*+ The weighted target vertex. They are coded as Gnum
-    rather than as Anum because this array needs to be
-    sorted, by means of the intSort2asc1 routine.      +*/
-
-#ifndef GRAPH_H
-#define Gnum                        Anum          /* Prevent data type to be undefined */
-#endif /* GRAPH_H */
+/*+ The weighted target vertex. Since Anum's
+    are INT's, they can be sorted, by means
+    of the intSort2asc1 routine.             +*/
 
 typedef struct ArchCmpltwLoad_ {
-  Gnum                      veloval;              /*+ Vertex load  +*/
-  Gnum                      vertnum;              /*+ Vertex index +*/
+  Anum                      veloval;              /*+ Vertex load  +*/
+  Anum                      vertnum;              /*+ Vertex index +*/
 } ArchCmpltwLoad;
 
 /*+ The weighted complete graph definitions. +*/
@@ -97,7 +93,7 @@ typedef struct ArchCmpltwDom_ {
 #define static
 #endif
 
-int                         archCmpltwArchBuild (ArchCmpltw * restrict const archptr, const Gnum, const Gnum * restrict const);
+int                         archCmpltwArchBuild (ArchCmpltw * restrict const archptr, const Anum, const Anum * restrict const);
 int                         archCmpltwArchLoad  (ArchCmpltw * restrict const, FILE * restrict const);
 int                         archCmpltwArchSave  (const ArchCmpltw * const, FILE * restrict const);
 int                         archCmpltwArchFree  (ArchCmpltw * restrict const);
