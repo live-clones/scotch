@@ -34,8 +34,8 @@ SCOTCHINCLUDEDIR	= ../../include
 SCOTCHLIBDIR		= ../../lib
 SCOTCHBINDIR		= ../../bin
 
-LIBPTSCOTCH		= -lptscotch -lscotch -lptscotcherr
-LIBSCOTCH		= -lscotch -lscotcherr
+LIBPTSCOTCH		= -lptscotch -lscotch -lptscotcherrexit
+LIBSCOTCH		= -lscotch -lscotcherrexit
 
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
 DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)

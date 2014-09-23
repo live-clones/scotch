@@ -357,6 +357,8 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_graph_part_ovl$(OBJ)		\
 			library_graph_part_ovl_f$(OBJ)		\
 			library_mapping$(OBJ)			\
+			library_memory$(OBJ)			\
+			library_memory_f$(OBJ)			\
 			library_mesh$(OBJ)			\
 			library_mesh_f$(OBJ)			\
 			library_mesh_graph$(OBJ)		\
@@ -2295,6 +2297,16 @@ library_graph_part_ovl_f$(OBJ)	:	library_graph_part_ovl_f.c		\
 					scotch.h
 
 library_mapping$(OBJ)		:	library_mapping.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_memory$(OBJ)		:	library_memory.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_memory_f$(OBJ)		:	library_memory_f.c			\
 					module.h				\
 					common.h				\
 					scotch.h

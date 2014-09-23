@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     14 fev 2011     **/
+/**                                 to     23 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,8 +79,8 @@ ArchCmpltwLoad * restrict const vesotab,
 Anum                            vertnbr,
 Anum                            velosum)
 {
-  Gnum                velosum0;
-  Gnum                velosum1;
+  Anum                velosum0;
+  Anum                velosum1;
   Anum                vertnbr0;
   Anum                vertnbr1;
   Anum                vertnum0;
@@ -154,11 +154,11 @@ ArchCmpltw * restrict const archptr)
 int
 archCmpltwArchBuild (
 ArchCmpltw * restrict const archptr,
-const Gnum                  vertnbr,              /* Gnum since to be called from the library */
-const Gnum * restrict const velotab)              /* Gnum since to be called from the library */
+const Anum                  vertnbr,
+const Anum * restrict const velotab)
 {
   Anum                vertnum;
-  Gnum                velosum;
+  Anum                velosum;
 
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
@@ -181,7 +181,7 @@ const Gnum * restrict const velotab)              /* Gnum since to be called fro
   }
 
   for (vertnum = 0, velosum = 0; vertnum < archptr->vertnbr; vertnum ++) { /* Fill vertex load array */
-    Gnum                veloval;
+    Anum                veloval;
 
     veloval  = velotab[vertnum];
     velosum += veloval;
@@ -206,7 +206,7 @@ ArchCmpltw * restrict const  archptr,
 FILE * restrict const       stream)
 {
   long                vertnbr;
-  Gnum                velosum;
+  Anum                velosum;
   Anum                vertnum;
 
 #ifdef SCOTCH_DEBUG_ARCH1
@@ -231,7 +231,7 @@ FILE * restrict const       stream)
 
   for (vertnum = 0, velosum = 0; vertnum < archptr->vertnbr; vertnum ++) {
     long                veloval;
-    Gnum                velotmp;
+    Anum                velotmp;
 
     if ((fscanf (stream, "%ld", &veloval) != 1) ||
         (veloval < 1)) {
@@ -239,7 +239,7 @@ FILE * restrict const       stream)
       return     (1);
     }
 
-    velotmp  = (Gnum) veloval;
+    velotmp  = (Anum) veloval;
     velosum += velotmp;
     archptr->velotab[vertnum].veloval = velotmp;
     archptr->velotab[vertnum].vertnum = vertnum;
