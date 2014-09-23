@@ -67,7 +67,7 @@
 +*/
 
 void
-SCOTCH_free (
+SCOTCH_memFree (
 void * const                dataptr)
 {
   memFree (dataptr);

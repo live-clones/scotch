@@ -164,8 +164,6 @@ void                        SCOTCH_errorProg    (const char * const);
 void                        SCOTCH_errorPrint   (const char * const, ...);
 void                        SCOTCH_errorPrintW  (const char * const, ...);
 
-void                        SCOTCH_free         (void * const);
-
 SCOTCH_Geom *               SCOTCH_geomAlloc    (void);
 int                         SCOTCH_geomInit     (SCOTCH_Geom * const);
 void                        SCOTCH_geomExit     (SCOTCH_Geom * const);
@@ -231,6 +229,7 @@ int                         SCOTCH_graphOrderCheck (const SCOTCH_Graph * const, 
 
 SCOTCH_Mapping *            SCOTCH_mapAlloc     (void);
 
+void                        SCOTCH_memFree      (void * const);
 SCOTCH_Idx                  SCOTCH_memCur       (void);
 SCOTCH_Idx                  SCOTCH_memMax       (void);
 
@@ -259,12 +258,12 @@ int                         SCOTCH_meshOrder    (SCOTCH_Mesh * const, SCOTCH_Str
 int                         SCOTCH_meshOrderList (SCOTCH_Mesh * const, const SCOTCH_Num, const SCOTCH_Num * const, SCOTCH_Strat * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         SCOTCH_meshOrderCheck (const SCOTCH_Mesh * const, const SCOTCH_Ordering * const);
 
+int                         SCOTCH_numSizeof    (void);
+
 SCOTCH_Ordering *           SCOTCH_orderAlloc   (void);
 
 void                        SCOTCH_randomReset  (void);
 void                        SCOTCH_randomSeed   (SCOTCH_Num);
-
-int                         SCOTCH_numSizeof    (void);
 
 SCOTCH_Strat *              SCOTCH_stratAlloc   (void);
 int                         SCOTCH_stratInit    (SCOTCH_Strat * const);
