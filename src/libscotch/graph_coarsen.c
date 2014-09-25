@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2011-2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2011-2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 30 oct 2009     **/
 /**                                 to     30 oct 2009     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     30 dec 2013     **/
+/**                                 to     25 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -382,7 +382,7 @@ Gnum * restrict const                 coarvfixptr)
     int                           thrdnum;
     Gnum                          finevertbas;
 
-    if ((thrdtab = malloc (thrdnbr * sizeof (GraphCoarsenThread))) == NULL) {
+    if ((thrdtab = memAlloc (thrdnbr * sizeof (GraphCoarsenThread))) == NULL) {
       errorPrint ("graphCoarsen: out of memory (2)");
       memFree    (finecoartab);
       return     (2);
