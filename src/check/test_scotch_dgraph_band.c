@@ -133,7 +133,7 @@ char *              argv[])
   }
 
   if (SCOTCH_dgraphInit (&grafdat, proccomm) != 0) { /* Initialize source graph */
-    errorPrint ("main: cannot initialize graph");
+    errorPrint ("main: cannot initialize graph (1)");
     return     (1);
   }
 
@@ -152,11 +152,6 @@ char *              argv[])
   if (file != NULL)
     fclose (file);
 
-  if (SCOTCH_dgraphCheck (&grafdat) != 0) {
-    errorPrint ("main: invalid graph");
-    return     (1);
-  }
-
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
     errorPrint ("main: cannot communicate");
     return     (1);
@@ -170,7 +165,7 @@ char *              argv[])
   }
 
   if (SCOTCH_dgraphInit (&bandgrafdat, proccomm) != 0) { /* Initialize band graph */
-    errorPrint ("main: cannot initialize graph");
+    errorPrint ("main: cannot initialize graph (2)");
     return     (1);
   }
 

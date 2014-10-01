@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 22 oct 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 01 jun 2012     **/
-/**                                 to     01 jun 2012     **/
+/**                                 to     30 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -148,9 +148,9 @@ Strat * const               strat)
     case STRATNODEMETHOD :                        /* Method strategy node       */
       paratab = strat->tabl->paratab;             /* Free the method parameters */
       for (i = 0; paratab[i].name != NULL; i ++) {
-        if ((paratab[i].meth == strat->data.method.meth) && /* For all parameters of that method   */
-            (paratab[i].type == STRATPARAMSTRAT)) { /* Which are strategy parameters               */
-          paraofft = (byte *) &strat->data.method.data + /* Compute parameter offset within method */
+        if ((paratab[i].meth == strat->data.method.meth) && /* For all parameters of that method    */
+            (paratab[i].type == STRATPARAMSTRAT)) { /* Which are non-deprecated strategy parameters */
+          paraofft = (byte *) &strat->data.method.data + /* Compute parameter offset within method  */
                       (paratab[i].dataofft -
                        paratab[i].database);
           o |= stratExit (*((Strat **) paraofft)); /* Perform recursion */
@@ -225,7 +225,8 @@ FILE * const                stream)
       paraflag = 0;                               /* No method parameters seen yet */
       paratab  = strat->tabl->paratab;
       for (i = 0; paratab[i].name != NULL; i ++) {
-        if (paratab[i].meth == strat->data.method.meth) { /* For all parameters of that method    */
+        if ((paratab[i].meth == strat->data.method.meth) && /* For all parameters of that method  */
+            ((paratab[i].type & STRATPARAMDEPRECATED) == 0)) { /* Which are not deprecated        */
           paraofft = (byte*) &strat->data.method.data + /* Compute parameter offset within method */
                      (paratab[i].dataofft -
                       paratab[i].database);

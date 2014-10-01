@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 30 oct 2009     **/
 /**                                 to     30 oct 2009     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     25 sep 2014     **/
+/**                                 to     26 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -437,7 +437,7 @@ Gnum * restrict const                 coarvfixptr)
                        &coarmulttax,          (size_t) (coarvertnbr          * sizeof (GraphCoarsenMulti)),
                        &coargrafptr->edgetax, (size_t) (finegrafptr->edgenbr * sizeof (Gnum)),
                        &coargrafptr->edlotax, (size_t) (coargrafptr->edgenbr * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint ("graphCoarsen: memory realloc error"); /* Allocate coarser graph structure */
+    errorPrint ("graphCoarsen: cannot reallocate memory"); /* Allocate coarser graph structure */
     return (2);
   }
   coargrafptr->verttax -= baseval;

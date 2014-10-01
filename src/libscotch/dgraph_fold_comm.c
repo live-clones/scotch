@@ -46,8 +46,6 @@
 /**                                                        **/
 /************************************************************/
 
-#define DGRAPH_FOLD_COMM
-
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
