@@ -77,6 +77,8 @@ realclean			:	clean
 					test_scotch_graph_order		\
 					test_scotch_graph_part_ovl	\
 					test_scotch_dgraph_band		\
+					test_scotch_dgraph_check	\
+					test_scotch_dgraph_coarsen	\
 					test_scotch_dgraph_grow		\
 					test_scotch_dgraph_redist	\
 					test_strat_par			\
@@ -95,7 +97,9 @@ CHECKSCOTCH = 		check_common_thread			\
 			check_prog_gpart_remap
 
 CHECKPTSCOTCH = 	check_strat_par				\
+			check_scotch_dgraph_check		\
 			check_scotch_dgraph_band		\
+			check_scotch_dgraph_coarsen		\
 			check_scotch_dgraph_grow		\
 			check_scotch_dgraph_redist		\
 
@@ -184,9 +188,27 @@ test_strat_par			:	test_strat_par.c		\
 ##
 
 check_scotch_dgraph_band	:	test_scotch_dgraph_band
-					$(EXECP) ./test_scotch_dgraph_band data/bump.grf
+					$(EXECP) ./test_scotch_dgraph_band data/bump_b1.grf
 
 test_scotch_dgraph_band		:	test_scotch_dgraph_band.c	\
+					$(SCOTCHLIBDIR)/libptscotch$(LIB)
+
+##
+
+check_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen
+					$(EXECP) ./test_scotch_dgraph_coarsen data/bump.grf
+					$(EXECP) ./test_scotch_dgraph_coarsen data/bump_b1.grf
+
+test_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen.c	\
+					$(SCOTCHLIBDIR)/libptscotch$(LIB)
+
+##
+
+check_scotch_dgraph_check	:	test_scotch_dgraph_check
+					$(EXECP) ./test_scotch_dgraph_check data/bump.grf
+					$(EXECP) ./test_scotch_dgraph_check data/bump_b1.grf
+
+test_scotch_dgraph_check	:	test_scotch_dgraph_check.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
 
 ##

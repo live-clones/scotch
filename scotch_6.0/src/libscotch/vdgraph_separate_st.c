@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 05 nov 2007     **/
 /**                                 to     26 may 2009     **/
 /**                # Version 6.0  : from : 01 may 2014     **/
-/**                                 to     01 may 2014     **/
+/**                                 to     30 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,7 +90,7 @@ static union {
 static union {
   VdgraphSeparateMlParam    param;
   StratNodeMethodData       padding;
-} vdgraphseparatedefaultml = { { 5, 1000, 100, 0, 0.8L, &stratdummy, &stratdummy, &stratdummy, 1 } };
+} vdgraphseparatedefaultml = { { 5, 1000, 2, 10000, 0.8L, &stratdummy, &stratdummy, &stratdummy } };
 
 static union {
   VdgraphSeparateSqParam    param;
@@ -152,26 +152,24 @@ static StratParamTab        vdgraphseparatestparatab[] = { /* Distributed graph 
                                 (byte *) &vdgraphseparatedefaultml.param,
                                 (byte *) &vdgraphseparatedefaultml.param.passnbr,
                                 NULL },
-                              { VDGRAPHSEPASTMETHML,  STRATPARAMINT,    "proc",
-                                (byte *) &vdgraphseparatedefaultml.param,
-                                (byte *) &vdgraphseparatedefaultml.param.seqnbr,
-                                NULL },
                               { VDGRAPHSEPASTMETHML,  STRATPARAMINT,    "vert",
                                 (byte *) &vdgraphseparatedefaultml.param,
                                 (byte *) &vdgraphseparatedefaultml.param.coarnbr,
                                 NULL },
                               { VDGRAPHSEPASTMETHML,  STRATPARAMINT,    "dvert",
                                 (byte *) &vdgraphseparatedefaultml.param,
-                                (byte *) &vdgraphseparatedefaultml.param.dupmax,
+                                (byte *) &vdgraphseparatedefaultml.param.foldmax,
                                 NULL },
-                              { VDGRAPHSEPASTMETHML,  STRATPARAMINT,    "dlevl",
+                              { VDGRAPHSEPASTMETHML,  STRATPARAMCASE,   "fold",
                                 (byte *) &vdgraphseparatedefaultml.param,
-                                (byte *) &vdgraphseparatedefaultml.param.duplvlmax,
-                                NULL },
+                                (byte *) &vdgraphseparatedefaultml.param.foldval,
+                                (void *) "nfd" },
                               { VDGRAPHSEPASTMETHML,  STRATPARAMDOUBLE, "rat",
                                 (byte *) &vdgraphseparatedefaultml.param,
                                 (byte *) &vdgraphseparatedefaultml.param.coarrat,
                                 NULL },
+                              { VDGRAPHSEPASTMETHML,  STRATPARAMDEPRECATED | STRATPARAMINT, "dlevl", NULL, NULL, NULL }, /* Wait until MUMPS 5.0 */
+                              { VDGRAPHSEPASTMETHML,  STRATPARAMDEPRECATED | STRATPARAMINT, "proc",  NULL, NULL, NULL },
                               { VDGRAPHSEPASTMETHSQ,  STRATPARAMSTRAT,  "strat",
                                 (byte *) &vdgraphseparatedefaultsq.param,
                                 (byte *) &vdgraphseparatedefaultsq.param.strat,

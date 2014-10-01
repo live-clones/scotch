@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,14 +31,14 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : test_scotch_dgraph_grow.c               **/
+/**   NAME       : test_scotch_dgraph_check.c              **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
-/**                the SCOTCH_dgraphGrow() routine.        **/
+/**                the SCOTCH_dgraphCheck() routine.       **/
 /**                                                        **/
-/**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
+/**   DATES      : # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to     28 sep 2014     **/
 /**                                                        **/
 /************************************************************/
@@ -53,7 +53,6 @@
 #include <stdint.h>
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
 #include <stdlib.h>
-#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <pthread.h>
@@ -63,9 +62,6 @@
 
 #define errorProg                   SCOTCH_errorProg
 #define errorPrint                  SCOTCH_errorPrint
-
-void                        _SCOTCHintRandInit  (void);
-SCOTCH_Num                  _SCOTCHintRandVal   (SCOTCH_Num);
 
 /*********************/
 /*                   */
@@ -79,20 +75,11 @@ main (
 int                 argc,
 char *              argv[])
 {
-  MPI_Status            statdat;
-  MPI_Comm              proccomm;
-  int                   procglbnbr;               /* Number of processes sharing graph data */
-  int                   proclocnum;               /* Number of this process                 */
-  long                  vertlocadj;
-  SCOTCH_Num            vertglbnbr;
-  SCOTCH_Num            vertlocnbr;
-  SCOTCH_Num            vertgstnbr;
-  SCOTCH_Num *          seedloctab;
-  SCOTCH_Num *          partgsttab;
-  SCOTCH_Num            baseval;
-  SCOTCH_Dgraph         grafdat;
-  FILE *                file;
-  int                   procnum;
+  MPI_Comm            proccomm;
+  int                 procglbnbr;                 /* Number of processes sharing graph data */
+  int                 proclocnum;                 /* Number of this process                 */
+  SCOTCH_Dgraph       grafdat;
+  FILE *              file;
 #ifdef SCOTCH_PTHREAD
   int                 thrdlvlreqval;
   int                 thrdlvlproval;
@@ -156,72 +143,14 @@ char *              argv[])
   if (file != NULL)
     fclose (file);
 
+  if (SCOTCH_dgraphCheck (&grafdat) != 0) {
+    errorPrint ("main: invalid graph");
+    return     (1);
+  }
+
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
     errorPrint ("main: cannot communicate");
     return     (1);
-  }
-
-  if (SCOTCH_dgraphGhst (&grafdat) != 0) {
-    errorPrint ("main: cannot compute ghost edge array");
-    return     (1);
-  }
-
-  SCOTCH_dgraphData (&grafdat, &baseval, &vertglbnbr, &vertlocnbr, NULL, &vertgstnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
-  if ((seedloctab = malloc (vertlocnbr * sizeof (SCOTCH_Num))) == NULL) {
-    errorPrint ("main: cannot allocate seed array");
-    return     (1);
-  }
-
-  if ((partgsttab = malloc (vertgstnbr * sizeof (SCOTCH_Num))) == NULL) {
-    errorPrint ("main: cannot allocate part array");
-    return     (1);
-  }
-
-  memset (partgsttab, ~0, vertgstnbr * sizeof (SCOTCH_Num));
-
-  _SCOTCHintRandInit ();
-  seedloctab[0] = _SCOTCHintRandVal (vertlocnbr);
-  seedloctab[1] = _SCOTCHintRandVal (vertlocnbr);
-  seedloctab[2] = _SCOTCHintRandVal (vertlocnbr);
-
-  partgsttab[seedloctab[0] - baseval] = 0;
-  partgsttab[seedloctab[1] - baseval] = 1;
-  partgsttab[seedloctab[2] - baseval] = 2;
-
-  if (SCOTCH_dgraphGrow (&grafdat, 3, seedloctab, 4, partgsttab) != 0) {
-    errorPrint ("main: cannot compute grown regions");
-    return     (1);
-  }
-
-  for (procnum = 0; procnum < procglbnbr; procnum ++) {
-    SCOTCH_Num          vertlocnum;
-
-    MPI_Barrier (proccomm);
-
-    if (procnum == proclocnum) {
-      if ((file = fopen ("/tmp/test_scotch_dgraph_grow.map", (procnum == 0) ? "w" : "a+")) == NULL) {
-        errorPrint ("main: cannot open mapping file");
-        return     (1);
-      }
-
-      if (procnum == 0) {
-        fprintf (file, "%ld\n", (long) vertglbnbr);
-        vertlocadj = (long) baseval;
-      }
-      else
-        MPI_Recv (&vertlocadj, 1, MPI_LONG, procnum - 1, 0, MPI_COMM_WORLD, &statdat);
-
-      for (vertlocnum = 0; vertlocnum < vertlocnbr; vertlocnum ++)
-        fprintf (file, "%ld\t%ld\n", vertlocadj + (long) vertlocnum, (long) partgsttab[vertlocnum]);
-
-      fclose (file);
-
-      if (procnum < (procglbnbr - 1)) {
-        vertlocadj += (long) vertlocnbr;
-        MPI_Send (&vertlocadj, 1, MPI_LONG, procnum + 1, 0, MPI_COMM_WORLD);
-      }
-    }
   }
 
   SCOTCH_dgraphExit (&grafdat);

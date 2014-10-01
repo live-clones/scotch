@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     23 sep 2014     **/
+/**                                 to     28 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,6 +82,9 @@ typedef DUMMYINT SCOTCH_Num;
 
 /*+ Coarsening flags +*/
 
+#define SCOTCH_COARSENNONE          0x0000
+#define SCOTCH_COARSENFOLD          0x0100
+#define SCOTCH_COARSENFOLDDUP       0x0300
 #define SCOTCH_COARSENNOMERGE       0x4000
 
 /*+ Strategy string parametrization values +*/

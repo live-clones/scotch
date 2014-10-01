@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to   : 14 apr 2011     **/
 /**              : # Version 6.0  : from : 11 sep 2011     **/
-/**                                 to   : 31 aug 2014     **/
+/**                                 to   : 28 sep 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,17 +88,29 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
 {
   int                 foldval;
 
-  foldval = 1;
-  if ((paraptr->duplvlmax > -1) &&                /* duplvlmax can allow fold dup */
-      (paraptr->duplvlmax < finegrafptr->levlnum + 1))
-    foldval = 0;
-  else if (paraptr->duplvlmax < -1)               /* duplvlmax can allow only fold */
-    foldval = (-(paraptr->duplvlmax + 1) < (finegrafptr->levlnum + 1)) ? 0 : -1;
+  switch (paraptr->foldval) {
+    case 0 :
+      foldval = DGRAPHCOARSENNONE;
+      break;
+    case 1 :
+      foldval = DGRAPHCOARSENFOLD;
+      break;
+    case 2 :
+      foldval = DGRAPHCOARSENFOLDDUP;
+      break;
+#ifdef SCOTCH_DEBUG_BGRAPH2
+    default :
+      errorPrint ("bdgraphBipartMlCoarsen: invalid parameter");
+      return     (1);
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
+  }
+  if ((finegrafptr->s.vertglbnbr / finegrafptr->s.procglbnbr) > paraptr->foldmax) /* If no need to fold */
+    foldval = DGRAPHCOARSENNONE;
 
   *coarmultptr = NULL;                            /* Let the routine create the multinode array */
   dgraphInit (&coargrafptr->s, finegrafptr->s.proccomm); /* Re-use fine graph communicator      */
   if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->passnbr,
-                     paraptr->coarnbr, 0, foldval, paraptr->dupmax, paraptr->coarrat) != 0)
+                     paraptr->coarnbr, paraptr->coarrat, foldval) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   *coarmultptr -= coargrafptr->s.baseval;         /* Base pointer to multinode array    */

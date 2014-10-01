@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,14 +31,14 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : test_scotch_dgraph_grow.c               **/
+/**   NAME       : test_scotch_dgraph_coarsen.c            **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
-/**                the SCOTCH_dgraphGrow() routine.        **/
+/**                the SCOTCH_dgraphCoarsen() routine.     **/
 /**                                                        **/
-/**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
+/**   DATES      : # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to     28 sep 2014     **/
 /**                                                        **/
 /************************************************************/
@@ -53,7 +53,6 @@
 #include <stdint.h>
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
 #include <stdlib.h>
-#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <pthread.h>
@@ -63,9 +62,6 @@
 
 #define errorProg                   SCOTCH_errorProg
 #define errorPrint                  SCOTCH_errorPrint
-
-void                        _SCOTCHintRandInit  (void);
-SCOTCH_Num                  _SCOTCHintRandVal   (SCOTCH_Num);
 
 /*********************/
 /*                   */
@@ -79,24 +75,23 @@ main (
 int                 argc,
 char *              argv[])
 {
-  MPI_Status            statdat;
-  MPI_Comm              proccomm;
-  int                   procglbnbr;               /* Number of processes sharing graph data */
-  int                   proclocnum;               /* Number of this process                 */
-  long                  vertlocadj;
-  SCOTCH_Num            vertglbnbr;
-  SCOTCH_Num            vertlocnbr;
-  SCOTCH_Num            vertgstnbr;
-  SCOTCH_Num *          seedloctab;
-  SCOTCH_Num *          partgsttab;
-  SCOTCH_Num            baseval;
-  SCOTCH_Dgraph         grafdat;
-  FILE *                file;
-  int                   procnum;
+  MPI_Comm            proccomm;
+  int                 procglbnbr;                 /* Number of processes sharing graph data */
+  int                 proclocnum;                 /* Number of this process                 */
+  SCOTCH_Num          vertglbnbr;
+  SCOTCH_Num          vertlocnbr;
+  SCOTCH_Num          baseval;
+  SCOTCH_Dgraph       grafdat;
+  SCOTCH_Dgraph       coargrafdat;
+  SCOTCH_Num          coarvertglbnbr;
+  SCOTCH_Num          coarvertlocnbr;
+  double              coarrat;
+  FILE *              file;
 #ifdef SCOTCH_PTHREAD
   int                 thrdlvlreqval;
   int                 thrdlvlproval;
 #endif /* SCOTCH_PTHREAD */
+  int                 i;
 
   errorProg (argv[0]);
 
@@ -137,7 +132,7 @@ char *              argv[])
   }
 
   if (SCOTCH_dgraphInit (&grafdat, proccomm) != 0) { /* Initialize source graph */
-    errorPrint ("main: cannot initialize graph");
+    errorPrint ("main: cannot initialize graph (1)");
     return     (1);
   }
 
@@ -161,67 +156,83 @@ char *              argv[])
     return     (1);
   }
 
-  if (SCOTCH_dgraphGhst (&grafdat) != 0) {
-    errorPrint ("main: cannot compute ghost edge array");
-    return     (1);
-  }
+  SCOTCH_dgraphData (&grafdat, NULL, &vertglbnbr, &vertlocnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-  SCOTCH_dgraphData (&grafdat, &baseval, &vertglbnbr, &vertlocnbr, NULL, &vertgstnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+  coarrat = 0.8;                                  /* Lazy coarsening ratio */
 
-  if ((seedloctab = malloc (vertlocnbr * sizeof (SCOTCH_Num))) == NULL) {
-    errorPrint ("main: cannot allocate seed array");
-    return     (1);
-  }
+  for (i = 0; i < 3; i ++) {                      /* For all test cases */
+    SCOTCH_Num *        multloctab;
+    SCOTCH_Num          multlocsiz;
+    SCOTCH_Num          foldval;
+    char *              foldstr;
+    char *              coarstr;
+    int                 procnum;
+    int                 o;
 
-  if ((partgsttab = malloc (vertgstnbr * sizeof (SCOTCH_Num))) == NULL) {
-    errorPrint ("main: cannot allocate part array");
-    return     (1);
-  }
-
-  memset (partgsttab, ~0, vertgstnbr * sizeof (SCOTCH_Num));
-
-  _SCOTCHintRandInit ();
-  seedloctab[0] = _SCOTCHintRandVal (vertlocnbr);
-  seedloctab[1] = _SCOTCHintRandVal (vertlocnbr);
-  seedloctab[2] = _SCOTCHintRandVal (vertlocnbr);
-
-  partgsttab[seedloctab[0] - baseval] = 0;
-  partgsttab[seedloctab[1] - baseval] = 1;
-  partgsttab[seedloctab[2] - baseval] = 2;
-
-  if (SCOTCH_dgraphGrow (&grafdat, 3, seedloctab, 4, partgsttab) != 0) {
-    errorPrint ("main: cannot compute grown regions");
-    return     (1);
-  }
-
-  for (procnum = 0; procnum < procglbnbr; procnum ++) {
-    SCOTCH_Num          vertlocnum;
-
-    MPI_Barrier (proccomm);
-
-    if (procnum == proclocnum) {
-      if ((file = fopen ("/tmp/test_scotch_dgraph_grow.map", (procnum == 0) ? "w" : "a+")) == NULL) {
-        errorPrint ("main: cannot open mapping file");
-        return     (1);
-      }
-
-      if (procnum == 0) {
-        fprintf (file, "%ld\n", (long) vertglbnbr);
-        vertlocadj = (long) baseval;
-      }
-      else
-        MPI_Recv (&vertlocadj, 1, MPI_LONG, procnum - 1, 0, MPI_COMM_WORLD, &statdat);
-
-      for (vertlocnum = 0; vertlocnum < vertlocnbr; vertlocnum ++)
-        fprintf (file, "%ld\t%ld\n", vertlocadj + (long) vertlocnum, (long) partgsttab[vertlocnum]);
-
-      fclose (file);
-
-      if (procnum < (procglbnbr - 1)) {
-        vertlocadj += (long) vertlocnbr;
-        MPI_Send (&vertlocadj, 1, MPI_LONG, procnum + 1, 0, MPI_COMM_WORLD);
-      }
+    switch (i) {
+      case 0 :
+        multlocsiz = vertlocnbr;
+        foldval    = SCOTCH_COARSENNONE;
+        foldstr    = "Plain coarsening";
+        break;
+      case 1 :
+        multlocsiz = (SCOTCH_Num) (((double) vertglbnbr * coarrat) / (double) (procglbnbr / 2)) + 1;
+        foldval    = SCOTCH_COARSENFOLD;
+        foldstr    = "Folding";
+        break;
+      case 2 :
+        multlocsiz = (SCOTCH_Num) (((double) vertglbnbr * coarrat) / (double) (procglbnbr / 2)) + 1;
+        foldval    = SCOTCH_COARSENFOLDDUP;
+        foldstr    = "Folding with duplication";
+        break;
     }
+
+    if (proclocnum == 0)
+      printf ("%s\n", foldstr);
+
+    if ((multloctab = malloc (multlocsiz * 2 * sizeof (SCOTCH_Num))) == NULL) {
+      errorPrint ("main: cannot allocate multinode array");
+      return     (1);
+    }
+
+    if (SCOTCH_dgraphInit (&coargrafdat, proccomm) != 0) { /* Initialize band graph */
+      errorPrint ("main: cannot initialize graph (2)");
+      return     (1);
+    }
+
+    o = SCOTCH_dgraphCoarsen (&grafdat, 0, coarrat, foldval, &coargrafdat, multloctab);
+
+    SCOTCH_dgraphData (&coargrafdat, NULL, &coarvertglbnbr, &coarvertlocnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+    for (procnum = 0; procnum < procglbnbr; procnum ++) {
+      switch (o) {
+        case 0 :
+          coarstr = "coarse graph created";
+          break;
+        case 1 :
+          coarstr = "graph could not be coarsened";
+          break;
+        case 2 :
+          coarstr = "folded graph not created here";
+          break;
+        case 3 :
+          coarstr = "cannot create coarse graph";
+          break;
+      }
+
+      if (procnum == proclocnum)
+        printf ("%d: %s (%ld / %ld / %ld)\n", procnum, coarstr, (long) multlocsiz, (long) coarvertlocnbr, (long) vertlocnbr);
+
+      MPI_Barrier (proccomm);
+    }
+
+    if (coarvertlocnbr > multlocsiz) {
+      errorPrint ("main: invalid local multinode array size");
+      return     (1);
+    }
+
+    SCOTCH_dgraphExit (&coargrafdat);
+    free (multloctab);
   }
 
   SCOTCH_dgraphExit (&grafdat);
