@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to     14 aug 2010     **/
 /**                # Version 6.0  : from : 08 jan 2012     **/
-/**                                 to     29 aug 2014     **/
+/**                                 to     15 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -266,13 +266,8 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
   if (listnbr == 0) {                             /* If empty list, return identity peremutation */
-    Gnum * restrict     peritab;
-    Gnum                vertnum;
-
-    peritab = libordeptr->o.peritab;
-    for (vertnum = 0; vertnum < srcgrafptr->vertnbr; vertnum ++)
-      peritab[vertnum] = vertnum + srcgrafptr->baseval;
-    return (0);
+    intAscn (libordeptr->o.peritab, srcgrafptr->vertnbr, srcgrafptr->baseval);
+    return  (0);
   }
 
   if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */

@@ -493,9 +493,11 @@ serve as non-regression checks for both sequential and parallel
 features of Scotch and PT-Scotch. They can be launched by typing "make
 check" and/or "make ptcheck" in the "src/" directory.
 
-In the case of "ptcheck", programs will be run in debug mode; user
-action is required (by typing ENTER whenever necessary) for launching
-the parallel programs.
+In the case of "ptcheck", programs can be run in debug mode, by
+compiling with the "-DSCOTCH_CHECK_NOAUTO" flag set. In this case,
+process numbers are printed, so that users can attach a debugger
+to a given (set of) process(es), and user action is required for
+launching the parallel programs, by typing ENTER whenever necessary.
 
 One might look at these programs for examples of how to use the Scotch
 and PT-Scotch libraries. However, some of these programs test internal

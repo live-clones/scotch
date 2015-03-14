@@ -39,7 +39,7 @@
 /**                the SCOTCH_dgraphBand() routine.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 21 feb 2012     **/
-/**                                 to     23 sep 2014     **/
+/**                                 to     02 mar 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -116,14 +116,14 @@ char *              argv[])
 
   fprintf (stderr, "Proc %2d of %2d, pid %d\n", proclocnum, procglbnbr, getpid ());
 
-#ifndef SCOTCH_CHECK_AUTO
+#ifdef SCOTCH_CHECK_NOAUTO
   if (proclocnum == 0) {                          /* Synchronize on keybord input */
     char           c;
 
     printf ("Waiting for key press...\n");
     scanf ("%c", &c);
   }
-#endif /* SCOTCH_CHECK_AUTO */
+#endif /* SCOTCH_CHECK_NOAUTO */
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
     errorPrint ("main: cannot communicate");

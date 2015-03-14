@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2011,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 28 sep 2008     **/
 /**                                 to     27 mar 2011     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     08 aug 2014     **/
+/**                                 to     27 feb 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,44 +93,47 @@
 static
 int
 bgraphBipartMlCoarsen (
-const Bgraph * const                  finegrafptr, /*+ Finer graph                         +*/
-Bgraph * restrict const               coargrafptr, /*+ Coarser graph to build              +*/
-GraphCoarsenMulti * restrict * const  coarmultptr, /*+ Pointer to multinode table to build +*/
-const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters                    +*/
+const Bgraph * const                  finegrafptr, /*+ Finer graph                                  +*/
+Bgraph * restrict const               coargrafptr, /*+ Coarser graph to build                       +*/
+GraphCoarsenMulti * restrict * const  coarmultptr, /*+ Pointer to un-based multinode table to build +*/
+const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters                             +*/
 {
   Gnum                comploadtmp;                /* Increase of imbalance range for coarse graph */
 
+  *coarmultptr = NULL;                            /* Allocate multloctab along with coarse graph */
   if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr,
                     paraptr->coarnbr, paraptr->coarrat, NULL, NULL, 0, NULL) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   if (finegrafptr->veextax != NULL) {             /* Merge external gains for coarsened vertices */
-    GraphCoarsenMulti * restrict  coarmulttax;
-    Gnum * restrict               coarveextax;
+    GraphCoarsenMulti * restrict  coarmulttab;
+    Gnum * restrict               coarveextab;
+    Gnum                          coarvertnbr;
     Gnum                          coarvertnum;
 
     const Gnum * restrict const fineveextax = finegrafptr->veextax;
 
-    if ((coarveextax = (Gnum *) memAlloc (coargrafptr->s.vertnbr * sizeof (Gnum))) == NULL) {
+    if ((coarveextab = (Gnum *) memAlloc (coargrafptr->s.vertnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("bgraphBipartMlCoarsen: out of memory");
       graphExit  (&coargrafptr->s);               /* Only free Graph since veextab not allocated */
       return     (1);
     }
-    coarveextax -= coargrafptr->s.baseval;
-    coarmulttax  = *coarmultptr;
-    coargrafptr->s.flagval |= BGRAPHFREEVEEX;
-    coargrafptr->veextax    = coarveextax;
 
-    for (coarvertnum = coargrafptr->s.baseval; coarvertnum < coargrafptr->s.vertnnd; coarvertnum ++) {
+    coarmulttab = *coarmultptr;
+    for (coarvertnum = 0, coarvertnbr = coargrafptr->s.vertnbr;
+         coarvertnum < coarvertnbr; coarvertnum ++) {
       Gnum                finevertnum0;           /* First multinode vertex  */
       Gnum                finevertnum1;           /* Second multinode vertex */
 
-      finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
-      finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
-      coarveextax[coarvertnum] = (finevertnum0 != finevertnum1)
+      finevertnum0 = coarmulttab[coarvertnum].vertnum[0];
+      finevertnum1 = coarmulttab[coarvertnum].vertnum[1];
+      coarveextab[coarvertnum] = (finevertnum0 != finevertnum1)
                                  ? fineveextax[finevertnum0] + fineveextax[finevertnum1]
                                  : fineveextax[finevertnum0];
     }
+
+    coargrafptr->s.flagval |= BGRAPHFREEVEEX;
+    coargrafptr->veextax    = coarveextab - coargrafptr->s.baseval;
   }
   else                                            /* If fine graph does not have external gains */
     coargrafptr->veextax = NULL;                  /* Coarse graph does not have external gains  */
@@ -171,21 +174,24 @@ const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters         
 static
 int
 bgraphBipartMlUncoarsen (
-Bgraph * restrict const         finegrafptr,      /*+ Finer graph                +*/
-const Bgraph * const            coargrafptr,      /*+ Coarser graph              +*/
-const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array +*/
+Bgraph * restrict const         finegrafptr,      /*+ Finer graph                         +*/
+const Bgraph * const            coargrafptr,      /*+ Coarser graph                       +*/
+const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to un-based multinode array +*/
 {
+  Gnum                        coarvertnnd;
+  Gnum                        coarvertnum;
+  Gnum                        coarfronnbr;
+  Gnum                        coarfronnum;
+  Gnum * restrict             coarfrontab;
+  GraphPart * restrict        coarparttax;
   GraphPart * restrict        fineparttax;
   Gnum                        finefronnbr;
   Gnum                        finecompsize1;
-  const GraphPart * restrict  coarparttax;
-  Gnum                        coarvertnum;
-  Gnum                        coarfronnum;
-  Gnum * restrict             coarfrontab;
 
-  const Gnum * restrict const       fineverttax = finegrafptr->s.verttax; /* Fast accesses */
-  const Gnum * restrict const       finevendtax = finegrafptr->s.vendtax;
-  const Gnum * restrict const       fineedgetax = finegrafptr->s.edgetax;
+  const GraphCoarsenMulti * const coarmulttax = coarmulttab - finegrafptr->s.baseval;
+  const Gnum * restrict const     fineverttax = finegrafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const     finevendtax = finegrafptr->s.vendtax;
+  const Gnum * restrict const     fineedgetax = finegrafptr->s.edgetax;
 
   if (finegrafptr->parttax == NULL) {             /* If partition array not yet allocated */
     if ((finegrafptr->parttax = (GraphPart *) memAlloc (finegrafptr->s.vertnbr * sizeof (GraphPart))) == NULL) {
@@ -205,7 +211,8 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
   fineparttax   = finegrafptr->parttax;
   finecompsize1 = coargrafptr->s.vertnbr - coargrafptr->compsize0; /* Pre-allocate sizes */
 
-  for (coarvertnum = coargrafptr->s.baseval; coarvertnum < coargrafptr->s.vertnnd; coarvertnum ++) {
+  for (coarvertnum = coargrafptr->s.baseval, coarvertnnd = coargrafptr->s.vertnnd;
+       coarvertnum < coarvertnnd; coarvertnum ++) {
     Gnum                finevertnum0;             /* First multinode vertex  */
     Gnum                finevertnum1;             /* Second multinode vertex */
     GraphPart           partval;
@@ -228,8 +235,8 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
   finegrafptr->commgainextn = coargrafptr->commgainextn;
   finegrafptr->bbalval      = coargrafptr->bbalval;
 
-  for (coarfronnum = 0, finefronnbr = coargrafptr->fronnbr; /* Re-cycle frontier array from coarse to fine graph */
-       coarfronnum < coargrafptr->fronnbr; coarfronnum ++) {
+  for (coarfronnum = 0, finefronnbr = coarfronnbr = coargrafptr->fronnbr; /* Re-cycle frontier array from coarse to fine graph */
+       coarfronnum < coarfronnbr; coarfronnum ++) {
     Gnum                coarvertnum;
     Gnum                finevertnum0;             /* First multinode vertex  */
     Gnum                finevertnum1;             /* Second multinode vertex */
@@ -238,7 +245,7 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
     finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
     finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
       
-    if (finevertnum0 != finevertnum1) {           /* If multinode si made of two distinct vertices */
+    if (finevertnum0 != finevertnum1) {           /* If multinode is made of two distinct vertices */
       GraphPart           coarpartval;
       Gnum                fineedgenum;
 
@@ -255,9 +262,9 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
           break;
         }
       }
-      if (fineedgenum >= finegrafptr->s.vendtax[finevertnum0]) { /* If first vertex not in frontier */
-        coarfrontab[coarfronnum] = finevertnum1;  /* Then second vertex must be in frontier         */
-        continue;                                 /* Skip to next multinode                         */
+      if (fineedgenum >= finevendtax[finevertnum0]) { /* If first vertex not in frontier    */
+        coarfrontab[coarfronnum] = finevertnum1;  /* Then second vertex must be in frontier */
+        continue;                                 /* Skip to next multinode                 */
       }
 
       for (fineedgenum = fineverttax[finevertnum1]; /* Check if second vertex belong to frontier too */
@@ -304,12 +311,12 @@ Bgraph * restrict const           grafptr,        /*+ Active graph      +*/
 const BgraphBipartMlParam * const paraptr)        /*+ Method parameters +*/
 {
   Bgraph              coargrafdat;
-  GraphCoarsenMulti * coarmultptr;
+  GraphCoarsenMulti * coarmulttab;
   int                 o;
 
-  if (bgraphBipartMlCoarsen (grafptr, &coargrafdat, &coarmultptr, paraptr) == 0) {
+  if (bgraphBipartMlCoarsen (grafptr, &coargrafdat, &coarmulttab, paraptr) == 0) {
     if (((o = bgraphBipartMl2         (&coargrafdat, paraptr))              == 0) &&
-        ((o = bgraphBipartMlUncoarsen (grafptr, &coargrafdat, coarmultptr)) == 0) &&
+        ((o = bgraphBipartMlUncoarsen (grafptr, &coargrafdat, coarmulttab)) == 0) &&
         ((o = bgraphBipartSt          (grafptr, paraptr->stratasc))         != 0)) /* Apply ascending strategy */
       errorPrint ("bgraphBipartMl2: cannot apply ascending strategy");
     bgraphExit (&coargrafdat);

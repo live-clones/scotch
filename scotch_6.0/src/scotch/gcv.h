@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,6 +55,8 @@
 /**                                 to   : 14 oct 1999     **/
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to   : 29 nov 2003     **/
+/**                # Version 6.0  : from : 12 nov 2014     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,13 +69,13 @@
 #define C_FILENBR                   3            /* Number of files in list                */
 #define C_FILEARGNBR                3            /* Number of files which can be arguments */
 
-#define C_filenamesrcinp            C_fileTab[0].name /* External graph input file name  */
-#define C_filenamesrcout            C_fileTab[1].name /* Source graph output file name   */
-#define C_filenamegeoout            C_fileTab[2].name /* Source graph geometry file name */
+#define C_filenamesrcinp            fileBlockName (C_fileTab, 0) /* External graph input file name  */
+#define C_filenamesrcout            fileBlockName (C_fileTab, 1) /* Source graph output file name   */
+#define C_filenamegeoout            fileBlockName (C_fileTab, 2) /* Source graph geometry file name */
 
-#define C_filepntrsrcinp            C_fileTab[0].pntr /* External graph input file  */
-#define C_filepntrsrcout            C_fileTab[1].pntr /* Source graph output file   */
-#define C_filepntrgeoout            C_fileTab[2].pntr /* Source graph geometry file */
+#define C_filepntrsrcinp            fileBlockFile (C_fileTab, 0) /* External graph input file  */
+#define C_filepntrsrcout            fileBlockFile (C_fileTab, 1) /* Source graph output file   */
+#define C_filepntrgeoout            fileBlockFile (C_fileTab, 2) /* Source graph geometry file */
 
 /*
 **  The type and structure definitions.

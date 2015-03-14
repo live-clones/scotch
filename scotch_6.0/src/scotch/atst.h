@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 05 jul 1995     **/
 /**                # Version 3.2  : from : 01 jun 1997     **/
 /**                                 to   : 01 jun 1997     **/
+/**                # Version 6.0  : from : 12 nov 2014     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,8 +60,8 @@
 #define C_FILEARGNBR                2             /* Number of files which can be arguments */
 
 
-#define C_filenametgtinp            C_fileTab[0].name /* Target graph input file name */
-#define C_filenamelogout            C_fileTab[1].name /* Statistics output file name  */
+#define C_filenametgtinp            fileBlockName (C_fileTab, 0) /* Target graph input file name */
+#define C_filenamelogout            fileBlockName (C_fileTab, 1) /* Statistics output file name  */
 
-#define C_filepntrtgtinp            C_fileTab[0].pntr /* Target graph input file */
-#define C_filepntrlogout            C_fileTab[1].pntr /* Statistics output file  */
+#define C_filepntrtgtinp            fileBlockFile (C_fileTab, 0) /* Target graph input file */
+#define C_filepntrlogout            fileBlockFile (C_fileTab, 1) /* Statistics output file  */

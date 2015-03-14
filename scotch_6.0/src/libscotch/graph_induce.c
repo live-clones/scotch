@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2013-2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,7 +58,7 @@
 /**                # Version 5.1  : from : 01 jan 2009     **/
 /**                                 to     01 jan 2009     **/
 /**                # Version 6.0  : from : 29 mar 2011     **/
-/**                                 to     01 aug 2014     **/
+/**                                 to     28 feb 2015     **/
 /**                                                        **/
 /**   NOTES      : # Several algorithms, such as the       **/
 /**                  active graph building routine of      **/
@@ -105,11 +105,16 @@ const Graph * restrict const    orggrafptr,
 const VertList * restrict const indlistptr,
 Graph * restrict const          indgrafptr)
 {
-  Gnum * restrict     orgindxtax;                 /* Based access to vertex translation array       */
-  Gnum                indvertnbr;                 /* Number of vertices in induced graph            */
-  Gnum                indvertnum;                 /* Number of current vertex in induced graph      */
-  Gnum * restrict     indedgetab;                 /* Pointer to pre-allocated edge array            */
-  Gnum                indedgenbr;                 /* (Approximate) number of edges in induced graph */
+  Gnum * restrict       orgindxtax;               /* Based access to vertex translation array       */
+  Gnum                  indvertnbr;               /* Number of vertices in induced graph            */
+  Gnum                  indvertnnd;
+  Gnum                  indvertnum;               /* Number of current vertex in induced graph      */
+  const Gnum * restrict indvnumtax;
+  Gnum * restrict       indedgetab;               /* Pointer to pre-allocated edge array            */
+  Gnum                  indedgenbr;               /* (Approximate) number of edges in induced graph */
+
+  const Gnum * restrict const orgverttax = orggrafptr->verttax;
+  const Gnum * restrict const orgvendtax = orggrafptr->vendtax;
 
   indvertnbr = indlistptr->vnumnbr;
 
@@ -160,14 +165,15 @@ Graph * restrict const          indgrafptr)
 
   memSet (orgindxtax + orggrafptr->baseval, ~0, orggrafptr->vertnbr * sizeof (Gnum)); /* Preset index array */
 
-  for (indvertnum = indgrafptr->baseval, indedgenbr = 0; /* Fill index array */
-       indvertnum < indgrafptr->baseval + indvertnbr; indvertnum ++) {
+  indvnumtax = indgrafptr->vnumtax;
+  for (indvertnum = indgrafptr->baseval, indvertnnd = indvertnum + indvertnbr, indedgenbr = 0; /* Fill index array */
+       indvertnum < indvertnnd; indvertnum ++) {
     Gnum                orgvertnum;
 
-    orgvertnum = indgrafptr->vnumtax[indvertnum];
+    orgvertnum = indvnumtax[indvertnum];
 
     orgindxtax[orgvertnum] = indvertnum;          /* Mark selected vertices */
-    indedgenbr += orggrafptr->vendtax[orgvertnum] - orggrafptr->verttax[orgvertnum];
+    indedgenbr += orgvendtax[orgvertnum] - orgverttax[orgvertnum];
   }
 
   return (graphInduce2 (orggrafptr, indgrafptr, indvertnbr, indedgenbr, indedgetab, orgindxtax));
@@ -195,9 +201,13 @@ Graph * restrict const        indgrafptr)         /* Pointer to induced subgraph
 {
   Gnum * restrict     orgindxtax;                 /* Based access to vertex translation array       */
   Gnum                indvertnum;                 /* Number of current vertex in induced graph      */
+  Gnum * restrict     indvnumtax;
   Gnum * restrict     indedgetab;                 /* Pointer to pre-allocated edge array            */
   Gnum                indedgenbr;                 /* (Approximate) number of edges in induced graph */
   Gnum                orgvertnum;
+
+  const Gnum * restrict const orgverttax = orggrafptr->verttax;
+  const Gnum * restrict const orgvendtax = orggrafptr->vendtax;
 
   memSet (indgrafptr, 0, sizeof (Graph));         /* Initialize graph fields */
   indgrafptr->flagval = GRAPHFREETABS | GRAPHVERTGROUP | GRAPHEDGEGROUP;
@@ -241,12 +251,13 @@ Graph * restrict const        indgrafptr)         /* Pointer to induced subgraph
   }
   orgindxtax -= orggrafptr->baseval;
 
-  for (indvertnum = indgrafptr->baseval, indedgenbr = 0, orgvertnum = orggrafptr->baseval; /* Fill index array */
+  indvnumtax = indgrafptr->vnumtax;
+  for (orgvertnum = indvertnum = orggrafptr->baseval, indedgenbr = 0; /* Fill index array */
        orgvertnum < orggrafptr->vertnnd; orgvertnum ++) {
     if (orgparttax[orgvertnum] == indpartval) {   /* If vertex should be kept */
       orgindxtax[orgvertnum] = indvertnum;        /* Mark selected vertex     */
-      indgrafptr->vnumtax[indvertnum] = orgvertnum;
-      indedgenbr += orggrafptr->vendtax[orgvertnum] - orggrafptr->verttax[orgvertnum];
+      indvnumtax[indvertnum] = orgvertnum;
+      indedgenbr += orgvendtax[orgvertnum] - orgverttax[orgvertnum];
       indvertnum ++;                              /* One more induced vertex created */
     }
     else

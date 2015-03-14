@@ -184,6 +184,7 @@ void * const                    dataptr)          /* Pointer to thread data */
   if (fldthrdptr->fldprocnbr > 1) {               /* If subpart has several processes, fold a distributed graph                     */
     o = (void *) (intptr_t) dgraphFold2 (&indgrafdat, fldthrdptr->fldpartval, /* Fold temporary induced subgraph from all processes */
                                          &fldgrafptr->data.dgrfdat, fldthrdptr->fldproccomm, NULL, NULL, MPI_INT);
+    fldgrafptr->data.dgrfdat.flagval |= DGRAPHFREECOMM; /* Split communicator has to be freed */
   }
   else {                                          /* Create a centralized graph */
     Graph * restrict      fldcgrfptr;
@@ -211,7 +212,7 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   int                     fldproccol;
   int                     fldpartval;
   Gnum                    indvertlocmax;          /* Local number of vertices in biggest subgraph */
-  int                     indconttab[2];          /* Array of subjob continuation flags           */
+  Gnum                    indflagtab[2];          /* Array of subjob continuation flags           */
   GraphPart               indpartmax;             /* Induced part having most vertices            */
 #ifdef SCOTCH_PTHREAD
   Dgraph                  orggrafdat;             /* Structure for copying graph fields except communicator */
@@ -219,25 +220,25 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
 #endif /* SCOTCH_PTHREAD */
   int                       o;
 
-  indconttab[0] =                                 /* Assume both jobs will not continue */
-  indconttab[1] = 0;
+  indflagtab[0] =                                 /* Assume both jobs will not continue */
+  indflagtab[1] = 0;
   if ((actgrafptr->compglbsize0 != 0) &&          /* If graph has been bipartitioned */
       (actgrafptr->compglbsize0 != actgrafptr->s.vertglbnbr)) {
     if (archVar (&mappptr->archdat)) {            /* If architecture is variable-sized    */
       if (actgrafptr->compglbsize0 > 1)           /* If graph is not single vertex, go on */
-        indconttab[0] = 1;
+        indflagtab[0] = ~0;                       /* All bits set to 1                    */
       if ((actgrafptr->s.vertglbnbr - actgrafptr->compglbsize0) > 1)
-        indconttab[1] = 1;
+        indflagtab[1] = ~0;
     }
     else {                                        /* Architecture is not variable-sized          */
       if (archDomSize (&mappptr->archdat, &domnsubtab[0]) > 1) /* Stop when target is one vertex */
-        indconttab[0] = 1;
+        indflagtab[0] = ~0;
       if (archDomSize (&mappptr->archdat, &domnsubtab[1]) > 1)
-        indconttab[1] = 1;
+        indflagtab[1] = ~0;
     }
   }
 
-  if ((indconttab[0] + indconttab[1]) == 0) {     /* If both subjobs stop    */
+  if ((indflagtab[0] | indflagtab[1]) == 0) {     /* If both subjobs stop    */
     fldgrafptr->procnbr = 0;                      /* Nothing to do on return */
     return (kdgraphMapRbAddBoth (&actgrafptr->s, mappptr, domnsubtab, actgrafptr->partgsttax + actgrafptr->s.baseval)); /* Map both subdomains in the same time */
   }
@@ -260,7 +261,7 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   fldthrdtab[0].indparttax  = actgrafptr->partgsttax;
   fldthrdtab[0].fldgrafptr  = fldgrafptr;
   fldthrdtab[0].fldpartval  = 0;
-  fldthrdtab[0].fldprocnbr  = indconttab[indpartmax] * fldprocnbr0; /* Stop if domain limited to one vertex */
+  fldthrdtab[0].fldprocnbr  = indflagtab[indpartmax] & fldprocnbr0; /* Stop if domain limited to one vertex */
   fldthrdtab[1].mappptr     = mappptr;
   fldthrdtab[1].orggrafptr  = &actgrafptr->s;     /* Assume jobs won't be run concurrently */
   fldthrdtab[1].inddomnptr  = &domnsubtab[indpartmax ^ 1];
@@ -269,7 +270,7 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   fldthrdtab[1].indparttax  = actgrafptr->partgsttax;
   fldthrdtab[1].fldgrafptr  = fldgrafptr;
   fldthrdtab[1].fldpartval  = 1;
-  fldthrdtab[1].fldprocnbr  = indconttab[indpartmax ^ 1] * (actgrafptr->s.procglbnbr - fldprocnbr0); /* Stop if domain limited to one vertex */
+  fldthrdtab[1].fldprocnbr  = indflagtab[indpartmax ^ 1] & (actgrafptr->s.procglbnbr - fldprocnbr0); /* Stop if domain limited to one vertex */
 
   if (actgrafptr->s.proclocnum < fldprocnbr0) {   /* Compute color and rank in our future subpart */
     fldpartval = 0;
@@ -297,7 +298,7 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   fldthrdtab[fldpartval ^ 1].fldproccomm = MPI_COMM_NULL;
 
 #ifdef SCOTCH_PTHREAD
-  if ((indconttab[0] + indconttab[1]) == 2) {     /* If both subjobs have meaningful things to do in parallel     */
+  if ((indflagtab[0] & indflagtab[1]) != 0) {     /* If both subjobs have meaningful things to do in parallel     */
     orggrafdat = actgrafptr->s;                   /* Create a separate graph structure to change its communicator */
     orggrafdat.flagval = (orggrafdat.flagval & ~DGRAPHFREEALL) | DGRAPHFREECOMM;
     fldthrdtab[1].orggrafptr = &orggrafdat;

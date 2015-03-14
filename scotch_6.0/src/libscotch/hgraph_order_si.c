@@ -76,10 +76,10 @@
 
 int
 hgraphOrderSi (
-const Hgraph * restrict const   grafptr,
-Order * restrict const          ordeptr,
-const Gnum                      ordenum,          /*+ Zero-based ordering number +*/
-OrderCblk * restrict const      cblkptr)          /*+ Single column-block        +*/
+const Hgraph * restrict const grafptr,
+Order * restrict const        ordeptr,
+const Gnum                    ordenum,            /*+ Zero-based ordering number +*/
+OrderCblk * restrict const    cblkptr)            /*+ Single column-block        +*/
 {
   Gnum                vnohnnd;
   Gnum                vertnum;

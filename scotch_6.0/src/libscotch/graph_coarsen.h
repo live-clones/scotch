@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011-2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011-2013,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 4.0  : from : 13 dec 2001     **/
 /**                                 to     05 dec 2004     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     02 nov 2012     **/
+/**                                 to     27 feb 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,7 +119,8 @@ typedef struct GraphCoarsenData_ {
   Graph *                   coargrafptr;          /*+ Coarse graph to build                           +*/
   Gnum                      coarvertmax;          /*+ Maximum number of vertices to get               +*/
   Gnum                      coarvertnbr;          /*+ Global number of coarse vertices after matching +*/
-  GraphCoarsenMulti *       coarmulttax;          /*+ Multinode array                                 +*/
+  Gnum *                    coarvfixptr;          /*+ Pointer to number of coarse fixed vertices      +*/
+  GraphCoarsenMulti *       coarmulttab;          /*+ Multinode array                                 +*/
   Gnum                      coarhashmsk;          /*+ Hash table mask                                 +*/
 #ifdef SCOTCH_PTHREAD
   int * restrict            finelocktax;          /*+ Matching lock array (if any)                    +*/
@@ -157,6 +158,7 @@ typedef struct GraphCoarsenThread_ {
 #endif
 
 int                         graphCoarsen        (const Graph * restrict const, Graph * restrict const, GraphCoarsenMulti * restrict * const, const Gnum, const double, const Anum * restrict const, const Anum * restrict const, const Gnum, Gnum * restrict const);
+int                         graphCoarsenBuild   (const Graph * restrict const, Graph * restrict const, GraphCoarsenMulti * restrict * const, const Gnum, Gnum * restrict const);
 
 #ifdef GRAPHCOARSENTHREAD
 static void                 graphCoarsenEdgeCt  (GraphCoarsenThread *);

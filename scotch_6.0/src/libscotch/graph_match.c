@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2011,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2011,2012,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                generic pattern.                        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 oct 2012     **/
-/**                                 to     21 nov 2012     **/
+/**                                 to     26 feb 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -308,6 +308,27 @@ static void              (* graphmatchfuncthrendtab[]) (GraphCoarsenThread *) = 
 
 /* This routine performs the sequential
 ** initialization of the global mating
+** data structures, so as to indicate
+** that no mating will be performed.
+** It returns:
+** - 0  : in all cases.
+*/
+
+void
+graphMatchNone (
+GraphCoarsenData * restrict coarptr)
+{
+#ifdef SCOTCH_PTHREAD
+  coarptr->finelocktax = NULL;
+  coarptr->finequeutab = NULL;
+  coarptr->fendptr     = (void (*) (void *)) NULL;
+  coarptr->fmidptr     = (void (*) (void *)) NULL;
+#endif /* SCOTCH_PTHREAD */
+  coarptr->fbegptr     = (void (*) (void *)) NULL;
+}
+
+/* This routine performs the sequential
+** initialization of the global mating
 ** data structures, before the threads
 ** are launched.
 ** It returns:
@@ -422,6 +443,9 @@ GraphCoarsenThread * restrict thrdptr)            /*+ Pointer to incomplete matc
   const Gnum                        finevertnnd = thrdptr->finevertnnd;
   Gnum * restrict const             finematetax = coarptr->finematetax;
   const Gnum                        baseval     = finegrafptr->baseval;
+
+  if (coarptr->fbegptr == NULL)                   /* If user-provided mating, nothing to do */
+    return;
 
   thrdptr->finequeubas = finevertbas;             /* Assume matching range is fine vertex processing range */
   thrdptr->finequeunnd = finevertnnd;

@@ -47,7 +47,7 @@
 /**                # Version 5.1  : from : 30 oct 2009     **/
 /**                                 to     30 oct 2009     **/
 /**                # Version 6.0  : from : 28 oct 2012     **/
-/**                                 to     30 oct 2012     **/
+/**                                 to     28 feb 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,7 +78,7 @@ GraphCoarsenThread *                      thrdptr)
 #endif /* GRAPHCOARSENEDGECOUNT */
   GraphCoarsenHash * restrict const         coarhashtab = thrdptr->coarhashtab; /* Hash table is thread-dependent for memory locality */
   const Gnum                                coarhashmsk = coarptr->coarhashmsk;
-  const GraphCoarsenMulti * restrict const  coarmulttax = coarptr->coarmulttax;
+  const GraphCoarsenMulti * restrict const  coarmulttax = coarptr->coarmulttab - finegrafptr->baseval;
 
 
   GRAPHCOARSENEDGEINIT;

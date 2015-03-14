@@ -1,4 +1,4 @@
-/* Copyright 2009-2011,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2011,2013-2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                array.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 jan 2009     **/
-/**                                 to   : 15 sep 2014     **/
+/**                                 to   : 01 mar 2015     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -238,7 +238,8 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
       return     (1);
     }
     memSet (bandvnumtax + bandvertnbr - domnnbr, ~0, domnnbr * sizeof (Gnum)); /* Prevent Valgrind from yelling when centralizing band graphs */
-    bandgrafptr->r.vmlotax  = bandvmlotax - bandgrafptr->s.baseval;
+    bandvmlotax -= bandgrafptr->s.baseval;
+    bandgrafptr->r.vmlotax  = bandvmlotax;
     bandgrafptr->s.flagval |= KGRAPHFREEVMLO;
   }
   if (parotax != NULL) {
@@ -247,7 +248,8 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
       return     (1);
     }
     memSet (bandparotax + bandvertnbr - bandgrafptr->r.m.domnnbr, ~0, bandgrafptr->r.m.domnnbr * sizeof (Gnum)); /* Prevent Valgrind from yelling when centralizing band graphs */
-    bandgrafptr->r.m.parttax = bandparotax - bandgrafptr->s.baseval;
+    bandparotax -= bandgrafptr->s.baseval;
+    bandgrafptr->r.m.parttax = bandparotax;
     bandgrafptr->r.m.flagval |= MAPPINGFREEPART;
   }
 

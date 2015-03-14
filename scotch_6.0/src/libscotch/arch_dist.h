@@ -77,22 +77,22 @@ typedef struct ArchDist_ {
 #define static
 #endif
 
-int                         archDistArchLoad   (ArchDist * restrict const, FILE * restrict const);
-int                         archDistArchSave   (const ArchDist * const, FILE * restrict const);
+int                         archDistArchLoad    (ArchDist * restrict const, FILE * restrict const);
+int                         archDistArchSave    (const ArchDist * const, FILE * restrict const);
 #define archDistArchFree    NULL
-int                         archDistArchBuild  (struct Arch_ * const, struct Arch_ * const, const Anum);
-ArchDomNum                  archDistDomNum     (const ArchDist * const, const ArchDom * const);
-int                         archDistDomTerm    (const ArchDist * const, ArchDom * restrict const, const ArchDomNum);
-Anum                        archDistDomSize    (const ArchDist * const, const ArchDom * const);
-Anum                        archDistDomWght    (const ArchDist * const, const ArchDom * const);
-Anum                        archDistDomDist    (const ArchDist * const, const ArchDom * const, const ArchDom * const);
-int                         archDistDomFrst    (const ArchDist * const, ArchDom * const);
-int                         archDistDomLoad    (const ArchDist * const, ArchDom * const, FILE * const);
-int                         archDistDomSave    (const ArchDist * const, const ArchDom * const, FILE * const);
-int                         archDistDomBipart  (const ArchDist * const, const ArchDom * const, ArchDom * restrict const, ArchDom * restrict const);
-int                         archDistDomIncl    (const ArchDist * const, const ArchDom * const, const ArchDom * const);
+int                         archDistArchBuild   (struct Arch_ * const, struct Arch_ * const, const Anum);
+ArchDomNum                  archDistDomNum      (const ArchDist * const, const ArchDom * const);
+int                         archDistDomTerm     (const ArchDist * const, ArchDom * restrict const, const ArchDomNum);
+Anum                        archDistDomSize     (const ArchDist * const, const ArchDom * const);
+Anum                        archDistDomWght     (const ArchDist * const, const ArchDom * const);
+Anum                        archDistDomDist     (const ArchDist * const, const ArchDom * const, const ArchDom * const);
+int                         archDistDomFrst     (const ArchDist * const, ArchDom * const);
+int                         archDistDomLoad     (const ArchDist * const, ArchDom * const, FILE * const);
+int                         archDistDomSave     (const ArchDist * const, const ArchDom * const, FILE * const);
+int                         archDistDomBipart   (const ArchDist * const, const ArchDom * const, ArchDom * restrict const, ArchDom * restrict const);
+int                         archDistDomIncl     (const ArchDist * const, const ArchDom * const, const ArchDom * const);
 #ifdef SCOTCH_PTSCOTCH
-int                         archDistDomMpiType (const ArchDist * const, MPI_Datatype * const);
+int                         archDistDomMpiType  (const ArchDist * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
 
 #undef static

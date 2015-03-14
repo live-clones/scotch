@@ -1,4 +1,4 @@
-/* Copyright 2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 26 oct 2008     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 14 nov 2012     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -69,11 +69,11 @@
 
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* File array              */
-                              { "-", NULL, "r" },
-                              { "-", NULL, "w" },
-                              { "-", NULL, "w" },
-                              { "-", NULL, "w" },
-                              { "-", NULL, "w" } };
+                              { "r" },
+                              { "w" },
+                              { "w" },
+                              { "w" },
+                              { "w" } };
 
 static const char *         C_usageList[] = {
   "dgord [<input source file> [<output ordering file> [<output log file>]]] <options>",
@@ -151,17 +151,19 @@ char *              argv[])
     return     (0);
   }
 
+  SCOTCH_randomProc (proclocnum);                 /* Record process number to initialize pseudo-random seed */
+
   flagval = C_FLAGNONE;                           /* Default behavior  */
   straval = 0;                                    /* No strategy flags */
   straptr = NULL;
   SCOTCH_stratInit (&stradat);
 
-  for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
-    C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
+  fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
+
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
-        C_fileTab[C_fileNum ++].name = argv[i];
+        fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else
         errorPrint ("main: too many file names given");
     }
@@ -239,7 +241,7 @@ char *              argv[])
           break;
         case 'V' :
           fprintf (stderr, "dgord, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2007-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                                /* Output control info */

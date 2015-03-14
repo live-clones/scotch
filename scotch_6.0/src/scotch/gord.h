@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 31 may 1999     **/
 /**                # Version 4.0  : from : 11 dec 2002     **/
 /**                                 to   : 27 dec 2004     **/
+/**                # Version 6.0  : from : 12 nov 2014     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,17 +59,17 @@
 #define C_FILENBR                   5             /* Number of files in list                */
 #define C_FILEARGNBR                3             /* Number of files which can be arguments */
 
-#define C_filenamesrcinp            C_fileTab[0].name /* Source graph input file name */
-#define C_filenameordout            C_fileTab[1].name /* Ordering output file name    */
-#define C_filenamelogout            C_fileTab[2].name /* Log file name                */
-#define C_filenamemapout            C_fileTab[3].name /* Separator mapping file name  */
-#define C_filenametreout            C_fileTab[4].name /* Separator tree file name     */
-
-#define C_filepntrsrcinp            C_fileTab[0].pntr /* Source graph input file */
-#define C_filepntrordout            C_fileTab[1].pntr /* Ordering output file    */
-#define C_filepntrlogout            C_fileTab[2].pntr /* Log file                */
-#define C_filepntrmapout            C_fileTab[3].pntr /* Separator mapping file  */
-#define C_filepntrtreout            C_fileTab[4].pntr /* Separator tree file     */
+#define C_filenamesrcinp            fileBlockName (C_fileTab, 0) /* Source graph input file name */
+#define C_filenameordout            fileBlockName (C_fileTab, 1) /* Ordering output file name    */
+#define C_filenamelogout            fileBlockName (C_fileTab, 2) /* Log file name                */
+#define C_filenamemapout            fileBlockName (C_fileTab, 3) /* Separator mapping file name  */
+#define C_filenametreout            fileBlockName (C_fileTab, 4) /* Separator tree file name     */
+				                                
+#define C_filepntrsrcinp            fileBlockFile (C_fileTab, 0) /* Source graph input file */
+#define C_filepntrordout            fileBlockFile (C_fileTab, 1) /* Ordering output file    */
+#define C_filepntrlogout            fileBlockFile (C_fileTab, 2) /* Log file                */
+#define C_filepntrmapout            fileBlockFile (C_fileTab, 3) /* Separator mapping file  */
+#define C_filepntrtreout            fileBlockFile (C_fileTab, 4) /* Separator tree file     */
 
 /*+ Process flags. +*/
 

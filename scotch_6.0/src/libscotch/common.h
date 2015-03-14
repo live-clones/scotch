@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     28 mar 2014     **/
+/**                                 to     01 mar 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,6 +96,8 @@
 #include            <sys/resource.h>
 #endif /* ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H)) */
 #if ((defined COMMON_WINDOWS) || (defined HAVE_WINDOWS_H))
+#include            <io.h>                        /* For _pipe () */
+#include            <stddef.h>                    /* For intptr_t */
 #include            <windows.h>
 #endif /* ((defined COMMON_WINDOWS) || (defined HAVE_WINDOWS_H)) */
 #if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
@@ -341,9 +343,10 @@ typedef struct ThreadHeader_ {
 /** The file structure. **/
 
 typedef struct File_ {
-  char *                    name;                 /*+ File name    +*/
-  FILE *                    pntr;                 /*+ File pointer +*/
-  char *                    mode;                 /*+ Opening mode +*/
+  char *                    modeptr;              /*+ Opening mode  +*/
+  char *                    nameptr;              /*+ File name     +*/
+  FILE *                    fileptr;              /*+ File pointer  +*/
+  char *                    dataptr;              /*+ Array to free +*/
 } File;
 
 /*
@@ -363,6 +366,7 @@ IDX                         memMax              ();
 
 void                        usagePrint          (FILE * const, const char (* []));
 
+void                        fileBlockInit       (File * const, const int);
 int                         fileBlockOpen       (File * const, const int);
 int                         fileBlockOpenDist   (File * const, const int, const int, const int, const int);
 void                        fileBlockClose      (File * const, const int);
@@ -381,6 +385,7 @@ int                         intSave             (FILE * const, const INT);
 void                        intAscn             (INT * const, const INT, const INT);
 void                        intPerm             (INT * const, const INT);
 void                        intRandInit         (void);
+void                        intRandProc         (int);
 void                        intRandReset        (void);
 void                        intRandSeed         (INT);
 #ifndef COMMON_RANDOM_SYSTEM
@@ -416,6 +421,10 @@ void                        threadScan          (void * const, void * const, Thr
 #define clockStart(clk)             ((clk)->time[0]  = clockGet ())
 #define clockStop(clk)              ((clk)->time[1] += (clockGet () - (clk)->time[0]))
 #define clockVal(clk)               ((clk)->time[1])
+
+#define fileBlockFile(b,i)          ((b)[i].fileptr)
+#define fileBlockMode(b,i)          ((b)[i].modeptr)
+#define fileBlockName(b,i)          ((b)[i].nameptr)
 
 #ifdef COMMON_RANDOM_SYSTEM
 #ifdef COMMON_RANDOM_RAND

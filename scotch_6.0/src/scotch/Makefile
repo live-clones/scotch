@@ -178,6 +178,7 @@ dggath$(EXE)			:	dggath.c				\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
+					$(libdir)/libscotch$(LIB)		\
 					$(libdir)/libptscotch$(LIB)		\
 					$(libdir)/libptscotcherrexit$(LIB)	\
 					dggath.h
@@ -186,6 +187,7 @@ dgmap$(EXE)			:	dgmap.c					\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
+					$(libdir)/libscotch$(LIB)		\
 					$(libdir)/libptscotch$(LIB)		\
 					$(libdir)/libptscotcherrexit$(LIB)	\
 					dgmap.h
@@ -194,6 +196,7 @@ dgord$(EXE)			:	dgord.c					\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
+					$(libdir)/libscotch$(LIB)		\
 					$(libdir)/libptscotch$(LIB)		\
 					$(libdir)/libptscotcherrexit$(LIB)	\
 					dgord.h
@@ -202,6 +205,7 @@ dgpart$(EXE)			:	dgmap.c					\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
+					$(libdir)/libscotch$(LIB)		\
 					$(libdir)/libptscotch$(LIB)		\
 					$(libdir)/libptscotcherrexit$(LIB)	\
 					dgmap.h
@@ -211,6 +215,7 @@ dgscat$(EXE)			:	dgscat.c				\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
+					$(libdir)/libscotch$(LIB)		\
 					$(libdir)/libptscotch$(LIB)		\
 					$(libdir)/libptscotcherrexit$(LIB)	\
 					dgscat.h
@@ -219,6 +224,7 @@ dgtst$(EXE)			:	dgtst.c					\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
+					$(libdir)/libscotch$(LIB)		\
 					$(libdir)/libptscotch$(LIB)		\
 					$(libdir)/libptscotcherrexit$(LIB)	\
 					dgtst.h

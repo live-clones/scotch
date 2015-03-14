@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     28 sep 2014     **/
+/**                                 to     28 feb 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -180,6 +180,7 @@ int                         SCOTCH_graphLoad    (SCOTCH_Graph * const, FILE * co
 int                         SCOTCH_graphSave    (const SCOTCH_Graph * const, FILE * const);
 int                         SCOTCH_graphBuild   (SCOTCH_Graph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const);
 int                         SCOTCH_graphCoarsen (const SCOTCH_Graph * const, SCOTCH_Graph * const, SCOTCH_Num * const, const SCOTCH_Num, const double);
+int                         SCOTCH_graphCoarsenBuild (const SCOTCH_Graph * const, SCOTCH_Graph * const, SCOTCH_Num * const, const SCOTCH_Num, SCOTCH_Num * const);
 int                         SCOTCH_graphColor   (const SCOTCH_Graph * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num);
 SCOTCH_Num                  SCOTCH_graphBase    (SCOTCH_Graph * const, const SCOTCH_Num baseval);
 int                         SCOTCH_graphCheck   (const SCOTCH_Graph * const);

@@ -1,4 +1,4 @@
-## Copyright 2011,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2011,2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -40,6 +40,7 @@ LIBSCOTCH		= -lscotch -lscotcherrexit
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
 DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)
 
+EXECS			=
 EXECP			= mpirun -n 4
 
 ##
@@ -71,9 +72,13 @@ clean				:
 
 realclean			:	clean
 					-$(RM) 				\
+					test_common_random		\
 					test_common_thread		\
+					test_scotch_graph_coarsen	\
+					test_scotch_graph_coarsen_build	\
 					test_scotch_graph_color		\
 					test_scotch_graph_map		\
+					test_scotch_graph_map_copy	\
 					test_scotch_graph_order		\
 					test_scotch_graph_part_ovl	\
 					test_scotch_dgraph_band		\
@@ -88,12 +93,17 @@ realclean			:	clean
 ##  Test cases dependencies.
 ##
 
-CHECKSCOTCH = 		check_common_thread			\
+CHECKSCOTCH = 		check_common_random			\
+			check_common_thread			\
 			check_strat_seq				\
-			check_graph_color			\
-			check_graph_map				\
-			check_graph_order			\
-			check_graph_part_ovl			\
+			check_scotch_graph_coarsen		\
+			check_scotch_graph_coarsen_build	\
+			check_scotch_graph_color		\
+			check_scotch_graph_map			\
+			check_scotch_graph_map_copy		\
+			check_scotch_graph_order		\
+			check_scotch_graph_part_ovl		\
+			check_prog_gord				\
 			check_prog_gpart_remap
 
 CHECKPTSCOTCH = 	check_strat_par				\
@@ -105,6 +115,23 @@ CHECKPTSCOTCH = 	check_strat_par				\
 
 ##
 ##  Todo list.
+##
+
+check_common_random		:	test_common_random
+					$(EXECS) ./test_common_random /tmp/rand.dat 0
+					$(EXECS) ./test_common_random /tmp/rand.dat 1
+
+test_common_random		:	test_common_random.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_common_thread		:	test_common_thread
+					$(EXECS) ./test_common_thread
+
+test_common_thread		:	test_common_thread.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
 ##
 
 check_dgraph_fold_comm		:	test_dgraph_fold_comm
@@ -121,52 +148,75 @@ test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
 
 ##
 
+check_prog_gord			:
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf /dev/null -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf /dev/null -vt
+
+##
+
 check_prog_gpart_remap		:
 					$(EXECS) $(SCOTCHBINDIR)/gpart 32 data/bump_imbal_32.grf /dev/null -rodata/bump_old.map -vmt
 
 ##
 
-check_common_thread		:	test_common_thread
-					$(EXECS) ./test_common_thread
+check_scotch_graph_coarsen	:	test_scotch_graph_coarsen
+					$(EXECS) ./test_scotch_graph_coarsen data/bump_b1.grf
 
-test_common_thread		:	test_common_thread.c		\
+test_scotch_graph_coarsen	:	test_scotch_graph_coarsen.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
 
-check_graph_color		:	test_scotch_graph_color
+check_scotch_graph_coarsen_build :	test_scotch_graph_coarsen_build
+					$(EXECS) ./test_scotch_graph_coarsen_build data/bump.grf
+					$(EXECS) ./test_scotch_graph_coarsen_build data/bump_b1.grf
+
+test_scotch_graph_coarsen_build	:	test_scotch_graph_coarsen_build.c \
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_graph_color	:	test_scotch_graph_color
 					$(EXECS) ./test_scotch_graph_color data/bump.grf
 
-test_graph_color		:	test_scotch_graph_color.c	\
+test_scotch_graph_color		:	test_scotch_graph_color.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
 
-check_graph_map			:	test_scotch_graph_map
+check_scotch_graph_map		:	test_scotch_graph_map
 					$(EXECS) ./test_scotch_graph_map data/m4x4.grf
 					$(EXECS) ./test_scotch_graph_map data/m4x4_b1.grf
 					$(EXECS) ./test_scotch_graph_map data/m16x16.grf
 					$(EXECS) ./test_scotch_graph_map data/m16x16_b1.grf
 
-test_graph_map			:	test_scotch_graph_map.c		\
+test_scotch_graph_map		:	test_scotch_graph_map.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
 
-check_graph_order		:	test_scotch_graph_order
+check_scotch_graph_map_copy	:	test_scotch_graph_map_copy
+					$(EXECS) ./test_scotch_graph_map_copy data/bump_b1.grf
+
+test_scotch_graph_map_copy	:	test_scotch_graph_map_copy.c	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_graph_order	:	test_scotch_graph_order
 					$(EXECS) ./test_scotch_graph_order data/bump.grf
 					$(EXECS) ./test_scotch_graph_order data/bump_b1.grf
 
-test_graph_order		:	test_scotch_graph_order.c	\
+test_scotch_graph_order		:	test_scotch_graph_order.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
 
-check_graph_part_ovl		:	test_scotch_graph_part_ovl
+check_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl
 					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16.grf /dev/null
 					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16_b1.grf /dev/null
 
-test_graph_part_ovl		:	test_scotch_graph_part_ovl.c	\
+test_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
