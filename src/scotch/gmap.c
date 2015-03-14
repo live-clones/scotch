@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -66,7 +66,7 @@
 /**                # Version 5.1  : from : 30 jun 2010     **/
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 29 may 2010     **/
-/**                                 to   : 14 nov 2012     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,10 +91,13 @@ static int                  C_paraNbr = 0;        /* No parameters for mapping  
 static int                  C_fileNum = 0;        /* Number of file in arg list             */
 static int                  C_fileNbr = 4;        /* Number of files for mapping            */
 static File                 C_fileTab[C_FILENBR] = { /* File array                          */
-                              { "-", NULL, "r" },
-                              { "-", NULL, "r" },
-                              { "-", NULL, "w" },
-                              { "-", NULL, "w" } };
+                              { "r" },
+                              { "r" },
+                              { "w" },
+                              { "w" },
+                              { "r" },
+                              { "r" },
+                              { "r" } };
 
 static const char *         C_usageList[] = {     /* Usage */
   "gmap [<input source file> [<input target file> [<output mapping file> [<output log file>]]]] <options>",
@@ -155,9 +158,6 @@ char *                      argv[])
   int                   flagval;
   double                kbalval;                  /* Imbalance tolerance value      */
   double                emraval;                  /* Edge migration ratio           */
-  File                  vfixfil = { "-", NULL, "r" }; /* Fixed vertex file          */
-  File                  mapofil = { "-", NULL, "r" }; /* Old mapping file           */
-  File                  vmlofil = { "-", NULL, "r" }; /* Vertex migration cost file */
   int                   i, j;
 
   flagval = C_FLAGNONE;                           /* Default behavior               */
@@ -185,8 +185,8 @@ char *                      argv[])
   grafflag = 0;                                   /* Use vertex and edge weights  */
   SCOTCH_stratInit (&stradat);                    /* Set default mapping strategy */
 
-  for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
-    C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
+  fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
+
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_paraNum < C_paraNbr) {                /* If number of parameters not reached              */
@@ -196,7 +196,7 @@ char *                      argv[])
         continue;                                 /* Process the other parameters */
       }
       if (C_fileNum < C_fileNbr)                  /* A file name has been given */
-        C_fileTab[C_fileNum ++].name = argv[i];
+        fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else
         errorPrint ("main: too many file names given");
     }
@@ -245,8 +245,7 @@ char *                      argv[])
         case 'F' :
         case 'f' :                                /* Fixed vertex file */
           flagval |= C_FLAGFIXED;
-          vfixfil.pntr = stdin;
-          vfixfil.name = &argv[i][2];
+          C_filenamevfxinp = &argv[i][2];
           break;
         case 'H' :                                /* Give the usage message */
         case 'h' :
@@ -280,8 +279,7 @@ char *                      argv[])
             case 'O' :
             case 'o' :                            /* Old mapping input file */
               flagval |= C_FLAGRMAPOLD;
-              mapofil.pntr = stdin;
-              mapofil.name = &argv[i][3];
+              C_filenamemaoinp = &argv[i][3];
               break;
             case 'R' :
             case 'r' :                            /* Edge migration ratio */
@@ -293,8 +291,7 @@ char *                      argv[])
             case 'V' :
             case 'v' :                            /* Vertex migration cost */
               flagval |= C_FLAGRMAPCST;
-              vmlofil.pntr = stdin;
-              vmlofil.name = &argv[i][3];
+              C_filenamevmlinp = &argv[i][3];
               break;
             default :
               errorPrint ("main: invalid remapping option '%c'", argv[i][2]);
@@ -319,7 +316,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "gmap/gpart, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                                /* Output control info */
@@ -348,21 +345,13 @@ char *                      argv[])
     }
   }
 
-  if ((flagval & C_FLAGPART) != 0) {              /* If program run as the partitioner            */
-    C_fileTab[3].name = C_fileTab[2].name;        /* Put provided file names at their right place */
-    C_fileTab[2].name = C_fileTab[1].name;
-    C_fileTab[1].name = "-";
+  if ((flagval & C_FLAGPART) != 0) {              /* If program run as the partitioner                           */
+    fileBlockName (C_fileTab, 3) = fileBlockName (C_fileTab, 2); /* Put provided file names at their right place */
+    fileBlockName (C_fileTab, 2) = fileBlockName (C_fileTab, 1);
+    fileBlockName (C_fileTab, 1) = "-";
   }
 
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
-
-  if ((flagval & C_FLAGFIXED) != 0)
-    fileBlockOpen (&vfixfil, 1);
-  if ((flagval & C_FLAGRMAPOLD) != 0) {
-    fileBlockOpen (&mapofil, 1);
-    if ((flagval & C_FLAGRMAPCST) != 0)
-      fileBlockOpen (&vmlofil, 1);
-  }
 
   clockInit  (&runtime[0]);
   clockStart (&runtime[0]);
@@ -422,15 +411,15 @@ char *                      argv[])
 
   if ((flagval & C_FLAGPARTOVL) == 0) {
     if ((flagval & C_FLAGFIXED) != 0)
-      SCOTCH_graphTabLoad (&grafdat, parttab, vfixfil.pntr);
+      SCOTCH_graphTabLoad (&grafdat, parttab, C_filepntrvfxinp);
 
     if ((flagval & C_FLAGRMAPOLD) != 0) {
       SCOTCH_graphMapInit (&grafdat, &mapodat, &archdat, NULL);
-      SCOTCH_graphMapLoad (&grafdat, &mapodat, mapofil.pntr);
+      SCOTCH_graphMapLoad (&grafdat, &mapodat, C_filepntrmaoinp);
       if ((flagval & C_FLAGRMAPCST) != 0) {
         if ((vmlotab = memAlloc (vertnbr * sizeof (SCOTCH_Num))) == NULL)
           errorPrint ("main: out of memory (2)");
-        SCOTCH_graphTabLoad (&grafdat, vmlotab, vmlofil.pntr);
+        SCOTCH_graphTabLoad (&grafdat, vmlotab, C_filepntrvmlinp);
       }
     }
   }
@@ -507,13 +496,6 @@ char *                      argv[])
   }
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
-  if ((flagval & C_FLAGFIXED) != 0)
-    fileBlockClose (&vfixfil, 1);
-  if ((flagval & C_FLAGRMAPOLD) != 0) {
-    fileBlockClose (&mapofil, 1);
-    if ((flagval & C_FLAGRMAPCST) != 0)
-      fileBlockClose (&vmlofil, 1);
-  }
 
   SCOTCH_graphExit (&grafdat);
   SCOTCH_stratExit (&stradat);

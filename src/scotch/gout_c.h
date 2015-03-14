@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,6 +51,8 @@
 /**                                 to     11 dec 2001     **/
 /**                # Version 5.0  : from : 13 dec 2007     **/
 /**                                 to     15 mar 2008     **/
+/**                # Version 6.0  : from : 12 nov 2014     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,17 +65,17 @@
 #define C_FILENBR                   4             /* Number of files in list                */
 #define C_FILEARGNBR                4             /* Number of files which can be arguments */
 
-#define C_filenamesrcinp            C_fileTab[0].name /* Source graph file name          */
-#define C_filenamegeoinp            C_fileTab[1].name /* Source graph geometry file name */
-#define C_filenamemapinp            C_fileTab[2].name /* Mapping result file name        */
-#define C_filenamedatout            C_fileTab[3].name /* Output data file name           */
+#define C_filenamesrcinp            fileBlockName (C_fileTab, 0) /* Source graph file name          */
+#define C_filenamegeoinp            fileBlockName (C_fileTab, 1) /* Source graph geometry file name */
+#define C_filenamemapinp            fileBlockName (C_fileTab, 2) /* Mapping result file name        */
+#define C_filenamedatout            fileBlockName (C_fileTab, 3) /* Output data file name           */
 
-#define C_filepntrsrcinp            C_fileTab[0].pntr /* Source graph input file    */
-#define C_filepntrgeoinp            C_fileTab[1].pntr /* Source graph geometry file */
-#define C_filepntrmapinp            C_fileTab[2].pntr /* Mapping result input file  */
-#define C_filepntrdatout            C_fileTab[3].pntr /* Data output file           */
+#define C_filepntrsrcinp            fileBlockFile (C_fileTab, 0) /* Source graph input file    */
+#define C_filepntrgeoinp            fileBlockFile (C_fileTab, 1) /* Source graph geometry file */
+#define C_filepntrmapinp            fileBlockFile (C_fileTab, 2) /* Mapping result input file  */
+#define C_filepntrdatout            fileBlockFile (C_fileTab, 3) /* Data output file           */
 
-#define C_filemodemapinp            C_fileTab[2].mode /* Mapping result mode */
+#define C_filemodemapinp            fileBlockMode (C_fileTab, 2) /* Mapping result mode */
 
 /*+ Dimension definitions. +*/
 

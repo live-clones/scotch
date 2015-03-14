@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 16 jul 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     14 nov 2012     **/
+/**                                 to     13 oct 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -195,8 +195,86 @@ const INT                   permnbr)              /*+ Number of entries in array
 /*************************************/
 
 static volatile int         intrandflag = 0;      /*+ Flag set if generator already initialized +*/
-static UINT32               intrandseed = 1;      /*+ Random seed                               +*/
-static IntRandState         intrandstat;          /*+ Random state value                        +*/
+static UINT32               intrandproc = 0;      /*+ Process number                            +*/
+static UINT32               intrandseed = 1;      /*+ Pseudo-random seed                        +*/
+
+/* This routine sets the process number that is
+** used to generate a different seed across all
+** processes. In order for this number to be
+** taken into account, it must be followed by
+** a subsequent call to intRandInit(),
+** intRandReset() or intRandSeed().
+** It returns:
+** - VOID  : in all cases.
+*/
+
+void
+intRandProc (
+int                         procnum)
+{
+  intrandproc = (UINT32) procnum;                 /* Set process number */
+}
+
+/* This routine initializes the seed used by Scotch
+** with the provided value. Hence, all subsequent
+** calls to intRandInit() will start from this seed.
+** It returns:
+** - VOID  : in all cases.
+*/
+
+#ifndef COMMON_RANDOM_SYSTEM
+static IntRandState         intrandstat;          /*+ Pseudo-random state value +*/
+
+static
+void
+intRandSeed3 (
+IntRandState * restrict     randptr,
+UINT32                      randval)
+{
+  UINT32              randtmp;
+  UINT32              i;
+
+  UINT32 * restrict const randtab = randptr->randtab; /* Fast access */
+
+  randtmp    = (UINT32) randval;
+  randtab[0] = randtmp;                           /* Reset array contents */
+  for (i = 1; i < 623; i ++) {
+    randtmp = 0x6c078965 * randtmp ^ (randtmp >> 30) + i;
+    randtab[i] = randtmp;
+  }
+  randptr->randnum = 0;                           /* Reset array index */
+}
+#endif /* COMMON_RANDOM_SYSTEM */
+
+static
+void
+intRandSeed2 (
+UINT32                      seedval)
+{
+  UINT32              randtmp;
+
+  randtmp = seedval * (intrandproc + 1);          /* Account for process index */
+
+#ifdef COMMON_RANDOM_SYSTEM
+#ifdef COMMON_RANDOM_RAND
+  srand ((unsigned int) randtmp);
+#else /* COMMON_RANDOM_RAND */
+  srandom ((unsigned int) randtmp);
+#endif /* COMMON_RANDOM_RAND */
+#else /* COMMON_RANDOM_SYSTEM */
+  intRandSeed3 (&intrandstat, randtmp);           /* Initialize state vector from random seed */
+#endif /* COMMON_RANDOM_SYSTEM */
+}
+
+void
+intRandSeed (
+INT                         seedval)
+{
+  intrandflag = 1;                                /* Generator has been initialized */
+  intrandseed = (UINT32) seedval;                 /* Save new seed                  */
+
+  intRandSeed2 (intrandseed);                     /* Initialize pseudo-random seed */
+}
 
 /* This routine initializes the pseudo-random
 ** generator if necessary. In order for multi-sequential
@@ -209,25 +287,6 @@ static IntRandState         intrandstat;          /*+ Random state value        
 ** - VOID  : in all cases.
 */
 
-#ifndef COMMON_RANDOM_SYSTEM
-static
-void
-intRandInit2 (
-IntRandState * restrict     randptr,
-int                         randval)
-{
-  UINT32              randtmp;
-  UINT32              i;
-
-  randtmp = (UINT32) randval;
-  randptr->randtab[0] = randtmp;
-  for (i = 1; i < 623; i ++) {
-    randtmp = 0x6c078965 * randtmp ^ (randtmp >> 30) + i;
-    randptr->randtab[i] = randtmp;
-  }
-}
-#endif /* COMMON_RANDOM_SYSTEM */
-
 void
 intRandInit (void)
 {
@@ -235,18 +294,9 @@ intRandInit (void)
     intrandflag = 1;                              /* Generator has been initialized */
 
 #if ! ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED) || (defined SCOTCH_DETERMINISTIC))
-    intrandseed = time (NULL);                    /* Set random seed if needed */
-#endif /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED)) */
-
-#ifdef COMMON_RANDOM_SYSTEM
-#ifdef COMMON_RANDOM_RAND
-    srand (intrandseed);
-#else /* COMMON_RANDOM_RAND */
-    srandom (intrandseed);
-#endif /* COMMON_RANDOM_RAND */
-#else /* COMMON_RANDOM_SYSTEM */
-    intRandInit2 (&intrandstat, intrandseed);     /* Initialize state vector from random seed */
-#endif /* COMMON_RANDOM_SYSTEM */
+    intrandseed = (UINT32) time (NULL);           /* Set random seed if needed */
+#endif /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED) || (defined SCOTCH_DETERMINISTIC)) */
+    intRandSeed2 (intrandseed);                   /* Initialize state vector from seed */
   }
 }
 
@@ -260,49 +310,23 @@ intRandInit (void)
 void
 intRandReset (void)
 {
-  if (intrandflag != 0) {                         /* Keep seed computed during first initialization */
-#ifdef COMMON_RANDOM_SYSTEM
-#ifdef COMMON_RANDOM_RAND
-    srand (intrandseed);
-#else /* COMMON_RANDOM_RAND */
-    srandom (intrandseed);
-#endif /* COMMON_RANDOM_RAND */
-#else /* COMMON_RANDOM_SYSTEM */
-    intRandInit2 (&intrandstat, intrandseed);
-#endif /* COMMON_RANDOM_SYSTEM */
-  }
-  else
+  if (intrandflag == 0)                           /* Keep seed computed during first initialization */
     intRandInit ();
-}
 
-/* This routine initializes the seed used by Scotch
-** with the provided value. Hence, all subsequent
-** calls to intRandInit() will start from this seed.
-** It returns:
-** - VOID  : in all cases.
-*/
-
-void
-intRandSeed (
-INT                         seedval)
-{
-  intrandseed = (UINT32) seedval;
-  intrandflag = 1;                                /* Generator has been initialized */
-
-#ifdef COMMON_RANDOM_SYSTEM
-#ifdef COMMON_RANDOM_RAND
-  srand (intrandseed);
-#else /* COMMON_RANDOM_RAND */
-  srandom (intrandseed);
-#endif /* COMMON_RANDOM_RAND */
-#else /* COMMON_RANDOM_SYSTEM */
-  intRandInit2 (&intrandstat, intrandseed);       /* Initialize state vector from random seed */
-#endif /* COMMON_RANDOM_SYSTEM */
+  intRandSeed2 (intrandseed);
 }
 
 /* This routine computes a new pseudo-random
 ** 32bit value from the state that is passed
 ** to it.
+** For speed and reproducibility reasons,
+** this routine is not thread-safe. Providing
+** a thread-safe routine would mean determinism
+** could not be achieved in caller routines.
+** It is the responsibility of application
+** routines to call intRandVal() in a way that
+** avoids concurrent execution and potentially
+** enforces reproducibility.
 ** It returns:
 ** - x  : pseudo-random value.
 */
@@ -315,6 +339,8 @@ IntRandState * restrict     randptr)
 {
   int                 randnum;
   UINT32              randval;
+
+  UINT32 * restrict const randtab = randptr->randtab; /* Fast access */
 
 #ifdef COMMON_DEBUG
   if (intrandflag == 0) {
@@ -330,16 +356,16 @@ IntRandState * restrict     randptr)
     for (i = 0; i < 624; i ++) {
       UINT32              randtmp;
 
-      randtmp = (randptr->randtab[i] & 0x80000000) + (randptr->randtab[(i + 1) % 624] & 0x7FFFFFFF);
-      randtmp = randptr->randtab[(i + 397) % 624] ^ (randtmp >> 1);
+      randtmp = (randtab[i] & 0x80000000) + (randtab[(i + 1) % 624] & 0x7FFFFFFF);
+      randtmp = randtab[(i + 397) % 624] ^ (randtmp >> 1);
       if ((randtmp & 1) != 0)
         randtmp ^= 0x9908B0DF;
 
-      randptr->randtab[i] = randtmp;
+      randtab[i] = randtmp;
     }
   }
 
-  randval  = randptr->randtab[randnum];
+  randval  = randtab[randnum];
   randval ^= (randval >> 11);
   randval ^= (randval >> 7) & 0x9D2C5680;
   randval ^= (randval >> 15) & 0xEFC60000;

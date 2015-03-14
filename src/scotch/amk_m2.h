@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,6 +52,8 @@
 /**                                 to   : 02 jun 1997     **/
 /**                # Version 4.0  : from : 09 feb 2004     **/
 /**                                 to   : 09 feb 2004     **/
+/**                # Version 6.0  : from : 12 nov 2014     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,9 +66,9 @@
 #define C_FILENBR                   1             /* Number of files in list                */
 #define C_FILEARGNBR                1             /* Number of files which can be arguments */
 
-#define C_filenamearcout            C_fileTab[0].name /* Architecture output file name */
+#define C_filenamearcout            fileBlockName (C_fileTab, 0) /* Architecture output file name */
 
-#define C_filepntrarcout            C_fileTab[0].pntr /* Architecture output file */
+#define C_filepntrarcout            fileBlockFile (C_fileTab, 0) /* Architecture output file */
 
 /*
 **  The type and structure definitions.

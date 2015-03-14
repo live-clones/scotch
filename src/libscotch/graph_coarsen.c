@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2011-2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2011-2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 30 oct 2009     **/
 /**                                 to     30 oct 2009     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     26 sep 2014     **/
+/**                                 to     28 feb 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,10 +119,8 @@ const int                           phasval)      /* Phase index             */
 
 #endif /* GRAPHCOARSENTHREAD */
 
-/* This routine coarsens the given "finegraph" into
-** "coargraph", as long as the coarsening ratio remains
-** below some threshold value and the coarsened graph
-** is not too small.
+/* This routine is the threaded core of the building
+** of the coarse graph from the fine graph.
 ** It returns:
 ** - 0  : if the graph has been coarsened.
 ** - 1  : if the graph could not be coarsened.
@@ -143,6 +141,7 @@ void *                      dataptr)
   Gnum                          coarvertnum;
   Gnum                          coarhashnbr;      /* Size of neighbor vertex hash table */
   GraphCoarsenMulti * restrict  coarmulttax;
+  Gnum                          coarmultsiz;      /* Size of embedded multinode array   */
 #ifdef GRAPHCOARSENTHREAD
   int                           thrdnbr;
   int                           thrdnum;
@@ -159,6 +158,8 @@ void *                      dataptr)
   coarvertnbr = coarptr->coarvertnbr;             /* Get number of vertices actually created            */
   if (coarvertnbr >= coarptr->coarvertmax)        /* If matching failed or if coarsened graph too large */
     return  (1);                                  /* Do not proceed any further                         */
+
+  coarmultsiz = (coarptr->coarmulttab == NULL) ? coarvertnbr : 0; /* Determine whether coarmulttab is iser-provided */
 
   baseval = finegrafptr->baseval;
 #ifdef GRAPHCOARSENTHREAD
@@ -177,18 +178,20 @@ void *                      dataptr)
     if (memAllocGroup ((void **) (void *)
                        &coargrafptr->verttax, (size_t) ((coarvertnbr + 1)    * sizeof (Gnum)),
                        &coargrafptr->velotax, (size_t) (coarvertnbr          * sizeof (Gnum)),
-                       &coarmulttax,          (size_t) (coarvertnbr          * sizeof (GraphCoarsenMulti)),
+                       &coarmulttax,          (size_t) (coarmultsiz          * sizeof (GraphCoarsenMulti)),
                        &coargrafptr->edgetax, (size_t) (finegrafptr->edgenbr * sizeof (Gnum)), /* Pre-allocate space for edge arrays */ 
                        &coargrafptr->edlotax, (size_t) (finegrafptr->edgenbr * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("graphCoarsen2: out of memory (1)"); /* Allocate coarser graph structure */
       return     (2);
     }
+    if (coarmultsiz > 0)                          /* If array created internally, record its location */
+      coarptr->coarmulttab = coarmulttax;         /* Record un-based array location                   */
+    coarmulttax = coarptr->coarmulttab - baseval; /* Only thread 0 knows coarptr->coarmulttab         */
+
     coargrafptr->verttax -= baseval;              /* Base coarse graph arrays */
     coargrafptr->velotax -= baseval;
     coargrafptr->edgetax -= baseval;
     coargrafptr->edlotax -= baseval;
-    coarmulttax          -= baseval;
-    coarptr->coarmulttax  = coarmulttax;          /* Only thread 0 knows coarptr->coarmulttax */
   }
 
   finevertnnd = thrdptr->finevertnnd;             /* Will be used by many loops */
@@ -206,9 +209,9 @@ void *                      dataptr)
     }
 
     thrdptr->coarvertbas = (thrdnum == 0) ? (coarvertnum + baseval) : coarvertnum;
-    threadScan (thrdptr, &thrdptr->coarvertbas, (ThreadScanFunc) graphCoarsenScan); /* Compute start indices for multinodes; barrier for coarptr->coarmulttax */
+    threadScan (thrdptr, &thrdptr->coarvertbas, (ThreadScanFunc) graphCoarsenScan); /* Compute start indices for multinodes; barrier for coarptr->coarmulttab */
     coarvertnum = thrdptr->coarvertbas - coarvertnum;
-    coarmulttax = coarptr->coarmulttax;           /* All threads know coarptr->coarmulttax */
+    coarmulttax = coarptr->coarmulttab - baseval; /* All threads know coarptr->coarmulttab */
 
     for (finevertnum = thrdptr->finevertbas;
          finevertnum < finevertnnd; finevertnum ++) {
@@ -303,36 +306,26 @@ void *                      dataptr)
   return (0);                                     /* Joining all treads will serve as synchronization for coarse graph data */
 }
 
-/* This routine coarsens the given "finegraph" into
-** "coargraph", as long as the coarsening ratio remains
-** below some threshold value and the coarsened graph
-** is not too small.
+/* This routine is the sequential core of the
+** matching and coarse graph building process.
 ** It returns:
 ** - 0  : if the graph has been coarsened.
 ** - 1  : if the graph could not be coarsened.
 ** - 2  : on error.
 */
 
+static
 int
-graphCoarsen (
-const Graph * restrict const          finegrafptr, /*+ Graph to coarsen                    +*/
-Graph * restrict const                coargrafptr, /*+ Coarse graph to build               +*/
-GraphCoarsenMulti * restrict * const  coarmultptr, /*+ Pointer to multinode table to build +*/
-const Gnum                            coarnbr,     /*+ Minimum number of coarse vertices   +*/
-const double                          coarval,     /*+ Maximum contraction ratio           +*/
-const Anum * restrict const           fineparotax,
-const Anum * restrict const           finepfixtax,
-const Gnum                            finevfixnbr,
-Gnum * restrict const                 coarvfixptr)
+graphCoarsen3 (
+GraphCoarsenData * restrict const     coarptr,
+GraphCoarsenMulti * restrict * const  coarmultptr) /*+ Pointer to un-based multinode table to build +*/
 {
-  Gnum                          baseval;
-  GraphCoarsenData              coardat;          /* Graph coarsening global data             */
   Gnum                          coarvertnbr;      /* Number of coarse vertices                */
   Gnum                          coarvertnum;      /* Number of current multinode vertex       */
   Gnum                          coarvfixnbr;      /* Coarse number of fixed vertices          */
   GraphCoarsenMulti * restrict  coarmulttax;      /* Multinode array                          */
+  Gnum                          coarmultsiz;      /* Size of embedded multinode array         */
   Gnum *                        finecoartab;      /* Fine vertex mating / indexing array      */
-  Gnum                          finevertnbr;      /* Number of fine vertices                  */
   Gnum                          finevertnum;      /* Number of currently selected fine vertex */
   Gnum                          coarhashmsk;      /* Mask for access to hash table            */
   size_t                        coarmultoftval;
@@ -344,37 +337,37 @@ Gnum * restrict const                 coarvfixptr)
 #endif /* GRAPHCOARSENTHREAD */
   int                           o;
 
-#ifdef SCOTCH_DEBUG_GRAPH1
-  if (coarval < 0.5L)                             /* If impossible coarsening ratio wanted */
-    return (1);                                   /* We will never succeed                 */
-#endif /* SCOTCH_DEBUG_GRAPH1 */
-
-  coardat.coarvertmax = (Gnum) ((double) (finegrafptr->vertnbr - finevfixnbr) * coarval) + finevfixnbr; /* Maximum number of coarse vertices */
-  if (coardat.coarvertmax < coarnbr)              /* If there will be too few vertices in graph */
-    return (1);                                   /* It is useless to go any further            */
-
-  coardat.finegrafptr = finegrafptr;              /* Fill caller part of matching data structure */
-  coardat.fineparotax = fineparotax;
-  coardat.finepfixtax = finepfixtax;
-  coardat.finevfixnbr = finevfixnbr;
-  coardat.coargrafptr = coargrafptr;
-#ifdef GRAPHCOARSENTHREAD
-  coardat.thrddat.thrdnbr = thrdnbr = SCOTCH_PTHREAD_NUMBER; /* Needed for graphMatchInit */
-#endif /* GRAPHCOARSENTHREAD */
-
-  if (graphMatchInit (&coardat) != 0)             /* Initialize global data needed for matching */
-    return (1);
+  Graph * restrict const        coargrafptr = coarptr->coargrafptr;
+  const Graph * restrict const  finegrafptr = coarptr->finegrafptr;
+  const Gnum                    finevertnbr = finegrafptr->vertnbr;
+  const Gnum                    baseval     = finegrafptr->baseval;
 
   for (coarhashmsk = 31; coarhashmsk < finegrafptr->degrmax; coarhashmsk = coarhashmsk * 2 + 1) ; /* Compute size of hash table */
-  coardat.coarhashmsk = coarhashmsk * 4 + 3;      /* Record it for (local) hash table allocation */
+  coarptr->coarhashmsk = coarhashmsk * 4 + 3;     /* Record it for (local) hash table allocation */
 
-  baseval     = finegrafptr->baseval;
-  finevertnbr = finegrafptr->vertnbr;
-  if ((finecoartab = (Gnum *) memAlloc (finevertnbr * sizeof (Gnum))) == NULL) {
-    errorPrint ("graphCoarsen: out of memory (1)"); /* Allocate coarse graph mating and indexing array */
-    return     (2);
+#ifdef GRAPHCOARSENTHREAD
+  thrdnbr                  =
+  coarptr->thrddat.thrdnbr = SCOTCH_PTHREAD_NUMBER; /* Required by graphMatchInit */
+#else /* GRAPHCOARSENTHREAD */
+  coarptr->thrddat.thrdnbr = 1;
+#endif /* GRAPHCOARSENTHREAD */
+
+  if (coarptr->finematetax == NULL) {             /* If no user-provided mating array           */
+    if (graphMatchInit (coarptr) != 0)            /* Initialize global data needed for matching */
+      return (1);
+
+    if ((finecoartab = (Gnum *) memAlloc (finevertnbr * sizeof (Gnum))) == NULL) {
+      errorPrint ("graphCoarsen3: out of memory (1)"); /* Allocate coarse graph mating and indexing array */
+      return     (2);
+    }
+    coarptr->finematetax = finecoartab - baseval;   /* Set based access to finematetab / finecoartab */
   }
-  coardat.finematetax = finecoartab - baseval;    /* Set based access to finematetab / finecoartab */
+  else {
+    graphMatchNone (coarptr);                     /* Initialize global data to avoid matching */
+    finecoartab = NULL;                           /* No need to allocate local mating array   */
+  }
+
+  coarptr->coarmulttab = *coarmultptr;
 
 #ifdef GRAPHCOARSENTHREAD
   if (thrdnbr > 1) {
@@ -383,7 +376,7 @@ Gnum * restrict const                 coarvfixptr)
     Gnum                          finevertbas;
 
     if ((thrdtab = memAlloc (thrdnbr * sizeof (GraphCoarsenThread))) == NULL) {
-      errorPrint ("graphCoarsen: out of memory (2)");
+      errorPrint ("graphCoarsen3: out of memory (2)");
       memFree    (finecoartab);
       return     (2);
     }
@@ -396,7 +389,7 @@ Gnum * restrict const                 coarvfixptr)
       thrdtab[thrdnum].coarvertnbr = 0;           /* No coarse vertices yet */
     }
 
-    o = threadLaunch (&coardat, thrdtab, sizeof (GraphCoarsenThread), (ThreadLaunchStartFunc) graphCoarsen2, (ThreadLaunchJoinFunc) NULL,
+    o = threadLaunch (coarptr, thrdtab, sizeof (GraphCoarsenThread), (ThreadLaunchStartFunc) graphCoarsen2, (ThreadLaunchJoinFunc) NULL,
                       thrdnbr, THREADCANBARRIER | THREADCANREDUCE);
 
     memFree (thrdtab);                            /* Free group leader */
@@ -407,10 +400,9 @@ Gnum * restrict const                 coarvfixptr)
     GraphCoarsenThread  thrddat;
 
 #ifdef GRAPHCOARSENTHREAD
-    coardat.thrddat.thrdnbr = 1;                  /* Thread 0 of 1 */
-    thrddat.thrddat.thrdnum = 0;
+    thrddat.thrddat.thrdnum = 0;                  /* Thread 0 of 1 */
 #endif /* GRAPHCOARSENTHREAD */
-    thrddat.thrddat.grouptr = (void *) &coardat;
+    thrddat.thrddat.grouptr = (void *) coarptr;
     thrddat.randval         = intRandVal (INT_MAX);
     thrddat.finevertbas     = baseval;
     thrddat.finevertnnd     = baseval + finevertnbr;
@@ -418,26 +410,27 @@ Gnum * restrict const                 coarvfixptr)
     o = graphCoarsen2 (&thrddat);
   }
 
-  memFree (finecoartab);
+  if (finecoartab != NULL)
+    memFree (finecoartab);
 
   if (o != 0)                                     /* If coarsened graph is too small, abort here */
     return (1);
 
   coargrafptr->edgenbr = coargrafptr->verttax[coargrafptr->vertnnd] - baseval; /* Set exact number of edges */
 
-  coarmulttax = coardat.coarmulttax;
   coarvertnbr = coargrafptr->vertnbr;
+  coarmultsiz = (*coarmultptr == NULL) ? coarvertnbr : 0; /* Tell whether we have to resize multloctab within coarse graph vertex group */
   coarvelooftval = coargrafptr->velotax - coargrafptr->verttax;
-  coarmultoftval = (Gnum *) coarmulttax - coargrafptr->verttax;
   coaredgeoftval = coargrafptr->edgetax - coargrafptr->verttax;
   coaredlooftval = coargrafptr->edlotax - coargrafptr->verttax;
+  coarmultoftval = (Gnum *) coarptr->coarmulttab - coargrafptr->verttax;
   if (memReallocGroup ((void *) (coargrafptr->verttax + baseval), /* Re-allocate data, wiping temporary arrays */
                        &coargrafptr->verttax, (size_t) ((coarvertnbr + 1)    * sizeof (Gnum)),
                        &coargrafptr->velotax, (size_t) (coarvertnbr          * sizeof (Gnum)),
-                       &coarmulttax,          (size_t) (coarvertnbr          * sizeof (GraphCoarsenMulti)),
+                       &coarptr->coarmulttab, (size_t) (coarmultsiz          * sizeof (GraphCoarsenMulti)),
                        &coargrafptr->edgetax, (size_t) (finegrafptr->edgenbr * sizeof (Gnum)),
                        &coargrafptr->edlotax, (size_t) (coargrafptr->edgenbr * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint ("graphCoarsen: cannot reallocate memory"); /* Allocate coarser graph structure */
+    errorPrint ("graphCoarsen3: cannot reallocate memory"); /* Allocate coarser graph structure */
     return (2);
   }
   coargrafptr->verttax -= baseval;
@@ -445,20 +438,97 @@ Gnum * restrict const                 coarvfixptr)
   coargrafptr->velotax  = coargrafptr->verttax + coarvelooftval;
   coargrafptr->edgetax  = coargrafptr->verttax + coaredgeoftval;
   coargrafptr->edlotax  = coargrafptr->verttax + coaredlooftval;
-  coarmulttax           = (GraphCoarsenMulti *) (coargrafptr->verttax + coarmultoftval);
-  *coarmultptr          = coarmulttax;            /* Return pointer to multinode array */
-  if (coarvfixptr != NULL)
-    *coarvfixptr = coarvfixnbr = finevfixnbr;     /* TODO : compute real number ! */
+  if (coarmultsiz > 0)                            /* If multinode array not user-provided                                         */
+    *coarmultptr = ((GraphCoarsenMulti *) (coargrafptr->verttax + coarmultoftval)); /* Return pointer to un-based multinode array */
+  if (coarptr->coarvfixptr != NULL)
+    *coarptr->coarvfixptr = coarvfixnbr = coarptr->finevfixnbr; /* TODO: compute real number ! */
 
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (graphCheck (coargrafptr) != 0) {            /* Check graph consistency */
-    errorPrint ("graphCoarsen: inconsistent graph data");
+    errorPrint ("graphCoarsen3: inconsistent graph data");
     graphFree  (coargrafptr);
     return     (2);
   }
 #endif /* SCOTCH_DEBUG_GRAPH2 */
 
   return (0);
+}
+
+/* This routine coarsens the given "finegraph" into
+** "coargraph", as long as the coarsening ratio remains
+** below some threshold value and the coarsened graph
+** is not too small.
+** It returns:
+** - 0  : if the graph has been coarsened.
+** - 1  : if the graph could not be coarsened.
+** - 2  : on error.
+*/
+
+int
+graphCoarsen (
+const Graph * restrict const          finegrafptr, /*+ Graph to coarsen                             +*/
+Graph * restrict const                coargrafptr, /*+ Coarse graph to build                        +*/
+GraphCoarsenMulti * restrict * const  coarmultptr, /*+ Pointer to un-based multinode table to build +*/
+const Gnum                            coarvertnbr, /*+ Minimum number of coarse vertices            +*/
+const double                          coarval,     /*+ Maximum contraction ratio                    +*/
+const Anum * restrict const           fineparotax,
+const Anum * restrict const           finepfixtax,
+const Gnum                            finevfixnbr,
+Gnum * restrict const                 coarvfixptr)
+{
+  GraphCoarsenData              coardat;          /* Graph coarsening global data */
+
+#ifdef SCOTCH_DEBUG_GRAPH1
+  if (coarval < 0.5L)                             /* If impossible coarsening ratio wanted */
+    return (1);                                   /* We will never succeed                 */
+#endif /* SCOTCH_DEBUG_GRAPH1 */
+
+  coardat.coarvertmax = (Gnum) ((double) (finegrafptr->vertnbr - finevfixnbr) * coarval) + finevfixnbr; /* Maximum number of coarse vertices */
+  if (coardat.coarvertmax < coarvertnbr)          /* If there will be too few vertices in graph */
+    return (1);                                   /* It is useless to go any further            */
+
+  coardat.finegrafptr = finegrafptr;              /* Fill caller part of matching data structure */
+  coardat.fineparotax = fineparotax;
+  coardat.finepfixtax = finepfixtax;
+  coardat.finevfixnbr = finevfixnbr;
+  coardat.finematetax = NULL;                     /* No user-provided mating array */
+  coardat.coargrafptr = coargrafptr;
+  coardat.coarvfixptr = coarvfixptr;
+
+  return (graphCoarsen3 (&coardat, coarmultptr));
+}
+
+/* This routine coarsens the given "finegraph" into
+** "coargraph", as long as the coarsening ratio remains
+** below some threshold value and the coarsened graph
+** is not too small.
+** It returns:
+** - 0  : if the graph has been coarsened.
+** - 1  : if the graph could not be coarsened.
+** - 2  : on error.
+*/
+
+int
+graphCoarsenBuild (
+const Graph * restrict const          finegrafptr, /*+ Graph to coarsen                               +*/
+Graph * restrict const                coargrafptr, /*+ Coarse graph to build                          +*/
+GraphCoarsenMulti * restrict * const  coarmultptr, /*+ Pointer to un-based multinode table to build   +*/
+const Gnum                            coarvertnbr, /*+ User-provided number of coarse vertices        +*/
+Gnum * restrict const                 finematetab) /*+ Pointer to un-based user-provided mating array +*/
+{
+  GraphCoarsenData              coardat;          /* Graph coarsening global data */
+
+  coardat.finegrafptr = finegrafptr;              /* Fill caller part of matching data structure */
+  coardat.fineparotax = NULL;                     /* TODO: arrays not handled yet                */
+  coardat.finepfixtax = NULL;
+  coardat.finevfixnbr = 0;
+  coardat.finematetax = finematetab - finegrafptr->baseval; /* User-provided mating array */
+  coardat.coargrafptr = coargrafptr;
+  coardat.coarvertmax = finegrafptr->vertnbr + 1; /* Value that always succeeds    */
+  coardat.coarvertnbr = coarvertnbr;              /* Set number of coarse vertices */
+  coardat.coarvfixptr = NULL;                     /* TODO: arrays not handled yet  */
+
+  return (graphCoarsen3 (&coardat, coarmultptr));
 }
 
 /****************************************/

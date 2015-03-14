@@ -1,4 +1,4 @@
-/* Copyright 2008-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 26 oct 2008     **/
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 14 nov 2012     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,10 +72,10 @@ static int                  C_paraNbr = 0;        /* No parameters for mapping  
 static int                  C_fileNum = 0;        /* Number of file in arg list             */
 static int                  C_fileNbr = 4;        /* Number of files for mapping            */
 static File                 C_fileTab[C_FILENBR] = { /* File array                          */
-                              { "-", NULL, "r" },
-                              { "-", NULL, "r" },
-                              { "-", NULL, "w" },
-                              { "-", NULL, "w" } };
+                              { "r" },
+                              { "r" },
+                              { "w" },
+                              { "w" } };
 
 static const char *         C_usageList[] = {     /* Usage */
   "dgmap [<input source file> [<input target file> [<output mapping file> [<output log file>]]]] <options>",
@@ -173,11 +173,13 @@ char *                      argv[])
     return     (0);
   }
 
+  SCOTCH_randomProc (proclocnum);                 /* Record process number to initialize pseudo-random seed */
+
   grafflag = 0;                                   /* Use vertex and edge weights */
   SCOTCH_stratInit (&stradat);
 
-  for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
-    C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
+  fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
+
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_paraNum < C_paraNbr) {                /* If number of parameters not reached              */
@@ -187,7 +189,7 @@ char *                      argv[])
         continue;                                 /* Process the other parameters */
       }
       if (C_fileNum < C_fileNbr)                  /* A file name has been given */
-        C_fileTab[C_fileNum ++].name = argv[i];
+        fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else
         errorPrint ("main: too many file names given");
     }
@@ -291,7 +293,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "dgmap/dgpart, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2008-2012 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2008-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                                /* Output control info */
@@ -327,10 +329,10 @@ char *                      argv[])
       }
     }
   }
-  if ((flagval & C_FLAGPART) != 0) {              /* If program run as the partitioner            */
-    C_fileTab[3].name = C_fileTab[2].name;        /* Put provided file names at their right place */
-    C_fileTab[2].name = C_fileTab[1].name;
-    C_fileTab[1].name = "-";
+  if ((flagval & C_FLAGPART) != 0) {              /* If program run as the partitioner                           */
+    fileBlockName (C_fileTab, 3) = fileBlockName (C_fileTab, 2); /* Put provided file names at their right place */
+    fileBlockName (C_fileTab, 2) = fileBlockName (C_fileTab, 1);
+    fileBlockName (C_fileTab, 1) = "-";
   }
 
 #ifdef SCOTCH_DEBUG_ALL

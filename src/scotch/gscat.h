@@ -1,4 +1,4 @@
-/* Copyright 2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2009,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 26 apr 2009     **/
 /**                                 to   : 26 apr 2009     **/
+/**                # Version 6.0  : from : 12 nov 2014     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,11 +55,11 @@
 #define C_FILENBR                   2             /* Number of files in list                */
 #define C_FILEARGNBR                2             /* Number of files which can be arguments */
 
-#define C_filenamesrcinp            C_fileTab[0].name /* Centralized source graph input file name  */
-#define C_filenamesrcout            C_fileTab[1].name /* Distributed source graph output file name */
+#define C_filenamesrcinp            fileBlockName (C_fileTab, 0) /* Centralized source graph input file name  */
+#define C_filenamesrcout            fileBlockName (C_fileTab, 1) /* Distributed source graph output file name */
 
-#define C_filepntrsrcinp            C_fileTab[0].pntr /* Centralized source graph input file  */
-#define C_filepntrsrcout            C_fileTab[1].pntr /* Distributed source graph output file */
+#define C_filepntrsrcinp            fileBlockFile (C_fileTab, 0) /* Centralized source graph input file  */
+#define C_filepntrsrcout            fileBlockFile (C_fileTab, 1) /* Distributed source graph output file */
 
 /*
 **  The function prototypes.

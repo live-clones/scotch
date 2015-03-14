@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 29 oct 2007     **/
 /**                                 to     24 jul 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     11 sep 2014     **/
+/**                                 to     29 oct 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -651,8 +651,8 @@ const double                kbalval)              /*+ Desired imbalance ratio   
 
   sprintf (bbaltab, "%lf", kbalval);
   sprintf (kbaltab, "%lf", kbalval);
-  sprintf (kmovtab, GNUMSTRING, ((flagval & SCOTCH_STRATQUALITY) != 0) ? 200 : 80);
-  sprintf (mvrttab, GNUMSTRING, MAX ((20 * partnbr), 10000));
+  sprintf (kmovtab, GNUMSTRING, (Gnum) (((flagval & SCOTCH_STRATQUALITY) != 0) ? 200 : 80));
+  sprintf (mvrttab, GNUMSTRING, (Gnum) (MAX ((20 * partnbr), 10000)));
 
   strcpy (bufftab, ((flagval & SCOTCH_STRATRECURSIVE) != 0)
           ? "<RECU>"                              /* Use only the recursive bipartitioning framework */

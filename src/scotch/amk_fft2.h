@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 /**                                 to   : 02 oct 1998     **/
 /**                # Version 5.0  : from : 01 jan 2008     **/
 /**                                 to   : 01 jan 2008     **/
+/**                # Version 6.0  : from : 12 nov 2014     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,9 +63,9 @@
 
 #define C_FILENBR                   1             /* Number of files in list */
 
-#define C_filenamearcout            C_fileTab[0].name /* Architecture output file name */
+#define C_filenamearcout            fileBlockName (C_fileTab, 0) /* Architecture output file name */
 
-#define C_filepntrarcout            C_fileTab[0].pntr /* Architecture output file */
+#define C_filepntrarcout            fileBlockFile (C_fileTab, 0) /* Architecture output file */
 
 /*+ This structure defines an FFT vertex. +*/
 

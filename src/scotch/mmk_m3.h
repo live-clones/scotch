@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 26 sep 2002     **/
 /**                                 to   : 26 sep 2002     **/
+/**                # Version 6.0  : from : 12 nov 2014     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,11 +55,11 @@
 #define C_FILENBR                   2             /* Number of files in list                */
 #define C_FILEARGNBR                1             /* Number of files which can be arguments */
 
-#define C_filenamemshout            C_fileTab[0].name /* Source mesh output file name   */
-#define C_filenamegeoout            C_fileTab[1].name /* Geometry mesh output file name */
+#define C_filenamemshout            fileBlockName (C_fileTab, 0) /* Source mesh output file name   */
+#define C_filenamegeoout            fileBlockName (C_fileTab, 1) /* Geometry mesh output file name */
 
-#define C_filepntrmshout            C_fileTab[0].pntr /* Source mesh output file   */
-#define C_filepntrgeoout            C_fileTab[1].pntr /* Geometry mesh output file */
+#define C_filepntrmshout            fileBlockFile (C_fileTab, 0) /* Source mesh output file   */
+#define C_filepntrgeoout            fileBlockFile (C_fileTab, 1) /* Geometry mesh output file */
 
 /*+ Process flags. +*/
 

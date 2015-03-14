@@ -1,4 +1,4 @@
-/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 12 jun 2008     **/
 /**                                 to   : 18 jul 2011     **/
+/**                # Version 6.0  : from : 10 nov 2014     **/
+/**                                 to   : 10 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,15 +54,15 @@
 
 #define C_FILENBR                   4             /* Number of files in list */
 
-#define C_filenamesrcinp            C_fileTab[0].name /* Source graph input file name        */
-#define C_filenametgtinp            C_fileTab[1].name /* Target architecture input file name */
-#define C_filenamemapout            C_fileTab[2].name /* Mapping result output file name     */
-#define C_filenamelogout            C_fileTab[3].name /* Log file name                       */
+#define C_filenamesrcinp            fileBlockName (C_fileTab, 0) /* Source graph input file name        */
+#define C_filenametgtinp            fileBlockName (C_fileTab, 1) /* Target architecture input file name */
+#define C_filenamemapout            fileBlockName (C_fileTab, 2) /* Mapping result output file name     */
+#define C_filenamelogout            fileBlockName (C_fileTab, 3) /* Log file name                       */
 
-#define C_filepntrsrcinp            C_fileTab[0].pntr /* Source graph input file        */
-#define C_filepntrtgtinp            C_fileTab[1].pntr /* Target architecture input file */
-#define C_filepntrmapout            C_fileTab[2].pntr /* Mapping result output file     */
-#define C_filepntrlogout            C_fileTab[3].pntr /* Log file                       */
+#define C_filepntrsrcinp            fileBlockFile (C_fileTab, 0) /* Source graph input file        */
+#define C_filepntrtgtinp            fileBlockFile (C_fileTab, 1) /* Target architecture input file */
+#define C_filepntrmapout            fileBlockFile (C_fileTab, 2) /* Mapping result output file     */
+#define C_filepntrlogout            fileBlockFile (C_fileTab, 3) /* Log file                       */
 
 /*+ Process flags. +*/
 

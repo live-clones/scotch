@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 27 jan 2004     **/
 /**                # Version 5.0  : from : 25 jun 2007     **/
 /**                                 to   : 25 jul 2007     **/
+/**                # Version 6.0  : from : 12 nov 2014     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,13 +57,13 @@
 #define C_FILENBR                   3            /* Number of files in list                */
 #define C_FILEARGNBR                3            /* Number of files which can be arguments */
 
-#define C_filenamegrfinp            C_fileTab[0].name /* Graph input file name    */
-#define C_filenamesrcout            C_fileTab[1].name /* Ordering input file name */
-#define C_filenamedatout            C_fileTab[2].name /* Output data file name    */
+#define C_filenamegrfinp            fileBlockName (C_fileTab, 0) /* Graph input file name    */
+#define C_filenamesrcout            fileBlockName (C_fileTab, 1) /* Ordering input file name */
+#define C_filenamedatout            fileBlockName (C_fileTab, 2) /* Output data file name    */
 
-#define C_filepntrgrfinp            C_fileTab[0].pntr /* Graph input file     */
-#define C_filepntrordinp            C_fileTab[1].pntr /* Ordering output file */
-#define C_filepntrdatout            C_fileTab[2].pntr /* Output data file     */
+#define C_filepntrgrfinp            fileBlockFile (C_fileTab, 0) /* Graph input file     */
+#define C_filepntrordinp            fileBlockFile (C_fileTab, 1) /* Ordering output file */
+#define C_filepntrdatout            fileBlockFile (C_fileTab, 2) /* Output data file     */
 
 /*
 **  The type and structure definitions.

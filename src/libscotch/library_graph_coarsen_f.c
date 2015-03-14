@@ -1,4 +1,4 @@
-/* Copyright 2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2011,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 07 aug 2011     **/
 /**                                 to     07 aug 2011     **/
+/**                # Version 6.0  : from : 28 feb 2015     **/
+/**                                 to     28 feb 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,4 +78,21 @@ int * const                 revaptr),       \
 (finegrafptr, coargrafptr, coarmulttab, coarnbrptr, coarratptr, revaptr))
 {
   *revaptr = SCOTCH_graphCoarsen (finegrafptr, coargrafptr, coarmulttab, *coarnbrptr, *coarratptr);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                             \
+SCOTCHFGRAPHCOARSENBUILD, scotchfgraphcoarsenbuild, ( \
+SCOTCH_Graph * const        finegrafptr,              \
+SCOTCH_Graph * const        coargrafptr,              \
+SCOTCH_Num * const          coarmulttab,              \
+SCOTCH_Num * const          coarnbrptr,               \
+SCOTCH_Num * const          finematetab,              \
+int * const                 revaptr),                 \
+(finegrafptr, coargrafptr, coarmulttab, coarnbrptr, finematetab, revaptr))
+{
+  *revaptr = SCOTCH_graphCoarsenBuild (finegrafptr, coargrafptr, coarmulttab, *coarnbrptr, finematetab);
 }

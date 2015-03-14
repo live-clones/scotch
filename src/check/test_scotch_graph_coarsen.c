@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,14 +31,14 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : test_scotch_graph_color.c               **/
+/**   NAME       : test_scotch_graph_coarsen.c             **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
 /**                the SCOTCH_graphColor() routine.        **/
 /**                                                        **/
-/**   DATES      : # Version 6.0  : from : 06 jan 2012     **/
+/**   DATES      : # Version 6.0  : from : 15 oct 2014     **/
 /**                                 to     15 oct 2014     **/
 /**                                                        **/
 /************************************************************/
@@ -67,19 +67,25 @@ main (
 int                 argc,
 char *              argv[])
 {
+  SCOTCH_Num          baseval;
   FILE *              fileptr;
-  SCOTCH_Graph        grafdat;
-  SCOTCH_Num          vertnbr;
-  SCOTCH_Num          vertnum;
-  SCOTCH_Num          colonbr;
-  SCOTCH_Num          colonum;
-  SCOTCH_Num *        colotab;
-  SCOTCH_Num *        cnbrtab;
+  SCOTCH_Num          finevertnbr;
+  SCOTCH_Graph        finegrafdat;
+  double              coarrat;
+  SCOTCH_Num          coarvertmax;
+  SCOTCH_Graph        coargrafdat;
+  SCOTCH_Num *        coarmulttab;
+  int                 o;
 
   SCOTCH_errorProg (argv[0]);
 
-  if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
-    SCOTCH_errorPrint ("main: cannot initialize graph");
+  if (SCOTCH_graphInit (&finegrafdat) != 0) {     /* Initialize source, fine graph */
+    SCOTCH_errorPrint ("main: cannot initialize fine graph");
+    return            (1);
+  }
+
+  if (SCOTCH_graphInit (&coargrafdat) != 0) {     /* Initialize coarse graph */
+    SCOTCH_errorPrint ("main: cannot initialize coarse graph");
     return            (1);
   }
 
@@ -88,44 +94,66 @@ char *              argv[])
     return            (1);
   }
 
-  if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
+  if (SCOTCH_graphLoad (&finegrafdat, fileptr, -1, 0) != 0) { /* Read source graph */
     SCOTCH_errorPrint ("main: cannot load graph");
     return            (1);
   }
 
   fclose (fileptr);
 
-  SCOTCH_graphSize (&grafdat, &vertnbr, NULL);
+  SCOTCH_graphData (&finegrafdat, &baseval, &finevertnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-  if ((colotab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) {
+  coarrat     = 0.8;
+  coarvertmax = (SCOTCH_Num) (coarrat * (double) finevertnbr);
+
+  if ((coarmulttab = malloc (coarvertmax * 2 * sizeof (SCOTCH_Num))) == NULL) {
     SCOTCH_errorPrint ("main: out of memory (1)");
     return            (1);
   }
 
-  if ((cnbrtab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) {
-    SCOTCH_errorPrint ("main: out of memory (1)");
-    return            (1);
-  }
-  memset (cnbrtab, 0, vertnbr * sizeof (SCOTCH_Num));
-
-  if (SCOTCH_graphColor (&grafdat, colotab, &colonbr, 0) != 0) {
-    SCOTCH_errorPrint ("main: cannot color graph");
+  if ((o = SCOTCH_graphCoarsen (&finegrafdat, &coargrafdat, coarmulttab, 1, coarrat)) >= 2) {
+    SCOTCH_errorPrint ("main: cannot coarsen graph");
     return            (1);
   }
 
-  printf ("Number of colors: %ld\n", (long) colonbr);
+  if (o == 0) {
+    SCOTCH_Num          finevertnnd;
+    SCOTCH_Num          coarvertnbr;
+    SCOTCH_Num          coarvertnum;
+    SCOTCH_Num          coarverttmp;
 
-  for (vertnum = 0; vertnum < vertnbr; vertnum ++) /* Sum-up color histogram */
-    cnbrtab[colotab[vertnum]] ++;
+    SCOTCH_graphSize (&coargrafdat, &coarvertnbr, NULL);
 
-  for (colonum = 0; colonum < colonbr; colonum ++)
-    printf ("Color %5ld: %ld\n",
-            (long) colonum,
-            (long) cnbrtab[colonum]);
+    printf ("Graph coarsened with a ratio of %lg\n", (double) coarvertnbr / (double) finevertnbr);
 
-  free (cnbrtab);
-  free (colotab);
-  SCOTCH_graphExit (&grafdat);
+    for (coarvertnum = 0, coarverttmp = finevertnbr, finevertnnd = finevertnbr + baseval;
+         coarvertnum < coarvertnbr; coarvertnum ++) {
+      SCOTCH_Num          finevertnum0;
+      SCOTCH_Num          finevertnum1;
+
+      finevertnum0 = coarmulttab[2 * coarvertnum];
+      finevertnum1 = coarmulttab[2 * coarvertnum + 1];
+      if ((finevertnum0 <  baseval)     ||
+          (finevertnum0 >= finevertnnd) ||
+          (finevertnum1 <  baseval)     ||
+          (finevertnum1 >= finevertnnd)) {
+        SCOTCH_errorPrint ("main: invalid multinode array (1)");
+        return            (1);
+      }
+      if (finevertnum0 != finevertnum1)
+        coarverttmp --;
+    }
+    if (coarverttmp != coarvertnbr) {
+      SCOTCH_errorPrint ("main: invalid multinode array (2)");
+      return            (1);
+    }
+  }
+  else
+    printf ("Graph could not be coarsened with a ratio of %lg\n", coarrat);
+
+  free (coarmulttab);
+  SCOTCH_graphExit (&coargrafdat);
+  SCOTCH_graphExit (&finegrafdat);
 
   return (0);
 }

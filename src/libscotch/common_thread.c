@@ -39,7 +39,7 @@
 /**                the use of Posix threads.               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 jul 2012     **/
-/**                                 to     14 sep 2014     **/
+/**                                 to     02 oct 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,7 +65,7 @@
 /*                           */
 /*****************************/
 
-#ifdef SCOTCH_PTHREAD
+#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
 
 /* These routines implement the classical barrier
 ** operations for systems that do not provide them.
@@ -375,7 +375,7 @@ const int                   flagval)              /* Flag for thread operation d
   return ((int) (intptr_t) o);
 }
 
-#else /* SCOTCH_PTHREAD */
+#else /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
 
 /**********************************/
 /*                                */
@@ -390,7 +390,7 @@ void * const                contptr,              /* Pointer to thread contents 
 ThreadReduceFunc const      redfptr,              /* Pointer to reduction routine */
 int                         rootnum)              /* Root of reduction            */
 {
-  errorPrint ("threadReduce: Scotch not compiled with SCOTCH_PTHREAD");
+  errorPrint ("threadReduce: Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD");
 }
 
 void
@@ -399,7 +399,7 @@ void * const                dataptr,              /* Per-thread data block      
 void * const                contptr,              /* Pointer to thread contents */
 ThreadScanFunc const        scafptr)              /* Scan function              */
 {
-  errorPrint ("threadScan: Scotch not compiled with SCOTCH_PTHREAD");
+  errorPrint ("threadScan: Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD");
 }
 
 int
@@ -412,7 +412,8 @@ ThreadLaunchJoinFunc        joifptr,              /* Pointer to join routine    
 const int                   thrdnbr,              /* Number of threads to run (including current) */
 const int                   flagval)              /* Flag for thread operation data structures    */
 {
-  errorPrint ("threadLaunch: Scotch not compiled with SCOTCH_PTHREAD");
+  errorPrint ("threadLaunch: Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD");
+  return     (1);
 }
 
-#endif /* SCOTCH_PTHREAD */
+#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 01 jan 2012     **/
+/**                                 to   : 12 nov 2014     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -81,8 +81,8 @@
 static int                  C_paraNum = 0;        /* Number of parameters       */
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* The file array          */
-                              { "-", NULL, "w" },
-                              { "-", NULL, "w" } };
+                              { "w" },
+                              { "w" } };
 
 static const char *         C_usageList[] = {
   "gmk_m2 <dimX> [<dimY> [<output source file>]] <options>",
@@ -122,8 +122,8 @@ char *                      argv[])
     return     (0);
   }
 
-  for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
-    C_fileTab[i].pntr = (C_fileTab[i].mode[0] == 'r') ? stdin : stdout;
+  fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
+
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_paraNum < 2) {                        /* If number of parameters not reached              */
@@ -134,7 +134,7 @@ char *                      argv[])
         continue;                                 /* Process the other parameters */
       }
       if (C_fileNum < C_FILEARGNBR)               /* A file name has been given */
-        C_fileTab[C_fileNum ++].name = argv[i];
+        fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
         return     (1);
@@ -169,7 +169,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "gmk_m2, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :

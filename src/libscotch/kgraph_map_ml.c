@@ -1,4 +1,4 @@
-/* Copyright 2010,2011,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2011,2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 13 jul 2010     **/
 /**                                 to     14 jul 2010     **/
 /**   DATES      : # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     18 sep 2014     **/
+/**                                 to     27 feb 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,10 +83,10 @@
 static
 int
 kgraphMapMlCoarsen (
-Kgraph * restrict const               finegrafptr, /*+ Finer graph                         +*/
-Kgraph * restrict const               coargrafptr, /*+ Coarser graph to build              +*/
-GraphCoarsenMulti * restrict * const  coarmultptr, /*+ Pointer to multinode table to build +*/
-const KgraphMapMlParam * const        paraptr)    /*+ Method parameters                    +*/
+Kgraph * restrict const               finegrafptr, /*+ Finer graph                                  +*/
+Kgraph * restrict const               coargrafptr, /*+ Coarser graph to build                       +*/
+GraphCoarsenMulti * restrict * const  coarmultptr, /*+ Pointer to un-based multinode table to build +*/
+const KgraphMapMlParam * const        paraptr)    /*+ Method parameters                             +*/
 {
   GraphCoarsenMulti * restrict  coarmulttab;
   Gnum                          coarvertnum;      /* Number of current multinode vertex */
@@ -101,6 +101,7 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
+  *coarmultptr = NULL;                            /* Allocate coarmulttab along with coarse graph */
   if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->coarnbr, paraptr->coarval, finegrafptr->r.m.parttax, finegrafptr->pfixtax, finegrafptr->vfixnbr, &coargrafptr->vfixnbr) != 0)
     return (1);                                   /* Return if coarsening failed */
 
@@ -241,18 +242,21 @@ int
 kgraphMapMlUncoarsen (
 Kgraph * restrict const         finegrafptr,      /*+ Finer graph                +*/
 Kgraph * restrict const         coargrafptr,      /*+ Coarser graph              +*/
-const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array +*/
+const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array +*/
 {
   const Anum * restrict coarparttax;              /* Only known when coagrafptr is not NULL      */
+  Gnum                  coarvertnnd;
   Gnum                  coarvertnum;
   Gnum * restrict       coarfrontab;              /* Coarse and fine frontiers arrays are merged */
+  Gnum                  coarfronnbr;
   Gnum                  coarfronnum;
   Gnum                  finefronnum;
   Anum * restrict       fineparttax;              /* May not have been allocated yet             */
 
-  const Gnum * restrict const fineverttax = finegrafptr->s.verttax; /* Fast accesses */
-  const Gnum * restrict const finevendtax = finegrafptr->s.vendtax;
-  const Gnum * restrict const fineedgetax = finegrafptr->s.edgetax;
+  const GraphCoarsenMulti * const coarmulttax = coarmulttab - finegrafptr->s.baseval;
+  const Gnum * restrict const     fineverttax = finegrafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const     finevendtax = finegrafptr->s.vendtax;
+  const Gnum * restrict const     fineedgetax = finegrafptr->s.edgetax;
 
   if (coargrafptr == NULL) {                      /* If no coarse graph provided        */
     if (mapAlloc (&finegrafptr->m) != 0) {        /* Allocate partition array if needed */
@@ -289,7 +293,8 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
   fineparttax = finegrafptr->m.parttax;           /* Fine part array is now allocated */
   coarparttax = coargrafptr->m.parttax;
   coarfrontab = coargrafptr->frontab;
-  for (coarvertnum = coargrafptr->s.baseval; coarvertnum < coargrafptr->s.vertnnd; coarvertnum ++) {
+  for (coarvertnum = coargrafptr->s.baseval, coarvertnnd = coargrafptr->s.vertnnd;
+       coarvertnum < coarvertnnd; coarvertnum ++) {
     Gnum                finevertnum0;             /* First multinode vertex  */
     Gnum                finevertnum1;             /* Second multinode vertex */
     Anum                partval;
@@ -305,8 +310,8 @@ const GraphCoarsenMulti * const coarmulttax)      /*+ Pointer to multinode array
 
   finegrafptr->commload = coargrafptr->commload;
 
-  for (coarfronnum = 0, finefronnum = coargrafptr->fronnbr; /* Re-cycle frontier array from coarse to fine graph */
-       coarfronnum < coargrafptr->fronnbr; coarfronnum ++) {
+  for (coarfronnum = 0, finefronnum = coarfronnbr = coargrafptr->fronnbr; /* Re-cycle frontier array from coarse to fine graph */
+       coarfronnum < coarfronnbr; coarfronnum ++) {
     Gnum                coarvertnum;
     Gnum                finevertnum0;             /* First multinode vertex  */
     Gnum                finevertnum1;             /* Second multinode vertex */
@@ -381,12 +386,12 @@ Kgraph * restrict const           grafptr,        /*+ Active graph      +*/
 const KgraphMapMlParam * const    paraptr)        /*+ Method parameters +*/
 {
   Kgraph              coargrafdat;
-  GraphCoarsenMulti * coarmultptr;
+  GraphCoarsenMulti * coarmulttab;                /* Pointer to un-based multinode array */
   int                 o;
 
-  if (kgraphMapMlCoarsen (grafptr, &coargrafdat, &coarmultptr, paraptr) == 0) {
+  if (kgraphMapMlCoarsen (grafptr, &coargrafdat, &coarmulttab, paraptr) == 0) {
     if (((o = kgraphMapMl2         (&coargrafdat, paraptr))              == 0) &&
-        ((o = kgraphMapMlUncoarsen (grafptr, &coargrafdat, coarmultptr)) == 0) &&
+        ((o = kgraphMapMlUncoarsen (grafptr, &coargrafdat, coarmulttab)) == 0) &&
         ((o = kgraphMapSt          (grafptr, paraptr->stratasc))         != 0)) /* Apply ascending strategy */
       errorPrint ("kgraphMapMl2: cannot apply ascending strategy");
     kgraphExit (&coargrafdat);

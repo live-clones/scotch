@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     01 sep 2014     **/
+/**                                 to     01 mar 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,6 +163,7 @@
 #define intGcd                      _SCOTCHintGcd
 #define intPerm                     _SCOTCHintPerm
 #define intRandInit                 _SCOTCHintRandInit
+#define intRandProc                 _SCOTCHintRandProc
 #define intRandReset                _SCOTCHintRandReset
 #define intRandSeed                 _SCOTCHintRandSeed
 #ifndef COMMON_RANDOM_SYSTEM
@@ -356,7 +357,7 @@
 /* #define archTorus2DomLoad           _SCOTCHarchTorus2DomLoad Already a macro */
 /* #define archTorus2DomSave           _SCOTCHarchTorus2DomSave Already a macro */
 #define archTorus2DomBipart         _SCOTCHarchTorus2DomBipart
-#define archTorus2DomMpiType        _SCOTCHarchTorus2DomMpiType
+/* #define archTorus2DomMpiType        _SCOTCHarchTorus2DomMpiTypeA lready a macro */
 #define archTorus3ArchLoad          _SCOTCHarchTorus3ArchLoad
 #define archTorus3ArchSave          _SCOTCHarchTorus3ArchSave
 #define archTorus3DomNum            _SCOTCHarchTorus3DomNum
@@ -369,7 +370,7 @@
 /* #define archTorus3DomLoad           _SCOTCHarchTorus3DomLoad Already a macro */
 /* #define archTorus3DomSave           _SCOTCHarchTorus3DomSave Already a macro */
 #define archTorus3DomBipart         _SCOTCHarchTorus3DomBipart
-#define archTorus3DomMpiType        _SCOTCHarchTorus3DomMpiType
+/* #define archTorus3DomMpiType        _SCOTCHarchTorus3DomMpiType Already a macro */
 #define archTorusXArchLoad          _SCOTCHarchTorusXArchLoad
 #define archTorusXArchSave          _SCOTCHarchTorusXArchSave
 #define archTorusXDomNum            _SCOTCHarchTorusXDomNum

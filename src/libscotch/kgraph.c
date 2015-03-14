@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 28 sep 2008     **/
 /**                                 to     31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     15 sep 2014     **/
+/**                                 to     12 nov 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,7 +98,7 @@ const Gnum * restrict const     vmlotax)          /*+ Vertex migration cost arra
   const ArchDom * restrict  domntmp;
 
 #ifdef SCOTCH_DEBUG_KGRAPH2
-  if ((crloval < 1) || (cmloval < 1)) {
+  if ((crloval < 1) || (cmloval < 0)) {
     errorPrint ("kgraphInit: invalid parameters");
     return     (1);
   }

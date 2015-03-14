@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_dgraphGrow() routine.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
-/**                                 to     28 sep 2014     **/
+/**                                 to     02 mar 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,14 +122,14 @@ char *              argv[])
 
   fprintf (stderr, "Proc %2d of %2d, pid %d\n", proclocnum, procglbnbr, getpid ());
 
-#ifndef SCOTCH_CHECK_AUTO
+#ifdef SCOTCH_CHECK_NOAUTO
   if (proclocnum == 0) {                          /* Synchronize on keybord input */
     char           c;
 
     printf ("Waiting for key press...\n");
     scanf ("%c", &c);
   }
-#endif /* SCOTCH_CHECK_AUTO */
+#endif /* SCOTCH_CHECK_NOAUTO */
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
     errorPrint ("main: cannot communicate");
@@ -193,6 +193,8 @@ char *              argv[])
     errorPrint ("main: cannot compute grown regions");
     return     (1);
   }
+
+  free (seedloctab);
 
   for (procnum = 0; procnum < procglbnbr; procnum ++) {
     SCOTCH_Num          vertlocnum;
