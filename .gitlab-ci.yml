@@ -1,0 +1,61 @@
+image: hpclib/hiepacs
+
+stages:
+  - build
+  - test
+  - sonar
+
+build_scotch:
+  stage: build
+  artifacts:
+    name: scotch_build
+    expire_in: 42 minutes
+    untracked: true
+  script:
+    - source .gitlab-ci-env.sh
+    - git submodule update --init --recursive
+    - cd src/
+    - cp ./Make.inc/Makefile.inc.x86-64_pc_linux2 ./Makefile.inc
+    - make -j 4 | tee ../scotch-build.log
+  only:
+    - branches
+    - master@scotch/scotch
+
+test_scotch:
+  stage: test
+  dependencies:
+    - build_scotch
+  artifacts:
+    name: scotch_test
+    expire_in: 42 minutes
+  script:
+    - source .gitlab-ci-env.sh
+    - cd src/scotch/
+    - ./gord -h
+  only:
+    - branches
+    - master@scotch/scotch
+
+sonar_scotch:
+  stage: sonar
+  dependencies:
+    - build_scotch
+    - test_scotch
+  artifacts:
+    name: scotch_sonar
+    expire_in: 1 week
+    paths:
+      - scotch-cppcheck.xml
+      - scotch-rats.xml
+      - sonar.log
+  script:
+    - source .gitlab-ci-env.sh
+    - ./.gitlab-ci-filelist.sh
+    - cppcheck -v -f --language=c --platform=unix64 --enable=all --xml --xml-version=2 --suppress=missingIncludeSystem -UPARSEC_PROF_DRY_BODY -UPARSEC_PROF_TRACE -UPARSEC_PROF_GRAPHER -UPARSEC_SIM -UPARSEC_DEBUG_NOISIER -DPINS_ENABLE --file-list=./filelist.txt 2> scotch-cppcheck.xml
+    - rats -w 3 --xml `cat filelist.txt` > scotch-rats.xml
+    - echo -n "sonar.inclusions=" >> sonar-project.properties
+    - cat filelist.txt | xargs echo | sed 's/ /, /g' >> sonar-project.properties
+    - sonar-scanner -X > sonar.log
+  only:
+    - master@scotch/scotch
+
