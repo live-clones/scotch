@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     05 may 2004     **/
 /**                # Version 5.1  : from : 19 nov 2009     **/
 /**                                 to     19 nov 2009     **/
+/**                # Version 6.0  : from : 15 aug 2016     **/
+/**                                 to     15 aug 2016     **/
 /**                                                        **/
 /**   NOTES      : # From a given mesh is created a graph, **/
 /**                  such that all vertices of the graph   **/
@@ -117,8 +119,9 @@ Graph * restrict const        grafptr)            /*+ Graph to build +*/
   grafptr->verttax -= grafptr->baseval;
   grafptr->vendtax  = grafptr->verttax + 1;
 
-  if (meshptr->vnlotax != NULL)                   /* Keep node part of mesh vertex load array as graph vertex load array        */
-    grafptr->velotax = meshptr->vnlotax + meshptr->vnodbas - grafptr->baseval; /* Since GRAPHVERTGROUP, no problem on graphFree */
+  grafptr->velotax = (meshptr->vnlotax != NULL)   /* Keep node part of mesh vertex load array as graph vertex load array       */
+                     ? meshptr->vnlotax + meshptr->vnodbas - grafptr->baseval /* Since GRAPHVERTGROUP, no problem on graphFree */
+                     : NULL;
 
   grafptr->velosum = meshptr->vnlosum;
 
@@ -199,6 +202,8 @@ Graph * restrict const        grafptr)            /*+ Graph to build +*/
 
   grafptr->edgenbr = edgenum - grafptr->baseval;
   grafptr->degrmax = degrmax;
+
+  memFree (hashtab);
 
 #ifdef SCOTCH_DEBUG_MESH2
   if (graphCheck (grafptr) != 0) {

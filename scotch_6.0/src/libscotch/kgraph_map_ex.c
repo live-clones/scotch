@@ -1,4 +1,4 @@
-/* Copyright 2011,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2013,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                it can.                                 **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 27 may 2011     **/
-/**                                 to     21 aug 2014     **/
+/**                                 to     11 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,38 +81,41 @@ const KgraphMapExParam * const  paraptr)          /*+ Method parameters +*/
   KgraphMapExTerm * restrict  termtab;
   KgraphMapExTree * restrict  treetab;
   Anum * restrict             parttax;
-  Anum                        treenbr;            /* Number of nodes in tree structure       */
+  Anum                        treemax;            /* Maximum number of nodes in tree structure */
+  Anum                        treenbr;            /* Number of nodes in tree structure         */
   const Arch * restrict       archptr;
-  ArchDom                     domndat;            /* Root domain                             */
+  ArchDom                     domndat;            /* Root domain                               */
   Anum                        domnnbr;
   Anum                        domnnum;
-  Gnum                        sortnbr;            /* Number of non-fixed vertices            */
+  Gnum                        sortnbr;            /* Number of non-fixed vertices              */
   Gnum                        sortnum;
-  Anum                        termnbr;            /* Number of terminal domains in mapping   */
+  Anum                        termnbr;            /* Number of terminal domains in mapping     */
   Gnum                        vertnum;
   Gnum                        vertnnd;
-  double                      velosum;            /* Sum of vertex weights                   */
-  double                      wghtsum;            /* Sum of architecture weights             */
-  Anum                        wghttmp;            /* Sum of architecture weights for archVar */
-  int                         flagval;            /* Flag unset if load imbalance to fix     */
+  double                      velosum;            /* Sum of vertex weights                     */
+  double                      wghtsum;            /* Sum of architecture weights               */
+  Anum                        wghttmp;            /* Sum of architecture weights for archVar   */
+  int                         flagval;            /* Flag unset if load imbalance to fix       */
 
   const Gnum * restrict const velotax = grafptr->s.velotax;
   const Anum * restrict const pfixtax = grafptr->pfixtax;
 
+  archptr = grafptr->m.archptr;
+  archDomFrst (archptr, &domndat);
+
   grafptr->kbalval = paraptr->kbalval;            /* Store last k-way imbalance ratio */
   domnnbr = grafptr->m.domnnbr;
   sortnbr = grafptr->s.vertnbr - grafptr->vfixnbr; /* Only sort non-fixed vertices */
+  treemax = 2 * ((archVar (archptr)) ? domnnbr : archDomSize (archptr, &domndat)); /* At most twice the number of terminals in last rank */
   if (memAllocGroup ((void **) (void *)
                      &doextab, (size_t) (domnnbr * sizeof (KgraphMapExDom)),
                      &sorttab, (size_t) (sortnbr * sizeof (KgraphMapExSort)),
                      &termtab, (size_t) (domnnbr * sizeof (KgraphMapExTerm)),
-                     &treetab, (size_t) (domnnbr * sizeof (KgraphMapExTree) * 2), NULL) == NULL) {
+                     &treetab, (size_t) (treemax * sizeof (KgraphMapExTree)), NULL) == NULL) {
     errorPrint ("kgraphMapEx: out of memory");
     return     (1);
   }
 
-  archptr = grafptr->m.archptr;
-  archDomFrst (archptr, &domndat);
   wghtsum = (double) archDomWght (archptr, &domndat);
   velosum = (double) grafptr->s.velosum;
 
@@ -162,6 +165,12 @@ const KgraphMapExParam * const  paraptr)          /*+ Method parameters +*/
 
   treenbr = 0;                                    /* Prepare to fill tree array; next slot to fill                  */
   kgraphMapExTree (archptr, termtab, termnbr, doextab, treetab, &treenbr, &domndat); /* Recursively fill tree array */
+#ifdef SCOTCH_DEBUG_KGRAPH2
+  if (treenbr >= treemax) {
+    errorPrint ("kgraphMapEx: internal error (1)");
+    return     (1);
+  }
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
 
   parttax = grafptr->m.parttax;
   for (vertnum = grafptr->s.baseval, vertnnd = grafptr->s.vertnnd, sortnbr = 0; /* Get vertex weights */
@@ -179,7 +188,7 @@ const KgraphMapExParam * const  paraptr)          /*+ Method parameters +*/
   }
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (sortnbr != (grafptr->s.vertnbr - grafptr->vfixnbr)) {
-    errorPrint ("kgraphMapEx: internal error");
+    errorPrint ("kgraphMapEx: internal error (2)");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
@@ -270,9 +279,8 @@ const ArchDom * restrict const          domnptr)  /*+ Pointer to subdomain to co
       if (sonsnum == -1)                          /* If this son does not exist, skip it */
         continue;
 
-      treetab[treenum].sonstab[j] = sonsnum;      /* Link son to current node */
+      treetab[treenum].sonstab[j ++] = sonsnum;   /* Link son to current node; one more son created */
       treetab[sonsnum].fathnum = treenum;
-      j ++;                                       /* One more son created */
     }
     treetab[treenum].domndat = *domnptr;
   }
@@ -331,13 +339,12 @@ const Gnum                              veloval)  /*+ Weight of vertex to map  +
 {
   KgraphMapExFind     bestdat;
   Anum                treenum;
-  int                 o;
 
   bestdat.comploaddlt = (doextab[domnnum].compload + veloval - doextab[domnnum].comploadmax) / doextab[domnnum].domnwght; /* Compute weighted imbalance */
   bestdat.domnnum     = domnnum;
 
   treenum = doextab[domnnum].treenum;             /* Start from leaf of subdomain tree */
-  do {                                            /* Traverse nodes up to the root     */
+  while (1) {                                     /* Traverse nodes up to the root     */
     Anum                nodenum;                  /* Number of the son we come from    */
     Anum                othrnum;                  /* Number of the other son           */
 
@@ -348,12 +355,11 @@ const Gnum                              veloval)  /*+ Weight of vertex to map  +
 
     othrnum = treetab[treenum].sonstab[(treetab[treenum].sonstab[0] == nodenum) ? 1 : 0]; /* Don't consider the branch we come from */
 
-    if (othrnum == -1)                            /* If parent node has only one son */
-      continue;                                   /* Skip to upper level             */
-
-    o = kgraphMapExFind2 (archptr, treetab, doextab, &bestdat, treenum, othrnum, veloval);
-  }
-  while (o != 0);                                 /* As long as proper candidate not found */
+    if (othrnum != -1) {                          /* If we have a sibling */
+      if (kgraphMapExFind2 (archptr, treetab, doextab, &bestdat, treenum, othrnum, veloval) == 0)
+        break;                                    /* If the sibling is a proper candidate for moving some weight */
+    }
+  }                                               /* As long as proper candidate not found */
 
   return (bestdat.domnnum);                       /* Return best candidate found */
 }
@@ -371,7 +377,7 @@ kgraphMapExFind2 (
 const Arch * restrict const             archptr,
 const KgraphMapExTree * restrict const  treetab,
 const KgraphMapExDom * restrict const   doextab,
-KgraphMapExFind * restrict const        bestptr,  /*+ Pointer to structure that keeps best terminal found */
+KgraphMapExFind * restrict const        bestptr,  /*+ Pointer to structure that keeps best terminal found +*/
 const Anum                              treenum,
 const Anum                              nodenum,
 const Gnum                              veloval)

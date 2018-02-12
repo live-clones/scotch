@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 13 jul 2010     **/
 /**                                 to     14 jul 2010     **/
 /**   DATES      : # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     27 feb 2015     **/
+/**                                 to     16 aug 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,7 +102,8 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
   *coarmultptr = NULL;                            /* Allocate coarmulttab along with coarse graph */
-  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->coarnbr, paraptr->coarval, finegrafptr->r.m.parttax, finegrafptr->pfixtax, finegrafptr->vfixnbr, &coargrafptr->vfixnbr) != 0)
+  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, NULL, coarmultptr, paraptr->coarnbr, paraptr->coarval, GRAPHCOARSENNONE,
+                    finegrafptr->r.m.parttax, finegrafptr->pfixtax, finegrafptr->vfixnbr, &coargrafptr->vfixnbr) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   finegrafptr->s.flagval  &= ~KGRAPHFREECOMP;     /* Now it's the coarse graph job to handle the load array             */

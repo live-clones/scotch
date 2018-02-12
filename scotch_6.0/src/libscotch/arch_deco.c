@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,7 +64,7 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     14 fev 2011     **/
+/**                                 to     01 may 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,6 +78,7 @@
 #include "common.h"
 #include "arch.h"
 #include "arch_deco.h"
+#include "arch_deco2.h"
 
 /***************************************/
 /*                                     */
@@ -96,7 +97,7 @@
 */
 
 int
-archDecoArchBuild (
+archDecoArchBuild2 (
 ArchDeco * restrict const       archptr,          /*+ Architecture to build                            +*/
 const Anum                      termdomnbr,       /*+ Number of terminal domains (ie processors)       +*/
 const Anum                      termdommax,       /*+ Maximum domain number given to a terminal domain +*/
@@ -108,15 +109,18 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchDeco)    > sizeof (ArchDummy)) ||
       (sizeof (ArchDecoDom) > sizeof (ArchDomDummy))) {
-    errorPrint ("archDecoArchBuild: invalid type specification");
+    errorPrint ("archDecoArchBuild2: invalid type specification");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
+
+/* ,finegrafptr, &coargrafdat, &coarmulttab, 0, 1.0, NULL, NULL, 0, NULL) != 0) { */
+
   if (memAllocGroup ((void **) (void *)
                      &archptr->domverttab, (size_t) (termdommax * sizeof (ArchDecoVert)),
                      &archptr->domdisttab, (size_t) ((((termdommax * (termdommax - 1)) / 2) + 1) * sizeof (Anum)), NULL) == NULL) {
-    errorPrint ("archDecoArchBuild: out of memory");
+    errorPrint ("archDecoArchBuild2: out of memory");
     return     (1);
   }
   archptr->flagval    = ARCHDECOFREE;
@@ -132,7 +136,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
   for (i = 0; i < termdomnbr; i ++) {             /* Set terminal data of all declared terminals */
 #ifdef SCOTCH_DEBUG_ARCH1
     if (termverttab[i].num > termdommax) {        /* If incorrect maximum terminal number */
-      errorPrint       ("archDecoArchBuild: bad maximum terminal");
+      errorPrint       ("archDecoArchBuild2: bad maximum terminal");
       archDecoArchFree (archptr);
       return           (1);
     }
@@ -155,7 +159,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
   }
 #ifdef SCOTCH_DEBUG_ARCH1
   if (archptr->domverttab[0].size != termdomnbr) { /* If incorrect accumulation */
-    errorPrint ("archDecoArchBuild: bad terminal count");
+    errorPrint ("archDecoArchBuild2: bad terminal count");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
@@ -190,7 +194,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
 #ifdef SCOTCH_DEBUG_ARCH1
         else {                                    /* If both domain are terminals                  */
           if (archDecoArchDist (archptr, i, j) == 0) { /* Distance value must be greater than zero */
-            errorPrint       ("archDecoArchBuild: invalid null distance");
+            errorPrint       ("archDecoArchBuild2: invalid null distance");
             archDecoArchFree (archptr);
             return           (1);
           }
@@ -216,7 +220,7 @@ archDecoArchLoad (
 ArchDeco * restrict const   archptr,
 FILE * restrict const       stream)
 {
-  INT                         decotype;           /* Type of decomposition                            */
+  INT                         typeval;            /* Type of decomposition                            */
   INT                         termdomnbr;         /* Number of terminal domains (ie processors)       */
   INT                         termdommax;         /* Maximum domain number given to a terminal domain */
   ArchDecoTermVert * restrict termverttab;        /* Table of terminal vertex data                    */
@@ -231,18 +235,27 @@ FILE * restrict const       stream)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((intLoad (stream, &decotype)   != 1) ||     /* Read header */
-      (intLoad (stream, &termdomnbr) != 1) ||
-      (intLoad (stream, &termdommax) != 1) ||
-      (decotype   < 0)                     ||
-      (decotype   > 1)                     ||
-      (termdommax < termdomnbr)            ||
-      (termdomnbr < 1)) {
+  if ((intLoad (stream, &typeval) != 1) ||        /* Read decomposition type */
+      (typeval  < 0)                    ||
+      (typeval  > 2)) {
     errorPrint ("archDecoArchLoad: bad input (1)");
     return     (1);
   }
 
-  if (decotype == 0) {                            /* If raw decomposition */
+  if (typeval == 2) {                             /* If type-2 decomposition                      */
+    archArch (archptr)->class = archClass2 ("deco", 1); /* Switch class for future routines       */
+    return (archDeco2ArchLoad2 ((ArchDeco2 *) archptr, stream)); /* Call subclass loading routine */
+  }
+
+  if ((intLoad (stream, &termdomnbr) != 1) ||     /* Proceed with type-0 and type-1 architectures */
+      (intLoad (stream, &termdommax) != 1) ||
+      (termdommax < termdomnbr)            ||
+      (termdomnbr < 1)) {
+    errorPrint ("archDecoArchLoad: bad input (2)");
+    return     (1);
+  }
+
+  if (typeval == 0) {                             /* If raw decomposition */
     if (memAllocGroup ((void **) (void *)
                        &termverttab, (size_t) (termdomnbr * sizeof (ArchDecoTermVert)),
                        &termdisttab, (size_t) ((((termdommax * (termdommax - 1)) / 2) + 1) * sizeof (Anum)), NULL) == NULL) {
@@ -260,7 +273,7 @@ FILE * restrict const       stream)
           (intLoad (stream, &termvertnum)  != 1) ||
           (termvertnum < 1)                      ||
           (termvertnum > termdommax)) {
-        errorPrint       ("archDecoArchLoad: bad input (2)");
+        errorPrint       ("archDecoArchLoad: bad input (3)");
         memFree          (termverttab);           /* Free group leader */
         return           (1);
       }
@@ -274,14 +287,14 @@ FILE * restrict const       stream)
 
       if ((intLoad (stream, &termdistval) != 1) ||
           (termdistval < 1)) {
-        errorPrint       ("archDecoArchLoad: bad input (3)");
+        errorPrint       ("archDecoArchLoad: bad input (4)");
         memFree          (termverttab);           /* Free group leader */
         return           (1);
       }
       termdisttab[i] = (Anum) termdistval;
     }
 
-    archDecoArchBuild (archptr, termdomnbr, termdommax, termverttab, termdisttab);
+    archDecoArchBuild2 (archptr, termdomnbr, termdommax, termverttab, termdisttab);
 
     memFree (termverttab);                        /* Free group leader */
   }
@@ -304,7 +317,7 @@ FILE * restrict const       stream)
       if ((intLoad (stream, &domvertlabl) != 1) ||
 	  (intLoad (stream, &domvertsize) != 1) ||
 	  (intLoad (stream, &domvertwght) != 1)) {
-        errorPrint       ("archDecoArchLoad: bad input (4)");
+        errorPrint       ("archDecoArchLoad: bad input (5)");
         archDecoArchFree (archptr);
         return           (1);
       }
@@ -317,7 +330,7 @@ FILE * restrict const       stream)
       INT                 domdistval;
 
       if (intLoad (stream, &domdistval) != 1) {
-        errorPrint       ("archDecoArchLoad: bad input (5)");
+        errorPrint       ("archDecoArchLoad: bad input (6)");
         archDecoArchFree (archptr);
         return           (1);
       }
@@ -406,6 +419,11 @@ FILE * restrict const       stream)
       errorPrint ("archDecoArchSave: bad output (3)");
       return     (1);
     }
+  }
+
+  if (fprintf (stream, "\n") == EOF) {
+    errorPrint ("archDecoArchSave: bad output (4)");
+    return     (1);
   }
 
   return (0);

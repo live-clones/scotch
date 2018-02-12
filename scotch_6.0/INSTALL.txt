@@ -195,8 +195,8 @@ handled by Scotch.
 Compression and decompression are handled either by extra threads
 or by fork'ed child processes if threads are not available. On
 systems which do not provide a functional fork() system call,
-compressed files cannot be handled when the "-DCOMMON_PTHREAD" flag
-is not set (see below).
+compressed files cannot be handled when the "-DCOMMON_PTHREAD_FILE"
+flag is not set (see below).
 
 
 2.5) Multi-threading
@@ -208,22 +208,22 @@ available. They are used in several places:
 - to compress and uncompress file data. This can be done either
   by launching a service thread, or else by creating a separate
   process by means of a Posix fork() system call. This choice is
-  controlled by the "-DCOMMON_PTHREAD" flag: if it is set, threads
-  will be used, else fork() calls will be performed. For systems
-  which do not support the fork() system call, such as the MinGW32
-  platform, one can set the "-DCOMMON_STUB_FORK" flag, which creates
-  a stub fork() routine which always returns an error. Therefore,
-  without both fork() and threads, one must set the
-  "-DCOMMON_STUB_FORK" flag without setting "-DCOMMON_PTHREAD", so
-  that compilation will successfully complete; however, in this case,
-  compressed graphs shall not be handled in practice.
+  controlled by the "-DCOMMON_PTHREAD_FILE" flag: if it is set,
+  threads will be used, else fork() calls will be performed. For
+  systems which do not support the fork() system call, such as the
+  MinGW32 platform, one can set the "-DCOMMON_STUB_FORK" flag, which
+  creates a stub fork() routine which always returns an
+  error. Therefore, without both fork() and threads, one must set the
+  "-DCOMMON_STUB_FORK" flag without setting "-DCOMMON_PTHREAD_FILE",
+  so that compilation will successfully complete; however, in this
+  case, compressed graphs shall not be handled in practice.
 
 - to create distributed graphs in parallel. Since this task involves
   concurrent MPI communications, the MPI library must support the
   MPI_THREAD_MULTIPLE level. The use of threads within Scotch itself
   is controlled by the "-DSCOTCH_PTHREAD" flag, which is completely
-  independent from the "-DCOMMON_PTHREAD" flag. Any of them can be set
-  without setting the other.
+  independent from the "-DCOMMON_PTHREAD_FILE" flag. Any of them can
+  be set without setting the other.
 
   Note that if you compile Scotch with the "-DSCOTCH_PTHREAD" flag,
   you will have to initialize your communication subsystem by using
@@ -258,21 +258,22 @@ library.
 
 The compilation flags used to manage threads are the following:
 
-"-DCOMMON_PTHREAD" enables threads for algorithms not related to
-graph management, partitioning and/or ordering, e.g. compressed
-file handling.
+"-DCOMMON_PTHREAD_AFFINITY_LINUX" enables Linux extensions for
+handling thread affinity. As said above, this may not prove
+efficient in all cases. More options will be provided in the
+near future.
 
 "-DCOMMON_PTHREAD_BARRIER" creates a replacement for missing
 pthread_barrier_t implementations, which unfortunately happens on some
 systems.
 
+"-DCOMMON_PTHREAD_FILE" enables threads for handling compressed
+files. This flag does not interfere with the use of threads by graph
+algorithms, e.g. for graph partitioning and/or ordering, which depends
+on other flags (see below).
+
 "-DSCOTCH_PTHREAD" is necessary to enable multi-threaded algorithms
 in Scotch and/or PT-Scotch.
-
-"-DSCOTCH_PTHREAD_AFFINITY_LINUX" enables Linux extensions for
-handling thread affinity. As said above, this may not prove
-efficient in all cases. More options will be provided in the
-near future.
 
 "-DSCOTCH_PTHREAD_NUMBER=x" sets the overall number of threads to be
 used by multi-threaded algorithms. This number may not necessary be a
@@ -558,6 +559,6 @@ dynamically configurable, one has to decide whether to compile it with
 threads enabled or not and, additionally, with which number of threads
 it will run. Based on the current processor market, I recommend to
 compile with -DSCOTCH_PTHREAD_NUMBER=2 (and, of course,
--DSCOTCH_PTHREAD_AFFINITY_LINUX whenever possible). The penalty for
+-DCOMMON_PTHREAD_AFFINITY_LINUX whenever possible). The penalty for
 single-thread CPUs will not be too high, while hyper-threaded and
 many-core CPUs will benefit from the extra thread.

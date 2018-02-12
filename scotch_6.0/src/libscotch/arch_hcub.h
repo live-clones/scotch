@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,7 +60,7 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     21 jan 2008     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     01 jul 2014     **/
+/**                                 to     12 apr 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,13 +74,18 @@
 /*+ The binary hypercube definitions. +*/
 
 typedef struct ArchHcub_ {
-  Anum                      dimmax;               /*+ Number of hypercube dimensions +*/
+  Anum                      dimnnbr;              /*+ Number of hypercube dimensions +*/
 } ArchHcub;
 
 typedef struct ArchHcubDom_ {
-  Anum                      dimcur;               /*+ Current dimension to be set +*/
-  Anum                      bitset;               /*+ Bit set of set dimensions   +*/
+  Anum                      dimncur;              /*+ Current dimension to be set +*/
+  Anum                      bitsset;              /*+ Bit set of set dimensions   +*/
 } ArchHcubDom;
+
+typedef struct ArchHcubMatch_ {
+  ArchCoarsenMulti *        multtab;              /*+ Multinode array for all coarsenings +*/
+  Anum                      vertnbr;              /*+ Number of vertices in fine graph    +*/
+} ArchHcubMatch;
 
 #endif /* ARCH_HCUB_H_STRUCT */
 
@@ -99,6 +104,11 @@ typedef struct ArchHcubDom_ {
 int                         archHcubArchLoad    (ArchHcub * restrict const, FILE * restrict const);
 int                         archHcubArchSave    (const ArchHcub * const, FILE * restrict const);
 #define archHcubArchFree            NULL
+
+int                         archHcubMatchInit   (ArchHcubMatch * restrict const, const ArchHcub * restrict const);
+void                        archHcubMatchExit   (ArchHcubMatch * restrict const);
+Anum                        archHcubMatchMate   (ArchHcubMatch * restrict const, ArchCoarsenMulti ** restrict const);
+
 ArchDomNum                  archHcubDomNum      (const ArchHcub * const, const ArchHcubDom * const);
 int                         archHcubDomTerm     (const ArchHcub * const, ArchHcubDom * restrict const, const ArchDomNum);
 Anum                        archHcubDomSize     (const ArchHcub * const, const ArchHcubDom * const);

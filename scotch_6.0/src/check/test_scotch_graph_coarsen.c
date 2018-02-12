@@ -1,4 +1,4 @@
-/* Copyright 2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -36,10 +36,11 @@
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
-/**                the SCOTCH_graphColor() routine.        **/
+/**                the sequential graph coarsening         **/
+/**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 15 oct 2014     **/
-/**                                 to     15 oct 2014     **/
+/**                                 to     16 aug 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,92 +68,234 @@ main (
 int                 argc,
 char *              argv[])
 {
-  SCOTCH_Num          baseval;
-  FILE *              fileptr;
-  SCOTCH_Num          finevertnbr;
-  SCOTCH_Graph        finegrafdat;
-  double              coarrat;
-  SCOTCH_Num          coarvertmax;
-  SCOTCH_Graph        coargrafdat;
-  SCOTCH_Num *        coarmulttab;
-  int                 o;
+  SCOTCH_Num              baseval;                /* Base value                */
+  SCOTCH_Graph            finegrafdat;            /* Fine graph                */
+  SCOTCH_Num              finevertnbr;            /* Number of fine vertices   */
+  SCOTCH_Num              finevertnnd;            /* Based end of vertex array */
+  SCOTCH_Num              finevertnum;
+  SCOTCH_Num *            fineverttax;
+  SCOTCH_Num *            finevendtax;
+  SCOTCH_Num *            fineedgetax;
+  SCOTCH_Num *            finematetax;
+  SCOTCH_Graph            coargrafdat;            /* Coarse graph              */
+  SCOTCH_Num *            coarmulttab;            /* Multinode array           */
+  SCOTCH_Num              coarvertnbr;            /* Number of coarse vertices */
+  SCOTCH_Num              coarvertnum;
+  SCOTCH_Num              coarverttmp;
+  SCOTCH_Num              coaredgenbr;
+  FILE *                  fileptr;
 
   SCOTCH_errorProg (argv[0]);
 
-  if (SCOTCH_graphInit (&finegrafdat) != 0) {     /* Initialize source, fine graph */
-    SCOTCH_errorPrint ("main: cannot initialize fine graph");
+  if (SCOTCH_graphInit (&finegrafdat) != 0) {     /* Initialize fine source graph */
+    SCOTCH_errorPrint ("main: cannot initialize graph");
     return            (1);
   }
 
-  if (SCOTCH_graphInit (&coargrafdat) != 0) {     /* Initialize coarse graph */
-    SCOTCH_errorPrint ("main: cannot initialize coarse graph");
-    return            (1);
-  }
-
-  if ((fileptr = fopen (argv[1], "r")) == NULL) {
+  if ((fileptr = fopen (argv[1], "r")) == NULL) { /* Open fine graph file */
     SCOTCH_errorPrint ("main: cannot open file");
     return            (1);
   }
 
-  if (SCOTCH_graphLoad (&finegrafdat, fileptr, -1, 0) != 0) { /* Read source graph */
+  if (SCOTCH_graphLoad (&finegrafdat, fileptr, -1, 0) != 0) { /* Read fine source graph */
     SCOTCH_errorPrint ("main: cannot load graph");
     return            (1);
   }
 
   fclose (fileptr);
 
-  SCOTCH_graphData (&finegrafdat, &baseval, &finevertnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+  SCOTCH_graphData (&finegrafdat, &baseval,
+                    &finevertnbr, &fineverttax, &finevendtax, NULL, NULL,
+                    NULL, &fineedgetax, NULL);
+  fineverttax -= baseval;
+  finevendtax -= baseval;
+  fineedgetax -= baseval;
 
-  coarrat     = 0.8;
-  coarvertmax = (SCOTCH_Num) (coarrat * (double) finevertnbr);
-
-  if ((coarmulttab = malloc (coarvertmax * 2 * sizeof (SCOTCH_Num))) == NULL) {
+  if ((finematetax = malloc (finevertnbr * sizeof (SCOTCH_Num))) == NULL) { /* Array is un-based */
     SCOTCH_errorPrint ("main: out of memory (1)");
     return            (1);
   }
 
-  if ((o = SCOTCH_graphCoarsen (&finegrafdat, &coargrafdat, coarmulttab, 1, coarrat)) >= 2) {
+  coarvertnbr = 0;                                /* Set minimum number of vertices in graph */
+  if (SCOTCH_graphCoarsenMatch (&finegrafdat, &coarvertnbr, 1.0, SCOTCH_COARSENNOMERGE, finematetax) != 0) {
+    SCOTCH_errorPrint ("main: cannot compute matching");
+    return            (1);
+  }
+
+  finematetax -= baseval;                         /* Array is based from now on */
+  for (finevertnum = baseval, finevertnnd = finevertnbr + baseval, coarverttmp = finevertnbr;
+       finevertnum < finevertnnd; finevertnum ++) {
+    SCOTCH_Num          finevertend;
+
+    finevertend = finematetax[finevertnum];
+    if ((finevertend <  baseval) ||
+        (finevertend >= finevertnnd)) {
+      SCOTCH_errorPrint ("main: invalid mate array (1)");
+      return            (1);
+    }
+    if (finevertend > finevertnum) {              /* If mates make a multinode (counted once) */
+      coarverttmp --;                             /* One less coarse vertex                   */
+      if (finematetax[finevertend] != finevertnum) {
+        SCOTCH_errorPrint ("main: invalid mate array (2)");
+        return            (1);
+      }
+    }
+  }
+  if (coarverttmp != coarvertnbr) {
+    SCOTCH_errorPrint ("main: invalid mate array (3)");
+    return            (1);
+  }
+
+  printf ("Mate array has " SCOTCH_NUMSTRING " vertices\n",
+          coarvertnbr);
+  printf ("Graph mated with a ratio of %lg\n", (double) coarvertnbr / (double) finevertnbr);
+
+  if ((coarmulttab = malloc (coarvertnbr * 2 * sizeof (SCOTCH_Num))) == NULL) {
+    SCOTCH_errorPrint ("main: out of memory (2)");
+    return            (1);
+  }
+
+  if (SCOTCH_graphCoarsenBuild (&finegrafdat, coarvertnbr, finematetax + baseval, &coargrafdat, coarmulttab) != 0) {
+    SCOTCH_errorPrint ("main: cannot compute coarse graph (1)");
+    return            (1);
+  }
+
+  SCOTCH_graphSize (&coargrafdat, &coarvertnbr, &coaredgenbr);
+  printf ("Coarse graph has " SCOTCH_NUMSTRING " vertices and " SCOTCH_NUMSTRING " edges\n",
+          coarvertnbr,
+          coaredgenbr);
+  printf ("Graph coarsened with a ratio of %lg\n", (double) coarvertnbr / (double) finevertnbr);
+
+  for (coarvertnum = 0, coarverttmp = finevertnbr, finevertnnd = finevertnbr + baseval;
+       coarvertnum < coarvertnbr; coarvertnum ++) {
+    SCOTCH_Num          finevertnum0;
+    SCOTCH_Num          finevertnum1;
+
+    finevertnum0 = coarmulttab[2 * coarvertnum];
+    finevertnum1 = coarmulttab[2 * coarvertnum + 1];
+    if ((finevertnum0 <  baseval)     ||
+        (finevertnum0 >= finevertnnd) ||
+        (finevertnum1 <  baseval)     ||
+        (finevertnum1 >= finevertnnd)) {
+      SCOTCH_errorPrint ("main: invalid multinode array (1)");
+      return            (1);
+    }
+    if (finevertnum0 != finevertnum1)
+      coarverttmp --;
+  }
+  if (coarverttmp != coarvertnbr) {
+    SCOTCH_errorPrint ("main: invalid multinode array (2)");
+    return            (1);
+  }
+
+  SCOTCH_graphExit (&coargrafdat);
+  free             (coarmulttab);                 /* Free first multinode array */
+
+  memset (finematetax + baseval, ~0, finevertnbr * sizeof (SCOTCH_Num)); /* Set based array to "-1"'s */
+
+  for (finevertnum = baseval, finevertnnd = finevertnbr + baseval, coarvertnbr = 0; /* Compute simple matching */
+       finevertnum < finevertnnd; finevertnum ++) {
+    SCOTCH_Num          finematenum;
+
+    if (finematetax[finevertnum] >= 0)            /* If vertex already matched */
+      continue;
+
+    coarvertnbr ++;                               /* One more coarse vertex will be created */
+
+    finematenum = finevertnum;                    /* Assume we mate with ourselves     */
+    if (fineverttax[finevertnum] == finevendtax[finevertnum]) { /* If isolated vertex  */
+      while (1) {                                 /* Use first free vertex as a mate   */
+        if (++ finevertnum >= finevertnnd) {      /* If no other free vertex available */
+          finematetax[finematenum] = finematenum; /* Mate isolated vertex with itself  */
+          goto endloop;                           /* Exit nested loops                 */
+        }
+        if (finematetax[finevertnum] < 0)         /* If vertex is free, keep it as mate */
+          break;                                  /* Increment performed in outer loop  */
+      }
+    }
+    else {
+      SCOTCH_Num          fineedgenum;
+
+      for (fineedgenum = fineverttax[finevertnum]; /* Find a suitable mate */
+           fineedgenum < finevendtax[finevertnum]; fineedgenum ++) {
+        SCOTCH_Num        finevertend;
+
+        finevertend = fineedgetax[fineedgenum];   /* FInd end vertex     */
+        if (finematetax[finevertend] < 0) {       /* If vertex is free   */
+          finematenum = finevertend;              /* Keep vertex as mate */
+          break;
+        }
+      }
+    }
+
+    finematetax[finevertnum] = finematenum;
+    finematetax[finematenum] = finevertnum;
+  }
+endloop:
+  printf ("Mate array has " SCOTCH_NUMSTRING " vertices\n",
+          coarvertnbr);
+  printf ("Graph mated with a ratio of %lg\n", (double) coarvertnbr / (double) finevertnbr);
+
+  if ((coarmulttab = malloc (coarvertnbr * 2 * sizeof (SCOTCH_Num))) == NULL) {
+    SCOTCH_errorPrint ("main: out of memory (3)");
+    return            (1);
+  }
+
+  if (SCOTCH_graphCoarsenBuild (&finegrafdat, coarvertnbr, finematetax + baseval, &coargrafdat, coarmulttab) != 0) {
+    SCOTCH_errorPrint ("main: cannot compute coarse graph (2)");
+    return            (1);
+  }
+
+  SCOTCH_graphSize (&coargrafdat, &coarvertnbr, &coaredgenbr);
+  printf ("Coarse graph has " SCOTCH_NUMSTRING " vertices and " SCOTCH_NUMSTRING " edges\n",
+          coarvertnbr,
+          coaredgenbr);
+  printf ("Graph coarsened with a ratio of %lg\n", (double) coarvertnbr / (double) finevertnbr);
+
+  SCOTCH_graphExit (&coargrafdat);
+  free (coarmulttab);                             /* Free second multinode array */
+  free (finematetax + baseval);
+
+  if ((coarmulttab = malloc (finevertnbr * 2 * sizeof (SCOTCH_Num))) == NULL) { /* Number of coarse vertices and ratio not bounded */
+    SCOTCH_errorPrint ("main: out of memory (3)");
+    return            (1);
+  }
+
+  if (SCOTCH_graphCoarsen (&finegrafdat, 1, 1.0, SCOTCH_COARSENNONE, &coargrafdat, coarmulttab) != 0) {
     SCOTCH_errorPrint ("main: cannot coarsen graph");
     return            (1);
   }
 
-  if (o == 0) {
-    SCOTCH_Num          finevertnnd;
-    SCOTCH_Num          coarvertnbr;
-    SCOTCH_Num          coarvertnum;
-    SCOTCH_Num          coarverttmp;
+  SCOTCH_graphSize (&coargrafdat, &coarvertnbr, NULL);
+  printf ("Coarse graph has " SCOTCH_NUMSTRING " vertices and " SCOTCH_NUMSTRING " edges\n",
+          coarvertnbr,
+          coaredgenbr);
+  printf ("Graph coarsened with a ratio of %lg\n", (double) coarvertnbr / (double) finevertnbr);
 
-    SCOTCH_graphSize (&coargrafdat, &coarvertnbr, NULL);
+  for (coarvertnum = 0, coarverttmp = finevertnbr, finevertnnd = finevertnbr + baseval;
+       coarvertnum < coarvertnbr; coarvertnum ++) {
+    SCOTCH_Num          finevertnum0;
+    SCOTCH_Num          finevertnum1;
 
-    printf ("Graph coarsened with a ratio of %lg\n", (double) coarvertnbr / (double) finevertnbr);
-
-    for (coarvertnum = 0, coarverttmp = finevertnbr, finevertnnd = finevertnbr + baseval;
-         coarvertnum < coarvertnbr; coarvertnum ++) {
-      SCOTCH_Num          finevertnum0;
-      SCOTCH_Num          finevertnum1;
-
-      finevertnum0 = coarmulttab[2 * coarvertnum];
-      finevertnum1 = coarmulttab[2 * coarvertnum + 1];
-      if ((finevertnum0 <  baseval)     ||
-          (finevertnum0 >= finevertnnd) ||
-          (finevertnum1 <  baseval)     ||
-          (finevertnum1 >= finevertnnd)) {
-        SCOTCH_errorPrint ("main: invalid multinode array (1)");
-        return            (1);
-      }
-      if (finevertnum0 != finevertnum1)
-        coarverttmp --;
-    }
-    if (coarverttmp != coarvertnbr) {
-      SCOTCH_errorPrint ("main: invalid multinode array (2)");
+    finevertnum0 = coarmulttab[2 * coarvertnum];
+    finevertnum1 = coarmulttab[2 * coarvertnum + 1];
+    if ((finevertnum0 <  baseval)     ||
+        (finevertnum0 >= finevertnnd) ||
+        (finevertnum1 <  baseval)     ||
+        (finevertnum1 >= finevertnnd)) {
+      SCOTCH_errorPrint ("main: invalid multinode array (3)");
       return            (1);
     }
+    if (finevertnum0 != finevertnum1)
+      coarverttmp --;
   }
-  else
-    printf ("Graph could not be coarsened with a ratio of %lg\n", coarrat);
+  if (coarverttmp != coarvertnbr) {
+    SCOTCH_errorPrint ("main: invalid multinode array (4)");
+    return            (1);
+  }
 
-  free (coarmulttab);
   SCOTCH_graphExit (&coargrafdat);
+  free             (coarmulttab);                 /* Free third multinode array */
   SCOTCH_graphExit (&finegrafdat);
 
   return (0);

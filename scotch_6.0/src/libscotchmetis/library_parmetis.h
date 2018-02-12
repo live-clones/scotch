@@ -9,7 +9,7 @@
 **  the libPTScotchMeTiS library.                       **
 **                                                      **
 *********************************************************/
-/* Copyright 2007,2008,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : parmetis.h                              **/
+/**   NAME       : library_parmetis.h                      **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 19 jun 2008     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
-/**                                 to     13 sep 2012     **/
+/**                                 to     12 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,6 +90,14 @@
 #define METISNAME3(s)               s
 #define METISNAME4(p,s)             p##s
 #endif /* METISNAMEL */
+
+/*
+**  The type and structure definitions.
+*/
+
+#ifndef SCOTCH_H                                  /* In case "scotch.h" not included before */
+typedef DUMMYINT SCOTCH_Num;
+#endif /* SCOTCH_H */
 
 /*
 **  The function prototypes.

@@ -1,4 +1,4 @@
-## Copyright 2011,2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2011,2012,2014-2016 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -29,6 +29,8 @@
 ## The fact that you are presently reading this means that you have had
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
+
+TMPDIR			= /tmp
 
 SCOTCHINCLUDEDIR	= ../../include
 SCOTCHLIBDIR		= ../../lib
@@ -74,8 +76,9 @@ realclean			:	clean
 					-$(RM) 				\
 					test_common_random		\
 					test_common_thread		\
+					test_scotch_arch		\
+					test_scotch_arch_deco		\
 					test_scotch_graph_coarsen	\
-					test_scotch_graph_coarsen_build	\
 					test_scotch_graph_color		\
 					test_scotch_graph_map		\
 					test_scotch_graph_map_copy	\
@@ -95,14 +98,18 @@ realclean			:	clean
 
 CHECKSCOTCH = 		check_common_random			\
 			check_common_thread			\
+			check_fibo				\
 			check_strat_seq				\
+			check_scotch_arch			\
+			check_scotch_arch_deco			\
 			check_scotch_graph_coarsen		\
-			check_scotch_graph_coarsen_build	\
 			check_scotch_graph_color		\
+			check_scotch_graph_diam			\
 			check_scotch_graph_map			\
 			check_scotch_graph_map_copy		\
 			check_scotch_graph_order		\
 			check_scotch_graph_part_ovl		\
+			check_scotch_mesh_graph			\
 			check_prog_gord				\
 			check_prog_gpart_remap
 
@@ -118,8 +125,8 @@ CHECKPTSCOTCH = 	check_strat_par				\
 ##
 
 check_common_random		:	test_common_random
-					$(EXECS) ./test_common_random /tmp/rand.dat 0
-					$(EXECS) ./test_common_random /tmp/rand.dat 1
+					$(EXECS) ./test_common_random "$(TMPDIR)/rand.dat" 0
+					$(EXECS) ./test_common_random "$(TMPDIR)/rand.dat" 1
 
 test_common_random		:	test_common_random.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -130,6 +137,14 @@ check_common_thread		:	test_common_thread
 					$(EXECS) ./test_common_thread
 
 test_common_thread		:	test_common_thread.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_fibo			:	test_fibo
+					$(EXECS) ./test_fibo
+
+test_fibo			:	test_fibo.c			\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
@@ -159,19 +174,28 @@ check_prog_gpart_remap		:
 
 ##
 
-check_scotch_graph_coarsen	:	test_scotch_graph_coarsen
-					$(EXECS) ./test_scotch_graph_coarsen data/bump_b1.grf
+check_scotch_arch		:	test_scotch_arch
+					$(EXECS) ./test_scotch_arch "$(TMPDIR)/arch.tgt"
 
-test_scotch_graph_coarsen	:	test_scotch_graph_coarsen.c	\
+test_scotch_arch		:	test_scotch_arch.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
 
-check_scotch_graph_coarsen_build :	test_scotch_graph_coarsen_build
-					$(EXECS) ./test_scotch_graph_coarsen_build data/bump.grf
-					$(EXECS) ./test_scotch_graph_coarsen_build data/bump_b1.grf
+check_scotch_arch_deco		:	test_scotch_arch_deco
+					$(EXECS) ./test_scotch_arch_deco data/m4x4.grf "$(TMPDIR)/arch2.tgt"
+#					$(EXECS) ./test_scotch_arch_deco data/m4x4_b1.grf "$(TMPDIR)/arch2.tgt"
 
-test_scotch_graph_coarsen_build	:	test_scotch_graph_coarsen_build.c \
+test_scotch_arch_deco		:	test_scotch_arch_deco.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_graph_coarsen	:	test_scotch_graph_coarsen
+					$(EXECS) ./test_scotch_graph_coarsen data/bump.grf
+					$(EXECS) ./test_scotch_graph_coarsen data/bump_b1.grf
+
+test_scotch_graph_coarsen	:	test_scotch_graph_coarsen.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
@@ -180,6 +204,16 @@ check_scotch_graph_color	:	test_scotch_graph_color
 					$(EXECS) ./test_scotch_graph_color data/bump.grf
 
 test_scotch_graph_color		:	test_scotch_graph_color.c	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_graph_diam		:	test_scotch_graph_diam
+					$(EXECS) ./test_scotch_graph_diam data/bump.grf
+					$(EXECS) ./test_scotch_graph_diam data/m16x16_b1.grf
+					$(EXECS) ./test_scotch_graph_diam data/p2-p2.grf
+
+test_scotch_graph_diam		:	test_scotch_graph_diam.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
@@ -217,6 +251,14 @@ check_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl
 					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16_b1.grf /dev/null
 
 test_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl.c	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_mesh_graph		:	test_scotch_mesh_graph
+					$(EXECS) ./test_scotch_mesh_graph data/ship001.msh
+
+test_scotch_mesh_graph		:	test_scotch_mesh_graph.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##

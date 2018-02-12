@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                graph matching functions.               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 01 oct 2012     **/
-/**                                 to     04 jun 2014     **/
+/**                                 to     14 aug 2015     **/
 /**                                                        **/
 /**   NOTES      : # This code partly derives from the     **/
 /**                  code of graph_match.c partly updated  **/
@@ -96,6 +96,7 @@ GraphCoarsenThread * restrict thrdptr)            /* Thread-dependent data */
 #if ((defined GRAPHMATCHSCANP1OUTQUEUE) || defined (GRAPHMATCHSCANP2OUTQUEUE))
   Gnum                    queunew;
 #endif /* ((defined GRAPHMATCHSCANP1OUTQUEUE) || defined (GRAPHMATCHSCANP2OUTQUEUE)) */
+  const int               flagval = coarptr->flagval;
 
   const Gnum * restrict const     fineverttax = finegrafptr->verttax;
   const Gnum * restrict const     finevendtax = finegrafptr->vendtax;
@@ -248,7 +249,8 @@ loop1: ;
     if (finematetax[finevertnum] >= 0)            /* If vertex already mated, skip it without remembering it */
       goto loop2;
 
-    if (fineverttax[finevertnum] == finevendtax[finevertnum]) { /* If isolated vertex */
+    if (((flagval & GRAPHCOARSENNOMERGE) == 0) && /* If merging isolated vertices is allowed */
+        (fineverttax[finevertnum] == finevendtax[finevertnum])) { /* And if isolated vertex  */
 #ifdef GRAPHMATCHSCANP2INPERT
       Gnum                perttmp = pertnnd;
       do

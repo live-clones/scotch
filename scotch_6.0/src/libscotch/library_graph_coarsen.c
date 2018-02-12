@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 07 aug 2011     **/
 /**                                 to     07 aug 2011     **/
 /**                # Version 6.0  : from : 06 sep 2011     **/
-/**                                 to     28 feb 2014     **/
+/**                                 to     15 aug 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,11 +83,12 @@
 
 int
 SCOTCH_graphCoarsen (
-const SCOTCH_Graph * restrict const finegrafptr,  /* Fine graph structure to fill      */
-SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph                      */
-SCOTCH_Num * restrict const         coarmulttab,  /* Pointer to multinode array        */
-const SCOTCH_Num                    coarnbr,      /* Minimum number of coarse vertices */
-const double                        coarval)      /* Maximum contraction ratio         */
+const SCOTCH_Graph * restrict const finegrafptr,  /* Fine graph structure to fill       */
+const SCOTCH_Num                    coarvertnbr,  /* Minimum number of coarse vertices  */
+const double                        coarval,      /* Maximum contraction ratio          */
+const SCOTCH_Num                    flagval,      /* Flag value                         */
+SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph                       */
+SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to multinode array to fill */
 {
   GraphCoarsenMulti * restrict  coarmultptr;      /* Un-based pointer to created, grouped multinode array */
   int                           o;
@@ -95,7 +96,38 @@ const double                        coarval)      /* Maximum contraction ratio  
   intRandInit ();                                 /* Check that random number generator is initialized */
   coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided        */
   return (graphCoarsen ((const Graph * restrict const) finegrafptr, (Graph * restrict const) coargrafptr,
-                        &coarmultptr, coarnbr, coarval, NULL, NULL, 0, NULL));
+                        NULL, &coarmultptr, coarvertnbr, coarval, flagval & GRAPHCOARSENNOMERGE,
+                        NULL, NULL, 0, NULL));
+}
+
+/*+ This routine computes a matching of a (coarse)
+*** graph, unless the would-be coarse graph is smaller
+*** than some threshold size or the coarsening ratio is
+*** above some other threshold.
+*** If the matching is computed, both a multinode and
+*** a coarse-to-fine vertex arrays are created.
+*** It returns:
+*** - 0  : if the matching has been coarsened.
+*** - 1  : if the graph could not be matched.
+*** - 2  : on error.
++*/
+
+int
+SCOTCH_graphCoarsenMatch (
+const SCOTCH_Graph * restrict const     finegrafptr, /* Fine graph structure to fill      */
+SCOTCH_Num * restrict const             coarvertptr, /* Minimum number of coarse vertices */
+const double                            coarval,  /* Maximum contraction ratio            */
+const SCOTCH_Num                        flagval,  /* Flag value                           */
+SCOTCH_Num * restrict const             finematetab) /* Mating array to fill              */
+{
+  Gnum * restrict     finemateptr;
+  int                 o;
+
+  intRandInit ();                                 /* Check that random number generator is initialized             */
+  finemateptr = finematetab;                      /* Slot will not be modified but preserve "const" of finematetab */
+  return (graphCoarsenMatch ((const Graph * restrict const) finegrafptr, &finemateptr,
+                             coarvertptr, coarval, flagval & GRAPHCOARSENNOMERGE,
+                             NULL, NULL, 0, NULL));
 }
 
 /*+ This routine creates a coarse graph from the
@@ -109,10 +141,10 @@ const double                        coarval)      /* Maximum contraction ratio  
 int
 SCOTCH_graphCoarsenBuild (
 const SCOTCH_Graph * restrict const finegrafptr,  /* Fine graph structure to fill             */
-SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph                             */
-SCOTCH_Num * restrict const         coarmulttab,  /* Pointer to user-provided multinode array */
 const SCOTCH_Num                    coarvertnbr,  /* Number of coarse vertices                */
-SCOTCH_Num * restrict const         finematetab)  /* Mating array                             */
+SCOTCH_Num * restrict const         finematetab,  /* Mating array                             */
+SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph                             */
+SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to user-provided multinode array */
 {
   GraphCoarsenMulti * restrict  coarmultptr;      /* Un-based pointer to created, grouped multinode array */
   int                           o;
@@ -120,5 +152,5 @@ SCOTCH_Num * restrict const         finematetab)  /* Mating array               
   intRandInit ();                                 /* Check that random number generator is initialized */
   coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided        */
   return (graphCoarsenBuild ((const Graph * restrict const) finegrafptr, (Graph * restrict const) coargrafptr,
-                             &coarmultptr, coarvertnbr, finematetab));
+                             finematetab, &coarmultptr, coarvertnbr));
 }

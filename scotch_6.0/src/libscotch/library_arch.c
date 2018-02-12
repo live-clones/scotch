@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009-2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009-2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 05 jun 2009     **/
 /**                                 to   : 13 feb 2011     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     19 aug 2014     **/
+/**                                 to     31 dec 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -222,7 +222,7 @@ const SCOTCH_Arch * const   archptr)
 int
 SCOTCH_archCmplt (
 SCOTCH_Arch * const         archptr,
-const SCOTCH_Num            numnbr)
+const SCOTCH_Num            termnbr)
 {
   Arch *              tgtarchptr;
   ArchCmplt *         tgtarchdatptr;
@@ -235,9 +235,9 @@ const SCOTCH_Num            numnbr)
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchCmplt *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class     = archClass ("cmplt");
-  tgtarchptr->flagval   = tgtarchptr->class->flagval; /* Copy architecture flag */
-  tgtarchdatptr->numnbr = (Anum) numnbr;
+  tgtarchptr->class      = archClass ("cmplt");
+  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchdatptr->termnbr = (Anum) termnbr;
 
   return (0);
 }
@@ -273,7 +273,7 @@ const SCOTCH_Num * const    velotab)
 int
 SCOTCH_archHcub (
 SCOTCH_Arch * const         archptr,
-const SCOTCH_Num            dimmax)               /*+ Number of dimensions +*/
+const SCOTCH_Num            dimnnbr)              /*+ Number of dimensions +*/
 {
   Arch *              tgtarchptr;
   ArchHcub *          tgtarchdatptr;
@@ -286,9 +286,9 @@ const SCOTCH_Num            dimmax)               /*+ Number of dimensions +*/
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchHcub *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class     = archClass ("hcub");
-  tgtarchptr->flagval   = tgtarchptr->class->flagval; /* Copy architecture flag */
-  tgtarchdatptr->dimmax = (Anum) dimmax;
+  tgtarchptr->class      = archClass ("hcub");
+  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchdatptr->dimnnbr = (Anum) dimnnbr;
 
   return (0);
 }
@@ -316,8 +316,9 @@ const SCOTCH_Num            dimyval)
 
   tgtarchptr->class   = archClass ("mesh2D");
   tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
-  tgtarchdatptr->c[0] = (Anum) dimxval;
-  tgtarchdatptr->c[1] = (Anum) dimyval;
+  tgtarchdatptr->dimnnbr = 2;
+  tgtarchdatptr->c[0]    = (Anum) dimxval;
+  tgtarchdatptr->c[1]    = (Anum) dimyval;
 
   return (0);
 }
@@ -346,11 +347,73 @@ const SCOTCH_Num            dimzval)
 
   tgtarchptr->class   = archClass ("mesh3D");
   tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
-  tgtarchdatptr->c[0] = (Anum) dimxval;
-  tgtarchdatptr->c[1] = (Anum) dimyval;
-  tgtarchdatptr->c[2] = (Anum) dimzval;
+  tgtarchdatptr->dimnnbr = 3;
+  tgtarchdatptr->c[0]    = (Anum) dimxval;
+  tgtarchdatptr->c[1]    = (Anum) dimyval;
+  tgtarchdatptr->c[2]    = (Anum) dimzval;
 
   return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archMeshX (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            dimnnbr,              /*+ Number of dimensions in architecture +*/
+const SCOTCH_Num * const    dimntab)              /*+ Array of dimensions                  +*/
+{
+  Arch *              tgtarchptr;
+  ArchMeshX *         tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archMeshX: internal error");
+    return     (1);
+  }
+  if (dimnnbr > ARCHMESHDIMNMAX) {
+    errorPrint ("SCOTCH_archMeshX: too many dimensions");
+    return     (1);
+  }
+
+  tgtarchptr    = (Arch *) archptr;
+  tgtarchdatptr = (ArchMeshX *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class      = archClass ("meshXD");
+  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchdatptr->dimnnbr = dimnnbr;
+  memCpy (tgtarchdatptr->c, dimntab, dimnnbr * sizeof (SCOTCH_Num)); /* Copy dimension array */
+
+  return (0);
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archSub (
+SCOTCH_Arch * const         subarchptr,
+SCOTCH_Arch * const         orgarchptr,
+const SCOTCH_Num            vnumnbr,              /*+ Number of dimensions +*/
+const SCOTCH_Num * const    vnumtab)
+{
+  Arch *              tgtarchptr;
+  ArchSub *           tgtarchdatptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint ("SCOTCH_archSub: internal error");
+    return     (2);
+  }
+
+  tgtarchptr    = (Arch *) subarchptr;
+  tgtarchdatptr = (ArchSub *) (void *) (&tgtarchptr->data);
+
+  tgtarchptr->class   = archClass ("sub");
+  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+
+  return (archSubArchBuild (tgtarchdatptr, (Arch *) orgarchptr, (Gnum) vnumnbr, (Gnum *) vnumtab));
 }
 
 /*
@@ -459,11 +522,11 @@ const SCOTCH_Num            dimyval)
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class     = archClass ("torus2D");
-  tgtarchptr->flagval   = tgtarchptr->class->flagval; /* Copy architecture flag */
-  tgtarchdatptr->dimmax = 2;
-  tgtarchdatptr->c[0]   = (Anum) dimxval;
-  tgtarchdatptr->c[1]   = (Anum) dimyval;
+  tgtarchptr->class      = archClass ("torus2D");
+  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchdatptr->dimnnbr = 2;
+  tgtarchdatptr->c[0]    = (Anum) dimxval;
+  tgtarchdatptr->c[1]    = (Anum) dimyval;
 
   return (0);
 }
@@ -490,12 +553,12 @@ const SCOTCH_Num            dimzval)
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class     = archClass ("torus3D");
-  tgtarchptr->flagval   = tgtarchptr->class->flagval; /* Copy architecture flag */
-  tgtarchdatptr->dimmax = 3;
-  tgtarchdatptr->c[0]   = (Anum) dimxval;
-  tgtarchdatptr->c[1]   = (Anum) dimyval;
-  tgtarchdatptr->c[2]   = (Anum) dimzval;
+  tgtarchptr->class      = archClass ("torus3D");
+  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchdatptr->dimnnbr = 3;
+  tgtarchdatptr->c[0]    = (Anum) dimxval;
+  tgtarchdatptr->c[1]    = (Anum) dimyval;
+  tgtarchdatptr->c[2]    = (Anum) dimzval;
 
   return (0);
 }
@@ -507,8 +570,8 @@ const SCOTCH_Num            dimzval)
 int
 SCOTCH_archTorusX (
 SCOTCH_Arch * const         archptr,
-const SCOTCH_Num            dimnbr,               /*+ Number of dimensions in architecture +*/
-const SCOTCH_Num * const    dimtab)               /*+ Array of dimensions                  +*/
+const SCOTCH_Num            dimnnbr,              /*+ Number of dimensions in architecture +*/
+const SCOTCH_Num * const    dimntab)              /*+ Array of dimensions                  +*/
 {
   Arch *              tgtarchptr;
   ArchTorusX *        tgtarchdatptr;
@@ -517,7 +580,7 @@ const SCOTCH_Num * const    dimtab)               /*+ Array of dimensions       
     errorPrint ("SCOTCH_archTorusX: internal error");
     return     (1);
   }
-  if (dimnbr > ARCHTORUSDIMMAX) {
+  if (dimnnbr > ARCHMESHDIMNMAX) {
     errorPrint ("SCOTCH_archTorusX: too many dimensions");
     return     (1);
   }
@@ -525,10 +588,10 @@ const SCOTCH_Num * const    dimtab)               /*+ Array of dimensions       
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class     = archClass ("torusXD");
-  tgtarchptr->flagval   = tgtarchptr->class->flagval; /* Copy architecture flag */
-  tgtarchdatptr->dimmax = dimnbr;
-  memCpy (tgtarchdatptr->c, dimtab, dimnbr * sizeof (SCOTCH_Num)); /* Copy dimension array */
+  tgtarchptr->class      = archClass ("torusXD");
+  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchdatptr->dimnnbr = dimnnbr;
+  memCpy (tgtarchdatptr->c, dimntab, dimnnbr * sizeof (SCOTCH_Num)); /* Copy dimension array */
 
   return (0);
 }

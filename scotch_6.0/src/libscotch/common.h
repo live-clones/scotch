@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     01 mar 2015     **/
+/**                                 to     19 mar 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,13 +104,13 @@
 #include            <unistd.h>
 #endif /* ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
 
-#ifdef SCOTCH_PTSCOTCH
+#ifdef COMMON_MPI
 #include            <mpi.h>
-#endif /* SCOTCH_PTSCOTCH */
+#endif /* COMMON_MPI */
 
-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
+#ifdef COMMON_PTHREAD
 #include            <pthread.h>
-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
+#endif /* COMMON_PTHREAD */
 
 /*
 **  Working definitions.
@@ -151,6 +151,7 @@
 #define UINT                        UINT32
 #define COMM_INT                    MPI_INTEGER4
 #define INTSTRING                   "%d"
+#define UINTSTRING                  "%u"
 #else /* INTSIZE32 */
 #ifdef INTSIZE64
 #define INT                         int64_t
@@ -161,17 +162,20 @@
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T)) */
 #define COMM_INT                    MPI_LONG_LONG
 #define INTSTRING                   "%lld"
+#define UINTSTRING                  "%llu"
 #else /* INTSIZE64 */
 #ifdef LONG                                       /* Better not use it */
 #define INT                         long          /* Long integer type */
 #define UINT                        unsigned long
 #define COMM_INT                    MPI_LONG
 #define INTSTRING                   "%ld"
+#define UINTSTRING                  "%lu"
 #else /* LONG */
 #define INT                         int           /* Default integer type */
 #define UINT                        unsigned int
 #define COMM_INT                    MPI_INT       /* Generic MPI integer type */
 #define INTSTRING                   "%d"
+#define UINTSTRING                  "%u"
 #endif /* LONG      */
 #endif /* INTSIZE64 */
 #endif /* INTSIZE32 */
@@ -299,42 +303,25 @@ typedef void (* ThreadScanFunc)   (void * const, void * const, void * const, con
 /** The thread group header block. **/
 
 typedef struct ThreadGroupHeader_ {
-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
+#ifdef COMMON_PTHREAD
   int                       flagval;              /*+ Thread block flags       +*/
   size_t                    datasiz;              /*+ Size of data array cell  +*/
   int                       thrdnbr;              /*+ Number of threads        +*/
   ThreadLaunchStartFunc     stafptr;              /*+ Pointer to start routine +*/
   ThreadLaunchJoinFunc      joifptr;              /*+ Pointer to join routine  +*/
   ThreadBarrier             barrdat;              /*+ Barrier data structure   +*/
-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
+#endif /* COMMON_PTHREAD */
 } ThreadGroupHeader;
 
 /** The thread header block. **/
 
 typedef struct ThreadHeader_ {
   void *                    grouptr;              /*+ Pointer to thread group +*/
-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
+#ifdef COMMON_PTHREAD
   pthread_t                 thidval;              /*+ Thread ID               +*/
   int                       thrdnum;              /*+ Thread instance number  +*/
-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
+#endif /* COMMON_PTHREAD */
 } ThreadHeader;
-
-/** The number of threads **/
-
-#ifdef SCOTCH_PTHREAD
-
-#ifndef SCOTCH_PTHREAD_NUMBER
-#define SCOTCH_PTHREAD_NUMBER       1
-#endif /* SCOTCH_PTHREAD_NUMBER */
-
-#else /* SCOTCH_PTHREAD */
-
-#ifdef SCOTCH_PTHREAD_NUMBER
-#undef SCOTCH_PTHREAD_NUMBER
-#endif /* SCOTCH_PTHREAD_NUMBER */
-#define SCOTCH_PTHREAD_NUMBER       1
-
-#endif /* SCOTCH_PTHREAD */
 
 /*
 **  Handling of files.

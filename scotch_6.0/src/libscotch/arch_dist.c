@@ -125,9 +125,8 @@ FILE * restrict const       stream)
   return (archSave (archptr->archptr, stream));   /* Save sub-architecture */
 }
 
-/* This routine build the
-** distance graph architecture of
-** an original one.
+/* This routine builds the distance graph
+** architecture of an original architecture.
 ** It returns:
 ** - 0   : if the architecture has been successfully built.
 ** - !0  : on error.

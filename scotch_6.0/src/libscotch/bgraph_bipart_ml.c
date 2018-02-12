@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 28 sep 2008     **/
 /**                                 to     27 mar 2011     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     27 feb 2015     **/
+/**                                 to     16 aug 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -101,8 +101,9 @@ const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters         
   Gnum                comploadtmp;                /* Increase of imbalance range for coarse graph */
 
   *coarmultptr = NULL;                            /* Allocate multloctab along with coarse graph */
-  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr,
-                    paraptr->coarnbr, paraptr->coarrat, NULL, NULL, 0, NULL) != 0)
+  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, NULL, coarmultptr,
+                    paraptr->coarnbr, paraptr->coarrat, GRAPHCOARSENNONE,
+                    NULL, NULL, 0, NULL) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   if (finegrafptr->veextax != NULL) {             /* Merge external gains for coarsened vertices */

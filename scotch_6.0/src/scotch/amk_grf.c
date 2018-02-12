@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 11 dec 2008     **/
 /**                                 to   : 17 jul 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 11 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,7 +82,8 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 
 static const char *         C_usageList[] = {     /* Usage */
   "amk_grf [<input source file> [<output target file>]] <options>",
-  "  -b<strat>  : Apply bipartitioning strategy <strat>",
+  "  -2         : Create a 'deco 2' instead of a 'deco 0' architecture",
+  "  -b<strat>  : Apply bipartitioning strategy <strat> (for 'deco 0' architectures)",
   "  -h         : Display this help",
   "  -l<file>   : Load vertex list from <file>",
   "  -V         : Print program version and copyright",
@@ -136,6 +137,9 @@ char *                      argv[])
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
+        case '2' :                                /* Type-2 architecture */
+          flagval |= C_FLAGDECO2;
+          break;
         case 'B' :                                /* Bipartitioning strategy */
         case 'b' :
           SCOTCH_stratExit (&bipastrat);
@@ -157,7 +161,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "amk_grf, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -234,9 +238,12 @@ char *                      argv[])
     }
   }
 
-  SCOTCH_archInit  (&archdat);                    /* Initialize target architecture            */
-  SCOTCH_archBuild (&archdat, &grafdat, listnbr, listtab, &bipastrat); /* Compute architecture */
-  SCOTCH_archSave  (&archdat, C_filepntrtgtout);  /* Write target architecture                 */
+  SCOTCH_archInit  (&archdat);                    /* Initialize target architecture */
+  if ((flagval & C_FLAGDECO2) != 0)
+    SCOTCH_archBuild2 (&archdat, &grafdat, listnbr, listtab); /* Compute type-2 architecture */
+  else
+    SCOTCH_archBuild0 (&archdat, &grafdat, listnbr, listtab, &bipastrat); /* Compute type-0 architecture */
+  SCOTCH_archSave  (&archdat, C_filepntrtgtout);  /* Write target architecture                           */
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end potential (un)compression tasks */
 

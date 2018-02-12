@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 17 jul 2011     **/
 /**                                 to   : 17 jul 2011     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 11 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,7 +73,8 @@
 
 /*+ Process flags. +*/
 
-#define C_FLAGVRTINP              0x0001         /* Input vertex list */
+#define C_FLAGVRTINP              0x0001         /* Input vertex list   */
+#define C_FLAGDECO2               0x0002         /* Type-2 architecture */
 
 #define C_FLAGNONE                0x0000          /* Default flags */
 

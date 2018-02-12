@@ -48,7 +48,7 @@
 /**                # Version 5.1  : from : 11 nov 2009     **/
 /**                                 to     11 nov 2009     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     27 feb 2015     **/
+/**                                 to     16 aug 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,7 +94,9 @@ GraphCoarsenMulti * restrict * const  coarmultptr, /*+ Pointer to un-based multi
 const VgraphSeparateMlParam * const   paraptr)    /*+ Method parameters                             +*/
 {
   *coarmultptr = NULL;                            /* Allocate coarmulttab along with coarse graph */
-  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->coarnbr, paraptr->coarval, NULL, NULL, 0, NULL) != 0)
+  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, NULL, coarmultptr,
+                    paraptr->coarnbr, paraptr->coarval, GRAPHCOARSENNONE,
+                    NULL, NULL, 0, NULL) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   coargrafptr->parttax = NULL;                    /* Do not allocate partition data yet      */
