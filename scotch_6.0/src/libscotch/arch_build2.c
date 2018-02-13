@@ -1,4 +1,4 @@
-/* Copyright 2015,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                from a source graph.                    **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
-/**                                 to     26 jan 2016     **/
+/**                                 to     13 feb 2018     **/
 /**                                                        **/
 /**   NOTES      : # The code of the main routine derives  **/
 /**                  from that of archSubArchBuild().      **/
@@ -173,6 +173,7 @@ const Graph * restrict const          grafptr)
   matcptr->lewgtab[0].edwgtab = NULL;             /* TRICK: in case of error             */
   matcptr->lewgtab[0].vewgtab = NULL;             /* No vertex traversal cost at level 0 */
   matcptr->lewgtab[0].vewgsum = 0;
+  matcptr->lewgtab[0].edwgsum = grafptr->edlosum; /* Assume graph has no edge weights */
 
   if ((matcptr->levltab = memAlloc (levlmax * sizeof (ArchDeco2Levl))) == NULL) {
     errorPrint ("archDeco2BuildMatchInit: out of memory (4)");
@@ -196,9 +197,9 @@ const Graph * restrict const          grafptr)
       archDeco2BuildMatchExit (matcptr);
       return (1);
     }
-
-    baseval = matcptr->levltab[0].grafdat.baseval;
-    memCpy (matcptr->lewgtab[0].edwgtab, matcptr->levltab[0].grafdat.edlotax + baseval, edgenbr * sizeof (Gnum));  /* Keep edge costs (if any)               */
+    matcptr->lewgtab[0].edwgsum = grafptr->edlosum; /* Record edge load sum for finest graph */
+    memCpy (matcptr->lewgtab[0].edwgtab, matcptr->levltab[0].grafdat.edlotax + grafptr->baseval, edgenbr * sizeof (Gnum));  /* Keep edge costs (if any) */
+    matcptr->levltab[0].grafdat.edlosum =         /* Record edge load sum of inversed loads */
     graphIelo (&matcptr->levltab[0].grafdat, matcptr->levltab[0].grafdat.edlotax, matcptr->levltab[0].grafdat.edlotax); /* Inverse edge costs for coarsening */
   }
 
@@ -384,7 +385,7 @@ ArchCoarsenMulti * restrict * restrict const  multptr)
           }
         }
         else                                      /* If collapsed edge, accumulate traversal cost (twice: once for each arc) */
-          coaredwgsum += (fineedwgtax != NULL) ? fineedwgtax[fineedgenum] : 1;
+          coaredwgval += (fineedwgtax != NULL) ? fineedwgtax[fineedgenum] : 1;
       }
     } while (i ++, finevertnum != coarmulttax[coarvertnum].vertnum[1]); /* Skip to next matched vertex if both vertices not equal */
 

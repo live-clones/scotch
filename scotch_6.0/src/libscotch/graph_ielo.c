@@ -1,4 +1,4 @@
-/* Copyright 2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,10 +67,10 @@
 ** edge load array and the inverse edge load array
 ** might be the same.
 ** It returns:
-** - void  : in all cases.
+** - Gnum  : new edlosum of the inverse weight load structure.
 */
 
-void
+Gnum
 graphIelo (
 const Graph * const         grafptr,
 Gnum * const                edlotax,              /* Pointer to edge load array [norestrict]                 */
@@ -79,6 +79,7 @@ Gnum * const                ielotax)              /* Pointer to inverse edge loa
   Gnum                vertnum;
   Gnum                edlomin;
   Gnum                edlomax;
+  Gnum                edlosum;
   float               prodval;
 
   const Gnum                  vertnnd = grafptr->vertnnd;
@@ -107,6 +108,7 @@ Gnum * const                ielotax)              /* Pointer to inverse edge loa
     edlomin = 1;
   prodval = (float) edlomin * (float) edlomax;
 
+  edlosum = 0;
   for (vertnum = grafptr->baseval; vertnum < vertnnd; vertnum ++) {
     Gnum                  edgenum;
     Gnum                  edgennd;
@@ -128,7 +130,10 @@ Gnum * const                ielotax)              /* Pointer to inverse edge loa
         return;
       }
 #endif /* SCOTCH_DEBUG_ARCH2 */
-      ielotax[edgenum] = edloval;                 /* Write inversed cost in working array */
+      edlosum +=                                  /* Accumulate edge load sum          */
+      ielotax[edgenum] = edloval;                 /* Write inversed cost in work array */
     }
   }
+
+  return (edlosum);
 }
