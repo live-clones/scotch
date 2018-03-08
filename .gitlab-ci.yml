@@ -16,7 +16,7 @@ build_scotch:
     - git submodule update --init --recursive
     - cd src/
     - cp ./Make.inc/Makefile.inc.x86-64_pc_linux2 ./Makefile.inc
-    - make -j 4 | tee ../scotch-build.log
+    - make | tee ../scotch-build.log
   only:
     - branches
     - master@scotch/scotch
