@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     23 sep 2014     **/
+/**                                 to     26 mar 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,6 +79,8 @@ typedef struct ArchCmpltwDom_ {
   Anum                      veloval;              /*+ Weight of subdomain   +*/
 } ArchCmpltwDom;
 
+#define archCmpltwMatch             archCmpltMatch
+
 #endif /* ARCH_CMPLTW_H_STRUCT */
 
 /*
@@ -97,6 +99,11 @@ int                         archCmpltwArchBuild (ArchCmpltw * restrict const arc
 int                         archCmpltwArchLoad  (ArchCmpltw * restrict const, FILE * restrict const);
 int                         archCmpltwArchSave  (const ArchCmpltw * const, FILE * restrict const);
 int                         archCmpltwArchFree  (ArchCmpltw * restrict const);
+
+#define archCmpltwMatchInit         archCmpltMatchInit
+#define archCmpltwMatchExit         archCmpltMatchExit
+#define archCmpltwMatchMate         archCmpltMatchMate
+
 ArchDomNum                  archCmpltwDomNum    (const ArchCmpltw * const, const ArchCmpltwDom * const);
 int                         archCmpltwDomTerm   (const ArchCmpltw * const, ArchCmpltwDom * restrict const, const ArchDomNum);
 Anum                        archCmpltwDomSize   (const ArchCmpltw * const, const ArchCmpltwDom * const);

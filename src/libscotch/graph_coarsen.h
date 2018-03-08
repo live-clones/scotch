@@ -55,7 +55,7 @@
 /**                # Version 4.0  : from : 13 dec 2001     **/
 /**                                 to     05 dec 2004     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     27 feb 2015     **/
+/**                                 to     16 aug 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,9 +67,21 @@
 #define GRAPHCOARSENTHREAD
 #endif /* SCOTCH_PTHREAD */
 
-/** Prime number for hashing vertex numbers. **/
+/*+ Graph option flags. Their values must be equal
+    to those defined in library.h and library_f.h  +*/
 
-#define GRAPHCOARSENHASHPRIME       1049          /* Prime number */
+#define GRAPHCOARSENNONE            0x0000        /* No options set */
+
+#define GRAPHCOARSENDSTMATE         0x0001        /* Matching/fine-to-coarse array destination provided */
+#define GRAPHCOARSENDSTMULT         0x0002        /* Multinode array destination provided               */
+#define GRAPHCOARSENHASMULT         0x0004        /* Multinode array provided                           */
+#define GRAPHCOARSENUSEMATE         0x0008        /* Matching array data provided                       */
+
+#define GRAPHCOARSENNOMERGE         0x4000        /* Do not merge isolated vertices                     */
+
+/*+ Prime number for hashing vertex numbers. +*/
+
+#define GRAPHCOARSENHASHPRIME       1049          /*+ Prime number +*/
 
 /*
 **  The type and structure definitions.
@@ -91,7 +103,7 @@ typedef enum GraphCoarsenType_ {
     vertices are set with respect to the base value
     of the fine graph.                               +*/
 
-typedef struct GraphCoarsenMulti_  {
+typedef struct GraphCoarsenMulti_ {
   Gnum                      vertnum[2];           /*+ Numbers of the collapsed vertices of a multinode +*/
 } GraphCoarsenMulti;
 
@@ -111,6 +123,7 @@ typedef struct GraphCoarsenHash_ {
 
 typedef struct GraphCoarsenData_ {
   ThreadGroupHeader         thrddat;              /*+ Thread handling data                            +*/
+  int                       flagval;              /*+ Flags for controlling matching and coarsening   +*/
   const Graph *             finegrafptr;          /*+ Fine graph to perform matching on               +*/
   const Anum *              fineparotax;          /*+ Old part array                                  +*/
   const Anum *              finepfixtax;          /*+ Array of fixed vertices                         +*/
@@ -121,6 +134,7 @@ typedef struct GraphCoarsenData_ {
   Gnum                      coarvertnbr;          /*+ Global number of coarse vertices after matching +*/
   Gnum *                    coarvfixptr;          /*+ Pointer to number of coarse fixed vertices      +*/
   GraphCoarsenMulti *       coarmulttab;          /*+ Multinode array                                 +*/
+  Gnum                      coarmultsiz;          /*+ Size of multinode array allocated in graph      +*/
   Gnum                      coarhashmsk;          /*+ Hash table mask                                 +*/
 #ifdef SCOTCH_PTHREAD
   int * restrict            finelocktax;          /*+ Matching lock array (if any)                    +*/
@@ -157,8 +171,9 @@ typedef struct GraphCoarsenThread_ {
 #define static
 #endif
 
-int                         graphCoarsen        (const Graph * restrict const, Graph * restrict const, GraphCoarsenMulti * restrict * const, const Gnum, const double, const Anum * restrict const, const Anum * restrict const, const Gnum, Gnum * restrict const);
-int                         graphCoarsenBuild   (const Graph * restrict const, Graph * restrict const, GraphCoarsenMulti * restrict * const, const Gnum, Gnum * restrict const);
+int                         graphCoarsen        (const Graph * restrict const, Graph * restrict const, Gnum * restrict * restrict const, GraphCoarsenMulti * restrict * restrict const, const Gnum, const double, const Gnum, const Anum * restrict const, const Anum * restrict const, const Gnum, Gnum * restrict const);
+int                         graphCoarsenMatch   (const Graph * restrict const, Gnum * restrict * restrict const, Gnum * restrict const, const double, const Gnum, const Anum * restrict const, const Anum * restrict const, const Gnum, Gnum * restrict const);
+int                         graphCoarsenBuild   (const Graph * restrict const, Graph * restrict const, Gnum * restrict const, GraphCoarsenMulti * restrict * restrict const, const Gnum);
 
 #ifdef GRAPHCOARSENTHREAD
 static void                 graphCoarsenEdgeCt  (GraphCoarsenThread *);

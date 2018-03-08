@@ -40,7 +40,7 @@
 /**                generic pattern.                        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 oct 2012     **/
-/**                                 to     26 feb 2015     **/
+/**                                 to     25 may 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -386,7 +386,7 @@ GraphCoarsenData * restrict coarptr)
 }
 
 /* This routine merges the results of two mating
-** threads and re-launches a mating operations
+** threads and re-launches a mating operation
 ** if necessary.
 */
 
@@ -443,9 +443,6 @@ GraphCoarsenThread * restrict thrdptr)            /*+ Pointer to incomplete matc
   const Gnum                        finevertnnd = thrdptr->finevertnnd;
   Gnum * restrict const             finematetax = coarptr->finematetax;
   const Gnum                        baseval     = finegrafptr->baseval;
-
-  if (coarptr->fbegptr == NULL)                   /* If user-provided mating, nothing to do */
-    return;
 
   thrdptr->finequeubas = finevertbas;             /* Assume matching range is fine vertex processing range */
   thrdptr->finequeunnd = finevertnnd;

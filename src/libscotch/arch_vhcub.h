@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     21 jan 2008     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     01 jul 2014     **/
+/**                                 to     28 mar 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -86,6 +86,11 @@ typedef struct ArchVhcubDom_ {
 #define archVhcubArchLoad           NULL
 #define archVhcubArchSave           NULL
 #define archVhcubArchFree           NULL
+
+#define archVhcubMatchInit          NULL
+#define archVhcubMatchExit          NULL
+#define archVhcubMatchMate          NULL
+
 ArchDomNum                  archVhcubDomNum     (const ArchVhcub * const, const ArchVhcubDom * const);
 int                         archVhcubDomTerm    (const ArchVhcub * const, ArchVhcubDom * restrict const, const ArchDomNum);
 Anum                        archVhcubDomSize    (const ArchVhcub * const, const ArchVhcubDom * const);

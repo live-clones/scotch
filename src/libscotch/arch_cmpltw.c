@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     23 sep 2014     **/
+/**                                 to     12 apr 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,6 +66,9 @@
 
 /* This routine builds a complete weighted
 ** graph architecture from the given load array.
+** The load array is sorted recursively in such
+** a way that recusive bipartitions of subdomains
+** yield parts that are not too much imbalanced.
 ** It returns:
 ** - 0   : if the architecture has been successfully built.
 ** - !0  : on error.
@@ -294,6 +297,11 @@ FILE * restrict const       stream)
     }
   }
 
+  if (fprintf (stream, "\n") == EOF) {
+    errorPrint ("archCmpltwArchSave: bad output (3)");
+    return     (1);
+  }
+
   return (0);
 }
 
@@ -332,9 +340,9 @@ ArchCmpltw * const          archptr)
 ArchDomNum
 archCmpltwDomNum (
 const ArchCmpltw * const    archptr,
-const ArchCmpltwDom * const domptr)
+const ArchCmpltwDom * const domnptr)
 {
-  return (archptr->velotab[domptr->vertmin].vertnum); /* Return vertex number */
+  return (archptr->velotab[domnptr->vertmin].vertnum); /* Return vertex number */
 }
 
 /* This function returns the terminal domain associated
@@ -349,14 +357,14 @@ const ArchCmpltwDom * const domptr)
 int
 archCmpltwDomTerm (
 const ArchCmpltw * const    archptr,
-ArchCmpltwDom * const       domptr,
-const ArchDomNum            domnum)
+ArchCmpltwDom * const       domnptr,
+const ArchDomNum            domnnum)
 {
-  if (domnum < archptr->vertnbr) {                /* If valid label */
+  if (domnnum < archptr->vertnbr) {               /* If valid label */
     Anum                vertnum;
 
     for (vertnum = 0; vertnum < archptr->vertnbr; vertnum ++) { /* Search for terminal domain index matching vertex label */
-      if (archptr->velotab[vertnum].vertnum == domnum)
+      if (archptr->velotab[vertnum].vertnum == domnnum)
         break;
     }
 #ifdef SCOTCH_DEBUG_ARCH2
@@ -366,9 +374,9 @@ const ArchDomNum            domnum)
     }
 #endif /* SCOTCH_DEBUG_ARCH2 */
 
-    domptr->vertmin = vertnum;                    /* Set the domain */
-    domptr->vertnbr = 1;
-    domptr->veloval = archptr->velotab[vertnum].veloval;
+    domnptr->vertmin = vertnum;                   /* Set the domain */
+    domnptr->vertnbr = 1;
+    domnptr->veloval = archptr->velotab[vertnum].veloval;
 
     return (0);
   }
@@ -383,9 +391,9 @@ const ArchDomNum            domnum)
 Anum 
 archCmpltwDomSize (
 const ArchCmpltw * const    archptr,
-const ArchCmpltwDom * const domptr)
+const ArchCmpltwDom * const domnptr)
 {
-  return (domptr->vertnbr);
+  return (domnptr->vertnbr);
 }
 
 /* This function returns the weight of
@@ -395,9 +403,9 @@ const ArchCmpltwDom * const domptr)
 Anum 
 archCmpltwDomWght (
 const ArchCmpltw * const    archptr,
-const ArchCmpltwDom * const domptr)
+const ArchCmpltwDom * const domnptr)
 {
-  return (domptr->veloval);
+  return (domnptr->veloval);
 }
 
 /* This function returns the average
@@ -426,11 +434,11 @@ const ArchCmpltwDom * const dom1ptr)
 int
 archCmpltwDomFrst (
 const ArchCmpltw * const        archptr,
-ArchCmpltwDom * restrict const  domptr)
+ArchCmpltwDom * restrict const  domnptr)
 {
-  domptr->vertmin = 0;
-  domptr->vertnbr = archptr->vertnbr;
-  domptr->veloval = archptr->velosum;
+  domnptr->vertmin = 0;
+  domnptr->vertnbr = archptr->vertnbr;
+  domnptr->veloval = archptr->velosum;
 
   return (0);
 }
@@ -445,7 +453,7 @@ ArchCmpltwDom * restrict const  domptr)
 int
 archCmpltwDomLoad (
 const ArchCmpltw * const        archptr,
-ArchCmpltwDom * restrict const  domptr,
+ArchCmpltwDom * restrict const  domnptr,
 FILE * const                    stream)
 {
   long                vertmin;
@@ -462,14 +470,14 @@ FILE * const                    stream)
     errorPrint ("archCmpltwDomLoad: bad input");
     return     (1);
   }
-  domptr->vertmin = (Anum) vertmin;
-  domptr->vertnbr = (Anum) vertnbr;
+  domnptr->vertmin = (Anum) vertmin;
+  domnptr->vertnbr = (Anum) vertnbr;
 
-  for (vertnum = domptr->vertmin, vertnnd = vertnum + domptr->vertnbr, velosum = 0;
+  for (vertnum = domnptr->vertmin, vertnnd = vertnum + domnptr->vertnbr, velosum = 0;
        vertnum < vertnnd; vertnum ++)
     velosum += archptr->velotab[vertnum].veloval;
 
-  domptr->veloval += velosum;
+  domnptr->veloval += velosum;
 
   return (0);
 }
@@ -484,12 +492,12 @@ FILE * const                    stream)
 int
 archCmpltwDomSave (
 const ArchCmpltw * const    archptr,
-const ArchCmpltwDom * const domptr,
+const ArchCmpltwDom * const domnptr,
 FILE * const                stream)
 {
   if (fprintf (stream, ANUMSTRING " " ANUMSTRING " ",
-               (Anum) domptr->vertmin,
-               (Anum) domptr->vertnbr) == EOF) {
+               (Anum) domnptr->vertmin,
+               (Anum) domnptr->vertnbr) == EOF) {
     errorPrint ("archCmpltwDomSave: bad output");
     return     (1);
   }
@@ -508,7 +516,7 @@ FILE * const                stream)
 int
 archCmpltwDomBipart (
 const ArchCmpltw * const        archptr,
-const ArchCmpltwDom * const     domptr,
+const ArchCmpltwDom * const     domnptr,
 ArchCmpltwDom * restrict const  dom0ptr,
 ArchCmpltwDom * restrict const  dom1ptr)
 {
@@ -516,13 +524,13 @@ ArchCmpltwDom * restrict const  dom1ptr)
   Anum                velosum1;
   Anum                velosum2;                   /* Half of overall load sum */
 
-  if (domptr->vertnbr <= 1)                       /* Return if cannot bipartition more */
+  if (domnptr->vertnbr <= 1)                      /* Return if cannot bipartition more */
     return (1);
 
-  vertnum  = domptr->vertmin + domptr->vertnbr - 1;
+  vertnum  = domnptr->vertmin + domnptr->vertnbr - 1;
   velosum1 = (Anum) archptr->velotab[vertnum].veloval;
-  velosum2 = domptr->veloval / 2;
-  for (vertnum --; vertnum > domptr->vertmin; vertnum --) {
+  velosum2 = domnptr->veloval / 2;
+  for (vertnum --; vertnum > domnptr->vertmin; vertnum --) {
     Anum                velotmp;
 
     velotmp = velosum1 + (Anum) archptr->velotab[vertnum].veloval;
@@ -531,11 +539,11 @@ ArchCmpltwDom * restrict const  dom1ptr)
     velosum1 = velotmp;
   }
 
-  dom0ptr->vertmin = domptr->vertmin;             /* Bipartition vertices */
+  dom0ptr->vertmin = domnptr->vertmin;            /* Bipartition vertices */
   dom1ptr->vertmin = vertnum + 1;
-  dom0ptr->vertnbr = dom1ptr->vertmin - domptr->vertmin;
-  dom1ptr->vertnbr = domptr->vertnbr - dom0ptr->vertnbr;
-  dom0ptr->veloval = domptr->veloval - velosum1;
+  dom0ptr->vertnbr = dom1ptr->vertmin - domnptr->vertmin;
+  dom1ptr->vertnbr = domnptr->vertnbr - dom0ptr->vertnbr;
+  dom0ptr->veloval = domnptr->veloval - velosum1;
   dom1ptr->veloval = velosum1;
 
   return (0);

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2013,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,9 @@
 /**                # Version 5.1  : from : 02 dec 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 10 oct 2013     **/
-/**                                 to     10 oct 2013     **/
+/**                                 to     03 aug 2016     **/
+/**                # Version 6.1  : from : 03 aug 2016     **/
+/**                                 to     03 aug 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,11 +90,14 @@ const char * const          dataptr)              /* No use           */
   long              chaflagval;                   /* Flag on numeric form       */
   char              chaflagstr[4];                /* Flag for optional data     */
   int               chabuffcar;                   /* Buffer for line processing */
-  Gnum              edgenum;
-  Gnum              edlosum;
   Gnum              vertnum;
+  Gnum              velosiz;
   Gnum              velosum;
+  Gnum              vlblsiz;
   Gnum              vlblmax;
+  Gnum              edgenum;
+  Gnum              edlosiz;
+  Gnum              edlosum;
   Gnum              degrmax;
 
   do {                                            /* Skip comment lines   */
@@ -113,7 +118,7 @@ const char * const          dataptr)              /* No use           */
     errorPrint ("graphGeomLoadChac: bad input (1)");
     return     (1);
   }
-  getc (filesrcptr);                              /* Purge newline (cannot be merged with above fscanf) */
+  getc (filesrcptr);                              /* Purge newline; cannot be merged with fscanf above */
 
   chaflagstr[0] =                                 /* Pre-set flag array */
   chaflagstr[1] =
@@ -123,54 +128,50 @@ const char * const          dataptr)              /* No use           */
   chaflagstr[1] = '0' + ((chaflagval / 10)  % 10);
   chaflagstr[2] = '0' + ((chaflagval)       % 10);
 
-  grafptr->flagval = GRAPHFREETABS;
+  grafptr->flagval = GRAPHFREETABS | GRAPHVERTGROUP | GRAPHEDGEGROUP;
   grafptr->baseval = 1;                         /* Chaco graphs are based */
   grafptr->vertnbr = chavertnbr;
   grafptr->vertnnd = chavertnbr + 1;
   grafptr->edgenbr = chaedgenbr * 2;            /* We are counting arcs */
-  if (((grafptr->verttax = (Gnum *) memAlloc (grafptr->vertnnd * sizeof (Gnum))) == NULL) ||
-      ((grafptr->edgetax = (Gnum *) memAlloc (grafptr->edgenbr * sizeof (Gnum))) == NULL)) {
-    errorPrint ("graphGeomLoadChac: out of memory (1)");
+
+  vlblsiz = (chaflagstr[0] != '0') ? grafptr->vertnbr : 0;
+  velosiz = (chaflagstr[1] != '0') ? grafptr->vertnbr : 0;
+  edlosiz = (chaflagstr[2] != '0') ? grafptr->edgenbr : 0;
+
+  if ((memAllocGroup ((void **) (void *)
+                      &grafptr->verttax, (size_t) (grafptr->vertnnd * sizeof (Gnum)),
+                      &grafptr->velotax, (size_t) (velosiz          * sizeof (Gnum)),
+                      &grafptr->vlbltax, (size_t) (vlblsiz          * sizeof (Gnum)), NULL) == NULL) ||
+      (memAllocGroup ((void **) (void *)
+                      &grafptr->edgetax, (size_t) (grafptr->edgenbr * sizeof (Gnum)),
+                      &grafptr->edlotax, (size_t) (edlosiz          * sizeof (Gnum)), NULL) == NULL)) {
     if (grafptr->verttax != NULL)
       memFree (grafptr->verttax);
+    errorPrint ("graphGeomLoadChac: out of memory");
     return     (1);
   }
-  grafptr->edgetax -= grafptr->baseval;
-  grafptr->verttax -= grafptr->baseval;
-  grafptr->vendtax  = grafptr->verttax + 1;
-
-  if (chaflagstr[0] != '0') {
-    if ((grafptr->vlbltax = (Gnum *) memAlloc (chavertnbr * sizeof (Gnum))) == NULL) {
-      errorPrint ("graphGeomLoadChac: out of memory (2)");
-      memFree    (grafptr);
-      return     (1);
-    }
-    grafptr->vlbltax -= grafptr->baseval;
-  }
-
-  velosum = grafptr->vertnbr;                     /* Assume no vertex loads */
+  grafptr->verttax --;
+  grafptr->vendtax = grafptr->verttax + 1;
+  grafptr->vlbltax = (chaflagstr[0] != '0') ? (grafptr->vlbltax - 1) : NULL;
+  grafptr->edgetax --;
   if (chaflagstr[1] != '0') {
-    if ((grafptr->velotax = (Gnum *) memAlloc (chavertnbr * sizeof (Gnum))) == NULL) {
-      errorPrint ("graphGeomLoadChac: out of memory (3)");
-      memFree    (grafptr);
-      return     (1);
-    }
-    grafptr->velotax -= grafptr->baseval;
+    grafptr->velotax --;
     velosum = 0;
   }
-
-  edlosum = grafptr->edgenbr;
+  else {
+    grafptr->velotax = NULL;
+    velosum = grafptr->vertnbr;                   /* No vertex loads */
+  }
   if (chaflagstr[2] != '0') {
-    if ((grafptr->edlotax = (Gnum *) memAlloc (grafptr->edgenbr * sizeof (Gnum))) == NULL) {
-      errorPrint ("graphGeomLoadChac: out of memory (4)");
-      memFree    (grafptr);
-      return     (1);
-    }
-    grafptr->edlotax -= grafptr->baseval;
+    grafptr->edlotax --;
     edlosum = 0;
   }
+  else {
+    grafptr->edlotax = NULL;
+    edlosum = grafptr->edgenbr;
+  }
 
-  for (vertnum = edgenum = grafptr->baseval, degrmax = vlblmax = 0;
+  for (vertnum = edgenum = 1, degrmax = vlblmax = 0;
        vertnum < grafptr->vertnnd; vertnum ++) {
     do {                                          /* Skip comment lines   */
       chabuffcar = getc (filesrcptr);             /* Read first character */
@@ -223,7 +224,7 @@ const char * const          dataptr)              /* No use           */
         graphFree  (grafptr);
         return     (1);
       }
-      if (edgenum > (grafptr->edgenbr + grafptr-> baseval)) { /* Test edge array overflow */
+      if (edgenum > (grafptr->edgenbr + 1)) { /* Test edge array overflow */
         errorPrint ("graphGeomLoadChac: bad input (5)");
         graphFree  (grafptr);
         return     (1);
@@ -240,7 +241,7 @@ const char * const          dataptr)              /* No use           */
   grafptr->degrmax = degrmax;
 
   if (grafptr->vlbltax != NULL) {                 /* If graph has labels       */
-    if (graphLoad2 (grafptr->baseval, grafptr->vertnnd, /* Un-label graph data */
+    if (graphLoad2 (1,                grafptr->vertnnd, /* Un-label graph data */
                     grafptr->verttax, grafptr->vendtax,
                     grafptr->edgetax, vlblmax, grafptr->vlbltax) != 0) {
       errorPrint ("graphGeomLoadChac: cannot relabel graph");

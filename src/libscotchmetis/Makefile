@@ -1,4 +1,4 @@
-## Copyright 2007-2010 ENSEIRB, INRIA & CNRS
+## Copyright 2007-2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -54,10 +54,12 @@ include ../Makefile.inc
 
 scotch				:
 					$(MAKE) CC="$(CCS)" SCOTCHLIB=ptscotch						\
+					metis.h										\
 					libscotchmetis$(LIB)
 
 ptscotch			:
 					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIB=ptscotch	\
+					parmetis.h									\
 					libptscotchparmetis$(LIB)
 
 install				:	scotch
@@ -69,13 +71,17 @@ ptinstall			:	ptscotch
 					-$(CP) libptscotchparmetis$(LIB) $(libdir)
 
 clean				:
-					-$(RM) *~ *$(OBJ) lib*$(LIB)
+					-$(RM) *~ *$(OBJ) lib*$(LIB) metis.h parmetis.h
 
 realclean			:	clean
 
 ##
 ##  Todo list.
 ##
+
+metis.h				:	../libscotch/dummysizes$(EXE)		\
+					library_metis.h
+					../libscotch/dummysizes$(EXE) library_metis.h metis.h
 
 metis_graph_order$(OBJ)		:	metis_graph_order.c			\
 					../libscotch/module.h			\
@@ -100,6 +106,10 @@ metis_graph_part_f$(OBJ)	:	metis_graph_part_f.c			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
 					metis.h
+
+parmetis.h			:	../libscotch/dummysizes$(EXE)		\
+					library_parmetis.h
+					../libscotch/dummysizes$(EXE) library_parmetis.h parmetis.h
 
 parmetis_dgraph_order$(OBJ)	:	parmetis_dgraph_order.c			\
 					../libscotch/module.h			\

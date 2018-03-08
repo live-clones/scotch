@@ -32,7 +32,7 @@
 
 VERSION	= 6
 RELEASE = 0
-PATCHLEVEL = 4
+PATCHLEVEL = 5
 
 .PHONY				:	clean	default	install	ptscotch	realclean	required	scotch
 
@@ -108,7 +108,7 @@ ptcheck				:	ptscotch
 esmumps				:	scotch
 					(cd esmumps ; $(MAKE) scotch && $(MAKE) install)
 
-ptesmumps			:	ptscotch
+ptesmumps			:	scotch	ptscotch
 					(cd esmumps ; $(MAKE) ptscotch && $(MAKE) ptinstall)
 
 install				:	required	$(bindir)	$(includedir)	$(libdir)	$(mandir)/man1

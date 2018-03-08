@@ -9,7 +9,7 @@
 **  the libScotchMeTiS library.                         **
 **                                                      **
 *********************************************************/
-/* Copyright 2007,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : metis.h                                 **/
+/**   NAME       : library_metis.h                         **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 30 jun 2010     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
-/**                                 to     13 sep 2012     **/
+/**                                 to     12 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,6 +83,24 @@
 #define METISNAME3(s)               s
 #define METISNAME4(p,s)             p##s
 #endif /* METISNAMEL */
+
+#ifndef SCOTCH_METIS_RETURN
+#define SCOTCH_METIS_RETURN
+typedef enum {
+  METIS_OK           = 1,
+  METIS_ERROR_INPUT  = -2,
+  METIS_ERROR_MEMORY = -3,
+  METIS_ERROR        = -4
+} rstatus_et; 
+#endif /* SCOTCH_METIS_RETURN */
+
+/*
+**  The type and structure definitions.
+*/
+
+#ifndef SCOTCH_H                                  /* In case "scotch.h" not included before */
+typedef DUMMYINT SCOTCH_Num;
+#endif /* SCOTCH_H */
 
 /*
 **  The function prototypes.

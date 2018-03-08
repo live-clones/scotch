@@ -1,4 +1,4 @@
-/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010,2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 15 may 2008     **/
 /**                # Version 5.1  : from : 27 jun 2010     **/
 /**                                 to     27 jun 2010     **/
+/**                # Version 6.0  : from : 27 apr 2015     **/
+/**                                 to     27 apr 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -172,9 +174,9 @@ const int                   typeval)              /*+ (Un)compression algorithm 
   int                 filetab[2];
   FILE *              writptr;
   FileCompressData *  dataptr;
-#ifdef COMMON_PTHREAD
+#ifdef COMMON_PTHREAD_FILE
   pthread_t           thrdval;
-#endif /* COMMON_PTHREAD */
+#endif /* COMMON_PTHREAD_FILE */
 
   if (typeval <= FILECOMPRESSTYPENONE)            /* If uncompressed stream, return original stream pointer */
     return (stream);
@@ -202,7 +204,7 @@ const int                   typeval)              /*+ (Un)compression algorithm 
   dataptr->innerfd     = filetab[0];
   dataptr->outerstream = stream;                  /* Stream to write to */
 
-#ifdef COMMON_PTHREAD
+#ifdef COMMON_PTHREAD_FILE
   if (pthread_create (&thrdval, NULL, (void * (*) (void *)) fileCompress2, (void *) dataptr) != 0) { /* If could not create thread */
     errorPrint ("fileCompress: cannot create thread");
     memFree (dataptr);
@@ -210,7 +212,7 @@ const int                   typeval)              /*+ (Un)compression algorithm 
     fclose  (writptr);
     return  (NULL);
   }
-#else /* COMMON_PTHREAD */
+#else /* COMMON_PTHREAD_FILE */
   switch (fork ()) {
     case -1 :                                     /* Error */
       errorPrint ("fileCompress: cannot create child process");
@@ -225,7 +227,7 @@ const int                   typeval)              /*+ (Un)compression algorithm 
     default :                                     /* We are the father process */
       close (filetab[0]);                         /* Close the reader pipe end */
   }
-#endif /* COMMON_PTHREAD */
+#endif /* COMMON_PTHREAD_FILE */
 
   return (writptr);
 }

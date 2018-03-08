@@ -1,4 +1,4 @@
-/* Copyright 2004,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2010-2012,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                method.                                 **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 03 mar 2011     **/ 
-/**                                 to     23 aug 2014     **/
+/**                                 to     27 aug 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -215,7 +215,7 @@ Gnum * restrict                     flagval)
   edxxptr = NULL;
   remoptr = NULL;
 
-  while ((linkptr = fiboTreeMin (tablptr)) != NULL) { /* Select candidate vertices */
+  while ((linkptr = fiboHeapMin (tablptr)) != NULL) { /* Select candidate vertices */
     Gnum                      vexxidx;
     Gnum                      veloval;
     Anum                      domnnumold;
@@ -233,7 +233,7 @@ Gnum * restrict                     flagval)
     }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
-    fiboTreeDel (tablptr, linkptr);               /* Remove vertex link from table         */
+    fiboHeapDel (tablptr, linkptr);               /* Remove vertex link from table         */
     linkptr->linkdat.prevptr = remoptr;           /* Node has been removed but is not kept */
     remoptr = linkptr;                            /* It will be chained back afterwards    */
 
@@ -264,7 +264,7 @@ Gnum * restrict                     flagval)
 
     tempptr = remoptr;                            /* Get pointer to node */
     remoptr = remoptr->linkdat.prevptr;           /* Find next node      */
-    fiboTreeAdd (tablptr, tempptr);               /* Re-link node        */
+    fiboHeapAdd (tablptr, tempptr);               /* Re-link node        */
   }
 
   if (linkptr == NULL)
@@ -1857,5 +1857,3 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
 
   return (0);
 }
-
-

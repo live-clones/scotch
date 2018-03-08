@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 22 oct 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 01 jun 2012     **/
-/**                                 to     30 sep 2014     **/
+/**                                 to     30 dec 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,6 +78,11 @@
 static StratTab             stratdummytab = { NULL, NULL, NULL }; /* Dummy strategy table for the dummy empty object       */
 Strat                       stratdummy = { &stratdummytab, STRATNODEEMPTY }; /* Dummy empty object for offset computations */
 
+#ifdef SCOTCH_PTHREAD
+static int                  muteflag = 1;         /*+ Flag for mutex initialization +*/
+static pthread_mutex_t      mutelocdat;           /*+ Local mutex for parsing       +*/
+#endif /* SCOTCH_PTHREAD */
+
 /**************************/
 /*                        */
 /* The strategy routines. */
@@ -97,6 +102,8 @@ stratInit (
 const StratTab * const      strattab,             /*+ Pointer to strategy parsing table +*/
 const char * const          string)               /*+ Strategy string to parse          +*/
 {
+  Strat *             o;
+
 #ifdef SCOTCH_DEBUG_PARSER1
   if ((strattab == NULL) || (string == NULL)) {
     errorPrint ("stratInit: invalid parameter");
@@ -104,7 +111,21 @@ const char * const          string)               /*+ Strategy string to parse  
   }
 #endif /* SCOTCH_DEBUG_PARSER1 */
 
-  return (stratParserParse (strattab, string));   /* Parse strategy string */
+#ifdef COMMON_PTHREAD_MEMORY
+  if (muteflag != 0) {                            /* Unsafe code with respect to race conditions but should work; portable TSL needed */
+    muteflag = 0;
+    pthread_mutex_init (&mutelocdat, NULL);       /* Initialize local mutex */
+  }
+  pthread_mutex_lock (&mutelocdat);               /* Lock local mutex */
+#endif /* COMMON_PTHREAD_MEMORY */
+
+  o = stratParserParse (strattab, string);        /* Parse strategy string */
+
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_unlock (&mutelocdat);             /* Unlock local mutex */
+#endif /* SCOTCH_PTHREAD */
+
+  return (o);
 }
 
 /* This routine frees a strategy structure.

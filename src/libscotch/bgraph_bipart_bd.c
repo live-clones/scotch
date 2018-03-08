@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 26 mar 2011     **/
 /**                # Version 6.0  : from : 07 nov 2011     **/
-/**                                 to   : 08 aug 2014     **/
+/**                                 to   : 13 aug 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -445,9 +445,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
     Gnum                bndfronnnd;
     Gnum                bndvertnum;
     Gnum                bndedgenum;
-    Gnum                bndedloval;
 
-    bndedloval      = 1;                          /* Assume unity edge weights */
     bndcommloadintn = 0;
     for (bndvertnum = orggrafptr->s.baseval, bndfronnnd = bndvertnum + orggrafptr->fronnbr; /* Compute communication load at frontier */
          bndvertnum < bndfronnnd; bndvertnum ++) {
@@ -461,8 +459,7 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
         Gnum                bndpartend;
 
         bndpartend = (Gnum) bndgrafdat.parttax[bndedgetax[bndedgenum]];
-        bndedloval = bndedlotax[bndedgenum];
-        bndcommloadintn += bndedloval * bndpartend;
+        bndcommloadintn += bndedlotax[bndedgenum] * bndpartend;
       }
     }
 

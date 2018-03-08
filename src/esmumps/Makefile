@@ -44,7 +44,7 @@ include ../Makefile.inc
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(includedir) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -I$(includedir) $(<) -o $(@) -L$(libdir) $(LDFLAGS) -L. -l$(ESMUMPSLIB) -l$(SCOTCHLIB) -lscotch -l$(SCOTCHLIB)errexit -lm
+		 		$(CC) $(CFLAGS) -I$(includedir) $(<) -o $(@) -L$(libdir) $(LDFLAGS) -L. -lesmumps -lscotch -lscotcherrexit -lm
 
 ##
 ##  Project rules.
@@ -53,22 +53,19 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:	clean
-					$(MAKE) CC="$(CCS)" CCD="$(CCS)" SCOTCHLIB=scotch ESMUMPSLIB=esmumps	\
-					libesmumps$(LIB)							\
+					$(MAKE) CC="$(CCS)" CCD="$(CCS)"	\
+					libesmumps$(LIB)			\
 					main_esmumps$(EXE)
 
-ptscotch			:	clean
-					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIB=ptscotch ESMUMPSLIB=ptesmumps	\
-					libesmumps$(LIB)											\
-					main_esmumps$(EXE)
+ptscotch			:	scotch
 
-install				:
+install				:	scotch
 					-$(CP) esmumps.h $(includedir)
 					-$(CP) libesmumps$(LIB) $(libdir)
 
-ptinstall			:
+ptinstall			:	scotch
 					-$(CP) esmumps.h $(includedir)
-					-$(CP) libptesmumps$(LIB) $(libdir)
+					-$(CP) libesmumps$(LIB) $(libdir)/libptesmumps$(LIB)
 
 clean				:
 					-$(RM) *~ common.h *$(OBJ) lib*$(LIB) main_esmumps$(EXE)
@@ -85,7 +82,7 @@ common.h			:	../libscotch/common.h			\
 
 graph_graph$(OBJ)		:	graph_graph.c				\
 					common.h				\
-					$(includedir)/$(SCOTCHLIB).h		\
+					$(includedir)/scotch.h			\
 					graph.h
 
 order$(OBJ)			:	order.c					\
@@ -97,13 +94,13 @@ order_scotch_graph$(OBJ)	:	order_scotch_graph.c			\
 					order.h					\
 					common.h				\
 					graph.h					\
-					$(includedir)/$(SCOTCHLIB).h
+					$(includedir)/scotch.h
 
 dof$(OBJ)			:	dof.c					\
 					dof.h					\
 					common.h				\
 					graph.h					\
-					$(includedir)/$(SCOTCHLIB).h
+					$(includedir)/scotch.h
 
 symbol$(OBJ)			:	symbol.c				\
 					symbol.h				\
@@ -123,7 +120,7 @@ symbol_fax_graph$(OBJ)		:	symbol_fax_graph.c			\
 					symbol.h				\
 					order.h					\
 					fax.h					\
-					$(includedir)/$(SCOTCHLIB).h
+					$(includedir)/scotch.h
 
 esmumps$(OBJ)			:	esmumps.c				\
 					common.h				\
@@ -132,7 +129,7 @@ esmumps$(OBJ)			:	esmumps.c				\
 					order.h					\
 					fax.h					\
 					esmumps.h				\
-					$(includedir)/$(SCOTCHLIB).h
+					$(includedir)/scotch.h
 
 esmumps_f$(OBJ)			:	esmumps_f.c				\
 					common.h				\
@@ -151,8 +148,8 @@ libesmumps$(LIB)		:	graph_graph$(OBJ)			\
 					esmumps$(OBJ)				\
 					esmumps_f$(OBJ)				\
 					esmumps_strats$(OBJ)
-					$(AR) $(ARFLAGS) lib$(ESMUMPSLIB)$(LIB) $(?)
-					-$(RANLIB) lib$(ESMUMPSLIB)$(LIB)
+					$(AR) $(ARFLAGS) $(@) $(?)
+					-$(RANLIB) $(@)
 
 main_esmumps$(EXE)		:	main_esmumps.c				\
 					common.h				\
@@ -160,6 +157,6 @@ main_esmumps$(EXE)		:	main_esmumps.c				\
 					order.h					\
 					symbol.h				\
 					esmumps.h				\
-					lib$(ESMUMPSLIB)$(LIB)			\
-					$(libdir)/lib$(SCOTCHLIB)$(LIB)		\
-					$(libdir)/lib$(SCOTCHLIB)errexit$(LIB)
+					libesmumps$(LIB)			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)

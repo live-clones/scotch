@@ -1,4 +1,4 @@
-/* Copyright 2012-2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012-2015 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the use of Posix threads.               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 jul 2012     **/
-/**                                 to     02 oct 2014     **/
+/**                                 to     27 apr 2015     **/
 /**                                                        **/
 /************************************************************/
 
@@ -47,10 +47,10 @@
 **  The defines and includes.
 */
 
-#ifdef SCOTCH_PTHREAD_AFFINITY_LINUX
+#ifdef COMMON_PTHREAD_AFFINITY_LINUX
 #define _GNU_SOURCE
 #include <sched.h>
-#endif /* SCOTCH_PTHREAD_AFFINITY_LINUX */
+#endif /* COMMON_PTHREAD_AFFINITY_LINUX */
 
 #define COMMON_THREAD
 
@@ -65,7 +65,7 @@
 /*                           */
 /*****************************/
 
-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
+#ifdef COMMON_PTHREAD
 
 /* These routines implement the classical barrier
 ** operations for systems that do not provide them.
@@ -249,15 +249,15 @@ void *                      dataptr)              /* Per-thread data block */
   const int                           thrdnum = thrdptr->thrdnum;
   int                                 thrdmsk;
   int                                 o;
-#ifdef SCOTCH_PTHREAD_AFFINITY_LINUX
+#ifdef COMMON_PTHREAD_AFFINITY_LINUX
   cpu_set_t                           cpuset;
-#endif /* SCOTCH_PTHREAD_AFFINITY_LINUX */
+#endif /* COMMON_PTHREAD_AFFINITY_LINUX */
 
-#ifdef SCOTCH_PTHREAD_AFFINITY_LINUX
+#ifdef COMMON_PTHREAD_AFFINITY_LINUX
   CPU_ZERO (&cpuset);
   CPU_SET  (thrdnum, &cpuset);                    /* Thread sets its own affinity */
   pthread_setaffinity_np (thrdptr->thidval, sizeof (cpu_set_t), &cpuset);
-#endif /* SCOTCH_PTHREAD_AFFINITY_LINUX */
+#endif /* COMMON_PTHREAD_AFFINITY_LINUX */
 
   o = grouptr->stafptr (dataptr);                 /* Call start routine */
 
@@ -375,7 +375,7 @@ const int                   flagval)              /* Flag for thread operation d
   return ((int) (intptr_t) o);
 }
 
-#else /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
+#else /* COMMON_PTHREAD */
 
 /**********************************/
 /*                                */
@@ -390,7 +390,7 @@ void * const                contptr,              /* Pointer to thread contents 
 ThreadReduceFunc const      redfptr,              /* Pointer to reduction routine */
 int                         rootnum)              /* Root of reduction            */
 {
-  errorPrint ("threadReduce: Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD");
+  errorPrint ("threadReduce: Not compiled with COMMON_PTHREAD");
 }
 
 void
@@ -399,7 +399,7 @@ void * const                dataptr,              /* Per-thread data block      
 void * const                contptr,              /* Pointer to thread contents */
 ThreadScanFunc const        scafptr)              /* Scan function              */
 {
-  errorPrint ("threadScan: Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD");
+  errorPrint ("threadScan: Not compiled with COMMON_PTHREAD");
 }
 
 int
@@ -412,8 +412,8 @@ ThreadLaunchJoinFunc        joifptr,              /* Pointer to join routine    
 const int                   thrdnbr,              /* Number of threads to run (including current) */
 const int                   flagval)              /* Flag for thread operation data structures    */
 {
-  errorPrint ("threadLaunch: Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD");
+  errorPrint ("threadLaunch: Not compiled with COMMON_PTHREAD");
   return     (1);
 }
 
-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
+#endif /* COMMON_PTHREAD */

@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2013 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2018 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -229,12 +229,15 @@ LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
 
 LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			arch_build$(OBJ)			\
+			arch_build2$(OBJ)			\
 			arch_cmplt$(OBJ)			\
 			arch_cmpltw$(OBJ)			\
 			arch_deco$(OBJ)				\
+			arch_deco2$(OBJ)			\
 			arch_dist$(OBJ)				\
 			arch_hcub$(OBJ)				\
 			arch_mesh$(OBJ)				\
+			arch_sub$(OBJ)				\
 			arch_tleaf$(OBJ)			\
 			arch_torus$(OBJ)			\
 			arch_vcmplt$(OBJ)			\
@@ -267,7 +270,10 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			graph_base$(OBJ)			\
 			graph_band$(OBJ)			\
 			graph_check$(OBJ)			\
+			graph_clone$(OBJ)			\
 			graph_coarsen$(OBJ)			\
+			graph_diam$(OBJ)			\
+			graph_ielo$(OBJ)			\
 			graph_induce$(OBJ)			\
 			graph_io$(OBJ)				\
 			graph_io_chac$(OBJ)			\
@@ -338,6 +344,10 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_graph_coarsen_f$(OBJ)		\
 			library_graph_color$(OBJ)		\
 			library_graph_color_f$(OBJ)		\
+			library_graph_diam$(OBJ)		\
+			library_graph_diam_f$(OBJ)		\
+			library_graph_induce$(OBJ)		\
+			library_graph_induce_f$(OBJ)		\
 			library_graph_io_chac$(OBJ)		\
 			library_graph_io_chac_f$(OBJ)		\
 			library_graph_io_habo$(OBJ)		\
@@ -485,13 +495,16 @@ common_thread$(OBJ)		:	common_thread.c				\
 arch$(OBJ)			:	arch.c					\
 					module.h				\
 					common.h				\
+					graph.h					\
 					arch.h					\
 					arch_cmplt.h				\
 					arch_cmpltw.h				\
 					arch_deco.h				\
+					arch_deco2.h				\
 					arch_dist.h				\
 					arch_hcub.h				\
 					arch_mesh.h				\
+					arch_sub.h				\
 					arch_tleaf.h				\
 					arch_torus.h				\
 					arch_vcmplt.h				\
@@ -510,6 +523,17 @@ arch_build$(OBJ)		:	arch_build.c				\
 					bgraph_bipart_st.h			\
 					arch_build.h
 
+arch_build2$(OBJ)		:	arch_build2.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch.h					\
+					arch$(OBJ)				\
+					arch_sub.h				\
+					arch_deco2.h				\
+					graph_coarsen.h				\
+					arch_build2.h
+
 arch_cmplt$(OBJ)		:	arch_cmplt.c				\
 					module.h				\
 					common.h				\
@@ -526,7 +550,15 @@ arch_deco$(OBJ)			:	arch_deco.c				\
 					module.h				\
 					common.h				\
 					arch.h					\
+					arch_deco2.h				\
 					arch_deco.h
+
+arch_deco2$(OBJ)		:	arch_deco2.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch.h					\
+					arch_deco2.h
 
 arch_dist$(OBJ)			:	arch_dist.c				\
 					module.h				\
@@ -543,6 +575,7 @@ arch_hcub$(OBJ)			:	arch_hcub.c				\
 arch_mesh$(OBJ)			:	arch_mesh.c				\
 					module.h				\
 					common.h				\
+					graph.h					\
 					arch.h					\
 					arch_mesh.h
 
@@ -552,10 +585,19 @@ arch_tleaf$(OBJ)		:	arch_tleaf.c				\
 					arch.h					\
 					arch_tleaf.h
 
+arch_sub$(OBJ)			:	arch_sub.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch.h					\
+					graph_coarsen.h				\
+					arch_sub.h
+
 arch_torus$(OBJ)		:	arch_torus.c				\
 					module.h				\
 					common.h				\
 					arch.h					\
+					arch_mesh.h				\
 					arch_torus.h
 
 arch_vcpmlt$(OBJ)		:	arch_vcmplt.c				\
@@ -1064,12 +1106,29 @@ graph_check$(OBJ)		:	graph_check.c				\
 					common.h				\
 					graph.h
 
+graph_clone$(OBJ)		:	graph_clone.c				\
+					module.h				\
+					common.h				\
+					graph.h
+
 graph_coarsen$(OBJ)		:	graph_coarsen.c				\
 					graph_coarsen_edge.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
 					graph_coarsen.h
+
+graph_diam$(OBJ)		:	graph_diam.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					fibo.h					\
+					graph_diam.h
+
+graph_ielo$(OBJ)		:	graph_ielo.c				\
+					module.h				\
+					common.h				\
+					graph.h
 
 graph_induce$(OBJ)		:	graph_induce.c				\
 					module.h				\

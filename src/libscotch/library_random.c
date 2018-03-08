@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2012,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 15 jan 2005     **/
 /**                                 to     15 jun 2005     **/
 /**                # Version 6.0  : from : 08 oct 2012     **/
-/**                                 to     03 oct 2014     **/
+/**                                 to     19 mar 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,6 +61,34 @@
 /* the random handling routines.    */
 /*                                  */
 /************************************/
+
+/*+ This routine loads a random state.
+*** It returns:
+*** - 0  : if state successfully loaded.
+*** - 1  : state cannot be loaded.
+*** - 2  : on error.
++*/
+
+int
+SCOTCH_randomLoad (
+FILE *                      stream)
+{
+  return (intRandLoad (stream));
+}
+
+/*+ This routine saves the random state.
+*** It returns:
+*** - 0  : if state successfully saved.
+*** - 1  : state cannot be saved.
+*** - 2  : on error.
++*/
+
+int
+SCOTCH_randomSave (
+FILE *                      stream)
+{
+  return (intRandSave (stream));
+}
 
 /*+ This routine sets the process number that
 *** is used to generate a different seed across
@@ -88,8 +116,8 @@ SCOTCH_randomReset ()
   intRandReset ();
 }
 
-/*+ This routine resets the random generator
-*** to simulate a start from scratch.
+/*+ This routine sets the value of the
+*** random seed.
 *** It returns:
 *** - void  : in all cases.
 +*/

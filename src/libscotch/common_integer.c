@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 16 jul 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     13 oct 2014     **/
+/**                                 to     19 mar 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -293,9 +293,9 @@ intRandInit (void)
   if (intrandflag == 0) {                         /* Non thread-safe check          */
     intrandflag = 1;                              /* Generator has been initialized */
 
-#if ! ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED) || (defined SCOTCH_DETERMINISTIC))
+#if ! ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED))
     intrandseed = (UINT32) time (NULL);           /* Set random seed if needed */
-#endif /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED) || (defined SCOTCH_DETERMINISTIC)) */
+#endif /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED)) */
     intRandSeed2 (intrandseed);                   /* Initialize state vector from seed */
   }
 }
@@ -314,6 +314,120 @@ intRandReset (void)
     intRandInit ();
 
   intRandSeed2 (intrandseed);
+}
+
+/* This routine loads the random state.
+** It returns:
+** - 0  : on success.
+** - 1  : state cannot be loaded.
+** - 2  : on error.
+*/
+
+#ifndef COMMON_RANDOM_SYSTEM
+
+static
+int
+intRandLoad2 (
+IntRandState * restrict const randptr,            /*+ Random state to load +*/
+FILE * restrict const         stream)             /*+ Stream to read from  +*/
+{
+  INT                 versval;
+  INT                 randnum;
+  int                 i;
+
+  if (intLoad (stream, &versval) != 1) {          /* Read version number */
+    errorPrint ("intRandLoad2: bad input (1)");
+    return     (2);
+  }
+  if (versval != 0) {                             /* If version not zero */
+    errorPrint ("intRandLoad2: invalid version number");
+    return     (2);
+  }
+
+  for (i = 0; i < 624; i ++) {
+    INT                 randval;
+
+    if (intLoad (stream, &randval) != 1) {        /* Read version number */
+      errorPrint ("intRandLoad2: bad input (2)");
+      return     (2);
+    }
+    randptr->randtab[i] = (UINT32) randval;
+  }
+
+  if (intLoad (stream, &randnum) != 1) {          /* Read version number */
+    errorPrint ("intRandLoad2: bad input (3)");
+    return     (2);
+  }
+  if ((randnum < 0) || (randnum >= 624)) {
+    errorPrint ("intRandLoad2: invalid array index");
+    return     (2);
+  }
+  randptr->randnum = randnum;
+
+  return (0);
+}
+
+#endif /* COMMON_RANDOM_SYSTEM */
+
+int
+intRandLoad (
+FILE * restrict const         stream)             /*+ Stream to read from  +*/
+{
+#ifndef COMMON_RANDOM_SYSTEM
+  return (intRandLoad2 (&intrandstat, stream));
+#else /* COMMON_RANDOM_SYSTEM */
+  return (1);
+#endif /* COMMON_RANDOM_SYSTEM */
+}
+
+/* This routine saves the random state.
+** It returns:
+** - 0  : on success.
+** - 1  : state cannot be saved.
+** - 2  : on error.
+*/
+
+#ifndef COMMON_RANDOM_SYSTEM
+
+static
+int
+intRandSave2 (
+IntRandState * restrict const randptr,            /*+ Random state to load +*/
+FILE * restrict const         stream)             /*+ Stream to read from  +*/
+{
+  int                 i;
+
+  if (fprintf (stream, "0\n") == EOF) {
+    errorPrint ("intRandSave2: bad output (1)");
+    return     (2);
+  }
+
+  for (i = 0; i < 624; i ++) {
+    if (fprintf (stream, UINTSTRING "\n", (UINT) randptr->randtab[i]) == EOF) {
+      errorPrint ("intRandLoad2: bad output (2)");
+      return     (2);
+    }
+  }
+
+  if (fprintf (stream, INTSTRING "\n", (INT) randptr->randnum) == EOF) {
+    errorPrint ("intRandLoad2: bad output (3)");
+    return     (2);
+  }
+
+  return (0);
+}
+
+#endif /* COMMON_RANDOM_SYSTEM */
+
+int
+intRandSave (
+FILE * restrict const         stream)             /*+ Stream to read from  +*/
+{
+#ifndef COMMON_RANDOM_SYSTEM
+  return (intRandSave2 (&intrandstat, stream));
+#else /* COMMON_RANDOM_SYSTEM */
+  return (1);
+#endif /* COMMON_RANDOM_SYSTEM */
 }
 
 /* This routine computes a new pseudo-random

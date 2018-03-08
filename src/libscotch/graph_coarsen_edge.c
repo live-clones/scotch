@@ -80,7 +80,6 @@ GraphCoarsenThread *                      thrdptr)
   const Gnum                                coarhashmsk = coarptr->coarhashmsk;
   const GraphCoarsenMulti * restrict const  coarmulttax = coarptr->coarmulttab - finegrafptr->baseval;
 
-
   GRAPHCOARSENEDGEINIT;
 
   coaredloadj = 0;

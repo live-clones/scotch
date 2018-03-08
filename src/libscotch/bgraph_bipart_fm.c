@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -65,7 +65,7 @@
 /**                # Version 5.1  : from : 30 oct 2008     **/
 /**                                 to   : 14 apr 2011     **/
 /**                # Version 6.0  : from : 23 fev 2011     **/
-/**                                 to     09 aug 2014     **/
+/**                                 to     27 aug 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -189,7 +189,7 @@ const Gnum                           deltmax)     /*+ Maximum imbalance +*/
   deltbest = deltmax;
   remoptr = NULL;
 
-  while ((linkptr = fiboTreeMin (tablptr)) != NULL) { /* Select candidate vertices */
+  while ((linkptr = fiboHeapMin (tablptr)) != NULL) { /* Select candidate vertices */
     Gnum                deltnew;
     Gnum                gainval;                  /* Separator gain of current link */
 
@@ -198,7 +198,7 @@ const Gnum                           deltmax)     /*+ Maximum imbalance +*/
     if (gainval > gainbest)                       /* If no more interesting vertices, stop searching */
       break;
 
-    fiboTreeDel (tablptr, linkptr);               /* Remove vertex link from table */
+    fiboHeapDel (tablptr, linkptr);               /* Remove vertex link from table */
     linkptr->linkdat.prevptr = remoptr;           /* Node has been removed but is not kept */
     remoptr = linkptr;                            /* It will be chained back afterwards    */
 
@@ -219,7 +219,7 @@ const Gnum                           deltmax)     /*+ Maximum imbalance +*/
 
     tempptr = remoptr;                            /* Get pointer to node */
     remoptr = remoptr->linkdat.prevptr;           /* Find next node      */
-    fiboTreeAdd (tablptr, tempptr);               /* Re-link node        */
+    fiboHeapAdd (tablptr, tempptr);               /* Re-link node        */
   }
 
   return (vertbest);

@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 17 oct 2012     **/
 /**                                 to   : 17 oct 2012     **/
 /**                # Version 6.0  : from : 23 aug 2014     **/
-/**                                 to   : 23 aug 2014     **/
+/**                                 to   : 15 aug 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -105,6 +105,7 @@ const HgraphOrderKpParam * restrict const paraptr)
     return     (1);
   }
 
+  memSet (&actgrafdat, 0, sizeof (Kgraph));       /* Allow for freeing on subsequent error      */
   hgraphUnhalo (grafptr, &actgrafdat.s);          /* Extract non-halo part of given graph       */
   actgrafdat.s.vnumtax = NULL;                    /* Do not keep numbers from nested dissection */
 
@@ -114,6 +115,7 @@ const HgraphOrderKpParam * restrict const paraptr)
       (kgraphMapSt (&actgrafdat, paraptr->strat) != 0)) {
     errorPrint ("hgraphOrderKp: cannot compute partition");
     memFree    (cblkptr->cblktab);
+    kgraphExit (&actgrafdat);
     cblkptr->cblktab = NULL;
     return (1);
   }
@@ -123,6 +125,7 @@ const HgraphOrderKpParam * restrict const paraptr)
                      &parttax, (size_t) (grafptr->vnohnbr * sizeof (Anum)), NULL) == NULL) {
     errorPrint ("hgraphOrderKp: out of memory (2)");
     memFree    (cblkptr->cblktab);
+    kgraphExit (&actgrafdat);
     cblkptr->cblktab = NULL;
     return (1);
   }

@@ -79,7 +79,12 @@ typedef struct ArchDist_ {
 
 int                         archDistArchLoad    (ArchDist * restrict const, FILE * restrict const);
 int                         archDistArchSave    (const ArchDist * const, FILE * restrict const);
-#define archDistArchFree    NULL
+#define archDistArchFree            NULL
+
+#define archDistMatchInit           NULL
+#define archDistMatchExit           NULL
+#define archDistMatchMate           NULL
+
 int                         archDistArchBuild   (struct Arch_ * const, struct Arch_ * const, const Anum);
 ArchDomNum                  archDistDomNum      (const ArchDist * const, const ArchDom * const);
 int                         archDistDomTerm     (const ArchDist * const, ArchDom * restrict const, const ArchDomNum);

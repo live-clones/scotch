@@ -1,4 +1,4 @@
-/* Copyright 2009-2011,2013-2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2011,2013-2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                array.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 jan 2009     **/
-/**                                 to   : 01 mar 2015     **/
+/**                                 to   : 19 aug 2016     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -185,7 +185,6 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
           if (termhashtab[termhashnum].termnum == termnum) { /* If hash slot found */
             errorPrint ("kgraphBand: duplicate terminal domain in domain array");
             memFree    (termhashtab);
-            kgraphExit (bandgrafptr);
             return     (1);
           }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014-2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,7 +61,7 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     27 sep 2008     **/
 /**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     01 jul 2014     **/
+/**                                 to     11 mar 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,6 +110,10 @@ typedef struct ArchDecoDom_ {
   Anum                      num;                  /*+ Domain number in the decomposition +*/
 } ArchDecoDom;
 
+typedef struct ArchDecoMatch_ {
+  Anum                      num;                  /*+ Domain number in the decomposition +*/
+} ArchDecoMatch;
+
 #endif /* ARCH_DECO_H_STRUCT */
 
 /*
@@ -124,10 +128,15 @@ typedef struct ArchDecoDom_ {
 #define static
 #endif
 
-int                         archDecoArchBuild   (ArchDeco * const, const Anum, const Anum, const ArchDecoTermVert * const, const Anum  * const);
+int                         archDecoArchBuild2  (ArchDeco * const, const Anum, const Anum, const ArchDecoTermVert * const, const Anum  * const);
 int                         archDecoArchLoad    (ArchDeco * const, FILE * restrict const);
 int                         archDecoArchSave    (const ArchDeco * const, FILE * restrict const);
 int                         archDecoArchFree    (ArchDeco * const);
+
+#define archDecoMatchInit           NULL
+#define archDecoMatchExit           NULL
+#define archDecoMatchMate           NULL
+
 Anum                        archDecoArchSize    (ArchDeco * const, const Anum);
 Anum                        archDecoArchDist    (ArchDeco * const, const Anum, const Anum);
 Anum                        archDecoArchDistE   (ArchDeco * const, const Anum, const Anum);

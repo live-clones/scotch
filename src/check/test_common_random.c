@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                strategy building routines.             **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 01 oct 2014     **/
-/**                                 to     16 oct 2014     **/
+/**                                 to     19 mar 2016     **/
 /**                                                        **/
 /************************************************************/
 
@@ -115,8 +115,30 @@ char *              argv[])
     }
 
     if (fwrite (randtab, sizeof (INT), RANDNBR, fileptr) < RANDNBR) {
-      errorPrint ("main: cannot write to file");
+      errorPrint ("main: cannot write to file (1)");
       return     (1);
+    }
+
+    switch (SCOTCH_randomSave (fileptr)) {        /* Try to save random state, if enabled */
+      case 0 :
+        if (fprintf (fileptr, "#") != 1) {        /* Write separator character */
+          errorPrint ("main: cannot write to file (3)");
+          return     (1);
+        }
+
+        for (randnum = 0; randnum < RANDNBR; randnum ++)
+          randtab[randnum] = intRandVal (INTVALMAX);
+        if (fwrite (randtab, sizeof (INT), RANDNBR, fileptr) < RANDNBR) {
+          errorPrint ("main: cannot write to file (3)");
+          return     (1);
+        }
+        break;
+      case 1 :
+        printf ("Random state cannot be saved\n");
+        break;
+      default :
+        errorPrint ("Could not save random state");
+        break;
     }
 
     sleep (1);                                    /* Next run will not get the same time() value */
@@ -127,7 +149,7 @@ char *              argv[])
     int                 o;
 
     if (fread (randtab, sizeof (INT), RANDNBR, fileptr) < RANDNBR) {
-      errorPrint ("main: cannot read from file");
+      errorPrint ("main: cannot read from file (1)");
       return     (1);
     }
 
@@ -147,6 +169,42 @@ char *              argv[])
       return     (1);
     }
     printf ("Two consecutive runs yield %s values.\n", charptr);
+
+    intRandReset ();                              /* Reset random seed to be sure */
+
+    switch (SCOTCH_randomLoad (fileptr)) {
+      case 0 :
+        while (1) {                               /* Discard all CR(LF) before separator character */
+          int                 c;
+
+          c = getc (fileptr);
+          if (c == '#')                           /* If separator character found */
+            break;
+          if (c == EOF) {
+            errorPrint ("main: cannot read from file (2)");
+            return     (1);
+          }
+        }
+
+        if (fread (randtab, sizeof (INT), RANDNBR, fileptr) < RANDNBR) {
+          errorPrint ("main: cannot read from file (3)");
+          return     (1);
+        }
+
+        for (randnum = 0; randnum < RANDNBR; randnum ++) {
+          if (randtab[randnum] != intRandVal (INTVALMAX)) {
+            errorPrint ("main: state not properly saved/restored");
+            return     (1);
+          }
+        }
+        break;
+      case 1 :
+        printf ("Random state cannot be loaded\n");
+        break;
+      default :
+        errorPrint ("Could not save random state");
+        break;
+    }
   }
 
   fclose (fileptr);
