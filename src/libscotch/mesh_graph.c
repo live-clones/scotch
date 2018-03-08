@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 19 nov 2009     **/
 /**                                 to     19 nov 2009     **/
 /**                # Version 6.0  : from : 15 aug 2016     **/
-/**                                 to     15 aug 2016     **/
+/**                                 to     13 feb 2018     **/
 /**                                                        **/
 /**   NOTES      : # From a given mesh is created a graph, **/
 /**                  such that all vertices of the graph   **/
@@ -200,6 +200,7 @@ Graph * restrict const        grafptr)            /*+ Graph to build +*/
   }
   grafptr->verttax[vertnum] = edgenum;            /* Set end of vertex array */
 
+  grafptr->edlosum =
   grafptr->edgenbr = edgenum - grafptr->baseval;
   grafptr->degrmax = degrmax;
 

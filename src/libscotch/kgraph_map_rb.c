@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2013,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,7 +67,7 @@
 /**                # Version 5.1  : from : 22 nov 2007     **/
 /**                                 to     07 oct 2008     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     28 aug 2014     **/
+/**                                 to     12 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -492,7 +492,7 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
 #ifdef SCOTCH_DEBUG_KGRAPH2
       if (mappptr->parttax[vertnum] < 0) {        /* If vertex has not been mapped */
         errorPrint ("kgraphMapRbVfloMerge: internal error (1)");
-        return;
+        return     (1);
       }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
       continue;                                   /* Skip to next vertex */
@@ -501,7 +501,7 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
 #ifdef SCOTCH_DEBUG_KGRAPH2
     if (mappptr->parttax[vertnum] >= 0) {         /* If fixed vertex has been mapped */
       errorPrint ("kgraphMapRbVfloMerge: internal error (2)");
-      return;
+      return     (1);
     }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 

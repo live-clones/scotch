@@ -78,10 +78,10 @@
 static StratTab             stratdummytab = { NULL, NULL, NULL }; /* Dummy strategy table for the dummy empty object       */
 Strat                       stratdummy = { &stratdummytab, STRATNODEEMPTY }; /* Dummy empty object for offset computations */
 
-#ifdef SCOTCH_PTHREAD
+#ifdef COMMON_PTHREAD_MEMORY
 static int                  muteflag = 1;         /*+ Flag for mutex initialization +*/
 static pthread_mutex_t      mutelocdat;           /*+ Local mutex for parsing       +*/
-#endif /* SCOTCH_PTHREAD */
+#endif /* COMMON_PTHREAD_MEMORY */
 
 /**************************/
 /*                        */
@@ -121,9 +121,9 @@ const char * const          string)               /*+ Strategy string to parse  
 
   o = stratParserParse (strattab, string);        /* Parse strategy string */
 
-#ifdef SCOTCH_PTHREAD
+#ifdef COMMON_PTHREAD_MEMORY
   pthread_mutex_unlock (&mutelocdat);             /* Unlock local mutex */
-#endif /* SCOTCH_PTHREAD */
+#endif /* COMMON_PTHREAD_MEMORY */
 
   return (o);
 }
