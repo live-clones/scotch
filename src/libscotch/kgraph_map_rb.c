@@ -501,7 +501,7 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
 #ifdef SCOTCH_DEBUG_KGRAPH2
     if (mappptr->parttax[vertnum] >= 0) {         /* If fixed vertex has been mapped */
       errorPrint ("kgraphMapRbVfloMerge: internal error (2)");
-      return (2);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
