@@ -8,8 +8,7 @@
 # Since all files are linked with the MPI libraries, this file is
 # for compiling PT-Scotch only. To compile Scotch, remove the
 # -DSCOTCH_PTSCOTCH flag, as well as all references to MPI in the
-# CFLAGS and CLIBFLAGS	=
-LDFLAGS variables.
+# CFLAGS and CLIBFLAGS = LDFLAGS variables.
 
 EXE			=
 LIB			= .a
@@ -26,14 +25,14 @@ CCD			= gcc
 #--- Compiler/loader flags
 CFLAGS_CPL		= -O0 -g3
 CFLAGS_INC		= 
-CFLAGS_DEF		= -DCOMMON_RANDOM_FIXED_SEED -DCOMMON_STUB_FORK -DSCOTCH_PTSCOTCH -DSCOTCH_RENAME -D'pipe(pfds)=_pipe(pfds,1024,0x8000)'
-CLIBFLAGS	=
+CFLAGS_DEF		= -DCOMMON_RANDOM_FIXED_SEED -DCOMMON_STUB_FORK -DSCOTCH_PTSCOTCH -DSCOTCH_RENAME -DCOMMON_WINDOWS
+CLIBFLAGS		=
 LDFLAGS   		= 
 
 PGMFILES=$(PROGRAMFILES)
 
 #--- MPI
-MPI_ROOTDIR		= $(PGMFILES)/MPICH2
+MPI_ROOTDIR	= $(PGMFILES)/MPICH2
 CFLAGS_INC	+= -I$(MPI_ROOTDIR)/include
 #--- Comment/Uncomment for threaded MPI
 CLIBFLAGS	=
@@ -43,12 +42,12 @@ LDFLAGS    	+= -L$(MPI_ROOTDIR)/lib -lm -lmpich2mt
 
 #--- Pthread : Uncomment for pthread support
 #PTHREAD_ROOTDIR		= $(PGMFILES)/pthread-win32
-#CFLAGS_INC		+= -I$(PTHREAD_ROOTDIR)/include
+#CFLAGS_INC	+= -I$(PTHREAD_ROOTDIR)/include
 #CLIBFLAGS	=
 LDFLAGS		+= -L$(PTHREAD_ROOTDIR)/lib -lpthreadGC2
 
 #--- zlib: Uncomment for compressed files
-#ZLIB_ROOTDIR		= $(PGMFILES)/zlib-1.2.3
+#ZLIB_ROOTDIR	= $(PGMFILES)/zlib-1.2.3
 #CFLAGS_INC	+= -I$(ZLIB_ROOTDIR)/include
 #CLIBFLAGS	=
 LDFLAGS	+= -L$(ZLIB_ROOTDIR)/lib -lzdll
@@ -60,10 +59,10 @@ LDFLAGS	+= -L$(ZLIB_ROOTDIR)/lib -lzdll
 #CFLAGS_DEF	+= -DSCOTCH_PTHREAD
 
 CFLAGS		= $(CFLAGS_CPL) $(CFLAGS_INC) $(CFLAGS_DEF)
-CP			= cp
-LEX			= flex -Pscotchyy -olex.yy.c
-LN			= cp
-MKDIR			= mkdir
-MV			= mv
-RANLIB			= ranlib
-YACC			= bison -pscotchyy -y -b y
+CP		= cp
+LEX		= flex -Pscotchyy -olex.yy.c
+LN		= cp
+MKDIR		= mkdir
+MV		= mv
+RANLIB		= ranlib
+YACC		= bison -pscotchyy -y -b y
