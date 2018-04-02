@@ -173,7 +173,33 @@ version of "scotch.h" may lead to unpredictable behavior because of
 memory overflow.
 
 
-2.4) Compression libraries
+2.4) Portability issues
+-----------------------
+
+While most of the code of Scotch poses no compatibility issues, some
+features are subject to many diverging implementations, such as
+date/time management, pipes, process forking, etc. Some of them are
+handled globally, thanks to system-specific flags. Others have to be
+finely tuned, depending on your platform.
+
+Some common platform configurations are available in the
+"src/Make.inc/" subdirectory.
+
+The compilation flags used to manage portability issues are the
+following:
+
+"-DCOMMON_WINDOWS" tweaks some includes and definitions to resolve
+most issues encountered on Windows platforms.
+
+"-DCOMMON_TIMING_OLD" selects the getrusage()-based timing routine,
+when "-DCOMMON_WINDOWS" is not set. Else, either clock_gettime() or
+gettimeofday() are selected, depending on POSIX compilation flags.
+
+"-DCOMMON_STUB_FORK" provides a stub for the fork() system call on
+systems that do not allow process forking.
+
+
+2.5) Compression libraries
 --------------------------
 
 The binaries of the Scotch distribution can handle compressed
@@ -199,7 +225,7 @@ compressed files cannot be handled when the "-DCOMMON_PTHREAD_FILE"
 flag is not set (see below).
 
 
-2.5) Multi-threading
+2.6) Multi-threading
 --------------------
 
 Scotch can also take advantage of Posix threads when they are
@@ -294,7 +320,7 @@ not a problem, as Cygwin provides its own implementation of Posix
 threads.
 
 
-2.6) Monitoring memory allocation
+2.7) Monitoring memory allocation
 ---------------------------------
 
 Some memory allocation information can be aggregated if PT-Scotch is
@@ -315,7 +341,7 @@ memory checking should be enabled by default, and 0 else. This
 mechanism is absolutely NOT thread-safe at the time being.
 
 
-2.7) Randomness
+2.8) Randomness
 ---------------
 
 Many algorithms in Scotch and PT-Scotch are based on the random
@@ -348,7 +374,7 @@ case, the "-DCOMMON_RANDOM_RAND" flag allows one to use the srand()
 routine instead of the default srandom() routine.
 
 
-2.8) Deterministic behavior
+2.9) Deterministic behavior
 ---------------------------
 
 When Scotch is compiled with the "-DCOMMON_RANDOM_FIXED_SEED"
@@ -385,7 +411,7 @@ avoid any interference with third-party libraries that might use the
 operating system pseudo-random generator.
 
 
-2.9) Point-to-point or collective communications
+2.10) Point-to-point or collective communications
 ------------------------------------------------
 
 Since distributed graph vertices can have any initial distribution
@@ -402,7 +428,7 @@ numbers of processes. To disable it, set the "-DSCOTCH_PTOP" flag at
 compile time.
 
 
-2.10) MeTiS compatibility library
+2.11) MeTiS compatibility library
 ---------------------------------
 
 In order to ease the adoption of Scotch/PT-Scotch by people who
