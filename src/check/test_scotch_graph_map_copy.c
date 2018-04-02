@@ -1,4 +1,4 @@
-/* Copyright 2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                specific case of the "copy" method.     **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 15 oct 2014     **/
-/**                                 to     28 feb 2015     **/
+/**                                 to     24 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,15 +75,11 @@ char *              argv[])
   SCOTCH_Mapping          mapodat;                /* Old mapping        */
   FILE *                  fileptr;
   SCOTCH_Graph            grafdat;
-  SCOTCH_Num              xdimsiz;
-  int                     archnum;
   SCOTCH_Arch             archdat;
   SCOTCH_Strat            stratab[STRANBR];
   int                     stranum;
   int                     typenum;
-  SCOTCH_Num              baseval;
   SCOTCH_Num              vertnbr;
-  SCOTCH_Num              vertnum;
   SCOTCH_Num *            parttab;
   SCOTCH_Num *            parotab;
 
@@ -131,7 +127,6 @@ char *              argv[])
 
   for (stranum = 0; stranum < (STRANBR - 1); stranum ++) {
     for (typenum = 0; typenum < 2; typenum ++) {
-      int                 i;
       int                 o;
 
       printf ("Strat %d, type %d\n", stranum, typenum);

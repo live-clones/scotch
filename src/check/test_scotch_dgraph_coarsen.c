@@ -1,4 +1,4 @@
-/* Copyright 2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_dgraphCoarsen() routine.     **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 sep 2014     **/
-/**                                 to     02 mar 2015     **/
+/**                                 to     24 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,7 +80,6 @@ char *              argv[])
   int                 proclocnum;                 /* Number of this process                 */
   SCOTCH_Num          vertglbnbr;
   SCOTCH_Num          vertlocnbr;
-  SCOTCH_Num          baseval;
   SCOTCH_Dgraph       grafdat;
   SCOTCH_Dgraph       coargrafdat;
   SCOTCH_Num          coarvertglbnbr;

@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_dgraphBand() routine.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 21 feb 2012     **/
-/**                                 to     02 mar 2015     **/
+/**                                 to     24 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,11 +82,9 @@ char *              argv[])
   SCOTCH_Num            vertlocnbr;
   SCOTCH_Num            vertlocnum;
   SCOTCH_Num *          partloctab;
-  SCOTCH_Num            baseval;
   SCOTCH_Dgraph         srcgrafdat;
   SCOTCH_Dgraph         dstgrafdat;
   FILE *                file;
-  int                   procnum;
 #ifdef SCOTCH_PTHREAD
   int                 thrdlvlreqval;
   int                 thrdlvlproval;

@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                strategy building routines.             **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 01 oct 2014     **/
-/**                                 to     19 mar 2016     **/
+/**                                 to     24 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,9 +76,7 @@ int                 argc,
 char *              argv[])
 {
   INT *               randtab;
-  int                 randnbr;
   int                 randnum;
-  struct stat         statdat;
   FILE *              fileptr;
   int                 passnum;
 
@@ -144,7 +142,6 @@ char *              argv[])
     sleep (1);                                    /* Next run will not get the same time() value */
   }
   else {                                          /* Second pass */
-    const char * const  bufftab = "";
     char *              charptr;
     int                 o;
 

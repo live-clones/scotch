@@ -1,4 +1,4 @@
-## Copyright 2011,2012,2014-2016 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2011,2012,2014-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -42,8 +42,12 @@ LIBSCOTCH		= -lscotch -lscotcherrexit
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
 DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)
 
-EXECS			=
-EXECP			= mpirun -n 4
+EXECS			?=
+EXECP			?= mpirun -n 3
+# EXECP			?= mpirun -n 3 valgrind --leak-check=full --track-origins=yes
+# EXECP			?= mpirun -n 3 --oversubscribe
+
+PROGDIFF		?= diff
 
 ##
 ##  General inference rules.
@@ -76,10 +80,12 @@ realclean			:	clean
 					-$(RM) 				\
 					test_common_random		\
 					test_common_thread		\
+					test_fibo			\
 					test_scotch_arch		\
 					test_scotch_arch_deco		\
 					test_scotch_graph_coarsen	\
 					test_scotch_graph_color		\
+					test_scotch_graph_diam		\
 					test_scotch_graph_map		\
 					test_scotch_graph_map_copy	\
 					test_scotch_graph_order		\
@@ -89,6 +95,7 @@ realclean			:	clean
 					test_scotch_dgraph_coarsen	\
 					test_scotch_dgraph_grow		\
 					test_scotch_dgraph_redist	\
+					test_scotch_mesh_graph		\
 					test_strat_par			\
 					test_strat_seq
 
@@ -119,9 +126,10 @@ CHECKPTSCOTCH = 	check_strat_par				\
 			check_scotch_dgraph_coarsen		\
 			check_scotch_dgraph_grow		\
 			check_scotch_dgraph_redist		\
+			check_prog_dgscat-dggath
 
 ##
-##  Todo list.
+##  Sequential library tests.
 ##
 
 check_common_random		:	test_common_random
@@ -146,31 +154,6 @@ check_fibo			:	test_fibo
 
 test_fibo			:	test_fibo.c			\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
-
-##
-
-check_dgraph_fold_comm		:	test_dgraph_fold_comm
-					$(EXECS) ./test_dgraph_fold_comm data/dgraph_fold_comm_1.txt
-
-test_dgraph_fold_comm		:	test_dgraph_fold_comm.c
-
-##
-
-check_scotch_dgraph_redist	:	test_scotch_dgraph_redist
-					$(EXECP) ./test_scotch_dgraph_redist data/bump.grf
-
-test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
-
-##
-
-check_prog_gord			:
-					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf /dev/null -vt
-					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf /dev/null -vt
-
-##
-
-check_prog_gpart_remap		:
-					$(EXECS) $(SCOTCHBINDIR)/gpart 32 data/bump_imbal_32.grf /dev/null -rodata/bump_old.map -vmt
 
 ##
 
@@ -270,6 +253,8 @@ test_strat_seq			:	test_strat_seq.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
+##  Parallel library tests.
+##
 
 check_strat_par			:	test_strat_par
 					$(EXECS) ./test_strat_par
@@ -310,3 +295,36 @@ check_scotch_dgraph_grow	:	test_scotch_dgraph_grow
 
 test_scotch_dgraph_grow		:	test_scotch_dgraph_grow.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
+
+##
+
+check_scotch_dgraph_redist	:	test_scotch_dgraph_redist
+					$(EXECP) ./test_scotch_dgraph_redist data/bump.grf
+
+test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
+
+##
+##  Sequential program tests.
+##
+
+check_prog_gord			:
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf /dev/null -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf /dev/null -vt
+
+##
+
+check_prog_gpart_remap		:
+					$(EXECS) $(SCOTCHBINDIR)/gpart 32 data/bump_imbal_32.grf /dev/null -rodata/bump_old.map -vmt
+
+##
+##  Parallel program tests.
+##
+
+check_prog_dgscat-dggath	:	TMP := $(shell mktemp -u)
+check_prog_dgscat-dggath	:
+					$(EXECP) $(SCOTCHBINDIR)/dgscat -r1 -c data/m16x16.grf "$(TMP)1_%r.grf"
+					$(EXECP) $(SCOTCHBINDIR)/dggath -r1 -c "$(TMP)1_%r.grf" "$(TMP)1.grf"
+					$(PROGDIFF) data/m16x16.grf "$(TMP)1.grf"
+					$(EXECP) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b1.grf "$(TMP)2_%r.grf"
+					$(EXECP) $(SCOTCHBINDIR)/dggath -c "$(TMP)2_%r.grf" "$(TMP)2.grf"
+					$(PROGDIFF) data/m16x16_b1.grf "$(TMP)2.grf"

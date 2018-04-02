@@ -39,7 +39,7 @@
 /**                the SCOTCH_graphColor() routine.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 11 feb 2018     **/
-/**                                 to     11 feb 2018     **/
+/**                                 to     24 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,7 +70,6 @@ char *              argv[])
   FILE *              fileptr;
   SCOTCH_Mesh         meshdat;
   SCOTCH_Graph        grafdat;
-  SCOTCH_Num          diamval;
 
   SCOTCH_errorProg (argv[0]);
 

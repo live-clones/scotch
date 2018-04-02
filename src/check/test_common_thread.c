@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                strategy building routines.             **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 nov 2012     **/
-/**                                 to     01 mar 2015     **/
+/**                                 to     24 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +121,6 @@ testThreads (
 TestThread * restrict   thrdptr)
 {
   TestThreadGroup * restrict const  grouptr = (TestThreadGroup *) (thrdptr->thrddat.grouptr);
-  const int                         thrdnbr = grouptr->thrddat.thrdnbr;
   const int                         thrdnum = thrdptr->thrddat.thrdnum;
   int                               o;
 
