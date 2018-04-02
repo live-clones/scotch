@@ -39,7 +39,7 @@
 /**                cloning function.                       **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 22 feb 2016     **/
-/**                                 to     22 feb 2016     **/
+/**                                 to     22 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,7 +76,6 @@ Graph * restrict const          clngrafptr)
   Gnum                  baseval;
   Gnum                  vertnbr;
   Gnum                  vertnnd;
-  Gnum                  edgenbr;
   Gnum                  datasiz;
   Gnum                  edgesiz;
 

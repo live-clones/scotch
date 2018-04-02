@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 26 mar 2011     **/
 /**                # Version 6.0  : from : 07 nov 2011     **/
-/**                                 to   : 13 aug 2016     **/
+/**                                 to   : 22 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -146,11 +146,8 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   queutailval  = 0;
   bndvlvlnum   = 0;                               /* Assume first layer is last layer   */
   while (distmax -- > 0) {                        /* For all passes except the last one */
-    Gnum                orgvertnum;
-    Gnum                orgdistval;
-
-    bndvlvlnum = queuheadval;                     /* Record start of last layer */
-    while (queutailval < bndvlvlnum) {            /* For all vertices in queue  */
+    bndvlvlnum = queuheadval;                     /* Record start of last layer         */
+    while (queutailval < bndvlvlnum) {            /* For all vertices in queue          */
       Gnum                orgvertnum;
       Gnum                orgedgenum;
       Gnum                orgpartval;

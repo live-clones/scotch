@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -66,7 +66,7 @@
 /**                # Version 5.1  : from : 22 nov 2007     **/
 /**                                 to     04 feb 2009     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     29 aug 2014     **/
+/**                                 to     25 feb 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -694,15 +694,6 @@ kgraphMapRbMapPoolRemv (
 KgraphMapRbMapPoolData * const  poolptr,
 const KgraphMapRbMapJob * const joboldptr)        /* Job to be removed */
 {
-  KgraphMapRbMapJob * restrict  jobtab;
-  const Anum * restrict         mapparttax;       /* Based pointer to mapping part array */
-  const Gnum * restrict         jobvnumtax;
-  const Gnum * restrict         jobverttax;
-  const Gnum * restrict         jobvendtax;
-  const Gnum * restrict         topverttax;
-  const Gnum * restrict         topvendtax;
-  const Gnum * restrict         topedgetax;
-
   if (poolptr->polival >= KGRAPHMAPRBPOLINEIGHBOR) { /* If neighbors have to be modified */
     Gnum                jobvertnnd;
     Gnum                jobvertnum;

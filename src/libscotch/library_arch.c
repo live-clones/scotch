@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009-2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,8 +52,8 @@
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 5.1  : from : 05 jun 2009     **/
 /**                                 to   : 13 feb 2011     **/
-/**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     31 dec 2016     **/
+/**                # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to     23 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -474,9 +474,7 @@ const SCOTCH_Num * const    linktab,              /*+ Link cost array, by increa
 const SCOTCH_Num            permnbr,              /*+ Number of permutation indices               +*/
 const SCOTCH_Num * const    permtab)              /*+ Permutation array                           +*/
 {
-  Anum                levlnum;
   Anum                permnum;
-  Anum                sizeval;
   Arch *              tgtarchptr;
   ArchTleaf *         tgtarchdatptr;
 

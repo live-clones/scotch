@@ -35,7 +35,7 @@
 /**                                                        **/
 /**   AUTHOR     : Jun-Ho HER (v6.0)                       **/
 /**                                                        **/
-/**   FUNCTION   : These lines are the data declaration    **/
+/**   FUNCTION   : These lines are the data declarations   **/
 /**                for the sequential bipartitioning       **/
 /**                routine for distributed graphs.         **/
 /**                                                        **/
@@ -62,7 +62,7 @@ typedef struct BdgraphBipartSqParam_ {
 #define static
 #endif
 
-int                         bdgraphBipartSq   (Bdgraph * const, const BdgraphBipartSqParam * const);
+int                         bdgraphBipartSq     (Bdgraph * const, const BdgraphBipartSqParam * const);
 
 static void                 bdgraphBipartSqOpBest (const Gnum * const, Gnum * const, const int * const, const MPI_Datatype * const);
 

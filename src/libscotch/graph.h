@@ -95,8 +95,8 @@
 */
 
 #ifndef GNUMMAX                                   /* If dgraph.h not included    */
-typedef INT                   Gnum;               /* Vertex and edge numbers     */
-typedef UINT                  Gunum;              /* Unsigned type of same width */
+typedef INT                 Gnum;                 /* Vertex and edge numbers     */
+typedef UINT                Gunum;                /* Unsigned type of same width */
 #define GNUMMAX                     INTVALMAX     /* Maximum signed Gnum value   */
 #define GNUMMIN                     (-GNUMMAX - 1) /* Minimum signed Gnum value  */
 #define GNUMSTRING                  INTSTRING     /* String to printf a Gnum     */

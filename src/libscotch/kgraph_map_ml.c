@@ -42,8 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 13 jul 2010     **/
 /**                                 to     14 jul 2010     **/
-/**   DATES      : # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     16 aug 2015     **/
+/**                # Version 6.0  : from : 03 mar 2011     **/
+/**                                 to     25 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,7 +90,6 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
 {
   GraphCoarsenMulti * restrict  coarmulttab;
   Gnum                          coarvertnum;      /* Number of current multinode vertex */
-  Gnum                          coarflagval;
 
   const Anum * restrict const finepfixtax = finegrafptr->pfixtax;
 

@@ -67,7 +67,7 @@
 /**                # Version 5.1  : from : 22 nov 2007     **/
 /**                                 to     07 oct 2008     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     12 feb 2018     **/
+/**                                 to     25 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,11 +117,6 @@ const KgraphMapRbParam * restrict const paraptr)
   Anum                          vflonbr;          /* Number of fixed vertex load slots                 */
   Gnum                          vertnum;
   int                           o;
-
-  Gnum * const                frontab = grafptr->frontab;
-  const Gnum * restrict const verttax = grafptr->s.verttax;
-  const Gnum * restrict const vendtax = grafptr->s.vendtax;
-  const Gnum * restrict const edgetax = grafptr->s.edgetax;
 
   grafptr->kbalval = paraptr->kbalval;            /* Store last k-way imbalance ratio */
 
@@ -501,7 +496,7 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
 #ifdef SCOTCH_DEBUG_KGRAPH2
     if (mappptr->parttax[vertnum] >= 0) {         /* If fixed vertex has been mapped */
       errorPrint ("kgraphMapRbVfloMerge: internal error (2)");
-      return (2);
+      return     (1);
     }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
@@ -714,7 +709,7 @@ const Gnum * restrict const             vflowgttab) /*+ Array of vertex weight b
   }
   o = 0;                                          /* Computations succeeded */
 
-fail:
+fail :
   if ((o != 0) || (veexmsk == 0)) {               /* If external gain array is useless */
     memFree (veextax + actgrafptr->s.baseval);    /* Forget about it                   */
     return  (o);                                  /* Return error code                 */

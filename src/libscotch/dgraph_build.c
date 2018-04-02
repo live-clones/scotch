@@ -222,8 +222,8 @@ const Gnum                  degrlocmax)
     grafptr->procvrttab[procnum + 1] = grafptr->procvrttab[procnum] + (Gnum) grafptr->procngbtab[2 * procnum + 1];
     grafptr->proccnttab[procnum]     = grafptr->procdsptab[procnum + 1] - grafptr->procdsptab[procnum];
   }
-
   grafptr->flagval |= DGRAPHFREEPRIV;
+
   return (dgraphBuild3 (grafptr, baseval,
                         vertlocnbr, vertloctax, vendloctax, veloloctax, velolocsum, vnumloctax, vlblloctax,
                         edgelocnbr, edgelocsiz, edgeloctax, edgegsttax, edloloctax, degrlocmax));

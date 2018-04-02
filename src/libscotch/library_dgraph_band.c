@@ -82,7 +82,6 @@ SCOTCH_Num * const          fronloctab,
 const SCOTCH_Num            distval,
 SCOTCH_Dgraph * const       bndgrafptr)
 {
-  MPI_Comm              bandproccomm;
   Gnum                  bandvertlocnnd;           /* End of local band vertex array                      */
   Gnum                  bandvertlocnbr;           /* Number of local band vertices                       */
   Gnum                  bandvertlvlnum;           /* Index of first band vertex belonging to last level  */
@@ -101,12 +100,10 @@ SCOTCH_Dgraph * const       bndgrafptr)
   Gnum * restrict       bandvnumgsttax;           /* Indices of selected band vertices in band graph     */
   Gnum * restrict       bandvlblloctax;
   Gnum                  banddegrlocmax;
-  Gnum                  degrval;
   Gnum                  veloval;
   Gnum                  vertlocadj;
   const Gnum * restrict edgegsttax;
   SCOTCH_Num *          fronloctax;
-  Gnum                  fronlocnum;
   int                   cheklocval;
   int                   chekglbval;
   int                   procngbnum;

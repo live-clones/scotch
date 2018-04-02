@@ -1,4 +1,4 @@
-/* Copyright 2007-2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2011,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,8 +34,8 @@
 /**   NAME       : wgraph_part_st.c                        **/
 /**                                                        **/
 /**   AUTHOR     : Jun-Ho HER (v6.0)                       **/
-/**                Charles-Edmond BICHOT (v5.1b)           **/
 /**                Sebastien FOURESTIER (v6.0)             **/
+/**                Charles-Edmond BICHOT (v5.1b)           **/
 /**                                                        **/
 /**   FUNCTION   : This module contains the global         **/
 /**                vertex overlapped graph partitioning    **/ 
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 5.1  : from : 01 dec 2007     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 6.0  : from : 05 nov 2009     **/
-/**                                 to     16 apr 2011     **/
+/**                                 to     26 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,7 +77,9 @@
 **  The static and global variables.
 */
 
+#if 0 /* Not used */
 static Wgraph               wgraphdummy;          /* Dummy overlap graph for offset computations */
+#endif
 
 static union {
   WgraphPartFmParam         param;

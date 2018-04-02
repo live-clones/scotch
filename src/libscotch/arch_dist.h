@@ -42,7 +42,7 @@
 /**                tioning routines to handle floating-    **/
 /**                point migration costs.                  **/
 /**                                                        **/
-/**   DATES      : # Version 6.0  : from : 14 fev 2011     **/
+/**   DATES      : # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 01 jul 2014     **/
 /**                                                        **/
 /************************************************************/

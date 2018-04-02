@@ -2229,6 +2229,28 @@ library_graph_color_f$(OBJ)	:	library_graph_color_f.c			\
 					common.h				\
 					scotch.h
 
+library_graph_diam$(OBJ)	:	library_graph_diam.c			\
+					module.h				\
+					common.h				\
+					graph.h					\
+					scotch.h
+
+library_graph_diam_f$(OBJ)	:	library_graph_diam_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_graph_induce$(OBJ)	:	library_graph_induce.c			\
+					module.h				\
+					common.h				\
+					graph.h					\
+					scotch.h
+
+library_graph_induce_f$(OBJ)	:	library_graph_induce_f.c		\
+					module.h				\
+					common.h				\
+					scotch.h
+
 library_graph_io_chac$(OBJ)	:	library_graph_io_chac.c			\
 					module.h				\
 					common.h				\

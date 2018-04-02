@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -65,7 +65,7 @@
 /**                # Version 5.1  : from : 25 jun 2008     **/
 /**                                 to     28 apr 2009     **/
 /**                # Version 6.0  : from : 04 mar 2011     **/
-/**                                 to     16 sep 2014     **/
+/**                                 to     26 fev 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -280,7 +280,6 @@ mapCopy (
 Mapping * restrict const       mappptr,           /*+ Mapping to set +*/
 const Mapping * restrict const mapoptr)           /*+ Old mapping    +*/
 {
-  ArchDom *           domntab;
   Anum                domnnbr;
   Gnum                baseval;
 
