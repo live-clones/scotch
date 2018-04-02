@@ -32,7 +32,7 @@
 
 VERSION	= 6
 RELEASE = 0
-PATCHLEVEL = 5
+PATCHLEVEL = 6
 
 .PHONY				:	clean	default	install	ptscotch	realclean	required	scotch
 
@@ -114,7 +114,9 @@ ptesmumps			:	scotch	ptscotch
 install				:	required	$(bindir)	$(includedir)	$(libdir)	$(mandir)/man1
 					-$(CP) -f ../bin/[agm]*$(EXE) $(bindir)
 					-$(CP) -f ../bin/d[agm]*$(EXE) $(bindir)
+					-$(CP) -f ../include/*esmumps*.h $(includedir)
 					-$(CP) -f ../include/*scotch*.h $(includedir)
+					-$(CP) -f ../lib/*esmumps*$(LIB) $(libdir)
 					-$(CP) -f ../lib/*scotch*$(LIB) $(libdir)
 					-$(CP) -Rf ../man/* $(mandir)
 
