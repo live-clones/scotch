@@ -58,7 +58,7 @@
 /**                # Version 5.1  : from : 01 jan 2009     **/
 /**                                 to     01 jan 2009     **/
 /**                # Version 6.0  : from : 29 mar 2011     **/
-/**                                 to     23 feb 2018     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /**   NOTES      : # Several algorithms, such as the       **/
 /**                  active graph building routine of      **/

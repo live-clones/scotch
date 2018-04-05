@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 5.1  : from : 24 oct 2010     **/
 /**                                 to     24 oct 2010     **/
 /**                # Version 6.0  : from : 22 mar 2012     **/
-/**                                 to     07 nov 2014     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,7 +75,6 @@ Hgraph * restrict const       indgrafptr)         /* Pointer to induced halo gra
   const Gnum * restrict const orgverttax = orggrafptr->s.verttax;
   const Gnum * restrict const orgvendtax = orggrafptr->s.vendtax;
   const Gnum * restrict const orgvelotax = orggrafptr->s.velotax;
-  const Gnum * restrict const orgvnumtax = orggrafptr->s.vnumtax;
   const Gnum * restrict const orgedgetax = orggrafptr->s.edgetax;
   Gnum * restrict const       indvnhdtax = indgrafptr->vnhdtax;
   Gnum * restrict const       indverttax = indgrafptr->s.verttax;
