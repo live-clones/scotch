@@ -289,6 +289,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			hgraph_check$(OBJ)			\
 			hgraph_induce$(OBJ)			\
 			hgraph_order_bl$(OBJ)			\
+			hgraph_order_cc$(OBJ)			\
 			hgraph_order_cp$(OBJ)			\
 			hgraph_order_gp$(OBJ)			\
 			hgraph_order_hd$(OBJ)			\
@@ -1318,6 +1319,16 @@ hgraph_order_bl$(OBJ)		:	hgraph_order_bl.c			\
 					order.h					\
 					hgraph.h				\
 					hgraph_order_bl.h
+
+hgraph_order_cc$(OBJ)		:	hgraph_order_cc.c			\
+					module.h				\
+					common.h				\
+					parser.h				\
+					graph.h					\
+					order.h					\
+					hgraph.h				\
+					hgraph_order_cc.h			\
+					hgraph_order_st.h
 
 hgraph_order_cp$(OBJ)		:	hgraph_order_cp.c			\
 					module.h				\

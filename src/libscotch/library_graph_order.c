@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012-2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012-2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to     14 aug 2010     **/
 /**                # Version 6.0  : from : 08 jan 2012     **/
-/**                                 to     15 nov 2014     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -295,7 +295,6 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     cblkptr    = &libordeptr->o.cblktre;
   }
   else {
-    VertList              listdat;
     Gnum * restrict       peritax;
     Gnum                  listnum;
     Gnum                  vertnum;
@@ -344,9 +343,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
-    listdat.vnumnbr = listnbr;
-    listdat.vnumtab = (Gnum * const) listtab;
-    if (hgraphInduceList (&halgrafdat, &listdat, srcgrafptr->vertnbr - listnbr, &halgraftmp) != 0) {
+    if (hgraphInduceList (&halgrafdat, listnbr, (Gnum * const) listtab, srcgrafptr->vertnbr - listnbr, &halgraftmp) != 0) {
       errorPrint ("SCOTCH_graphOrderComputeList: cannot create induced subgraph");
       return     (1);
     }
@@ -502,7 +499,7 @@ const double                balrat)               /*+ Desired imbalance ratio   
   sprintf (bbaltab, "%lf", balrat);
   sprintf (levltab, GNUMSTRING, levlnbr);
 
-  strcpy (bufftab, "c{rat=0.7,cpr=n{sep=/(<TSTS>)?m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}<SEPA>;,ole=<OLEA>,ose=<OSEP>},unc=n{sep=/(<TSTS>)?m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}<SEPA>;,ole=<OLEA>,ose=<OSEP>}}");
+  strcpy (bufftab, "o{strat=c{rat=0.7,cpr=n{sep=/(<TSTS>)?m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}<SEPA>;,ole=<OLEA>,ose=<OSEP>},unc=n{sep=/(<TSTS>)?m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}<SEPA>;,ole=<OLEA>,ose=<OSEP>}}}");
 
   switch (flagval & (SCOTCH_STRATLEVELMIN | SCOTCH_STRATLEVELMAX)) {
     case SCOTCH_STRATLEVELMIN :

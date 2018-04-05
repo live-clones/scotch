@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     25 mar 2018     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -781,6 +781,7 @@
 #define hgraphInduceList            SCOTCH_NAME_INTERN (hgraphInduceList)
 #define hgraphCheck                 SCOTCH_NAME_INTERN (hgraphCheck)
 #define hgraphOrderBl               SCOTCH_NAME_INTERN (hgraphOrderBl)
+#define hgraphOrderCc               SCOTCH_NAME_INTERN (hgraphOrderCc)
 #define hgraphOrderCp               SCOTCH_NAME_INTERN (hgraphOrderCp)
 #define hgraphOrderGp               SCOTCH_NAME_INTERN (hgraphOrderGp)
 #define hgraphOrderHd               SCOTCH_NAME_INTERN (hgraphOrderHd)

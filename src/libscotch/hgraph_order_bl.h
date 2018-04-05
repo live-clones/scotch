@@ -44,6 +44,8 @@
 /**                                 to     29 dec 2004     **/
 /**                # Version 5.1  : from : 01 oct 2009     **/
 /**                                 to   : 04 nov 2010     **/
+/**                # Version 6.0  : from : 05 apr 2018     **/
+/**                                 to   : 05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,10 +64,4 @@ typedef struct HgraphOrderBlParam_ {
 **  The function prototypes.
 */
 
-#ifndef HGRAPH_ORDER_BL
-#define static
-#endif
-
 int                         hgraphOrderBl       (const Hgraph * const, Order * const, const Gnum, OrderCblk * const, const HgraphOrderBlParam * const);
-
-#undef static

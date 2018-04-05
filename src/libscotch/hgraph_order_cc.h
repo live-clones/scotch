@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,30 +31,31 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : hgraph_induce.h                         **/
+/**   NAME       : hgraph_order_cc.h                       **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : These lines are the data declarations   **/
-/**                for the halo graph subgraph making      **/
-/**                functions.                              **/
+/**   FUNCTION   : This module contains the data declara-  **/
+/**                tions for the graph cnnected component  **/
+/**                ordering routine.                       **/
 /**                                                        **/
-/**   DATES      : # Version 4.0  : from : 10 jan 2002     **/
-/**                                 to     22 dec 2002     **/
-/**                # Version 6.0  : from : 05 apr 2018     **/
+/**   DATES      : # Version 6.0  : from : 04 apr 2018     **/
 /**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
 /*
+**  The type and structure definitions.
+*/
+
+/*+ This structure holds the method parameters. +*/
+
+typedef struct HgraphOrderCcParam_ {
+  Strat *                   straptr;              /*+ Ordering strategy for connected components +*/
+} HgraphOrderCcParam;
+
+/*
 **  The function prototypes.
 */
 
-#ifdef HGRAPH_INDUCE
-
-static int                  hgraphInduce2       (const Hgraph * const, Gnum * const, Hgraph * const, const Gnum, Gnum * const);
-static void                 hgraphInduce2L      (const Hgraph * const, Gnum * const, Hgraph * const);
-static void                 hgraphInduce2U      (const Hgraph * const, Gnum * const, Hgraph * const);
-static Gnum                 hgraphInduce3       (const Hgraph * restrict const, const Gnum, const Gnum * restrict const);
-
-#endif /* HGRAPH_INDUCE */
+int                         hgraphOrderCc       (const Hgraph * const, Order * const, const Gnum, OrderCblk * const, const HgraphOrderCcParam * const);

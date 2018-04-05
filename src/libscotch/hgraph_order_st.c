@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 5.0  : from : 31 may 2008     **/
 /**                                 to     31 may 2008     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
-/**                                 to     17 oct 2012     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,6 +67,7 @@
 #include "order.h"
 #include "hgraph.h"
 #include "hgraph_order_bl.h"
+#include "hgraph_order_cc.h"
 #include "hgraph_order_cp.h"
 #include "hgraph_order_gp.h"
 #include "hgraph_order_hd.h"
@@ -90,6 +91,11 @@ static union {                                    /* Default parameters for bloc
   HgraphOrderBlParam        param;                /* Parameter zone                                */
   StratNodeMethodData       padding;              /* To avoid reading out of structure             */
 } hgraphorderstdefaultbl = { { &stratdummy, 8 } };
+
+static union {
+  HgraphOrderCcParam        param;
+  StratNodeMethodData       padding;
+} hgraphorderstdefaultcc = { { &stratdummy } };
 
 static union {
   HgraphOrderCpParam        param;
@@ -123,6 +129,7 @@ static union {                                    /* Default parameters for nest
 
 static StratMethodTab       hgraphorderstmethtab[] = { /* Graph ordering methods array */
                               { HGRAPHORDERSTMETHBL, "b",  hgraphOrderBl, &hgraphorderstdefaultbl },
+                              { HGRAPHORDERSTMETHCC, "o",  hgraphOrderCc, &hgraphorderstdefaultcc },
                               { HGRAPHORDERSTMETHCP, "c",  hgraphOrderCp, &hgraphorderstdefaultcp },
                               { HGRAPHORDERSTMETHGP, "g",  hgraphOrderGp, &hgraphorderstdefaultgp },
                               { HGRAPHORDERSTMETHHD, "d",  hgraphOrderHd, &hgraphorderstdefaulthd },
@@ -141,6 +148,10 @@ static StratParamTab        hgraphorderstparatab[] = { /* The method parameter l
                                 (byte *) &hgraphorderstdefaultbl.param,
                                 (byte *) &hgraphorderstdefaultbl.param.cblkmin,
                                 NULL },
+                              { HGRAPHORDERSTMETHCC,  STRATPARAMSTRAT,  "strat",
+                                (byte *) &hgraphorderstdefaultcc.param,
+                                (byte *) &hgraphorderstdefaultcc.param.straptr,
+                                (void *) &hgraphorderststratab },
                               { HGRAPHORDERSTMETHCP,  STRATPARAMDOUBLE, "rat",
                                 (byte *) &hgraphorderstdefaultcp.param,
                                 (byte *) &hgraphorderstdefaultcp.param.comprat,
