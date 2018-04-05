@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to     20 aug 2004     **/
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
+/**                # Version 6.0  : from : 05 apr 2018     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,13 +83,7 @@ typedef struct BgraphBipartGpQueue_ {
 **  The function prototypes.
 */
 
-#ifndef BGRAPH_BIPART_GP
-#define static
-#endif
-
 int                         bgraphBipartGp      (Bgraph * restrict const, const BgraphBipartGpParam * const);
-
-#undef static
 
 /*
 **  The macro definitions.

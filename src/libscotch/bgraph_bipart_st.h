@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to     15 jan 2002     **/
 /**                # Version 5.0  : from : 27 nov 2006     **/
 /**                                 to     13 jan 2007     **/
+/**                # Version 6.0  : from : 05 apr 2018     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,10 +79,4 @@ extern StratTab             bgraphbipartststratab;
 **  The function prototypes.
 */
 
-#ifndef BGRAPH_BIPART_ST
-#define static
-#endif
-
 int                         bgraphBipartSt      (Bgraph * restrict const, const Strat * restrict const);
-
-#undef static

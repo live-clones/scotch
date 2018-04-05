@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,7 +63,7 @@
 /**                # Version 5.1  : from : 08 jan 2008     **/
 /**                                 to     18 mar 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     08 aug 2014     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -120,10 +120,6 @@ typedef struct BgraphStore_ {
 **  The function prototypes.
 */
 
-#ifndef BGRAPH
-#define static
-#endif
-
 int                         bgraphInit          (Bgraph * restrict const, const Graph * restrict const, const Arch * restrict const, const ArchDom * restrict const, const Gnum * restrict const);
 void                        bgraphInit2         (Bgraph * restrict const, const Anum, const Anum, const Anum, const Gnum, const Gnum);
 void                        bgraphExit          (Bgraph * restrict const);
@@ -135,5 +131,3 @@ int                         bgraphStoreInit     (const Bgraph * const, BgraphSto
 void                        bgraphStoreExit     (BgraphStore * const);
 void                        bgraphStoreSave     (const Bgraph * const, BgraphStore * const);
 void                        bgraphStoreUpdt     (Bgraph * const, const BgraphStore * const);
-
-#undef static
