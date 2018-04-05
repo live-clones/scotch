@@ -81,7 +81,6 @@ const HgraphOrderCcParam * restrict const paraptr)
 {
   Hgraph                indgrafdat;
   Gnum                  indordenum;
-  OrderCblk * restrict  cblktab;
   Gnum * restrict       flagtax;                  /* Flag array                       */
   Gnum * restrict       roottab;                  /* Array of root indices in queutab */
   Gnum                  rootnbr;                  /* Number of connected components   */
@@ -102,14 +101,14 @@ const HgraphOrderCcParam * restrict const paraptr)
     errorPrint ("hgraphOrderCc: out of memory");
     return     (1);
   }
-  memSet (flagtax, 0, grafptr->vnohnbr * sizeof (Gnum)); /* Initialize flag array */
+  memSet (flagtax, ~0, grafptr->vnohnbr * sizeof (Gnum)); /* Initialize flag array */
   flagtax -= grafptr->s.baseval;
 
   rootnbr = 0;
   qhedidx =
   qtalidx = 0;
-  vrotnum = 0;
-  while (qtalidx != grafptr->vnohnbr) {
+  vrotnum = grafptr->s.baseval;
+  while (qtalidx < grafptr->vnohnbr) {
     while (flagtax[vrotnum] >= 0)                 /* Search for an unflagged vertex */
       vrotnum ++;
     roottab[rootnbr] = qtalidx;                   /* Record start vertex of component */
@@ -166,23 +165,27 @@ const HgraphOrderCcParam * restrict const paraptr)
   cblkptr->cblknbr  = rootnbr;
 
   for (rootnum = 0, indordenum = 0; rootnum < rootnbr; rootnum ++) {
-    Gnum                indvertnbr;
+    Gnum                indvnohnbr;
 
-    indvertnbr = roottab[rootnum + 1] - roottab[rootnum];
+    indvnohnbr = roottab[rootnum + 1] - roottab[rootnum];
 
-    if (hgraphInduceList (grafptr, indvertnbr, &queutab[roottab[rootnum]], grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat) != 0) {
+    if (hgraphInduceList (grafptr, indvnohnbr, &queutab[roottab[rootnum]], grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat) != 0) {
       errorPrint ("hgraphOrderCc: cannot create induced graph");
       memFree    (queutab);
       return     (1);
     }
 
-    if (hgraphOrderSt (&indgrafdat, ordeptr, indordenum, &cblktab[rootnum], paraptr->straptr) != 0) { /* Perform strategy on induced subgraph */
+    cblkptr->cblktab[rootnum].typeval = ORDERCBLKOTHR;
+    cblkptr->cblktab[rootnum].vnodnbr = indvnohnbr;
+    cblkptr->cblktab[rootnum].cblknbr = 0;
+    cblkptr->cblktab[rootnum].cblktab = NULL;
+    if (hgraphOrderSt (&indgrafdat, ordeptr, indordenum, &cblkptr->cblktab[rootnum], paraptr->straptr) != 0) { /* Perform strategy on induced subgraph */
       errorPrint ("hgraphOrderCc: cannot compute ordering on induced graph");
       memFree    (queutab);
       return     (1);
     }
 
-    indordenum += indvertnbr;
+    indordenum += indvnohnbr;
   }
 
   memFree (queutab);
