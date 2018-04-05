@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to     01 oct 1998     **/
 /**                # Version 4.0  : from : 01 nov 2003     **/
 /**                                 to     01 nov 2003     **/
+/**                # Version 6.0  : from : 05 apr 2018     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,10 +55,4 @@
 **  The function prototypes.
 */
 
-#ifndef BGRAPH_BIPART_ZR
-#define static
-#endif
-
 int                         bgraphBipartZr      (Bgraph * restrict const);
-
-#undef static
