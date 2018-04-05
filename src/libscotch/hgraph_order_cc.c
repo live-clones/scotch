@@ -163,6 +163,12 @@ const HgraphOrderCcParam * restrict const paraptr)
   ordeptr->treenbr += rootnbr;                    /* These more number of tree nodes    */
   ordeptr->cblknbr += rootnbr - 1;                /* These more number of column blocks */
   cblkptr->cblknbr  = rootnbr;
+  for (rootnum = 0; rootnum < rootnbr; rootnum ++) { /* Initialize tree node array */
+    cblkptr->cblktab[rootnum].typeval = ORDERCBLKOTHR;
+    cblkptr->cblktab[rootnum].vnodnbr = roottab[rootnum + 1] - roottab[rootnum];
+    cblkptr->cblktab[rootnum].cblknbr = 0;
+    cblkptr->cblktab[rootnum].cblktab = NULL;
+  }
 
   for (rootnum = 0, indordenum = 0; rootnum < rootnbr; rootnum ++) {
     Gnum                indvnohnbr;
@@ -175,10 +181,6 @@ const HgraphOrderCcParam * restrict const paraptr)
       return     (1);
     }
 
-    cblkptr->cblktab[rootnum].typeval = ORDERCBLKOTHR;
-    cblkptr->cblktab[rootnum].vnodnbr = indvnohnbr;
-    cblkptr->cblktab[rootnum].cblknbr = 0;
-    cblkptr->cblktab[rootnum].cblktab = NULL;
     if (hgraphOrderSt (&indgrafdat, ordeptr, indordenum, &cblkptr->cblktab[rootnum], paraptr->straptr) != 0) { /* Perform strategy on induced subgraph */
       errorPrint ("hgraphOrderCc: cannot compute ordering on induced graph");
       memFree    (queutab);
