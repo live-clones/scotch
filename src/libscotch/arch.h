@@ -65,7 +65,7 @@
 /**                # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
-/**                                 to     01 may 2015     **/
+/**                                 to     20 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -137,7 +137,7 @@ typedef struct ArchClass_ {
   int                    (* archFree)  ();        /*+ Architecture freeing function       +*/
   int                    (* matchInit) ();        /*+ Architecture matching init function +*/
   void                   (* matchExit) ();        /*+ Architecture matching exit function +*/
-  int                    (* matchMate) ();        /*+ Architecture matching function      +*/
+  Anum                   (* matchMate) ();        /*+ Architecture matching function      +*/
   ArchDomNum             (* domNum)    ();        /*+ Domain labeling function            +*/
   int                    (* domTerm)   ();        /*+ Terminal domain building function   +*/
   Anum                   (* domSize)   ();        /*+ Domain size function                +*/
