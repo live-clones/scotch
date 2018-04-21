@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 26 jul 2007     **/
 /**                                 to     18 oct 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     21 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,11 +67,32 @@ FORTRAN (                                               \
 SCOTCHFDGRAPHORDERSAVEMAP, scotchfdgraphordersavemap, ( \
 const SCOTCH_Dgraph * const     grafptr,                \
 const SCOTCH_Dordering * const  ordeptr,                \
-FILE * const                    stream,                 \
+int * const                     fileptr,                \
 int * const                     revaptr),               \
-(grafptr, ordeptr, stream, revaptr))
+(grafptr, ordeptr, fileptr, revaptr))
 {
-  *revaptr = SCOTCH_dgraphOrderSaveMap (grafptr, ordeptr, stream);
+  FILE *              stream;                     /* Stream to build from handle */
+  int                 filenum;                    /* Duplicated handle           */
+  int                 o;
+
+  if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */
+    errorPrint ("SCOTCHFDGRAPHORDERSAVEMAP: cannot duplicate handle");
+
+    *revaptr = 1;                                 /* Indicate error */
+    return;
+  }
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
+    errorPrint ("SCOTCHFDGRAPHORDERSAVEMAP: cannot open output stream");
+    close      (filenum);
+    *revaptr = 1;
+    return;
+  }
+
+  o = SCOTCH_dgraphOrderSaveMap (grafptr, ordeptr, stream);
+
+  fclose (stream);                                /* This closes filenum too */
+
+  *revaptr = o;
 }
 
 /*
@@ -82,9 +103,30 @@ FORTRAN (                                                 \
 SCOTCHFDGRAPHORDERSAVETREE, scotchfdgraphordersavetree, ( \
 const SCOTCH_Dgraph * const     grafptr,                  \
 const SCOTCH_Dordering * const  ordeptr,                  \
-FILE * const                    stream,                   \
+int * const                     fileptr,                  \
 int * const                     revaptr),                 \
-(grafptr, ordeptr, stream, revaptr))
+(grafptr, ordeptr, fileptr, revaptr))
 {
-  *revaptr = SCOTCH_dgraphOrderSaveTree (grafptr, ordeptr, stream);
+  FILE *              stream;                     /* Stream to build from handle */
+  int                 filenum;                    /* Duplicated handle           */
+  int                 o;
+
+  if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */
+    errorPrint ("SCOTCHFDGRAPHORDERSAVETREE: cannot duplicate handle");
+
+    *revaptr = 1;                                 /* Indicate error */
+    return;
+  }
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
+    errorPrint ("SCOTCHFDGRAPHORDERSAVETREE: cannot open output stream");
+    close      (filenum);
+    *revaptr = 1;
+    return;
+  }
+
+  o = SCOTCH_dgraphOrderSaveTree (grafptr, ordeptr, stream);
+
+  fclose (stream);                                /* This closes filenum too */
+
+  *revaptr = o;
 }
