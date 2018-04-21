@@ -2923,10 +2923,10 @@ structure remains ready for subsequent calls to any routine of the
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_graphInduceList ( & const SCOTCH\_Graph * & orggrafptr, \\
-                               & SCOTCH\_Num           & vnumnbr, \\
-                               & SCOTCH\_Num *         & vnumtab, \\
-                               & SCOTCH\_Graph *       & indgrafptr)
+int SCOTCH\_graphInduceList ( & const SCOTCH\_Graph * & orggrafptr, \\
+                              & SCOTCH\_Num           & vnumnbr, \\
+                              & SCOTCH\_Num *         & vnumtab, \\
+                              & SCOTCH\_Graph *       & indgrafptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -2958,11 +2958,11 @@ been successfully computed, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_graphInducePart ( & const SCOTCH\_Graph * & orggrafptr, \\
-                               & SCOTCH\_Num           & vnumnbr, \\
-                               & SCOTCH\_GraphPart2 *  & parttab, \\
-                               & SCOTCH\_GraphPart2    & partval, \\
-                               & SCOTCH\_Graph *       & indgrafptr)
+int SCOTCH\_graphInducePart ( & const SCOTCH\_Graph * & orggrafptr, \\
+                              & SCOTCH\_Num           & vnumnbr, \\
+                              & SCOTCH\_GraphPart2 *  & parttab, \\
+                              & SCOTCH\_GraphPart2    & partval, \\
+                              & SCOTCH\_Graph *       & indgrafptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
