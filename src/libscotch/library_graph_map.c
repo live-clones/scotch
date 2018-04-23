@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 29 oct 2007     **/
 /**                                 to     24 jul 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     29 oct 2014     **/
+/**                                 to     23 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -154,7 +154,7 @@ SCOTCH_Mapping * const      mappptr,              /*+ Mapping to compute        
 SCOTCH_Mapping * const      mapoptr,              /*+ Old mapping                            +*/
 const double                emraval,              /*+ Edge migration ratio                   +*/ 
 const SCOTCH_Num *          vmlotab,              /*+ Vertex migration cost array            +*/
-const Gnum                  vfixnbr,              /*+ Number of fixed vertices in part array +*/
+const SCOTCH_Num            vfixnbr,              /*+ Number of fixed vertices in part array +*/
 SCOTCH_Strat * const        straptr)              /*+ Mapping strategy                       +*/
 {
   Kgraph                mapgrafdat;               /* Effective mapping graph              */
