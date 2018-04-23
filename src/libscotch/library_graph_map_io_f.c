@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 03 jul 2012     **/
-/**                                 to     23 nov 2012     **/
+/**                                 to     23 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,7 +71,6 @@ int * const                 revaptr),       \
 {
   FILE *              stream;                     /* Stream to build from handle */
   int                 filenum;                    /* Duplicated handle           */
-  int                 filegeonum;
   int                 o;
 
   if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */

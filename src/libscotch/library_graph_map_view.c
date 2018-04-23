@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 27 jul 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     01 mar 2015     **/
+/**                                 to     23 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,7 +104,6 @@ FILE * const                  stream)             /*+ Output stream             
   const Arch * restrict     archptr;
   LibMapping * restrict     lmapptr;
   LibMapping * restrict     lmaoptr;
-  Mapping                   mappdat;
   Anum * restrict           parttax;              /* Part array                                   */
   Anum * restrict           parotax;              /* Old part array                               */
   MappingSort * restrict    domntab;              /* Pointer to domain sort array                 */

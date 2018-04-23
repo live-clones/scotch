@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                of the libSCOTCH library.               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 apr 2011     **/
-/**                                 to     28 dec 2015     **/
+/**                                 to     23 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,7 +88,6 @@ FILE * const                  stream)             /*+ Input stream  +*/
   Gnum                  mappfileval;
   Gnum                  mappfilenbr;              /* Number of mapping pairs in file          */
   Gnum                  mappfilenum;              /* Counter of mapping pairs in file         */
-  Gnum *                mappfiletab;              /* Pointer to mapping data read from file   */
   Graph *               grafptr;
   Gnum                  vertnbr;
 
