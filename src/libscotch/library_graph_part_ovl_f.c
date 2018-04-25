@@ -1,4 +1,4 @@
-/* Copyright 2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                overlap of the libSCOTCH library.       **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 29 may 2010     **/
-/**                                 to     17 oct 2010     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,8 +92,9 @@ const int                   strnbr),                  \
   char * restrict     strtab;                     /* Pointer to null-terminated string */
 
   if ((strtab = (char *) memAlloc (strnbr + 1)) == NULL) { /* Allocate temporary space */
-    errorPrint ("SCOTCHFSTRATGRAPHPARTOVL: out of memory (1)");
+    errorPrint ("SCOTCHFSTRATGRAPHPARTOVL: out of memory");
     *revaptr = 1;
+    return;
   }
   memCpy (strtab, string, strnbr);                /* Copy string contents */
   strtab[strnbr] = '\0';                          /* Terminate string     */
