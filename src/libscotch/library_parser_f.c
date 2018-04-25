@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 27 mar 2010     **/
 /**                                 to     27 mar 2010     **/
 /**                # Version 6.0  : from : 07 jan 2014     **/
-/**                                 to     07 jan 2014     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,10 +66,10 @@
 /*                                     */
 /***************************************/
 
-FORTRAN (                                       \
-SCOTCHFSTRATINIT, scotchfstratinit, (           \
-SCOTCH_Strat * const        stratptr,           \
-int * const                 revaptr),           \
+SCOTCH_FORTRAN (                      \
+STRATINIT, stratinit, (               \
+SCOTCH_Strat * const        stratptr, \
+int * const                 revaptr), \
 (stratptr, revaptr))
 {
   *revaptr = SCOTCH_stratInit (stratptr);
@@ -79,9 +79,9 @@ int * const                 revaptr),           \
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFSTRATEXIT, scotchfstratexit, (           \
-SCOTCH_Strat * const        stratptr),          \
+SCOTCH_FORTRAN (                       \
+STRATEXIT, stratexit, (                \
+SCOTCH_Strat * const        stratptr), \
 (stratptr))
 {
   SCOTCH_stratExit (stratptr);
@@ -91,9 +91,9 @@ SCOTCH_Strat * const        stratptr),          \
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFSTRATFREE, scotchfstratfree, (           \
-SCOTCH_Strat * const        stratptr),          \
+SCOTCH_FORTRAN (                       \
+STRATFREE, stratfree, (                \
+SCOTCH_Strat * const        stratptr), \
 (stratptr))
 {
   SCOTCH_stratFree (stratptr);
@@ -103,11 +103,11 @@ SCOTCH_Strat * const        stratptr),          \
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFSTRATSAVE, scotchfstratsave, (           \
-const SCOTCH_Strat * const  stratptr,           \
-int * const                 fileptr,            \
-int * const                 revaptr),           \
+SCOTCH_FORTRAN (                      \
+STRATSAVE, stratsave, (               \
+SCOTCH_Strat * const        stratptr, \
+int * const                 fileptr,  \
+int * const                 revaptr), \
 (stratptr, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
@@ -115,13 +115,13 @@ int * const                 revaptr),           \
   int                 o;
 
   if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFSTRATSAVE: cannot duplicate handle");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (STRATSAVE)) ": cannot duplicate handle");
 
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFSTRATSAVE: cannot open output stream");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (STRATSAVE)) ": cannot open output stream");
     close      (filenum);
     *revaptr = 1;
     return;

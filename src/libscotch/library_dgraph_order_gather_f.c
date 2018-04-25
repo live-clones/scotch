@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 21 jul 2007     **/
 /**                                 to     22 jul 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,17 +63,17 @@
 /*                                    */
 /**************************************/
 
-FORTRAN (                                           \
-SCOTCHFDGRAPHCORDERINIT, scotchfdgraphcorderinit, ( \
-const SCOTCH_Dgraph * const grafptr,                \
-SCOTCH_Ordering * const     ordeptr,                \
-SCOTCH_Num * const          permtab,                \
-SCOTCH_Num * const          peritab,                \
-SCOTCH_Num * const          cblkptr,                \
-SCOTCH_Num * const          rangtab,                \
-SCOTCH_Num * const          treetab,                \
-int * const                 revaptr),               \
-(grafptr, ordeptr, permtab, peritab,                \
+SCOTCH_FORTRAN (                      \
+DGRAPHCORDERINIT, dgraphcorderinit, ( \
+const SCOTCH_Dgraph * const grafptr,  \
+SCOTCH_Ordering * const     ordeptr,  \
+SCOTCH_Num * const          permtab,  \
+SCOTCH_Num * const          peritab,  \
+SCOTCH_Num * const          cblkptr,  \
+SCOTCH_Num * const          rangtab,  \
+SCOTCH_Num * const          treetab,  \
+int * const                 revaptr), \
+(grafptr, ordeptr, permtab, peritab,  \
  cblkptr, rangtab, treetab, revaptr))
 {
   *revaptr = SCOTCH_dgraphCorderInit (grafptr, ordeptr, permtab, peritab, cblkptr, rangtab, treetab);
@@ -83,10 +83,10 @@ int * const                 revaptr),               \
 **
 */
 
-FORTRAN (                                           \
-SCOTCHFDGRAPHCORDEREXIT, scotchfdgraphcorderexit, ( \
-const SCOTCH_Dgraph * const grafptr,                \
-SCOTCH_Ordering * const     ordeptr),               \
+SCOTCH_FORTRAN (                      \
+DGRAPHCORDEREXIT, dgraphcorderexit, ( \
+const SCOTCH_Dgraph * const grafptr,  \
+SCOTCH_Ordering * const     ordeptr), \
 (grafptr, ordeptr))
 {
   SCOTCH_dgraphCorderExit (grafptr, ordeptr);
@@ -96,12 +96,12 @@ SCOTCH_Ordering * const     ordeptr),               \
 **
 */
 
-FORTRAN (                                             \
-SCOTCHFDGRAPHORDERGATHER, scotchfdgraphordergather, ( \
-const SCOTCH_Dgraph * const     grafptr,              \
-const SCOTCH_Dordering * const  dordptr,              \
-SCOTCH_Ordering * const         cordptr,              \
-int * const                     revaptr),             \
+SCOTCH_FORTRAN (                        \
+DGRAPHORDERGATHER, dgraphordergather, ( \
+const SCOTCH_Dgraph * const grafptr,    \
+SCOTCH_Dordering * const    dordptr,    \
+SCOTCH_Ordering * const     cordptr,    \
+int * const                 revaptr),   \
 (grafptr, dordptr, cordptr, revaptr))
 {
   *revaptr = SCOTCH_dgraphOrderGather (grafptr, dordptr, cordptr);

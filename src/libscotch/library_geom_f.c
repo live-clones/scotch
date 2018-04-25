@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     22 dec 2005     **/
 /**                # Version 5.1  : from : 15 apr 2010     **/
 /**                                 to     15 apr 2010     **/
+/**                # Version 6.0  : from : 11 apr 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,10 +69,10 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFGEOMINIT, scotchfgeominit, (             \
-SCOTCH_Geom * const         geomptr,            \
-int * const                 revaptr),           \
+SCOTCH_FORTRAN (                      \
+GEOMINIT, geominit, (                 \
+SCOTCH_Geom * const         geomptr,  \
+int * const                 revaptr), \
 (geomptr, revaptr))
 {
   *revaptr = SCOTCH_geomInit (geomptr);
@@ -80,9 +82,9 @@ int * const                 revaptr),           \
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFGEOMEXIT, scotchfgeomexit, (             \
-SCOTCH_Geom * const         geomptr),           \
+SCOTCH_FORTRAN (                      \
+GEOMEXIT, geomexit, (                 \
+SCOTCH_Geom * const         geomptr), \
 (geomptr))
 {
   SCOTCH_geomExit (geomptr);
@@ -92,12 +94,12 @@ SCOTCH_Geom * const         geomptr),           \
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFGEOMDATA, scotchfgeomdata, (             \
-const SCOTCH_Geom * const   geomptr,            \
-const double * const        indxptr,            \
-SCOTCH_Num * const          dimnptr,            \
-SCOTCH_Idx * const          geomidx),           \
+SCOTCH_FORTRAN (                      \
+GEOMDATA, geomdata, (                 \
+const SCOTCH_Geom * const   geomptr,  \
+const double * const        indxptr,  \
+SCOTCH_Num * const          dimnptr,  \
+SCOTCH_Idx * const          geomidx), \
 (geomptr, indxptr, dimnptr, geomidx))
 {
   double *            geomtab;

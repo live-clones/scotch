@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 06 jun 2010     **/
 /**                                 to     06 jun 2010     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,17 +70,17 @@
 **
 */
 
-FORTRAN (                                             \
-SCOTCHFDGRAPHBUILDGRID3D, scotchfdgraphbuildgrid3d, ( \
-SCOTCH_Dgraph * const       grafptr,                  \
-const SCOTCH_Num * const    baseptr,                  \
-const SCOTCH_Num * const    dimxptr,                  \
-const SCOTCH_Num * const    dimyptr,                  \
-const SCOTCH_Num * const    dimzptr,                  \
-const SCOTCH_Num * const    incrptr,                  \
-const int * const           flagptr,                  \
-int * const                 revaptr),                 \
-(grafptr, baseptr, dimxptr, dimyptr, dimzptr, incrptr, flagptr, revaptr))
+SCOTCH_FORTRAN (                        \
+DGRAPHBUILDGRID3D, dgraphbuildgrid3d, ( \
+SCOTCH_Dgraph * const       grafptr,    \
+const SCOTCH_Num * const    baseval,    \
+const SCOTCH_Num * const    dimxval,    \
+const SCOTCH_Num * const    dimyval,    \
+const SCOTCH_Num * const    dimzval,    \
+const SCOTCH_Num * const    incrval,    \
+const int * const           flagval,    \
+int * const                 revaptr),   \
+(grafptr, baseval, dimxval, dimyval, dimzval, incrval, flagval, revaptr))
 {
-  *revaptr = SCOTCH_dgraphBuildGrid3D (grafptr, *baseptr, *dimxptr, *dimyptr, *dimzptr, *incrptr, *flagptr);
+  *revaptr = SCOTCH_dgraphBuildGrid3D (grafptr, *baseval, *dimxval, *dimyval, *dimzval, *incrval, *flagval);
 }

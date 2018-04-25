@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 14 jun 2012     **/
-/**                                 to     14 jun 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,9 +66,9 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFMEMCUR, scotchfmemcur, (                 \
-SCOTCH_Idx * const          memoptr),           \
+SCOTCH_FORTRAN (                      \
+MEMCUR, memcur, (                     \
+SCOTCH_Idx * const          memoptr), \
 (memoptr))
 {
   *memoptr = SCOTCH_memCur ();
@@ -78,9 +78,9 @@ SCOTCH_Idx * const          memoptr),           \
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFMEMMAX, scotchfmemmax, (                 \
-SCOTCH_Idx * const          memoptr),           \
+SCOTCH_FORTRAN (                      \
+MEMMAX, memmax, (                     \
+SCOTCH_Idx * const          memoptr), \
 (memoptr))
 {
   *memoptr = SCOTCH_memMax ();

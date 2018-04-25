@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines of the libSCOTCH library.      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 30 aug 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,14 +66,14 @@
 **
 */
 
-FORTRAN (                                           \
-SCOTCHFDGRAPHINDUCEPART, scotchfdgraphinducepart, ( \
-SCOTCH_Dgraph * const       orggrafptr,             \
-SCOTCH_Num * const          orgpartloctab,          \
-SCOTCH_Num * const          indpartval,             \
-SCOTCH_Num * const          indvertlocnbr,          \
-SCOTCH_Dgraph * const       indgrafptr,             \
-int * const                 revaptr),               \
+SCOTCH_FORTRAN (                           \
+DGRAPHINDUCEPART, dgraphinducepart, (      \
+SCOTCH_Dgraph * const       orggrafptr,    \
+SCOTCH_Num * const          orgpartloctab, \
+SCOTCH_Num * const          indpartval,    \
+SCOTCH_Num * const          indvertlocnbr, \
+SCOTCH_Dgraph * const       indgrafptr,    \
+int * const                 revaptr),      \
 (orggrafptr, orgpartloctab, indpartval, indvertlocnbr, indgrafptr, revaptr))
 {
   *revaptr = SCOTCH_dgraphInducePart (orggrafptr, orgpartloctab, *indpartval, *indvertlocnbr, indgrafptr);

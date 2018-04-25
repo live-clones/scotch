@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 24 feb 2007     **/
 /**                                 to     18 jul 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,29 +67,29 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFDGRAPHBUILD, scotchfdgraphbuild, (       \
-SCOTCH_Dgraph * const       grafptr,            \
-const SCOTCH_Num * const    baseptr,            \
-const SCOTCH_Num * const    vertlocptr,         \
-const SCOTCH_Num * const    vertlocmpt,         \
-SCOTCH_Num * const          vertloctab,         \
-SCOTCH_Num * const          vendloctab,         \
-SCOTCH_Num * const          veloloctab,         \
-SCOTCH_Num * const          vlblloctab,         \
-const SCOTCH_Num * const    edgelocptr,         \
-const SCOTCH_Num * const    edgelocptz,         \
-SCOTCH_Num * const          edgeloctab,         \
-SCOTCH_Num * const          edgegsttab,         \
-SCOTCH_Num * const          edloloctab,         \
-int * const                 revaptr),           \
-(grafptr, baseptr, vertlocptr, vertlocmpt,      \
- vertloctab, vendloctab, veloloctab,            \
- vlblloctab, edgelocptr, edgelocptz,            \
- edgeloctab, edgegsttab, edloloctab,            \
+SCOTCH_FORTRAN (                           \
+DGRAPHBUILD, dgraphbuild, (                \
+SCOTCH_Dgraph * const       grafptr,       \
+const SCOTCH_Num * const    baseval,       \
+const SCOTCH_Num * const    vertlocnbr,    \
+const SCOTCH_Num * const    vertlocmax,    \
+SCOTCH_Num * const          vertloctab,    \
+SCOTCH_Num * const          vendloctab,    \
+SCOTCH_Num * const          veloloctab,    \
+SCOTCH_Num * const          vlblloctab,    \
+const SCOTCH_Num * const    edgelocnbr,    \
+const SCOTCH_Num * const    edgelocsiz,    \
+SCOTCH_Num * const          edgeloctab,    \
+SCOTCH_Num * const          edgegsttab,    \
+SCOTCH_Num * const          edloloctab,    \
+int * const                 revaptr),      \
+(grafptr, baseval, vertlocnbr, vertlocmax, \
+ vertloctab, vendloctab, veloloctab,       \
+ vlblloctab, edgelocnbr, edgelocsiz,       \
+ edgeloctab, edgegsttab, edloloctab,       \
  revaptr))
 {
-  *revaptr = SCOTCH_dgraphBuild (grafptr, *baseptr, *vertlocptr, *vertlocmpt, vertloctab,
+  *revaptr = SCOTCH_dgraphBuild (grafptr, *baseval, *vertlocnbr, *vertlocmax, vertloctab,
                                  vendloctab, veloloctab, vlblloctab,
-                                 *edgelocptr, *edgelocptz, edgeloctab, edgegsttab, edloloctab);
+                                 *edgelocnbr, *edgelocsiz, edgeloctab, edgegsttab, edloloctab);
 }

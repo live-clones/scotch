@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 26 aug 2006     **/
 /**                                 to     26 aug 2006     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,10 +68,10 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFDGRAPHCHECK, scotchfdgraphcheck, (       \
-const SCOTCH_Dgraph * const grafptr,            \
-int * const                 revaptr),           \
+SCOTCH_FORTRAN (                      \
+DGRAPHCHECK, dgraphcheck, (           \
+const SCOTCH_Dgraph * const grafptr,  \
+int * const                 revaptr), \
 (grafptr, revaptr))
 {
   *revaptr = SCOTCH_dgraphCheck (grafptr);

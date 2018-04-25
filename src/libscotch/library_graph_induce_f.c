@@ -40,7 +40,7 @@
 /**                the libSCOTCH library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 14 jan 2018     **/
-/**                                 to     14 jan 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,13 +65,13 @@
 **
 */
 
-FORTRAN (                                         \
-SCOTCHFGRAPHINDUCELIST, scotchfgraphinducelist, ( \
-SCOTCH_Graph * restrict const     orggrafptr,     \
-const SCOTCH_Num                  vnumnbr,        \
-const SCOTCH_Num * restrict const vnumtab,        \
-SCOTCH_Graph * restrict const     indgrafptr,     \
-int * const                       revaptr),       \
+SCOTCH_FORTRAN (                              \
+GRAPHINDUCELIST, graphinducelist, (           \
+SCOTCH_Graph * restrict const     orggrafptr, \
+const SCOTCH_Num                  vnumnbr,    \
+const SCOTCH_Num * restrict const vnumtab,    \
+SCOTCH_Graph * restrict const     indgrafptr, \
+int * const                       revaptr),   \
 (orggrafptr, vnumnbr, vnumtab, indgrafptr, revaptr))
 {
   *revaptr = SCOTCH_graphInduceList (orggrafptr, vnumnbr, vnumtab, indgrafptr);
@@ -81,8 +81,8 @@ int * const                       revaptr),       \
 **
 */
 
-FORTRAN (                                         \
-SCOTCHFGRAPHINDUCEPART, scotchfgraphinducepart, (     \
+SCOTCH_FORTRAN (                                      \
+GRAPHINDUCEPART, graphinducepart, (                   \
 SCOTCH_Graph * restrict const             orggrafptr, \
 const SCOTCH_Num                          vnumnbr,    \
 const SCOTCH_GraphPart2 * restrict const  parttab,    \

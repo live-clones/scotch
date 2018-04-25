@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 24 jun 2007     **/
 /**                                 to     24 jun 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,28 +67,28 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFDGRAPHSTAT, scotchfdgraphstat, (         \
-const SCOTCH_Dgraph * const grafptr,            \
-SCOTCH_Num * const          velominptr,         \
-SCOTCH_Num * const          velomaxptr,         \
-SCOTCH_Num * const          velosumptr,         \
-double *                    veloavgptr,         \
-double *                    velodltptr,         \
-SCOTCH_Num * const          degrminptr,         \
-SCOTCH_Num * const          degrmaxptr,         \
-double *                    degravgptr,         \
-double *                    degrdltptr,         \
-SCOTCH_Num * const          edlominptr,         \
-SCOTCH_Num * const          edlomaxptr,         \
-SCOTCH_Num * const          edlosumptr,         \
-double *                    edloavgptr,         \
-double *                    edlodltptr,         \
-int * const                 revaptr),           \
-(grafptr, velominptr, velomaxptr, velosumptr,   \
- veloavgptr, velodltptr, degrminptr,            \
- degrmaxptr, degravgptr, degrdltptr,            \
- edlominptr, edlomaxptr, edlosumptr,            \
+SCOTCH_FORTRAN (                              \
+DGRAPHSTAT, Dgraphstat, (                     \
+const SCOTCH_Dgraph * const grafptr,          \
+SCOTCH_Num * const          velominptr,       \
+SCOTCH_Num * const          velomaxptr,       \
+SCOTCH_Num * const          velosumptr,       \
+double *                    veloavgptr,       \
+double *                    velodltptr,       \
+SCOTCH_Num * const          degrminptr,       \
+SCOTCH_Num * const          degrmaxptr,       \
+double *                    degravgptr,       \
+double *                    degrdltptr,       \
+SCOTCH_Num * const          edlominptr,       \
+SCOTCH_Num * const          edlomaxptr,       \
+SCOTCH_Num * const          edlosumptr,       \
+double *                    edloavgptr,       \
+double *                    edlodltptr,       \
+int * const                 revaptr),         \
+(grafptr, velominptr, velomaxptr, velosumptr, \
+ veloavgptr, velodltptr, degrminptr,          \
+ degrmaxptr, degravgptr, degrdltptr,          \
+ edlominptr, edlomaxptr, edlosumptr,          \
  edloavgptr, edlodltptr, revaptr))
 {
   *revaptr = SCOTCH_dgraphStat (grafptr,

@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 26 jul 2007     **/
 /**                                 to     18 oct 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     21 apr 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,12 +63,12 @@
 /*                                    */
 /**************************************/
 
-FORTRAN (                                               \
-SCOTCHFDGRAPHORDERSAVEMAP, scotchfdgraphordersavemap, ( \
-const SCOTCH_Dgraph * const     grafptr,                \
-const SCOTCH_Dordering * const  ordeptr,                \
-int * const                     fileptr,                \
-int * const                     revaptr),               \
+SCOTCH_FORTRAN (                          \
+DGRAPHORDERSAVEMAP, dgraphordersavemap, ( \
+const SCOTCH_Dgraph * const     grafptr,  \
+const SCOTCH_Dordering * const  ordeptr,  \
+int * const                     fileptr,  \
+int * const                     revaptr), \
 (grafptr, ordeptr, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
@@ -76,13 +76,13 @@ int * const                     revaptr),               \
   int                 o;
 
   if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFDGRAPHORDERSAVEMAP: cannot duplicate handle");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHORDERSAVEMAP)) ": cannot duplicate handle");
 
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFDGRAPHORDERSAVEMAP: cannot open output stream");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHORDERSAVEMAP)) ": cannot open output stream");
     close      (filenum);
     *revaptr = 1;
     return;
@@ -99,12 +99,12 @@ int * const                     revaptr),               \
 **
 */
 
-FORTRAN (                                                 \
-SCOTCHFDGRAPHORDERSAVETREE, scotchfdgraphordersavetree, ( \
-const SCOTCH_Dgraph * const     grafptr,                  \
-const SCOTCH_Dordering * const  ordeptr,                  \
-int * const                     fileptr,                  \
-int * const                     revaptr),                 \
+SCOTCH_FORTRAN (                            \
+DGRAPHORDERSAVETREE, dgraphordersavetree, ( \
+const SCOTCH_Dgraph * const     grafptr,    \
+const SCOTCH_Dordering * const  ordeptr,    \
+int * const                     fileptr,    \
+int * const                     revaptr),   \
 (grafptr, ordeptr, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
@@ -112,13 +112,13 @@ int * const                     revaptr),                 \
   int                 o;
 
   if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFDGRAPHORDERSAVETREE: cannot duplicate handle");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHORDERSAVETREE)) ": cannot duplicate handle");
 
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFDGRAPHORDERSAVETREE: cannot open output stream");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHORDERSAVETREE)) ": cannot open output stream");
     close      (filenum);
     *revaptr = 1;
     return;

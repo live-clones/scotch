@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     05 apr 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -219,15 +219,24 @@
 #endif /* SCOTCH_NAME_PREFIX_INTERN */
 #ifndef SCOTCH_NAME_PREFIX_PUBLIC
 #define SCOTCH_NAME_PREFIX_PUBLIC   SCOTCH_
+#define SCOTCH_NAME_PREFIX_PUBLICFL scotchf
+#define SCOTCH_NAME_PREFIX_PUBLICFU SCOTCHF
 #endif /* SCOTCH_NAME_PREFIX_PUBLIC */
 #ifndef SCOTCH_NAME_SUFFIX
 #define SCOTCH_NAME_SUFFIX
 #endif /* SCOTCH_NAME_SUFFIX */
+#ifndef SCOTCH_NAME_SUFFIXFL
+#define SCOTCH_NAME_SUFFIXFL        SCOTCH_NAME_SUFFIX
+#define SCOTCH_NAME_SUFFIXFU        SCOTCH_NAME_SUFFIX
+#endif /* SCOTCH_NAME_SUFFIXFL */
 
 #define SCOTCH_NAME_GLUE(p,n,s)     p##n##s
-#define SCOTCH_NAME_MACRO(p,n,s)    SCOTCH_NAME_GLUE (p,n,s)
-#define SCOTCH_NAME_INTERN(f)       SCOTCH_NAME_MACRO(SCOTCH_NAME_PREFIX_INTERN,f,SCOTCH_NAME_SUFFIX)
-#define SCOTCH_NAME_PUBLIC(f)       SCOTCH_NAME_MACRO(SCOTCH_NAME_PREFIX_PUBLIC,f,SCOTCH_NAME_SUFFIX)
+#define SCOTCH_NAME_MACRO(p,n,s)    SCOTCH_NAME_GLUE  (p,n,s)
+#define SCOTCH_NAME_INTERN(f)       SCOTCH_NAME_MACRO (SCOTCH_NAME_PREFIX_INTERN,f,SCOTCH_NAME_SUFFIX)
+#define SCOTCH_NAME_PUBLIC(f)       SCOTCH_NAME_MACRO (SCOTCH_NAME_PREFIX_PUBLIC,f,SCOTCH_NAME_SUFFIX)
+#define SCOTCH_NAME_PUBLICFL(f)     SCOTCH_NAME_MACRO (SCOTCH_NAME_PREFIX_PUBLICFL,f,SCOTCH_NAME_SUFFIXFL)
+#define SCOTCH_NAME_PUBLICFU(f)     SCOTCH_NAME_MACRO (SCOTCH_NAME_PREFIX_PUBLICFU,f,SCOTCH_NAME_SUFFIXFU)
+#define SCOTCH_FORTRAN(nu,nl,pl,pc) FORTRAN (SCOTCH_NAME_PUBLICFU(nu),SCOTCH_NAME_PUBLICFL(nl),pl,pc)
 
 #if ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME))
 #define memCur                      SCOTCH_NAME_PUBLIC (memCur)

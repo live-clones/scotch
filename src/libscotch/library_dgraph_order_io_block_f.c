@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 27 mar 2010     **/
 /**                                 to     27 mar 2010     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,12 +65,12 @@
 /*                                    */
 /**************************************/
 
-FORTRAN (                                                   \
-SCOTCHFDGRAPHORDERSAVEBLOCK, scotchfdgraphordersaveblock, ( \
-const SCOTCH_Dgraph * const     grafptr,                    \
-const SCOTCH_Dordering * const  ordeptr,                    \
-int * const                     fileptr,                    \
-int * const                     revaptr),                   \
+SCOTCH_FORTRAN (                              \
+DGRAPHORDERSAVEBLOCK, dgraphordersaveblock, ( \
+const SCOTCH_Dgraph * const     grafptr,      \
+const SCOTCH_Dordering * const  ordeptr,      \
+int * const                     fileptr,      \
+int * const                     revaptr),     \
 (grafptr, ordeptr, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
@@ -81,12 +81,12 @@ int * const                     revaptr),                   \
     stream = NULL;
   else {                                          /* Open stream for root process        */
     if ((filenum = dup (*fileptr)) < 0) {         /* If cannot duplicate file descriptor */
-      errorPrint ("SCOTCHFDGRAPHORDERSAVEBLOCK: cannot duplicate handle");
+      errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHORDERSAVEBLOCK)) ": cannot duplicate handle");
       *revaptr = 1;                               /* Indicate error */
       return;
     }
     if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
-      errorPrint ("SCOTCHFDGRAPHORDERSAVEBLOCK: cannot open output stream");
+      errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHORDERSAVEBLOCK)) ": cannot open output stream");
       close      (filenum);
       *revaptr = 1;
       return;

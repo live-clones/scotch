@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     23 nov 2005     **/
 /**                # Version 5.1  : from : 27 mar 2010     **/
 /**                                 to     27 mar 2010     **/
+/**                # Version 6.0  : from : 20 apr 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,15 +69,15 @@
 ** end of the argument list.
 */
 
-FORTRAN (                                             \
-SCOTCHFGRAPHGEOMLOADSCOT, scotchfgraphgeomloadscot, ( \
-SCOTCH_Graph * const        grafptr,                  \
-SCOTCH_Geom * const         geomptr,                  \
-const int * const           filegrfptr,               \
-const int * const           filegeoptr,               \
-const char * const          dataptr, /* No use */     \
-int * const                 revaptr,                  \
-const int                   datanbr),                 \
+SCOTCH_FORTRAN (                                                 \
+GRAPHGEOMLOADSCOT, graphgeomloadscot, (             \
+SCOTCH_Graph * const  grafptr,              \
+SCOTCH_Geom * const   geomptr,              \
+const int * const                   filegrfptr,           \
+const int * const                   filegeoptr,           \
+const char * const                  dataptr, /* No use */ \
+int * const                         revaptr,              \
+const int                           datanbr),             \
 (grafptr, geomptr, filegrfptr, filegeoptr, dataptr, revaptr, datanbr))
 {
   FILE *              filegrfstream;              /* Streams to build from handles */
@@ -85,25 +87,25 @@ const int                   datanbr),                 \
   int                 o;
 
   if ((filegrfnum = dup (*filegrfptr)) < 0) {     /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFGRAPHGEOMLOADSCOT: cannot duplicate handle (1)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHGEOMLOADSCOT)) ": cannot duplicate handle (1)");
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((filegeonum = dup (*filegeoptr)) < 0) {     /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFGRAPHGEOMLOADSCOT: cannot duplicate handle (2)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHGEOMLOADSCOT)) ": cannot duplicate handle (2)");
     close      (filegrfnum);
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((filegrfstream = fdopen (filegrfnum, "r")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFGRAPHGEOMLOADSCOT: cannot open input stream (1)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHGEOMLOADSCOT)) ": cannot open input stream (1)");
     close      (filegrfnum);
     close      (filegeonum);
     *revaptr = 1;
     return;
   }
   if ((filegeostream = fdopen (filegeonum, "r")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFGRAPHGEOMLOADSCOT: cannot open input stream (2)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHGEOMLOADSCOT)) ": cannot open input stream (2)");
     fclose     (filegrfstream);
     close      (filegeonum);
     *revaptr = 1;
@@ -122,15 +124,15 @@ const int                   datanbr),                 \
 ** end of the argument list.
 */
 
-FORTRAN (                                             \
-SCOTCHFGRAPHGEOMSAVESCOT, scotchfgraphgeomsavescot, ( \
-const SCOTCH_Graph * const  grafptr,                  \
-const SCOTCH_Geom * const   geomptr,                  \
-const int * const           filegrfptr,               \
-const int * const           filegeoptr,               \
-const char * const          dataptr, /* No use */     \
-int * const                 revaptr,                  \
-const int                   datanbr),                 \
+SCOTCH_FORTRAN (                                  \
+GRAPHGEOMSAVESCOT, graphgeomsavescot, (           \
+const SCOTCH_Graph * const  grafptr,              \
+const SCOTCH_Geom * const   geomptr,              \
+const int * const           filegrfptr,           \
+const int * const           filegeoptr,           \
+const char * const          dataptr, /* No use */ \
+int * const                 revaptr,              \
+const int                   datanbr),             \
 (grafptr, geomptr, filegrfptr, filegeoptr, dataptr, revaptr, datanbr))
 {
   FILE *              filegrfstream;              /* Streams to build from handles */
@@ -140,25 +142,25 @@ const int                   datanbr),                 \
   int                 o;
 
   if ((filegrfnum = dup (*filegrfptr)) < 0) {     /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFGRAPHGEOMSAVESCOT: cannot duplicate handle (1)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHGEOMSAVESCOT)) ": cannot duplicate handle (1)");
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((filegeonum = dup (*filegeoptr)) < 0) {     /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFGRAPHGEOMSAVESCOT: cannot duplicate handle (2)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHGEOMSAVESCOT)) ": cannot duplicate handle (2)");
     close      (filegrfnum);
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((filegrfstream = fdopen (filegrfnum, "w")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFGRAPHGEOMSAVESCOT: cannot open output stream (1)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHGEOMSAVESCOT)) ": cannot open output stream (1)");
     close      (filegrfnum);
     close      (filegeonum);
     *revaptr = 1;
     return;
   }
   if ((filegeostream = fdopen (filegeonum, "w")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFGRAPHGEOMSAVESCOT: cannot open output stream (2)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHGEOMSAVESCOT)) ": cannot open output stream (2)");
     fclose     (filegrfstream);
     close      (filegeonum);
     *revaptr = 1;
