@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to     19 jan 2004     **/
 /**                # Version 5.1  : from : 17 nov 2010     **/
 /**                                 to     17 nov 2010     **/
+/**                # Version 6.0  : from : 25 apr 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,11 +96,11 @@ SCOTCH_geomInit (
 SCOTCH_Geom * const         geomptr)
 {
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_geomInit: internal error (1)");
+    errorPrint (STRINGIFY (SCOTCH_geomInit) ": internal error (1)");
     return     (1);
   }
   if (sizeof (SCOTCH_Geom) < sizeof (Geom)) {
-    errorPrint ("SCOTCH_geomInit: internal error (2)");
+    errorPrint (STRINGIFY (SCOTCH_geomInit) ": internal error (2)");
     return     (1);
   }
 

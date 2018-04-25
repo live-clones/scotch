@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 13 may 2007     **/
 /**                                 to     13 may 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,11 +88,11 @@ const SCOTCH_Num            flagval)
   GraphFlag           srcgrafflag;                /* Graph flags */
 
   if ((baseval < -1) || (baseval > 1)) {
-    errorPrint ("SCOTCH_dgraphLoad: invalid base parameter");
+    errorPrint (STRINGIFY (SCOTCH_dgraphLoad) ": invalid base parameter");
     return     (1);
   }
   if ((flagval < 0) || (flagval > 3)) {
-    errorPrint ("SCOTCH_dgraphLoad: invalid flag parameter");
+    errorPrint (STRINGIFY (SCOTCH_dgraphLoad) ": invalid flag parameter");
     return     (1);
   }
 

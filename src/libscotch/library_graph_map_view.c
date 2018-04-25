@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 27 jul 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     23 apr 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -151,7 +151,7 @@ FILE * const                  stream)             /*+ Output stream             
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Mapping) < sizeof (LibMapping)) {
-    errorPrint ("SCOTCH_graphMapView: internal error");
+    errorPrint (STRINGIFY (SCOTCH_graphMapView) ": internal error");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
@@ -161,7 +161,7 @@ FILE * const                  stream)             /*+ Output stream             
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if ((Graph *) libgrafptr != grafptr) {
-    errorPrint ("SCOTCH_graphMapView: input graph must be the same as mapping graph");
+    errorPrint (STRINGIFY (SCOTCH_graphMapView) ": input graph must be the same as mapping graph");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
@@ -186,7 +186,7 @@ FILE * const                  stream)             /*+ Output stream             
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (lmapptr->parttab == NULL) {
-    errorPrint ("SCOTCH_graphMapView: the mapping given in input must contain a valid partition array");
+    errorPrint (STRINGIFY (SCOTCH_graphMapView) ": the mapping given in input must contain a valid partition array");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
@@ -196,7 +196,7 @@ FILE * const                  stream)             /*+ Output stream             
   if (memAllocGroup ((void **) (void *)
                      &domntab, (size_t) ((grafptr->vertnbr + 1) * sizeof (MappingSort)),
                      &nghbtab, (size_t) ((grafptr->vertnbr + 2) * sizeof (Anum)), NULL) == NULL) {
-    errorPrint ("SCOTCH_graphMapView: out of memory");
+    errorPrint (STRINGIFY (SCOTCH_graphMapView) ": out of memory");
     return     (1);
   }
 
@@ -250,7 +250,7 @@ FILE * const                  stream)             /*+ Output stream             
   if (mapnbr > tgtnbr) {                          /* If more subdomains than architecture size */
 #ifdef SCOTCH_DEBUG_MAP2
     if (! archVar (archptr)) {                    /* If not a variable-sized architecture */
-      errorPrint ("SCOTCH_graphMapView: invalid mapping");
+      errorPrint (STRINGIFY (SCOTCH_graphMapView) ": invalid mapping");
       memFree    (domntab);                       /* Free group leader */
       return     (1);
     }
@@ -310,8 +310,8 @@ FILE * const                  stream)             /*+ Output stream             
 
 #ifdef SCOTCH_DEBUG_MAP2
         if (nghbnbr >= (grafptr->vertnbr + 1)) {
-          errorPrint ("SCOTCH_graphMapView: internal error");
-          return (1);
+          errorPrint (STRINGIFY (SCOTCH_graphMapView) ": internal error");
+          return     (1);
         }
 #endif /* SCOTCH_DEBUG_MAP2 */
 

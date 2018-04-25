@@ -122,25 +122,25 @@ SCOTCH_Dgraph * const       bndgrafptr)
   MPI_Comm_compare (((Dgraph * restrict const) orggrafptr)->proccomm,
                     ((Dgraph * restrict const) bndgrafptr)->proccomm, &o);
   if ((o != MPI_IDENT) && (o != MPI_CONGRUENT)) {
-    errorPrint ("SCOTCH_dgraphBand: communicators are not congruent");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": communicators are not congruent");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
-    errorPrint ("SCOTCH_dgraphBand: cannot compute ghost edge array");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": cannot compute ghost edge array");
     return     (1);
   }
 
   cheklocval = 0;
   bandvnumgstsiz = MAX ((grafptr->vertgstnbr * sizeof (Gnum)), (grafptr->procglbnbr * sizeof (int))); /* TRICK: re-use array for further error collective communications */
   if ((bandvnumgsttax = memAlloc (bandvnumgstsiz)) == NULL) {
-    errorPrint ("SCOTCH_dgraphBand: out of memory (1)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": out of memory (1)");
     cheklocval = 1;
   }
 #ifdef SCOTCH_DEBUG_DGRAPH1                       /* This communication cannot be covered by a useful one */
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("SCOTCH_dgraphBand: communication error (1)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": communication error (1)");
     return     (1);
   }
 #else /* SCOTCH_DEBUG_DGRAPH1 */
@@ -169,14 +169,14 @@ SCOTCH_Dgraph * const       bndgrafptr)
                      &bandgrafptr->procngbtab, (size_t) (grafptr->procglbnbr       * sizeof (int)),
                      &bandgrafptr->procrcvtab, (size_t) (grafptr->procglbnbr       * sizeof (int)),
                      &bandgrafptr->procsndtab, (size_t) (grafptr->procglbnbr       * sizeof (int)), NULL) == NULL) {
-    errorPrint ("SCOTCH_dgraphBand: out of memory (2)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": out of memory (2)");
     cheklocval = 1;
   }
   else if (memAllocGroup ((void **) (void *)      /* Allocate distributed graph public data */
                           &bandgrafptr->vertloctax, (size_t) ((bandvertlocnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
                           &bandvlblloctax,          (size_t) (bandvertlocnbr       * sizeof (Gnum)),
                           &bandveloloctax,          (size_t) (bandvelolocnbr       * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint ("SCOTCH_dgraphBand: out of memory (3)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": out of memory (3)");
     cheklocval = 1;
   }
   else if (bandgrafptr->vertloctax -= bandgrafptr->baseval,
@@ -185,7 +185,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
            (memAllocGroup ((void **) (void *)
                            &bandedgeloctax, (size_t) (bandedgelocsiz * sizeof (Gnum)),
                            &bandedloloctax, (size_t) (bandedlolocsiz * sizeof (Gnum)), NULL) == NULL)) {
-    errorPrint ("SCOTCH_dgraphBand: out of memory (4)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": out of memory (4)");
     cheklocval = 1;
   }
   else {
@@ -197,7 +197,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
     bandgrafptr->procdsptab[0] = -1;
     if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, GNUM_MPI, /* Send received data to dummy array */
                        bandvnumgsttax + bandgrafptr->baseval, 1, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
-      errorPrint ("SCOTCH_dgraphBand: communication error (2)");
+      errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": communication error (2)");
       return     (1);
     }
     dgraphExit (bandgrafptr);
@@ -208,7 +208,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
     bandgrafptr->procdsptab[0] = bandvertlocnbr;
     if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, GNUM_MPI,
                        &bandgrafptr->procdsptab[1], 1, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
-      errorPrint ("SCOTCH_dgraphBand: communication error (3)");
+      errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": communication error (3)");
       return     (1);
     }
   }
@@ -241,7 +241,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
   }
 
   if (dgraphHaloSync (grafptr, (byte *) (bandvnumgsttax + bandgrafptr->baseval), GNUM_MPI) != 0) { /* Share global indexing of halo vertices */
-    errorPrint ("SCOTCH_dgraphBand: cannot perform halo exchange");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": cannot perform halo exchange");
     return     (1);
   }
 
@@ -273,7 +273,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
          edgelocnum < vendloctax[vertlocnum]; edgelocnum ++) {
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if (bandvnumgsttax[edgegsttax[edgelocnum]] == ~0) { /* All ends should belong to the band graph too */
-        errorPrint ("SCOTCH_dgraphBand: internal error (1)");
+        errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": internal error (1)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -340,12 +340,12 @@ SCOTCH_Dgraph * const       bndgrafptr)
   bandgrafptr->edgelocsiz = bandedgelocsiz;
   bandgrafptr->degrglbmax = banddegrlocmax;       /* Local maximum degree will be turned into global maximum degree */
   if (dgraphBuild4 (bandgrafptr) != 0) {
-    errorPrint ("SCOTCH_dgraphBand: cannot build band graph");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": cannot build band graph");
     return     (1);
   }
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphCheck (bandgrafptr) != 0) {
-    errorPrint ("SCOTCH_dgraphBand: internal error (2)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": internal error (2)");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */

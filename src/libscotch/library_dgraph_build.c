@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 23 feb 2007     **/
 /**                                 to     18 jul 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,12 +100,12 @@ Gnum * const                edloloctab)           /* Local edge load array (if a
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Dgraph) < sizeof (Dgraph)) {
-    errorPrint ("SCOTCH_dgraphBuild: internal error");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBuild) ": internal error");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
   if ((baseval < 0) || (baseval > 1)) {
-    errorPrint ("SCOTCH_dgraphBuild: invalid base parameter");
+    errorPrint (STRINGIFY (SCOTCH_dgraphBuild) ": invalid base parameter");
     return     (1);
   }
 

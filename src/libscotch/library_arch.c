@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 05 jun 2009     **/
 /**                                 to   : 13 feb 2011     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
-/**                                 to     23 feb 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -111,11 +111,11 @@ SCOTCH_archInit (
 SCOTCH_Arch * const         archptr)
 {
   if (sizeof (SCOTCH_Num) != sizeof (Anum)) {
-    errorPrint ("SCOTCH_archInit: internal error (1)");
+    errorPrint (STRINGIFY (SCOTCH_archInit) ": internal error (1)");
     return     (1);
   }
   if (sizeof (SCOTCH_Arch) < sizeof (Arch)) {
-    errorPrint ("SCOTCH_archInit: internal error (2)");
+    errorPrint (STRINGIFY (SCOTCH_archInit) ": internal error (2)");
     return     (1);
   }
 
@@ -228,7 +228,7 @@ const SCOTCH_Num            termnbr)
   ArchCmplt *         tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archCmplt: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archCmplt) ": internal error");
     return     (1);
   }
 
@@ -255,7 +255,7 @@ const SCOTCH_Num * const    velotab)
   Arch *              tgtarchptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archCmpltw: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archCmpltw) ": internal error");
     return     (1);
   }
 
@@ -279,7 +279,7 @@ const SCOTCH_Num            dimnnbr)              /*+ Number of dimensions +*/
   ArchHcub *          tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archHcub: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archHcub) ": internal error");
     return     (1);
   }
 
@@ -307,7 +307,7 @@ const SCOTCH_Num            dimyval)
   ArchMesh2 *         tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archMesh2: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archMesh2) ": internal error");
     return     (1);
   }
 
@@ -338,7 +338,7 @@ const SCOTCH_Num            dimzval)
   ArchMesh3 *         tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archMesh3: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archMesh3) ": internal error");
     return     (1);
   }
 
@@ -369,11 +369,11 @@ const SCOTCH_Num * const    dimntab)              /*+ Array of dimensions       
   ArchMeshX *         tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archMeshX: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archMeshX) ": internal error");
     return     (1);
   }
   if (dimnnbr > ARCHMESHDIMNMAX) {
-    errorPrint ("SCOTCH_archMeshX: too many dimensions");
+    errorPrint (STRINGIFY (SCOTCH_archMeshX) ": too many dimensions");
     return     (1);
   }
 
@@ -403,7 +403,7 @@ const SCOTCH_Num * const    vnumtab)
   ArchSub *           tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archSub: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archSub) ": internal error");
     return     (2);
   }
 
@@ -433,7 +433,7 @@ const SCOTCH_Num * const    linktab)              /*+ Link cost array, by increa
   ArchTleaf *         tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archTleaf: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archTleaf) ": internal error");
     return     (1);
   }
 
@@ -443,7 +443,7 @@ const SCOTCH_Num * const    linktab)              /*+ Link cost array, by increa
   tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
 
   if ((tgtarchdatptr->sizetab = memAlloc ((levlnbr * 2 + 1) * sizeof (Anum))) == NULL) { /* TRICK: One more slot for linktab[-1] */
-    errorPrint ("SCOTCH_archTleaf: out of memory");
+    errorPrint (STRINGIFY (SCOTCH_archTleaf) ": out of memory");
     return     (1);
   }
   tgtarchdatptr->levlnbr     = (Anum) levlnbr;
@@ -485,7 +485,7 @@ const SCOTCH_Num * const    permtab)              /*+ Permutation array         
   tgtarchptr->class = archClass ("ltleaf");       /* Override class */
 
   if ((tgtarchdatptr->permtab = memAlloc (permnbr * 2 * sizeof (Anum))) == NULL) { /* TRICK: space for peritab too */
-    errorPrint ("SCOTCH_archLtleaf: out of memory");
+    errorPrint (STRINGIFY (SCOTCH_archLtleaf) ": out of memory");
     return     (1);
   }
   tgtarchdatptr->permnbr = (Anum) permnbr;
@@ -513,7 +513,7 @@ const SCOTCH_Num            dimyval)
   ArchTorusX *        tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archTorus2: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archTorus2) ": internal error");
     return     (1);
   }
 
@@ -544,7 +544,7 @@ const SCOTCH_Num            dimzval)
   ArchTorusX *        tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archTorus3: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archTorus3) ": internal error");
     return     (1);
   }
 
@@ -575,11 +575,11 @@ const SCOTCH_Num * const    dimntab)              /*+ Array of dimensions       
   ArchTorusX *        tgtarchdatptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archTorusX: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archTorusX) ": internal error");
     return     (1);
   }
   if (dimnnbr > ARCHMESHDIMNMAX) {
-    errorPrint ("SCOTCH_archTorusX: too many dimensions");
+    errorPrint (STRINGIFY (SCOTCH_archTorusX) ": too many dimensions");
     return     (1);
   }
 
@@ -605,7 +605,7 @@ SCOTCH_Arch * const         archptr)
   Arch *              tgtarchptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archVcmplt: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archVcmplt) ": internal error");
     return     (1);
   }
 
@@ -628,7 +628,7 @@ SCOTCH_Arch * const         archptr)
   Arch *              tgtarchptr;
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_archVhcub: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archVhcub) ": internal error");
     return     (1);
   }
 

@@ -1,4 +1,4 @@
-/* Copyright 2010,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                the libSCOTCH library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 may 2010     **/
-/**                                 to     20 sep 2014     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,7 +89,7 @@ SCOTCH_Num * const          parttab)              /*+ Partition array       +*/
 
   partstraptr = *((Strat **) straptr);
   if (partstraptr->tabl != &wgraphpartststratab) {
-    errorPrint ("SCOTCH_graphPartOvl: not a graph partitioning with overlap strategy");
+    errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": not a graph partitioning with overlap strategy");
     return     (1);
   }
 
@@ -99,7 +99,7 @@ SCOTCH_Num * const          parttab)              /*+ Partition array       +*/
   grafdat.parttax = ((Gnum *) parttab) - grafdat.s.baseval; /* Directly use given part array */
   grafdat.levlnum = 0;
   if (wgraphAlloc (&grafdat) != 0) {              /* Always allocate graph data when calling */
-    errorPrint ("SCOTCH_graphPartOvl: out of memory");
+    errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": out of memory");
     return     (1);
   }
 
@@ -126,7 +126,7 @@ const char * const          string)
     stratExit (*((Strat **) straptr));
 
   if ((*((Strat **) straptr) = stratInit (&wgraphpartststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratGraphPartOvl: error in sequential overlap partitioning strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphPartOvl) ": error in sequential overlap partitioning strategy");
     return     (1);
   }
 
@@ -157,7 +157,7 @@ const double                balrat)               /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<KBAL>", kbaltab);
 
   if (SCOTCH_stratGraphPartOvl (straptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratGraphPartOvlBuild: error in sequential overlap partitioning strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphPartOvlBuild) ": error in sequential overlap partitioning strategy");
     return     (1);
   }
 

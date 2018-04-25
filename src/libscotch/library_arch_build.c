@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 08 mar 2005     **/
 /**                                 to     17 mar 2005     **/
 /**                # Version 6.0  : from : 16 mar 2016     **/
-/**                                 to     11 feb 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,7 +90,7 @@ const char * const          string)
     stratExit (*((Strat **) stratptr));
 
   if ((*((Strat **) stratptr) = stratInit (&bgraphbipartststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratBipart: error in bipartitioning strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratBipart) ": error in bipartitioning strategy");
     return     (1);
   }
 
@@ -114,7 +114,7 @@ const char * const          string)
 
 #if 0
   if ((*((Strat **) stratptr) = stratInit (&archbuildststratab, "")) == NULL) {
-    errorPrint ("SCOTCH_stratArchBuild: error in architecture building strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratArchBuild) ": error in architecture building strategy");
     return     (1);
   }
 #endif
@@ -147,7 +147,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Bipartitoning strategy    
 
   if ((sizeof (SCOTCH_Num) != sizeof (Gnum)) ||
       (sizeof (SCOTCH_Num) != sizeof (Anum))) {
-    errorPrint ("SCOTCH_archBuild0: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archBuild0) ": internal error");
     return     (1);
   }
 
@@ -155,7 +155,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Bipartitoning strategy    
     *((Strat **) stratptr) = stratInit (&bgraphbipartststratab, "(m{vert=50,low=h{pass=10},asc=f{move=100,bal=0.1}}f{move=100,bal=0.05})(/((load0=load)|(load0=0))?x;)");
   bipstratptr = *((Strat **) stratptr);
   if (bipstratptr->tabl != &bgraphbipartststratab) {
-    errorPrint ("SCOTCH_archBuild0: not a bipartitioning strategy");
+    errorPrint (STRINGIFY (SCOTCH_archBuild0) ": not a bipartitioning strategy");
     return     (1);
   }
 
@@ -185,7 +185,7 @@ const SCOTCH_Num * const    vnumtab)              /*+ Pointer to sublist        
 
   if ((sizeof (SCOTCH_Num) != sizeof (Gnum)) ||
       (sizeof (SCOTCH_Num) != sizeof (Anum))) {
-    errorPrint ("SCOTCH_archBuild2: internal error");
+    errorPrint (STRINGIFY (SCOTCH_archBuild2) ": internal error");
     return     (1);
   }
 

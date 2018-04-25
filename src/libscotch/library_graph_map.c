@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 29 oct 2007     **/
 /**                                 to     24 jul 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     23 apr 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,7 +103,7 @@ SCOTCH_Num * const          parttab)              /*+ Mapping array             
   lmapptr->archptr = (Arch *)  archptr;
   if (parttab == NULL) {
     if ((lmapptr->parttab = (Gnum *) memAlloc (lmapptr->grafptr->vertnbr * sizeof (Gnum))) == NULL) {
-      errorPrint ("SCOTCH_graphMapInit: out of memory");
+      errorPrint (STRINGIFY (SCOTCH_graphMapInit) ": out of memory");
       return     (1);
     }
     memSet (lmapptr->parttab, 0, lmapptr->grafptr->vertnbr * sizeof (Anum)); /* All vertices mapped to first domain    */
@@ -614,7 +614,7 @@ const char * const          string)
     stratExit (*((Strat **) straptr));
 
   if ((*((Strat **) straptr) = stratInit (&kgraphmapststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratGraphMap: error in mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphMap) ": error in mapping strategy");
     return     (1);
   }
 
@@ -682,7 +682,7 @@ const double                kbalval)              /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<BBAL>", bbaltab);
 
   if (SCOTCH_stratGraphMap (straptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratGraphMapBuild: error in sequential mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphMapBuild) ": error in sequential mapping strategy");
     return     (1);
   }
 
@@ -736,7 +736,7 @@ const double                bbalval)              /*+ Maximum imbalance ratio +*
   stringSubst (bufftab, "<PWGT>", pwgttab);
 
   if (SCOTCH_stratGraphMap (straptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratGraphClusterBuild: error in sequential mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphClusterBuild) ": error in sequential mapping strategy");
     return     (1);
   }
 

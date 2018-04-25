@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                the libScotch library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -109,7 +109,7 @@ SCOTCH_Num * const          partgsttab)
   Dgraph * restrict const grafptr = (Dgraph *) orggrafptr;
 
   if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
-    errorPrint ("SCOTCH_dgraphGrow: cannot compute ghost edge array");
+    errorPrint (STRINGIFY (SCOTCH_dgraphGrow) ": cannot compute ghost edge array");
     return     (1);
   }
 

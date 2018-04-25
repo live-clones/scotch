@@ -1,4 +1,4 @@
-/* Copyright 2008-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 12 jun 2008     **/
 /**                                 to     31 aug 2011     **/
 /**                # Version 6.0  : from : 14 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,7 +89,7 @@ SCOTCH_Num * const          termloctab)           /*+ Mapping array             
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Dmapping) < sizeof (LibDmapping)) {
-    errorPrint ("SCOTCH_dgraphMapInit: internal error");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapInit) ": internal error");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
@@ -154,7 +154,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphCheck (srcgrafptr) != 0) {
-    errorPrint ("SCOTCH_dgraphMapCompute: invalid input graph");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapCompute) ": invalid input graph");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -170,7 +170,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Mapping strategy   +*/
   }
   mapstratptr = *((Strat **) stratptr);
   if (mapstratptr->tabl != &kdgraphmapststratab) {
-    errorPrint ("SCOTCH_dgraphMapCompute: not a parallel graph mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapCompute) ": not a parallel graph mapping strategy");
     return     (1);
   }
 
@@ -256,7 +256,7 @@ const char * const          string)
     stratExit (*((Strat **) stratptr));
 
   if ((*((Strat **) stratptr) = stratInit (&kdgraphmapststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratDgraphMap: error in parallel mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratDgraphMap) ": error in parallel mapping strategy");
     return     (1);
   }
 
@@ -333,7 +333,7 @@ const double                kbalval)              /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<VERT>", verttab);
 
   if (SCOTCH_stratDgraphMap (stratptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratDgraphMapBuild: error in parallel mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratDgraphMapBuild) ": error in parallel mapping strategy");
     return     (1);
   }
 
@@ -414,7 +414,7 @@ const double                bbalval)              /*+ Maximum imbalance ratio   
   stringSubst (bufftab, "<VERT>", verttab);
 
   if (SCOTCH_stratDgraphMap (stratptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratDgraphClusterBuild: error in parallel mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratDgraphClusterBuild) ": error in parallel mapping strategy");
     return     (1);
   }
 

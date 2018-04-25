@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 jan 2012     **/
-/**                                 to     19 aug 2014     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,7 +103,7 @@ const SCOTCH_Num                    flagval)      /* Flag value (not used)      
   if (memAllocGroup ((void **) (void *)
                      &queutax, (size_t) (vertnbr * sizeof (Gnum)),
                      &randtax, (size_t) (vertnbr * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint ("SCOTCH_graphColor: out of memory");
+    errorPrint (STRINGIFY (SCOTCH_graphColor) ": out of memory");
     return     (1);
   }
   queutax -= baseval;
