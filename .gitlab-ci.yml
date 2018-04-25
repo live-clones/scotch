@@ -69,5 +69,5 @@ sonar_scotch:
   script:
     - ./analysis.sh
     - sonar-scanner -X > sonar.log
-  #only:
-  #  - master@scotch/scotch
+  only:
+    - master@scotch/scotch
