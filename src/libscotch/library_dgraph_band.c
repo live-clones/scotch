@@ -1,4 +1,4 @@
-/* Copyright 2011,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                the libScotch library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 oct 2011     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -313,10 +313,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
 
   memFree (bandvnumgsttax + bandgrafptr->baseval);  /* Free useless space */
 
-  if (bandedloloctax != NULL) {                   /* If graph has edge weights */
-    Gnum              edgelocnum;
-    Gnum              edgelocnnd;
-
+  if (bandedloloctax != NULL) {                   /* If graph has edge weights                             */
     for (bandvertlocnum = bandgrafptr->baseval;   /* For all vertices that do not belong to the last level */
          bandvertlocnum < bandvertlvlnum; bandvertlocnum ++) { 
       Gnum              vertlocnum;

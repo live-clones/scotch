@@ -1,4 +1,4 @@
-/* Copyright 2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 03 apr 2012     **/
-/**                                 to   : 26 sep 2012     **/
+/**                                 to   : 25 apr 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version      **/
@@ -87,7 +87,6 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
 {
   Gnum                    queulocnum;
   Gnum                    vertlocnnd;
-  Gnum                    vnumgstsiz;             /* Size of vnumgsttax; TRICK: re-use     */
   Gnum                    vrcvdatsiz;             /* Sizes of data send and receive arrays */
   Gnum                    vsnddatsiz;
   Gnum *                  vrcvdattab;             /* Data arrays [norestrict:async]        */
@@ -325,7 +324,6 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
 {
   Gnum                    queulocnum;
   Gnum                    vertlocnnd;
-  Gnum                    vnumgstsiz;             /* Size of vnumgsttax; TRICK: re-use     */
   Gnum                    vrcvdatsiz;             /* Sizes of data send and receive arrays */
   Gnum                    vsnddatsiz;
   Gnum *                  vrcvdattab;             /* Data arrays [norestrict:async]        */
