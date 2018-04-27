@@ -249,6 +249,18 @@
 #define SCOTCH_NAME_PUBLICFU(f)     SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_PUBLICFU,f,SCOTCH_NAME_SUFFIXFU)
 #define SCOTCH_FORTRAN(nu,nl,pl,pc) FORTRAN (SCOTCH_NAME_PUBLICFU(nu),SCOTCH_NAME_PUBLICFL(nl),pl,pc)
 
+#ifdef SCOTCH_RENAME
+#define SCOTCH_Arch                 SCOTCH_NAME_PUBLIC (SCOTCH_Arch)
+#define SCOTCH_Geom                 SCOTCH_NAME_PUBLIC (SCOTCH_Geom)
+#define SCOTCH_Graph                SCOTCH_NAME_PUBLIC (SCOTCH_Graph)
+#define SCOTCH_Idx                  SCOTCH_NAME_PUBLIC (SCOTCH_Idx)
+#define SCOTCH_Mesh                 SCOTCH_NAME_PUBLIC (SCOTCH_Mesh)
+#define SCOTCH_Mapping              SCOTCH_NAME_PUBLIC (SCOTCH_Mapping)
+#define SCOTCH_Num                  SCOTCH_NAME_PUBLIC (SCOTCH_Num)
+#define SCOTCH_Ordering             SCOTCH_NAME_PUBLIC (SCOTCH_Ordering)
+#define SCOTCH_Strat                SCOTCH_NAME_PUBLIC (SCOTCH_Strat)
+#endif /* SCOTCH_RENAME */
+
 #if ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME))
 #define errorPrint                  SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrint) /* Same name whatever the suffix is since external library */
 #define errorPrintW                 SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrintW)

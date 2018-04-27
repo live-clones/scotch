@@ -49,7 +49,7 @@
 !*                # Version 5.1  : from : 26 mar 2009     **
 !*                                 to     12 feb 2011     **
 !*                # Version 6.0  : from : 22 oct 2011     **
-!*                                 to     28 sep 2014     **
+!*                                 to     28 apr 2018     **
 !*                                                        **
 !***********************************************************
 
@@ -61,8 +61,8 @@
         INTEGER SCOTCH_COARSENFOLDDUP
         INTEGER SCOTCH_COARSENNOMERGE
         PARAMETER (SCOTCH_COARSENNONE    = 0)
-        PARAMETER (SCOTCH_COARSENFOLD    = 4096)
-        PARAMETER (SCOTCH_COARSENFOLDDUP = 12288)
+        PARAMETER (SCOTCH_COARSENFOLD    = 256)
+        PARAMETER (SCOTCH_COARSENFOLDDUP = 768)
         PARAMETER (SCOTCH_COARSENNOMERGE = 16384)
 
 !* Flag definitions for the strategy

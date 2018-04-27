@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 16 jun 2008     **/
 /**                                 to   : 15 aug 2010     **/
 /**                # Version 6.0  : from : 01 dec 2012     **/
-/**                                 to   : 25 apr 2018     **/
+/**                                 to   : 28 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -220,9 +220,11 @@ char *                      argv[])
 #ifdef SCOTCH_PTSCOTCH
   subsFill ("library_pt.h", "ptscotch.h  ");
   subsFill ("library_pt_f.h", "ptscotchf.h   ");
+  subsSuffix ("PTSCOTCH_H");
 #else /* SCOTCH_PTSCOTCH */
   subsFill ("library.h", "scotch.h ");
   subsFill ("library_f.h", "scotchf.h  ");
+  subsSuffix ("SCOTCH_H");
 #endif /* SCOTCH_PTSCOTCH */
   subsFill ("DUMMYIDX", EXPAND (IDX));
   subsFill ("DUMMYINT", EXPAND (INT));
@@ -251,6 +253,27 @@ char *                      argv[])
 #endif /* SCOTCH_PTSCOTCH */
   subsFill ("##SCOTCH_NAME_SUFFIX", suffptr);
   if (suffptr[0] != '\0') {                       /* If suffix provided */
+#ifdef SCOTCH_RENAME_ALL
+    subsSuffix ("SCOTCH_VERSION");
+    subsSuffix ("SCOTCH_RELEASE");
+    subsSuffix ("SCOTCH_PATCHLEVEL");
+    subsSuffix ("SCOTCH_COARSENNONE");
+    subsSuffix ("SCOTCH_COARSENFOLD");
+    subsSuffix ("SCOTCH_COARSENFOLDDUP");
+    subsSuffix ("SCOTCH_COARSENNOMERGE");
+    subsSuffix ("SCOTCH_STRATDEFAULT");
+    subsSuffix ("SCOTCH_STRATQUALITY");
+    subsSuffix ("SCOTCH_STRATSPEED");
+    subsSuffix ("SCOTCH_STRATBALANCE");
+    subsSuffix ("SCOTCH_STRATSAFETY");
+    subsSuffix ("SCOTCH_STRATSCALABILITY");
+    subsSuffix ("SCOTCH_STRATRECURSIVE");
+    subsSuffix ("SCOTCH_STRATREMAP");
+    subsSuffix ("SCOTCH_STRATLEVELMAX");
+    subsSuffix ("SCOTCH_STRATLEVELMIN");
+    subsSuffix ("SCOTCH_STRATLEAFSIMPLE");
+    subsSuffix ("SCOTCH_STRATSEPASIMPLE");
+#endif /* SCOTCH_RENAME_ALL */
 #ifdef SCOTCH_PTSCOTCH
 #else /* SCOTCH_PTSCOTCH */
     subsSuffix ("SCOTCH_Idx");
