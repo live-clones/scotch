@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     22 apr 2018     **/
+/**                                 to     27 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,12 +65,6 @@
 **  The type and structure definitions.
 */
 
-/*+ Version flags. +*/
-
-#define SCOTCH_VERSION DUMMYVERSION
-#define SCOTCH_RELEASE DUMMYRELEASE
-#define SCOTCH_PATCHLEVEL DUMMYPATCHLEVEL
-
 /*+ Integer type. +*/
 
 typedef DUMMYIDX SCOTCH_Idx;
@@ -80,15 +74,30 @@ typedef DUMMYINT SCOTCH_Num;
 #define SCOTCH_NUMMAX               DUMMYMAXINT
 #define SCOTCH_NUMSTRING            DUMMYNUMSTRING
 
+/*+ Version flags. +*/
+
+#ifndef SCOTCH_H_UNIQUE
+#define SCOTCH_VERSION DUMMYVERSION
+#define SCOTCH_RELEASE DUMMYRELEASE
+#define SCOTCH_PATCHLEVEL DUMMYPATCHLEVEL
+#else /* SCOTCH_H_UNIQUE */
+#if ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL))
+#define SCOTCH_WARNING_UNSAFE
+#endif /* ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL)) */
+#endif /* SCOTCH_H_UNIQUE */
+
 /*+ Coarsening flags +*/
 
+#ifndef SCOTCH_H_UNIQUE
 #define SCOTCH_COARSENNONE          0x0000
 #define SCOTCH_COARSENFOLD          0x0100
 #define SCOTCH_COARSENFOLDDUP       0x0300
 #define SCOTCH_COARSENNOMERGE       0x4000
+#endif /* SCOTCH_H_UNIQUE */
 
 /*+ Strategy string parametrization values +*/
 
+#ifndef SCOTCH_H_UNIQUE
 #define SCOTCH_STRATDEFAULT         0x0000
 #define SCOTCH_STRATQUALITY         0x0001
 #define SCOTCH_STRATSPEED           0x0002
@@ -101,11 +110,16 @@ typedef DUMMYINT SCOTCH_Num;
 #define SCOTCH_STRATLEVELMIN        0x2000
 #define SCOTCH_STRATLEAFSIMPLE      0x4000
 #define SCOTCH_STRATSEPASIMPLE      0x8000
+#endif /* SCOTCH_H_UNIQUE */
 
 /*+ Opaque objects. The dummy sizes of these
 objects, computed at compile-time by program
 "dummysizes", are given as double values for
 proper padding                               +*/
+
+#ifndef SCOTCH_H_UNIQUE
+typedef unsigned char       SCOTCH_GraphPart2;
+#endif /* SCOTCH_H_UNIQUE */
 
 typedef struct {
   double                    dummy[DUMMYSIZEARCH];
@@ -118,8 +132,6 @@ typedef struct {
 typedef struct {
   double                    dummy[DUMMYSIZEGRAPH];
 } SCOTCH_Graph;
-
-typedef unsigned char       SCOTCH_GraphPart2;
 
 typedef struct {
   double                    dummy[DUMMYSIZEMESH];
@@ -302,4 +314,5 @@ void                        SCOTCH_version      (int * const, int * const, int *
 }
 #endif /* __cplusplus */
 
+#define SCOTCH_H_UNIQUE                           /* For symbols that need only be defined once */
 #endif /* SCOTCH_H */
