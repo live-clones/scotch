@@ -3040,19 +3040,19 @@ ptdummysizes$(EXE)		:	dummysizes.c				\
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
-					./dummysizes$(EXE) library.h scotch.h
+					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library.h scotch.h
 
 scotchf.h			:	dummysizes$(EXE) 			\
 					library_f.h
-					./dummysizes$(EXE) library_f.h scotchf.h
+					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_f.h scotchf.h
 
 ptscotch.h			:	ptdummysizes$(EXE)			\
 					library_pt.h
-					./ptdummysizes$(EXE) library_pt.h ptscotch.h
+					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt.h ptscotch.h
 
 ptscotchf.h			:	ptdummysizes$(EXE)			\
 					library_pt_f.h
-					./ptdummysizes$(EXE) library_pt_f.h ptscotchf.h
+					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt_f.h ptscotchf.h
 
 libscotch$(LIB)			:	$(LIBSCOTCHDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)
