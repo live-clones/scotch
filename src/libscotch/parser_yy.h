@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to     21 dec 2001     **/
 /**                # Version 5.1  : from : 09 jun 2009     **/
 /**                                 to     07 aug 2010     **/
+/**                # Version 6.0  : from : 27 apr 2018     **/
+/**                                 to     27 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,28 +62,23 @@
 
 #if ((defined SCOTCH_RENAME_PARSER) || (defined yylex)) /* If prefix renaming    */
 #define scotchyyparse               stratParserParse2 /* Parser function name    */
-#define scotchyyerror               stratParserError /* Error processing routine */
 #ifndef yylval
-#define yylval                      scotchyylval  /* It should be Yacc/Bison's job to redefine it! */
+#define yylval                      SCOTCH_NAME_MACRO3 (scotchyy, SCOTCH_NAME_SUFFIX, lval) /* It should be Yacc/Bison's job to redefine it! */
 #endif /* yylval              */
 #else /* SCOTCH_RENAME_PARSER */
 #define yylex                       stratParserLex /* Lexical analyzer           */
 #define yyparse                     stratParserParse2 /* Parser function name    */
-#define yyerror                     stratParserError /* Error processing routine */
 #endif /* SCOTCH_RENAME_PARSER */
 
 /*
 **  The function prototypes.
 */
 
-#ifndef PARSER_YY
-#define static
-#endif
+Strat *                     stratParserParse    (const StratTab * const, const char * const);
 
 int                         yylex               (void);
+int                         yyparse             (void);
 
-Strat *                     stratParserParse    (const StratTab * const, const char * const);
-int                         stratParserParse2   (void);
-static int                  stratParserError    (const char * const);
-
-#undef static
+#ifdef PARSER_YY
+static int                  yyerror             (const char * const);
+#endif /* PARSER_YY */

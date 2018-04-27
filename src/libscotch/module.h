@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     26 apr 2018     **/
+/**                                 to     27 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -217,6 +217,9 @@
 #ifndef SCOTCH_NAME_SUFFIX
 #define SCOTCH_NAME_SUFFIX
 #else /* SCOTCH_NAME_SUFFIX */
+#ifndef SCOTCH_RENAME
+#define SCOTCH_RENAME
+#endif /* SCOTCH_RENAME */
 #ifndef SCOTCH_RENAME_PUBLIC
 #define SCOTCH_RENAME_PUBLIC
 #endif /* SCOTCH_RENAME_PUBLIC */
@@ -225,6 +228,9 @@
 #define SCOTCH_NAME_SUFFIXFL        SCOTCH_NAME_SUFFIX
 #define SCOTCH_NAME_SUFFIXFU        SCOTCH_NAME_SUFFIX
 #else /* SCOTCH_NAME_SUFFIXFL */
+#ifndef SCOTCH_RENAME
+#define SCOTCH_RENAME
+#endif /* SCOTCH_RENAME */
 #ifndef SCOTCH_RENAME_PUBLIC
 #define SCOTCH_RENAME_PUBLIC
 #endif /* SCOTCH_RENAME_PUBLIC */
@@ -244,16 +250,16 @@
 #define SCOTCH_FORTRAN(nu,nl,pl,pc) FORTRAN (SCOTCH_NAME_PUBLICFU(nu),SCOTCH_NAME_PUBLICFL(nl),pl,pc)
 
 #if ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME))
+#define errorPrint                  SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrint) /* Same name whatever the suffix is since external library */
+#define errorPrintW                 SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrintW)
+#define errorProg                   SCOTCH_NAME_MACRO2 (SCOTCH_, errorProg)
+
 #define memCur                      SCOTCH_NAME_PUBLIC (memCur)
 #define memMax                      SCOTCH_NAME_PUBLIC (memMax)
 
 #define clockGet                    SCOTCH_NAME_INTERN (clockGet)
 
 #define commonStubDummy             SCOTCH_NAME_INTERN (commonStubDummy)
-
-#define errorPrint                  SCOTCH_NAME_PUBLIC (errorPrint)
-#define errorPrintW                 SCOTCH_NAME_PUBLIC (errorPrintW)
-#define errorProg                   SCOTCH_NAME_PUBLIC (errorProg)
 
 #define fileBlockInit               SCOTCH_NAME_INTERN (fileBlockInit)
 #define fileBlockClose              SCOTCH_NAME_INTERN (fileBlockClose)
@@ -933,7 +939,6 @@
 #define stratParserLex              SCOTCH_NAME_INTERN (stratParserLex)
 #define stratParserRemain           SCOTCH_NAME_INTERN (stratParserRemain)
 #define stratParserSelect           SCOTCH_NAME_INTERN (stratParserSelect)
-#define stratParserError            SCOTCH_NAME_INTERN (stratParserError)
 #define stratParserParse            SCOTCH_NAME_INTERN (stratParserParse)
 #define stratParserParse2           SCOTCH_NAME_INTERN (stratParserParse2)
 #define stratTestEval               SCOTCH_NAME_INTERN (stratTestEval)
