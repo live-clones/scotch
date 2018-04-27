@@ -1,4 +1,4 @@
-## Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -89,13 +89,17 @@ $(mandir)			:	$(datarootdir)
 $(mandir)/man1			:	$(mandir)
 					-$(MKDIR) $(mandir)/man1
 
-scotch				:	required
+libscotch			:	required
 					(cd libscotch ;      $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) scotch && $(MAKE) install)
+
+scotch				:	libscotch
 					(cd scotch ;         $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) scotch && $(MAKE) install)
 					(cd libscotchmetis ; $(MAKE)                                                                scotch && $(MAKE) install)
 
-ptscotch			:	required
+libptscotch			:	required
 					(cd libscotch ;      $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) ptscotch && $(MAKE) ptinstall)
+
+ptscotch			:	libptscotch
 					(cd scotch ;         $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) ptscotch && $(MAKE) ptinstall)
 					(cd libscotchmetis ; $(MAKE)                                                                ptscotch && $(MAKE) ptinstall)
 

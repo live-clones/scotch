@@ -210,6 +210,16 @@ Once the Scotch library and programs have been compiled, it is up to
 the packager to apply proper renaming to the various files. For
 instance, "scotch.h" can be renamed into "scotch_64.h", etc.
 
+Note also that, because names of library data types are renamed, the
+programs of the Scotch package can no longer be compiled. Hence, users
+can only compile the libraries of the Scotch package, by running:
+
+%prompt% make libscotch
+
+and/or:
+
+%prompt% make libptscotch
+
 
 2.5) Portability issues
 -----------------------
