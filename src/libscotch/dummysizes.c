@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 16 jun 2008     **/
 /**                                 to   : 15 aug 2010     **/
 /**                # Version 6.0  : from : 01 dec 2012     **/
-/**                                 to   : 28 apr 2018     **/
+/**                                 to   : 29 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -230,9 +230,9 @@ char *                      argv[])
   subsFill ("DUMMYINT", EXPAND (INT));
   subsFill ("DUMMYMAXINT", EXPAND (INTVALMAX));
   subsFill ("DUMMYNUMSTRING", "\"" GNUMSTRING "\"");
-  subsFill ("DUMMYVERSION", EXPAND (SCOTCH_VERSION));
-  subsFill ("DUMMYRELEASE", EXPAND (SCOTCH_RELEASE));
-  subsFill ("DUMMYPATCHLEVEL", EXPAND (SCOTCH_PATCHLEVEL));
+  subsFill ("DUMMYVERSION", EXPAND (SCOTCH_VERSION_NUM));
+  subsFill ("DUMMYRELEASE", EXPAND (SCOTCH_RELEASE_NUM));
+  subsFill ("DUMMYPATCHLEVEL", EXPAND (SCOTCH_PATCHLEVEL_NUM));
   subsFill ("DUMMYSIZEARCH", subsSize (sizeof (Arch)));
   subsFill ("DUMMYSIZEGEOM", subsSize (sizeof (Geom)));
   subsFill ("DUMMYSIZEGRAPH", subsSize (sizeof (Graph)));

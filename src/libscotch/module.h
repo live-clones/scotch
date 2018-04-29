@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     27 apr 2018     **/
+/**                                 to     29 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -248,6 +248,28 @@
 #define SCOTCH_NAME_PUBLICFL(f)     SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_PUBLICFL,f,SCOTCH_NAME_SUFFIXFL)
 #define SCOTCH_NAME_PUBLICFU(f)     SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_PUBLICFU,f,SCOTCH_NAME_SUFFIXFU)
 #define SCOTCH_FORTRAN(nu,nl,pl,pc) FORTRAN (SCOTCH_NAME_PUBLICFU(nu),SCOTCH_NAME_PUBLICFL(nl),pl,pc)
+
+#ifdef SCOTCH_RENAME_ALL
+#define SCOTCH_VERSION              SCOTCH_NAME_PUBLIC (SCOTCH_VERSION)
+#define SCOTCH_RELEASE              SCOTCH_NAME_PUBLIC (SCOTCH_RELEASE)
+#define SCOTCH_PATCHLEVEL           SCOTCH_NAME_PUBLIC (SCOTCH_PATCHLEVEL)
+#define SCOTCH_COARSENNONE          SCOTCH_NAME_PUBLIC (SCOTCH_COARSENNONE)
+#define SCOTCH_COARSENFOLD          SCOTCH_NAME_PUBLIC (SCOTCH_COARSENFOLD)
+#define SCOTCH_COARSENFOLDDUP       SCOTCH_NAME_PUBLIC (SCOTCH_COARSENFOLDDUP)
+#define SCOTCH_COARSENNOMERGE       SCOTCH_NAME_PUBLIC (SCOTCH_COARSENNOMERGE)
+#define SCOTCH_STRATDEFAULT         SCOTCH_NAME_PUBLIC (SCOTCH_STRATDEFAULT)
+#define SCOTCH_STRATQUALITY         SCOTCH_NAME_PUBLIC (SCOTCH_STRATQUALITY)
+#define SCOTCH_STRATSPEED           SCOTCH_NAME_PUBLIC (SCOTCH_STRATSPEED)
+#define SCOTCH_STRATBALANCE         SCOTCH_NAME_PUBLIC (SCOTCH_STRATBALANCE)
+#define SCOTCH_STRATSAFETY          SCOTCH_NAME_PUBLIC (SCOTCH_STRATSAFETY)
+#define SCOTCH_STRATSCALABILITY     SCOTCH_NAME_PUBLIC (SCOTCH_STRATSCALABILITY)
+#define SCOTCH_STRATRECURSIVE       SCOTCH_NAME_PUBLIC (SCOTCH_STRATRECURSIVE)
+#define SCOTCH_STRATREMAP           SCOTCH_NAME_PUBLIC (SCOTCH_STRATREMAP)
+#define SCOTCH_STRATLEVELMAX        SCOTCH_NAME_PUBLIC (SCOTCH_STRATLEVELMAX)
+#define SCOTCH_STRATLEVELMIN        SCOTCH_NAME_PUBLIC (SCOTCH_STRATLEVELMIN)
+#define SCOTCH_STRATLEAFSIMPLE      SCOTCH_NAME_PUBLIC (SCOTCH_STRATLEAFSIMPLE)
+#define SCOTCH_STRATSEPASIMPLE      SCOTCH_NAME_PUBLIC (SCOTCH_STRATSEPASIMPLE)
+#endif /* SCOTCH_RENAME_ALL */
 
 #ifdef SCOTCH_RENAME
 #define SCOTCH_Arch                 SCOTCH_NAME_PUBLIC (SCOTCH_Arch)
@@ -665,8 +687,8 @@
 #define dgraphBuildHcub             SCOTCH_NAME_INTERN (dgraphBuildHcub)
 #define dgraphCheck                 SCOTCH_NAME_INTERN (dgraphCheck)
 #define dgraphBand                  SCOTCH_NAME_INTERN (dgraphBand)
-#define dgraphBandColl              SCOTCH_NAME_INTERN (dgraphBandColl)
-#define dgraphBandPtop              SCOTCH_NAME_INTERN (dgraphBandPtop)
+#define dgraphBand2Coll             SCOTCH_NAME_INTERN (dgraphBand2Coll)
+#define dgraphBand2Ptop             SCOTCH_NAME_INTERN (dgraphBand2Ptop)
 #define dgraphCoarsen               SCOTCH_NAME_INTERN (dgraphCoarsen)
 #define dgraphExit                  SCOTCH_NAME_INTERN (dgraphExit)
 #define dgraphFold                  SCOTCH_NAME_INTERN (dgraphFold)
@@ -681,8 +703,8 @@
 /* #define dgraphGhstReplace        SCOTCH_NAME_INTERN (dgraphGhstReplace) Already a macro */
 #define dgraphGhst2                 SCOTCH_NAME_INTERN (dgraphGhst2)
 #define dgraphGrow                  SCOTCH_NAME_INTERN (dgraphGrow) /* Used before macro replacement */
-#define dgraphGrowColl              SCOTCH_NAME_INTERN (dgraphGrowColl)
-#define dgraphGrowPtop              SCOTCH_NAME_INTERN (dgraphGrowPtop)
+#define dgraphGrow2Coll             SCOTCH_NAME_INTERN (dgraphGrow2Coll)
+#define dgraphGrow2Ptop             SCOTCH_NAME_INTERN (dgraphGrow2Ptop)
 #define dgraphHaloSync              SCOTCH_NAME_INTERN (dgraphHaloSync)
 #define dgraphHaloAsync             SCOTCH_NAME_INTERN (dgraphHaloAsync)
 #define dgraphHaloWait              SCOTCH_NAME_INTERN (dgraphHaloWait)

@@ -1,4 +1,4 @@
-/* Copyright 2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 03 apr 2012     **/
-/**                                 to   : 26 sep 2012     **/
+/**                                 to   : 29 apr 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version 5.0. **/
@@ -64,7 +64,7 @@
 /*                                */
 /**********************************/
 
-#define DGRAPHBANDGROWNAME          dgraphBand
+#define DGRAPHBANDGROWNAME          dgraphBand2
 #define DGRAPHBANDGROWEDGE(n)       bandedgelocnbr += vendloctax[n] - vertloctax[n]
 #define DGRAPHBANDGROWENQ1          for (queulocnum = 0; queulocnum < queulocnbr; queulocnum ++) { \
                                       Gnum              vertlocnum;                                \
@@ -167,7 +167,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
   memSet (bandvnumgsttax, ~0, grafptr->vertgstnbr * sizeof (Gnum)); /* Reset part array */
   bandvnumgsttax -= grafptr->baseval;
 
-  if ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphBandPtop : dgraphBandColl)
+  if ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphBand2Ptop : dgraphBand2Coll)
       (grafptr, fronlocnbr, fronloctab, distmax, bandvnumgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocnbr) != 0)
     return (1);
 

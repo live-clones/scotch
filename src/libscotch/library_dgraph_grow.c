@@ -40,7 +40,7 @@
 /**                the libScotch library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     29 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,7 +62,7 @@
 /*                                */
 /**********************************/
 
-#define DGRAPHBANDGROWNAME          dgraphGrow
+#define DGRAPHBANDGROWNAME          dgraphGrow2
 #define DGRAPHBANDGROWEDGE(n)                     /* No need to count edges         */
 #define DGRAPHBANDGROWENQ1                        /* Color array already set        */
 #define DGRAPHBANDGROWENQ2          vnumgsttax[vertlocnum] /* Set vertex color      */
@@ -113,6 +113,6 @@ SCOTCH_Num * const          partgsttab)
     return     (1);
   }
 
-  return ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphGrowPtop : dgraphGrowColl)
+  return ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphGrow2Ptop : dgraphGrow2Coll)
           (grafptr, seedlocnbr, seedloctab, distval, partgsttab - grafptr->baseval, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz));
 }
