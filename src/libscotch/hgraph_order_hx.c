@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 23 jan 2004     **/
 /**                                 to   : 28 jan 2004     **/
+/**                # Version 6.0  : from : 30 apr 2018     **/
+/**                                 to   : 30 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,26 +72,28 @@
 
 void
 hgraphOrderHxFill (
-const Hgraph * restrict const             grafptr,
-Gnum * restrict const                     petab,
-Gnum * restrict const                     lentab,
-Gnum * restrict const                     iwtab,
-Gnum * restrict const                     elentab,
-Gnum * restrict const                     pfreptr)
+const Hgraph * restrict const grafptr,
+Gnum * restrict const         petab,
+Gnum * restrict const         lentab,
+Gnum * restrict const         iwtab,
+Gnum * restrict const         nvartab,
+Gnum * restrict const         elentab,
+Gnum * restrict const         pfreptr)
 {
-  Gnum * restrict             petax;
-  Gnum * restrict             iwtax;
-  Gnum * restrict             lentax;
-  Gnum * restrict             elentax;
-  Gnum                        vertadj;            /* Index adjustment for vertices */
-  Gnum                        vertnum;
-  Gnum                        vertnew;
-  Gnum                        edgenew;
+  Gnum                vertadj;                    /* Index adjustment for vertices */
+  Gnum                vertnum;
+  Gnum                vertnew;
+  Gnum                edgenew;
 
-  petax   = petab - 1;                            /* Base HAMF arrays at base 1 */
-  iwtax   = iwtab - 1;
-  lentax  = lentab - 1;
-  elentax = elentab - 1;
+  Gnum * restrict const       petax   = petab   - 1; /* Base HAMF arrays at base 1 */
+  Gnum * restrict const       iwtax   = iwtab   - 1;
+  Gnum * restrict const       lentax  = lentab  - 1;
+  Gnum * restrict const       nvartax = nvartab - 1;
+  Gnum * restrict const       elentax = elentab - 1;
+  const Gnum * restrict const verttax = grafptr->s.verttax;
+  const Gnum * restrict const vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const velotax = grafptr->s.velotax;
+  const Gnum * restrict const edgetax = grafptr->s.edgetax;
 
   vertadj = 1 - grafptr->s.baseval;
   for (vertnum = grafptr->s.baseval, vertnew = edgenew = 1; /* Process non-halo vertices */
@@ -97,23 +101,24 @@ Gnum * restrict const                     pfreptr)
     Gnum                      degrval;
     Gnum                      edgenum;
 
-    degrval = grafptr->s.vendtax[vertnum] - grafptr->s.verttax[vertnum];
+    degrval = vendtax[vertnum] - verttax[vertnum];
     petax[vertnew]   = edgenew;
     lentax[vertnew]  = degrval;
     elentax[vertnew] = degrval;
+    nvartax[vertnew] = (velotax != NULL) ? velotax[vertnum] : 1;
 
-    for (edgenum = grafptr->s.verttax[vertnum];
-         edgenum < grafptr->s.vendtax[vertnum]; edgenum ++, edgenew ++)
-      iwtax[edgenew] = grafptr->s.edgetax[edgenum] + vertadj;
+    for (edgenum = verttax[vertnum]; edgenum < vendtax[vertnum]; edgenum ++, edgenew ++)
+      iwtax[edgenew] = edgetax[edgenum] + vertadj;
   }
   for ( ; vertnum < grafptr->s.vertnnd; vertnum ++, vertnew ++) { /* Process halo vertices */
     Gnum                      degrval;
     Gnum                      edgenum;
 
-    degrval = grafptr->s.verttax[vertnum] - grafptr->s.vendtax[vertnum];
+    degrval = verttax[vertnum] - vendtax[vertnum]; /* Negative degree */
     petax[vertnew]   = edgenew;
     lentax[vertnew]  = (degrval != 0) ? degrval : (-1 - grafptr->s.vertnbr);
     elentax[vertnew] = 0;
+    nvartax[vertnew] = (velotax != NULL) ? velotax[vertnum] : 1;
 
     for (edgenum = grafptr->s.verttax[vertnum];
          edgenum < grafptr->s.vendtax[vertnum]; edgenum ++, edgenew ++)

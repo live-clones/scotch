@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 4.0  : from : 14 jan 2003     **/
 /**                                 to   : 29 aug 2007     **/
 /**                # Version 6.0  : from : 08 mar 2012     **/
-/**                                 to   : 08 mar 2012     **/
+/**                                 to   : 30 apr 2018     **/
 /**                                                        **/
 /**   NOTES      : # This module contains pieces of code   **/
 /**                  that belong to other people; see      **/
@@ -390,8 +390,7 @@ Gnum * restrict     w)                            /* Flag array                 
   if (nbelts == 0) {                              /* Patch 8/12/03 <PA> */
     memSet (elen + 1, 0, n * sizeof (Gnum));      
     for (i = 1; i <= n; i ++) {
-      nv[i] = 1;
-      w[i]  = 1;
+      w[i] = 1;
       if (len[i] < 0) {
         degree[i] = n + 1;
         nbflag ++;
@@ -408,8 +407,7 @@ Gnum * restrict     w)                            /* Flag array                 
   }
   else  {                                         /* Patch 08/12/03 <PA>: Duplicate part of previous loop to avoid sytematic testing for elements */
     for (i = 1; i <= n; i ++) {
-      nv[i] = 1;
-      w[i]  = 1;
+      w[i] = 1;
       if (len[i] < 0) {                           /* i \in V1 */
         degree[i] = n + 1;
         nbflag ++;

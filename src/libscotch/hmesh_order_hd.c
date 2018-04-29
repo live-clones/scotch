@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 24 jan 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to   : 12 sep 2007     **/
+/**                # Version 6.0  : from : 30 apr 2018     **/
+/**                                 to   : 30 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -126,7 +128,7 @@ const HmeshOrderHdParam * restrict const  paraptr)
     return      (1);
   }
 
-  hmeshOrderHxFill (meshptr, petab, lentab, iwtab, elentab, &pfree);
+  hmeshOrderHxFill (meshptr, petab, lentab, iwtab, nvartab, elentab, &pfree);
 
   hallOrderHdHalmd (n, meshptr->m.velmnbr, iwlen, petab, pfree,
                     lentab, iwtab, nvartab, elentab, lasttab, &ncmpa,
