@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,54 +31,86 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : parser_yy.h                             **/
+/**   NAME       : test_multilib.c                         **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : Part of a static mapper.                **/
-/**                These lines are the declarations for    **/
-/**                the strategy strings syntactic parser.  **/
+/**   FUNCTION   : This module tests the use of two        **/
+/**                versions of the libScotch libraries.    **/
 /**                                                        **/
-/**   DATES      : # Version 3.1  : from : 07 nov 1995     **/
-/**                                 to     30 may 1996     **/
-/**                # Version 3.2  : from : 03 oct 1996     **/
-/**                                 to     19 oct 1996     **/
-/**                # Version 3.3  : from : 01 oct 1998     **/
-/**                                 to     01 oct 1998     **/
-/**                # Version 4.0  : from : 20 dec 2001     **/
-/**                                 to     21 dec 2001     **/
-/**                # Version 5.1  : from : 09 jun 2009     **/
-/**                                 to     07 aug 2010     **/
-/**                # Version 6.0  : from : 27 apr 2018     **/
+/**   DATES      : # Version 6.0  : from : 27 apr 2018     **/
 /**                                 to     27 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The defines.
+**  The defines and includes.
 */
 
-/* Change some function names. */
+#include <stdio.h>
+#if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H))
+#include <stdint.h>
+#endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
+#include <stdlib.h>
+#include <string.h>
 
-#if ((defined SCOTCH_RENAME_PARSER) || (defined yylex)) /* If prefix renaming    */
-#define scotchyyparse               stratParserParse2 /* Parser function name    */
-#ifndef yylval
-#define yylval                      SCOTCH_NAME_MACRO3 (scotchyy, SCOTCH_NAME_SUFFIX, lval) /* It should be Yacc/Bison's job to redefine it! */
-#endif /* yylval              */
-#else /* SCOTCH_RENAME_PARSER */
-#define yylex                       stratParserLex /* Lexical analyzer           */
-#define yyparse                     stratParserParse2 /* Parser function name    */
-#endif /* SCOTCH_RENAME_PARSER */
+#include "scotch.h"
+#include "scotch_64.h"
 
-/*
-**  The function prototypes.
-*/
+/*********************/
+/*                   */
+/* The main routine. */
+/*                   */
+/*********************/
 
-Strat *                     stratParserParse    (const StratTab * const, const char * const);
+int
+main (
+int                 argc,
+char *              argv[])
+{
+  FILE *              fileptr;
+  SCOTCH_Graph        grafdat;
+  SCOTCH_Num          vertnbr;
+  SCOTCH_Graph_64     grafdat_64;
+  SCOTCH_Num_64       vertnbr_64;
 
-int                         yylex               (void);
-int                         yyparse             (void);
+  SCOTCH_errorProg (argv[0]);
 
-#ifdef PARSER_YY
-static int                  yyerror             (const char * const);
-#endif /* PARSER_YY */
+  if ((SCOTCH_graphInit    (&grafdat)    != 0) ||
+      (SCOTCH_graphInit_64 (&grafdat_64) != 0)) {  /* Initialize source graph */
+    SCOTCH_errorPrint ("main: cannot initialize graph");
+    return            (1);
+  }
+
+  if ((fileptr = fopen (argv[1], "r")) == NULL) {
+    SCOTCH_errorPrint ("main: cannot open file (1)");
+    return            (1);
+  }
+
+  if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
+    SCOTCH_errorPrint ("main: cannot load graph (1)");
+    return            (1);
+  }
+
+  fclose (fileptr);
+
+  if ((fileptr = fopen (argv[1], "r")) == NULL) {
+    SCOTCH_errorPrint ("main: cannot open file (2)");
+    return            (1);
+  }
+
+  if (SCOTCH_graphLoad_64 (&grafdat_64, fileptr, -1, 0) != 0) { /* Read source graph */
+    SCOTCH_errorPrint ("main: cannot load graph (2)");
+    return            (1);
+  }
+
+  fclose (fileptr);
+
+  SCOTCH_graphSize    (&grafdat,    &vertnbr,    NULL);
+  SCOTCH_graphSize_64 (&grafdat_64, &vertnbr_64, NULL);
+
+  SCOTCH_graphExit    (&grafdat);
+  SCOTCH_graphExit_64 (&grafdat_64);
+
+  return (0);
+}

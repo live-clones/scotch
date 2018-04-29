@@ -40,10 +40,10 @@ libdir		= ../../lib
 include ../Makefile.inc
 
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -o $(@) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -DSCOTCH_VERSION=$(VERSION) -DSCOTCH_RELEASE=$(RELEASE) -DSCOTCH_PATCHLEVEL=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 ##
 ##  Project rules.
@@ -3029,30 +3029,30 @@ dummysizes$(EXE)		:	dummysizes.c				\
 					mapping.h				\
 					order.h					\
 					parser.h
-			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION=$(VERSION) -DSCOTCH_RELEASE=$(RELEASE) -DSCOTCH_PATCHLEVEL=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 ptdummysizes$(EXE)		:	dummysizes.c				\
 					module.h				\
 					common.h				\
 					dgraph.h				\
 					dorder.h
-			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION=$(VERSION) -DSCOTCH_RELEASE=$(RELEASE) -DSCOTCH_PATCHLEVEL=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
-					./dummysizes$(EXE) library.h scotch.h
+					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library.h scotch.h
 
 scotchf.h			:	dummysizes$(EXE) 			\
 					library_f.h
-					./dummysizes$(EXE) library_f.h scotchf.h
+					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_f.h scotchf.h
 
 ptscotch.h			:	ptdummysizes$(EXE)			\
 					library_pt.h
-					./ptdummysizes$(EXE) library_pt.h ptscotch.h
+					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt.h ptscotch.h
 
 ptscotchf.h			:	ptdummysizes$(EXE)			\
 					library_pt_f.h
-					./ptdummysizes$(EXE) library_pt_f.h ptscotchf.h
+					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt_f.h ptscotchf.h
 
 libscotch$(LIB)			:	$(LIBSCOTCHDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)

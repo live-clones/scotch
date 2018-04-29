@@ -76,7 +76,7 @@ int * const                 versptr,
 int * const                 relaptr,
 int * const                 patcptr)
 {
-  *versptr = SCOTCH_VERSION;
-  *relaptr = SCOTCH_RELEASE;
-  *patcptr = SCOTCH_PATCHLEVEL;
+  *versptr = SCOTCH_VERSION_NUM;
+  *relaptr = SCOTCH_RELEASE_NUM;
+  *patcptr = SCOTCH_PATCHLEVEL_NUM;
 }

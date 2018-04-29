@@ -40,7 +40,7 @@
 /**                the libScotch library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 oct 2011     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     29 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,7 +56,7 @@
 #include "dgraph_halo.h"
 #include "ptscotch.h"
 
-#define DGRAPHBANDGROWNAME          dgraphBand
+#define DGRAPHBANDGROWNAME          dgraphBand2
 #include "dgraph_band_grow.h"
 
 /************************************/
@@ -152,7 +152,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
   memSet (bandvnumgsttax, ~0, grafptr->vertgstnbr * sizeof (Gnum)); /* Reset part array */
   bandvnumgsttax -= grafptr->baseval;
 
-  if ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphBandPtop : dgraphBandColl)
+  if ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphBand2Ptop : dgraphBand2Coll)
       (grafptr, fronlocnbr, fronloctab, distval, bandvnumgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz) != 0)
     return (1);
 
