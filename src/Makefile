@@ -96,7 +96,7 @@ scotch				:	libscotch
 					(cd scotch ;         $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) scotch && $(MAKE) install)
 					(cd libscotchmetis ; $(MAKE)                                                                scotch && $(MAKE) install)
 
-libptscotch			:	required
+libptscotch			:	libscotch
 					(cd libscotch ;      $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) ptscotch && $(MAKE) ptinstall)
 
 ptscotch			:	libptscotch
