@@ -5,6 +5,11 @@ stages:
   - test
   - sonar
 
+before_script:
+  - git submodule update --init --recursive
+  - source .gitlab-ci-env.sh
+  - . /etc/profile.d/spack.sh
+
 build_scotch:
   stage: build
   artifacts:
@@ -12,11 +17,12 @@ build_scotch:
     expire_in: 42 minutes
     untracked: true
   script:
-    - source .gitlab-ci-env.sh
-    - git submodule update --init --recursive
-    - cd src/
+    - cd src
     - cp ./Make.inc/Makefile.inc.x86-64_pc_linux2 ./Makefile.inc
-    - make -j 4 | tee ../scotch-build.log
+    - sed -i -e "s#^CFLAGS.*#CFLAGS = -O0 -g -fPIC --coverage -Wall -fdiagnostics-show-option `pkg-config --cflags ompi-c` -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME -DSCOTCH_PTHREAD -Drestrict=__restrict -DIDXSIZE64#g" Makefile.inc
+    - sed -i -e "s#^LDFLAGS.*#LDFLAGS = --coverage `pkg-config --libs --static ompi-c` -lz -lm -lrt -pthread#g" Makefile.inc
+    - sed -i "301s#return#return (METIS_ERROR)#" libscotchmetis/metis_graph_part.c
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   only:
     - branches
     - master@scotch/scotch
@@ -26,12 +32,22 @@ test_scotch:
   dependencies:
     - build_scotch
   artifacts:
-    name: scotch_test
+    name: scotch_build
     expire_in: 42 minutes
+    paths:
+      - scotch-coverage.xml
   script:
-    - source .gitlab-ci-env.sh
-    - cd src/scotch/
-    - ./gord -h
+    - cd src
+    - make -j 4 check
+    - make -j 4 ptcheck
+    - find . -print0 | xargs -0 touch
+    - rsync -acv --filter='+ */' --filter='+ *.c' --filter='+ *.h' --filter='+ *.l' --filter='+ *.y' --filter='+ *.gcno' --filter='- *' ./ $GCOV_PREFIX
+    - cd $GCOV_PREFIX
+    - cp libscotch/parser_ll.c libscotch/lex.yy.c
+    - cp libscotch/parser_yy.c libscotch/y.tab.c
+    - cd ..
+    - lcov --directory $GCOV_PREFIX --capture --output-file scotch.lcov
+    - lcov_cobertura.py scotch.lcov --output ../../scotch-coverage.xml
   only:
     - branches
     - master@scotch/scotch
@@ -45,17 +61,13 @@ sonar_scotch:
     name: scotch_sonar
     expire_in: 1 week
     paths:
+      - scotch-coverage.xml
       - scotch-cppcheck.xml
       - scotch-rats.xml
+      - sonar-project.properties
       - sonar.log
   script:
-    - source .gitlab-ci-env.sh
-    - ./.gitlab-ci-filelist.sh
-    - cppcheck -v -f --language=c --platform=unix64 --enable=all --xml --xml-version=2 --suppress=missingIncludeSystem -UPARSEC_PROF_DRY_BODY -UPARSEC_PROF_TRACE -UPARSEC_PROF_GRAPHER -UPARSEC_SIM -UPARSEC_DEBUG_NOISIER -DPINS_ENABLE --file-list=./filelist.txt 2> scotch-cppcheck.xml
-    - rats -w 3 --xml `cat filelist.txt` > scotch-rats.xml
-    - echo -n "sonar.inclusions=" >> sonar-project.properties
-    - cat filelist.txt | xargs echo | sed 's/ /, /g' >> sonar-project.properties
+    - ./analysis.sh
     - sonar-scanner -X > sonar.log
   only:
     - master@scotch/scotch
-
