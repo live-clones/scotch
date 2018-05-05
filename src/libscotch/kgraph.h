@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 13 jul 2010     **/
 /**                                 to     31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     23 aug 2014     **/
+/**                                 to     05 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # The comploadavg and comploaddlt       **/
 /**                  should always be allocated together,  **/
@@ -122,7 +122,7 @@ typedef struct Kgraph_ {
   double                    comploadrat;          /*+ Ideal load balance per weight unit                +*/
   double                    kbalval;              /*+ Last k-way imbalance ratio                        +*/
   Gnum                      commload;             /*+ Communication load                                +*/
-  Gnum                      levlnum;              /*+ Graph coarsening level                            +*/
+  INT                       levlnum;              /*+ Graph coarsening level                            +*/
 } Kgraph;
 
 /*+ The save graph structure. +*/
