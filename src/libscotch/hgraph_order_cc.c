@@ -40,7 +40,7 @@
 /**                components.                             **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 apr 2018     **/
-/**                                 to   : 05 apr 2018     **/
+/**                                 to   : 05 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,6 +163,7 @@ const HgraphOrderCcParam * restrict const paraptr)
   ordeptr->treenbr += rootnbr;                    /* These more number of tree nodes    */
   ordeptr->cblknbr += rootnbr - 1;                /* These more number of column blocks */
   cblkptr->cblknbr  = rootnbr;
+  cblkptr->typeval  = ORDERCBLKDICO;              /* Disconnected components node  */
   for (rootnum = 0; rootnum < rootnbr; rootnum ++) { /* Initialize tree node array */
     cblkptr->cblktab[rootnum].typeval = ORDERCBLKOTHR;
     cblkptr->cblktab[rootnum].vnodnbr = roottab[rootnum + 1] - roottab[rootnum];

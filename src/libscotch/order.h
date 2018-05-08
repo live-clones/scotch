@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to     25 jul 2007     **/
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
+/**                # Version 6.0  : from : 08 may 2018     **/
+/**                                 to     08 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,6 +70,7 @@
 
 #define ORDERCBLKOTHR               0x0000        /*+ Other ordering node              +*/
 #define ORDERCBLKNEDI               0x0001        /*+ Nested dissection separator node +*/
+#define ORDERCBLKDICO               0x0002        /*+ Disconnected components node     +*/
 
 /*
 **  The type and structure definitions.
