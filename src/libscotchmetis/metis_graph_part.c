@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 06 jun 2009     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 23 dec 2011     **/
-/**                                 to     14 feb 2018     **/
+/**                                 to     15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -298,7 +298,7 @@ SCOTCH_Num * const          part)
 
     edgenbr = xadj[vertnbr] - baseval;
     if ((edlotax = memAlloc (edgenbr * sizeof (SCOTCH_Num))) == NULL)
-      return;
+      return (METIS_ERROR);
     edlotax -= baseval;                           /* Base access to edlotax */
     vsiztax  = vsize2 - baseval;
 
