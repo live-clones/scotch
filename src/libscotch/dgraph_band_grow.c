@@ -38,12 +38,13 @@
 /**   FUNCTION   : This module flags vertices according    **/
 /**                to a breadth-first search traversal of  **/
 /**                the distributed graph. It is used both  **/
-/**                by dgraphBand() and dgraphGrow().       **/
+/**                by dgraphBand() and                     **/
+/**                SCOTCH_dgraphGrow().                    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 03 apr 2012     **/
-/**                                 to   : 25 apr 2018     **/
+/**                                 to   : 15 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version      **/
@@ -85,7 +86,6 @@ Gnum * restrict const             bandvertlvlptr, /*+ Pointer to based start ind
 Gnum * restrict const             bandvertlocptr, /*+ Pointer to bandvertlocnnd                                +*/
 Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr                                +*/
 {
-  Gnum                    queulocnum;
   Gnum                    vertlocnnd;
   Gnum                    vrcvdatsiz;             /* Sizes of data send and receive arrays */
   Gnum                    vsnddatsiz;
@@ -322,7 +322,6 @@ Gnum * restrict const             bandvertlvlptr, /*+ Pointer to based start ind
 Gnum * restrict const             bandvertlocptr, /*+ Pointer to bandvertlocnnd                                +*/
 Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr                                +*/
 {
-  Gnum                    queulocnum;
   Gnum                    vertlocnnd;
   Gnum                    vrcvdatsiz;             /* Sizes of data send and receive arrays */
   Gnum                    vsnddatsiz;
@@ -507,10 +506,6 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
     procngbnum = procngbnxt;                      /* Send all buffers to neighbors */
     if (procngbnbr != 0) {
       do {
-        int               procglbnum;
-
-        procglbnum = grafptr->procngbtab[procngbnum];
-
         if (MPI_Isend (vsnddattab + nsnddsptab[procngbnum], nsndidxtab[procngbnum] - nsnddsptab[procngbnum],
                        GNUM_MPI, grafptr->procngbtab[procngbnum], TAGBAND, grafptr->proccomm,
                        nsndreqtab + procngbnum) != MPI_SUCCESS) {

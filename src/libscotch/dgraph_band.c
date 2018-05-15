@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 03 apr 2012     **/
-/**                                 to   : 29 apr 2018     **/
+/**                                 to   : 15 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version 5.0. **/
@@ -66,13 +66,16 @@
 
 #define DGRAPHBANDGROWNAME          dgraphBand2
 #define DGRAPHBANDGROWEDGE(n)       bandedgelocnbr += vendloctax[n] - vertloctax[n]
-#define DGRAPHBANDGROWENQ1          for (queulocnum = 0; queulocnum < queulocnbr; queulocnum ++) { \
-                                      Gnum              vertlocnum;                                \
-                                                                                                   \
-                                      vertlocnum = queuloctab[queulocnum];                         \
-                                      vnumgsttax[vertlocnum] = bandvertlocnnd ++;                  \
-                                      DGRAPHBANDGROWEDGE (vertlocnum);                             \
-                                    }
+#define DGRAPHBANDGROWENQ1          do {                                                             \
+                                      Gnum              queulocnum;                                  \
+                                      for (queulocnum = 0; queulocnum < queulocnbr; queulocnum ++) { \
+                                        Gnum              vertlocnum;                                \
+                                                                                                     \
+                                        vertlocnum = queuloctab[queulocnum];                         \
+                                        vnumgsttax[vertlocnum] = bandvertlocnnd ++;                  \
+                                        DGRAPHBANDGROWEDGE (vertlocnum);                             \
+                                      }                                                              \
+                                    } while (0)
 #define DGRAPHBANDGROWENQ2          bandvertlocnnd ++
 #define DGRAPHBANDGROWENQ3                        /* Nothing more to send */
 #define DGRAPHBANDGROWENQ4          bandvertlocnnd ++
