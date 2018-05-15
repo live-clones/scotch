@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
 /**                                 to   : 14 apr 2011     **/
 /**                # Version 6.0  : from : 11 sep 2011     **/
-/**                                 to   : 31 aug 2014     **/
+/**                                 to   : 15 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -253,8 +253,10 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
   }
 
   if (dgraphGhst (&bndgrafdat.s) != 0) {          /* Compute ghost edge array if not already present */
-    errorPrint ("bdgraphBipartBd: cannot compute ghost edge array");
-    return     (1);
+    errorPrint  ("bdgraphBipartBd: cannot compute ghost edge array");
+    memFree     (orgflagloctab);
+    bdgraphExit (&bndgrafdat);
+    return      (1);
   }
 
   if (reduglbtab[0] == orggrafptr->s.procglbnbr) { /* If all anchors swapped parts, swap all parts of original vertices */
