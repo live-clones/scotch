@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 27 jul 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -275,7 +275,6 @@ FILE * const                  stream)             /*+ Output stream             
   nghbmin = ANUMMAX;
   nghbmax = 0;
   nghbsum = 0;
-  nghbnbr = 0;
   nghbtab[0] = -2;
   for (vertnum = 0; domntab[vertnum].labl != ARCHDOMNOTTERM; vertnum ++) {
     Gnum                edgenum;
@@ -575,7 +574,6 @@ const Anum                  partval)              /*+ Part value +*/
   int                           diamflag;         /* Flag set if diameter changed           */
   Gnum                          diambase;         /* Base distance for connected components */
   Gnum                          diamdist;         /* Current diameter distance              */
-  Gnum                          diamnum;          /* Vertex which achieves diameter         */
   Gnum                          passnum;          /* Pass number                            */
   const Gnum * restrict         verttax;          /* Based access to vertex array           */
   const Gnum * restrict         vendtax;          /* Based access to vertex end array       */
@@ -594,9 +592,10 @@ const Anum                  partval)              /*+ Part value +*/
   vendtax  = grafptr->vendtax;
   vexxtax -= grafptr->baseval;
 
-  diamnum  = 0;                                   /* Start distances from zero */
-  diamdist = 0;
+  diamdist = 0;                                   /* Start distances from zero                  */
   for (passnum = 1, rootnum = grafptr->baseval; ; passnum ++) { /* For all connected components */
+    Gnum                diamnum;                  /* Vertex which achieves diameter             */
+
     while ((rootnum < grafptr->vertnbr) &&
            ((vexxtax[rootnum].passnum != 0) ||    /* Find first unallocated vertex */
             (parttax[rootnum] != partval)))
