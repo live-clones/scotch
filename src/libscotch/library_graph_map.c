@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 29 oct 2007     **/
 /**                                 to     24 jul 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -166,7 +166,6 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
   Gnum                  crloval;                  /* Coefficient load for regular edges   */
   Gnum                  cmloval;                  /* Coefficient load for migration edges */
   const Gnum *          vmlotax;                  /* Vertex migration cost array          */
-  Gnum                  vertnbr;
   int                   o;
 
   lmapptr = (LibMapping *) mappptr;
@@ -199,18 +198,18 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   baseval = lmapptr->grafptr->baseval;
-  vertnbr = lmapptr->grafptr->vertnbr;
 
   if (vfixnbr != 0) {                             /* We have fixed vertices */
 #ifdef SCOTCH_DEBUG_LIBRARY1
-    ArchDom                     domndat;
-    Gnum                        vertnum;
+    ArchDom             domndat;
+    Gnum                vertnbr;
+    Gnum                vertnum;
 
     if (lmapptr->parttab == NULL) {               /* We must have fixed vertex information */
       errorPrint ("graphMapCompute2: missing output mapping part array");
       return     (1);
     }
-    for (vertnum = 0; vertnum < vertnbr; vertnum ++) {
+    for (vertnum = 0, vertnbr = lmapptr->grafptr->vertnbr; vertnum < vertnbr; vertnum ++) {
       if ((lmapptr->parttab[vertnum] >= 0) &&
           (archDomTerm (lmapptr->archptr, &domndat, lmapptr->parttab[vertnum]) != 0)) {
         errorPrint ("graphMapCompute2: invalid fixed partition");
@@ -229,6 +228,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
     Gnum                        denoval;
 #ifdef SCOTCH_DEBUG_LIBRARY1
     ArchDom                     domndat;
+    Gnum                        vertnbr;
     Gnum                        vertnum;
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
@@ -242,7 +242,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
       errorPrint ("graphMapCompute2: output and old mappings must correspond to same architecture");
       return     (1);
     }
-    for (vertnum = 0; vertnum < vertnbr; vertnum ++) {
+    for (vertnum = 0, vertnbr = lmapptr->grafptr->vertnbr; vertnum < vertnbr; vertnum ++) {
       if ((lmaoptr->parttab[vertnum] >= 0) &&
           (archDomTerm (lmapptr->archptr, &domndat, lmaoptr->parttab[vertnum]) != 0)) {
         errorPrint ("graphMapCompute2: invalid old partition");
