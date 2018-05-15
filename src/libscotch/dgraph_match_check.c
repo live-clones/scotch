@@ -1,4 +1,4 @@
-/* Copyright 2008,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2009,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**    DATES     : # Version 5.1  : from : 25 dec 2008     **/
 /**                                 to   : 08 apr 2009     **/
+/**                # Version 6.0  : from : 15 may 2018     **/
+/**                                 to   : 15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,7 +81,6 @@ DgraphMatchData * restrict const    mateptr)
   int                 procngbnum;
   Gnum                multlocnbr;
   Gnum                multlocnum;
-  Gnum                vertglbnnd;
   Gnum                vertlocnbr;
   Gnum                vertlocnnd;
   Gnum                vertlocnum;
@@ -139,7 +140,6 @@ DgraphMatchData * restrict const    mateptr)
   memSet (flaggsttax, ~0, grafptr->vertgstnbr * sizeof (Gnum));
   flaggsttax -= baseval;
 
-  vertglbnnd = grafptr->vertglbnbr + baseval;
   vertlocnnd = grafptr->vertlocnnd;
   vertlocadj = grafptr->procvrttab[grafptr->proclocnum] - baseval;
   for (multlocnum = 0; multlocnum < multlocnbr; multlocnum ++) {
