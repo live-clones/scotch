@@ -859,6 +859,7 @@ dgraph_allreduce$(OBJ)		:	dgraph_allreduce.c			\
 					dgraph_allreduce.h
 
 dgraph_band$(OBJ)		:	dgraph_band.c				\
+					dgraph_band_grow.c			\
 					module.h				\
 					common.h				\
 					dgraph.h
@@ -1944,6 +1945,7 @@ library_dgraph_gather_f$(OBJ)	:	library_dgraph_gather_f.c		\
 					ptscotch.h
 
 library_dgraph_grow$(OBJ)	:	library_dgraph_grow.c			\
+					dgraph_band_grow.c			\
 					module.h				\
 					common.h				\
 					dgraph.h				\
