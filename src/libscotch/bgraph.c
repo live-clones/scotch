@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,7 +63,7 @@
 /**                # Version 5.1  : from : 08 oct 2008     **/
 /**                                 to     18 mar 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     25 aug 2014     **/
+/**                                 to     15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -130,6 +130,7 @@ const Gnum * restrict const     vflowgttab)       /*+ Array of vertex weight bia
 #ifdef SCOTCH_DEBUG_BGRAPH2
   if (bgraphCheck (actgrafptr) != 0) {
     errorPrint ("bgraphInit: inconsistent graph data");
+    bgraphExit (actgrafptr);
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
