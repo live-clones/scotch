@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 5.1  : from : 22 nov 2008     **/
 /**                                 to   : 27 jun 2010     **/
 /**                # Version 6.0  : from : 11 jun 2012     **/
-/**                                 to   : 27 apr 2015     **/
+/**                                 to   : 15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -491,6 +491,7 @@ void **                     memptr,               /*+ Pointer to first argument 
     memoff += va_arg (memlist, size_t);
     memloc  = va_arg (memlist, byte **);
   }
+  va_end (memlist);
 
   if ((blkptr = (byte *) memAlloc (memoff)) == NULL) { /* If cannot allocate   */
     *memptr = NULL;                               /* Set first pointer to NULL */
@@ -506,6 +507,7 @@ void **                     memptr,               /*+ Pointer to first argument 
     memoff += va_arg (memlist, size_t);           /* Accumulate padded sizes        */
     memloc  = va_arg (memlist, void *);           /* Get next argument pointer      */
   }
+  va_end (memlist);
 
   return ((void *) blkptr);
 }
@@ -533,12 +535,12 @@ void *                      oldptr,               /*+ Pointer to block to reallo
   byte *              blkptr;                     /* Pointer to memory chunk                */
 
   memoff = 0;
-  va_start (memlist, oldptr);                     /* Start argument parsing */
-
+  va_start (memlist, oldptr);                     /* Start argument parsing             */
   while ((memloc = va_arg (memlist, byte **)) != NULL) { /* As long as not NULL pointer */
     memoff  = (memoff + (sizeof (double) - 1)) & (~ (sizeof (double) - 1)); /* Pad      */
     memoff += va_arg (memlist, size_t);           /* Accumulate padded sizes            */
   }
+  va_end (memlist);
 
   if ((blkptr = (byte *) memRealloc (oldptr, memoff)) == NULL) /* If cannot allocate block */
     return (NULL);
@@ -550,6 +552,7 @@ void *                      oldptr,               /*+ Pointer to block to reallo
     *memloc = blkptr + memoff;                    /* Set argument address               */
     memoff += va_arg (memlist, size_t);           /* Accumulate padded sizes            */
   }
+  va_end (memlist);
 
   return ((void *) blkptr);
 }
@@ -575,13 +578,13 @@ void *                      memptr,               /*+ Pointer to base address of
   size_t              memoff;                     /* Offset value of argument               */
 
   memoff = 0;
-  va_start (memlist, memptr);                     /* Start argument parsing */
-
+  va_start (memlist, memptr);                     /* Start argument parsing             */
   while ((memloc = va_arg (memlist, byte **)) != NULL) { /* As long as not NULL pointer */
     memoff  = (memoff + (sizeof (double) - 1)) & (~ (sizeof (double) - 1));
     *memloc = (byte *) memptr + memoff;           /* Set argument address    */
     memoff += va_arg (memlist, size_t);           /* Accumulate padded sizes */
   }
+  va_end (memlist);
 
   return ((void *) ((byte *) memptr + memoff));
 }
