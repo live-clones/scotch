@@ -40,7 +40,7 @@
 /**                architecture.                           **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 30 apr 2015     **/
-/**                                 to     22 feb 2018     **/
+/**                                 to     15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -651,14 +651,12 @@ loop: vertnum = queutab[queutailidx ++];          /* Get vertex number from queu
       for (edgenum = verttax[vertnum], edgennd = vendtax[vertnum];
            edgenum < edgennd; edgenum ++) {
         Gnum                vertend;
-        Gnum                distend;
         Gnum                disttmp;
 
         vertend = edgetax[edgenum];
-        distend = disttax[vertend];
         disttmp = distval + ((edlotax != NULL) ? edlotax[edgenum] : 1);
 
-        if (vertend == vertnum1) {                /* If to end vertex path found */
+        if (vertend == vertnum1) {                /* If path to end vertex found */
           if (disttmp < distmin)
             distmin = disttmp;
           passnbr = 0;                            /* Abort at end of this pass       */
