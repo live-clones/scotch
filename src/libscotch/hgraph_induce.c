@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 24 oct 2010     **/
 /**                                 to     24 oct 2010     **/
 /**                # Version 6.0  : from : 27 mar 2012     **/
-/**                                 to     05 apr 2018     **/
+/**                                 to     16 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,7 +106,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
   if (memAllocGroup ((void **) (void *)
                      &indgrafptr->s.verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
                      &indgrafptr->vnhdtax,   (size_t) ( indvnumnbr      * sizeof (Gnum)), /* Put closest to beginning of array because no padding after */
-                     &indgrafptr->s.velotax, (size_t) ( indvertnbr      * sizeof (Gnum)),
+                     &indgrafptr->s.velotax, (size_t) ( indvelosiz      * sizeof (Gnum)),
                      &indgrafptr->s.vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hgraphInduceList: out of memory (1)"); /* Allocate induced graph structure */
     return     (1);
