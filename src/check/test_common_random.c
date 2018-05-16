@@ -39,7 +39,7 @@
 /**                strategy building routines.             **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 01 oct 2014     **/
-/**                                 to     24 feb 2018     **/
+/**                                 to     16 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,6 +61,7 @@
 
 #include "../libscotch/module.h"
 #include "../libscotch/common.h"
+#include "scotch.h"
 
 #define RANDNBR                     100
 
