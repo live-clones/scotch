@@ -31,12 +31,12 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : test_common_thread.c                    **/
+/**   NAME       : test_common_random.c                    **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module tests the sequential        **/
-/**                strategy building routines.             **/
+/**   FUNCTION   : This module tests the random number     **/
+/**                generator module.                       **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 01 oct 2014     **/
 /**                                 to     16 may 2018     **/
