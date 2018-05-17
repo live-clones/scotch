@@ -35,8 +35,8 @@
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module tests the sequential        **/
-/**                strategy building routines.             **/
+/**   FUNCTION   : This module tests the thread            **/
+/**                management module.                      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 nov 2012     **/
 /**                                 to     24 feb 2018     **/
