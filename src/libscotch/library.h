@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     29 apr 2018     **/
+/**                                 to     17 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -175,9 +175,13 @@ int                         SCOTCH_archCmpltw   (SCOTCH_Arch * const, const SCOT
 int                         SCOTCH_archHcub     (SCOTCH_Arch * const, const SCOTCH_Num);
 int                         SCOTCH_archMesh2    (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num);
 int                         SCOTCH_archMesh3    (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num);
+int                         SCOTCH_archMeshX    (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num * const);
+int                         SCOTCH_archSub      (SCOTCH_Arch * const, SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num * const);
+
 int                         SCOTCH_archTleaf    (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const);
 int                         SCOTCH_archTorus2   (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num);
 int                         SCOTCH_archTorus3   (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num);
+int                         SCOTCH_archTorusX   (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num * const);
 int                         SCOTCH_archVcmplt   (SCOTCH_Arch * const);
 int                         SCOTCH_archVhcub    (SCOTCH_Arch * const);
 
