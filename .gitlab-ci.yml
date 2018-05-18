@@ -32,7 +32,7 @@ build_scotch_32:
     - cp ../ci/Makefile.inc ./Makefile.inc
     - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
-#    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_32
 
 build_scotch_32-d:
@@ -43,7 +43,7 @@ build_scotch_32-d:
     - cp ../ci/Makefile.inc ./Makefile.inc
     - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
-#    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_32
 
 build_scotch_64:
@@ -54,7 +54,7 @@ build_scotch_64:
     - cp ../ci/Makefile.inc ./Makefile.inc
     - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
-#    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_64
 
 .job_template: &job_test
@@ -74,7 +74,7 @@ build_scotch_64:
     - cp libscotch/parser_yy.c libscotch/y.tab.c
     - cd ..
     - lcov --directory $GCOV_PREFIX --capture --output-file scotch.lcov
-#    - lcov_cobertura.py scotch.lcov --output ../../scotch-coverage.xml
+    - lcov_cobertura.py scotch.lcov --output ../../scotch-coverage.xml
   only:
     - master@fpellegr/scotch
 
@@ -109,13 +109,9 @@ test_scotch_64:
     name: scotch_build_64
   <<: *job_test_64
 
-sonar_scotch_32:
+.job_template: &job_sonar
   stage: sonar
-  dependencies:
-    - build_scotch_32
-    - test_scotch_32
   artifacts:
-    name: scotch_sonar_32
     expire_in: 1 week
     paths:
       - scotch-coverage.xml
@@ -128,5 +124,23 @@ sonar_scotch_32:
     - sonar-scanner -X > sonar.log
   only:
     - master@fpellegr/scotch
+
+sonar_scotch_32:
+  dependencies:
+    - build_scotch_32
+    - test_scotch_32
+  artifacts:
+    name: scotch_build_32
   tags:
     - 32bits
+  <<: *job_sonar
+
+sonar_scotch_64:
+  dependencies:
+    - build_scotch_64
+    - test_scotch_64
+  artifacts:
+    name: scotch_build_64
+  tags:
+    - 64bits
+  <<: *job_sonar
