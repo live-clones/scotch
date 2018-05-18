@@ -21,7 +21,6 @@ build_scotch:
     - cp ./Make.inc/Makefile.inc.x86-64_pc_linux2 ./Makefile.inc
     - sed -i -e "s#^CFLAGS.*#CFLAGS = -O0 -g -fPIC --coverage -Wall -fdiagnostics-show-option `pkg-config --cflags ompi-c` -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME -DSCOTCH_PTHREAD -Drestrict=__restrict -DIDXSIZE64#g" Makefile.inc
     - sed -i -e "s#^LDFLAGS.*#LDFLAGS = --coverage `pkg-config --libs --static ompi-c` -lz -lm -lrt -pthread#g" Makefile.inc
-    - sed -i "301s#return#return (METIS_ERROR)#" libscotchmetis/metis_graph_part.c
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   only:
     - branches
