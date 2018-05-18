@@ -6,4 +6,4 @@
 
 # ENV var used during the analysis
 export GCOV_PREFIX=$PWD/src/coverage/src
-export GCOV_PREFIX_STRIP=`echo $PWD/src | grep -o "/" |wc | awk '{print $1}'`
+export GCOV_PREFIX_STRIP=`echo $PWD/src | grep -o "/" | wc | awk '{print $1}'`

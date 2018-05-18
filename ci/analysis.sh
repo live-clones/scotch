@@ -2,7 +2,7 @@
 
 export CPPCHECK_DEFINITIONS="-DCOMMON_FILE_COMPRESS_GZ -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME -DSCOTCH_PTHREAD -Drestrict=__restrict -DIDXSIZE64"
 export CPPCHECK_INCLUDES="-Isrc/scotch -Isrc/misc -Isrc/libscotch -Isrc/esmumps -Isrc/libscotchmetis"
-./.gitlab-ci-filelist.sh
+./ci/gitlab-ci-filelist.sh
 
 cppcheck -v --max-configs=1 --language=c --platform=unix64 --enable=all --xml --xml-version=2 --suppress=missingIncludeSystem --suppress=varFuncNullUB --suppress=invalidPrintfArgType_sint ${CPPCHECK_DEFINITIONS} ${CPPCHECK_INCLUDES} --file-list=./filelist.txt 2> scotch-cppcheck.xml
 
@@ -11,10 +11,10 @@ rats -w 3 --xml `cat filelist.txt` > scotch-rats.xml
 cat > sonar-project.properties << EOF
 sonar.host.url=https://sonarqube.bordeaux.inria.fr/sonarqube
 sonar.login=$SONARQUBE_LOGIN
-sonar.links.homepage=https://gitlab.inria.fr/scotch/scotch
-sonar.links.scm=https://gitlab.inria.fr/scotch/scotch.git
-sonar.links.ci=https://gitlab.inria.fr/scotch/scotch/pipelines
-sonar.links.issue=https://gitlab.inria.fr/scotch/scotch/issues
+sonar.links.homepage=https://gitlab.inria.fr/fpellegr/scotch
+sonar.links.scm=https://gitlab.inria.fr/fpellegr/scotch.git
+sonar.links.ci=https://gitlab.inria.fr/fpellegr/scotch/pipelines
+sonar.links.issue=https://gitlab.inria.fr/fpellegr/scotch/issues
 sonar.projectKey=tadaam:scotch:gitlab:master
 sonar.projectDescription=Package for graph and mesh/hypergraph partitioning, graph clustering, and sparse matrix ordering.
 sonar.projectVersion=6.0

@@ -1,45 +1,72 @@
-image: hpclib/hiepacs
-
 stages:
   - build
   - test
   - sonar
 
 before_script:
-  - git submodule update --init --recursive
-  - source .gitlab-ci-env.sh
-  - . /etc/profile.d/spack.sh
+  - . ci/gitlab-ci-env.sh
 
-build_scotch:
+.job_template: &job_build
   stage: build
   artifacts:
-    name: scotch_build
     expire_in: 42 minutes
     untracked: true
+  only:
+    - master@fpellegr/scotch
+
+.job_template: &job_build_32
+  <<: *job_build
+  tags:
+    - 32bits
+
+.job_template: &job_build_64
+  <<: *job_build
+  tags:
+    - 64bits
+
+build_scotch_32:
+  artifacts:
+    name: scotch_build_32
   script:
     - cd src
-    - cp ./Make.inc/Makefile.inc.x86-64_pc_linux2 ./Makefile.inc
-    - sed -i -e "s#^CFLAGS.*#CFLAGS = -O0 -g -fPIC --coverage -Wall -fdiagnostics-show-option `pkg-config --cflags ompi-c` -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME -DSCOTCH_PTHREAD -Drestrict=__restrict -DIDXSIZE64#g" Makefile.inc
-    - sed -i -e "s#^LDFLAGS.*#LDFLAGS = --coverage `pkg-config --libs --static ompi-c` -lz -lm -lrt -pthread#g" Makefile.inc
-    - sed -i "301s#return#return (METIS_ERROR)#" libscotchmetis/metis_graph_part.c
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
-  only:
-    - branches
-    - master@scotch/scotch
+    - cp ../ci/Makefile.inc ./Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
+    - make scotch ptscotch esmumps ptesmumps
+#    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+  <<: *job_build_32
 
-test_scotch:
-  stage: test
-  dependencies:
-    - build_scotch
+build_scotch_32-d:
   artifacts:
-    name: scotch_build
+    name: scotch_build_32-d
+  script:
+    - cd src
+    - cp ../ci/Makefile.inc ./Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL#1' Makefile.inc
+    - make scotch ptscotch esmumps ptesmumps
+#    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+  <<: *job_build_32
+
+build_scotch_64:
+  artifacts:
+    name: scotch_build_64
+  script:
+    - cd src
+    - cp ../ci/Makefile.inc ./Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
+    - make scotch ptscotch esmumps ptesmumps
+#    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+  <<: *job_build_64
+
+.job_template: &job_test
+  stage: test
+  artifacts:
     expire_in: 42 minutes
     paths:
       - scotch-coverage.xml
   script:
     - cd src
-    - make -j 4 check
-    - make -j 4 ptcheck
+    - make check
+    - make ptcheck
     - find . -print0 | xargs -0 touch
     - rsync -acv --filter='+ */' --filter='+ *.c' --filter='+ *.h' --filter='+ *.l' --filter='+ *.y' --filter='+ *.gcno' --filter='- *' ./ $GCOV_PREFIX
     - cd $GCOV_PREFIX
@@ -47,18 +74,48 @@ test_scotch:
     - cp libscotch/parser_yy.c libscotch/y.tab.c
     - cd ..
     - lcov --directory $GCOV_PREFIX --capture --output-file scotch.lcov
-    - lcov_cobertura.py scotch.lcov --output ../../scotch-coverage.xml
+#    - lcov_cobertura.py scotch.lcov --output ../../scotch-coverage.xml
   only:
-    - branches
-    - master@scotch/scotch
+    - master@fpellegr/scotch
 
-sonar_scotch:
+.job_template: &job_test_32
+  <<: *job_test
+  tags:
+    - 32bits
+
+.job_template: &job_test_64
+  <<: *job_test
+  tags:
+    - 64bits
+
+test_scotch_32:
+  dependencies:
+    - build_scotch_32
+  artifacts:
+    name: scotch_build_32
+  <<: *job_test_32
+
+test_scotch_32-d:
+  dependencies:
+    - build_scotch_32-d
+  artifacts:
+    name: scotch_build_32-d
+  <<: *job_test_32
+
+test_scotch_64:
+  dependencies:
+    - build_scotch_64
+  artifacts:
+    name: scotch_build_64
+  <<: *job_test_64
+
+sonar_scotch_32:
   stage: sonar
   dependencies:
-    - build_scotch
-    - test_scotch
+    - build_scotch_32
+    - test_scotch_32
   artifacts:
-    name: scotch_sonar
+    name: scotch_sonar_32
     expire_in: 1 week
     paths:
       - scotch-coverage.xml
@@ -67,7 +124,9 @@ sonar_scotch:
       - sonar-project.properties
       - sonar.log
   script:
-    - ./analysis.sh
+    - ci/analysis.sh
     - sonar-scanner -X > sonar.log
   only:
-    - master@scotch/scotch
+    - master@fpellegr/scotch
+  tags:
+    - 32bits
