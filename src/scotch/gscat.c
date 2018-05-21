@@ -1,4 +1,4 @@
-/* Copyright 2009-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 26 apr 2009     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -211,6 +211,7 @@ char * const                nameptr)
                  (SCOTCH_Num) baseval,
                  proptab) == EOF) {
       errorPrint ("C_graphScat: bad output (1)");
+      fclose     (ostream);
       return     (1);
     }
 
@@ -222,6 +223,7 @@ char * const                nameptr)
 
         if (intLoad (stream, &vlblval) != 1) {    /* Read label data */
           errorPrint ("C_graphScat: bad input (3)");
+          fclose     (ostream);
           return     (1);
         }
         intSave (ostream, vlblval);
@@ -232,6 +234,7 @@ char * const                nameptr)
 
         if (intLoad (stream, &veloval) != 1) {    /* Read vertex load data    */
           errorPrint ("C_graphScat: bad input (4)");
+          fclose     (ostream);
           return     (1);
         }
         intSave (ostream, veloval);
@@ -239,6 +242,7 @@ char * const                nameptr)
       }
       if (intLoad (stream, &degrval) != 1) {      /* Read vertex degree */
         errorPrint ("C_graphScat: bad input (5)");
+        fclose     (ostream);
         return     (1);
       }
       intSave (ostream, degrval);
@@ -253,6 +257,7 @@ char * const                nameptr)
 
           if (intLoad (stream, &edloval) != 1) {  /* Read edge load data    */
             errorPrint ("C_graphScat: bad input (6)");
+            fclose     (ostream);
             return     (1);
           }
           putc ('\t', ostream);
@@ -261,6 +266,7 @@ char * const                nameptr)
 
         if (intLoad (stream, &edgeval) != 1) {    /* Read edge data */
           errorPrint ("C_graphScat: bad input (7)");
+          fclose     (ostream);
           return     (1);
         }
         putc ('\t', ostream);

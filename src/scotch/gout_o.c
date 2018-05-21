@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 01 jan 2012     **/
+/**                                 to   : 21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -360,10 +360,7 @@ FILE * const                stream)               /* Output stream              
   for (i = 0; i < idxnbr - 1; i ++) {
     if ((i % 8) == 0)
       fprintf (stream, "\n");
-    if (idxtab[i] == ~0)
-      fprintf (stream, "\t-1,");
-    else
-      fprintf (stream, "\t%u,", idxtab[i]);
+    fprintf (stream, "\t%d,", idxtab[i]);         /* ~0 is "1" */
   }
   if (((idxnbr - 1) % 8) == 0)
     fprintf (stream, "\n");
@@ -769,7 +766,7 @@ FILE * const                stream)               /* Output stream              
           if (O_outParam.PosMesh.color == 'c')
             fprintf (stream, "C%c\n", 'a' + pictab[i].col);
           else
-            fprintf (stream, "%u G\n", pictab[i].col);
+            fprintf (stream, "%d G\n", pictab[i].col);
           j = i;                                  /* Record the new current color */
         }
 
