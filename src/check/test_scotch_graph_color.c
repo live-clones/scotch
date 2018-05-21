@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_graphColor() routine.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 06 jan 2012     **/
-/**                                 to     15 oct 2014     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,19 +78,24 @@ char *              argv[])
 
   SCOTCH_errorProg (argv[0]);
 
+  if (argc != 2) {
+    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+    exit (EXIT_FAILURE);
+  }
+
   if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
     SCOTCH_errorPrint ("main: cannot load graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
@@ -99,18 +104,18 @@ char *              argv[])
 
   if ((colotab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) {
     SCOTCH_errorPrint ("main: out of memory (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if ((cnbrtab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) {
     SCOTCH_errorPrint ("main: out of memory (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
   memset (cnbrtab, 0, vertnbr * sizeof (SCOTCH_Num));
 
   if (SCOTCH_graphColor (&grafdat, colotab, &colonbr, 0) != 0) {
     SCOTCH_errorPrint ("main: cannot color graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   printf ("Number of colors: %ld\n", (long) colonbr);
@@ -127,5 +132,5 @@ char *              argv[])
   free (colotab);
   SCOTCH_graphExit (&grafdat);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

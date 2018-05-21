@@ -39,7 +39,7 @@
 /**                the SCOTCH_arch*() routines.            **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 dec 2015     **/
-/**                                 to     11 feb 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /**   DATES      : # This code derives from that of        **/
 /**                  test_scotch_arch.c                    **/
@@ -85,25 +85,25 @@ char *              argv[])
   SCOTCH_errorProg (argv[0]);
 
   if (argc != 3) {
-    SCOTCH_errorPrint ("main: invalid number of parameters");
-    return            (1);
+    SCOTCH_errorPrint ("usage: %s graph_file architecture_file", argv[0]);
+    exit (EXIT_FAILURE);
   }
 
   SCOTCH_randomReset ();
 
   if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
     SCOTCH_errorPrint ("main: cannot load graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
@@ -111,14 +111,14 @@ char *              argv[])
   SCOTCH_graphSize (&grafdat, &vertnbr, NULL);
   if (vertnbr < 8) {
     SCOTCH_errorPrint ("main: graph is too small");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   SCOTCH_stratInit (&stradat);
 
   if ((fileptr = fopen (argv[2], "w")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   for (i = 1, archnbr = 0; i <= 2; i ++) {
@@ -131,7 +131,7 @@ char *              argv[])
       o = SCOTCH_archBuild2 (&archtab[archnbr], &grafdat, vertnbr, NULL);
     if (o != 0) {
       SCOTCH_errorPrint ("main: cannot create decomposition-described architecture (%d)", 2 * i - 1);
-      return            (1);
+      exit (EXIT_FAILURE);
     }
 
     if (i == 1)
@@ -140,20 +140,20 @@ char *              argv[])
       o = SCOTCH_archBuild2 (&archtab[archnbr + 1], &grafdat, listnbr, listtab);
     if (o != 0) {
       SCOTCH_errorPrint ("main: cannot create decomposition-described architecture (%d)", 2 * i);
-      return            (1);
+      exit (EXIT_FAILURE);
     }
 
     if (i == 2) {
       if (SCOTCH_archSub (&archtab[archnbr + 2], &archtab[archnbr], listnbr, listtab) != 0) {
         SCOTCH_errorPrint ("main: cannot create sub-architecture (%d)", i);
-        return            (1);
+        exit (EXIT_FAILURE);
       }
     }
 
     for (j = 0; j < (1 + i); j ++) {
       if (SCOTCH_archSave (&archtab[archnbr + j], fileptr) != 0) {
         SCOTCH_errorPrint ("main: cannot save architecture (%d)", archnbr + 1 + j);
-        return            (1);
+        exit (EXIT_FAILURE);
       }
     }
 
@@ -169,14 +169,14 @@ char *              argv[])
 
   if ((fileptr = fopen (argv[2], "r")) == NULL) { /* Read all architectures from file where they were written to */
     SCOTCH_errorPrint ("main: cannot open file (2)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   for (i = 0; i < archnbr; i ++) {
     if ((SCOTCH_archInit (&archtab[i])          != 0) ||
         (SCOTCH_archLoad (&archtab[i], fileptr) != 0)) {
       SCOTCH_errorPrint ("main: cannot load architecture (%d)", 1 + i);
-      return            (1);
+      exit (EXIT_FAILURE);
     }
   }
 
@@ -185,5 +185,5 @@ char *              argv[])
   for (i = 0; i < archnbr; i ++)                  /* Destroy architectures in any order, as they are now all autonomous from each other */
     SCOTCH_archExit (&archtab[i]);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

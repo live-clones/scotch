@@ -39,7 +39,7 @@
 /**                versions of the libScotch libraries.    **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 27 apr 2018     **/
-/**                                 to     27 apr 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,32 +76,37 @@ char *              argv[])
 
   SCOTCH_errorProg (argv[0]);
 
+  if (argc != 2) {
+    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+    exit (EXIT_FAILURE);
+  }
+
   if ((SCOTCH_graphInit    (&grafdat)    != 0) ||
       (SCOTCH_graphInit_64 (&grafdat_64) != 0)) {  /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
     SCOTCH_errorPrint ("main: cannot load graph (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file (2)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphLoad_64 (&grafdat_64, fileptr, -1, 0) != 0) { /* Read source graph */
     SCOTCH_errorPrint ("main: cannot load graph (2)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
@@ -112,5 +117,5 @@ char *              argv[])
   SCOTCH_graphExit    (&grafdat);
   SCOTCH_graphExit_64 (&grafdat_64);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

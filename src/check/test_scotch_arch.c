@@ -1,4 +1,4 @@
-/* Copyright 2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_arch*() routines.            **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 25 jun 2014     **/
-/**                                 to     12 apr 2015     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,71 +87,71 @@ char *              argv[])
 
   if (SCOTCH_archHcub (&archtab[archnbr ++], 4) != 0) { /* TRICK: must be in rank 0 to create sub-architecture from it */
     SCOTCH_errorPrint ("main: cannot create hcub architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_archCmplt (&archtab[archnbr ++], 8) != 0) {
     SCOTCH_errorPrint ("main: cannot create cmplt architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_archMesh2 (&archtab[archnbr ++], 2, 4) != 0) {
     SCOTCH_errorPrint ("main: cannot create mesh2D architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_archMesh3 (&archtab[archnbr ++], 3, 4, 5) != 0) {
     SCOTCH_errorPrint ("main: cannot create mesh3D architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_archMeshX (&archtab[archnbr ++], dimnnbr, dimntab) != 0) {
     SCOTCH_errorPrint ("main: cannot create meshXD architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_archTleaf (&archtab[archnbr ++], levlnbr, sizetab, linktab) != 0) {
     SCOTCH_errorPrint ("main: cannot create tleaf architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_archTorus2 (&archtab[archnbr ++], 2, 4) != 0) {
     SCOTCH_errorPrint ("main: cannot create torus2D architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_archTorus3 (&archtab[archnbr ++], 3, 4, 5) != 0) {
     SCOTCH_errorPrint ("main: cannot create torus3D architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_archTorusX (&archtab[archnbr ++], dimnnbr, dimntab) != 0) {
     SCOTCH_errorPrint ("main: cannot create torusXD architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_archSub (&archtab[archnbr ++], &archtab[0], vnumnbr + 3, vnumtab) != 0) { /* TRICK: create sub-architecture of hypercube at rank 0 */
     SCOTCH_errorPrint ("main: cannot create sub-architecture (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   for (i = 0; i < archnbr; i ++) {
     if (SCOTCH_archSub (&archtab[i + archnbr], &archtab[i], vnumnbr, vnumtab) != 0) { /* Create sub-architectures (of sub-architecture, too) */
       SCOTCH_errorPrint ("main: cannot create sub-architecture (%d)", 2 + i);
-      return            (1);
+      exit (EXIT_FAILURE);
     }
   }
   archnbr *= 2;                                   /* Number of architectures has doubled */
 
   if ((fileptr = fopen (argv[1], "w+")) == NULL) { /* Write all architectures to file */
     SCOTCH_errorPrint ("main: cannot open file (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   for (i = 0; i < archnbr; i ++) {                /* Save all architectures to same file */
     if (SCOTCH_archSave (&archtab[i], fileptr) != 0) {
       SCOTCH_errorPrint ("main: cannot save architecture (%d)", 1 + i);
-      return            (1);
+      exit (EXIT_FAILURE);
     }
   }
 
@@ -162,14 +162,14 @@ char *              argv[])
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) { /* Read all architectures from file where they were written to */
     SCOTCH_errorPrint ("main: cannot open file (2)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   for (i = 0; i < archnbr; i ++) {
     if ((SCOTCH_archInit (&archtab[i])          != 0) ||
         (SCOTCH_archLoad (&archtab[i], fileptr) != 0)) {
       SCOTCH_errorPrint ("main: cannot load architecture (%d)", 1 + i);
-      return            (1);
+      exit (EXIT_FAILURE);
     }
   }
 
@@ -178,5 +178,5 @@ char *              argv[])
   for (i = 0; i < archnbr; i ++)                  /* Destroy architectures in any order, as they are now all autonomous from each other */
     SCOTCH_archExit (&archtab[i]);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

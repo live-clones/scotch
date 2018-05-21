@@ -40,7 +40,7 @@
 /**                specific case of the "copy" method.     **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 15 oct 2014     **/
-/**                                 to     24 feb 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,19 +85,24 @@ char *              argv[])
 
   SCOTCH_errorProg (argv[0]);
 
+  if (argc != 2) {
+    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+    exit (EXIT_FAILURE);
+  }
+
   if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) { /* Read the givel graph */
     SCOTCH_errorPrint ("main: cannot open file (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
     SCOTCH_errorPrint ("main: cannot load graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
@@ -107,13 +112,13 @@ char *              argv[])
   if (((parttab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) ||
       ((parotab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL)) {
     SCOTCH_errorPrint ("main: out of memory");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   for (stranum = 0; stranum < STRANBR; stranum ++) { /* Initialize mapping strategies */
     if (SCOTCH_stratInit (&stratab[stranum]) != 0) {
       SCOTCH_errorPrint ("main: cannot initialize strategy");
-      return            (1);
+      exit (EXIT_FAILURE);
     }
   }
   SCOTCH_stratGraphMap (&stratab[0], "cf{move=10000,pass=-1,bal=0.05}");
@@ -121,7 +126,7 @@ char *              argv[])
 
   if (SCOTCH_archInit (&archdat) != 0) {
     SCOTCH_errorPrint ("main: cannot initialize architecture");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
   SCOTCH_archCmplt (&archdat, 5);
 
@@ -135,7 +140,7 @@ char *              argv[])
         case 0 :                                  /* Plain mapping */
           if (SCOTCH_graphMapInit (&grafdat, &mappdat, &archdat, parttab) != 0) { /* Initialize new mapping */
             SCOTCH_errorPrint ("main: cannot initialize mapping (1)");
-            return            (1);
+            exit (EXIT_FAILURE);
           }
 
           o = SCOTCH_graphMapCompute (&grafdat, &mappdat, &stratab[STRANBR - 1]); /* Last strategy is plain mapping strategy */
@@ -144,7 +149,7 @@ char *              argv[])
         case 1 :                                  /* Remapping with copy of the old partition array         */
           if (SCOTCH_graphMapInit (&grafdat, &mapodat, &archdat, parotab) != 0) { /* Initialize old mapping */
             SCOTCH_errorPrint ("main: cannot initialize mapping (2)");
-            return            (1);
+            exit (EXIT_FAILURE);
           }
 
           o = SCOTCH_graphRemapCompute (&grafdat, &mappdat, &mapodat, 0, NULL, &stratab[stranum]);
@@ -153,7 +158,7 @@ char *              argv[])
 
       if (o != 0) {
         SCOTCH_errorPrint ("main: cannot compute mapping");
-        return (1);
+        exit (EXIT_FAILURE);
       }
     }
 
@@ -171,5 +176,5 @@ char *              argv[])
   free             (parttab);
   SCOTCH_graphExit (&grafdat);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

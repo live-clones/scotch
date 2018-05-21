@@ -39,7 +39,7 @@
 /**                management module.                      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 nov 2012     **/
-/**                                 to     24 feb 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -187,14 +187,14 @@ char *              argv[])
   groudat.redusum = COMPVAL (thrdnbr);
 
   if ((thrdtab = malloc (thrdnbr * sizeof (TestThread))) == NULL) {
-    errorPrint ("main: out of memory");
-    return     (1);
+    SCOTCH_errorPrint ("main: out of memory");
+    exit (EXIT_FAILURE);
   }
 
   if (threadLaunch (&groudat, thrdtab, sizeof (TestThread), (ThreadLaunchStartFunc) testThreads, (ThreadLaunchJoinFunc) NULL,
                     thrdnbr, THREADCANBARRIER | THREADCANREDUCE | THREADCANSCAN) != 0) {
-    errorPrint ("main: cannot launch or run threads");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot launch or run threads");
+    exit (EXIT_FAILURE);
   }
 
   free (thrdtab);
@@ -202,5 +202,5 @@ char *              argv[])
   printf ("Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD\n");
 #endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

@@ -39,7 +39,7 @@
 /**                the SCOTCH_dgraphBand() routine.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 21 feb 2012     **/
-/**                                 to     24 feb 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,9 +60,6 @@
 
 #include "ptscotch.h"
 
-#define errorProg                   SCOTCH_errorProg
-#define errorPrint                  SCOTCH_errorPrint
-
 /*********************/
 /*                   */
 /* The main routine. */
@@ -71,7 +68,6 @@
 
 int
 main (
-
 int                 argc,
 char *              argv[])
 {
@@ -90,22 +86,22 @@ char *              argv[])
   int                 thrdlvlproval;
 #endif /* SCOTCH_PTHREAD */
 
-  errorProg (argv[0]);
+  SCOTCH_errorProg (argv[0]);
 
 #ifdef SCOTCH_PTHREAD
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
   if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS)
-    errorPrint ("main: Cannot initialize (1)");
+    SCOTCH_errorPrint ("main: Cannot initialize (1)");
   if (thrdlvlreqval > thrdlvlproval)
-    errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
+    SCOTCH_errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
 #else /* SCOTCH_PTHREAD */
   if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
-    errorPrint ("main: Cannot initialize (2)");
+    SCOTCH_errorPrint ("main: Cannot initialize (2)");
 #endif /* SCOTCH_PTHREAD */
 
   if (argc != 2) {
-    errorPrint ("main: invalid number of parameters");
-    exit       (1);
+    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+    exit (EXIT_FAILURE);
   }
 
   proccomm = MPI_COMM_WORLD;
@@ -124,57 +120,57 @@ char *              argv[])
 #endif /* SCOTCH_CHECK_NOAUTO */
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
-    errorPrint ("main: cannot communicate");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot communicate");
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_dgraphInit (&srcgrafdat, proccomm) != 0) { /* Initialize source graph */
-    errorPrint ("main: cannot initialize source graph");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot initialize source graph");
+    exit (EXIT_FAILURE);
   }
   if (SCOTCH_dgraphInit (&dstgrafdat, proccomm) != 0) { /* Initialize destination graph */
-    errorPrint ("main: cannot initialize destination graph");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot initialize destination graph");
+    exit (EXIT_FAILURE);
   }
 
   file = NULL;
   if ((proclocnum == 0) &&
       ((file = fopen (argv[1], "r")) == NULL)) {
-    errorPrint ("main: cannot open graph file");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot open graph file");
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_dgraphLoad (&srcgrafdat, file, -1, 0) != 0) {
-    errorPrint ("main: cannot load source graph");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot load source graph");
+    exit (EXIT_FAILURE);
   }
 
   if (file != NULL)
     fclose (file);
 
   if (SCOTCH_dgraphCheck (&srcgrafdat) != 0) {
-    errorPrint ("main: invalid source graph");
-    return     (1);
+    SCOTCH_errorPrint ("main: invalid source graph");
+    exit (EXIT_FAILURE);
   }
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
-    errorPrint ("main: cannot communicate");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot communicate");
+    exit (EXIT_FAILURE);
   }
 
   SCOTCH_dgraphData (&srcgrafdat, NULL, &vertglbnbr, &vertlocnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
   if ((partloctab = malloc (vertlocnbr * sizeof (SCOTCH_Num))) == NULL) {
-    errorPrint ("main: cannot allocate frontier array");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot allocate frontier array");
+    exit (EXIT_FAILURE);
   }
 
   for (vertlocnum = 0; vertlocnum < vertlocnbr; vertlocnum ++) /* Create packs of 3 vertices each */
     partloctab[vertlocnum] = (vertlocnum / 3) % procglbnbr;
 
   if (SCOTCH_dgraphRedist (&srcgrafdat, partloctab, NULL, -1, -1, &dstgrafdat) != 0) {
-    errorPrint ("main: cannot compute redistributed graph");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot compute redistributed graph");
+    exit (EXIT_FAILURE);
   }
 
   SCOTCH_dgraphExit (&dstgrafdat);
@@ -182,5 +178,5 @@ char *              argv[])
   free (partloctab);
 
   MPI_Finalize ();
-  exit         (0);
+  exit (EXIT_SUCCESS);
 }
