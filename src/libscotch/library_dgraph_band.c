@@ -40,7 +40,7 @@
 /**                the libScotch library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 oct 2011     **/
-/**                                 to     29 apr 2018     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -105,7 +105,6 @@ SCOTCH_Dgraph * const       bndgrafptr)
   const Gnum * restrict edgegsttax;
   SCOTCH_Num *          fronloctax;
   int                   cheklocval;
-  int                   chekglbval;
   int                   procngbnum;
 
   Dgraph * restrict const grafptr     = (Dgraph *) orggrafptr;
@@ -134,27 +133,19 @@ SCOTCH_Dgraph * const       bndgrafptr)
 
   cheklocval = 0;
   bandvnumgstsiz = MAX ((grafptr->vertgstnbr * sizeof (Gnum)), (grafptr->procglbnbr * sizeof (int))); /* TRICK: re-use array for further error collective communications */
-  if ((bandvnumgsttax = memAlloc (bandvnumgstsiz)) == NULL) {
-    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": out of memory (1)");
-    cheklocval = 1;
+  if ((bandvnumgsttax = memAlloc (bandvnumgstsiz)) == NULL)
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": out of memory (1)"); /* Error will be propagated by dgraphBand2*() */
+  else {
+    memSet (bandvnumgsttax, ~0, grafptr->vertgstnbr * sizeof (Gnum)); /* Reset part array */
+    bandvnumgsttax -= grafptr->baseval;
   }
-#ifdef SCOTCH_DEBUG_DGRAPH1                       /* This communication cannot be covered by a useful one */
-  if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": communication error (1)");
-    return     (1);
-  }
-#else /* SCOTCH_DEBUG_DGRAPH1 */
-  chekglbval = cheklocval;
-#endif /* SCOTCH_DEBUG_DGRAPH1 */
-  if (chekglbval != 0)
-    return (1);
-
-  memSet (bandvnumgsttax, ~0, grafptr->vertgstnbr * sizeof (Gnum)); /* Reset part array */
-  bandvnumgsttax -= grafptr->baseval;
 
   if ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphBand2Ptop : dgraphBand2Coll)
-      (grafptr, fronlocnbr, fronloctab, distval, bandvnumgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz) != 0)
+      (grafptr, fronlocnbr, fronloctab, distval, bandvnumgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz) != 0) {
+    if (bandvnumgsttax != NULL)
+      memFree (bandvnumgsttax + grafptr->baseval);
     return (1);
+  }
 
   bandvelolocnbr = (veloloctax != NULL) ? bandvertlocnbr : 0;
   bandedlolocsiz = (edloloctax != NULL) ? bandedgelocsiz : 0;

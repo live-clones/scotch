@@ -121,19 +121,21 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
 
   procngbnbr = grafptr->procngbnbr;
 
-  reduglbtab[0] = 0;                             /* Assume everything is all right */
+  reduglbtab[0] = 0;                              /* Assume everything is all right */
 
   vrcvdatsiz = DGRAPHBANDGROWSMUL (grafptr->procsndnbr); /* Senders and receivers inverted because we send local, not halo vertices */
   vsnddatsiz = DGRAPHBANDGROWSMUL (grafptr->vertgstnbr - grafptr->vertlocnbr);
-  if (memAllocGroup ((void **) (void *)
-                     &procvgbtab, (size_t) ((procngbnbr + 1)    * sizeof (Gnum)),
-                     &nsndidxtab, (size_t) (procngbnbr          * sizeof (int)),
-                     &vrcvcnttab, (size_t) (grafptr->procglbnbr * sizeof (int)),
-                     &vsndcnttab, (size_t) (grafptr->procglbnbr * sizeof (int)), /* TRICK: vsndcnttab, vrcvdsptab, vrcvdattab, vrcvdattab joined */
-                     &vrcvdsptab, (size_t) (grafptr->procglbnbr * sizeof (int)),
-                     &vsnddsptab, (size_t) (grafptr->procglbnbr * sizeof (int)),
-                     &vrcvdattab, (size_t) (vrcvdatsiz          * sizeof (Gnum)),
-                     &vsnddattab, (size_t) (vsnddatsiz          * sizeof (Gnum)), NULL) == NULL) {
+  procvgbtab = NULL;                              /* In case of error */
+  if ((vnumgsttax == NULL) ||
+      (memAllocGroup ((void **) (void *)
+                      &procvgbtab, (size_t) ((procngbnbr + 1)    * sizeof (Gnum)),
+                      &nsndidxtab, (size_t) (procngbnbr          * sizeof (int)),
+                      &vrcvcnttab, (size_t) (grafptr->procglbnbr * sizeof (int)),
+                      &vsndcnttab, (size_t) (grafptr->procglbnbr * sizeof (int)), /* TRICK: vsndcnttab, vrcvdsptab, vrcvdattab, vrcvdattab joined */
+                      &vrcvdsptab, (size_t) (grafptr->procglbnbr * sizeof (int)),
+                      &vsnddsptab, (size_t) (grafptr->procglbnbr * sizeof (int)),
+                      &vrcvdattab, (size_t) (vrcvdatsiz          * sizeof (Gnum)),
+                      &vsnddattab, (size_t) (vsnddatsiz          * sizeof (Gnum)), NULL) == NULL)) {
     errorPrint (DGRAPHBANDGROWNSTR "Coll: out of memory (1)");
     reduglbtab[0] = 1;
   }
@@ -151,11 +153,8 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
   }
 #endif /* SCOTCH_DEBUG_DGRAPH1 */
   if (reduglbtab[0] != 0) {
-    if (vnumgsttax != NULL) {
-      if (procvgbtab != NULL)
-        memFree (procvgbtab);                     /* Free group leader */
-      memFree (vnumgsttax + grafptr->baseval);
-    }
+    if (procvgbtab != NULL)
+      memFree (procvgbtab);                       /* Free group leader */
     return (1);
   }
 

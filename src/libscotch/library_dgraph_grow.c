@@ -40,7 +40,7 @@
 /**                the libScotch library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
-/**                                 to     29 apr 2018     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,6 +102,7 @@ SCOTCH_Num * const          seedloctab,
 const SCOTCH_Num            distval,
 SCOTCH_Num * const          partgsttab)
 {
+  Gnum *              bandpartgsttax;
   Gnum                bandvertlocnbr;             /* Not used */
   Gnum                bandvertlvlnum;             /* Not used */
   Gnum                bandedgelocsiz;             /* Not used */
@@ -113,6 +114,8 @@ SCOTCH_Num * const          partgsttab)
     return     (1);
   }
 
+  bandpartgsttax = (partgsttab != NULL) ? (Gnum *) partgsttab - grafptr->baseval : NULL;
+
   return ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphGrow2Ptop : dgraphGrow2Coll)
-          (grafptr, seedlocnbr, seedloctab, distval, partgsttab - grafptr->baseval, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz));
+          (grafptr, seedlocnbr, seedloctab, distval, bandpartgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz));
 }
