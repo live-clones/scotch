@@ -44,7 +44,7 @@
 /**   DATES      : # Version 5.1  : from : 11 nov 2007     **/
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 03 apr 2012     **/
-/**                                 to   : 15 may 2018     **/
+/**                                 to   : 21 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version      **/
@@ -154,7 +154,7 @@ Gnum * restrict const             bandedgelocptr) /*+ Pointer to bandedgelocnbr 
     if (vnumgsttax != NULL) {
       if (procvgbtab != NULL)
         memFree (procvgbtab);                     /* Free group leader */
-      memFree (vnumgsttax);
+      memFree (vnumgsttax + grafptr->baseval);
     }
     return (1);
   }
