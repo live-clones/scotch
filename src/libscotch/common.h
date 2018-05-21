@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     19 mar 2016     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,11 +119,11 @@
 #ifdef COMMON_MEMORY_TRACE
 #define memAlloc(size)              memAllocRecord ((size) | 8)
 #define memRealloc(ptr,size)        memReallocRecord ((ptr), ((size) | 8))
-#define memFree(ptr)                (memFreeRecord ((void *) (ptr)), 0)
+#define memFree(ptr)                memFreeRecord ((void *) (ptr))
 #else /* COMMON_MEMORY_TRACE */
 #define memAlloc(size)              malloc ((size) | 8) /* For platforms which return NULL for malloc(0) */
 #define memRealloc(ptr,size)        realloc ((ptr),((size) | 8))
-#define memFree(ptr)                (free ((char *) (ptr)), 0)
+#define memFree(ptr)                free ((char *) (ptr))
 #endif /* COMMON_MEMORY_TRACE */
 
 #define memSet(ptr,val,siz)         memset ((void *) (ptr), (val), (siz))
