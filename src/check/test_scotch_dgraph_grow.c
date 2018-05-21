@@ -129,7 +129,7 @@ char *              argv[])
 #endif /* SCOTCH_CHECK_NOAUTO */
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
-    SCOTCH_errorPrint ("main: cannot communicate");
+    SCOTCH_errorPrint ("main: cannot communicate (1)");
     exit (EXIT_FAILURE);
   }
 
@@ -154,7 +154,7 @@ char *              argv[])
     fclose (file);
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
-    SCOTCH_errorPrint ("main: cannot communicate");
+    SCOTCH_errorPrint ("main: cannot communicate (2)");
     exit (EXIT_FAILURE);
   }
 

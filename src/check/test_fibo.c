@@ -214,7 +214,7 @@ char *              argv[])
         nodetmp = intRandVal (nodenbr);
         for (nodenum = 0; ; nodenum ++) {         /* Search for non-empty slot */
           if (nodenum > nodemax) {
-            SCOTCH_errorPrint ("main: invalid node array (2)");
+            SCOTCH_errorPrint ("main: invalid node array (3)");
             exit (EXIT_FAILURE);
           }
           if (nodetab[nodenum].randval >= 0) {
