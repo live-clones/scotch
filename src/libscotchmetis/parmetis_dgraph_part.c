@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 19 jun 2008     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
-/**                                 to     14 feb 2018     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,8 +122,11 @@ MPI_Comm *                  comm)
     velotab[i] = (SCOTCH_Num) (vwgttab[i] + 0.5);
 
   proccomm = *comm;
-  if (SCOTCH_dgraphInit (&grafdat, proccomm) != 0)
+  if (SCOTCH_dgraphInit (&grafdat, proccomm) != 0) {
+    free   (velotab);
+    free   (vwgttab);
     return (METIS_ERROR);
+  }
 
   MPI_Comm_size (proccomm, &procglbnbr);
   MPI_Comm_rank (proccomm, &proclocnum);
@@ -157,8 +160,8 @@ MPI_Comm *                  comm)
 
   *edgecut = 0;                                   /* TODO : compute real edge cut for people who might want it */
 
-  free (vwgttab);
   free (velotab);
+  free (vwgttab);
 
   if (baseval != 0) {                             /* MeTiS part array is based, Scotch is not */
     SCOTCH_Num          vertlocnum;
