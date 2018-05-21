@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 23 jun 2007     **/
 /**                                 to     03 apr 2008     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -276,7 +276,7 @@ double *                    edlodltptr)
   MPI_Get_address (&srclstadat.velodlt, &srcdisptab[1]);
 #endif /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
   srcdisptab[1] -= srcdisptab[0];
-  srcdisptab[0] -= srcdisptab[0];
+  srcdisptab[0]  = 0;
 
   o = 1;                                          /* Assume something will go wrong */
 #if ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100))
