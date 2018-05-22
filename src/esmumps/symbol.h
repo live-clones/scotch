@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                                 to     03 mar 2005     **/
 /**                # Version 5.1  : from : 05 nov 2010     **/
 /**                                 to     05 nov 2010     **/
+/**                # Version 6.0  : from : 22 may 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -130,10 +132,6 @@ typedef struct SymbolKeep_ {
 **  The function prototypes.
 */
 
-#ifndef SYMBOL
-#define static
-#endif
-
 int                         symbolInit          (SymbolMatrix * const symbptr);
 void                        symbolExit          (SymbolMatrix * const symbptr);
 void                        symbolRealloc       (SymbolMatrix * const symbptr);
@@ -159,5 +157,3 @@ int                         symbolKeepCompute   (SymbolKeep * restrict const kee
 int                         symbolKeepHisto     (SymbolKeep * const keepptr, const SymbolMatrix * const, int (* funcptr) (const SymbolKeepBlok * const, void * const), void * dataptr);
 int                         symbolKeepPurge     (SymbolKeep * restrict const keepptr, SymbolMatrix * restrict const symbptr);
 int                         symbolKeepView      (const SymbolKeep * const keepptr, const double nnzlmax, const char * const nameptr);
-
-#undef static
