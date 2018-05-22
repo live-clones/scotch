@@ -55,16 +55,12 @@
 #include "arch.h"
 #include "arch_sub.h"
 
-/**************************************/
-/*                                    */
-/* These are the entry points for the */
-/* distance graph routines. They are  */
-/* used only in debugging mode, to    */
-/* provide breakpoints for routines   */
-/* which are else implemented as      */
-/* macros for the sake of efficiency. */
-/*                                    */
-/**************************************/
+/**********************************/
+/*                                */
+/* These are the sub-architecture */
+/* meta-architecture routines.    */
+/*                                */
+/**********************************/
 
 /* This routine loads the distance
 ** graph architecture.
