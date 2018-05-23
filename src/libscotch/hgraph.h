@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
-/**                                 to     05 apr 2018     **/
+/**                                 to     23 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,7 +73,7 @@ typedef struct Hgraph_ {
   Gnum *                    vnhdtax;              /*+ End vertex array for non-halo vertices [vnohnbr, based]        +*/
   Gnum                      vnlosum;              /*+ Sum of vertex loads for non-halo vertices only (<= s.velosum)  +*/
   Gnum                      enohnbr;              /*+ Number of non-halo edges                                       +*/
-  Gnum                      enohsum;              /*+ Sum of non-halo edge loads                                     +*/
+  Gnum                      enlosum;              /*+ Sum of non-halo edge loads                                     +*/
   Gnum                      levlnum;              /*+ Nested dissection level                                        +*/
 } Hgraph;
 

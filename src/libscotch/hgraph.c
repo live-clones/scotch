@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2012,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2012,2014,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.0  : from : 19 dec 2006     **/
 /**                                 to     30 may 2008     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
-/**                                 to     14 aug 2016     **/
+/**                                 to     23 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -136,7 +136,7 @@ Graph * restrict const        ugrfptr)
   ugrfptr->edgenbr = grafptr->enohnbr;
   ugrfptr->edgetax = grafptr->s.edgetax;
   ugrfptr->edlotax = grafptr->s.edlotax;
-  ugrfptr->edlosum = grafptr->enohsum;
+  ugrfptr->edlosum = grafptr->enlosum;
   ugrfptr->degrmax = grafptr->s.degrmax;          /* Upper bound */
   ugrfptr->procptr = grafptr->s.procptr;
 }

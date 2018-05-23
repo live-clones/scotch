@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to     14 aug 2010     **/
 /**                # Version 6.0  : from : 08 jan 2012     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     23 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -287,7 +287,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   halgrafdat.vnhdtax    = halgrafdat.s.vendtax;   /* End of non-halo vertices    */
   halgrafdat.vnlosum    = halgrafdat.s.velosum;   /* Sum of node vertex weights  */
   halgrafdat.enohnbr    = halgrafdat.s.edgenbr;   /* No halo present             */
-  halgrafdat.enohsum    = halgrafdat.s.edlosum;
+  halgrafdat.enlosum    = halgrafdat.s.edlosum;
   halgrafdat.levlnum    = 0;                      /* No nested dissection yet */
 
   if (listnbr == srcgrafptr->vertnbr) {           /* If work on full graph */

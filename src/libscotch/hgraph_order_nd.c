@@ -49,7 +49,7 @@
 /**                # Version 5.1  : from : 24 oct 2010     **/
 /**                                 to     24 oct 2010     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
-/**                                 to     05 apr 2018     **/
+/**                                 to     23 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -209,7 +209,7 @@ const HgraphOrderNdParam * restrict const paraptr)
     indgrafdat.vnhdtax = indgrafdat.s.vendtax;
     indgrafdat.vnlosum = indgrafdat.s.velosum;
     indgrafdat.enohnbr = indgrafdat.s.edgenbr;
-    indgrafdat.enohsum = indgrafdat.s.edlosum;
+    indgrafdat.enlosum = indgrafdat.s.edlosum;
     indgrafdat.levlnum = grafptr->levlnum;        /* Separator graph is at level of original graph */
 
     o = hgraphOrderSt (&indgrafdat, ordeptr, ordenum + vsplisttab[0].vnumnbr + vsplisttab[1].vnumnbr,

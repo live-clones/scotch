@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 24 oct 2010     **/
 /**                                 to     24 oct 2010     **/
 /**                # Version 6.0  : from : 27 mar 2012     **/
-/**                                 to     16 apr 2018     **/
+/**                                 to     23 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -233,27 +233,27 @@ Gnum * restrict const           indedgetab)       /* Pointer to pre-allocated sp
 #define HGRAPHINDUCE2EDLOINIT(e)
 #define HGRAPHINDUCE2EDLOSUM        indgrafptr->s.edgenbr
 #define HGRAPHINDUCE2ENOHINIT
-#define HGRAPHINDUCE2ENOHSUM        indgrafptr->enohnbr
+#define HGRAPHINDUCE2ENLOSUM        indgrafptr->enohnbr
 #include "hgraph_induce_edge.c"
 #undef HGRAPHINDUCE2NAME
 #undef HGRAPHINDUCE2EDLOINIT
 #undef HGRAPHINDUCE2EDLOSUM
 #undef HGRAPHINDUCE2ENOHINIT
-#undef HGRAPHINDUCE2ENOHSUM
+#undef HGRAPHINDUCE2ENLOSUM
 #undef HGRAPHINDUCE2U
 
 #define HGRAPHINDUCE2L
 #define HGRAPHINDUCE2NAME           hgraphInduce2L
 #define HGRAPHINDUCE2EDLOINIT(e)    indedlosum += indedlotax[e] = orgedlotax[orgedgenum]
 #define HGRAPHINDUCE2EDLOSUM        indedlosum
-#define HGRAPHINDUCE2ENOHINIT       indenohsum += orgedlotax[orgedgenum]
-#define HGRAPHINDUCE2ENOHSUM        indenohsum
+#define HGRAPHINDUCE2ENOHINIT       indenlosum += orgedlotax[orgedgenum]
+#define HGRAPHINDUCE2ENLOSUM        indenlosum
 #include "hgraph_induce_edge.c"
 #undef HGRAPHINDUCE2NAME
 #undef HGRAPHINDUCE2EDLOINIT
 #undef HGRAPHINDUCE2EDLOSUM
 #undef HGRAPHINDUCE2ENOHINIT
-#undef HGRAPHINDUCE2ENOHSUM
+#undef HGRAPHINDUCE2ENLOSUM
 #undef HGRAPHINDUCE2L
 
 /* This routine computes the exact number of edges

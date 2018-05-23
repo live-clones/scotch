@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 01 oct 2009     **/
 /**                                 to   : 01 oct 2009     **/
 /**                # Version 6.0  : from : 04 aug 2014     **/
-/**                                 to   : 24 feb 2015     **/
+/**                                 to   : 23 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -409,7 +409,7 @@ loop_failed: ;
   coargrafdat.s.verttax[coarvertnum] = coaredgenum; /* Set end of compact vertex array */
   coargrafdat.s.edlosum =
   coargrafdat.s.edgenbr = coaredgenum - coargrafdat.s.baseval;
-  coargrafdat.enohsum   =
+  coargrafdat.enlosum   =
   coargrafdat.enohnbr   = coargrafdat.s.edgenbr - 2 * (coaredgenum - coarenohnnd);
 
   if (finevelotax != NULL) {                      /* If fine graph has vertex loads */

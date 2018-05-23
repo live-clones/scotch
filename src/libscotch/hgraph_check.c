@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     01 dec 2003     **/
 /**                # Version 5.0  : from : 19 dec 2006     **/
 /**                                 to     19 dec 2006     **/
+/**                # Version 6.0  : from : 23 may 2018     **/
+/**                                 to     23 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,7 +77,7 @@ const Hgraph * restrict const grafptr)
 {
   Gnum                vertnum;                    /* Number of current vertex */
   Gnum                edgenum;                    /* Number of current edge   */
-  Gnum                enohsum;
+  Gnum                enlosum;
 
   if (graphCheck (&grafptr->s) != 0) {
     errorPrint ("hgraphCheck: invalid graph structure in halo graph");
@@ -87,12 +89,12 @@ const Hgraph * restrict const grafptr)
       (grafptr->vnohnnd != (grafptr->vnohnbr + grafptr->s.baseval)) ||
       (grafptr->vnlosum > grafptr->s.velosum)                       ||
       (grafptr->enohnbr > grafptr->s.edgenbr)                       ||
-      (grafptr->enohsum < grafptr->enohnbr)) {
+      (grafptr->enlosum < grafptr->enohnbr)) {
     errorPrint ("hgraphCheck: invalid halo graph parameters");
     return     (1);
   }
 
-  enohsum = (grafptr->s.edlotax == NULL) ? grafptr->enohnbr : 0;
+  enlosum = (grafptr->s.edlotax == NULL) ? grafptr->enohnbr : 0;
   for (vertnum = grafptr->s.baseval; vertnum < grafptr->vnohnnd; vertnum ++) { /* For all non-halo vertices */
     if ((grafptr->vnhdtax[vertnum] < grafptr->s.verttax[vertnum]) ||
         (grafptr->vnhdtax[vertnum] > grafptr->s.vendtax[vertnum])) {
@@ -104,11 +106,11 @@ const Hgraph * restrict const grafptr)
       Gnum                edgenum;
 
       for (edgenum = grafptr->s.verttax[vertnum]; edgenum < grafptr->vnhdtax[vertnum]; edgenum ++)
-        enohsum += grafptr->s.edlotax[edgenum];
+        enlosum += grafptr->s.edlotax[edgenum];
     }
   }
 
-  if (grafptr->enohsum != enohsum) {
+  if (grafptr->enlosum != enlosum) {
     errorPrint ("hgraphCheck: invalid non-halo edge load sum");
     return     (1);
   }
