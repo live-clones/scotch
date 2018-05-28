@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2011,2013-2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2011,2013-2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -65,7 +65,7 @@
 /**                # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
-/**                                 to     20 apr 2018     **/
+/**                                 to     28 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -223,10 +223,6 @@ typedef struct ArchMatch_ {
 **  The function prototypes.
 */
 
-#ifndef ARCH
-#define static
-#endif
-
 int                         archInit            (Arch * restrict const);
 int                         archExit            (Arch * restrict const);
 int                         archFree            (Arch * restrict const);
@@ -249,8 +245,6 @@ int                         archDomIncl         (const Arch * const, const ArchD
 #ifdef SCOTCH_PTSCOTCH
 int                         archDomMpiType      (const Arch * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
-
-#undef static
 
 /*
 **  The macro definitions.

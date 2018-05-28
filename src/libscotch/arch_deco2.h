@@ -1,4 +1,4 @@
-/* Copyright 2015,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                target architecture functions.          **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 01 may 2015     **/
-/**                                 to     29 dec 2016     **/
+/**                                 to     28 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # The internals of the "deco2"          **/
 /**                  architecture derive from those of     **/
@@ -136,10 +136,6 @@ typedef struct ArchDeco2Dom_ {
 #ifndef ARCH_DECO2_H_PROTO
 #define ARCH_DECO2_H_PROTO
 
-#ifndef ARCH_DECO2
-#define static
-#endif
-
 #define archDeco2ArchLoad           NULL
 int                         archDeco2ArchLoad2  (ArchDeco2 * const, FILE * restrict const);
 int                         archDeco2ArchSave   (const ArchDeco2 * const, FILE * restrict const);
@@ -162,8 +158,6 @@ int                         archDeco2DomIncl    (const ArchDeco2 * const, const 
 #ifdef SCOTCH_PTSCOTCH
 int                         archDecoDomMpiType  (const ArchDeco2 * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
-
-#undef static
 
 #endif /* ARCH_DECO2_H_PROTO */
 #endif /* ARCH_NOPROTO       */
