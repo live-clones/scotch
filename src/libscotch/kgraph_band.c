@@ -41,7 +41,7 @@
 /**                array.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 jan 2009     **/
-/**                                 to   : 21 may 2018     **/
+/**                                 to   : 29 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -254,7 +254,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     }
     memSet (bandparotax + bandvertnbr - bandgrafptr->r.m.domnnbr, ~0, bandgrafptr->r.m.domnnbr * sizeof (Gnum)); /* Prevent Valgrind from yelling when centralizing band graphs */
     bandparotax -= bandgrafptr->s.baseval;
-    bandgrafptr->r.m.parttax = bandparotax;
+    bandgrafptr->r.m.parttax  = bandparotax;
     bandgrafptr->r.m.flagval |= MAPPINGFREEPART;
   }
 
@@ -264,6 +264,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 
   if ((bandgrafptr->s.edgetax = memAlloc ((bandedgenbr + bandedlonbr) * sizeof (Gnum))) == NULL) {
     errorPrint ("kgraphBand: out of memory (6)");
+    kgraphExit (bandgrafptr);
     return     (1);
   }
   bandedlotax             = NULL;
