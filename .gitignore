@@ -1,6 +1,16 @@
 bin
 include
 lib
+doc/src/*/*.aux
+doc/src/*/*.bbl
+doc/src/*/*.blg
+doc/src/*/*.dvi
+doc/src/*/*.log
+doc/src/*/*.toc
+doc/src/ptscotch/p.ps
+doc/src/ptscotch/p.pdf
+doc/src/scotch/s.ps
+doc/src/scotch/s.pdf
 src/Makefile.inc*
 src/check/*
 !src/check/*[.][ch]
