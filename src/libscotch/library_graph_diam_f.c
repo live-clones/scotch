@@ -40,7 +40,7 @@
 /**                the libSCOTCH library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 jan 2017     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     29 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,8 +68,8 @@
 SCOTCH_FORTRAN (                      \
 GRAPHDIAMPV, graphdiampv, (           \
 SCOTCH_Graph * const        grafptr,  \
-int * const                 revaptr), \
-(grafptr, revaptr))
+SCOTCH_Num * const          diamptr), \
+(grafptr, diamptr))
 {
-  *revaptr = SCOTCH_graphDiamPV (grafptr);
+  *diamptr = SCOTCH_graphDiamPV (grafptr);
 }
