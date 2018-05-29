@@ -12,11 +12,11 @@ rats -w 3 --xml `cat filelist.txt` > scotch-rats.xml
 cat > sonar-project.properties << EOF
 sonar.host.url=https://sonarqube.bordeaux.inria.fr/sonarqube
 sonar.login=$SONARQUBE_LOGIN
-sonar.links.homepage=https://gitlab.inria.fr/fpellegr/scotch
-sonar.links.scm=https://gitlab.inria.fr/fpellegr/scotch.git
-sonar.links.ci=https://gitlab.inria.fr/fpellegr/scotch/pipelines
-sonar.links.issue=https://gitlab.inria.fr/fpellegr/scotch/issues
-sonar.projectKey=tadaam:scotch:gitlab:master
+sonar.links.homepage=$CI_PROJECT_URL
+sonar.links.scm=$CI_REPOSITORY_URL
+sonar.links.ci=https://gitlab.inria.fr/CI_PROJECT_NAMESPACE/scotch/pipelines
+sonar.links.issue=https://gitlab.inria.fr/CI_PROJECT_NAMESPACE/scotch/issues
+sonar.projectKey=tadaam:scotch:gitlab:$CI_PROJECT_NAMESPACE:$CI_COMMIT_REF_NAME
 sonar.projectDescription=Package for graph and mesh/hypergraph partitioning, graph clustering, and sparse matrix ordering.
 sonar.projectVersion=6.0
 sonar.language=c
