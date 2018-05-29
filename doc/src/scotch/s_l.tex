@@ -2868,6 +2868,45 @@ Section~\ref{sec-lib-inttypesize} for more information on this
 issue.
 \end{itemize}
 
+
+
+
+\subsubsection{{\tt SCOTCH\_graphDiamPV}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+SCOTCH\_Num SCOTCH\_graphDiamPV ( & const SCOTCH\_Graph * & grafptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgraphdiampv ( & doubleprecision (*) & grafdat, \\
+                     & integer{\it num}    & diamval)
+
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_graphDiamPV} routine computes the edge-weighted
+(pseudo-)diameter value of the given graph.
+
+To do so, it selects a random vertex, computes the set of vertices at
+maximum distance from this vertex by means of Dijkstra's algorithm,
+selects a vertex from this set, and repeats the process as long as
+this maximum distance value increases. If the graph is not
+edge-weighted, neighboring vertices are assumed to be at distance $1$
+from each other; else, edge weights represent distances between
+vertices.
+
+\progret
+
+{\tt SCOTCH\_graphDiamPV} returns a positive value if the graph
+diameter has been successfully computed, the \texttt{SCOTCH\_\lbt
+NUMMAX} maximum positive value if the graph is disconnected, and $-1$
+on error.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_graphExit}}
 
 \begin{itemize}
