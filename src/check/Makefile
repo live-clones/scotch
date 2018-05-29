@@ -117,6 +117,8 @@ CHECKSCOTCH = 		check_common_random			\
 			check_scotch_graph_order		\
 			check_scotch_graph_part_ovl		\
 			check_scotch_mesh_graph			\
+			check_prog_amk				\
+			check_prog_amk_grf			\
 			check_prog_gord				\
 			check_prog_gpart_remap
 
@@ -306,6 +308,20 @@ test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
 ##
 ##  Sequential program tests.
 ##
+
+check_prog_amk			:
+					$(EXECS) $(SCOTCHBINDIR)/amk_ccc 5 /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_fft2 5 /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_hy 5 /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_m2 -mo 5 12 /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_p2 5 7 /dev/null
+
+check_prog_amk_grf		:
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf data/m16x16.grf /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf -2 data/m16x16.grf /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt data/m4x4.grf /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt -2 data/m4x4.grf /dev/null
 
 check_prog_gord			:
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf /dev/null -vt
