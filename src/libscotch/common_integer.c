@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014-2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 16 jul 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     19 mar 2016     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -239,7 +239,7 @@ UINT32                      randval)
   randtmp    = (UINT32) randval;
   randtab[0] = randtmp;                           /* Reset array contents */
   for (i = 1; i < 623; i ++) {
-    randtmp = 0x6c078965 * randtmp ^ (randtmp >> 30) + i;
+    randtmp = (0x6c078965 * randtmp) ^ ((randtmp >> 30) + i);
     randtab[i] = randtmp;
   }
   randptr->randnum = 0;                           /* Reset array index */
