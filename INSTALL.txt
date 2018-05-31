@@ -360,10 +360,10 @@ on other flags (see below).
 in Scotch and/or PT-Scotch.
 
 "-DSCOTCH_PTHREAD_NUMBER=x" sets the overall number of threads to be
-used by multi-threaded algorithms. This number may not necessary be a
-power of two. Since some algorithms have had to be reformulated to
-accomodate for multi-threading, some algorithms will most probably be
-much more efficient than sequential processing only for a number of
+used by multi-threaded algorithms. This number may not necessarily be
+a power of two. Some algorithms have had to be reformulated to
+accomodate for multi-threading, and will be most probably much more
+efficient than sequential processing only for a number of
 threads strictly greater than 2. Setting "-DSCOTCH_PTHREAD_NUMBER=1"
 allows you to run sequential algorithms instead of multi-threaded
 ones, while benefitting from multi-threading for file compression and
