@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to     27 apr 2010     **/
 /**                # Version 6.0  : from : 04 aug 2016     **/
-/**                                 to     04 aug 2016     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,7 +87,6 @@ const char * const          dataptr)              /* Tag value        */
   char                          habmattype[3];    /* Matrix type                     */
   Gnum                          habcrdnbr;        /* Total number of data lines      */
   Gnum                          habrhsnbr;        /* Number of right hand side lines */
-  Gnum                          habrownbr;        /* Number of rows                  */
   GraphGeomHaboLine             habcolfmt;        /* Format of column line           */
   int                           habvalnum;        /* Number of value in line         */
   Gnum                          habcolnbr;        /* Number of columns               */
@@ -137,8 +136,10 @@ const char * const          dataptr)              /* Tag value        */
     habnzrnbr = (Gnum) atol (&habmatbuf[2][43]);
     habmatbuf[2][42] = '\0';
     habcolnbr = (Gnum) atol (&habmatbuf[2][29]);
+#if 0                                             /* Number of rows not used since only square matrices considered */
     habmatbuf[2][28] = '\0';
     habrownbr = (Gnum) atol (&habmatbuf[2][14]);
+#endif
 
     habmatbuf[3][32] = '\0';
     if (graphGeomLoadHaboFormat (&habnzrfmt, &habmatbuf[3][16]) != 0) {
