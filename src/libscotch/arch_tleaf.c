@@ -64,7 +64,7 @@
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
-/**                                 to     22 feb 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # The ltleaf architecture was proposed  **/
 /**                  by Emmanuel Jeannot and Francois      **/
@@ -674,8 +674,6 @@ archLtleafArchLoad (
 ArchTleaf * restrict const  archptr,
 FILE * restrict const       stream)
 {
-  Anum                sizeval;
-  Anum                levlnum;
   Anum                permnum;
 
   if (archTleafArchLoad (archptr, stream) != 0)   /* Read tree part */
@@ -689,6 +687,9 @@ FILE * restrict const       stream)
 
 #ifdef SCOTCH_DEBUG_ARCH2
   if (archptr->permnbr != 1) {                    /* Valid empty permutation is of size 1 */
+    Anum                levlnum;
+    Anum                sizeval;
+
     for (levlnum = archptr->levlnbr - 1, sizeval = archptr->sizetab[levlnum];
          sizeval != archptr->permnbr; levlnum --, sizeval *= archptr->sizetab[levlnum]) {
       if (levlnum < 0) {
