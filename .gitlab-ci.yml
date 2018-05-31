@@ -99,7 +99,7 @@ build_scotch_64-dr:
     - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_RENAME_ALL -DSCOTCH_NAME_SUFFIX=_64#1' Makefile.inc
     - sed -i -e 's#^\(SCOTCH_NAME_SUFFIX.*\)#\1_64#1' Makefile.inc
     - make libscotch libptscotch
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make libscotch libptscotch 2>&1 | tee ../scotch-build.log
   <<: *job_build_64
 
 .job_template: &job_test
