@@ -1,4 +1,4 @@
-/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 01 dec 2007     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 6.0  : from : 05 nov 2009     **/
-/**                                 to   : 10 mar 2010     **/
+/**                                 to   : 31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,7 +82,6 @@ int
 wgraphCheck (
 const Wgraph * const        grafptr)
 {
-  Gnum                      vertnbr;              /* number of vertex                     */
   Gnum                      vertnum;              /* Number of current vertex             */
   const Gnum * restrict     velobax;              /* Data for handling of optional arrays */
   Gnum                      velomsk;
@@ -93,8 +92,6 @@ const Wgraph * const        grafptr)
   Gnum * restrict           compload;
   Gnum * restrict           compsize;
   Gnum * restrict           flagtab;
-
-  vertnbr = grafptr->s.vertnbr;
 
   if (memAllocGroup ((void **) (void *)
                      &flagtab,  (size_t) (grafptr->partnbr * sizeof (Gnum)),
