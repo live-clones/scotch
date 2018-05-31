@@ -46,7 +46,7 @@
 /**                # Version 5.1  : from : 27 mar 2010     **/
 /**                                 to     13 feb 2011     **/
 /**                # Version 6.0  : from : 16 apr 2015     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -312,7 +312,7 @@ const SCOTCH_Num * const    vnumtab,    \
 int * const                 revaptr),   \
 (subarchptr, orgarchptr, vnumnbr, vnumtab, revaptr))
 {
-  *revaptr = SCOTCH_archSub (subarchptr, orgarchptr, vnumnbr, vnumtab);
+  *revaptr = SCOTCH_archSub (subarchptr, orgarchptr, *vnumnbr, vnumtab);
 }
 
 /*
