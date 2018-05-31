@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     21 may 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -372,8 +372,10 @@ int                         intSave             (FILE * const, const INT);
 void                        intAscn             (INT * const, const INT, const INT);
 void                        intPerm             (INT * const, const INT);
 void                        intRandInit         (void);
+int                         intRandLoad         (FILE * const);
 void                        intRandProc         (int);
 void                        intRandReset        (void);
+int                         intRandSave         (FILE * const);
 void                        intRandSeed         (INT);
 #ifndef COMMON_RANDOM_SYSTEM
 INT                         intRandVal          (INT);
