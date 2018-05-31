@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 26 feb 2003     **/
 /**                                 to     06 may 2004     **/
+/**                # Version 6.0  : from : 31 may 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -123,16 +125,12 @@ typedef struct VmeshSeparateFmSave_ {
 **  The function prototypes.
 */
 
-#ifndef VMESH_SEPARATE_FM
-#define static
-#endif
-
-int                         vmeshSeparateFm     (Vmesh * restrict const, const VmeshSeparateFmParam * restrict const);
-
+#ifdef VMESH_SEPARATE_FM
 static VmeshSeparateFmElement * vmeshSeparateFmTablGet (GainTabl * const, const Gnum, const Gnum);
 static int                  vmeshSeparateFmResize (GainTabl * restrict const, VmeshSeparateFmElement * restrict * const, VmeshSeparateFmNode * restrict * const, VmeshSeparateFmSave * restrict * const, const Gnum, VmeshSeparateFmElement **, VmeshSeparateFmElement **, const Gnum);
 #ifdef SCOTCH_DEBUG_VMESH3
 static int                  vmeshSeparateFmCheck (const Vmesh * const, const VmeshSeparateFmElement * restrict, const VmeshSeparateFmNode * restrict, const Gnum, const Gnum, const Gnum);
 #endif /* SCOTCH_DEBUG_VMESH3 */
+#endif /* VMESH_SEPARATE_FM */
 
-#undef static
+int                         vmeshSeparateFm     (Vmesh * restrict const, const VmeshSeparateFmParam * restrict const);

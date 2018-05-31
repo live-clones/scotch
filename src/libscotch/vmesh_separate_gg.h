@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 16 sep 2002     **/
 /**                                 to     07 apr 2004     **/
+/**                # Version 6.0  : from : 31 may 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,14 +93,10 @@ typedef struct VmeshSeparateGgNode_ {
 **  The function prototypes.
 */
 
-#ifndef VMESH_SEPARATE_GG
-#define static
-#endif
-
-int                         vmeshSeparateGg     (Vmesh * restrict const, const VmeshSeparateGgParam * restrict const);
-
+#ifdef VMESH_SEPARATE_GG
 #ifdef SCOTCH_DEBUG_VMESH3
 static int                  vmeshSeparateGgCheck (Vmesh * restrict const, const Gnum, const Gnum, const VmeshSeparateGgElem * restrict const, const VmeshSeparateGgNode * restrict const  vnoxtax);
 #endif /* SCOTCH_DEBUG_VMESH3 */
+#endif /* VMESH_SEPARATE_GG */
 
-#undef static
+int                         vmeshSeparateGg     (Vmesh * restrict const, const VmeshSeparateGgParam * restrict const);
