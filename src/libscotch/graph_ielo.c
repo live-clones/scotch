@@ -39,7 +39,7 @@
 /**                functions.                              **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 dec 2016     **/
-/**                                 to     30 dec 2016     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from that of        **/
 /**                  arch_build.c.                         **/
@@ -68,6 +68,7 @@
 ** might be the same.
 ** It returns:
 ** - Gnum  : new edlosum of the inverse weight load structure.
+** - -1    : on error.
 */
 
 Gnum
@@ -127,7 +128,7 @@ Gnum * const                ielotax)              /* Pointer to inverse edge loa
 #ifdef SCOTCH_DEBUG_ARCH2
       if ((edloval < edlomin) || (edloval > edlomax)) {
         errorPrint ("graphIelo: internal error");
-        return;
+        return (-1);
       }
 #endif /* SCOTCH_DEBUG_ARCH2 */
       edlosum +=                                  /* Accumulate edge load sum          */
