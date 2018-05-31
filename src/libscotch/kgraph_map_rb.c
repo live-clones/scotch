@@ -67,7 +67,7 @@
 /**                # Version 5.1  : from : 22 nov 2007     **/
 /**                                 to     07 oct 2008     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     05 apr 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -437,7 +437,6 @@ const Gnum                  vfixnbr,              /*+ Number of fixed vertices i
 const Anum * restrict const pfixtax,              /*+ Array of fixed vertex terminal domains +*/
 const Anum                  vflonbr)              /*+ Number of fixed vertex load slots      +*/
 {
-  Anum                            domnmax;
   Anum                            domnnum;
   Gnum                            vertnum;
   Gnum                            vertnnd;
@@ -476,7 +475,6 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
     }
   }
 
-  domnmax = mappptr->domnmax;
   for (vertnum = mappptr->grafptr->baseval, vertnnd = mappptr->grafptr->vertnnd; vertnum < vertnnd; vertnum ++) {
     Anum                pfixval;
 
