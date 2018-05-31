@@ -12,7 +12,7 @@ before_script:
     expire_in: 42 minutes
     untracked: true
   only:
-    - master@fpellegr/scotch
+    - master
 
 .job_template: &job_build_32
   <<: *job_build
@@ -46,6 +46,28 @@ build_scotch_32-d:
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_32
 
+build_scotch_32-dm2:
+  artifacts:
+    name: scotch_build_32-dm2
+  script:
+    - cd src
+    - cp ../ci/Makefile.inc ./Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_PTHREAD_NUMBER=2#1' Makefile.inc
+    - make scotch ptscotch esmumps ptesmumps
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+  <<: *job_build_32
+
+build_scotch_32-64d:
+  artifacts:
+    name: scotch_build_32-64d
+  script:
+    - cd src
+    - cp ../ci/Makefile.inc ./Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DINTSIZE64 -DIDXSIZE64 -DSCOTCH_DEBUG_ALL#1' Makefile.inc
+    - make scotch ptscotch esmumps ptesmumps
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+  <<: *job_build_32
+
 build_scotch_64:
   artifacts:
     name: scotch_build_64
@@ -53,6 +75,29 @@ build_scotch_64:
     - cd src
     - cp ../ci/Makefile.inc ./Makefile.inc
     - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
+    - make scotch ptscotch esmumps ptesmumps
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+  <<: *job_build_64
+
+build_scotch_64-dm2:
+  artifacts:
+    name: scotch_build_64-dm2
+  script:
+    - cd src
+    - cp ../ci/Makefile.inc ./Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_PTHREAD_NUMBER=2#1' Makefile.inc
+    - make scotch ptscotch esmumps ptesmumps
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+  <<: *job_build_64
+
+build_scotch_64-dr:
+  artifacts:
+    name: scotch_build_64-dr
+  script:
+    - cd src
+    - cp ../ci/Makefile.inc ./Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_RENAME_ALL -DSCOTCH_RENAME_SUFFIX=_64#1' Makefile.inc
+    - sed -i -e 's#^\(SCOTCH_NAME_SUFFIX.*\)#\1_64#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_64
@@ -76,7 +121,7 @@ build_scotch_64:
     - lcov --directory $GCOV_PREFIX --capture --output-file scotch.lcov
     - lcov_cobertura.py scotch.lcov --output ../../scotch-coverage.xml
   only:
-    - master@fpellegr/scotch
+    - master
 
 .job_template: &job_test_32
   <<: *job_test
@@ -123,7 +168,7 @@ test_scotch_64:
     - ci/analysis.sh
     - sonar-scanner -X > sonar.log
   only:
-    - master@fpellegr/scotch
+    - master
 
 sonar_scotch_32:
   dependencies:
