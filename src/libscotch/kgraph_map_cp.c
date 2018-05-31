@@ -39,7 +39,7 @@
 /**                as a mapping result.                    **/ 
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 jan 2012     **/
-/**                                 to     26 feb 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,15 +77,12 @@ int
 kgraphMapCp (
 Kgraph * restrict const     grafptr)              /*+ Graph +*/
 {
-  Gnum                          baseval;
-
   const Anum * restrict const pfixtax = grafptr->pfixtax;
 
   if (grafptr->r.m.parttax == NULL) {             /* If we do not have an old partition */
     errorPrint ("kgraphMapCp: inconsistent old mapping data");
     return     (1);
   }
-  baseval = grafptr->s.baseval;
 
   if (mapCopy (&grafptr->m, &grafptr->r.m) != 0) {
     errorPrint ("kgraphMapCp: cannot copy old mapping");
