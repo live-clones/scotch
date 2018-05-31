@@ -45,7 +45,7 @@
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     29 nov 2003     **/
 /**                # Version 6.0  : from : 14 mar 2016     **/
-/**                                 to     28 may 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # This file contains pieces of code     **/
 /**                  extracted from release 3.1 of         **/
@@ -87,4 +87,4 @@ typedef struct ArchDecoBuildQueuElem_ {
 static void                 archDecoBuildJobExit (ArchDecoBuildJob *);
 #endif /* ARCH_BUILD */
 
-int                         archDecoBuild       (Arch * const, const Graph * const, const VertList * const, const Strat * const);
+int                         archDecoArchBuild   (Arch * const, const Graph * const, const VertList * const, const Strat * const);
