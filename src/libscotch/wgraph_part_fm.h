@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 5.1  : from : 01 dec 2007     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 6.0  : from : 05 nov 2009     **/
-/**                                 to   : 30 nov 2012     **/
+/**                                 to   : 31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -145,13 +145,8 @@ typedef struct WgraphPartFmSave_ {
 **  The function prototypes.
 */
 
-#ifndef WGRAPH_PART_FM
-#define static
-#endif
+#ifdef WGRAPH_PART_FM
+static int                  wgraphPartFmResize  ();
+#endif /* WGRAPH_PART_FM */
 
 int                         wgraphPartFm        (Wgraph * const, const WgraphPartFmParam * const);
-
-static int                  wgraphPartFmResize  ();
-static int                  wgraphPartFmCheck   (const Wgraph * restrict const, const WgraphPartFmVertex * restrict const, Gnum, const Gnum, const Gnum);
-
-#undef static
