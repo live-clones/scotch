@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 08 mar 2005     **/
 /**                                 to     17 mar 2005     **/
 /**                # Version 6.0  : from : 16 mar 2016     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,6 +62,7 @@
 #include "graph.h"
 #include "arch.h"
 #include "arch_build.h"
+#include "arch_build2.h"
 #include "mapping.h"
 #include "bgraph.h"
 #include "bgraph_bipart_st.h"
