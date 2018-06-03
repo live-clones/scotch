@@ -347,14 +347,14 @@ FILE * restrict const         stream)             /*+ Stream to read from  +*/
   for (i = 0; i < 624; i ++) {
     INT                 randval;
 
-    if (intLoad (stream, &randval) != 1) {        /* Read version number */
+    if (intLoad (stream, &randval) != 1) {        /* Read state vector */
       errorPrint ("intRandLoad2: bad input (2)");
       return     (2);
     }
     randptr->randtab[i] = (UINT32) randval;
   }
 
-  if (intLoad (stream, &randnum) != 1) {          /* Read version number */
+  if (intLoad (stream, &randnum) != 1) {          /* Read state index */
     errorPrint ("intRandLoad2: bad input (3)");
     return     (2);
   }
