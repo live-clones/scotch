@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 29 oct 2007     **/
 /**                                 to     27 mar 2011     **/
 /**                # Version 6.0  : from : 07 nov 2011     **/
-/**                                 to   : 22 feb 2018     **/
+/**                                 to   : 03 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -312,7 +312,9 @@ BgraphBipartDfThread * restrict thrdptr)          /* Thread-dependent data */
     }
 #endif /* BGRAPHBIPARTDFLOOPTHREAD */
   }
+#ifndef BGRAPHBIPARTDFLOOPTHREAD
 abort : ;
+#endif /* BGRAPHBIPARTDFLOOPTHREAD */
 
   for (vertnum = vertbas; vertnum < vertnnd; vertnum ++) /* Update part according to diffusion state */
     parttax[vertnum] = (difotax[vertnum] <= 0.0F) ? 0 : 1;
