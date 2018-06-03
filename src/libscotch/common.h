@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     31 may 2018     **/
+/**                                 to     03 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -378,7 +378,7 @@ void                        intRandReset        (void);
 int                         intRandSave         (FILE * const);
 void                        intRandSeed         (INT);
 #ifndef COMMON_RANDOM_SYSTEM
-INT                         intRandVal          (INT);
+UINT                        intRandVal          (UINT);
 #endif /* COMMON_RANDOM_SYSTEM */
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
@@ -417,9 +417,9 @@ void                        threadScan          (void * const, void * const, Thr
 
 #ifdef COMMON_RANDOM_SYSTEM
 #ifdef COMMON_RANDOM_RAND
-#define intRandVal(ival)            ((INT) (((UINT) rand ()) % ((UINT) (ival))))
+#define intRandVal(ival)            ((UINT) (((UINT) rand ()) % ((UINT) (ival))))
 #else /* COMMON_RANDOM_RAND */
-#define intRandVal(ival)            ((INT) (((UINT) random ()) % ((UINT) (ival))))
+#define intRandVal(ival)            ((UINT) (((UINT) random ()) % ((UINT) (ival))))
 #endif /* COMMON_RANDOM_RAND */
 #endif /* COMMON_RANDOM_SYSTEM */
 
