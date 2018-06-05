@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 05 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,14 +72,18 @@
 #include "scotch.h"
 #include "gmk_ub2.h"
 
-#define ngbadd(v)                 if ((v) != vertnum) {           \
-                                    int                   k;      \
-                                    for (k = 0; k < ngbnbr; k ++) \
-                                      if ((v) == ngbtab[k])       \
-                                        break;                    \
-                                    if (k == ngbnbr)              \
-                                      ngbtab[ngbnbr ++] = (v);    \
-                                  }
+#define ngbadd(v)                 do {                              \
+                                    int                 t;          \
+                                    t = (v);                        \
+                                    if (t != vertnum) {             \
+                                      int                 k;        \
+                                      for (k = 0; k < ngbnbr; k ++) \
+                                        if (t == ngbtab[k])         \
+                                          break;                    \
+                                      if (k == ngbnbr)              \
+                                        ngbtab[ngbnbr ++] = t;      \
+                                    }                               \
+                                  } while (0);
 
 /*
 **  The static definitions.
