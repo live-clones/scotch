@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 05 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,12 +95,11 @@ main (
 int                         argc,
 char *                      argv[])
 {
-  SCOTCH_Graph        grafdat;                    /* Source graph                      */
-  SCOTCH_Num          vertnbr;                    /* Source graph size                 */
-  SCOTCH_Num *        vlbltab;                    /* Source graph vertex label array   */
-  SCOTCH_Arch         archdat;                    /* Target architecture               */
-  SCOTCH_Num          archnbr;                    /* Size of the target architecture   */
-  SCOTCH_Mapping      mappdat;                    /* Mapping data                      */
+  SCOTCH_Graph        grafdat;                    /* Source graph                    */
+  SCOTCH_Num          vertnbr;                    /* Source graph size               */
+  SCOTCH_Num *        vlbltab;                    /* Source graph vertex label array */
+  SCOTCH_Arch         archdat;                    /* Target architecture             */
+  SCOTCH_Mapping      mappdat;                    /* Mapping data                    */
   int                 i;
 
   errorProg ("gmtst");
@@ -158,8 +157,6 @@ char *                      argv[])
     errorPrint ("main: variable-sized architectures cannot be mapped");
     return     (1);
   }
-
-  archnbr = SCOTCH_archSize (&archdat);           /* Get architecture size */
 
   SCOTCH_graphMapInit (&grafdat, &mappdat, &archdat, NULL); /* Create mapping structure */
   if (SCOTCH_graphMapLoad (&grafdat, &mappdat, C_filepntrmapinp) != 0)
