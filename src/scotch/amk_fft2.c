@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 05 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,8 +104,7 @@ char *                      argv[])
   SCOTCH_Num          fnbr;                       /* Number of FFT vertices      */
   SCOTCH_Num          fmax;                       /* Maximum terminal number     */
   SCOTCH_Num          fmsk;                       /* Position bit mask           */
-  C_Vertex            v, w, x;                    /* A FFT vertex (lvl, pos)     */
-  SCOTCH_Num          b, d;                       /* Mask and bit variables      */
+  C_Vertex            v;                          /* A FFT vertex (lvl, pos)     */
   SCOTCH_Num          i;                          /* Loop counter                */
   SCOTCH_Num          t;                          /* Vertex terminal value       */
 
@@ -167,6 +166,8 @@ char *                      argv[])
 
   for (v.lvl = 0; v.lvl <= fdim; v.lvl ++) {      /* For all vertices */
     for (v.pos = 0; v.pos <= fmsk; v.pos ++) {
+      SCOTCH_Num          b;                      /* Bitmask value */
+
       for (i = v.lvl, b = 1 << (fdim - 1), t = 1; /* Recurse through the vertical + horizontal cuts */
            i <= fdim;
            i ++, b >>= 1) {
@@ -195,6 +196,9 @@ char *                      argv[])
 
   for (v.lvl = 0; v.lvl <= fdim; v.lvl ++) {      /* For all vertices */
     for (v.pos = 0; v.pos <= fmsk; v.pos ++) {
+      C_Vertex            w;                      /* Current vertex */
+      SCOTCH_Num          d;                      /* Distance value */
+
       for (i = 0; i < fnbr; i ++)                 /* Initialize the vertex table */
         C_distaTab[i].queued = 0;                 /* Vertex not queued yet       */
 
@@ -205,6 +209,8 @@ char *                      argv[])
 
         d ++;                                     /* Search for neighbors at next level */
         if (w.lvl > 0) {                          /* Add new neighbors to the queue     */
+          C_Vertex            x;                  /* Neighbor vertex                    */
+
           x.lvl = w.lvl - 1;
           x.pos = w.pos;
           C_distaPut (&x, d);
@@ -212,6 +218,8 @@ char *                      argv[])
           C_distaPut (&x, d);
         }
         if (w.lvl < fdim) {
+          C_Vertex            x;                  /* Neighbor vertex */
+
           x.lvl = w.lvl + 1;
           x.pos = w.pos;
           C_distaPut (&x, d);
