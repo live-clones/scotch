@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 05 jun 2009     **/
 /**                                 to   : 13 feb 2011     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     05 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,6 +71,7 @@
 #include "arch_cmpltw.h"
 #include "arch_hcub.h"
 #include "arch_mesh.h"
+#include "arch_sub.h"
 #include "arch_tleaf.h"
 #include "arch_torus.h"
 #include "arch_vcmplt.h"
