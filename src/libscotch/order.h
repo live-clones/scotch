@@ -48,7 +48,7 @@
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 08 may 2018     **/
-/**                                 to     08 may 2018     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -115,22 +115,19 @@ typedef struct Order_ {
 **  The function prototypes.
 */
 
-#ifndef ORDER
-#define static
-#endif
+#ifdef ORDER
+static void                 orderExit2          (OrderCblk * const, const Gnum);
+static void                 orderRang2          (Gnum ** const, Gnum * const, const OrderCblk * const);
+static void                 orderTree2          (Gnum * restrict const, Gnum * restrict const, const OrderCblk * restrict const, Gnum);
+#endif /* ORDER */
 
 int                         orderInit           (Order * const, const Gnum, const Gnum, Gnum * const);
 void                        orderExit           (Order * const);
-static void                 orderExit2          (OrderCblk * const, const Gnum);
 int                         orderLoad           (Order * restrict const, const Gnum * restrict const, FILE * restrict const);
 int                         orderSave           (const Order * restrict const, const Gnum * restrict const, FILE * restrict const);
 int                         orderSaveMap        (const Order * const, const Gnum * restrict const, FILE * restrict const);
 int                         orderSaveTree       (const Order * const, const Gnum * restrict const, FILE * restrict const);
 void                        orderPeri           (const Gnum * const, const Gnum, const Gnum, Gnum * const, const Gnum);
 void                        orderRang           (const Order * const, Gnum * const);
-static void                 orderRang2          (Gnum ** const, Gnum * const, const OrderCblk * const);
 void                        orderTree           (const Order * restrict const, Gnum * restrict const);
-static void                 orderTree2          (Gnum * restrict const, Gnum * restrict const, const OrderCblk * restrict const, Gnum);
 int                         orderCheck          (const Order * const);
-
-#undef static

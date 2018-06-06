@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,7 +64,7 @@
 /**                # Version 5.1  : from : 25 jun 2008     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     14 sep 2014     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /**   NOTES      : # While Anum and Gnum are different     **/
 /**                  types, because architectures are      **/
@@ -133,11 +133,6 @@ typedef struct MappingSort_ {
 /*
 **  The function prototypes.
 */
-void                        mapExit             (Mapping * const);
-
-#ifndef MAPPING
-#define static
-#endif
 
 void                        mapInit             (Mapping * restrict const, const Graph * restrict const, const Arch * restrict const, const ArchDom * restrict const);
 void                        mapInit2            (Mapping * restrict const, const Graph * restrict const, const Arch * restrict const, const ArchDom * restrict const, const Anum, const Anum);
@@ -154,8 +149,6 @@ void                        mapTerm             (const Mapping * restrict const,
 int                         mapLoad             (Mapping * restrict const, const Gnum * restrict const, FILE * restrict const);
 int                         mapSave             (const Mapping * restrict const, FILE * restrict const);
 int                         mapView             (const Mapping * restrict const, const Graph * restrict const, FILE * const);
-
-#undef static
 
 /*
 **  The macro definitions.

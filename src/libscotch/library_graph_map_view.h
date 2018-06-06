@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 04 feb 2007     **/
 /**                                 to     04 feb 2007     **/
+/**                # Version 6.0  : from : 06 jun 2018     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,13 +70,9 @@ typedef struct GraphMapViewQueue_ {
 **  The function prototypes.
 */
 
-#ifndef LIBRARY_GRAPH_MAP_VIEW
-#define static
-#endif
-
+#ifdef LIBRARY_GRAPH_MAP_VIEW
 static Gnum                 graphMapView3       (const Graph * const, const Anum * const, const Anum);
-
-#undef static
+#endif /* LIBRARY_GRAPH_MAP_VIEW */
 
 /*
 **  The macro definitions.
