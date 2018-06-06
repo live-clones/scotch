@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     11 may 2004     **/
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
+/**                # Version 6.0  : from : 06 jun 2018     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -125,10 +127,6 @@ typedef struct Mesh_ {
 **  The function prototypes.
 */
 
-#ifndef MESH
-#define static
-#endif
-
 int                         meshInit            (Mesh * const);
 void                        meshExit            (Mesh * const);
 void                        meshFree            (Mesh * const);
@@ -147,5 +145,3 @@ int                         meshGeomLoadHabo    (Mesh * restrict const, Geom * r
 int                         meshGeomLoadScot    (Mesh * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         meshGeomSaveScot    (const Mesh * restrict const, const Geom * restrict const, FILE * const, FILE * const, const char * const);
 #endif /* GEOM_H */
-
-#undef static
