@@ -42,7 +42,7 @@
 /**                method.                                 **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 03 mar 2011     **/ 
-/**                                 to     25 feb 2018     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -1328,7 +1328,6 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
       Gnum                edxxidx;
       Gnum *              edxpptr;
       Gnum *              vpexptr;
-      Gnum                vexdflg;
 
       vexxidx = edxxptr->vexxidx;                 /* Get relevant information */
       vertnum = vexxtab[vexxidx].vertnum;
@@ -1417,7 +1416,6 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
       edxxptr->commgain = - edxxptr->commgain;
       edxxptr->cmiggain = - edxxptr->cmiggain;
 
-      vexdflg = 0;
       if (edgenbr == 0) {
         Gnum              edxxidx;  
  
@@ -1453,9 +1451,6 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
 
         vertend = edgetax[edgenum];
         edloval = (edlotax != NULL) ? edlotax[edgenum] : 1;
-
-        if (parttax[edgetax[edgenum]] == domnnum)
-          vexdflg = 1;
 
         if ((pfixtax != NULL) && (pfixtax[vertend] != -1)) /* Do not link fixed vertices */
           continue;
@@ -1618,7 +1613,9 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
         }
 
         if ((edxnidx == -1) && (vexxtab[vexxend].domnnum != domnend)) { /* If was first vertex linked to this domain, add edge to new domain */
+#ifdef SCOTCH_DEBUG_KGRAPH2 
           Gnum        edxxidx;
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
 
           kgraphMapFmPartAdd2 (grafptr, vexxtab, vexxend, &edxxtab, &edxxsiz, &edxxnbr, vexxtab[vexxend].domnnum, domnend, edloval, tablptr); /* Add new extended edge */
 #ifdef SCOTCH_DEBUG_KGRAPH2 
