@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 06 jun 2009     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 23 dec 2011     **/
-/**                                 to     15 may 2018     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -203,6 +203,8 @@ double                      kbalval)
     }
   }
   *edgecut = commcut / 2;
+
+  return (METIS_OK);
 }
 
 /*
