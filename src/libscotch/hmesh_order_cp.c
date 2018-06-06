@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     05 jan 2005     **/
 /**                # Version 5.0  : from : 25 jul 2007     **/
 /**                                 to   : 12 sep 2007     **/
+/**                # Version 6.0  : from : 06 jun 2018     **/
+/**                                 to   : 06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,7 +100,6 @@ const HmeshOrderCpParam * restrict const  paraptr)
   int * restrict                finehasptab;      /* Pre-hashing table                                                     */
   Gnum                          finehaspmsk;      /* Mask for access to pre-hashing table                                  */
   Gnum * restrict               finehsumtax;      /* Array of hash values for each original vertex                         */
-  Gnum                          finevertnbr;      /* Number of fine vertices in compressed elimination tree                */
   Gnum                          finevsizsum;      /* Sum of compressed vertex sizes to build fine inverse permutation      */
   Gnum                          coarvsizsiz;      /* Size of array of sizes of coarse nodes                                */
   Gnum                          coarvelmnbr;      /* Number of coarse element vertices                                     */
@@ -112,6 +113,9 @@ const HmeshOrderCpParam * restrict const  paraptr)
   Gnum                          coarvnodnnd;
   Gnum                          coardegrmax;
   Gnum                          coarvnodnum;
+#ifdef SCOTCH_DEBUG_ORDER2
+  Gnum                          finevertnbr;      /* Number of fine vertices in compressed elimination tree                */
+#endif /* SCOTCH_DEBUG_ORDER2 */
 
   if (finemeshptr->vnohnbr != finemeshptr->m.vnodnbr) {
     errorPrint ("hmeshOrderCp: halo meshes not supported yet");
@@ -384,8 +388,11 @@ loop_failed: ;
 
   *cblkptr = coarordedat.cblktre;                 /* Link sub-tree to ordering         */
   coarordedat.cblktre.cblktab = NULL;             /* Unlink sub-tree from sub-ordering */
-  finevertnbr = hmeshOrderCpTree (coarordedat.peritab, /* Expand sub-tree              */
-                                  coarvsiztax, cblkptr, 0);
+
+#ifdef SCOTCH_DEBUG_ORDER2
+  finevertnbr =
+#endif /* SCOTCH_DEBUG_ORDER2 */
+  hmeshOrderCpTree (coarordedat.peritab, coarvsiztax, cblkptr, 0); /* Expand sub-tree */
 #ifdef SCOTCH_DEBUG_ORDER2
   if (finevertnbr != finemeshptr->m.vnodnbr) {
     errorPrint ("hmeshOrderCp: internal error (5)");
