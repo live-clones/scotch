@@ -40,7 +40,7 @@
 /**                components.                             **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 apr 2018     **/
-/**                                 to   : 05 may 2018     **/
+/**                                 to   : 06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -173,6 +173,7 @@ const HgraphOrderCcParam * restrict const paraptr)
 
   for (rootnum = 0, indordenum = 0; rootnum < rootnbr; rootnum ++) {
     Gnum                indvnohnbr;
+    int                 o;
 
     indvnohnbr = roottab[rootnum + 1] - roottab[rootnum];
 
@@ -182,7 +183,11 @@ const HgraphOrderCcParam * restrict const paraptr)
       return     (1);
     }
 
-    if (hgraphOrderSt (&indgrafdat, ordeptr, indordenum, &cblkptr->cblktab[rootnum], paraptr->straptr) != 0) { /* Perform strategy on induced subgraph */
+    o = hgraphOrderSt (&indgrafdat, ordeptr, indordenum, &cblkptr->cblktab[rootnum], paraptr->straptr); /* Perform strategy on induced subgraph */
+
+    hgraphExit (&indgrafdat);
+
+    if (o != 0) {
       errorPrint ("hgraphOrderCc: cannot compute ordering on induced graph");
       memFree    (queutab);
       return     (1);
