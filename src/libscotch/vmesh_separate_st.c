@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     08 feb 2003     **/
 /**                # Version 5.0  : from : 04 aug 2007     **/
 /**                                 to     04 aug 2007     **/
+/**                # Version 6.0  : from : 06 jun 2018     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,10 +86,12 @@ static union {
   StratNodeMethodData       padding;
 } vmeshseparatedefaultgg = { { 5 } };
 
+#ifdef SCOTCH_DEBUG_VMESH2
 static union {
   VmeshSeparateGrParam      param;
   StratNodeMethodData       padding;
 } vmeshseparatedefaultgr = { { &stratdummy } };
+#endif /* SCOTCH_DEBUG_VMESH2 */
 
 static union {
   VmeshSeparateMlParam      param;
