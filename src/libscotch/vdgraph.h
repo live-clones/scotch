@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 29 apr 2006     **/
 /**                # Version 5.1  : from : 07 nov 2007     **/
 /**                                 to   : 04 nov 2010     **/
+/**                # Version 6.0  : from : 06 jun 2018     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,10 +82,6 @@ typedef struct VdgraphStore_ {
 **  The function prototypes.
 */
 
-#ifndef VDGRAPH
-#define static
-#endif
-
 int                         vdgraphInit         (Vdgraph * restrict const, MPI_Comm);
 void                        vdgraphExit         (Vdgraph * const);
 void                        vdgraphZero         (Vdgraph * const);
@@ -96,5 +94,3 @@ int                         vdgraphStoreInit    (const Vdgraph * const, VdgraphS
 void                        vdgraphStoreExit    (VdgraphStore * const);
 void                        vdgraphStoreSave    (const Vdgraph * const , VdgraphStore * const);
 void                        vdgraphStoreUpdt    (Vdgraph * const, const VdgraphStore * const);
-
-#undef static
