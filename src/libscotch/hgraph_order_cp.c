@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 01 oct 2009     **/
 /**                                 to   : 01 oct 2009     **/
 /**                # Version 6.0  : from : 04 aug 2014     **/
-/**                                 to   : 23 may 2018     **/
+/**                                 to   : 06 jun 2018     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -117,10 +117,13 @@ const HgraphOrderCpParam * const  paraptr)
   int * restrict                finehasptab;      /* Pre-hashing table                                                     */
   Gnum                          finehaspmsk;      /* Mask for access to pre-hashing table                                  */
   Gnum * restrict               finehsumtax;      /* Array of hash values for each original vertex                         */
-  Gnum                          finevertnbr;      /* Number of fine vertices in compressed elimination tree                */
   Gnum                          finevertnum;      /* Number of current original vertex                                     */
   Gnum                          finevsizsum;      /* Sum of compressed vertex sizes to build fine inverse permutation      */
   void *                        dataptr;          /* Flag of memory allocation success                                     */
+#ifdef SCOTCH_DEBUG_ORDER2
+  Gnum                          finevertnbr;      /* Number of fine vertices in compressed elimination tree                */
+#endif /* SCOTCH_DEBUG_ORDER2 */
+
 
   Gnum * restrict const         fineperitab = fineordeptr->peritab;
   const Gnum * restrict const   fineverttax = finegrafptr->s.verttax;
@@ -446,8 +449,10 @@ loop_failed: ;
 
   *cblkptr = coarordedat.cblktre;                 /* Link sub-tree to ordering         */
   coarordedat.cblktre.cblktab = NULL;             /* Unlink sub-tree from sub-ordering */
-  finevertnbr = hgraphOrderCpTree (coarordedat.peritab, /* Expand sub-tree             */
-                                   coarvsiztax, cblkptr, 0);
+#ifdef SCOTCH_DEBUG_ORDER2
+  finevertnbr =
+#endif /* SCOTCH_DEBUG_ORDER2 */
+  hgraphOrderCpTree (coarordedat.peritab, coarvsiztax, cblkptr, 0); /* Expand sub-tree */
 #ifdef SCOTCH_DEBUG_ORDER2
   if (finevertnbr != finegrafptr->vnohnbr) {
     errorPrint ("hgraphOrderCp: internal error (4)");
