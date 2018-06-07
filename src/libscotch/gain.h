@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to     18 mar 2005     **/
 /**                # Version 5.0  : from : 24 mar 2008     **/
 /**                                 to     01 jun 2008     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /**   NOTES      : # Most of the contents of this module   **/
 /**                  comes from "map_b_fm" of the SCOTCH   **/
@@ -99,10 +101,6 @@ typedef struct GainTabl_ {
 **  The function prototypes.
 */
 
-#ifndef GAIN
-#define static
-#endif
-
 GainTabl *                  gainTablInit        (const INT, const INT);
 void                        gainTablExit        (GainTabl * const);
 void                        gainTablFree        (GainTabl * const);
@@ -112,11 +110,11 @@ void                        gainTablDel         (GainTabl * const, GainLink * co
 GainLink *                  gainTablFrst        (GainTabl * const);
 GainLink *                  gainTablNext        (GainTabl * const, const GainLink * const);
 #ifdef SCOTCH_DEBUG_GAIN3
-int                         gainTablCheck       (GainEntr * const);
+#ifdef GAIN
 static int                  gainTablCheck2      (GainEntr * const, GainLink * const);
+#endif /* GAIN */
+int                         gainTablCheck       (GainEntr * const);
 #endif /* SCOTCH_DEBUG_GAIN3 */
-
-#undef static
 
 /*
 **  The marco definitions.
