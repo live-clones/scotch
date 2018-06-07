@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to     15 may 1999     **/
 /**                # Version 4.0  : from : 25 nov 2001     **/
 /**                                 to     25 nov 2001     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,10 +62,4 @@
 **  The function prototypes.
 */
 
-#ifndef GRAPH_IO
-#define static
-#endif
-
 int                         graphLoad2          (const Gnum, const Gnum, const Gnum * const, const Gnum * const, Gnum * const, const Gnum, const Gnum * const);
-
-#undef static

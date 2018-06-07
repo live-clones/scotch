@@ -62,7 +62,7 @@
 /**                # Version 5.1  : from : 11 aug 2010     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     13 feb 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -156,10 +156,6 @@ typedef struct Graph_ {
 **  The function prototypes.
 */
 
-#ifndef GRAPH
-#define static
-#endif
-
 int                         listInit            (VertList *);
 void                        listExit            (VertList *);
 int                         listAlloc           (VertList *, Gnum);
@@ -193,5 +189,3 @@ int                         graphGeomSaveMmkt   (const Graph * restrict const, c
 int                         graphGeomLoadScot   (Graph * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         graphGeomSaveScot   (const Graph * restrict const, const Geom * restrict const, FILE * const, FILE * const, const char * const);
 #endif /* GEOM_H */
-
-#undef static
