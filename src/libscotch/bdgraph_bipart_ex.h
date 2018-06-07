@@ -1,4 +1,4 @@
-/* Copyright 2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 14 jul 2010     **/
 /**                                 to   : 14 aug 2010     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,10 +78,4 @@ typedef struct BdgraphBipartExMove_ {
 **  The function prototypes.
 */
 
-#ifndef BDGRAPH_BIPART_EX
-#define static
-#endif
-
 int                         bdgraphBipartEx     (Bdgraph * restrict const, const BdgraphBipartExParam * restrict const);
-
-#undef static

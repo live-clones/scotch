@@ -1,4 +1,4 @@
-/* Copyright 2007,2009,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2009,2011,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 nov 2007     **/
 /**                                 to   : 14 apr 2011     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,10 +82,4 @@ typedef struct BdgraphBipartDfParam_ {
 **  The function prototypes.
 */
 
-#ifndef BDGRAPH_BIPART_DF
-#define static
-#endif
-
 int                         bdgraphBipartDf     (Bdgraph * const, const BdgraphBipartDfParam * const);
-
-#undef static

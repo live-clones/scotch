@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 10 sep 2007     **/
 /**                                 to   : 14 apr 2011     **/
 /**                # Version 6.0  : from : 11 sep 2011     **/
-/**                                 to   : 31 aug 2014     **/
+/**                                 to   : 07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,10 +104,6 @@ typedef struct BdgraphStore_ {
 **  The function prototypes.
 */
 
-#ifndef BDGRAPH
-#define static
-#endif
-
 #ifdef DMAPPING_H
 int                         bdgraphInit         (Bdgraph * const, const Dgraph * const, const Dgraph * const, const Arch * const, const ArchDom[]);
 #endif /* DMAPPING_H */
@@ -127,5 +123,3 @@ int                         bdgraphStoreInit    (const Bdgraph * const, BdgraphS
 void                        bdgraphStoreExit    (BdgraphStore * const);
 void                        bdgraphStoreSave    (const Bdgraph * const , BdgraphStore * const);
 void                        bdgraphStoreUpdt    (Bdgraph * const, const BdgraphStore * const);
-
-#undef static
