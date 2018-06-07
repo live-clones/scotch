@@ -1,4 +1,4 @@
-/* Copyright 2009-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                k-partitioning method.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 22 dec 2009     **/
-/**                                 to     02 nov 2012     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,12 +119,8 @@ typedef struct KgraphMapDfThread_ {
 **  The function prototypes.
 */
 
-#ifndef KGRAPH_MAP_DF
-#define static
-#endif
+#ifdef KGRAPH_MAP_DF
+static void                 kgraphMapDfSort     (void * const, const INT);
+#endif /* KGRAPH_MAP_DF */
 
-int                         kgraphMapDf      (Kgraph * restrict const, const KgraphMapDfParam * const);
-
-static void                 kgraphMapDfSort  (void * const, const INT);
-
-#undef static
+int                         kgraphMapDf         (Kgraph * restrict const, const KgraphMapDfParam * const);

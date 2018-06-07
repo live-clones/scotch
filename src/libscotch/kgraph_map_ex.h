@@ -1,4 +1,4 @@
-/* Copyright 2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2011,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 08 jun 2011     **/
-/**                                 to     08 jun 2011     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,14 +104,10 @@ typedef struct KgraphMapExTree_ {
 **  The function prototypes.
 */
 
-#ifndef KGRAPH_MAP_EX
-#define static
-#endif
-
-int                         kgraphMapEx         (Kgraph * restrict const, const KgraphMapExParam * const);
-
+#ifdef KGRAPH_MAP_EX
 static Anum                 kgraphMapExTree     (const Arch * restrict const, const KgraphMapExTerm * restrict const, const Anum, KgraphMapExDom * restrict const, KgraphMapExTree * restrict const, Anum * restrict const, const ArchDom * restrict const);
 static Anum                 kgraphMapExFind     (const Arch * restrict const, const KgraphMapExTree * restrict const, const KgraphMapExDom * restrict const, const Anum, const Gnum);
 static int                  kgraphMapExFind2    (const Arch * restrict const, const KgraphMapExTree * restrict const, const KgraphMapExDom * restrict const, KgraphMapExFind * restrict const, const Anum, const Anum, const Gnum);
+#endif /* KGRAPH_MAP_EX */
 
-#undef static
+int                         kgraphMapEx         (Kgraph * restrict const, const KgraphMapExParam * const);

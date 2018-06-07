@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 13 jul 2010     **/
 /**                                 to     31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     05 may 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /**   NOTES      : # The comploadavg and comploaddlt       **/
 /**                  should always be allocated together,  **/
@@ -145,10 +145,6 @@ typedef struct KgraphStore_ {
 **  The function prototypes.
 */
 
-#ifndef KGRAPH
-#define static
-#endif
-
 int                         kgraphInit          (Kgraph * restrict const, const Graph * restrict const, const Arch * restrict const, const ArchDom * restrict const, const Gnum, const Anum * restrict const, const Anum * restrict const, const Gnum, const Gnum, const Gnum * restrict const);
 void                        kgraphExit          (Kgraph * const);
 void                        kgraphFrst          (Kgraph * const);
@@ -161,5 +157,3 @@ int                         kgraphStoreInit     (const Kgraph * const, KgraphSto
 void                        kgraphStoreExit     (KgraphStore * const);
 void                        kgraphStoreSave     (const Kgraph * const, KgraphStore * const);
 void                        kgraphStoreUpdt     (Kgraph * const, const KgraphStore * const);
-
-#undef static

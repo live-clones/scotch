@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,7 +63,7 @@
 /**                # Version 5.1  : from : 30 sep 2008     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     28 aug 2014     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -123,10 +123,7 @@ typedef struct KgraphMapRbMapPoolData_ {
 **  The function prototypes.
 */
 
-#ifndef KGRAPH_MAP_RB_MAP
-#define static
-#endif
-
+#ifdef KGRAPH_MAP_RB_MAP
 static int                  kgraphMapRbMapPoolInit (KgraphMapRbMapPoolData * restrict const, const KgraphMapRbData * restrict const);
 static void                 kgraphMapRbMapPoolExit (KgraphMapRbMapPoolData * restrict const poolptr);
 static void                 kgraphMapRbMapPoolAdd (KgraphMapRbMapPoolLink * restrict const, KgraphMapRbMapJob * const);
@@ -134,12 +131,10 @@ static KgraphMapRbMapJob *  kgraphMapRbMapPoolGet (KgraphMapRbMapPoolData * rest
 static void                 kgraphMapRbMapPoolFrst (KgraphMapRbMapPoolData * const, KgraphMapRbMapJob * const);
 static void                 kgraphMapRbMapPoolUpdt1 (KgraphMapRbMapPoolData * const, const KgraphMapRbMapJob * const, const GraphPart * const, KgraphMapRbMapJob * const, const GraphPart);
 static void                 kgraphMapRbMapPoolUpdt2 (KgraphMapRbMapPoolData * const, const KgraphMapRbMapJob * const, const GraphPart * const, KgraphMapRbMapJob * const, KgraphMapRbMapJob * const);
+static int                  kgraphMapRbMapPoolResize (KgraphMapRbMapPoolData * restrict const);
+#endif /* KGRAPH_MAP_RB_MAP */
 
 int                         kgraphMapRbMap      (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict const);
-
-static int                  kgraphMapRbMapPoolResize (KgraphMapRbMapPoolData * restrict const);
-
-#undef static
 
 /*
 **  The macro definitions.
