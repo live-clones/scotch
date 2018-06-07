@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
-/**                                 to     23 may 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,10 +81,6 @@ typedef struct Hgraph_ {
 **  The function prototypes.
 */
 
-#ifndef HGRAPH
-#define static
-#endif
-
 int                         hgraphInit          (Hgraph * const);
 void                        hgraphExit          (Hgraph * const);
 void                        hgraphFree          (Hgraph * const);
@@ -92,5 +88,3 @@ Gnum                        hgraphBase          (Hgraph * const, const Gnum);
 int                         hgraphCheck         (const Hgraph *);
 int                         hgraphInduceList    (const Hgraph * restrict const, const Gnum, const Gnum * restrict const, const Gnum, Hgraph * restrict const);
 void                        hgraphUnhalo        (const Hgraph * const, Graph * const);
-
-#undef static

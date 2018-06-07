@@ -43,7 +43,7 @@
 /**   DATES      : # Version 4.0  : from : 24 jan 2004     **/
 /**                                 to     24 jan 2004     **/
 /**                # Version 6.0  : from : 30 apr 2018     **/
-/**                                 to   : 30 apr 2018     **/
+/**                                 to   : 03 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,10 +51,4 @@
 **  The function prototypes.
 */
 
-#ifndef HGRAPH_ORDER_HX
-#define static
-#endif
-
 void                        hgraphOrderHxFill   (const Hgraph * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const);
-
-#undef static

@@ -51,10 +51,8 @@
 */
 
 #ifdef HGRAPH_INDUCE
-
 static int                  hgraphInduce2       (const Hgraph * const, Gnum * const, Hgraph * const, const Gnum, Gnum * const);
 static void                 hgraphInduce2L      (const Hgraph * const, Gnum * const, Hgraph * const);
 static void                 hgraphInduce2U      (const Hgraph * const, Gnum * const, Hgraph * const);
 static Gnum                 hgraphInduce3       (const Hgraph * restrict const, const Gnum, const Gnum * restrict const);
-
 #endif /* HGRAPH_INDUCE */
