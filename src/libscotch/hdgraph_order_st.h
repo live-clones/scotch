@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 14 apr 2006     **/
 /**                # Version 5.1  : from : 11 nov 2008     **/
 /**                                 to   : 11 nov 2008     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -69,10 +71,4 @@ extern StratTab             hdgraphorderststratab;
 **  The function prototypes.
 */
 
-#ifndef HDGRAPH_ORDER_ST
-#define static
-#endif
-
 int                         hdgraphOrderSt      (const Hdgraph * restrict const, DorderCblk * restrict const, const Strat * const);
-
-#undef static
