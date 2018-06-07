@@ -1,4 +1,4 @@
-/* Copyright 2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 06 jun 2010     **/
 /**                                 to   : 04 nov 2010     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,16 +76,12 @@ typedef struct DgraphBuildGrid3DData_ {
 ** The function prototypes.
 */
 
-#ifndef DGRAPH_BUILD_GRID3D
-#define static
-#endif
-
+#ifdef DGRAPH_BUILD_GRID3D
 static Gnum                 dgraphBuildGrid3Dvertex26M (const DgraphBuildGrid3DData * restrict const, const Gnum, Gnum, const Gnum, const Gnum, const Gnum);
 static Gnum                 dgraphBuildGrid3Dvertex26T (const DgraphBuildGrid3DData * restrict const, const Gnum, Gnum, const Gnum, const Gnum, const Gnum);
 static Gnum                 dgraphBuildGrid3Dvertex6M (const DgraphBuildGrid3DData * restrict const, const Gnum, Gnum, const Gnum, const Gnum, const Gnum);
 static Gnum                 dgraphBuildGrid3Dvertex6T (const DgraphBuildGrid3DData * restrict const, const Gnum, Gnum, const Gnum, const Gnum, const Gnum);
-
-#undef static
+#endif /* DGRAPH_BUILD_GRID3D */
 
 /*
 ** The macro definitions.
@@ -98,4 +96,3 @@ static Gnum                 dgraphBuildGrid3Dvertex6T (const DgraphBuildGrid3DDa
                                       if ((d)->edloloctax != NULL)                                                 \
                                         (d)->edloloctax[edgeloctmp] = ((vertglbend + (v)) % 16) + 1;               \
                                     }
-
