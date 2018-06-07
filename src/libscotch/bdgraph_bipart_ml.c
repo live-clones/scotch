@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to   : 14 apr 2011     **/
 /**              : # Version 6.0  : from : 11 sep 2011     **/
-/**                                 to   : 24 feb 2018     **/
+/**                                 to   : 07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -234,7 +234,6 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   Gnum                            finefronlocnum;
   Gnum                            fineedlolocval;
   Gnum                            finevertlocadj; /* Global vertex adjustment                            */
-  Gnum                            finevertlocnum;
   Gnum                            finevertlocnnd; /* Index for frontier array fronloctab                 */
   Gnum                            finecomplocsize1;
   Gnum                            finecomplocload1;
@@ -262,6 +261,9 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   GraphPart * restrict            coarpartgsttax;
   GraphPart * restrict            finepartgsttax;
   Gnum * restrict                 finefronloctab;
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+  Gnum                            finevertlocnum;
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
 
   const int                   fineprocglbnbr = finegrafptr->s.procglbnbr;
   const Gnum * restrict const fineprocvrttab = finegrafptr->s.procvrttab;
