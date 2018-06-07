@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 28 nov 2007     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 08 may 2018     **/
-/**                                 to     08 may 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -160,10 +160,6 @@ typedef struct Dorder_ {
 **  The function prototypes.
 */
 
-#ifndef DORDER
-#define static
-#endif
-
 int                         dorderInit          (Dorder * const, const Gnum, const Gnum, MPI_Comm);
 void                        dorderExit          (Dorder * const);
 void                        dorderFree          (Dorder * const);
@@ -189,5 +185,3 @@ DorderCblk *                dorderNew           (DorderCblk * const, MPI_Comm);
 DorderCblk *                dorderNewSequ       (DorderCblk * const);
 Gnum                        dorderNewSequIndex  (DorderCblk * const, const Gnum);
 void                        dorderDispose       (DorderCblk * const);
-
-#undef static
