@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010,2011,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 23 jun 2008     **/
 /**                                 to     31 aug 2011     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,10 +92,4 @@ typedef struct KdgraphMapRbPartData_ {
 **  The function prototypes.
 */
 
-#ifndef KDGRAPH_MAP_RB
-#define static
-#endif
-
 int                         kdgraphMapRbPart    (Kdgraph * const, Kdmapping * const, const KdgraphMapRbParam * const);
-
-#undef static
