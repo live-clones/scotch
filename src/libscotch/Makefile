@@ -1836,6 +1836,14 @@ library_arch$(OBJ)		:	library_arch.c				\
 					graph.h					\
 					arch$(OBJ)				\
 					arch_cmplt.h				\
+					arch_cmpltw.h				\
+					arch_hcub.h				\
+					arch_mesh.h				\
+					arch_sub.h				\
+					arch_tleaf.h				\
+					arch_torus.h				\
+					arch_vcmplt.h				\
+					arch_vhcub.h				\
 					scotch.h
 
 library_arch_f$(OBJ)		:	library_arch_f.c			\
