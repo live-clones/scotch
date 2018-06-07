@@ -47,7 +47,7 @@
 /**                # Version 5.1  : from : 23 jun 2008     **/
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 11 sep 2012     **/
-/**                                 to   : 03 jun 2018     **/
+/**                                 to   : 07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -399,7 +399,6 @@ int
 dgraphCoarsenBuild (
 DgraphCoarsenData * restrict const  coarptr)
 {
-  Gnum                          vertlocnum;
   Gnum                          vertlocadj;
   Gnum                          edgelocnbr;
   Gnum                          edlolocval;
@@ -437,6 +436,7 @@ DgraphCoarsenData * restrict const  coarptr)
   int                           cheklocval;
   int                           chekglbval;
 #ifdef SCOTCH_DEBUG_DGRAPH2
+  Gnum                          vertlocnum;
   int * restrict                ercvdbgtab;
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
