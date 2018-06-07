@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 06 jan 2002     **/
 /**                                 to     23 jan 2004     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,10 +62,4 @@ typedef struct HmeshOrderNdParam_ {
 **  The function prototypes.
 */
 
-#ifndef HMESH_ORDER_ND
-#define static
-#endif
-
 int                         hmeshOrderNd        (const Hmesh * restrict const, Order * restrict const, const Gnum, OrderCblk * restrict const, const HmeshOrderNdParam * const);
-
-#undef static

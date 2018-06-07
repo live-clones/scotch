@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     08 feb 2004     **/
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,12 +85,8 @@ typedef struct HgraphOrderCpMate_ {
 **  The function prototypes.
 */
 
-#ifndef HMESH_ORDER_CP
-#define static
-#endif
+#ifdef HMESH_ORDER_CP
+static Gnum                 hmeshOrderCpTree    (const Gnum * const, const Gnum * const, OrderCblk * const, Gnum);
+#endif /* HMESH_ORDER_CP */
 
 int                         hmeshOrderCp        (const Hmesh * const, Order * const, const Gnum, OrderCblk * const, const HmeshOrderCpParam * const);
-
-static Gnum                 hmeshOrderCpTree    (const Gnum * const, const Gnum * const, OrderCblk * const, Gnum);
-
-#undef static
