@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.0.2"
+#define YYBISON_VERSION "3.0.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -72,7 +72,7 @@
 /* Copy the first part of user declarations.  */
 #line 1 "parser_yy.y" /* yacc.c:339  */
 
-/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -123,7 +123,7 @@
 /**                # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to     24 jul 2011     **/
 /**                # Version 6.0  : from : 30 sep 2014     **/
-/**                                 to     30 sep 2014     **/
+/**                                 to     27 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -220,7 +220,7 @@ extern int scotchyydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE YYSTYPE;
+
 union YYSTYPE
 {
 #line 92 "parser_yy.y" /* yacc.c:355  */
@@ -240,6 +240,8 @@ union YYSTYPE
 
 #line 242 "y.tab.c" /* yacc.c:355  */
 };
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -253,7 +255,7 @@ int scotchyyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 257 "y.tab.c" /* yacc.c:358  */
+#line 259 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -1402,7 +1404,7 @@ yyreduce:
     {
                 parserstratcurr = ((yyvsp[0].STRAT));           /* Save pointer to root of tree */
               }
-#line 1406 "y.tab.c" /* yacc.c:1646  */
+#line 1408 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
@@ -1424,7 +1426,7 @@ yyreduce:
 
                 ((yyval.STRAT)) = strat;
               }
-#line 1428 "y.tab.c" /* yacc.c:1646  */
+#line 1430 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
@@ -1442,7 +1444,7 @@ yyreduce:
 
                 ((yyval.STRAT)) = strat;
               }
-#line 1446 "y.tab.c" /* yacc.c:1646  */
+#line 1448 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
@@ -1464,7 +1466,7 @@ yyreduce:
 
                 ((yyval.STRAT)) = strat;
               }
-#line 1468 "y.tab.c" /* yacc.c:1646  */
+#line 1470 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
@@ -1472,7 +1474,7 @@ yyreduce:
     {
                 stratParserSelect (VALTEST);      /* Parse parameter tokens */
               }
-#line 1476 "y.tab.c" /* yacc.c:1646  */
+#line 1478 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
@@ -1480,7 +1482,7 @@ yyreduce:
     {
                 stratParserSelect (VALSTRAT);     /* Parse strategy tokens */
               }
-#line 1484 "y.tab.c" /* yacc.c:1646  */
+#line 1486 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
@@ -1505,7 +1507,7 @@ yyreduce:
 
                 ((yyval.STRAT)) = strat;
               }
-#line 1509 "y.tab.c" /* yacc.c:1646  */
+#line 1511 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
@@ -1513,7 +1515,7 @@ yyreduce:
     {
                 ((yyval.STRAT)) = ((yyvsp[0].STRAT));
               }
-#line 1517 "y.tab.c" /* yacc.c:1646  */
+#line 1519 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
@@ -1521,7 +1523,7 @@ yyreduce:
     {
                 ((yyval.STRAT)) = NULL;
               }
-#line 1525 "y.tab.c" /* yacc.c:1646  */
+#line 1527 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
@@ -1529,7 +1531,7 @@ yyreduce:
     {
                 ((yyval.STRAT)) = ((yyvsp[-1].STRAT));
               }
-#line 1533 "y.tab.c" /* yacc.c:1646  */
+#line 1535 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
@@ -1573,7 +1575,7 @@ yyreduce:
 
                 parserstratcurr = strat;          /* Structure available for parameter processing */
               }
-#line 1577 "y.tab.c" /* yacc.c:1646  */
+#line 1579 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
@@ -1596,7 +1598,7 @@ yyreduce:
                 ((yyval.STRAT)) = parserstratcurr;           /* Return current structure */
                 parserstratcurr = NULL;           /* No current structure     */
               }
-#line 1600 "y.tab.c" /* yacc.c:1646  */
+#line 1602 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
@@ -1604,7 +1606,7 @@ yyreduce:
     {
                 stratParserSelect (VALPARAM);     /* Parse parameter tokens */
               }
-#line 1608 "y.tab.c" /* yacc.c:1646  */
+#line 1610 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
@@ -1612,7 +1614,7 @@ yyreduce:
     {
                 stratParserSelect (VALSTRAT);     /* Parse strategy tokens */
               }
-#line 1616 "y.tab.c" /* yacc.c:1646  */
+#line 1618 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
@@ -1648,7 +1650,7 @@ yyreduce:
                 if (parserparamcurr->type == STRATPARAMSTRAT) /* If parameter is a strategy           */
                   parserstrattab = (StratTab *) parserparamcurr->datasltr; /* Use new strategy tables */
               }
-#line 1652 "y.tab.c" /* yacc.c:1646  */
+#line 1654 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
@@ -1657,7 +1659,7 @@ yyreduce:
                 stratParserSelect (VALPARAM);     /* Go-on reading parameters        */
                 parserstrattab = ((yyvsp[-2].SAVE)).tabl; /* Restore current strategy tables */
               }
-#line 1661 "y.tab.c" /* yacc.c:1646  */
+#line 1663 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
@@ -1696,7 +1698,7 @@ yyreduce:
                               parserparamcurr->database))) = i;
                 }
               }
-#line 1700 "y.tab.c" /* yacc.c:1646  */
+#line 1702 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
@@ -1715,7 +1717,7 @@ yyreduce:
                                  parserparamcurr->database))) = ((yyvsp[0].DOUBLE));
                 }
               }
-#line 1719 "y.tab.c" /* yacc.c:1646  */
+#line 1721 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
@@ -1734,7 +1736,7 @@ yyreduce:
                               parserparamcurr->database))) = (INT) ((yyvsp[0].INTEGER));
                 }
               }
-#line 1738 "y.tab.c" /* yacc.c:1646  */
+#line 1740 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
@@ -1754,7 +1756,7 @@ yyreduce:
                           ((yyvsp[0].STRING)));
                 }
               }
-#line 1758 "y.tab.c" /* yacc.c:1646  */
+#line 1760 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
@@ -1765,7 +1767,7 @@ yyreduce:
                 parserstratcurr  = NULL;
                 parserparamcurr  = NULL;
               }
-#line 1769 "y.tab.c" /* yacc.c:1646  */
+#line 1771 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
@@ -1787,7 +1789,7 @@ yyreduce:
                                  parserparamcurr->database))) = ((yyvsp[0].STRAT));
                 }
               }
-#line 1791 "y.tab.c" /* yacc.c:1646  */
+#line 1793 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
@@ -1797,7 +1799,7 @@ yyreduce:
                             parserparamcurr->name, parserstratcurr->tabl->methtab[parserstratcurr->data.method.meth].name, stratParserRemain ());
                 YYABORT;
               }
-#line 1801 "y.tab.c" /* yacc.c:1646  */
+#line 1803 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
@@ -1819,7 +1821,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 1823 "y.tab.c" /* yacc.c:1646  */
+#line 1825 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
@@ -1841,7 +1843,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 1845 "y.tab.c" /* yacc.c:1646  */
+#line 1847 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
@@ -1861,7 +1863,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 1865 "y.tab.c" /* yacc.c:1646  */
+#line 1867 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
@@ -1869,7 +1871,7 @@ yyreduce:
     {
                 ((yyval.TEST)) = ((yyvsp[-1].TEST));
               }
-#line 1873 "y.tab.c" /* yacc.c:1646  */
+#line 1875 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
@@ -1890,7 +1892,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 1894 "y.tab.c" /* yacc.c:1646  */
+#line 1896 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
@@ -1898,7 +1900,7 @@ yyreduce:
     {
                 ((yyval.TESTOP)) = STRATTESTLT;
               }
-#line 1902 "y.tab.c" /* yacc.c:1646  */
+#line 1904 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
@@ -1906,7 +1908,7 @@ yyreduce:
     {
                 ((yyval.TESTOP)) = STRATTESTEQ;
               }
-#line 1910 "y.tab.c" /* yacc.c:1646  */
+#line 1912 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
@@ -1914,7 +1916,7 @@ yyreduce:
     {
                 ((yyval.TESTOP)) = STRATTESTGT;
               }
-#line 1918 "y.tab.c" /* yacc.c:1646  */
+#line 1920 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
@@ -1934,7 +1936,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 1938 "y.tab.c" /* yacc.c:1646  */
+#line 1940 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
@@ -1942,7 +1944,7 @@ yyreduce:
     {
                 ((yyval.TESTOP)) = STRATTESTADD;
               }
-#line 1946 "y.tab.c" /* yacc.c:1646  */
+#line 1948 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
@@ -1950,7 +1952,7 @@ yyreduce:
     {
                 ((yyval.TESTOP)) = STRATTESTSUB;
               }
-#line 1954 "y.tab.c" /* yacc.c:1646  */
+#line 1956 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
@@ -1970,7 +1972,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 1974 "y.tab.c" /* yacc.c:1646  */
+#line 1976 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
@@ -1978,7 +1980,7 @@ yyreduce:
     {
                 ((yyval.TESTOP)) = STRATTESTMUL;
               }
-#line 1982 "y.tab.c" /* yacc.c:1646  */
+#line 1984 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
@@ -1998,7 +2000,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 2002 "y.tab.c" /* yacc.c:1646  */
+#line 2004 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
@@ -2006,7 +2008,7 @@ yyreduce:
     {
                 ((yyval.TESTOP)) = STRATTESTMOD;
               }
-#line 2010 "y.tab.c" /* yacc.c:1646  */
+#line 2012 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
@@ -2014,7 +2016,7 @@ yyreduce:
     {
                 ((yyval.TEST)) = ((yyvsp[-1].TEST));
               }
-#line 2018 "y.tab.c" /* yacc.c:1646  */
+#line 2020 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
@@ -2033,7 +2035,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 2037 "y.tab.c" /* yacc.c:1646  */
+#line 2039 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
@@ -2052,7 +2054,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 2056 "y.tab.c" /* yacc.c:1646  */
+#line 2058 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
@@ -2095,7 +2097,7 @@ yyreduce:
 
                 ((yyval.TEST)) = test;
               }
-#line 2099 "y.tab.c" /* yacc.c:1646  */
+#line 2101 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
@@ -2103,7 +2105,7 @@ yyreduce:
     {
                 ((yyval.DOUBLE)) = (((yyvsp[-1].TESTOP)) == STRATTESTSUB) ? - ((yyvsp[0].DOUBLE)) : ((yyvsp[0].DOUBLE));
               }
-#line 2107 "y.tab.c" /* yacc.c:1646  */
+#line 2109 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
@@ -2111,11 +2113,11 @@ yyreduce:
     {
                 ((yyval.INTEGER)) = (((yyvsp[-1].TESTOP)) == STRATTESTSUB) ? - ((yyvsp[0].INTEGER)) : ((yyvsp[0].INTEGER));
               }
-#line 2115 "y.tab.c" /* yacc.c:1646  */
+#line 2117 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2119 "y.tab.c" /* yacc.c:1646  */
+#line 2121 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2391,7 +2393,7 @@ const char * const          string)               /*+ Strategy string to parse  
   parserstrattab  = strattab;                     /* Point to the parsing tables             */
   parserstratcurr = NULL;                         /* Clear up the temporary strategy pointer */
 
-  if (stratParserParse2 () != 0) {                /* Parse the strategy string */
+  if (yyparse () != 0) {                          /* Parse the strategy string */
     if (parserstratcurr != NULL)
       stratExit (parserstratcurr);
     return (NULL);
@@ -2407,7 +2409,7 @@ const char * const          string)               /*+ Strategy string to parse  
 
 static
 int
-stratParserError (
+yyerror (
 const char * const          errstr)
 {
   errorPrint ("stratParserParse: invalid strategy string, before \"%s\"", stratParserRemain ());
