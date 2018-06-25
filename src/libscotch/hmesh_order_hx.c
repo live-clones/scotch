@@ -42,7 +42,7 @@
 /**   DATES      : # Version 4.0  : from : 09 dec 2003     **/
 /**                                 to   : 24 jan 2004     **/
 /**                # Version 6.0  : from : 30 apr 2018     **/
-/**                                 to   : 30 apr 2018     **/
+/**                                 to   : 25 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,7 +100,9 @@ Gnum * restrict const         pfreptr)
   Gnum * restrict const       elentax = elentab - 1;
   const Gnum * restrict const verttax = meshptr->m.verttax;
   const Gnum * restrict const vendtax = meshptr->m.vendtax;
+#if 0 /* TODO when weighted vertices will be managed */
   const Gnum * restrict const velotax = meshptr->m.velotax;
+#endif
   const Gnum * restrict const edgetax = meshptr->m.edgetax;
 
   n = meshptr->m.velmnbr + meshptr->m.vnodnbr;
@@ -123,7 +125,11 @@ Gnum * restrict const         pfreptr)
 
     petax[vertnum]   = edgenum;
     lentax[vertnum]  = vendtax[vnodnum] - verttax[vnodnum];
+#if 0 /* TODO when weighted vertices will be managed */
     nvartax[vertnum] = (velotax != NULL) ? velotax[vnodnum] : 1;
+#else
+    nvartax[vertnum] = 1;
+#endif
 
     for (enodnum = verttax[vnodnum], nghbnbr = -1; /* -1 since loop edge will be processed in the main loop */
          enodnum < vendtax[vnodnum]; enodnum ++) {
@@ -161,7 +167,11 @@ Gnum * restrict const         pfreptr)
     petax[vertnum]   = edgenum;
     lentax[vertnum]  = (degrval != 0) ? degrval : - (n + 1);
     elentax[vertnum] = 0;
+#if 0 /* TODO when weighted vertices will be managed */
     nvartax[vertnum] = (velotax != NULL) ? velotax[vnodnum] : 1;
+#else
+    nvartax[vertnum] = 1;
+#endif
 
     for (enodnum = verttax[vnodnum];
          enodnum < vendtax[vnodnum]; enodnum ++)
@@ -175,7 +185,11 @@ Gnum * restrict const         pfreptr)
     petax[vertnum]   = edgenum;
     lentax[vertnum]  = meshptr->m.vendtax[velmnum] - meshptr->m.verttax[velmnum];
     elentax[vertnum] = - (n + 1);
-    nvartax[vertnum] = (velotax != NULL) ? velotax[velmnum] : 1;
+#if 0 /* TODO when weighted vertices will be managed */
+    nvartax[vertnum] = (velotax != NULL) ? velotax[vnodnum] : 1;
+#else
+    nvartax[vertnum] = 1;
+#endif
 
     for (eelmnum = verttax[velmnum];
          eelmnum < vendtax[velmnum]; eelmnum ++)
