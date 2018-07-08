@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 27 jun 2010     **/
 /**                                 to     27 jun 2010     **/
 /**                # Version 6.0  : from : 27 apr 2015     **/
-/**                                 to     27 apr 2015     **/
+/**                                 to     08 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,7 +67,7 @@
 #include "zlib.h"
 #endif /* COMMON_FILE_COMPRESS_GZ */
 #ifdef COMMON_FILE_COMPRESS_LZMA
-#include "lzmadec.h"                              /* TODO: Temporary interface */
+#include "lzma.h"
 #endif /* COMMON_FILE_COMPRESS_LZMA */
 
 /*
@@ -87,8 +87,10 @@ static FileCompressTab      filetab[] = {
 #endif /* COMMON_FILE_COMPRESS_GZ */
 #ifdef COMMON_FILE_COMPRESS_LZMA
                                           { ".lzma", FILECOMPRESSTYPELZMA    },
+                                          { ".xz",   FILECOMPRESSTYPELZMA    },
 #else /* COMMON_FILE_COMPRESS_LZMA */
                                           { ".lzma", FILECOMPRESSTYPENOTIMPL },
+                                          { ".xz",   FILECOMPRESSTYPENOTIMPL },
 #endif /* COMMON_FILE_COMPRESS_LZMA */
                                           { NULL,    FILECOMPRESSTYPENOTIMPL } };
 
@@ -236,11 +238,11 @@ const int                   typeval)              /*+ (Un)compression algorithm 
   return (readptr);
 }
 
-/* This routine uncompresses a stream compressed in the
-** bzip2 format.
+/* This routine uncompresses a stream compressed
+** in the bzip2 format.
 ** It returns:
-** - void  : in all cases. Uncompression stops immediately
-**           in case of error.
+** - void  : in all cases. Uncompression stops
+**           immediately in case of error.
 */
 
 #ifdef COMMON_FILE_COMPRESS_BZ2
@@ -249,57 +251,57 @@ void
 fileUncompressBz2 (
 FileCompressData * const  dataptr)
 {
-  BZFILE *              bzfile;
-  int                   bzsize;
-  int                   bzerror;
+  BZFILE *            decoptr;
+  int                 bytenbr;
+  int                 flagval;
 
   if (FILECOMPRESSDATASIZE < (BZ_MAX_UNUSED)) {
     errorPrint ("fileUncompressBz2: cannot start decompression (1)");
     return;
   }
-  if ((bzfile = BZ2_bzReadOpen (&bzerror, dataptr->outerstream, 0, 0, NULL, 0)) == NULL) {
+  if ((decoptr = BZ2_bzReadOpen (&flagval, dataptr->outerstream, 0, 0, NULL, 0)) == NULL) {
     errorPrint ("fileUncompressBz2: cannot start decompression (2)");
-    BZ2_bzReadClose (&bzerror, bzfile);
+    BZ2_bzReadClose (&flagval, decoptr);
     return;
   }
 
-  while ((bzsize = BZ2_bzRead (&bzerror, bzfile, &dataptr->datatab, FILECOMPRESSDATASIZE), bzerror) >= BZ_OK) { /* If BZ_OK or BZ_STREAM_END */
-    if (write (dataptr->innerfd, &dataptr->datatab, bzsize) != bzsize) {
+  while ((bytenbr = BZ2_bzRead (&flagval, decoptr, &dataptr->datatab, FILECOMPRESSDATASIZE), flagval) >= BZ_OK) { /* If BZ_OK or BZ_STREAM_END */
+    if (write (dataptr->innerfd, &dataptr->datatab, bytenbr) != bytenbr) {
       errorPrint ("fileUncompressBz2: cannot write");
-      bzerror = BZ_STREAM_END;                    /* Avoid other error message */
+      flagval = BZ_STREAM_END;                    /* Avoid other error message */
       break;
     }
-    if (bzerror == BZ_STREAM_END) {               /* If end of compressed stream */
-      void *                bzunusptr;
-      int                   bzunusnbr;
+    if (flagval == BZ_STREAM_END) {               /* If end of compressed stream */
+      void *              byunptr;
+      int                 byunnbr;
 
-      BZ2_bzReadGetUnused (&bzerror, bzfile, &bzunusptr, &bzunusnbr); /* Get remaining chars in stream   */
-      if ((bzunusnbr == 0) && (feof (dataptr->outerstream) != 0)) { /* If end of uncompressed stream too */
-        bzerror = BZ_STREAM_END;
+      BZ2_bzReadGetUnused (&flagval, decoptr, &byunptr, &byunnbr); /* Get remaining chars in stream    */
+      if ((byunnbr == 0) && (feof (dataptr->outerstream) != 0)) { /* If end of uncompressed stream too */
+        flagval = BZ_STREAM_END;
         break;
       }
-      memMov (&dataptr->datatab, bzunusptr, bzunusnbr);
-      BZ2_bzReadClose (&bzerror, bzfile);
-      if ((bzfile = BZ2_bzReadOpen (&bzerror, dataptr->outerstream, 0, 0, &dataptr->datatab, bzunusnbr)) == NULL) {
+      memMov (&dataptr->datatab, byunptr, byunnbr);
+      BZ2_bzReadClose (&flagval, decoptr);
+      if ((decoptr = BZ2_bzReadOpen (&flagval, dataptr->outerstream, 0, 0, &dataptr->datatab, byunnbr)) == NULL) {
         errorPrint ("fileUncompressBz2: cannot start decompression (3)");
-        bzerror = BZ_STREAM_END;
+        flagval = BZ_STREAM_END;
         break;
       }
     }
   }
-  if (bzerror != BZ_STREAM_END)
+  if (flagval != BZ_STREAM_END)
     errorPrint ("fileUncompressBz2: cannot read");
 
-  BZ2_bzReadClose (&bzerror, bzfile);
+  BZ2_bzReadClose (&flagval, decoptr);
   fclose (dataptr->outerstream);                  /* Do as zlib does */
 }
 #endif /* COMMON_FILE_COMPRESS_BZ2 */
 
-/* This routine uncompresses a stream compressed in the
-** gzip format.
+/* This routine uncompresses a stream compressed
+** in the gzip format.
 ** It returns:
-** - void  : in all cases. Uncompression stops immediately
-**           in case of error.
+** - void  : in all cases. Uncompression stops
+**           immediately in case of error.
 */
 
 #ifdef COMMON_FILE_COMPRESS_GZ
@@ -308,32 +310,32 @@ void
 fileUncompressGz (
 FileCompressData * const  dataptr)
 {
-  gzFile                gzfile;
-  int                   gzsize;
+  gzFile              decoptr;
+  int                 bytenbr;
 
-  if ((gzfile = gzdopen (fileno (dataptr->outerstream), "rb")) == NULL) {
+  if ((decoptr = gzdopen (fileno (dataptr->outerstream), "rb")) == NULL) {
     errorPrint ("fileUncompressGz: cannot start decompression");
     return;
   }
 
-  while ((gzsize = gzread (gzfile, &dataptr->datatab, FILECOMPRESSDATASIZE)) > 0) {
-    if (write (dataptr->innerfd, &dataptr->datatab, gzsize) != gzsize) {
+  while ((bytenbr = gzread (decoptr, &dataptr->datatab, FILECOMPRESSDATASIZE)) > 0) {
+    if (write (dataptr->innerfd, &dataptr->datatab, bytenbr) != bytenbr) {
       errorPrint ("fileUncompressGz: cannot write");
       break;
     }
   }
-  if (gzsize < 0)
+  if (bytenbr < 0)
     errorPrint ("fileUncompressGz: cannot read");
 
-  gzclose (gzfile);
+  gzclose (decoptr);
 }
 #endif /* COMMON_FILE_COMPRESS_GZ */
 
-/* This routine uncompresses a stream compressed in the
-** lzma format.
+/* This routine uncompresses a stream compressed
+** in the lzma format.
 ** It returns:
-** - void  : in all cases. Uncompression stops immediately
-**           in case of error.
+** - void  : in all cases. Uncompression stops
+**           immediately in case of error.
 */
 
 #ifdef COMMON_FILE_COMPRESS_LZMA
@@ -342,23 +344,60 @@ void
 fileUncompressLzma (
 FileCompressData * const  dataptr)
 {
-  lzmadec_FILE *        lzmafile;
-  ssize_t               lzmasize;
+  lzma_stream         decodat = LZMA_STREAM_INIT; /* Decoder data          */
+  lzma_action         deacval;                    /* Decoder action value  */
+  lzma_ret            dereval;                    /* Decoder return value  */
+  byte *              obuftab;                    /* Decoder output buffer */
 
-  if ((lzmafile = lzmadec_dopen (fileno (dataptr->outerstream))) == NULL) {
-    errorPrint ("fileUncompressLzma: cannot start decompression");
+  if ((obuftab = memAlloc (FILECOMPRESSDATASIZE)) == NULL) {
+    errorPrint ("fileUncompressLzma: out of memory");
     return;
   }
 
-  while ((lzmasize = lzmadec_read (lzmafile, (void *) &dataptr->datatab, FILECOMPRESSDATASIZE)) > 0) {
-    if (write (dataptr->innerfd, &dataptr->datatab, lzmasize) != lzmasize) {
-      errorPrint ("fileUncompressLzma: cannot write");
-      break;
-    }
+  if (lzma_stream_decoder (&decodat, UINT64_MAX, LZMA_CONCATENATED) != LZMA_OK) {
+    errorPrint ("fileUncompressLzma: cannot start decompression");
+    memFree    (obuftab);
+    return;
   }
-  if (lzmasize < 0)
-    errorPrint ("fileUncompressLzma: cannot read");
 
-  lzmadec_close (lzmafile);
+  deacval           = LZMA_RUN;
+  dereval           = LZMA_OK;
+  decodat.avail_in  = 0;
+  decodat.next_out  = obuftab;
+  decodat.avail_out = FILECOMPRESSDATASIZE;
+  do {
+    if ((decodat.avail_in == 0) && (deacval == LZMA_RUN)) {
+      ssize_t             bytenbr;
+
+      bytenbr = fread (&dataptr->datatab, 1, FILECOMPRESSDATASIZE, dataptr->outerstream); /* Read from pipe */
+      if (bytenbr < 0) {
+        errorPrint ("fileUncompressLzma: cannot read");
+        break;
+      }
+      if (bytenbr == 0)
+        deacval = LZMA_FINISH;                    /* If end of stream, request completion of encoding */
+      decodat.next_in  = (byte *) &dataptr->datatab;
+      decodat.avail_in = bytenbr;
+    }
+
+    dereval = lzma_code (&decodat, deacval);
+
+    if ((decodat.avail_out == 0) || (dereval == LZMA_STREAM_END)) { /* Write when output buffer full or end of encoding */
+      size_t              obufnbr;
+
+      obufnbr = FILECOMPRESSDATASIZE - decodat.avail_out; /* Compute number of bytes to write */
+      if (write (dataptr->innerfd, obuftab, obufnbr) != obufnbr) {
+        errorPrint ("fileUncompressLzma: cannot write");
+        break;
+      }
+      decodat.next_out  = obuftab;
+      decodat.avail_out = FILECOMPRESSDATASIZE;
+    }
+  } while (dereval == LZMA_OK);
+
+  lzma_end (&decodat);
+  memFree  (obuftab);
+
+  fclose (dataptr->outerstream);                  /* Do as zlib does */
 }
 #endif /* COMMON_FILE_COMPRESS_LZMA */

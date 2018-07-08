@@ -1,4 +1,4 @@
-/* Copyright 2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 12 mar 2008     **/
 /**                                 to     17 mar 2008     **/
+/**                # Version 6.0  : from : 08 jul 2018     **/
+/**                                 to     08 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,9 +102,9 @@ static void                 fileUncompressGz    (FileCompressData * const  datap
 #endif /* COMMON_FILE_UNCOMPRESS */
 #endif /* COMMON_FILE_COMPRESS_GZ */
 #ifdef COMMON_FILE_COMPRESS_LZMA
-/* #ifdef COMMON_FILE_COMPRESS */
-/* static void                 fileCompressLzma    (FileCompressData * const  dataptr); */
-/* #endif /\* COMMON_FILE_COMPRESS *\/ */
+#ifdef COMMON_FILE_COMPRESS
+static void                 fileCompressLzma    (FileCompressData * const  dataptr);
+#endif /* COMMON_FILE_COMPRESS */
 #ifdef COMMON_FILE_UNCOMPRESS
 static void                 fileUncompressLzma  (FileCompressData * const  dataptr);
 #endif /* COMMON_FILE_UNCOMPRESS */

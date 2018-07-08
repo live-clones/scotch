@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 27 jun 2010     **/
 /**                                 to     27 jun 2010     **/
 /**                # Version 6.0  : from : 27 apr 2015     **/
-/**                                 to     27 apr 2015     **/
+/**                                 to     09 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,6 +66,9 @@
 #ifdef COMMON_FILE_COMPRESS_GZ
 #include "zlib.h"
 #endif /* COMMON_FILE_COMPRESS_GZ */
+#ifdef COMMON_FILE_COMPRESS_LZMA
+#include "lzma.h"
+#endif /* COMMON_FILE_COMPRESS_LZMA */
 
 /*
 **  The static definitions.
@@ -82,11 +85,13 @@ static FileCompressTab      filetab[] = {
 #else /* COMMON_FILE_COMPRESS_GZ */
                                           { ".gz",   FILECOMPRESSTYPENOTIMPL },
 #endif /* COMMON_FILE_COMPRESS_GZ */
-/* #ifdef COMMON_FILE_COMPRESS_LZMA */ /* TODO: Current lzmadec library does not offer compression to date */
-/*                                          { ".lzma", FILECOMPRESSTYPELZMA    }, */
-/* #else COMMON_FILE_COMPRESS_LZMA */
+#ifdef COMMON_FILE_COMPRESS_LZMA
+                                          { ".lzma", FILECOMPRESSTYPELZMA    },
+                                          { ".xz",   FILECOMPRESSTYPELZMA    },
+#else /* COMMON_FILE_COMPRESS_LZMA */
                                           { ".lzma", FILECOMPRESSTYPENOTIMPL },
-/* #endif /\* COMMON_FILE_COMPRESS_LZMA *\/ */
+                                          { ".xz",   FILECOMPRESSTYPENOTIMPL },
+#endif /* COMMON_FILE_COMPRESS_LZMA */
                                           { NULL,    FILECOMPRESSTYPENOTIMPL } };
 
 /*********************************/
@@ -151,11 +156,11 @@ FileCompressData * const  dataptr)
       fileCompressGz (dataptr);
       break;
 #endif /* COMMON_FILE_COMPRESS_GZ */
-/* #ifdef COMMON_FILE_COMPRESS_LZMA /\* TODO: Current lzmadec library does not offer compression to date *\/ */
-/*     case FILECOMPRESSTYPELZMA : */
-/*       fileCompressLzma (dataptr); */
-/*       break; */
-/* #endif /\* COMMON_FILE_COMPRESS_LZMA *\/ */
+#ifdef COMMON_FILE_COMPRESS_LZMA
+    case FILECOMPRESSTYPELZMA :
+      fileCompressLzma (dataptr);
+      break;
+#endif /* COMMON_FILE_COMPRESS_LZMA */
     default :
       errorPrint ("fileCompress2: method not implemented");
   }
@@ -232,11 +237,11 @@ const int                   typeval)              /*+ (Un)compression algorithm 
   return (writptr);
 }
 
-/* This routine compresses a stream compressed in the
-** gzip format.
+/* This routine compresses a stream in the
+** bz2 format.
 ** It returns:
-** - void  : in all cases. Compression stops immediately
-**           in case of error.
+** - void  : in all cases. Compression stops
+**           immediately in case of error.
 */
 
 #ifdef COMMON_FILE_COMPRESS_BZ2
@@ -245,38 +250,38 @@ void
 fileCompressBz2 (
 FileCompressData * const  dataptr)
 {
-  BZFILE *              bzfile;
-  int                   bzsize;
-  int                   bzerror;
+  BZFILE *              encoptr;
+  int                   bytenbr;
+  int                   flagval;
 
-  if ((bzfile = BZ2_bzWriteOpen (&bzerror, dataptr->outerstream, 9, 0, 0)) == NULL) {
+  if ((encoptr = BZ2_bzWriteOpen (&flagval, dataptr->outerstream, 9, 0, 0)) == NULL) {
     errorPrint ("fileCompressBz2: cannot start compression");
-    BZ2_bzWriteClose (&bzerror, bzfile, 1, NULL, NULL);
+    BZ2_bzWriteClose (&flagval, encoptr, 1, NULL, NULL);
     return;
   }
 
-  while ((bzsize = read (dataptr->innerfd, &dataptr->datatab, FILECOMPRESSDATASIZE)) > 0) { /* Read from pipe */
-    BZ2_bzWrite (&bzerror, bzfile, &dataptr->datatab, bzsize);
-    if (bzerror != BZ_OK) {
+  while ((bytenbr = read (dataptr->innerfd, &dataptr->datatab, FILECOMPRESSDATASIZE)) > 0) { /* Read from pipe */
+    BZ2_bzWrite (&flagval, encoptr, &dataptr->datatab, bytenbr);
+    if (flagval != BZ_OK) {
       errorPrint ("fileCompressBz2: cannot write");
       break;
     }
   }
-  if (bzsize < 0) {
+  if (bytenbr < 0) {
     errorPrint ("fileCompressBz2: cannot read");
-    bzerror = BZ_STREAM_END;                      /* Will set abandon flag to 1 in BZ2_bzWriteClose */
+    flagval = BZ_STREAM_END;                      /* Will set abandon flag to 1 in BZ2_bzWriteClose */
   }
 
-  BZ2_bzWriteClose (&bzerror, bzfile, (bzerror != BZ_OK) ? 1 : 0, NULL, NULL);
+  BZ2_bzWriteClose (&flagval, encoptr, (flagval != BZ_OK) ? 1 : 0, NULL, NULL);
   fclose (dataptr->outerstream);                  /* Do as zlib does */
 }
 #endif /* COMMON_FILE_COMPRESS_BZ2 */
 
-/* This routine compresses a stream compressed in the
+/* This routine compresses a stream in the
 ** gzip format.
 ** It returns:
-** - void  : in all cases. Compression stops immediately
-**           in case of error.
+** - void  : in all cases. Compression stops
+**           immediately in case of error.
 */
 
 #ifdef COMMON_FILE_COMPRESS_GZ
@@ -285,24 +290,95 @@ void
 fileCompressGz (
 FileCompressData * const  dataptr)
 {
-  gzFile                gzfile;
-  int                   gzsize;
+  gzFile                encoptr;
+  int                   bytenbr;
 
-  if ((gzfile = gzdopen (fileno (dataptr->outerstream), "wb")) == NULL) {
+  if ((encoptr = gzdopen (fileno (dataptr->outerstream), "wb")) == NULL) {
     errorPrint ("fileCompressGz: cannot start compression");
     return;
   }
-  gzsetparams (gzfile, 9, Z_DEFAULT_STRATEGY);    /* Maximum compression */
+  gzsetparams (encoptr, 9, Z_DEFAULT_STRATEGY);   /* Maximum compression */
 
-  while ((gzsize = read (dataptr->innerfd, &dataptr->datatab, FILECOMPRESSDATASIZE)) > 0) { /* Read from pipe */
-    if (gzwrite (gzfile, &dataptr->datatab, gzsize) != gzsize) {
+  while ((bytenbr = read (dataptr->innerfd, &dataptr->datatab, FILECOMPRESSDATASIZE)) > 0) { /* Read from pipe */
+    if (gzwrite (encoptr, &dataptr->datatab, bytenbr) != bytenbr) {
       errorPrint ("fileCompressGz: cannot write");
       break;
     }
   }
-  if (gzsize < 0)
+  if (bytenbr < 0)
     errorPrint ("fileCompressGz: cannot read");
 
-  gzclose (gzfile);
+  gzclose (encoptr);
 }
 #endif /* COMMON_FILE_COMPRESS_GZ */
+
+/* This routine compresses a stream in the
+** LZMA format.
+** It returns:
+** - void  : in all cases. Compression stops
+**           immediately in case of error.
+*/
+
+#ifdef COMMON_FILE_COMPRESS_LZMA
+static
+void
+fileCompressLzma (
+FileCompressData * const  dataptr)
+{
+  lzma_stream         encodat = LZMA_STREAM_INIT; /* Encoder data          */
+  lzma_action         enacval;                    /* Encoder action value  */
+  lzma_ret            enreval;                    /* Encoder return value  */
+  byte *              obuftab;                    /* Encoder output buffer */
+
+  if ((obuftab = memAlloc (FILECOMPRESSDATASIZE)) == NULL) {
+    errorPrint ("fileCompressLzma: out of memory");
+    return;
+  }
+
+  if (lzma_easy_encoder (&encodat, LZMA_PRESET_EXTREME, LZMA_CHECK_CRC64) != LZMA_OK) {
+    errorPrint ("fileCompressLzma: cannot start compression");
+    memFree    (obuftab);
+    return;
+  }
+
+  enacval           = LZMA_RUN;
+  enreval           = LZMA_OK;
+  encodat.avail_in  = 0;
+  encodat.next_out  = obuftab;
+  encodat.avail_out = FILECOMPRESSDATASIZE;
+  do {
+    if ((encodat.avail_in == 0) && (enacval == LZMA_RUN)) {
+      ssize_t             bytenbr;
+
+      bytenbr = read (dataptr->innerfd, &dataptr->datatab, FILECOMPRESSDATASIZE); /* Read from pipe */
+      if (bytenbr < 0) {
+        errorPrint ("fileCompressLzma: cannot read");
+        break;
+      }
+      if (bytenbr == 0)
+        enacval = LZMA_FINISH;                    /* If end of stream, request completion of encoding */
+      encodat.next_in  = (byte *) &dataptr->datatab;
+      encodat.avail_in = bytenbr;
+    }
+
+    enreval = lzma_code (&encodat, enacval);
+
+    if ((encodat.avail_out == 0) || (enreval == LZMA_STREAM_END)) { /* Write when output buffer full or end of encoding */
+      size_t              obufnbr;
+
+      obufnbr = FILECOMPRESSDATASIZE - encodat.avail_out; /* Compute number of bytes to write */
+      if (fwrite (obuftab, 1, obufnbr, dataptr->outerstream) != obufnbr) {
+        errorPrint ("fileCompressLzma: cannot write");
+        break;
+      }
+      encodat.next_out  = obuftab;
+      encodat.avail_out = FILECOMPRESSDATASIZE;
+    }
+  } while (enreval == LZMA_OK);
+
+  lzma_end (&encodat);
+  memFree  (obuftab);
+
+  fclose (dataptr->outerstream);                  /* Do as zlib does */
+}
+#endif /* COMMON_FILE_COMPRESS_LZMA */
