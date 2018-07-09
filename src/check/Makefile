@@ -36,8 +36,8 @@ SCOTCHINCLUDEDIR	= ../../include
 SCOTCHLIBDIR		= ../../lib
 SCOTCHBINDIR		= ../../bin
 
-LIBPTSCOTCH		= -lptscotch -lscotch -lptscotcherrexit
-LIBSCOTCH		= -lscotch -lscotcherrexit
+LIBPTSCOTCH		= -lptscotch -lscotch -lptscotcherr
+LIBSCOTCH		= -lscotch -lscotcherr
 
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
 DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -78,6 +78,7 @@ clean				:
 
 realclean			:	clean
 					-$(RM) 				\
+					test_common_file_compress	\
 					test_common_random		\
 					test_common_thread		\
 					test_fibo			\
@@ -103,7 +104,8 @@ realclean			:	clean
 ##  Test cases dependencies.
 ##
 
-CHECKSCOTCH = 		check_common_random			\
+CHECKSCOTCH = 		check_common_file_compress		\
+			check_common_random			\
 			check_common_thread			\
 			check_fibo				\
 			check_strat_seq				\
@@ -133,6 +135,25 @@ CHECKPTSCOTCH = 	check_strat_par				\
 
 ##
 ##  Sequential library tests.
+##
+
+check_common_file_compress	:	test_common_file_compress
+					-cp "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+					$(EXECS) ./test_common_file_compress "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf.gz"
+					$(EXECS) ./test_common_file_compress "$(TMPDIR)/bump_b1.grf.gz" "$(TMPDIR)/bump_b1.grf"
+					diff -q "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+					-cp "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+					$(EXECS) ./test_common_file_compress "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf.bz2"
+					$(EXECS) ./test_common_file_compress "$(TMPDIR)/bump_b1.grf.bz2" "$(TMPDIR)/bump_b1.grf"
+					diff -q "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+					-cp "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+					$(EXECS) ./test_common_file_compress "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf.lzma"
+					$(EXECS) ./test_common_file_compress "$(TMPDIR)/bump_b1.grf.lzma" "$(TMPDIR)/bump_b1.grf"
+					diff -q "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+
+test_common_file_compress	:	test_common_file_compress.c	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
 ##
 
 check_common_random		:	test_common_random

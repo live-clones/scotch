@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 27 jun 2010     **/
 /**                                 to     27 jun 2010     **/
 /**                # Version 6.0  : from : 10 nov 2014     **/
-/**                                 to     12 nov 2014     **/
+/**                                 to     09 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -189,7 +189,8 @@ const int                   filenbr)
 ** descriptor structures.
 ** It returns:
 ** - 0  : on success.
-** - !0 : on error.
+** - 1  : if could not open a stream.
+** - 2  : if (un)compression method not implemented.
 */
 
 int
@@ -225,7 +226,7 @@ const int                   filenbr)
       compval = (filetab[i].modeptr[0] == 'r') ? fileUncompressType (filetab[i].nameptr) : fileCompressType (filetab[i].nameptr);
       if (compval < 0) {
         errorPrint ("fileBlockOpen: (un)compression type not implemented");
-        return     (1);
+        return     (2);
       }
       compptr = (filetab[i].modeptr[0] == 'r') ? fileUncompress (filetab[i].fileptr, compval) : fileCompress (filetab[i].fileptr, compval);
       if (compptr == NULL) {
