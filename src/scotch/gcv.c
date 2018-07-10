@@ -195,7 +195,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "gcv, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014 Universite de Bordeaux, INRIA & CNRS\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014,2018 Universite de Bordeaux, INRIA & CNRS\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :

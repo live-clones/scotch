@@ -293,7 +293,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "dgmap/dgpart, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2008-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2008-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                                /* Output control info */
