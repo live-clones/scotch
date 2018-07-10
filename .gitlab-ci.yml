@@ -30,7 +30,7 @@ build_scotch_32:
   script:
     - cd src
     - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_FILE_COMPRESS_LZMA -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_32
@@ -41,7 +41,18 @@ build_scotch_32-d:
   script:
     - cd src
     - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL#1' Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL#1' Makefile.inc
+    - make scotch ptscotch esmumps ptesmumps
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+  <<: *job_build_32
+
+build_scotch_32-dnt:
+  artifacts:
+    name: scotch_build_32-dnt
+  script:
+    - cd src
+    - cp ../ci/Makefile.inc ./Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_FILE_COMPRESS_LZMA -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_32
@@ -52,7 +63,7 @@ build_scotch_32-dm2:
   script:
     - cd src
     - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_PTHREAD_NUMBER=2#1' Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_PTHREAD_NUMBER=2#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_32
@@ -63,7 +74,7 @@ build_scotch_32-64d:
   script:
     - cd src
     - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DINTSIZE64 -DIDXSIZE64 -DSCOTCH_DEBUG_ALL#1' Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DINTSIZE64 -DIDXSIZE64 -DSCOTCH_DEBUG_ALL#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_32
@@ -74,7 +85,7 @@ build_scotch_64:
   script:
     - cd src
     - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_64
@@ -85,7 +96,7 @@ build_scotch_64-dm2:
   script:
     - cd src
     - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_PTHREAD_NUMBER=2#1' Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_PTHREAD_NUMBER=2#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_64
@@ -96,7 +107,7 @@ build_scotch_64-dr:
   script:
     - cd src
     - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_RENAME_ALL -DSCOTCH_NAME_SUFFIX=_64#1' Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_RENAME_ALL -DSCOTCH_NAME_SUFFIX=_64#1' Makefile.inc
     - sed -i -e 's#^\(SCOTCH_NAME_SUFFIX.*\)#\1_64#1' Makefile.inc
     - make libscotch libptscotch
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make libscotch libptscotch 2>&1 | tee ../scotch-build.log
@@ -145,6 +156,13 @@ test_scotch_32-d:
     - build_scotch_32-d
   artifacts:
     name: scotch_build_32-d
+  <<: *job_test_32
+
+test_scotch_32-dnt:
+  dependencies:
+    - build_scotch_32-dnt
+  artifacts:
+    name: scotch_build_32-dnt
   <<: *job_test_32
 
 test_scotch_64:
