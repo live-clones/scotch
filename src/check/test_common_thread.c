@@ -39,7 +39,7 @@
 /**                management module.                      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 nov 2012     **/
-/**                                 to     22 may 2018     **/
+/**                                 to     10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -173,8 +173,8 @@ main (
 int                 argc,
 char *              argv[])
 {
-  TestThreadGroup       groudat;
 #if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
+  TestThreadGroup       groudat;
   TestThread * restrict thrdtab;
   int                   thrdnbr;
 #endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
