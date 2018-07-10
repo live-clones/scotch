@@ -106,8 +106,10 @@ char *              argv[])
   SCOTCH_Num          edlosum;
   double              edloavg;
   double              edlodlt;
-  int                 flagval;
   int                 i;
+#ifdef SCOTCH_DEBUG_ALL
+  int                 flagval;
+#endif /* SCOTCH_DEBUG_ALL */
 #ifdef SCOTCH_PTHREAD
   int                 thrdlvlreqval;
   int                 thrdlvlproval;
@@ -135,7 +137,9 @@ char *              argv[])
     return     (0);
   }
 
+#ifdef SCOTCH_DEBUG_ALL
   flagval = C_FLAGNONE;
+#endif /* SCOTCH_DEBUG_ALL */
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
 
