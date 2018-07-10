@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     17 may 2018     **/
+/**                                 to     10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,18 +100,19 @@ typedef DUMMYINT SCOTCH_Num;
 /*+ Strategy string parametrization values +*/
 
 #ifndef SCOTCH_STRATDEFAULT
-#define SCOTCH_STRATDEFAULT         0x0000
-#define SCOTCH_STRATQUALITY         0x0001
-#define SCOTCH_STRATSPEED           0x0002
-#define SCOTCH_STRATBALANCE         0x0004
-#define SCOTCH_STRATSAFETY          0x0008
-#define SCOTCH_STRATSCALABILITY     0x0010
-#define SCOTCH_STRATRECURSIVE       0x0100
-#define SCOTCH_STRATREMAP           0x0200
-#define SCOTCH_STRATLEVELMAX        0x1000
-#define SCOTCH_STRATLEVELMIN        0x2000
-#define SCOTCH_STRATLEAFSIMPLE      0x4000
-#define SCOTCH_STRATSEPASIMPLE      0x8000
+#define SCOTCH_STRATDEFAULT         0x00000
+#define SCOTCH_STRATQUALITY         0x00001
+#define SCOTCH_STRATSPEED           0x00002
+#define SCOTCH_STRATBALANCE         0x00004
+#define SCOTCH_STRATSAFETY          0x00008
+#define SCOTCH_STRATSCALABILITY     0x00010
+#define SCOTCH_STRATRECURSIVE       0x00100
+#define SCOTCH_STRATREMAP           0x00200
+#define SCOTCH_STRATLEVELMAX        0x01000
+#define SCOTCH_STRATLEVELMIN        0x02000
+#define SCOTCH_STRATLEAFSIMPLE      0x04000
+#define SCOTCH_STRATSEPASIMPLE      0x08000
+#define SCOTCH_STRATDISCONNECTED    0x10000
 #endif /* SCOTCH_STRATDEFAULT */
 
 /*+ Opaque objects. The dummy sizes of these
