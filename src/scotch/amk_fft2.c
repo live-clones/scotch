@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 05 jun 2018     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,7 +77,7 @@
 static int                  C_paraNum = 0;        /* Number of parameters       */
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* The file array          */
-                              { "w" } };
+                              { FILEMODEW } };
 
 static C_VertDist *         C_distaTab;           /* Pointer to distance map table */
 static C_Queue              C_distaQueue;         /* Distance queue                */
@@ -244,8 +244,5 @@ char *                      argv[])
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
   return (0);
 }

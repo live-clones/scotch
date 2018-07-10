@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 27 jun 2010     **/
 /**                                 to     27 jun 2010     **/
 /**                # Version 6.0  : from : 27 apr 2015     **/
-/**                                 to     08 jul 2018     **/
+/**                                 to     10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -143,99 +143,106 @@ const char * const          nameptr)              /*+ Name string +*/
 static
 void *                                            /* (void *) to comply to the Posix pthread API */
 fileUncompress2 (
-FileCompressData * const  dataptr)
+FileCompress * const        compptr)
 {
-  switch (dataptr->typeval) {
+  switch (compptr->typeval) {
 #ifdef COMMON_FILE_COMPRESS_BZ2
     case FILECOMPRESSTYPEBZ2 :
-      fileUncompressBz2 (dataptr);
+      fileUncompressBz2 (compptr);
       break;
 #endif /* COMMON_FILE_COMPRESS_BZ2 */
 #ifdef COMMON_FILE_COMPRESS_GZ
     case FILECOMPRESSTYPEGZ :
-      fileUncompressGz (dataptr);
+      fileUncompressGz (compptr);
       break;
 #endif /* COMMON_FILE_COMPRESS_GZ */
 #ifdef COMMON_FILE_COMPRESS_LZMA
     case FILECOMPRESSTYPELZMA :
-      fileUncompressLzma (dataptr);
+      fileUncompressLzma (compptr);
       break;
 #endif /* COMMON_FILE_COMPRESS_LZMA */
     default :
       errorPrint ("fileUncompress2: method not implemented");
   }
 
-  close   (dataptr->innerfd);                     /* Close writer's end */
-  memFree (dataptr);                              /* Free buffers       */
+  close   (compptr->infdnum);                     /* Close writer's end */
+  memFree (compptr->bufftab);                     /* Free data buffer   */
+#ifdef COMMON_DEBUG
+  compptr->bufftab = NULL;
+#endif /* COMMON_DEBUG */
 
-  return ((void *) 0);                            /* Don't care anyway */
+  return (NULL);                                  /* Don't care anyway */
 }
 
-FILE *
+int
 fileUncompress (
-FILE * const                stream,               /*+ Compressed stream         +*/
+File * const                fileptr,              /*+ Compressed input stream   +*/
 const int                   typeval)              /*+ (Un)compression algorithm +*/
 {
   int                 filetab[2];
   FILE *              readptr;
-  FileCompressData *  dataptr;
-#ifdef COMMON_PTHREAD_FILE
-  pthread_t           thrdval;
-#endif /* COMMON_PTHREAD_FILE */
+  FileCompress *      compptr;
 
-  if (typeval <= FILECOMPRESSTYPENONE)            /* If uncompressed stream, return original stream pointer */
-    return (stream);
+  if (typeval <= FILECOMPRESSTYPENONE)            /* If nothing to do */
+    return (0);
 
   if (pipe (filetab) != 0) {
     errorPrint ("fileUncompress: cannot create pipe");
-    return (NULL);
+    return (1);
   }
 
-  if ((readptr = fdopen (filetab[0], "r")) == NULL) {
+  if ((readptr = fdopen (filetab[0], "r")) == NULL) { /* New stream master will read from */
     errorPrint ("fileUncompress: cannot create stream");
     close  (filetab[0]);
     close  (filetab[1]);
-    return (NULL);
+    return (1);
   }
 
-  if ((dataptr = memAlloc (sizeof (FileCompressData) + FILECOMPRESSDATASIZE)) == NULL) {
+  if (((compptr = memAlloc (sizeof (FileCompress))) == NULL) || /* Compression structure to be freed by master */
+      ((compptr->bufftab = memAlloc (FILECOMPRESSDATASIZE)) == NULL)) {
     errorPrint ("fileUncompress: out of memory");
+    if (compptr != NULL)
+      memFree (compptr);
     fclose (readptr);
     close  (filetab[1]);
-    return (NULL);
+    return (1);
   }
 
-  dataptr->typeval     = typeval;                 /* Fill structure to be passed to uncompression thread/process */
-  dataptr->innerfd     = filetab[1];
-  dataptr->outerstream = stream;
+  compptr->typeval = typeval;                     /* Fill structure to be passed to uncompression thread/process */
+  compptr->infdnum = filetab[1];
+  compptr->oustptr = fileptr->fileptr;            /* Compressed stream to read from */
 
 #ifdef COMMON_PTHREAD_FILE
-  if (pthread_create (&thrdval, NULL, (void * (*) (void *)) fileUncompress2, (void *) dataptr) != 0) { /* If could not create thread */
+  if (pthread_create (&compptr->thrdval, NULL, (void * (*) (void *)) fileUncompress2, (void *) compptr) != 0) { /* If could not create thread */
     errorPrint ("fileUncompress: cannot create thread");
-    memFree (dataptr);
+    memFree (compptr->bufftab);
+    memFree (compptr);
     fclose  (readptr);
     close   (filetab[1]);
-    return  (NULL);
+    return  (1);
   }
-  pthread_detach (thrdval);                       /* Detach thread so that it will end up gracefully by itself */
 #else /* COMMON_PTHREAD_FILE */
-  switch (fork ()) {
+  switch (compptr->procval = fork ()) {
     case -1 :                                     /* Error */
       errorPrint ("fileUncompress: cannot create child process");
-      memFree (dataptr);
+      memFree (compptr->bufftab);
+      memFree (compptr);
       fclose  (readptr);
       close   (filetab[1]);
-      return  (NULL);
+      return  (1);
     case 0 :                                      /* We are the son process    */
       fclose (readptr);                           /* Close reader pipe stream  */
-      fileUncompress2 (dataptr);                  /* Perform uncompression     */
-      exit (0);                                   /* Exit gracefully           */
+      fileUncompress2 (compptr);                  /* Perform uncompression     */
+      exit (EXIT_SUCCESS);                        /* Exit gracefully           */
     default :                                     /* We are the father process */
       close (filetab[1]);                         /* Close the writer pipe end */
   }
 #endif /* COMMON_PTHREAD_FILE */
 
-  return (readptr);
+  fileptr->fileptr = readptr;                     /* Master can read from pipe */
+  fileptr->compptr = compptr;
+
+  return (0);
 }
 
 /* This routine uncompresses a stream compressed
@@ -249,7 +256,7 @@ const int                   typeval)              /*+ (Un)compression algorithm 
 static
 void
 fileUncompressBz2 (
-FileCompressData * const  dataptr)
+FileCompress * const        compptr)
 {
   BZFILE *            decoptr;
   int                 bytenbr;
@@ -259,14 +266,14 @@ FileCompressData * const  dataptr)
     errorPrint ("fileUncompressBz2: cannot start decompression (1)");
     return;
   }
-  if ((decoptr = BZ2_bzReadOpen (&flagval, dataptr->outerstream, 0, 0, NULL, 0)) == NULL) {
+  if ((decoptr = BZ2_bzReadOpen (&flagval, compptr->oustptr, 0, 0, NULL, 0)) == NULL) {
     errorPrint ("fileUncompressBz2: cannot start decompression (2)");
     BZ2_bzReadClose (&flagval, decoptr);
     return;
   }
 
-  while ((bytenbr = BZ2_bzRead (&flagval, decoptr, &dataptr->datatab, FILECOMPRESSDATASIZE), flagval) >= BZ_OK) { /* If BZ_OK or BZ_STREAM_END */
-    if (write (dataptr->innerfd, &dataptr->datatab, bytenbr) != bytenbr) {
+  while ((bytenbr = BZ2_bzRead (&flagval, decoptr, compptr->bufftab, FILECOMPRESSDATASIZE), flagval) >= BZ_OK) { /* If BZ_OK or BZ_STREAM_END */
+    if (write (compptr->infdnum, compptr->bufftab, bytenbr) != bytenbr) {
       errorPrint ("fileUncompressBz2: cannot write");
       flagval = BZ_STREAM_END;                    /* Avoid other error message */
       break;
@@ -275,14 +282,14 @@ FileCompressData * const  dataptr)
       void *              byunptr;
       int                 byunnbr;
 
-      BZ2_bzReadGetUnused (&flagval, decoptr, &byunptr, &byunnbr); /* Get remaining chars in stream    */
-      if ((byunnbr == 0) && (feof (dataptr->outerstream) != 0)) { /* If end of uncompressed stream too */
+      BZ2_bzReadGetUnused (&flagval, decoptr, &byunptr, &byunnbr); /* Get remaining chars in stream */
+      if ((byunnbr == 0) && (feof (compptr->oustptr) != 0)) { /* If end of uncompressed stream too  */
         flagval = BZ_STREAM_END;
         break;
       }
-      memMov (&dataptr->datatab, byunptr, byunnbr);
+      memMov (compptr->bufftab, byunptr, byunnbr);
       BZ2_bzReadClose (&flagval, decoptr);
-      if ((decoptr = BZ2_bzReadOpen (&flagval, dataptr->outerstream, 0, 0, &dataptr->datatab, byunnbr)) == NULL) {
+      if ((decoptr = BZ2_bzReadOpen (&flagval, compptr->oustptr, 0, 0, compptr->bufftab, byunnbr)) == NULL) {
         errorPrint ("fileUncompressBz2: cannot start decompression (3)");
         flagval = BZ_STREAM_END;
         break;
@@ -293,7 +300,7 @@ FileCompressData * const  dataptr)
     errorPrint ("fileUncompressBz2: cannot read");
 
   BZ2_bzReadClose (&flagval, decoptr);
-  fclose (dataptr->outerstream);                  /* Do as zlib does */
+  fclose (compptr->oustptr);                      /* Do as zlib does */
 }
 #endif /* COMMON_FILE_COMPRESS_BZ2 */
 
@@ -308,18 +315,18 @@ FileCompressData * const  dataptr)
 static
 void
 fileUncompressGz (
-FileCompressData * const  dataptr)
+FileCompress * const        compptr)
 {
   gzFile              decoptr;
   int                 bytenbr;
 
-  if ((decoptr = gzdopen (fileno (dataptr->outerstream), "rb")) == NULL) {
+  if ((decoptr = gzdopen (fileno (compptr->oustptr), "rb")) == NULL) {
     errorPrint ("fileUncompressGz: cannot start decompression");
     return;
   }
 
-  while ((bytenbr = gzread (decoptr, &dataptr->datatab, FILECOMPRESSDATASIZE)) > 0) {
-    if (write (dataptr->innerfd, &dataptr->datatab, bytenbr) != bytenbr) {
+  while ((bytenbr = gzread (decoptr, compptr->bufftab, FILECOMPRESSDATASIZE)) > 0) {
+    if (write (compptr->infdnum, compptr->bufftab, bytenbr) != bytenbr) {
       errorPrint ("fileUncompressGz: cannot write");
       break;
     }
@@ -342,7 +349,7 @@ FileCompressData * const  dataptr)
 static
 void
 fileUncompressLzma (
-FileCompressData * const  dataptr)
+FileCompress * const        compptr)
 {
   lzma_stream         decodat = LZMA_STREAM_INIT; /* Decoder data          */
   lzma_action         deacval;                    /* Decoder action value  */
@@ -369,14 +376,14 @@ FileCompressData * const  dataptr)
     if ((decodat.avail_in == 0) && (deacval == LZMA_RUN)) {
       ssize_t             bytenbr;
 
-      bytenbr = fread (&dataptr->datatab, 1, FILECOMPRESSDATASIZE, dataptr->outerstream); /* Read from pipe */
+      bytenbr = fread (compptr->bufftab, 1, FILECOMPRESSDATASIZE, compptr->oustptr); /* Read from pipe */
       if (bytenbr < 0) {
         errorPrint ("fileUncompressLzma: cannot read");
         break;
       }
       if (bytenbr == 0)
         deacval = LZMA_FINISH;                    /* If end of stream, request completion of encoding */
-      decodat.next_in  = (byte *) &dataptr->datatab;
+      decodat.next_in  = compptr->bufftab;
       decodat.avail_in = bytenbr;
     }
 
@@ -386,7 +393,7 @@ FileCompressData * const  dataptr)
       size_t              obufnbr;
 
       obufnbr = FILECOMPRESSDATASIZE - decodat.avail_out; /* Compute number of bytes to write */
-      if (write (dataptr->innerfd, obuftab, obufnbr) != obufnbr) {
+      if (write (compptr->infdnum, obuftab, obufnbr) != obufnbr) {
         errorPrint ("fileUncompressLzma: cannot write");
         break;
       }
@@ -398,6 +405,6 @@ FileCompressData * const  dataptr)
   lzma_end (&decodat);
   memFree  (obuftab);
 
-  fclose (dataptr->outerstream);                  /* Do as zlib does */
+  fclose (compptr->oustptr);                      /* Do as zlib does */
 }
 #endif /* COMMON_FILE_COMPRESS_LZMA */

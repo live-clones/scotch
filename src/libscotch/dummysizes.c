@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 16 jun 2008     **/
 /**                                 to   : 15 aug 2010     **/
 /**                # Version 6.0  : from : 01 dec 2012     **/
-/**                                 to   : 29 apr 2018     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -111,8 +111,8 @@
 
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* The file array          */
-                              { "r" },
-                              { "w" } };
+                              { FILEMODER },
+                              { FILEMODEW } };
 
 /******************************/
 /*                            */
@@ -173,7 +173,7 @@ char *                      argv[])
   suffptr = "";                                   /* No suffix */
 
   for (i = 0; i < C_FILENBR; i ++)                /* Set default stream pointers */
-    C_fileTab[i].fileptr = (C_fileTab[i].modeptr[0] == 'r') ? stdin : stdout;
+    C_fileTab[i].fileptr = ((C_fileTab[i].flagval & FILEMODE) == FILEMODER) ? stdin : stdout;
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes */
     if ((argv[i][0] != '+') &&                    /* If found a file name      */
         ((argv[i][0] != '-') || (argv[i][1] == '\0'))) {
@@ -209,7 +209,7 @@ char *                      argv[])
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */
     if ((C_fileTab[i].nameptr[0] != '-') ||       /* If not standard stream */
         (C_fileTab[i].nameptr[1] != '\0')) {
-      if ((C_fileTab[i].fileptr = fopen (C_fileTab[i].nameptr, C_fileTab[i].modeptr)) == NULL) { /* Open the file */
+      if ((C_fileTab[i].fileptr = fopen (C_fileTab[i].nameptr, ((C_fileTab[i].flagval & FILEMODE) == FILEMODER) ? "r" : "w")) == NULL) { /* Open the file */
           fprintf (stderr, "dummysizes: ERROR: main: cannot open file (%d)", i);
           exit    (1);
       }

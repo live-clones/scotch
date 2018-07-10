@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     03 jun 2018     **/
+/**                                 to     10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,6 +110,8 @@
 
 #ifdef COMMON_PTHREAD
 #include            <pthread.h>
+#else /* COMMON_PTHREAD */
+#include            <sys/wait.h>
 #endif /* COMMON_PTHREAD */
 
 /*
@@ -327,13 +329,20 @@ typedef struct ThreadHeader_ {
 **  Handling of files.
 */
 
+/** The file flags **/
+
+#define FILEMODE                    0x0001
+#define FILEMODER                   0x0000
+#define FILEMODEW                   0x0001
+#define FILEFREENAME                0x0002
+
 /** The file structure. **/
 
 typedef struct File_ {
-  char *                    modeptr;              /*+ Opening mode  +*/
-  char *                    nameptr;              /*+ File name     +*/
-  FILE *                    fileptr;              /*+ File pointer  +*/
-  char *                    dataptr;              /*+ Array to free +*/
+  int                       flagval;              /*+ File mode            +*/
+  char *                    nameptr;              /*+ File name            +*/
+  FILE *                    fileptr;              /*+ File pointer         +*/
+  void *                    compptr;              /*+ (Un)compression data +*/
 } File;
 
 /*
@@ -357,11 +366,12 @@ void                        fileBlockInit       (File * const, const int);
 int                         fileBlockOpen       (File * const, const int);
 int                         fileBlockOpenDist   (File * const, const int, const int, const int, const int);
 void                        fileBlockClose      (File * const, const int);
-FILE *                      fileCompress        (FILE * const, const int);
+int                         fileCompress        (File * const, const int);
+void                        fileCompressExit    (File * const);
 int                         fileCompressType    (const char * const);
-FILE *                      fileUncompress      (FILE * const, const int);
+int                         fileUncompress      (File * const, const int);
 int                         fileUncompressType  (const char * const);
-int                         fileNameDistExpand  (char ** const, const int, const int, const int);
+char *                      fileNameDistExpand  (char * const, const int, const int);
 
 void                        errorProg           (const char * const);
 void                        errorPrint          (const char * const, ...);

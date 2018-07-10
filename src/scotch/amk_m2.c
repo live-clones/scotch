@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 21 may 2018     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -92,7 +92,7 @@
 static int                  C_paraNum = 0;        /* Number of parameters       */
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* File array              */
-                              { "w" } };
+                              { FILEMODEW } };
 
 static const char *         C_usageList[] = {
   "amk_m2 <dimX> [<dimY> [<output target file>]] <options>",
@@ -231,9 +231,6 @@ char *                      argv[])
 
   memFree (termtab);                              /* Free terminal number array */
 
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
   return (0);
 }
 

@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 26 apr 2009     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 21 may 2018     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,8 +64,8 @@
 static int                  C_paraNum = 0;        /* Number of parameters       */
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* File array              */
-                              { "r" },
-                              { "w" } };
+                              { FILEMODER },
+                              { FILEMODEW } };
 
 static const char *         C_usageList[] = {     /* Usage */
   "gscat <nparts> <input source file> <output target file pattern> <options>",
@@ -136,9 +136,6 @@ char *                      argv[])
 
   fileBlockClose (C_fileTab, 1);                  /* Always close explicitely to end eventual (un)compression tasks */
 
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
   return (0);
 }
 
@@ -182,18 +179,25 @@ char * const                nameptr)
   flagtab[2] = proptab[2] - '0';                  /* Vertex loads flag       */
 
   for (procnum = 0; procnum < procnbr; procnum ++) {
-    char *              nametmp;
+    char *              naexptr;                  /* Expanded name */
     FILE *              ostream;
     SCOTCH_Num          vertlocnbr;
     SCOTCH_Num          vertlocnum;
     SCOTCH_Num          edgelocnbr;
 
-    nametmp = nameptr;
     ostream = NULL;
-    if (fileNameDistExpand (&nametmp, procnbr, procnum, -1) == 0) {
-      ostream = fopen (nametmp, "w+");
-      memFree (nametmp);                            /* Expanded name no longer needed anyway */
+    naexptr = fileNameDistExpand (nameptr, procnbr, procnum);
+    if (naexptr == nameptr) {
+      errorPrint ("C_graphScat: not a distributed file name");
+      return     (1);
     }
+    if (naexptr == NULL) {
+      errorPrint ("C_graphScat: cannot create distributed file name");
+      return     (1);
+    }
+
+    ostream = fopen (naexptr, "w+");
+    memFree (naexptr);                            /* Expanded name no longer needed anyway */
     if (ostream == NULL) {
       errorPrint ("C_graphScat: cannot open file");
       return     (1);

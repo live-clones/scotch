@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 12 mar 2008     **/
 /**                                 to     17 mar 2008     **/
 /**                # Version 6.0  : from : 08 jul 2018     **/
-/**                                 to     08 jul 2018     **/
+/**                                 to     10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,7 +57,7 @@
 
 typedef enum FileCompressType_ {
   FILECOMPRESSTYPENOTIMPL = -1,                   /* Error code     */
-  FILECOMPRESSTYPENONE,                           /* No compression */
+  FILECOMPRESSTYPENONE    = 0,                    /* No compression */
   FILECOMPRESSTYPEBZ2,
   FILECOMPRESSTYPEGZ,
   FILECOMPRESSTYPELZMA
@@ -74,12 +74,17 @@ typedef struct FileCompressTab_ {
 **  The type and structure definitions.
 */
 
-typedef struct FileCompressData_ {
-  int                       typeval;              /*+ Type of (un)compression      +*/
-  int                       innerfd;              /*+ Inner file handle (pipe end) +*/
-  FILE *                    outerstream;          /*+ Outer stream                 +*/
-  double                    datatab;              /*+ Start of data buffer         +*/
-} FileCompressData;
+typedef struct FileCompress_ {
+  FileCompressType          typeval;              /*+ Type of (un)compression      +*/
+  int                       infdnum;              /*+ Inner file handle (pipe end) +*/
+  FILE *                    oustptr;              /*+ Outer stream                 +*/
+  byte *                    bufftab;              /*+ Data buffer                  +*/
+#ifdef COMMON_PTHREAD_FILE
+  pthread_t                 thrdval;              /*+ Spawned thread ID            +*/
+#else /* COMMON_PTHREAD_FILE */
+  int                       procval;              /*+ Forked process ID            +*/
+#endif /* COMMON_PTHREAD_FILE */
+} FileCompress;
 
 /*
 **  The function prototypes.
@@ -87,25 +92,25 @@ typedef struct FileCompressData_ {
 
 #ifdef COMMON_FILE_COMPRESS_BZ2
 #ifdef COMMON_FILE_COMPRESS
-static void                 fileCompressBz2     (FileCompressData * const  dataptr);
+static void                 fileCompressBz2     (FileCompress * const  dataptr);
 #endif /* COMMON_FILE_COMPRESS */
 #ifdef COMMON_FILE_UNCOMPRESS
-static void                 fileUncompressBz2   (FileCompressData * const  dataptr);
+static void                 fileUncompressBz2   (FileCompress * const  dataptr);
 #endif /* COMMON_FILE_UNCOMPRESS */
 #endif /* COMMON_FILE_COMPRESS_Bz2 */
 #ifdef COMMON_FILE_COMPRESS_GZ
 #ifdef COMMON_FILE_COMPRESS
-static void                 fileCompressGz      (FileCompressData * const  dataptr);
+static void                 fileCompressGz      (FileCompress * const  dataptr);
 #endif /* COMMON_FILE_COMPRESS */
 #ifdef COMMON_FILE_UNCOMPRESS
-static void                 fileUncompressGz    (FileCompressData * const  dataptr);
+static void                 fileUncompressGz    (FileCompress * const  dataptr);
 #endif /* COMMON_FILE_UNCOMPRESS */
 #endif /* COMMON_FILE_COMPRESS_GZ */
 #ifdef COMMON_FILE_COMPRESS_LZMA
 #ifdef COMMON_FILE_COMPRESS
-static void                 fileCompressLzma    (FileCompressData * const  dataptr);
+static void                 fileCompressLzma    (FileCompress * const  dataptr);
 #endif /* COMMON_FILE_COMPRESS */
 #ifdef COMMON_FILE_UNCOMPRESS
-static void                 fileUncompressLzma  (FileCompressData * const  dataptr);
+static void                 fileUncompressLzma  (FileCompress * const  dataptr);
 #endif /* COMMON_FILE_UNCOMPRESS */
 #endif /* COMMON_FILE_COMPRESS_LZMA */

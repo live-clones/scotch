@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 05 jun 2018     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,10 +72,10 @@
 
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* The file array          */
-                              { "r" },
-                              { "r" },
-                              { "r" },
-                              { "w" } };
+                              { FILEMODER },
+                              { FILEMODER },
+                              { FILEMODER },
+                              { FILEMODEW } };
 
 static const char *         C_usageList[] = {     /* Usage */
   "gmtst [<input source file> [<input target file> [<input mapping file> [<output data file>]]]] <options>",
@@ -170,8 +170,5 @@ char *                      argv[])
   SCOTCH_archExit     (&archdat);
   SCOTCH_graphExit    (&grafdat);
 
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
   return (0);
 }
