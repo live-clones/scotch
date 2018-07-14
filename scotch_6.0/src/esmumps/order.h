@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     01 may 1999     **/
 /**                # Version 2.0  : from : 25 oct 2003     **/
 /**                                 to     02 jul 2010     **/
+/**                # Version 6.0  : from : 22 may 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,10 +70,6 @@ typedef struct Order_ {
 /*
 **  The function prototypes.
 */
-
-#ifndef ORDER
-#define static
-#endif
 
 int                         orderInit           (Order * const ordeptr);
 void                        orderExit           (Order * const ordeptr);
@@ -99,5 +97,3 @@ int                         orderMeshList       (Order * restrict const ordeptr,
 int                         orderMeshStrat      (Order * restrict const ordeptr, Mesh * restrict const meshptr, const char * const);
 int                         orderMeshListStrat  (Order * restrict const ordeptr, Mesh * restrict const meshptr, const INT listnbr, const INT * restrict const listtab, const char * const);
 #endif /* MESH_H */
-
-#undef static

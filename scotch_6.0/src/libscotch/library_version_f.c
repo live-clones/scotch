@@ -1,4 +1,4 @@
-/* Copyright 2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 nov 2010     **/
 /**                                 to     16 nov 2010     **/
+/**                # Version 6.0  : from : 20 apr 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,11 +67,11 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFVERSION, scotchfversion, (               \
-int * const                 versptr,            \
-int * const                 relaptr,            \
-int * const                 patcptr),           \
+SCOTCH_FORTRAN (                      \
+VERSION, version, (                   \
+int * const                 versptr,  \
+int * const                 relaptr,  \
+int * const                 patcptr), \
 (versptr, relaptr, patcptr))
 {
   SCOTCH_version (versptr, relaptr, patcptr);

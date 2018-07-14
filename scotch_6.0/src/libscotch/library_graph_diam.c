@@ -1,4 +1,4 @@
-/* Copyright 2017 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2017,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 jan 2017     **/
-/**                                 to     26 jan 2017     **/
+/**                                 to     22 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,8 +72,7 @@
 
 SCOTCH_Num
 SCOTCH_graphDiamPV (
-SCOTCH_Graph * const        grafptr,
-const SCOTCH_Num            baseval)
+const SCOTCH_Graph * const  grafptr)
 {
   return ((SCOTCH_Num) graphDiamPV ((Graph * const) grafptr));
 }

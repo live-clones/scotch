@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 19 jun 2008     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
-/**                                 to     12 feb 2018     **/
+/**                                 to     14 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,6 +91,16 @@
 #define METISNAME4(p,s)             p##s
 #endif /* METISNAMEL */
 
+#ifndef SCOTCH_METIS_RETURN
+#define SCOTCH_METIS_RETURN
+typedef enum {
+  METIS_OK           = 1,
+  METIS_ERROR_INPUT  = -2,
+  METIS_ERROR_MEMORY = -3,
+  METIS_ERROR        = -4
+} rstatus_et; 
+#endif /* SCOTCH_METIS_RETURN */
+
 /*
 **  The type and structure definitions.
 */
@@ -103,6 +113,6 @@ typedef DUMMYINT SCOTCH_Num;
 **  The function prototypes.
 */
 
-void                        METISNAMEU(ParMETIS_V3_NodeND) (const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, MPI_Comm * const);
-void                        METISNAMEU(ParMETIS_V3_PartGeomKway) (const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const float * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const float * const, const float * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, MPI_Comm * const);
-void                        METISNAMEU(ParMETIS_V3_PartKway) (const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const float * const, const float * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, MPI_Comm * const);
+int                         METISNAMEU(ParMETIS_V3_NodeND) (const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, MPI_Comm * const);
+int                         METISNAMEU(ParMETIS_V3_PartGeomKway) (const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const float * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const float * const, const float * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, MPI_Comm * const);
+int                         METISNAMEU(ParMETIS_V3_PartKway) (const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const float * const, const float * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, MPI_Comm * const);

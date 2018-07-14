@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014-2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,8 +60,8 @@
 /**                                 to     14 jun 2004     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     27 sep 2008     **/
-/**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     11 mar 2016     **/
+/**                # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to     28 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -124,10 +124,6 @@ typedef struct ArchDecoMatch_ {
 #ifndef ARCH_DECO_H_PROTO
 #define ARCH_DECO_H_PROTO
 
-#ifndef ARCH_DECO
-#define static
-#endif
-
 int                         archDecoArchBuild2  (ArchDeco * const, const Anum, const Anum, const ArchDecoTermVert * const, const Anum  * const);
 int                         archDecoArchLoad    (ArchDeco * const, FILE * restrict const);
 int                         archDecoArchSave    (const ArchDeco * const, FILE * restrict const);
@@ -153,8 +149,6 @@ int                         archDecoDomIncl     (const ArchDeco * const, const A
 #ifdef SCOTCH_PTSCOTCH
 int                         archDecoDomMpiType  (const ArchDeco * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
-
-#undef static
 
 /*
 **  The macro definitions.

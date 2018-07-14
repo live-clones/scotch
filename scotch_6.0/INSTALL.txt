@@ -7,12 +7,13 @@ Scotch 6.0 installation instructions
 
 In order for you to compile Scotch and/or PT-Scotch, you must have GNU
 Make installed on your system, as well as an implementation of the MPI
-message-passing library in the case of PT-Scotch. Lex and Yacc are
-optional. There is a possibility to install Scotch without having Lex
-or Yacc, but it may require the tuning of sample Flex and Bison (i.e.,
-the GNU equivalents of Lex and Yacc) outputs created on a Linux
-system, which may need some tricky work to compile on other systems,
-because of different C library implementations.
+message-passing library in the case of PT-Scotch. Flex and Bison are
+optional. There is a possibility to install Scotch without having Flex
+or Bison, but it may require the tuning of pre-compiled Flex and Bison
+outputs created on a Linux system, which may need some tricky work to
+compile on other systems, because of different C library
+implementations. Therefore, it is much more secure to have them
+installed.
 
 To check if GNU Make is installed and is found first, please type:
 
@@ -30,12 +31,12 @@ executables, you can try to locate it using the which command:
 
 %prompt% which make
 
-If several occurences of make are found, one might be GNU Make,
+If several occurrences of make are found, one might be GNU Make,
 so try to figure out which of them.
 
-To see if lex and yacc are present, type
-%prompt% which lex
-%prompt% which yacc    (or "bison", the GNU flavor of yacc)
+To see if Flex and Bison are present, type
+%prompt% which flex
+%prompt% which bison
 
 If some of these are missing, please:
 - check your path variable (just in case they are located in
@@ -48,8 +49,8 @@ If some of these are missing, please:
   available from the FSF website, at:
   http://www.gnu.org/software/make/ and
   http://ftp.gnu.org/pub/gnu/make/ .
-  A GNU version of lex and yacc is also available from the
-  very same FSF website, at:
+  Flex and Bison are also available from the very same FSF
+  website, at:
   http://www.gnu.org/software/flex/
   http://ftp.gnu.org/non-gnu/flex/
   http://www.gnu.org/software/bison/
@@ -67,8 +68,8 @@ If some of these are missing, please:
   compiles properly on your system. Else, you will have to dig in
   their code to have them compile properly...
   The Makefile of the libScotch library has been designed so as
-  to copy the last_resort/* files automatically when the lex or
-  yacc tools are not found.
+  to copy the last_resort/* files automatically when the Flex or
+  Bison tools are not found.
   In this case, depending on your platform, you may also have to set
   the "-DSCOTCH_RENAME_PARSER" flag in order for all symbols to be
   properly redefined (see Section 2.2).
@@ -119,7 +120,7 @@ platform.
 Since Scotch uses a parser to analyze its strategy strings, it may
 happen that the symbols of this parser conflict with those of
 another parser used in a third-party library. All "Makefile.inc.*"
-platform configuration files which base on flex / bison are already
+platform configuration files which base on Flex/Bison are already
 tailored so as to prevent such conflicts. If you use other parsing
 tools, you may have to provide other options. Another solution is to
 use the pre-processed parser files of the "src/libscotch/last_resort"
@@ -173,47 +174,131 @@ version of "scotch.h" may lead to unpredictable behavior because of
 memory overflow.
 
 
-2.4) Compression libraries
+2.2) (Re)naming of library objects
+----------------------------------
+
+In order to prevent conflicts with third-party software, the following
+naming conventions have been defined :
+- public C objects start with "SCOTCH_", and public Fortran objects
+  start with "SCOTCHF";
+- internal Scotch routines start with "_SCOTCH";
+- some internal routines start with "scotch", e.g. Flex/Bison
+  routines, see above.
+
+It is possible to make several Scotch versions coexist in the same
+application. To do so, libraries must be compiled with adequate
+function renaming, by adding an appropriate suffix. For instance,
+a "_64" suffix can be appended to routines and data types of a
+64-bit version of the library.
+
+To do so, the following actions must be performed :
+- the variable "SCOTCH_NAME_SUFFIX" must be defined in Makefile.inc
+  (e.g., "SCOTCH_NAME_SUFFIX=_64");
+- the preprocessor variable definition
+  "-DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)"
+  must be added to the CFLAGS variable (with the double quotes
+  for increased safety).
+
+Note that, when libScotch data types are renamed, the programs of the
+Scotch package can no longer be compiled. Hence, users can only
+compile the libraries of the Scotch package, by running:
+
+%prompt% make libscotch
+
+and/or:
+
+%prompt% make libptscotch
+
+Since error handling routines are generic and belong to a separate
+library, suffix transformation is never applied to them. Hence,
+application programs that use multiple versions of Scotch can be
+linked against a single instance of the error handling library.
+
+Once the library files with renamed objects have been compiled, it is
+up to the packager to rename adequately the various files. For
+instance, in the case of a 64-bit version, "scotch.h" can be renamed
+into "scotch_64.h", etc.
+
+By default, objects such as function option flags are not renamed,
+since they can be shared without harm by all library instances of the
+same version of Scotch. However, this can pose a risk when two
+different versions of Scotch are to be used concurrently. In this
+case, it may be necessary to rename these objects as well. It
+can be done by defining the "-DSCOTCH_RENAME_ALL" flag.
+
+When two different versions of the Scotch library are used without
+any renaming of all of the external objects, the preprocessor symbol
+"SCOTCH_WARNING_RENAME_UNSAFE" is defined by the include files
+"scotch.h", to be taken into account by the application programmer.
+
+
+2.5) Portability issues
+-----------------------
+
+While most of the code of Scotch poses no compatibility issues, some
+features are subject to many diverging implementations, such as
+date/time management, pipes, process forking, etc. Some of them are
+handled globally, thanks to system-specific flags. Others have to be
+finely tuned, depending on your platform.
+
+Some common platform configurations are available in the
+"src/Make.inc/" subdirectory.
+
+The compilation flags used to manage portability issues are the
+following:
+
+"-DCOMMON_WINDOWS" tweaks some includes and definitions to resolve
+most issues encountered on Windows platforms.
+
+"-DCOMMON_TIMING_OLD" selects the getrusage()-based timing routine,
+when "-DCOMMON_WINDOWS" is not set. Else, either clock_gettime() or
+gettimeofday() are selected, depending on POSIX compilation flags.
+
+"-DCOMMON_STUB_FORK" provides a stub for the fork() system call on
+systems that do not allow process forking.
+
+
+2.6) Compression libraries
 --------------------------
 
 The binaries of the Scotch distribution can handle compressed
 graphs in input or output. Three compressed graph formats are
-currently supported: bzip2, gzip and lzma. In order for them to be
+currently supported: bzip2, gzip and xz/lzma. In order for them to be
 actually activated, the proper libraries must be available on your
-system. On a Linux platform, they are called "zlib" for the gzip
-format, "libbz2" for the bzip2 format, and "liblzma" for the lzma
+system. On a Linux platform, they are called "libz" for the gzip
+format, "libbzip2" for the bzip2 format, and "liblzma" for the lzma
 format. Note that it is the "development" version (also called
-"devel", for short, within package names) of each of these libraries
-which is required for the compilation to succeed.
-According to the libraries installed on your system, you may set
-flags "-DCOMMON_FILE_COMPRESS_BZ2", "-DCOMMON_FILE_COMPRESS_GZ" and/or
-"-DCOMMON_FILE_COMPRESS_LZMA" in the CFLAGS variable of your
+"-devel" or "-dev", for short, as a post-fix in package names) of
+each of these libraries, which is required for the compilation to
+succeed. According to the libraries installed on your system, you may
+set flags "-DCOMMON_FILE_COMPRESS_BZ2", "-DCOMMON_FILE_COMPRESS_GZ"
+and/or "-DCOMMON_FILE_COMPRESS_LZMA" in the CFLAGS variable of your
 Makefile.inc configuration file, to have these formats and their
-respective extensions ".bz2", ".gz" and ".lzma", recognized and
+respective extensions ".bz2", ".gz" and ".xz"/".lzma", recognized and
 handled by Scotch.
 
 Compression and decompression are handled either by extra threads
-or by fork'ed child processes if threads are not available. On
+or by fork()'ed child processes if threads are not available. On
 systems which do not provide a functional fork() system call,
 compressed files cannot be handled when the "-DCOMMON_PTHREAD_FILE"
 flag is not set (see below).
 
 
-2.5) Multi-threading
+2.7) Multi-threading
 --------------------
 
 Scotch can also take advantage of Posix threads when they are
 available. They are used in several places:
 
-- to compress and uncompress file data. This can be done either
+- to compress and decompress file data. This can be done either
   by launching a service thread, or else by creating a separate
   process by means of a Posix fork() system call. This choice is
   controlled by the "-DCOMMON_PTHREAD_FILE" flag: if it is set,
   threads will be used, else fork() calls will be performed. For
   systems which do not support the fork() system call, such as the
-  MinGW32 platform, one can set the "-DCOMMON_STUB_FORK" flag, which
+  MinGW32 platform, you can set the "-DCOMMON_STUB_FORK" flag, which
   creates a stub fork() routine which always returns an
-  error. Therefore, without both fork() and threads, one must set the
+  error. Therefore, without both fork() and threads, you must set the
   "-DCOMMON_STUB_FORK" flag without setting "-DCOMMON_PTHREAD_FILE",
   so that compilation will successfully complete; however, in this
   case, compressed graphs shall not be handled in practice.
@@ -253,7 +338,7 @@ The available number of threads can only be set at compile-time, and
 the assignment of threads to cores is performed in increasing order,
 starting from 0, which may not always prove to be the most efficient
 mapping in terms of memory affinity. We plan to add a mechanism for
-dynamic thread allocation in the near future, based upon the hwloc
+dynamic thread allocation in the near future, based upon the Hwloc
 library.
 
 The compilation flags used to manage threads are the following:
@@ -275,14 +360,14 @@ on other flags (see below).
 "-DSCOTCH_PTHREAD" is necessary to enable multi-threaded algorithms
 in Scotch and/or PT-Scotch.
 
-"-DSCOTCH_PTHREAD_NUMBER=x" sets the overall number of threads to be
-used by multi-threaded algorithms. This number may not necessary be a
-power of two. Since some algorithms have had to be reformulated to
-accomodate for multi-threading, some algorithms will most probably be
-much more efficient than sequential processing only for a number of
+"-DSCOTCH_PTHREAD_NUMBER=x" sets the maximum number of threads to be
+used by multi-threaded algorithms. This number may not necessarily be
+a power of two. Some algorithms have had to be reformulated to
+accommodate for multi-threading, and will be most probably much more
+efficient than sequential processing only for a number of
 threads strictly greater than 2. Setting "-DSCOTCH_PTHREAD_NUMBER=1"
-allows one to run sequential algorithms instead of multi-threaded
-ones, while benefitting from multi-threading for file compression and
+allows you to run sequential algorithms instead of multi-threaded
+ones, while benefiting from multi-threading for file compression and
 distributed graph handling.
 
 When compiling under mingw32 on Windows systems, it is possible to
@@ -294,7 +379,7 @@ not a problem, as Cygwin provides its own implementation of Posix
 threads.
 
 
-2.6) Monitoring memory allocation
+2.8) Monitoring memory allocation
 ---------------------------------
 
 Some memory allocation information can be aggregated if PT-Scotch is
@@ -315,7 +400,7 @@ memory checking should be enabled by default, and 0 else. This
 mechanism is absolutely NOT thread-safe at the time being.
 
 
-2.7) Randomness
+2.9) Randomness
 ---------------
 
 Many algorithms in Scotch and PT-Scotch are based on the random
@@ -344,11 +429,11 @@ problem, Scotch now uses its own pseudo-random generator. Users that
 want to go on using the operating system pseudo-random generator
 (e.g. for regression testing with respect to version 5.x) can still do
 so, by compiling with the "-DCOMMON_RANDOM_SYSTEM" flag set. In this
-case, the "-DCOMMON_RANDOM_RAND" flag allows one to use the srand()
+case, the "-DCOMMON_RANDOM_RAND" flag allows you to use the srand()
 routine instead of the default srandom() routine.
 
 
-2.8) Deterministic behavior
+2.10) Deterministic behavior
 ---------------------------
 
 When Scotch is compiled with the "-DCOMMON_RANDOM_FIXED_SEED"
@@ -385,7 +470,7 @@ avoid any interference with third-party libraries that might use the
 operating system pseudo-random generator.
 
 
-2.9) Point-to-point or collective communications
+2.11) Point-to-point or collective communications
 ------------------------------------------------
 
 Since distributed graph vertices can have any initial distribution
@@ -402,7 +487,7 @@ numbers of processes. To disable it, set the "-DSCOTCH_PTOP" flag at
 compile time.
 
 
-2.10) MeTiS compatibility library
+2.12) MeTiS compatibility library
 ---------------------------------
 
 In order to ease the adoption of Scotch/PT-Scotch by people who
@@ -431,21 +516,44 @@ An advantage of the Scotch/PT-Scotch stubs over the genuine
 MeTiS/ParMeTiS V3 routines is that they can be available in a 64-bit
 version. In this case, all int's that were passed to MeTiS/ParMeTiS
 routines must be replaced by 64-bit integer values (even the option
-configuration values). However, in this case, one will not be able to
-link against the service routines of the genuine MeTiS/ParMeTiS V3
-library, as the latter is only available as a 32-bit implementation.
+configuration values). However, in this case, users will not be able
+to link against the service routines of the genuine MeTiS/ParMeTiS V3
+libraries, as the latter are only available as 32-bit implementations.
 
 
 3) Compilation
 ==============
 
 Once you have performed the configuration of the "Makefile.inc" file,
-compile the Scotch distribution by typing "make scotch", or just
-"make", in the current "src/" working directory. To compile the
-PT-Scotch distribution, type "make ptscotch" in the same "src/"
-directory. This can be done in any order. Typing "make scotch
-ptscotch" to compile both is equivalent to typing "make ptscotch"
-alone, since PT-Scotch requires Scotch.
+compile the Scotch distribution by typing:
+
+%prompt% make scotch
+
+or just:
+
+%prompt% make
+
+in the current "src/" working directory. To compile the
+PT-Scotch distribution, type:
+
+%prompt% make ptscotch
+
+in the same "src/" directory. This can be done in any order. Typing:
+
+%prompt% ptscotch
+
+will in fact compile both Scotch and PT-Scotch, since PT-Scotch
+requires Scotch.
+
+In some cases (e.g. when renaming library objects, see above), you
+may only want/need to build the libraries and not the executables.
+To do so, type:
+
+%prompt% make libscotch
+
+or:
+
+%prompt% make ptlibscotch
 
 The most common problem you may encounter when trying to compile
 PT-Scotch on a new platform relates to the "dummysizes" and
@@ -465,7 +573,7 @@ and MPI implementations. Yet, on some platforms, programs compiled for
 parallel execution cannot be run interactively. Moreover,
 "ptdummysizes" itself does not contain any MPI calls, as it just wants
 to know the sizes of the data structures, and the communication
-susbystem of the platform may not want to run it. In any of these
+subsystem of the platform may not want to run it. In any of these
 cases, compilation will break. It is possible to solve this problem by
 specifying, in the CCD variable of "Makefile.inc", how to compile
 "ptdummysizes" sequentially but with knowledge of the location of the
@@ -478,12 +586,23 @@ files will be created and copied to the "../include/", "../lib/" and
 directory. Headers, libraries and binaries of Scotch and PT-Scotch can
 coexist in these directories without any interference.
 
-Then, typing "make install" will perform a GNU-like installation, with
-header, library, binary and man files copied to the "include", "lib",
-"bin" and "man" subdirectories of the path specified in the "prefix"
-variable, which is set by default to "/usr/local". For instance,
-typing "make prefix=/home/myself/usr/ install" will install the
-Scotch/PT-Scotch files in a subtree of directory "/home/myself/usr/".
+Then, typing:
+
+%prompt% make install
+
+and/or
+
+%prompt% make ptinstall
+
+will perform a GNU-like installation, with header, library, binary and
+man files copied to the "include", "lib", "bin" and "man"
+subdirectories of the path specified in the "prefix" variable, which
+is set by default to "/usr/local". For instance, typing:
+
+%prompt% make prefix=/home/myself/usr/ install
+
+will install the Scotch/PT-Scotch files in a subtree of directory
+"/home/myself/usr/".
 
 
 4) Checking 
@@ -491,21 +610,28 @@ Scotch/PT-Scotch files in a subtree of directory "/home/myself/usr/".
 
 A set of test programs is available in the "src/check" directory. They
 serve as non-regression checks for both sequential and parallel
-features of Scotch and PT-Scotch. They can be launched by typing "make
-check" and/or "make ptcheck" in the "src/" directory.
+features of Scotch and PT-Scotch. They can be launched by typing:
+
+%prompt% make check
+
+and/or:
+
+%prompt% make ptcheck
+
+in the "src/" directory.
 
 In the case of "ptcheck", programs can be run in debug mode, by
 compiling with the "-DSCOTCH_CHECK_NOAUTO" flag set. In this case,
-process numbers are printed, so that users can attach a debugger
-to a given (set of) process(es), and user action is required for
-launching the parallel programs, by typing ENTER whenever necessary.
+process numbers are printed, so that users can attach a debugger to a
+given (set of) process(es), and user action is required for launching
+the parallel programs, by typing ENTER whenever necessary.
 
 One might look at these programs for examples of how to use the Scotch
 and PT-Scotch libraries. However, some of these programs test internal
 features, and interact with the library through non-standard and
 non-documented procedures. It is therefore recommended NOT to imitate
-these calling practices and rather to follow the guidelines provided in
-the Scotch and PT-Scotch user manuals.
+these calling practices and rather to follow the guidelines provided
+in the Scotch and PT-Scotch user manuals.
 
 
 5) Use

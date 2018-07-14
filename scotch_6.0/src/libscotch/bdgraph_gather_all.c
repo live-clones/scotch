@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 5.1  : from : 21 dec 2007     **/
 /**                                 to     14 apr 2011     **/
 /**                # Version 6.0  : from : 29 aug 2014     **/
-/**                                 to     31 aug 2014     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -87,14 +87,14 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
   int * restrict     froncnttab;                   /* Count array for gather operations        */
   int * restrict     fronvrttab;                   /* Displacement array for gather operations */
   int                fronlocnbr;                   /* Also int to enforce MPI standard         */
-  int                cheklocval;
 #ifdef SCOTCH_DEBUG_BDGRAPH1
+  int                cheklocval;
   int                chekglbval;
 #endif /* SCOTCH_DEBUG_BDGRAPH1 */
   int                procnum;
 
-  cheklocval = 0;
 #ifdef SCOTCH_DEBUG_BDGRAPH1
+  cheklocval = 0;
   if (cgrfptr == NULL)                            /* Centralized graphs should be provided by all */
     cheklocval = 1;
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, dgrfptr->s.proccomm) != MPI_SUCCESS) {
@@ -239,7 +239,7 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
   memFree (froncnttab);                           /* Free group leader */
 
   for (procnum = 0; procnum < dgrfptr->s.proclocnum; procnum ++) /* Desynchronize random generators across processes */
-    cheklocval = intRandVal (2);
+    intRandVal (2);
   intPerm (cgrfptr->frontab, dgrfptr->fronglbnbr); /* Compute permutation of frontier array to have different solutions on every process */
 
   cgrfptr->compload0     = dgrfptr->compglbload0; /* Update other fields */

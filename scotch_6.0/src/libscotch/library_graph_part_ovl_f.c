@@ -1,4 +1,4 @@
-/* Copyright 2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                overlap of the libSCOTCH library.       **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 29 may 2010     **/
-/**                                 to     17 oct 2010     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,13 +65,13 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFGRAPHPARTOVL, scotchfgraphpartovl, (     \
-SCOTCH_Graph * const        grafptr,            \
-const SCOTCH_Num * const    partptr,            \
-SCOTCH_Strat * const        straptr,            \
-SCOTCH_Num * const          parttab,            \
-int * const                 revaptr),           \
+SCOTCH_FORTRAN (                      \
+GRAPHPARTOVL, graphpartovl, (         \
+SCOTCH_Graph * const        grafptr,  \
+const SCOTCH_Num * const    partptr,  \
+SCOTCH_Strat * const        straptr,  \
+SCOTCH_Num * const          parttab,  \
+int * const                 revaptr), \
 (grafptr, partptr, straptr, parttab, revaptr))
 {
   *revaptr = SCOTCH_graphPartOvl (grafptr, *partptr, straptr, parttab);
@@ -81,19 +81,20 @@ int * const                 revaptr),           \
 ** end of the argument list.
 */
 
-FORTRAN (                                             \
-SCOTCHFSTRATGRAPHPARTOVL, scotchfstratgraphpartovl, ( \
-SCOTCH_Strat * const        straptr,                  \
-const char * const          string,                   \
-int * const                 revaptr,                  \
-const int                   strnbr),                  \
+SCOTCH_FORTRAN (                        \
+STRATGRAPHPARTOVL, stratgraphpartovl, ( \
+SCOTCH_Strat * const        straptr,    \
+const char * const          string,     \
+int * const                 revaptr,    \
+const int                   strnbr),    \
 (straptr, string, revaptr, strnbr))
 {
   char * restrict     strtab;                     /* Pointer to null-terminated string */
 
   if ((strtab = (char *) memAlloc (strnbr + 1)) == NULL) { /* Allocate temporary space */
-    errorPrint ("SCOTCHFSTRATGRAPHPARTOVL: out of memory (1)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (STRATGRAPHPARTOVL)) ": out of memory");
     *revaptr = 1;
+    return;
   }
   memCpy (strtab, string, strnbr);                /* Copy string contents */
   strtab[strnbr] = '\0';                          /* Terminate string     */
@@ -107,14 +108,14 @@ const int                   strnbr),                  \
 **
 */
 
-FORTRAN (                                                       \
-SCOTCHFSTRATGRAPHPARTOVLBUILD, scotchfstratgraphpartovlbuild, ( \
-SCOTCH_Strat * const        straptr,                            \
-const SCOTCH_Num * const    flagptr,                            \
-const SCOTCH_Num * const    partptr,                            \
-const double * const        balrptr,                            \
-int * const                 revaptr),                           \
-(straptr, flagptr, partptr, balrptr, revaptr))
+SCOTCH_FORTRAN (                                  \
+STRATGRAPHPARTOVLBUILD, stratgraphpartovlbuild, ( \
+SCOTCH_Strat * const        straptr,              \
+const SCOTCH_Num * const    flagval,              \
+const SCOTCH_Num * const    partnbr,              \
+const double * const        kbalval,              \
+int * const                 revaptr),             \
+(straptr, flagval, partnbr, kbalval, revaptr))
 {
-  *revaptr = SCOTCH_stratGraphPartOvlBuild (straptr, *flagptr, *partptr, *balrptr); /* Call original routine */
+  *revaptr = SCOTCH_stratGraphPartOvlBuild (straptr, *flagval, *partnbr, *kbalval); /* Call original routine */
 }

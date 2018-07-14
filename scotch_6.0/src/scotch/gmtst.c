@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,10 +72,10 @@
 
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* The file array          */
-                              { "r" },
-                              { "r" },
-                              { "r" },
-                              { "w" } };
+                              { FILEMODER },
+                              { FILEMODER },
+                              { FILEMODER },
+                              { FILEMODEW } };
 
 static const char *         C_usageList[] = {     /* Usage */
   "gmtst [<input source file> [<input target file> [<input mapping file> [<output data file>]]]] <options>",
@@ -95,12 +95,11 @@ main (
 int                         argc,
 char *                      argv[])
 {
-  SCOTCH_Graph        grafdat;                    /* Source graph                      */
-  SCOTCH_Num          vertnbr;                    /* Source graph size                 */
-  SCOTCH_Num *        vlbltab;                    /* Source graph vertex label array   */
-  SCOTCH_Arch         archdat;                    /* Target architecture               */
-  SCOTCH_Num          archnbr;                    /* Size of the target architecture   */
-  SCOTCH_Mapping      mappdat;                    /* Mapping data                      */
+  SCOTCH_Graph        grafdat;                    /* Source graph                    */
+  SCOTCH_Num          vertnbr;                    /* Source graph size               */
+  SCOTCH_Num *        vlbltab;                    /* Source graph vertex label array */
+  SCOTCH_Arch         archdat;                    /* Target architecture             */
+  SCOTCH_Mapping      mappdat;                    /* Mapping data                    */
   int                 i;
 
   errorProg ("gmtst");
@@ -134,7 +133,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "gmtst, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -159,8 +158,6 @@ char *                      argv[])
     return     (1);
   }
 
-  archnbr = SCOTCH_archSize (&archdat);           /* Get architecture size */
-
   SCOTCH_graphMapInit (&grafdat, &mappdat, &archdat, NULL); /* Create mapping structure */
   if (SCOTCH_graphMapLoad (&grafdat, &mappdat, C_filepntrmapinp) != 0)
     errorPrint ("main: bad input (1)");
@@ -173,8 +170,5 @@ char *                      argv[])
   SCOTCH_archExit     (&archdat);
   SCOTCH_graphExit    (&grafdat);
 
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
   return (0);
 }

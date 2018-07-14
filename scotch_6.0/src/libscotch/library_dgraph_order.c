@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 29 mar 2010     **/
 /**                                 to     14 aug 2010     **/
 /**                # Version 6.0  : from : 08 jan 2012     **/
-/**                                 to     28 sep 2014     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,7 +89,7 @@ SCOTCH_Dordering * const    ordeptr)              /*+ Ordering structure to init
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Dordering) < sizeof (Dorder)) {
-    errorPrint ("SCOTCH_graphDorderInit: internal error");
+    errorPrint (STRINGIFY (SCOTCH_graphDorderInit) ": internal error");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
@@ -174,7 +174,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphCheck (srcgrafptr) != 0) {
-    errorPrint ("SCOTCH_dgraphOrderComputeList: invalid input graph");
+    errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": invalid input graph");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -184,7 +184,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hdgraphorderststratab) {
-    errorPrint ("SCOTCH_dgraphOrderComputeList: not a distributed ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": not a distributed ordering strategy");
     return     (1);
   }
 
@@ -206,7 +206,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 /* TODO: Take list into account */
   dorderFree (srcordeptr);                        /* Clean all existing ordering data */
   if ((srccblkptr = dorderFrst (srcordeptr)) == NULL) {
-    errorPrint ("SCOTCH_dgraphOrderComputeList: cannot create root column block");
+    errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create root column block");
     return     (1);
   }
   hdgraphOrderSt (&srcgrafdat, srccblkptr, ordstratptr);
@@ -236,7 +236,7 @@ const char * const          string)
     stratExit (*((Strat **) stratptr));
 
   if ((*((Strat **) stratptr) = stratInit (&hdgraphorderststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratDgraphOrder: error in ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratDgraphOrder) ": error in ordering strategy");
     return     (1);
   }
 
@@ -314,7 +314,7 @@ const double                balrat)               /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<VERT>", verttab);
 
   if (SCOTCH_stratDgraphOrder (stratptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratDgraphOrderBuild: error in parallel ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratDgraphOrderBuild) ": error in parallel ordering strategy");
     return     (1);
   }
 

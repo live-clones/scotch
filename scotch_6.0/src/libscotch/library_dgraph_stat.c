@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 23 jun 2007     **/
 /**                                 to     03 apr 2008     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 oct 2014     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -240,7 +240,7 @@ double *                    edlodltptr)
       }
 
       if (MPI_Allreduce (&edlolocsum, &edloglbsum, 1, GNUM_MPI, MPI_SUM, srcgrafptr->proccomm) != MPI_SUCCESS) {
-        errorPrint ("SCOTCH_dgraphStat: communication error (1)");
+        errorPrint (STRINGIFY (SCOTCH_dgraphStat) ": communication error (1)");
         return     (1);
       }
       edloglbavg = (double) edloglbsum / (double) (2 * srcgrafptr->edgeglbnbr);
@@ -276,7 +276,7 @@ double *                    edlodltptr)
   MPI_Get_address (&srclstadat.velodlt, &srcdisptab[1]);
 #endif /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
   srcdisptab[1] -= srcdisptab[0];
-  srcdisptab[0] -= srcdisptab[0];
+  srcdisptab[0]  = 0;
 
   o = 1;                                          /* Assume something will go wrong */
 #if ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100))
@@ -294,7 +294,7 @@ double *                    edlodltptr)
     MPI_Type_free (&srctypedat);
   }
   if (o != 0) {
-    errorPrint ("SCOTCH_dgraphStat: communication error (2)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphStat) ": communication error (2)");
     return     (1);
   }
 

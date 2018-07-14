@@ -1,4 +1,4 @@
-## Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -32,7 +32,7 @@
 
 VERSION	= 6
 RELEASE = 0
-PATCHLEVEL = 5
+PATCHLEVEL = 6
 
 .PHONY				:	clean	default	install	ptscotch	realclean	required	scotch
 
@@ -89,13 +89,17 @@ $(mandir)			:	$(datarootdir)
 $(mandir)/man1			:	$(mandir)
 					-$(MKDIR) $(mandir)/man1
 
-scotch				:	required
+libscotch			:	required
 					(cd libscotch ;      $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) scotch && $(MAKE) install)
+
+scotch				:	libscotch
 					(cd scotch ;         $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) scotch && $(MAKE) install)
 					(cd libscotchmetis ; $(MAKE)                                                                scotch && $(MAKE) install)
 
-ptscotch			:	required
+libptscotch			:	libscotch
 					(cd libscotch ;      $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) ptscotch && $(MAKE) ptinstall)
+
+ptscotch			:	libptscotch
 					(cd scotch ;         $(MAKE) VERSION=$(VERSION) RELEASE=$(RELEASE) PATCHLEVEL=$(PATCHLEVEL) ptscotch && $(MAKE) ptinstall)
 					(cd libscotchmetis ; $(MAKE)                                                                ptscotch && $(MAKE) ptinstall)
 
@@ -114,7 +118,9 @@ ptesmumps			:	scotch	ptscotch
 install				:	required	$(bindir)	$(includedir)	$(libdir)	$(mandir)/man1
 					-$(CP) -f ../bin/[agm]*$(EXE) $(bindir)
 					-$(CP) -f ../bin/d[agm]*$(EXE) $(bindir)
+					-$(CP) -f ../include/*esmumps*.h $(includedir)
 					-$(CP) -f ../include/*scotch*.h $(includedir)
+					-$(CP) -f ../lib/*esmumps*$(LIB) $(libdir)
 					-$(CP) -f ../lib/*scotch*$(LIB) $(libdir)
 					-$(CP) -Rf ../man/* $(mandir)
 

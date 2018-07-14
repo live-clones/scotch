@@ -702,6 +702,8 @@ Use the strategy for remapping an existing partition.
 \paragraph{Ordering flags}
 
 \begin{itemize}
+\iteme[{\tt SCOTCH\_STRATDISCONNECTED}]
+Find and handle independently disconnected components.
 \iteme[{\tt SCOTCH\_STRATLEVELMAX}]
 Create at most the prescribed levels of nested dissection separators.
 \iteme[{\tt SCOTCH\_STRATLEVELMIN}]
@@ -1377,6 +1379,14 @@ tree.
 Set the node separation strategy that is used on every leaf of the
 separators tree to make it grow. Node separation strategies are
 described below, in section~\ref{sec-lib-format-nsep}.
+\end{itemize}
+\iteme[{\tt o}]
+Disconnected subgraph detection method. This method is used at the
+global level to search for connected components, and run independently
+the provided graph ordering strategy on each of them.
+\begin{itemize}
+\iteme[{\tt strat=}{\it strat}]
+Ordering strategy to apply to each of the connected components.
 \end{itemize}
 \iteme[{\tt s}]
 Simple method. Vertices are ordered in their natural order. This
@@ -2738,10 +2748,10 @@ did not enforce the threshold parameters, and $2$ on error.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_graphColor ( & const SCOTCH\_Graph * & grafptr, \\
-                          & SCOTCH\_Num *         & colotab, \\
-                          & SCOTCH\_Num *         & coloptr, \\
-                          & SCOTCH\_Num           & flagval)
+int SCOTCH\_graphColor ( & const SCOTCH\_Graph * & grafptr, \\
+                         & SCOTCH\_Num *         & colotab, \\
+                         & SCOTCH\_Num *         & coloptr, \\
+                         & SCOTCH\_Num           & flagval)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -2868,6 +2878,45 @@ Section~\ref{sec-lib-inttypesize} for more information on this
 issue.
 \end{itemize}
 
+
+
+
+\subsubsection{{\tt SCOTCH\_graphDiamPV}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+SCOTCH\_Num SCOTCH\_graphDiamPV ( & const SCOTCH\_Graph * & grafptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgraphdiampv ( & doubleprecision (*) & grafdat, \\
+                     & integer{\it num}    & diamval)
+
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_graphDiamPV} routine computes the edge-weighted
+(pseudo-)diameter value of the given graph.
+
+To do so, it selects a random vertex, computes the set of vertices at
+maximum distance from this vertex by means of Dijkstra's algorithm,
+selects a vertex from this set, and repeats the process as long as
+this maximum distance value increases. If the graph is not
+edge-weighted, neighboring vertices are assumed to be at distance $1$
+from each other; else, edge weights represent distances between
+vertices.
+
+\progret
+
+{\tt SCOTCH\_graphDiamPV} returns a positive value if the graph
+diameter has been successfully computed, the \texttt{SCOTCH\_\lbt
+NUMMAX} maximum positive value if the graph is disconnected, and $-1$
+on error.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_graphExit}}
 
 \begin{itemize}
@@ -2923,10 +2972,10 @@ structure remains ready for subsequent calls to any routine of the
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_graphInduceList ( & const SCOTCH\_Graph * & orggrafptr, \\
-                               & SCOTCH\_Num           & vnumnbr, \\
-                               & SCOTCH\_Num *         & vnumtab, \\
-                               & SCOTCH\_Graph *       & indgrafptr)
+int SCOTCH\_graphInduceList ( & const SCOTCH\_Graph * & orggrafptr, \\
+                              & SCOTCH\_Num           & vnumnbr, \\
+                              & SCOTCH\_Num *         & vnumtab, \\
+                              & SCOTCH\_Graph *       & indgrafptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -2958,11 +3007,11 @@ been successfully computed, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_graphInducePart ( & const SCOTCH\_Graph * & orggrafptr, \\
-                               & SCOTCH\_Num           & vnumnbr, \\
-                               & SCOTCH\_GraphPart2 *  & parttab, \\
-                               & SCOTCH\_GraphPart2    & partval, \\
-                               & SCOTCH\_Graph *       & indgrafptr)
+int SCOTCH\_graphInducePart ( & const SCOTCH\_Graph * & orggrafptr, \\
+                              & SCOTCH\_Num           & vnumnbr, \\
+                              & SCOTCH\_GraphPart2 *  & parttab, \\
+                              & SCOTCH\_GraphPart2    & partval, \\
+                              & SCOTCH\_Graph *       & indgrafptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}

@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,11 +35,11 @@
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module tests the sequential        **/
-/**                strategy building routines.             **/
+/**   FUNCTION   : This module tests the thread            **/
+/**                management module.                      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 nov 2012     **/
-/**                                 to     01 mar 2015     **/
+/**                                 to     10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +121,6 @@ testThreads (
 TestThread * restrict   thrdptr)
 {
   TestThreadGroup * restrict const  grouptr = (TestThreadGroup *) (thrdptr->thrddat.grouptr);
-  const int                         thrdnbr = grouptr->thrddat.thrdnbr;
   const int                         thrdnum = thrdptr->thrddat.thrdnum;
   int                               o;
 
@@ -174,8 +173,8 @@ main (
 int                 argc,
 char *              argv[])
 {
-  TestThreadGroup       groudat;
 #if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
+  TestThreadGroup       groudat;
   TestThread * restrict thrdtab;
   int                   thrdnbr;
 #endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
@@ -188,14 +187,14 @@ char *              argv[])
   groudat.redusum = COMPVAL (thrdnbr);
 
   if ((thrdtab = malloc (thrdnbr * sizeof (TestThread))) == NULL) {
-    errorPrint ("main: out of memory");
-    return     (1);
+    SCOTCH_errorPrint ("main: out of memory");
+    exit (EXIT_FAILURE);
   }
 
   if (threadLaunch (&groudat, thrdtab, sizeof (TestThread), (ThreadLaunchStartFunc) testThreads, (ThreadLaunchJoinFunc) NULL,
                     thrdnbr, THREADCANBARRIER | THREADCANREDUCE | THREADCANSCAN) != 0) {
-    errorPrint ("main: cannot launch or run threads");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot launch or run threads");
+    exit (EXIT_FAILURE);
   }
 
   free (thrdtab);
@@ -203,5 +202,5 @@ char *              argv[])
   printf ("Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD\n");
 #endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

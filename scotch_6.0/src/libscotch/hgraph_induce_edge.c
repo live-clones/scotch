@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 5.1  : from : 24 oct 2010     **/
 /**                                 to     24 oct 2010     **/
 /**                # Version 6.0  : from : 22 mar 2012     **/
-/**                                 to     07 nov 2014     **/
+/**                                 to     23 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -69,13 +69,12 @@ Hgraph * restrict const       indgrafptr)         /* Pointer to induced halo gra
 #endif /* SCOTCH_DEBUG_HGRAPH2 */
 #ifdef HGRAPHINDUCE2L                             /* If edge loads present */
   Gnum                indedlosum;
-  Gnum                indenohsum;
+  Gnum                indenlosum;
 #endif /* HGRAPHINDUCE2L */
 
   const Gnum * restrict const orgverttax = orggrafptr->s.verttax;
   const Gnum * restrict const orgvendtax = orggrafptr->s.vendtax;
   const Gnum * restrict const orgvelotax = orggrafptr->s.velotax;
-  const Gnum * restrict const orgvnumtax = orggrafptr->s.vnumtax;
   const Gnum * restrict const orgedgetax = orggrafptr->s.edgetax;
   Gnum * restrict const       indvnhdtax = indgrafptr->vnhdtax;
   Gnum * restrict const       indverttax = indgrafptr->s.verttax;
@@ -87,7 +86,7 @@ Hgraph * restrict const       indgrafptr)         /* Pointer to induced halo gra
   Gnum * restrict             indedlotax = indgrafptr->s.edlotax; /* Not const because location will change */
 
   indedlosum =
-  indenohsum = 0;
+  indenlosum = 0;
 #endif /* HGRAPHINDUCE2L */
   inddegrmax = 0;
   for (indvertnum = indedgenum = indgrafptr->s.baseval, indvelosum = indenohnbr = 0, indvertnnd = indgrafptr->vnohnnd; /* For all non-halo vertices */
@@ -211,5 +210,5 @@ Hgraph * restrict const       indgrafptr)         /* Pointer to induced halo gra
   indgrafptr->s.edgenbr = indedgenum - indgrafptr->s.baseval; /* Set actual number of edges */
   indgrafptr->s.edlosum = HGRAPHINDUCE2EDLOSUM;
   indgrafptr->s.degrmax = inddegrmax;
-  indgrafptr->enohsum   = HGRAPHINDUCE2ENOHSUM;
+  indgrafptr->enlosum   = HGRAPHINDUCE2ENLOSUM;
 }

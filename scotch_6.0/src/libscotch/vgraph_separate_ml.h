@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011,2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011,2013,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 13 dec 2001     **/
 /**                                 to     02 feb 2004     **/
 /**                # Version 6.0  : from : 16 apr 2011     **/
-/**                                 to     25 sep 2013     **/
+/**                                 to     30 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,14 +68,12 @@ typedef struct VgraphSeparateMlParam_ {
 **  The function prototypes.
 */
 
-#ifndef VGRAPH_SEPARATE_ML
-#define static
-#endif
+#ifdef VGRAPH_SEPARATE_ML
 
 static int                  vgraphSeparateMlCoarsen (const Vgraph * const, Vgraph * const, GraphCoarsenMulti * restrict * const, const VgraphSeparateMlParam * const);
 static int                  vgraphSeparateMlUncoarsen (Vgraph * const, const Vgraph * const, const GraphCoarsenMulti * restrict const);
-
-int                         vgraphSeparateMl    (Vgraph * const, const VgraphSeparateMlParam * const);
 static int                  vgraphSeparateMl2   (Vgraph * const, const VgraphSeparateMlParam * const);
 
-#undef static
+#endif /* VGRAPH_SEPARATE_ML */
+
+int                         vgraphSeparateMl    (Vgraph * const, const VgraphSeparateMlParam * const);

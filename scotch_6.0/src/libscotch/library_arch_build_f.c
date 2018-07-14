@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 17 mar 2005     **/
 /**                                 to     17 mar 2005     **/
+/**                # Version 6.0  : from : 21 apr 2018     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,24 +68,25 @@
 **
 */
 
-FORTRAN (                                           \
-SCOTCHFSTRATGRAPHBIPART, scotchfstratgraphbipart, ( \
-SCOTCH_Strat * const        stratptr,               \
-const char * const          string,                 \
-int * const                 revaptr,                \
-const int                   strnbr),                \
-(stratptr, string, revaptr, strnbr))
+SCOTCH_FORTRAN (                      \
+STRATGRAPHBIPART, stratgraphbipart, ( \
+SCOTCH_Strat * const        straptr,  \
+const char * const          string,   \
+int * const                 revaptr,  \
+const int                   strnbr),  \
+(straptr, string, revaptr, strnbr))
 {
   char * restrict     strtab;                     /* Pointer to null-terminated string */
 
   if ((strtab = (char *) memAlloc (strnbr + 1)) == NULL) { /* Allocate temporary space */
-    errorPrint ("SCOTCHFSTRATGRAPHBIPART: out of memory (1)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (STRATGRAPHBIPART)) ": out of memory");
     *revaptr = 1;
+    return;
   }
   memCpy (strtab, string, strnbr);                /* Copy string contents */
   strtab[strnbr] = '\0';                          /* Terminate string     */
 
-  *revaptr = SCOTCH_stratGraphBipart (stratptr, strtab); /* Call original routine */
+  *revaptr = SCOTCH_stratGraphBipart (straptr, strtab); /* Call original routine */
 
   memFree (strtab);
 }
@@ -92,15 +95,15 @@ const int                   strnbr),                \
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFARCHBUILD, scotchfarchbuild, (           \
-SCOTCH_Arch * const         archptr,            \
-SCOTCH_Graph * const        grafptr,            \
-const SCOTCH_Num * const    listnbr,            \
-const SCOTCH_Num * const    listptr,            \
-SCOTCH_Strat * const        stratptr,           \
-int * const                 revaptr),           \
-(archptr, grafptr, listnbr, listptr, stratptr, revaptr))
+SCOTCH_FORTRAN (                      \
+ARCHBUILD, archbuild, (               \
+SCOTCH_Arch * const         archptr,  \
+SCOTCH_Graph * const        grafptr,  \
+const SCOTCH_Num * const    listnbr,  \
+const SCOTCH_Num * const    listptr,  \
+SCOTCH_Strat * const        straptr,  \
+int * const                 revaptr), \
+(archptr, grafptr, listnbr, listptr, straptr, revaptr))
 {
-  *revaptr = SCOTCH_archBuild (archptr, grafptr, *listnbr, listptr, stratptr);
+  *revaptr = SCOTCH_archBuild (archptr, grafptr, *listnbr, listptr, straptr);
 }

@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 28 sep 2008     **/
 /**                                 to     28 jun 2011     **/
 /**                # Version 6.0  : from : 28 jun 2011     **/
-/**                                 to     14 jan 2018     **/
+/**                                 to     15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -123,7 +123,6 @@ const Graph * const         tgtgrafptr,           /*+ Source graph modeling the 
 const VertList * const      tgtlistptr,           /*+ Subset of source graph vertices        +*/
 const Strat * const         mapstrat)             /*+ Bipartitioning strategy                +*/
 {
-  Gnum * restrict                   mapparttax;   /* Based access to mapping part array             */
   Arch                              archdat;      /* Variable-sized architecture for bipartitioning */
   ArchDom                           domsub0;      /* Temporary space for subdomain 0                */
   Gnum                              termdomnbr;   /* Number of terminal domains                     */
@@ -205,8 +204,6 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
     graphIelo (&jobtab[0].grafdat, jobtab[0].grafdat.edlotax, invedlotax); /* Compute inverse of edge loads   */
     jobtab[0].grafdat.edlotax = invedlotax;       /* Replace potentially induced edge array with inversed one */
   }                                               /* Edge array will be freed along with jobtab group leader  */
-
-  mapparttax = mappdat.parttax;
 
   actgrafdat.veextax = NULL;                      /* No external gain array      */
   actgrafdat.parttax = actparttax;                /* Set global auxiliary arrays */

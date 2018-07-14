@@ -58,7 +58,7 @@
 /**                # Version 5.1  : from : 01 jan 2009     **/
 /**                                 to     01 jan 2009     **/
 /**                # Version 6.0  : from : 29 mar 2011     **/
-/**                                 to     14 jan 2018     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /**   NOTES      : # Several algorithms, such as the       **/
 /**                  active graph building routine of      **/
@@ -155,7 +155,7 @@ Graph * restrict const          indgrafptr)
 int
 graphInducePart (
 const Graph * restrict const  orggrafptr,         /* Pointer to original graph             */
-const GraphPart * restrict    orgparttax,         /* Based array of vertex partition flags */
+const GraphPart * const       orgparttax,         /* Based array of vertex partition flags */
 const Gnum                    indvnumnbr,         /* Number of vertices in selected part   */
 const GraphPart               indpartval,         /* Partition value of vertices to keep   */
 Graph * restrict const        indgrafptr)         /* Pointer to induced subgraph           */
@@ -212,9 +212,6 @@ const Graph * restrict const  orggrafptr,         /* Pointer to original graph  
 Graph * restrict const        indgrafptr,         /* Pointer to induced graph            */
 const Gnum                    indvertnbr)         /* Number of vertices in induced graph */
 {
-  Gnum * restrict       orgindxtax;               /* Based access to vertex translation array       */
-  const Gnum * restrict indvnumtax;
-  Gnum * restrict       indedgetab;               /* Pointer to pre-allocated edge array            */
   Gnum                  indedgenbr;               /* (Approximate) number of edges in induced graph */
 
   const Gnum                baseval = orggrafptr->baseval; /* Fast accesses */

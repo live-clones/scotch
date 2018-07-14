@@ -1,4 +1,4 @@
-/* Copyright 2009-2011,2013-2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2011,2013-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                array.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 jan 2009     **/
-/**                                 to   : 19 aug 2016     **/
+/**                                 to   : 31 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -109,7 +109,6 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   Gnum                      bandedlonbr;          /* Size of local band edge load array                                                     */
   Gnum                      bandedlosum;
   Gnum * restrict           bandcompload;
-  Gnum                      bandcommload;
   Gnum * restrict         compload;               /* Load of parts in original graph                                                        */
   Gnum                    fronnum;
   Anum                    domnnbr;
@@ -231,9 +230,11 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     errorPrint ("kgraphBand: out of memory (3)");
     return     (1);
   }
+  bandvmlotax = NULL;
   if (vmlotax != NULL) {
     if ((bandvmlotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("kgraphBand: out of memory (4)");
+      memFree    (bandvnumtax);
       return     (1);
     }
     memSet (bandvnumtax + bandvertnbr - domnnbr, ~0, domnnbr * sizeof (Gnum)); /* Prevent Valgrind from yelling when centralizing band graphs */
@@ -241,14 +242,18 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     bandgrafptr->r.vmlotax  = bandvmlotax;
     bandgrafptr->s.flagval |= KGRAPHFREEVMLO;
   }
+  bandparotax = NULL;
   if (parotax != NULL) {
     if ((bandparotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("kgraphBand: out of memory (5)");
-      return     (1);
+      if (bandvmlotax != NULL)
+        memFree (bandvmlotax + bandgrafptr->s.baseval);
+      memFree (bandvnumtax);
+      return  (1);
     }
     memSet (bandparotax + bandvertnbr - bandgrafptr->r.m.domnnbr, ~0, bandgrafptr->r.m.domnnbr * sizeof (Gnum)); /* Prevent Valgrind from yelling when centralizing band graphs */
     bandparotax -= bandgrafptr->s.baseval;
-    bandgrafptr->r.m.parttax = bandparotax;
+    bandgrafptr->r.m.parttax  = bandparotax;
     bandgrafptr->r.m.flagval |= MAPPINGFREEPART;
   }
 
@@ -258,6 +263,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 
   if ((bandgrafptr->s.edgetax = memAlloc ((bandedgenbr + bandedlonbr) * sizeof (Gnum))) == NULL) {
     errorPrint ("kgraphBand: out of memory (6)");
+    kgraphExit (bandgrafptr);
     return     (1);
   }
   bandedlotax             = NULL;
@@ -333,7 +339,6 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   bandverttax  = bandgrafptr->s.verttax;
   bandvelotax  = bandgrafptr->s.velotax;
   banddegrmax  = 0;
-  bandcommload = 0;
   bandcompload = bandgrafptr->comploaddlt;        /* TRICK: use delta array to compute load sums */
   memSet (bandcompload, 0, domnnbr * sizeof (Gnum));
   bandedlosum = 0;
@@ -634,9 +639,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     for (bandvertnum = bandvertlvlnum; bandvertnum < bandvertnnd; /* We do not have fixed vertices */
          bandvertnum ++) {                        /* Link anchors to vertices of last level        */
       Anum              partval;
-      Gnum              vertnum;
 
-      vertnum = bandvnumtax[bandvertnum];
       partval = bandparttax[bandvertnum];
       bandedgetax[bandedgetab[partval] ++] = bandvertnum;
 

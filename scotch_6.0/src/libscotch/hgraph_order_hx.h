@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 24 jan 2004     **/
 /**                                 to     24 jan 2004     **/
+/**                # Version 6.0  : from : 30 apr 2018     **/
+/**                                 to   : 03 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -49,10 +51,4 @@
 **  The function prototypes.
 */
 
-#ifndef HGRAPH_ORDER_HX
-#define static
-#endif
-
-void                        hgraphOrderHxFill   (const Hgraph * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const);
-
-#undef static
+void                        hgraphOrderHxFill   (const Hgraph * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const);

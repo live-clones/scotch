@@ -319,7 +319,7 @@ const int                     protnum)            /* -1 means allgather */
     if (dgraphGatherAll3 (dgrfptr->veloloctax + baseval, dgrfptr->vertlocnbr,
                           velotax,                /* Based array since procdsptab holds based values */
                           dgrfptr->proccnttab, dgrfptr->procdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
-      errorPrint ("dgraphGatherAll2: communication error (6)");
+      errorPrint ("dgraphGatherAll2: communication error (5)");
       return     (1);
     }
   }
@@ -327,7 +327,7 @@ const int                     protnum)            /* -1 means allgather */
     if (dgraphGatherAll3 (dgrfptr->vnumloctax + baseval, dgrfptr->vertlocnbr,
                           vnumtax,                /* Based array since procdsptab holds based values */
                           dgrfptr->proccnttab, dgrfptr->procdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
-      errorPrint ("dgraphGatherAll2: communication error (5)");
+      errorPrint ("dgraphGatherAll2: communication error (6)");
       return     (1);
     }
   }

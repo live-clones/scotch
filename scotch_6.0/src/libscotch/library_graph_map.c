@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 29 oct 2007     **/
 /**                                 to     24 jul 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     29 oct 2014     **/
+/**                                 to     15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,7 +103,7 @@ SCOTCH_Num * const          parttab)              /*+ Mapping array             
   lmapptr->archptr = (Arch *)  archptr;
   if (parttab == NULL) {
     if ((lmapptr->parttab = (Gnum *) memAlloc (lmapptr->grafptr->vertnbr * sizeof (Gnum))) == NULL) {
-      errorPrint ("SCOTCH_graphMapInit: out of memory");
+      errorPrint (STRINGIFY (SCOTCH_graphMapInit) ": out of memory");
       return     (1);
     }
     memSet (lmapptr->parttab, 0, lmapptr->grafptr->vertnbr * sizeof (Anum)); /* All vertices mapped to first domain    */
@@ -154,7 +154,7 @@ SCOTCH_Mapping * const      mappptr,              /*+ Mapping to compute        
 SCOTCH_Mapping * const      mapoptr,              /*+ Old mapping                            +*/
 const double                emraval,              /*+ Edge migration ratio                   +*/ 
 const SCOTCH_Num *          vmlotab,              /*+ Vertex migration cost array            +*/
-const Gnum                  vfixnbr,              /*+ Number of fixed vertices in part array +*/
+const SCOTCH_Num            vfixnbr,              /*+ Number of fixed vertices in part array +*/
 SCOTCH_Strat * const        straptr)              /*+ Mapping strategy                       +*/
 {
   Kgraph                mapgrafdat;               /* Effective mapping graph              */
@@ -162,14 +162,10 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
   LibMapping * restrict lmapptr;
   Anum *                pfixtax;
   Gnum                  baseval;
-  Anum *                parttax;                  /* Partition array                      */
   Anum *                parotax;                  /* Old partition array                  */
   Gnum                  crloval;                  /* Coefficient load for regular edges   */
   Gnum                  cmloval;                  /* Coefficient load for migration edges */
   const Gnum *          vmlotax;                  /* Vertex migration cost array          */
-  Gnum                  vertnum;
-  Gnum                  vertnnd;
-  Gnum                  vertnbr;
   int                   o;
 
   lmapptr = (LibMapping *) mappptr;
@@ -202,18 +198,18 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   baseval = lmapptr->grafptr->baseval;
-  vertnbr = lmapptr->grafptr->vertnbr;
 
   if (vfixnbr != 0) {                             /* We have fixed vertices */
 #ifdef SCOTCH_DEBUG_LIBRARY1
-    ArchDom                     domndat;
-    Gnum                        vertnum;
+    ArchDom             domndat;
+    Gnum                vertnbr;
+    Gnum                vertnum;
 
     if (lmapptr->parttab == NULL) {               /* We must have fixed vertex information */
       errorPrint ("graphMapCompute2: missing output mapping part array");
       return     (1);
     }
-    for (vertnum = 0; vertnum < vertnbr; vertnum ++) {
+    for (vertnum = 0, vertnbr = lmapptr->grafptr->vertnbr; vertnum < vertnbr; vertnum ++) {
       if ((lmapptr->parttab[vertnum] >= 0) &&
           (archDomTerm (lmapptr->archptr, &domndat, lmapptr->parttab[vertnum]) != 0)) {
         errorPrint ("graphMapCompute2: invalid fixed partition");
@@ -232,6 +228,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
     Gnum                        denoval;
 #ifdef SCOTCH_DEBUG_LIBRARY1
     ArchDom                     domndat;
+    Gnum                        vertnbr;
     Gnum                        vertnum;
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
@@ -245,7 +242,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
       errorPrint ("graphMapCompute2: output and old mappings must correspond to same architecture");
       return     (1);
     }
-    for (vertnum = 0; vertnum < vertnbr; vertnum ++) {
+    for (vertnum = 0, vertnbr = lmapptr->grafptr->vertnbr; vertnum < vertnbr; vertnum ++) {
       if ((lmaoptr->parttab[vertnum] >= 0) &&
           (archDomTerm (lmapptr->archptr, &domndat, lmaoptr->parttab[vertnum]) != 0)) {
         errorPrint ("graphMapCompute2: invalid old partition");
@@ -617,7 +614,7 @@ const char * const          string)
     stratExit (*((Strat **) straptr));
 
   if ((*((Strat **) straptr) = stratInit (&kgraphmapststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratGraphMap: error in mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphMap) ": error in mapping strategy");
     return     (1);
   }
 
@@ -643,7 +640,6 @@ const double                kbalval)              /*+ Desired imbalance ratio   
   char                kbaltab[64];
   char                kmovtab[64];
   char                mvrttab[64];
-  Gunum               parttmp;                    /* "Unsigned" so that ">>" will always insert "0"s */
   const char *        difkptr;
   const char *        difsptr;
   const char *        exasptr;
@@ -686,7 +682,7 @@ const double                kbalval)              /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<BBAL>", bbaltab);
 
   if (SCOTCH_stratGraphMap (straptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratGraphMapBuild: error in sequential mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphMapBuild) ": error in sequential mapping strategy");
     return     (1);
   }
 
@@ -740,7 +736,7 @@ const double                bbalval)              /*+ Maximum imbalance ratio +*
   stringSubst (bufftab, "<PWGT>", pwgttab);
 
   if (SCOTCH_stratGraphMap (straptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratGraphClusterBuild: error in sequential mapping strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphClusterBuild) ": error in sequential mapping strategy");
     return     (1);
   }
 

@@ -1,4 +1,4 @@
-/* Copyright 2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 aug 2014     **/
-/**                                 to     29 aug 2014     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,19 +81,24 @@ char *              argv[])
 
   SCOTCH_errorProg (argv[0]);
 
+  if (argc != 2) {
+    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+    exit (EXIT_FAILURE);
+  }
+
   if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
     SCOTCH_errorPrint ("main: cannot load graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
@@ -103,7 +108,7 @@ char *              argv[])
   listnbr = (vertnbr + 1) / 2;                    /* Only keep half of the vertices in induced graph */
   if ((listtab = malloc (listnbr * sizeof (SCOTCH_Num))) == NULL) {
     SCOTCH_errorPrint ("main: out of memory (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
   for (listnum = 0, vertnum = baseval + (listnbr / 4); /* Keep only middle half of the vertices */
        listnum < listnbr; listnum ++, vertnum ++)
@@ -111,27 +116,27 @@ char *              argv[])
 
   if ((fileptr = tmpfile ()) == NULL) {           /* Open temporary file for resulting output */
     SCOTCH_errorPrint ("main: cannot open file (2)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_stratInit (&stradat) != 0) {         /* Initialize ordering strategy */
     SCOTCH_errorPrint ("main: cannot initialize strategy");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphOrderInit (&grafdat, &ordedat, NULL, NULL, NULL, NULL, NULL) != 0) { /* Initialize ordering */
     SCOTCH_errorPrint ("main: cannot initialize ordering (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphOrderCompute (&grafdat, &ordedat, &stradat) != 0) {
     SCOTCH_errorPrint ("main: cannot order graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphOrderCheck (&grafdat, &ordedat) != 0) {
     SCOTCH_errorPrint ("main: invalid ordering (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   SCOTCH_graphOrderSave     (&grafdat, &ordedat, fileptr); /* Test ordering data output routines */
@@ -142,17 +147,17 @@ char *              argv[])
 
   if (SCOTCH_graphOrderInit (&grafdat, &ordedat, NULL, NULL, NULL, NULL, NULL) != 0) { /* Initialize ordering again */
     SCOTCH_errorPrint ("main: cannot initialize ordering (2)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphOrderComputeList (&grafdat, &ordedat, listnbr, listtab, &stradat) != 0) {
     SCOTCH_errorPrint ("main: cannot order induced graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphOrderCheck (&grafdat, &ordedat) != 0) {
     SCOTCH_errorPrint ("main: invalid ordering (2)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   SCOTCH_graphOrderSave     (&grafdat, &ordedat, fileptr); /* Test ordering data output routines */
@@ -164,5 +169,5 @@ char *              argv[])
   SCOTCH_graphOrderExit (&grafdat, &ordedat);
   SCOTCH_graphExit      (&grafdat);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

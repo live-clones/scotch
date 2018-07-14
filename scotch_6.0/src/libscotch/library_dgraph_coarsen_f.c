@@ -1,4 +1,4 @@
-/* Copyright 2011,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 07 aug 2011     **/
 /**                                 to     07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,16 +67,16 @@
 **
 */
 
-FORTRAN (                                     \
-SCOTCHFDGRAPHCOARSEN, scotchfdgraphcoarsen, ( \
-SCOTCH_Dgraph * const       finegrafptr,      \
-const SCOTCH_Num * const    coarnbrptr,       \
-double * const              coarratptr,       \
-const SCOTCH_Num * const    flagvalptr,       \
-SCOTCH_Dgraph * const       coargrafptr,      \
-SCOTCH_Num * const          multloctab,       \
-int * const                 revaptr),         \
-(finegrafptr, coarnbrptr, coarratptr, flagvalptr, coargrafptr, multloctab, revaptr))
+SCOTCH_FORTRAN (                         \
+DGRAPHCOARSEN, dgraphcoarsen, (          \
+SCOTCH_Dgraph * const       finegrafptr, \
+const SCOTCH_Num * const    coarnbrptr,  \
+double * const              coarrat,     \
+const SCOTCH_Num * const    flagval,     \
+SCOTCH_Dgraph * const       coargrafptr, \
+SCOTCH_Num * const          multloctab,  \
+int * const                 revaptr),    \
+(finegrafptr, coarnbrptr, coarrat, flagval, coargrafptr, multloctab, revaptr))
 {
-  *revaptr = SCOTCH_dgraphCoarsen (finegrafptr, *coarnbrptr, *coarratptr, *flagvalptr, coargrafptr, multloctab);
+  *revaptr = SCOTCH_dgraphCoarsen (finegrafptr, *coarnbrptr, *coarrat, *flagval, coargrafptr, multloctab);
 }

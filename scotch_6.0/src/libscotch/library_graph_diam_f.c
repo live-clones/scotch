@@ -1,4 +1,4 @@
-/* Copyright 2017 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2017,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                the libSCOTCH library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 jan 2017     **/
-/**                                 to     26 jan 2017     **/
+/**                                 to     29 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,11 +65,11 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFGRAPHDIAMPV, scotchfgraphdiampv, (       \
-SCOTCH_Graph * const        grafptr,            \
-int * const                 revaptr),           \
-(grafptr, revaptr))
+SCOTCH_FORTRAN (                      \
+GRAPHDIAMPV, graphdiampv, (           \
+SCOTCH_Graph * const        grafptr,  \
+SCOTCH_Num * const          diamptr), \
+(grafptr, diamptr))
 {
-  *revaptr = SCOTCH_graphDiamPV (grafptr);
+  *diamptr = SCOTCH_graphDiamPV (grafptr);
 }

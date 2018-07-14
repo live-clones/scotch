@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to     30 nov 2007     **/
 /**                # Version 6.0  : from : 14 aug 2016     **/
-/**                                 to     14 aug 2016     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,6 +100,7 @@ Bgraph * restrict const     grafptr)
   parafmdat.movenbr = grafptr->s.vertnbr;
   parafmdat.passnbr = ~0;
   parafmdat.deltval = 0.0L;                       /* Exact balance required */
+  parafmdat.typeval = BGRAPHBIPARTFMTYPEALL;      /* All vertices involved  */
   if (bgraphBipartFm (grafptr, &parafmdat) != 0)  /* Return if error        */
     return (1);
 

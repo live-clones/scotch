@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,8 +49,8 @@
 /**                                 to     01 oct 1998     **/
 /**                # Version 4.0  : from : 09 jan 2004     **/
 /**                                 to     09 jan 2004     **/
-/**                # Version 6.0  : from : 23 fev 2011     **/
-/**                                 to     27 aug 2016     **/
+/**                # Version 6.0  : from : 23 feb 2011     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,13 +94,7 @@ typedef struct BgraphBipartGgVertex_ {
 **  The function prototypes.
 */
 
-#ifndef BGRAPH_BIPART_GG
-#define static
-#endif
-
 int                         bgraphBipartGg      (Bgraph * restrict const, const BgraphBipartGgParam * const);
-
-#undef static
 
 /*
 **  The macro definitions.

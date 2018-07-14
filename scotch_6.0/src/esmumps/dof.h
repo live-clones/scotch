@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to     06 jun 2002     **/
 /**                # Version 3.0  : from : 28 feb 2004     **/
 /**                                 to     29 feb 2004     **/
+/**                # Version 6.0  : from : 22 may 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,10 +76,6 @@ typedef struct Dof_ {
 **  The function prototypes.
 */
 
-#ifndef DOF
-#define static
-#endif
-
 int                         dofInit             (Dof * const deofptr);
 void                        dofExit             (Dof * const deofptr);
 int                         dofLoad             (Dof * const deofptr, FILE * const stream);
@@ -86,8 +84,6 @@ void                        dofConstant         (Dof * const deofptr, const INT 
 #ifdef GRAPH_H
 int                         dofGraph            (Dof * const deofptr, const Graph * grafptr, const INT, const INT * const peritab);
 #endif /* GRAPH_H */
-
-#undef static
 
 /*
 **  The macro definitions.

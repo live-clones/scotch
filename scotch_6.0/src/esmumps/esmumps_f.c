@@ -58,8 +58,8 @@
 /*                                    */
 /**************************************/
 
-FORTRAN (                                       \
-ESMUMPSF, esmumpsf, (                           \
+ESMUMPS_FORTRAN (                               \
+ESMUMPS_VOID, ESMUMPS_VOID, (                   \
 const INT * const           n,                  \
 const INT * const           iwlen,              \
 INT * const                 petab,              \

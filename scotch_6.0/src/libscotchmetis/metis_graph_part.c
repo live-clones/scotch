@@ -1,4 +1,4 @@
-/* Copyright 2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 06 jun 2009     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 23 dec 2011     **/
-/**                                 to     13 sep 2012     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -130,7 +130,7 @@ double                      kbalval)
 */
 
 static
-void
+int
 _SCOTCH_METIS_PartGraph (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
@@ -161,7 +161,7 @@ double                      kbalval)
 
   if (_SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt2, adjwgt2, numflag, nparts, part, flagval, kbalval) != 0) {
     *edgecut = -1;                                /* Indicate error */
-    return;
+    return (METIS_ERROR);
   }
 
   parttax = part   - *numflag;
@@ -203,13 +203,15 @@ double                      kbalval)
     }
   }
   *edgecut = commcut / 2;
+
+  return (METIS_OK);
 }
 
 /*
 **
 */
 
-void
+int
 METISNAMEU (METIS_PartGraphKway) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
@@ -223,11 +225,12 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part)
 {
-  _SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part,
-                           SCOTCH_STRATDEFAULT, 0.01);
+  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt, adjwgt, wgtflag,
+                                   numflag, nparts, options, edgecut, part,
+                                   SCOTCH_STRATDEFAULT, 0.01));
 }
 
-void
+int
 METISNAMEU (METIS_PartGraphRecursive) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
@@ -241,8 +244,9 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part)
 {
-  _SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part,
-                           SCOTCH_STRATRECURSIVE, 0.01);
+  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt, adjwgt, wgtflag,
+                                   numflag, nparts, options, edgecut, part,
+                                   SCOTCH_STRATRECURSIVE, 0.01));
 }
 
 /* Scotch does not directly consider communication volume.
@@ -252,7 +256,7 @@ SCOTCH_Num * const          part)
 ** be less likely to be cut.
 */
 
-void
+int
 METISNAMEU (METIS_PartGraphVKway) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
@@ -286,7 +290,7 @@ SCOTCH_Num * const          part)
 
   if (vsize2 == NULL) {                           /* If no communication load data provided */
     if (_SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt2, NULL, numflag, nparts, part, SCOTCH_STRATDEFAULT, 0.01) != 0)
-      return;
+      return (METIS_ERROR);
   }
   else {                                          /* Will have to turn communication volumes into edge loads */
     const SCOTCH_Num * restrict vsiztax;
@@ -296,7 +300,7 @@ SCOTCH_Num * const          part)
 
     edgenbr = xadj[vertnbr] - baseval;
     if ((edlotax = memAlloc (edgenbr * sizeof (SCOTCH_Num))) == NULL)
-      return;
+      return (METIS_ERROR);
     edlotax -= baseval;                           /* Base access to edlotax */
     vsiztax  = vsize2 - baseval;
 
@@ -320,11 +324,11 @@ SCOTCH_Num * const          part)
     memFree (edlotax + baseval);
 
     if (o != 0)
-      return;
+      return (METIS_ERROR);
   }
 
   if ((nghbtab = memAlloc (*nparts * sizeof (SCOTCH_Num))) == NULL)
-    return;
+    return (METIS_ERROR_MEMORY);
   memSet (nghbtab, ~0, *nparts * sizeof (SCOTCH_Num));
 
   parttax = part - baseval;
@@ -354,4 +358,6 @@ SCOTCH_Num * const          part)
   *volume = commvol;
 
   memFree (nghbtab);
+
+  return (METIS_OK);
 }

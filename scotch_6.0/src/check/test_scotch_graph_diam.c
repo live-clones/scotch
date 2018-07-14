@@ -1,4 +1,4 @@
-/* Copyright 2017 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2017,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_graphColor() routine.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 jan 2017     **/
-/**                                 to     26 jan 2017     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,19 +76,24 @@ char *              argv[])
 
   SCOTCH_errorProg (argv[0]);
 
+  if (argc != 2) {
+    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+    exit (EXIT_FAILURE);
+  }
+
   if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
     SCOTCH_errorPrint ("main: cannot load graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
@@ -97,12 +102,12 @@ char *              argv[])
 
   if ((diamval = SCOTCH_graphDiamPV (&grafdat)) < 0) {
     SCOTCH_errorPrint ("main: cannot compute graph pseudo-diameter");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   printf ("Graph pseudo-diameter: %ld\n", (long) diamval);
 
   SCOTCH_graphExit (&grafdat);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

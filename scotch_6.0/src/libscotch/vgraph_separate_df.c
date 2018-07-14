@@ -1,4 +1,4 @@
-/* Copyright 2007,2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2013,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**   DATES      : # Version 5.1  : from : 29 oct 2007     **/
 /**                                 to     24 may 2008     **/
 /**                # Version 6.0  : from : 24 dec 2013     **/
-/**                                 to     24 dec 2013     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -173,9 +173,7 @@ const VgraphSeparateDfParam * const paraptr)      /*+ Method parameters +*/
     for (movenum = 0; movenum < paraptr->movenbr; movenum ++) { /* For all moves */
       Gnum                vertnum;
       Gnum                vertnnd;
-      float               vancval;                /* Value to load vertex with if anchor */
 
-      vancval = 0.0F;                             /* At first vertices are not anchors */
       vertnum = grafptr->s.baseval;
       vertnnd = grafptr->s.vertnnd - 2;
       while (1) {
@@ -216,8 +214,7 @@ const VgraphSeparateDfParam * const paraptr)      /*+ Method parameters +*/
         if (vertnum == grafptr->s.vertnnd)        /* If all vertices processed, exit intermediate infinite loop */
           break;
 
-        vertnnd ++;                               /* Prepare to go only for one more run        */
-        vancval = vanctab[vertnum - grafptr->s.vertnnd + 2]; /* Load variable with anchor value */
+        vertnnd ++;                               /* Prepare to go only for one more run */
       }
 
       difttax = difntax;                          /* Swap old and new diffusion arrays */

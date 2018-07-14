@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 04 mar 2006     **/
 /**                                 to   : 04 mar 2006     **/
+/**                # Version 6.0  : from : 06 jun 2018     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,10 +61,4 @@ typedef struct VdgraphSeparateBdParam_ {
 **  The function prototypes.
 */
 
-#ifndef VDGRAPH_SEPARATE_BD
-#define static
-#endif
-
 int                         vdgraphSeparateBd   (Vdgraph * const, const VdgraphSeparateBdParam * const);
-
-#undef static

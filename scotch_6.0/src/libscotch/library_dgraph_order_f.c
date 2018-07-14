@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 27 mar 2010     **/
 /**                                 to     25 jul 2010     **/
 /**                # Version 6.0  : from : 08 jan 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -69,11 +69,11 @@
 **
 */
 
-FORTRAN (                                         \
-SCOTCHFDGRAPHORDERINIT, scotchfdgraphorderinit, ( \
-const SCOTCH_Dgraph * const grafptr,              \
-SCOTCH_Dordering * const    ordeptr,              \
-int * const                 revaptr),             \
+SCOTCH_FORTRAN (                        \
+DGRAPHORDERINIT, dgraphorderinit, (     \
+const SCOTCH_Dgraph * const   grafptr,  \
+SCOTCH_Dordering * const      ordeptr,  \
+int * const                   revaptr), \
 (grafptr, ordeptr, revaptr))
 {
   *revaptr = SCOTCH_dgraphOrderInit (grafptr, ordeptr);
@@ -83,10 +83,10 @@ int * const                 revaptr),             \
 **
 */
 
-FORTRAN (                                         \
-SCOTCHFDGRAPHORDEREXIT, scotchfdgraphorderexit, ( \
-const SCOTCH_Dgraph * const grafptr,              \
-SCOTCH_Dordering * const    ordeptr),             \
+SCOTCH_FORTRAN (                        \
+DGRAPHORDEREXIT, dgraphorderexit, (     \
+const SCOTCH_Dgraph * const   grafptr,  \
+SCOTCH_Dordering * const      ordeptr), \
 (grafptr, ordeptr))
 {
   SCOTCH_dgraphOrderExit (grafptr, ordeptr);
@@ -96,12 +96,12 @@ SCOTCH_Dordering * const    ordeptr),             \
 **
 */
 
-FORTRAN (                                         \
-SCOTCHFDGRAPHORDERSAVE, scotchfdgraphordersave, ( \
-const SCOTCH_Dgraph * const     grafptr,          \
-const SCOTCH_Dordering * const  ordeptr,          \
-int * const                     fileptr,          \
-int * const                     revaptr),         \
+SCOTCH_FORTRAN (                        \
+DGRAPHORDERSAVE, dgraphordersave, (     \
+const SCOTCH_Dgraph * const   grafptr,  \
+SCOTCH_Dordering * const      ordeptr,  \
+int * const                   fileptr,  \
+int * const                   revaptr), \
 (grafptr, ordeptr, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
@@ -112,12 +112,12 @@ int * const                     revaptr),         \
     stream = NULL;
   else {                                          /* Open stream for root process        */
     if ((filenum = dup (*fileptr)) < 0) {         /* If cannot duplicate file descriptor */
-      errorPrint ("SCOTCHFDGRAPHORDERSAVE: cannot duplicate handle");
+      errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHORDERSAVE)) ": cannot duplicate handle");
       *revaptr = 1;                               /* Indicate error */
       return;
     }
     if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
-      errorPrint ("SCOTCHFDGRAPHORDERSAVE: cannot open output stream");
+      errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHORDERSAVE)) ": cannot open output stream");
       close      (filenum);
       *revaptr = 1;
       return;
@@ -136,56 +136,57 @@ int * const                     revaptr),         \
 **
 */
 
-FORTRAN (                                               \
-SCOTCHFDGRAPHORDERCOMPUTE, scotchfdgraphordercompute, ( \
-SCOTCH_Dgraph * const       grafptr,                    \
-SCOTCH_Dordering * const    ordeptr,                    \
-SCOTCH_Strat * const        stratptr,                   \
-int * const                 revaptr),                   \
-(grafptr, ordeptr, stratptr, revaptr))
+SCOTCH_FORTRAN (                          \
+DGRAPHORDERCOMPUTE, dgraphordercompute, ( \
+SCOTCH_Dgraph * const       grafptr,      \
+SCOTCH_Dordering * const    ordeptr,      \
+SCOTCH_Strat * const        straptr,      \
+int * const                 revaptr),     \
+(grafptr, ordeptr, straptr, revaptr))
 {
-  *revaptr = SCOTCH_dgraphOrderCompute (grafptr, ordeptr, stratptr);
+  *revaptr = SCOTCH_dgraphOrderCompute (grafptr, ordeptr, straptr);
 }
 
 /*
 **
 */
 
-FORTRAN (                                                       \
-SCOTCHFDGRAPHORDERCOMPUTELIST, scotchfdgraphordercomputelist, ( \
-SCOTCH_Dgraph * const       grafptr,                            \
-SCOTCH_Dordering * const    ordeptr,                            \
-const SCOTCH_Num *          listptr,                            \
-const SCOTCH_Num * const    listtab,                            \
-SCOTCH_Strat * const        stratptr,                           \
-int * const                 revaptr),                           \
-(grafptr, ordeptr, listptr, listtab, stratptr, revaptr))
+SCOTCH_FORTRAN (                                  \
+DGRAPHORDERCOMPUTELIST, dgraphordercomputelist, ( \
+SCOTCH_Dgraph * const       grafptr,              \
+SCOTCH_Dordering * const    ordeptr,              \
+const SCOTCH_Num *          listptr,              \
+const SCOTCH_Num * const    listtab,              \
+SCOTCH_Strat * const        straptr,              \
+int * const                 revaptr),             \
+(grafptr, ordeptr, listptr, listtab, straptr, revaptr))
 {
-  *revaptr = SCOTCH_dgraphOrderComputeList (grafptr, ordeptr, *listptr, listtab, stratptr);
+  *revaptr = SCOTCH_dgraphOrderComputeList (grafptr, ordeptr, *listptr, listtab, straptr);
 }
 
 /*
 **
 */
 
-FORTRAN (                                           \
-SCOTCHFSTRATDGRAPHORDER, scotchfstratdgraphorder, ( \
-SCOTCH_Strat * const        stratptr,               \
-const char * const          string,                 \
-int * const                 revaptr,                \
-const int                   strnbr),                \
-(stratptr, string, revaptr, strnbr))
+SCOTCH_FORTRAN (                      \
+STRATDGRAPHORDER, stratdgraphorder, ( \
+SCOTCH_Strat * const        straptr,  \
+const char * const          string,   \
+int * const                 revaptr,  \
+const int                   strnbr),  \
+(straptr, string, revaptr, strnbr))
 {
   char * restrict     strtab;                     /* Pointer to null-terminated string */
 
   if ((strtab = (char *) memAlloc (strnbr + 1)) == NULL) { /* Allocate temporary space */
-    errorPrint ("SCOTCHFSTRATDGRAPHORDER: out of memory (1)");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (STRATDGRAPHORDER)) ": out of memory");
     *revaptr = 1;
+    return;
   }
   memCpy (strtab, string, strnbr);                /* Copy string contents */
   strtab[strnbr] = '\0';                          /* Terminate string     */
 
-  *revaptr = SCOTCH_stratDgraphOrder (stratptr, strtab); /* Call original routine */
+  *revaptr = SCOTCH_stratDgraphOrder (straptr, strtab); /* Call original routine */
 
   memFree (strtab);                               /* Prevent compiler warnings */
 }
@@ -194,15 +195,15 @@ const int                   strnbr),                \
 **
 */
 
-FORTRAN (                                                     \
-SCOTCHFSTRATDGRAPHORDERBUILD, scotchfstratdgraphorderbuild, ( \
-SCOTCH_Strat * const        stratptr,                         \
-const SCOTCH_Num * const    flagval,                          \
-const SCOTCH_Num * const    procnbr,                          \
-const SCOTCH_Num * const    levlnbr,                          \
-const double * const        balrat,                           \
-int * const                 revaptr),                         \
-(stratptr, flagval, procnbr, levlnbr, balrat, revaptr))
+SCOTCH_FORTRAN (                                \
+STRATDGRAPHORDERBUILD, stratdgraphorderbuild, ( \
+SCOTCH_Strat * const        straptr,            \
+const SCOTCH_Num * const    flagval,            \
+const SCOTCH_Num * const    procnbr,            \
+const SCOTCH_Num * const    levlnbr,            \
+const double * const        bbalval,            \
+int * const                 revaptr),           \
+(straptr, flagval, procnbr, levlnbr, bbalval, revaptr))
 {
-  *revaptr = SCOTCH_stratDgraphOrderBuild (stratptr, *flagval, *procnbr, *levlnbr, *balrat);
+  *revaptr = SCOTCH_stratDgraphOrderBuild (straptr, *flagval, *procnbr, *levlnbr, *bbalval);
 }

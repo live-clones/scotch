@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2011,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 13 jul 2010     **/
 /**                                 to     13 jul 2010     **/
 /**                # Version 6.0  : from : 16 apr 2011     **/
-/**                                 to     03 sep 2011     **/
+/**                                 to     05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,14 +72,12 @@ typedef struct BgraphBipartMlParam_ {
 **  The function prototypes.
 */
 
-#ifndef BGRAPH_BIPART_ML
-#define static
-#endif
+#ifdef BGRAPH_BIPART_ML
 
 static int                  bgraphBipartMlCoarsen (const Bgraph * const, Bgraph * restrict const, GraphCoarsenMulti * restrict * const, const BgraphBipartMlParam * const);
 static int                  bgraphBipartMlUncoarsen (Bgraph * restrict const, const Bgraph * restrict const, const GraphCoarsenMulti * const);
-
-int                         bgraphBipartMl      (Bgraph * restrict const, const BgraphBipartMlParam * const);
 static int                  bgraphBipartMl2     (Bgraph * restrict const, const BgraphBipartMlParam * const);
 
-#undef static
+#endif /* BGRAPH_BIPART_ML */
+
+int                         bgraphBipartMl      (Bgraph * restrict const, const BgraphBipartMlParam * const);

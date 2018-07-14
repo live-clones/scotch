@@ -1,4 +1,4 @@
-/* Copyright 2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 23 sep 2014     **/
-/**                                 to     23 sep 2014     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,9 +66,9 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFNUMSIZEOF, scotchfnumsizeof, (           \
-int * const                 sizeptr),           \
+SCOTCH_FORTRAN (                      \
+NUMSIZEOF, numsizeof, (               \
+int * const                 sizeptr), \
 (sizeptr))
 {
   *sizeptr = SCOTCH_numSizeof ();

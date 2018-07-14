@@ -40,10 +40,10 @@ libdir		= ../../lib
 include ../Makefile.inc
 
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -o $(@) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -DSCOTCH_VERSION=$(VERSION) -DSCOTCH_RELEASE=$(RELEASE) -DSCOTCH_PATCHLEVEL=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 ##
 ##  Project rules.
@@ -257,7 +257,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			common$(OBJ)				\
 			common_file$(OBJ)			\
 			common_file_compress$(OBJ)		\
-			common_file_uncompress$(OBJ)		\
+			common_file_decompress$(OBJ)		\
 			common_integer$(OBJ)			\
 			common_memory$(OBJ)			\
 			common_string$(OBJ)			\
@@ -289,6 +289,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			hgraph_check$(OBJ)			\
 			hgraph_induce$(OBJ)			\
 			hgraph_order_bl$(OBJ)			\
+			hgraph_order_cc$(OBJ)			\
 			hgraph_order_cp$(OBJ)			\
 			hgraph_order_gp$(OBJ)			\
 			hgraph_order_hd$(OBJ)			\
@@ -459,7 +460,7 @@ common_file_compress$(OBJ)	:	common_file_compress.c			\
 					common_file_compress.h
 					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
-common_file_uncompress$(OBJ)	:	common_file_uncompress.c		\
+common_file_decompress$(OBJ)	:	common_file_decompress.c		\
 					module.h				\
 					common.h				\
 					common_file.h				\
@@ -858,6 +859,7 @@ dgraph_allreduce$(OBJ)		:	dgraph_allreduce.c			\
 					dgraph_allreduce.h
 
 dgraph_band$(OBJ)		:	dgraph_band.c				\
+					dgraph_band_grow.c			\
 					module.h				\
 					common.h				\
 					dgraph.h
@@ -1318,6 +1320,16 @@ hgraph_order_bl$(OBJ)		:	hgraph_order_bl.c			\
 					order.h					\
 					hgraph.h				\
 					hgraph_order_bl.h
+
+hgraph_order_cc$(OBJ)		:	hgraph_order_cc.c			\
+					module.h				\
+					common.h				\
+					parser.h				\
+					graph.h					\
+					order.h					\
+					hgraph.h				\
+					hgraph_order_cc.h			\
+					hgraph_order_st.h
 
 hgraph_order_cp$(OBJ)		:	hgraph_order_cp.c			\
 					module.h				\
@@ -1824,6 +1836,14 @@ library_arch$(OBJ)		:	library_arch.c				\
 					graph.h					\
 					arch$(OBJ)				\
 					arch_cmplt.h				\
+					arch_cmpltw.h				\
+					arch_hcub.h				\
+					arch_mesh.h				\
+					arch_sub.h				\
+					arch_tleaf.h				\
+					arch_torus.h				\
+					arch_vcmplt.h				\
+					arch_vhcub.h				\
 					scotch.h
 
 library_arch_f$(OBJ)		:	library_arch_f.c			\
@@ -1933,6 +1953,7 @@ library_dgraph_gather_f$(OBJ)	:	library_dgraph_gather_f.c		\
 					ptscotch.h
 
 library_dgraph_grow$(OBJ)	:	library_dgraph_grow.c			\
+					dgraph_band_grow.c			\
 					module.h				\
 					common.h				\
 					dgraph.h				\
@@ -2225,6 +2246,28 @@ library_graph_color$(OBJ)	:	library_graph_color.c			\
 					scotch.h
 
 library_graph_color_f$(OBJ)	:	library_graph_color_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_graph_diam$(OBJ)	:	library_graph_diam.c			\
+					module.h				\
+					common.h				\
+					graph.h					\
+					scotch.h
+
+library_graph_diam_f$(OBJ)	:	library_graph_diam_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_graph_induce$(OBJ)	:	library_graph_induce.c			\
+					module.h				\
+					common.h				\
+					graph.h					\
+					scotch.h
+
+library_graph_induce_f$(OBJ)	:	library_graph_induce_f.c		\
 					module.h				\
 					common.h				\
 					scotch.h
@@ -2996,30 +3039,30 @@ dummysizes$(EXE)		:	dummysizes.c				\
 					mapping.h				\
 					order.h					\
 					parser.h
-			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION=$(VERSION) -DSCOTCH_RELEASE=$(RELEASE) -DSCOTCH_PATCHLEVEL=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 ptdummysizes$(EXE)		:	dummysizes.c				\
 					module.h				\
 					common.h				\
 					dgraph.h				\
 					dorder.h
-			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION=$(VERSION) -DSCOTCH_RELEASE=$(RELEASE) -DSCOTCH_PATCHLEVEL=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
-					./dummysizes$(EXE) library.h scotch.h
+					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library.h scotch.h
 
 scotchf.h			:	dummysizes$(EXE) 			\
 					library_f.h
-					./dummysizes$(EXE) library_f.h scotchf.h
+					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_f.h scotchf.h
 
 ptscotch.h			:	ptdummysizes$(EXE)			\
 					library_pt.h
-					./ptdummysizes$(EXE) library_pt.h ptscotch.h
+					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt.h ptscotch.h
 
 ptscotchf.h			:	ptdummysizes$(EXE)			\
 					library_pt_f.h
-					./ptdummysizes$(EXE) library_pt_f.h ptscotchf.h
+					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt_f.h ptscotchf.h
 
 libscotch$(LIB)			:	$(LIBSCOTCHDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)

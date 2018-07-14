@@ -1,4 +1,4 @@
-/* Copyright 2012,2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2013,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                strategy building routines.             **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 08 jan 2012     **/
-/**                                 to     11 oct 2013     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,6 +70,11 @@ char *              argv[])
   SCOTCH_Strat        stradat;
 
   SCOTCH_errorProg (argv[0]);
+
+  if (argc != 1) {
+    SCOTCH_errorPrint ("usage: %s", argv[0]);
+    exit (EXIT_FAILURE);
+  }
 
   printf ("Parallel mapping strategy, SCOTCH_STRATDEFAULT\n");
 
@@ -119,5 +124,5 @@ char *              argv[])
   SCOTCH_stratDgraphOrderBuild (&stradat, SCOTCH_STRATSEPASIMPLE, 1, 0, 0.2);
   SCOTCH_stratExit (&stradat);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

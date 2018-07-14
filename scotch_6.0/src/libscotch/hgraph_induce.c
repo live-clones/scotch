@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 24 oct 2010     **/
 /**                                 to     24 oct 2010     **/
 /**                # Version 6.0  : from : 27 mar 2012     **/
-/**                                 to     07 nov 2014     **/
+/**                                 to     23 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,8 +83,9 @@
 int
 hgraphInduceList (
 const Hgraph * restrict const     orggrafptr,     /* Pointer to original graph                 */
-const VertList * restrict const   orglistptr,     /* Pointer to vertex list                    */
-const Gnum                        orghalonbr,     /* Upper bound of number of vertices in halo */
+const Gnum                        indvnumnbr,
+const Gnum * restrict const       indvnumtab,
+const Gnum                        indhalonbr,     /* Upper bound of number of vertices in halo */
 Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph               */
 {
   Gnum * restrict     orgindxtax;                 /* Original to induced vertex number translation   */
@@ -100,23 +101,23 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
   indgrafptr->s.flagval = GRAPHFREETABS | GRAPHVERTGROUP | GRAPHEDGEGROUP;
   indgrafptr->s.baseval = orggrafptr->s.baseval;
 
-  indvertnbr = orglistptr->vnumnbr + orghalonbr;  /* Compute upper bound on number of vertices */
+  indvertnbr = indvnumnbr + indhalonbr;           /* Compute upper bound on number of vertices */
   indvelosiz = (orggrafptr->s.velotax != NULL) ? indvertnbr : 0;
   if (memAllocGroup ((void **) (void *)
-                     &indgrafptr->s.verttax, (size_t) ((indvertnbr + 1)     * sizeof (Gnum)),
-                     &indgrafptr->vnhdtax,   (size_t) ( orglistptr->vnumnbr * sizeof (Gnum)), /* Put closest to beginning of array because no padding after */
-                     &indgrafptr->s.velotax, (size_t) ( indvertnbr          * sizeof (Gnum)),
-                     &indgrafptr->s.vnumtax, (size_t) ( indvertnbr          * sizeof (Gnum)), NULL) == NULL) {
+                     &indgrafptr->s.verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
+                     &indgrafptr->vnhdtax,   (size_t) ( indvnumnbr      * sizeof (Gnum)), /* Put closest to beginning of array because no padding after */
+                     &indgrafptr->s.velotax, (size_t) ( indvelosiz      * sizeof (Gnum)),
+                     &indgrafptr->s.vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hgraphInduceList: out of memory (1)"); /* Allocate induced graph structure */
     return     (1);
   }
-  memCpy (indgrafptr->s.vnumtax, orglistptr->vnumtab, orglistptr->vnumnbr * sizeof (Gnum)); /* Copy vertex number array from list */
+  memCpy (indgrafptr->s.vnumtax, indvnumtab, indvnumnbr * sizeof (Gnum)); /* Copy vertex number array from list */
   indgrafptr->s.velotax  = (orggrafptr->s.velotax != NULL) ? (indgrafptr->s.velotax - indgrafptr->s.baseval) : NULL;
   indgrafptr->s.verttax -= indgrafptr->s.baseval;
   indgrafptr->s.vnumtax -= indgrafptr->s.baseval;
   indgrafptr->vnhdtax   -= indgrafptr->s.baseval;
-  indgrafptr->vnohnbr    = orglistptr->vnumnbr;
-  indgrafptr->vnohnnd    = orglistptr->vnumnbr + indgrafptr->s.baseval;
+  indgrafptr->vnohnbr    = indvnumnbr;
+  indgrafptr->vnohnnd    = indvnumnbr + indgrafptr->s.baseval;
 
   indedgenbr = ((orggrafptr->s.degrmax > 0) && (indvertnbr < (orggrafptr->s.edgenbr / orggrafptr->s.degrmax))) /* Choose best upper bound on number of edges (avoid multiply overflow) */
                ? (indvertnbr * orggrafptr->s.degrmax) : orggrafptr->s.edgenbr;
@@ -125,7 +126,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
   if (memAllocGroup ((void **) (void *)           /* If cannot allocate edge arrays with approximation */
                      &indedgetab, (size_t) (indedgesiz            * sizeof (Gnum)),
                      &orgindxtax, (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL) {
-    indedgenbr = hgraphInduce3 (orggrafptr, orglistptr); /* Count real number of edges */
+    indedgenbr = hgraphInduce3 (orggrafptr, indvnumnbr, indvnumtab); /* Count real number of edges */
 
     indedgesiz = (orggrafptr->s.edlotax != NULL) ? indedgenbr * 2 : indedgenbr; /* Account for edge load array size if graph has edge weights */
 
@@ -232,27 +233,27 @@ Gnum * restrict const           indedgetab)       /* Pointer to pre-allocated sp
 #define HGRAPHINDUCE2EDLOINIT(e)
 #define HGRAPHINDUCE2EDLOSUM        indgrafptr->s.edgenbr
 #define HGRAPHINDUCE2ENOHINIT
-#define HGRAPHINDUCE2ENOHSUM        indgrafptr->enohnbr
+#define HGRAPHINDUCE2ENLOSUM        indgrafptr->enohnbr
 #include "hgraph_induce_edge.c"
 #undef HGRAPHINDUCE2NAME
 #undef HGRAPHINDUCE2EDLOINIT
 #undef HGRAPHINDUCE2EDLOSUM
 #undef HGRAPHINDUCE2ENOHINIT
-#undef HGRAPHINDUCE2ENOHSUM
+#undef HGRAPHINDUCE2ENLOSUM
 #undef HGRAPHINDUCE2U
 
 #define HGRAPHINDUCE2L
 #define HGRAPHINDUCE2NAME           hgraphInduce2L
 #define HGRAPHINDUCE2EDLOINIT(e)    indedlosum += indedlotax[e] = orgedlotax[orgedgenum]
 #define HGRAPHINDUCE2EDLOSUM        indedlosum
-#define HGRAPHINDUCE2ENOHINIT       indenohsum += orgedlotax[orgedgenum]
-#define HGRAPHINDUCE2ENOHSUM        indenohsum
+#define HGRAPHINDUCE2ENOHINIT       indenlosum += orgedlotax[orgedgenum]
+#define HGRAPHINDUCE2ENLOSUM        indenlosum
 #include "hgraph_induce_edge.c"
 #undef HGRAPHINDUCE2NAME
 #undef HGRAPHINDUCE2EDLOINIT
 #undef HGRAPHINDUCE2EDLOSUM
 #undef HGRAPHINDUCE2ENOHINIT
-#undef HGRAPHINDUCE2ENOHSUM
+#undef HGRAPHINDUCE2ENLOSUM
 #undef HGRAPHINDUCE2L
 
 /* This routine computes the exact number of edges
@@ -270,14 +271,14 @@ Gnum * restrict const           indedgetab)       /* Pointer to pre-allocated sp
 static
 Gnum
 hgraphInduce3 (
-const Hgraph * restrict const   orggrafptr,       /* Pointer to original graph */
-const VertList * restrict const orglistptr)       /* Pointer to vertex list    */
+const Hgraph * restrict const orggrafptr,         /* Pointer to original graph */
+const Gnum                    indvnumnbr,
+const Gnum * restrict const   indvnumtab)
 {
   Gnum                indedgenbr;                 /* Revised number of edges in induced halo graph */
   Gnum                indvertnum;                 /* Current vertex number in induced halo graph   */
   Gnum * restrict     orgindxtax;                 /* Array of numbers of selected vertices         */
 
-  const Gnum * restrict const orglistvnumtab = orglistptr->vnumtab;
   const Gnum * restrict const orgverttax = orggrafptr->s.verttax;
   const Gnum * restrict const orgvendtax = orggrafptr->s.vendtax;
   const Gnum * restrict const orgedgetax = orggrafptr->s.edgetax;
@@ -287,15 +288,15 @@ const VertList * restrict const orglistptr)       /* Pointer to vertex list    *
   memSet (orgindxtax, ~0, orggrafptr->s.vertnbr * sizeof (Gnum)); /* Preset index array */
   orgindxtax -= orggrafptr->s.baseval;            /* Base access to orgindxtab          */
 
-  for (indvertnum = 0; indvertnum < orglistptr->vnumnbr; indvertnum ++) /* For all vertices in list */
-    orgindxtax[orglistvnumtab[indvertnum]] = indvertnum; /* Mark selected vertices                  */
+  for (indvertnum = 0; indvertnum < indvnumnbr; indvertnum ++) /* For all vertices in list */
+    orgindxtax[indvnumtab[indvertnum]] = indvertnum; /* Mark selected vertices             */
 
   for (indvertnum = 0, indedgenbr = 0;            /* For all vertices in list */
-       indvertnum < orglistptr->vnumnbr; indvertnum ++) {
+       indvertnum < indvnumnbr; indvertnum ++) {
     Gnum                orgvertnum;               /* Current vertex number in original halo graph */
     Gnum                orgedgenum;               /* Current edge number in original halo graph   */
 
-    orgvertnum = orglistvnumtab[indvertnum];      /* Get number of original vertex                  */
+    orgvertnum = indvnumtab[indvertnum];          /* Get number of original vertex                  */
     indedgenbr += orgvendtax[orgvertnum] - orgverttax[orgvertnum]; /* Add degree of original vertex */
 
     for (orgedgenum = orgverttax[orgvertnum];     /* For all neighbors of original halo vertex */

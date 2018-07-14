@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                the libScotch library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,7 +62,7 @@
 /*                                */
 /**********************************/
 
-#define DGRAPHBANDGROWNAME          dgraphGrow
+#define DGRAPHBANDGROWNAME          dgraphGrow2
 #define DGRAPHBANDGROWEDGE(n)                     /* No need to count edges         */
 #define DGRAPHBANDGROWENQ1                        /* Color array already set        */
 #define DGRAPHBANDGROWENQ2          vnumgsttax[vertlocnum] /* Set vertex color      */
@@ -102,6 +102,7 @@ SCOTCH_Num * const          seedloctab,
 const SCOTCH_Num            distval,
 SCOTCH_Num * const          partgsttab)
 {
+  Gnum *              bandpartgsttax;
   Gnum                bandvertlocnbr;             /* Not used */
   Gnum                bandvertlvlnum;             /* Not used */
   Gnum                bandedgelocsiz;             /* Not used */
@@ -109,10 +110,12 @@ SCOTCH_Num * const          partgsttab)
   Dgraph * restrict const grafptr = (Dgraph *) orggrafptr;
 
   if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
-    errorPrint ("SCOTCH_dgraphGrow: cannot compute ghost edge array");
+    errorPrint (STRINGIFY (SCOTCH_dgraphGrow) ": cannot compute ghost edge array");
     return     (1);
   }
 
-  return ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphGrowPtop : dgraphGrowColl)
-          (grafptr, seedlocnbr, seedloctab, distval, partgsttab - grafptr->baseval, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz));
+  bandpartgsttax = (partgsttab != NULL) ? (Gnum *) partgsttab - grafptr->baseval : NULL;
+
+  return ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphGrow2Ptop : dgraphGrow2Coll)
+          (grafptr, seedlocnbr, seedloctab, distval, bandpartgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz));
 }

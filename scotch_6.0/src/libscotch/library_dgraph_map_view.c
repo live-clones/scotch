@@ -1,4 +1,4 @@
-/* Copyright 2008-2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 26 jul 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -130,12 +130,12 @@ FILE * const                  stream)
   tgtnbr = archDomSize (&mappptr->m.archdat, &domnfrst); /* Get architecture size */
 
   if (archVar (&mappptr->m.archdat)) {
-    errorPrint ("SCOTCH_dgraphMapView: not implemented");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": not implemented");
     return     (1);
   }
 
   if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
-    errorPrint ("SCOTCH_dgraphMapView: cannot compute ghost edge array");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": cannot compute ghost edge array");
     return     (1);
   }
 
@@ -151,18 +151,18 @@ FILE * const                  stream)
     cheklocval = 1;
   }
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("SCOTCH_dgraphMapView: communication error (1)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": communication error (1)");
     return     (1);
   }
   if (chekglbval != 0) {
     if (nmskloctab != NULL)
       memFree (nmskloctab);
-    errorPrint ("SCOTCH_dgraphMapView: out of memory");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": out of memory");
     return     (1);
   }
 
   if (dmapTerm (&mappptr->m, grafptr, termgsttax) != 0) {
-    errorPrint ("SCOTCH_dgraphMapView: cannot build local terminal array");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": cannot build local terminal array");
     memFree    (nmskloctab);
     return     (1);
   }
@@ -176,7 +176,7 @@ FILE * const                  stream)
   for (vertlocnum = grafptr->baseval; vertlocnum < grafptr->vertlocnnd; vertlocnum ++) {
 #ifdef SCOTCH_DEBUG_DMAP2
     if ((termgsttax[vertlocnum] < -1) || (termgsttax[vertlocnum] >= tgtnbr)) {
-      errorPrint ("SCOTCH_dgraphMapView: invalid local terminal array");
+      errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": invalid local terminal array");
       memFree    (nmskloctab);                      /* Free group leader */
       return     (1);
     }
@@ -187,7 +187,7 @@ FILE * const                  stream)
   }
 
   if (MPI_Allreduce (tgloloctab, tgloglbtab, tgtnbr, GNUM_MPI, MPI_SUM, grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("SCOTCH_dgraphMapView: communication error (2)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": communication error (2)");
     memFree    (nmskloctab);                      /* Free group leader */
     return     (1);
   }
@@ -231,7 +231,7 @@ FILE * const                  stream)
   }
 
   if (dgraphHaloWait (&requdat) != 0) {           /* Wait for ghost terminal data to be exchanged */
-    errorPrint ("SCOTCH_dgraphMapView: cannot complete asynchronous halo exchange");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": cannot complete asynchronous halo exchange");
     memFree    (nmskloctab);                      /* Free group leader */
     return     (1);
   }
@@ -272,7 +272,7 @@ FILE * const                  stream)
     nmskloctab[0] &= ~1;                          /* Do not account for unmapped vertices (terminal domain 0 because of "+1") */
 
     if (MPI_Allreduce (nmskloctab, nmskglbtab, nmskidxnbr, MPI_INT, MPI_BOR, grafptr->proccomm) != MPI_SUCCESS) {
-      errorPrint ("SCOTCH_dgraphMapView: communication error (3)");
+      errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": communication error (3)");
       memFree    (nmskloctab);                    /* Free group leader */
       return     (1);
     }
@@ -344,7 +344,7 @@ FILE * const                  stream)
   commlocdist[256 + 2] = commlocexpan;
 
   if (MPI_Allreduce (commlocdist, commglbdist, 256 + 3, GNUM_MPI, MPI_SUM, grafptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("SCOTCH_dgraphMapView: communication error (4)");
+    errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": communication error (4)");
     memFree    (nmskloctab);                      /* Free group leader */
     return     (1);
   }

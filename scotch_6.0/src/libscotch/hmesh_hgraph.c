@@ -154,6 +154,7 @@ Hgraph * restrict const       grafptr)            /*+ Graph to build +*/
   if ((grafptr->s.edgetax = memAlloc (edgemax * sizeof (Gnum))) == NULL) {
     errorPrint ("hmeshHgraph: out of memory (3)");
     hgraphFree (grafptr);
+    memFree    (hashtab);
     return     (1);
   }
   grafptr->s.edgetax -= grafptr->s.baseval;

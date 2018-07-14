@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014-2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 16 jul 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     19 mar 2016     **/
+/**                                 to     03 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -174,11 +174,11 @@ INT * const                 permtab,              /*+ Permutation array to build
 const INT                   permnbr)              /*+ Number of entries in array +*/
 {
   INT *               permptr;
-  INT                 permrmn;
+  UINT                permrmn;
 
-  for (permptr = permtab, permrmn = permnbr;      /* Perform random permutation */
+  for (permptr = permtab, permrmn = (UINT) permnbr; /* Perform random permutation */
        permrmn > 0; permptr ++, permrmn --) {
-    INT                 permnum;
+    UINT                permnum;
     INT                 permtmp;
 
     permnum          = intRandVal (permrmn);      /* Select index to swap       */
@@ -239,7 +239,7 @@ UINT32                      randval)
   randtmp    = (UINT32) randval;
   randtab[0] = randtmp;                           /* Reset array contents */
   for (i = 1; i < 623; i ++) {
-    randtmp = 0x6c078965 * randtmp ^ (randtmp >> 30) + i;
+    randtmp = (0x6c078965 * randtmp) ^ ((randtmp >> 30) + i);
     randtab[i] = randtmp;
   }
   randptr->randnum = 0;                           /* Reset array index */
@@ -347,14 +347,14 @@ FILE * restrict const         stream)             /*+ Stream to read from  +*/
   for (i = 0; i < 624; i ++) {
     INT                 randval;
 
-    if (intLoad (stream, &randval) != 1) {        /* Read version number */
+    if (intLoad (stream, &randval) != 1) {        /* Read state vector */
       errorPrint ("intRandLoad2: bad input (2)");
       return     (2);
     }
     randptr->randtab[i] = (UINT32) randval;
   }
 
-  if (intLoad (stream, &randnum) != 1) {          /* Read version number */
+  if (intLoad (stream, &randnum) != 1) {          /* Read state index */
     errorPrint ("intRandLoad2: bad input (3)");
     return     (2);
   }
@@ -499,9 +499,9 @@ IntRandState * restrict     randptr)
 */
 
 #ifndef COMMON_RANDOM_SYSTEM
-INT
+UINT
 intRandVal (
-INT                         randmax)
+UINT                        randmax)
 {
   return (((UINT) intRandVal2 (&intrandstat)) % randmax);
 }

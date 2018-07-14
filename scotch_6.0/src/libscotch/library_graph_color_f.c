@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 jan 2012     **/
-/**                                 to     02 jan 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,14 +65,14 @@
 **
 */
 
-FORTRAN (                               \
-SCOTCHFGRAPHCOLOR, scotchfgraphcolor, ( \
-const SCOTCH_Graph * const  grafptr,    \
-SCOTCH_Num * const          colotab,    \
-SCOTCH_Num * const          coloptr,    \
-const SCOTCH_Num * const    flagptr,    \
-int * const                 revaptr),   \
-(grafptr, colotab, coloptr, flagptr, revaptr))
+SCOTCH_FORTRAN (                      \
+GRAPHCOLOR, graphcolor, (             \
+const SCOTCH_Graph * const  grafptr,  \
+SCOTCH_Num * const          colotab,  \
+SCOTCH_Num * const          coloptr,  \
+const SCOTCH_Num * const    flagval,  \
+int * const                 revaptr), \
+(grafptr, colotab, coloptr, flagval, revaptr))
 {
-  *revaptr = SCOTCH_graphColor (grafptr, colotab, coloptr, *flagptr);
+  *revaptr = SCOTCH_graphColor (grafptr, colotab, coloptr, *flagval);
 }

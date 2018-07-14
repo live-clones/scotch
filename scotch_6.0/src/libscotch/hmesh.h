@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 31 dec 2001     **/
 /**                                 to     29 apr 2004     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,10 +94,6 @@ typedef struct Hmesh_ {
 **  The function prototypes.
 */
 
-#ifndef HMESH
-#define static
-#endif
-
 void                        hmeshExit           (Hmesh * const);
 Gnum                        hmeshBase           (Hmesh * const, const Gnum);
 #ifdef HGRAPH_H
@@ -104,5 +102,3 @@ int                         hmeshHgraph         (const Hmesh * restrict const, H
 int                         hmeshInducePart     (const Hmesh * const, const GraphPart * const, const GraphPart, const Gnum, const Gnum, const Gnum, Hmesh * const);
 int                         hmeshMesh           (const Hmesh * restrict const, Mesh * restrict const);
 int                         hmeshCheck          (const Hmesh *);
-
-#undef static

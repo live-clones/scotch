@@ -1,4 +1,4 @@
-/* Copyright 2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_dgraphCoarsen() routine.     **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 sep 2014     **/
-/**                                 to     02 mar 2015     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,9 +60,6 @@
 
 #include "ptscotch.h"
 
-#define errorProg                   SCOTCH_errorProg
-#define errorPrint                  SCOTCH_errorPrint
-
 /*********************/
 /*                   */
 /* The main routine. */
@@ -80,7 +77,6 @@ char *              argv[])
   int                 proclocnum;                 /* Number of this process                 */
   SCOTCH_Num          vertglbnbr;
   SCOTCH_Num          vertlocnbr;
-  SCOTCH_Num          baseval;
   SCOTCH_Dgraph       grafdat;
   SCOTCH_Dgraph       coargrafdat;
   SCOTCH_Num          coarvertglbnbr;
@@ -93,22 +89,22 @@ char *              argv[])
 #endif /* SCOTCH_PTHREAD */
   int                 i;
 
-  errorProg (argv[0]);
+  SCOTCH_errorProg (argv[0]);
 
 #ifdef SCOTCH_PTHREAD
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
   if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS)
-    errorPrint ("main: Cannot initialize (1)");
+    SCOTCH_errorPrint ("main: Cannot initialize (1)");
   if (thrdlvlreqval > thrdlvlproval)
-    errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
+    SCOTCH_errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
 #else /* SCOTCH_PTHREAD */
   if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
-    errorPrint ("main: Cannot initialize (2)");
+    SCOTCH_errorPrint ("main: Cannot initialize (2)");
 #endif /* SCOTCH_PTHREAD */
 
   if (argc != 2) {
-    errorPrint ("main: invalid number of parameters");
-    exit       (1);
+    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+    exit (EXIT_FAILURE);
   }
 
   proccomm = MPI_COMM_WORLD;
@@ -127,33 +123,33 @@ char *              argv[])
 #endif /* SCOTCH_CHECK_NOAUTO */
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
-    errorPrint ("main: cannot communicate");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot communicate (1)");
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_dgraphInit (&grafdat, proccomm) != 0) { /* Initialize source graph */
-    errorPrint ("main: cannot initialize graph (1)");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot initialize graph (1)");
+    exit (EXIT_FAILURE);
   }
 
   file = NULL;
   if ((proclocnum == 0) &&
       ((file = fopen (argv[1], "r")) == NULL)) {
-    errorPrint ("main: cannot open graph file");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot open graph file");
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_dgraphLoad (&grafdat, file, 0, 0) != 0) {
-    errorPrint ("main: cannot load graph");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot load graph");
+    exit (EXIT_FAILURE);
   }
 
   if (file != NULL)
     fclose (file);
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
-    errorPrint ("main: cannot communicate");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot communicate (2)");
+    exit (EXIT_FAILURE);
   }
 
   SCOTCH_dgraphData (&grafdat, NULL, &vertglbnbr, &vertlocnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -191,13 +187,13 @@ char *              argv[])
       printf ("%s\n", foldstr);
 
     if ((multloctab = malloc (multlocsiz * 2 * sizeof (SCOTCH_Num))) == NULL) {
-      errorPrint ("main: cannot allocate multinode array");
-      return     (1);
+      SCOTCH_errorPrint ("main: cannot allocate multinode array");
+      exit (EXIT_FAILURE);
     }
 
     if (SCOTCH_dgraphInit (&coargrafdat, proccomm) != 0) { /* Initialize band graph */
-      errorPrint ("main: cannot initialize graph (2)");
-      return     (1);
+      SCOTCH_errorPrint ("main: cannot initialize graph (2)");
+      exit (EXIT_FAILURE);
     }
 
     o = SCOTCH_dgraphCoarsen (&grafdat, 0, coarrat, foldval, &coargrafdat, multloctab);
@@ -227,8 +223,8 @@ char *              argv[])
     }
 
     if (coarvertlocnbr > multlocsiz) {
-      errorPrint ("main: invalid local multinode array size");
-      return     (1);
+      SCOTCH_errorPrint ("main: invalid local multinode array size");
+      exit (EXIT_FAILURE);
     }
 
     SCOTCH_dgraphExit (&coargrafdat);
@@ -238,5 +234,5 @@ char *              argv[])
   SCOTCH_dgraphExit (&grafdat);
 
   MPI_Finalize ();
-  exit         (0);
+  exit (EXIT_SUCCESS);
 }

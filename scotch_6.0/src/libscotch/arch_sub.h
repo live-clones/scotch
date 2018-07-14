@@ -1,4 +1,4 @@
-/* Copyright 2015,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                architecture functions.                 **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 13 mar 2015     **/
-/**                                 to   : 21 feb 2016     **/
+/**                                 to   : 31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,12 +103,6 @@ typedef struct ArchSubMatch_ {
 */
 
 #ifndef ARCH_NOPROTO
-#ifndef ARCH_SUB_H_PROTO
-#define ARCH_SUB_H_PROTO
-
-#ifndef ARCH_SUB
-#define static
-#endif
 
 int                         archSubArchLoad     (ArchSub * restrict const, FILE * restrict const);
 int                         archSubArchSave     (const ArchSub * const, FILE * restrict const);
@@ -134,7 +128,4 @@ int                         archSubDomIncl      (const ArchSub * const, const Ar
 int                         archSubDomMpiType   (const ArchSub * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
 
-#undef static
-
-#endif /* ARCH_SUB_H_PROTO */
 #endif /* ARCH_NOPROTO     */

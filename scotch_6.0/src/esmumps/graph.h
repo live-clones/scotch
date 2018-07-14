@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to     24 jan 2004     **/
 /**                # Version 2.0  : from : 28 feb 2004     **/
 /**                                 to     23 apr 2004     **/
+/**                # Version 6.0  : from : 22 may 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -69,12 +71,6 @@
 **  The function prototypes.
 */
 
-#ifndef GRAPH
-#define static
-#endif
-
 int                         graphBuild          (Graph * const grafptr, const INT baseval, const INT vertnbr, const INT edgenbr, void * const ngbdptr, INT nghbfrstfunc (void * const, const INT), INT nghbnextfunc (void * const));
 int                         graphBuildGraph     (Graph * const grafptr, const INT baseval, const INT vertnbr, const INT edgenbr, INT * restrict verttab, INT * restrict velotab, INT * restrict edgetab);
 int                         graphBuildGraph2    (Graph * const grafptr, const INT baseval, const INT vertnbr, const INT edgenbr, INT * restrict verttab, INT * restrict vendtab, INT * restrict velotab, INT * restrict vlbltab, INT * restrict edgetab, INT * restrict edlotab);
-
-#undef static

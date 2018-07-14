@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 11 dec 2008     **/
 /**                                 to   : 17 jul 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 11 feb 2018     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,9 +76,9 @@
 
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* File array              */
-                              { "r" },
-                              { "w" },
-                              { "r" } };
+                              { FILEMODER },
+                              { FILEMODEW },
+                              { FILEMODER } };
 
 static const char *         C_usageList[] = {     /* Usage */
   "amk_grf [<input source file> [<output target file>]] <options>",
@@ -253,8 +253,5 @@ char *                      argv[])
   if (listtab != NULL)                            /* If vertex list provided  */
     memFree (listtab);                            /* Free it                  */
 
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
   return (0);
 }

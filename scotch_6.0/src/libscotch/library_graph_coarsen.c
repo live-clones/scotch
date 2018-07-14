@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 07 aug 2011     **/
 /**                                 to     07 aug 2011     **/
 /**                # Version 6.0  : from : 06 sep 2011     **/
-/**                                 to     15 aug 2015     **/
+/**                                 to     23 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,7 +91,6 @@ SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph               
 SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to multinode array to fill */
 {
   GraphCoarsenMulti * restrict  coarmultptr;      /* Un-based pointer to created, grouped multinode array */
-  int                           o;
 
   intRandInit ();                                 /* Check that random number generator is initialized */
   coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided        */
@@ -121,7 +120,6 @@ const SCOTCH_Num                        flagval,  /* Flag value                 
 SCOTCH_Num * restrict const             finematetab) /* Mating array to fill              */
 {
   Gnum * restrict     finemateptr;
-  int                 o;
 
   intRandInit ();                                 /* Check that random number generator is initialized             */
   finemateptr = finematetab;                      /* Slot will not be modified but preserve "const" of finematetab */
@@ -147,7 +145,6 @@ SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph               
 SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to user-provided multinode array */
 {
   GraphCoarsenMulti * restrict  coarmultptr;      /* Un-based pointer to created, grouped multinode array */
-  int                           o;
 
   intRandInit ();                                 /* Check that random number generator is initialized */
   coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided        */

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 5.1  : from : 08 dec 2010     **/
 /**                                 to   : 08 dec 2010     **/
 /**                # Version 6.0  : from : 08 mar 2012     **/
-/**                                 to   : 08 mar 2012     **/
+/**                                 to   : 30 apr 2018     **/
 /**                                                        **/
 /**   NOTES      : # This module contains pieces of code   **/
 /**                  that belong to other people; see      **/
@@ -155,7 +155,7 @@ Gnum * restrict     pe /* [] */,                  /* Array of indexes in iw of s
 Gnum                pfree,                        /* Useful size in iw                        */
 Gnum * restrict     len /* [] */,                 /* Array of lengths of adjacency lists      */
 Gnum * restrict     iw /* [] */,                  /* Adjacency list array                     */
-Gnum * restrict     nv /* [] */,                  /* Array of element degrees                 */
+Gnum * restrict     nv /* [] */,                  /* Array of element degrees (weights)       */
 Gnum * restrict     elen /* [] */,                /* Array that holds the inverse permutation */
 Gnum * restrict     last /* [] */,                /* Array that holds the permutation         */
 Gnum * restrict     ncmpaptr,                     /* Number of times array iw was compressed  */
@@ -426,8 +426,7 @@ Gnum * restrict     head /* [] */)                /* Linked list structure      
   if (nbelts == 0) {                              /* Patch 8/12/03 <PA> */
     memSet (elen + 1, 0, n * sizeof (Gnum));      
     for (i = 1; i <= n; i ++) {
-      nv[i] = 1;
-      w[i]  = 1;
+      w[i] = 1;
       if (len[i] < 0) {
         degree[i] = n2;
         nbflag ++;
@@ -444,8 +443,7 @@ Gnum * restrict     head /* [] */)                /* Linked list structure      
   }
   else  {                                         /* Patch 08/12/03 <PA>: Duplicate part of previous loop to avoid sytematic testing for elements */
     for (i = 1; i <= n; i ++) {
-      nv[i] = 1;
-      w[i]  = 1;
+      w[i] = 1;
       if (len[i] < 0) {                           /* i \in V1 */
         degree[i] = n2;
         nbflag ++;

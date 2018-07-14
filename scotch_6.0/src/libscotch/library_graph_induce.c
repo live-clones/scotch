@@ -39,8 +39,8 @@
 /**                graph handling routines of the          **/
 /**                libSCOTCH library.                      **/
 /**                                                        **/
-/**   DATES      : # Version 6.0  : from : 14 jnn 2018     **/
-/**                                 to     14 jan 2018     **/
+/**   DATES      : # Version 6.0  : from : 14 jan 2018     **/
+/**                                 to     21 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,17 +74,17 @@
 ** - !0  : on error.
 */
 
-SCOTCH_Num
+int
 SCOTCH_graphInduceList (
 const SCOTCH_Graph * restrict const orggrafptr,
 const SCOTCH_Num                    vnumnbr,
 const SCOTCH_Num * restrict const   vnumtab,
 SCOTCH_Graph * restrict const       indgrafptr)
 {
-  return ((SCOTCH_Num) graphInduceList ((const Graph * restrict const) orggrafptr,
-                                        (const Gnum) vnumnbr,
-                                        (const Gnum * restrict const) vnumtab,
-                                        (Graph * const) indgrafptr));
+  return (graphInduceList ((const Graph * restrict const) orggrafptr,
+                           (const Gnum) vnumnbr,
+                           (const Gnum * restrict const) vnumtab,
+                           (Graph * const) indgrafptr));
 }
 
 /* This routine builds the graph induced
@@ -99,7 +99,7 @@ SCOTCH_Graph * restrict const       indgrafptr)
 ** - !0  : on error.
 */
 
-SCOTCH_Num
+int
 SCOTCH_graphInducePart (
 const SCOTCH_Graph * restrict const       orggrafptr,
 const SCOTCH_Num                          vnumnbr,
@@ -107,9 +107,9 @@ const SCOTCH_GraphPart2 * restrict const  parttab,
 const SCOTCH_GraphPart2                   partval,
 SCOTCH_Graph * restrict const             indgrafptr)
 {
-  return ((SCOTCH_Num) graphInducePart ((const Graph * restrict const) orggrafptr,
-                                        ((GraphPart * restrict const) parttab) - ((const Graph * const) orggrafptr)->baseval,
-                                        (const Gnum) vnumnbr,
-                                        (const GraphPart) partval,
-                                        (Graph * restrict const) indgrafptr));
+  return (graphInducePart ((const Graph * restrict const) orggrafptr,
+                           ((GraphPart * restrict const) parttab) - ((const Graph * const) orggrafptr)->baseval,
+                           (const Gnum) vnumnbr,
+                           (const GraphPart) partval,
+                           (Graph * restrict const) indgrafptr));
 }

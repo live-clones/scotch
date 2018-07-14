@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,7 +62,7 @@
 /**                # Version 5.1  : from : 07 oct 2008     **/
 /**                                 to     28 mar 2011     **/
 /**                # Version 6.0  : from : 07 aug 2014     **/
-/**                                 to     24 aug 2014     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -152,10 +152,6 @@ typedef struct KgraphMapRbVfloHash_ {
 **  The function prototypes.
 */
 
-#ifndef KGRAPH_MAP_RB
-#define static
-#endif
-
 int                         kgraphMapRb         (Kgraph * const, const KgraphMapRbParam * const);
 
 int                         kgraphMapRbVfloBuild (const Arch * restrict const, const Graph * restrict const, const Gnum, const Anum * restrict const, Graph * restrict const, Anum * restrict const, KgraphMapRbVflo * restrict * restrict const);
@@ -163,5 +159,3 @@ void                        kgraphMapRbVfloSplit (const Arch * restrict const, c
 int                         kgraphMapRbVfloMerge (Mapping * restrict const, const Gnum, const Anum * restrict const, const Anum);
 
 int                         kgraphMapRbBgraph   (const KgraphMapRbData * restrict const, Bgraph * restrict const, const Graph * restrict const, const Mapping * restrict const, const ArchDom * restrict const, const Gnum * restrict const);
-
-#undef static

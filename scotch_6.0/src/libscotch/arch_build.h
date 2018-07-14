@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 4.0  : from : 29 nov 2003     **/
 /**                                 to     29 nov 2003     **/
 /**                # Version 6.0  : from : 14 mar 2016     **/
-/**                                 to     14 mar 2016     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # This file contains pieces of code     **/
 /**                  extracted from release 3.1 of         **/
@@ -83,12 +83,8 @@ typedef struct ArchDecoBuildQueuElem_ {
 **  The function prototypes.
 */
 
-#ifndef ARCH_BUILD
-#define static
-#endif
-
+#ifdef ARCH_BUILD
 static void                 archDecoBuildJobExit (ArchDecoBuildJob *);
+#endif /* ARCH_BUILD */
 
-int                         archDecoBuild       (Arch * const, const Graph * const, const VertList * const, const Strat * const);
-
-#undef static
+int                         archDecoArchBuild   (Arch * const, const Graph * const, const VertList * const, const Strat * const);

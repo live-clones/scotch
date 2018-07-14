@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     24 sep 1998     **/
 /**                # Version 0.1  : from : 04 apr 1999     **/
 /**                                 to     01 may 1999     **/
+/**                # Version 6.0  : from : 22 may 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,12 +53,6 @@
 **  The function prototypes.
 */
 
-#ifndef ESMUMPS
-#define static
-#endif
-
 int                         esmumps             (const INT n, const INT iwlen, INT * const pe, const INT pfree, INT * const len, INT * const iw, INT * const nv, INT * const elen, INT * const last);
 
 int                         esmumps_strat1      (const INT procnbr, const INT leafsiz, const int leorval, const INT cminval, const INT cmaxval, const double fratval, const int verbval, FILE * const stream, char * const straptr);
-
-#undef static

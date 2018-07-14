@@ -138,7 +138,7 @@ of \scotch\ should refer to the \emph{\ptscotch\ \textsc{\scotchver}
 User's Guide}~\scotchcitepuser.
 
 Version \textsc{6.0} of \scotch\ is oriented towards the development of
-new features., namely graph repartitioning and
+new features, namely graph repartitioning and
 remapping~\cite{fope11a}. A whole set of direct $k$-way graph
 partitioning and mapping algorithms has also been implemented.
 Also, new target architectures have been created, to allow \scotch\ to
@@ -841,6 +841,11 @@ Incomplete nested dissection method. Separators are computed
 recursively on subgraphs, and specific ordering methods are applied to
 the separators and to the resulting subgraphs (see
 sections~\ref{sec-algo-nested} and ~\ref{sec-algo-nested-hybrid}).
+\iteme[\textbf{Disconnected subgraph detection}]
+This method may be used as a pre-processing step so as to apply the same
+ordering strategy on each of the disconnected components of a
+graph. While finding the connected components of a graph is expensive,
+it may bring an improvement on graph ordering quality in some cases.
 \end{itemize}
 
 \subsection{Graph separation methods}

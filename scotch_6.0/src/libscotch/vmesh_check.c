@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 4.0  : from : 21 mar 2003     **/
 /**                                 to     11 may 2004     **/
 /**                # Version 6.0  : from : 02 jun 2014     **/
-/**                                 to     02 jun 2014     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -120,17 +120,9 @@ const Vmesh * const         meshptr)
          eelmnum < meshptr->m.vendtax[velmnum]; eelmnum ++)
       edgecut[meshptr->parttax[meshptr->m.edgetax[eelmnum]]] ++;
 
-    if (partnum == 2) {
-      if ((edgecut[0] != 0) || (edgecut[1] != 0)) {
-        errorPrint ("vmeshCheck: separator element not surrounded by separator nodes");
-        return     (1);
-      }
-    }
-    else {
-      if (edgecut[1 - partnum] != 0) {
-        errorPrint ("vmeshCheck: element should be in separator (%ld)", (long) velmnum);
-        return     (1);
-      }
+    if (edgecut[1 - partnum] != 0) {
+      errorPrint ("vmeshCheck: element connected to nodes in other part (%ld)", (long) velmnum);
+      return     (1);
     }
   }
   if ((meshptr->ecmpsize[0] != ecmpsize[0]) ||

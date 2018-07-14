@@ -1,4 +1,4 @@
-/* Copyright 2004,2010-2012,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2010-2012,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 5.0  : from : 11 oct 2006     **/
 /**                                 to     12 oct 2006     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     27 aug 2016     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -165,13 +165,7 @@ typedef struct KgraphMapFmSave_ {
 **  The function prototypes.
 */
 
-#ifndef KGRAPH_MAP_FM
-#define static
-#endif
-
 int                         kgraphMapFm         (Kgraph * restrict const, const KgraphMapFmParam * const);
-
-#undef static
 
 /*
 **  The macro definitions.

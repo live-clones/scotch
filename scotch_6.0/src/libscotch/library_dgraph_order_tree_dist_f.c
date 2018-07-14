@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to     30 nov 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,11 +64,11 @@
 /*                                    */
 /**************************************/
 
-FORTRAN (                                                 \
-SCOTCHFDGRAPHORDERCBLKDIST, scotchfdgraphordercblkdist, ( \
-const SCOTCH_Dgraph * const     grafptr,                  \
-const SCOTCH_Dordering * const  ordeptr,                  \
-SCOTCH_Num * const              cblkglbptr),
+SCOTCH_FORTRAN (                            \
+DGRAPHORDERCBLKDIST, dgraphordercblkdist, ( \
+SCOTCH_Dgraph * const       grafptr,        \
+SCOTCH_Dordering * const    ordeptr,        \
+SCOTCH_Num * const          cblkglbptr),    \
 (grafptr, ordeptr, cblkglbptr))
 {
   *cblkglbptr = SCOTCH_dgraphOrderCblkDist (grafptr, ordeptr);
@@ -78,13 +78,13 @@ SCOTCH_Num * const              cblkglbptr),
 **
 */
 
-FORTRAN (                                                 \
-SCOTCHFDGRAPHORDERTREEDIST, scotchfdgraphordertreedist, ( \
-const SCOTCH_Dgraph * const     grafptr,                  \
-const SCOTCH_Dordering * const  ordeptr,                  \
-SCOTCH_Num * const              treeglbtab,               \
-SCOTCH_Num * const              sizeglbtab,               \
-int * const                     revaptr),                 \
+SCOTCH_FORTRAN (                            \
+DGRAPHORDERTREEDIST, dgraphordertreedist, ( \
+SCOTCH_Dgraph * const       grafptr,        \
+SCOTCH_Dordering * const    ordeptr,        \
+SCOTCH_Num * const          treeglbtab,     \
+SCOTCH_Num * const          sizeglbtab,     \
+int * const                 revaptr),       \
 (grafptr, ordeptr, treeglbtab, sizeglbtab, revaptr))
 {
   *revaptr = SCOTCH_dgraphOrderTreeDist (grafptr, ordeptr, treeglbtab, sizeglbtab);

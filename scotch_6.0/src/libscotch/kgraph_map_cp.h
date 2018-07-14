@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                old mapping has a mapping result.       **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 jan 2012     **/
-/**                                 to     23 aug 2014     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -49,10 +49,4 @@
 **  The function prototypes.
 */
 
-#ifndef KGRAPH_MAP_CP
-#define static
-#endif
-
 int                         kgraphMapCp         (Kgraph * restrict const);
-
-#undef static

@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,8 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     04 nov 2010     **/
-/**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     26 mar 2015     **/
+/**                # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to     28 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,10 +91,6 @@ typedef struct ArchCmpltwDom_ {
 #ifndef ARCH_CMPLTW_H_PROTO
 #define ARCH_CMPLTW_H_PROTO
 
-#ifndef ARCH_CMPLTW
-#define static
-#endif
-
 int                         archCmpltwArchBuild (ArchCmpltw * restrict const archptr, const Anum, const Anum * restrict const);
 int                         archCmpltwArchLoad  (ArchCmpltw * restrict const, FILE * restrict const);
 int                         archCmpltwArchSave  (const ArchCmpltw * const, FILE * restrict const);
@@ -117,8 +113,6 @@ int                         archCmpltwDomIncl   (const ArchCmpltw * const, const
 #ifdef SCOTCH_PTSCOTCH
 int                         archCmpltwDomMpiType (const ArchCmpltw * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
-
-#undef static
 
 #endif /* ARCH_CMPLTW_H_PROTO */
 #endif /* ARCH_NOPROTO        */

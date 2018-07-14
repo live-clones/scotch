@@ -1,4 +1,4 @@
-/* Copyright 2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 23 aug 2016     **/
-/**                                 to     27 aug 2016     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -120,9 +120,11 @@ char *              argv[])
   int                 passnbr;
   int                 passnum;
 
+  SCOTCH_errorProg (argv[0]);
+
   if (fiboHeapInit (&fibodat, testFiboCmpFunc) != 0) {
-    errorPrint ("main: cannot initialize Fibonacci heap");
-    return     (1);
+    SCOTCH_errorPrint ("main: cannot initialize Fibonacci heap");
+    exit (EXIT_FAILURE);
   }
 
   intRandInit ();                                 /* Initialize random generator */
@@ -139,15 +141,15 @@ char *              argv[])
     case 1 :
       break;
     default :
-      errorPrint ("usage: %s [nodenbr [passnbr [seed]]]", argv[0]);
-      return     (1);
+      SCOTCH_errorPrint ("usage: %s [nodenbr [passnbr [seed]]]", argv[0]);
+      exit (EXIT_FAILURE);
   }
   if (passnbr < 0)
     passnbr = 10 * nodesiz;
 
   if ((nodetab = malloc (nodesiz * sizeof (TestFibo))) == NULL) {
-    errorPrint ("main: out of memory");
-    return     (1);
+    SCOTCH_errorPrint ("main: out of memory");
+    exit (EXIT_FAILURE);
   }
   for (nodenum = 0; nodenum < nodesiz; nodenum ++) /* Initialize node array */
     nodetab[nodenum].randval = -1;
@@ -166,8 +168,8 @@ char *              argv[])
             break;
         }
         if (nodenum > nodemax) {
-          errorPrint ("main: invalid node array (1)");
-          return     (1);
+          SCOTCH_errorPrint ("main: invalid node array (1)");
+          exit (EXIT_FAILURE);
         }
         nodetab[nodenum].randval = abs (intRandVal (INTVALMAX));
         fiboHeapAdd (&fibodat, (FiboNode *) &nodetab[nodenum]);
@@ -179,8 +181,8 @@ char *              argv[])
         nodetmp = intRandVal (nodenbr);
         for (nodenum = 0; ; nodenum ++) {         /* Search for non-empty slot */
           if (nodenum > nodemax) {
-            errorPrint ("main: invalid node array (2)");
-            return     (1);
+            SCOTCH_errorPrint ("main: invalid node array (2)");
+            exit (EXIT_FAILURE);
           }
           if (nodetab[nodenum].randval >= 0) {
             if (-- nodetmp <= 0)
@@ -202,7 +204,7 @@ char *              argv[])
         for (nodenum = 0; nodenum <= nodemax; nodenum ++) { /* Check if smaller node exists */
           if ((nodetab[nodenum].randval >= 0) &&
               (nodetab[nodenum].randval <  randval)) {
-            errorPrint ("main: node is not of minimum key");
+            SCOTCH_errorPrint ("main: node is not of minimum key");
           }
         }
         break;
@@ -212,8 +214,8 @@ char *              argv[])
         nodetmp = intRandVal (nodenbr);
         for (nodenum = 0; ; nodenum ++) {         /* Search for non-empty slot */
           if (nodenum > nodemax) {
-            errorPrint ("main: invalid node array (2)");
-            return     (1);
+            SCOTCH_errorPrint ("main: invalid node array (3)");
+            exit (EXIT_FAILURE);
           }
           if (nodetab[nodenum].randval >= 0) {
             if (-- nodetmp <= 0)
@@ -234,5 +236,5 @@ char *              argv[])
   fiboHeapExit (&fibodat);
   free         (nodetab);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines of the libSCOTCH library.      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 mar 2012     **/
-/**                                 to   : 29 nov 2012     **/
+/**                                 to   : 25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,15 +65,15 @@
 **
 */
 
-FORTRAN (                                   \
-SCOTCHFDGRAPHREDIST, scotchfdgraphredist, ( \
-SCOTCH_Dgraph * const       srcgrafptr,     \
-const SCOTCH_Num * const    partloctab,     \
-const SCOTCH_Num * const    permgsttab,     \
-const SCOTCH_Num * const    vertlocdlt,     \
-const SCOTCH_Num * const    edgelocdlt,     \
-SCOTCH_Dgraph * const       dstgrafptr,     \
-int * const                 revaptr),       \
+SCOTCH_FORTRAN (                        \
+DGRAPHREDIST, dgraphredist, (           \
+SCOTCH_Dgraph * const       srcgrafptr, \
+const SCOTCH_Num * const    partloctab, \
+const SCOTCH_Num * const    permgsttab, \
+const SCOTCH_Num * const    vertlocdlt, \
+const SCOTCH_Num * const    edgelocdlt, \
+SCOTCH_Dgraph * const       dstgrafptr, \
+int * const                 revaptr),   \
 (srcgrafptr, partloctab, permgsttab, vertlocdlt, edgelocdlt, dstgrafptr, revaptr))
 {
   *revaptr = SCOTCH_dgraphRedist (srcgrafptr, partloctab, permgsttab, *vertlocdlt, *edgelocdlt, dstgrafptr);

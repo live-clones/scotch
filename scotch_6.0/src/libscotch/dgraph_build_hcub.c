@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 12 nov 2008     **/
 /**                                 to   : 12 nov 2008     **/
+/**                # Version 6.0  : from : 15 may 2018     **/
+/**                                 to   : 15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,7 +121,7 @@ const Gnum                  flagval)              /* Flags               */
 #ifdef SCOTCH_DEBUG_DGRAPH3
                      &vlblloctax, (size_t) (vertlocnbr       * sizeof (Gnum)),
 #endif /* SCOTCH_DEBUG_DGRAPH3 */
-                     &veloloctax, (size_t) (vertlocnbr       * sizeof (Gnum)), NULL) == NULL) {
+                     &veloloctax, (size_t) (velolocnbr       * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("dgraphBuildHcub: out of memory (1)");
     cheklocval = 1;
   }

@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 26 oct 2008     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,8 +65,8 @@
 
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* File array              */
-                              { "r" },
-                              { "w" } };
+                              { FILEMODER },
+                              { FILEMODEW } };
 
 static const char *         C_usageList[] = {
   "dgtst [<input graph file> [<output data file>]] <options>",
@@ -106,8 +106,10 @@ char *              argv[])
   SCOTCH_Num          edlosum;
   double              edloavg;
   double              edlodlt;
-  int                 flagval;
   int                 i;
+#ifdef SCOTCH_DEBUG_ALL
+  int                 flagval;
+#endif /* SCOTCH_DEBUG_ALL */
 #ifdef SCOTCH_PTHREAD
   int                 thrdlvlreqval;
   int                 thrdlvlproval;
@@ -135,7 +137,9 @@ char *              argv[])
     return     (0);
   }
 
+#ifdef SCOTCH_DEBUG_ALL
   flagval = C_FLAGNONE;
+#endif /* SCOTCH_DEBUG_ALL */
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
 
@@ -170,7 +174,7 @@ char *              argv[])
         case 'V' :
         case 'v' :
           fprintf (stderr, "dgtst, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -221,8 +225,6 @@ char *              argv[])
   SCOTCH_dgraphExit (&grafdat);
 
   MPI_Finalize ();
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
+
   return (0);
 }

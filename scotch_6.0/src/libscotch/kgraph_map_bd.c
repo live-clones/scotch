@@ -1,4 +1,4 @@
-/* Copyright 2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : kgraph_map_bd.c                         **/
 /**                                                        **/
 /**   AUTHOR     : Sebastien FOURESTIER (v6.0)             **/
+/**                Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module computes a partition of     **/
 /**                the given k-way mapping graph by        **/
@@ -45,7 +46,7 @@
 /**                graph.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 jan 2010     **/
-/**                                 to   : 03 mar 2011     **/
+/**                                 to   : 21 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -122,14 +123,6 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
   Gnum * restrict const       orgfrontab = orggrafptr->frontab;
   Gnum * restrict const       orgparttax = orggrafptr->m.parttax;
 
-  if ((vertnbrtab = memAlloc (domnnbr * sizeof(Gnum))) == NULL) {
-    errorPrint ("kgraphMapBd: out of memory (1)");
-    return     (1);
-  }
-  memSet (vertnbrtab, 0, domnnbr * sizeof(Gnum));
-  for (vertnum = orggrafptr->s.baseval; vertnum < orggrafptr->s.vertnnd; vertnum ++)
-    vertnbrtab[orgparttax[vertnum]] ++;           /* TODO check optimize? */
-
   if (orggrafptr->fronnbr == 0)                   /* If no separator vertices, apply strategy to full (original) graph */
     return (kgraphMapSt (orggrafptr, paraptr->stratorg));
 
@@ -137,6 +130,14 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
     errorPrint ("kgraphMapBd: cannot create band graph");
     return     (1);
   }
+
+  if ((vertnbrtab = memAlloc (domnnbr * sizeof(Gnum))) == NULL) {
+    errorPrint ("kgraphMapBd: out of memory (1)");
+    return     (1);
+  }
+  memSet (vertnbrtab, 0, domnnbr * sizeof(Gnum));
+  for (vertnum = orggrafptr->s.baseval; vertnum < orggrafptr->s.vertnnd; vertnum ++)
+    vertnbrtab[orgparttax[vertnum]] ++;           /* TODO check optimize? */
 
   bndvertancnnd = bndgrafdat.s.vertnnd - domnnbr;
   for (domnnum = 0; domnnum < domnnbr; domnnum ++) { /* For all anchor domains */

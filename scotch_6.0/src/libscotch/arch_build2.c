@@ -40,7 +40,7 @@
 /**                from a source graph.                    **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
-/**                                 to     13 feb 2018     **/
+/**                                 to     22 feb 2018     **/
 /**                                                        **/
 /**   NOTES      : # The code of the main routine derives  **/
 /**                  from that of archSubArchBuild().      **/
@@ -123,7 +123,6 @@ archDeco2BuildMatchInit (
 ArchDeco2BuildMatch * restrict const  matcptr,
 const Graph * restrict const          grafptr)
 {
-  Gnum                hashmsk;
   Gnum                verttmp;
   Gnum                levlmax;                    /* Estimated upper bound on number of coarsening levels */
   Gnum                multnbr;
@@ -189,7 +188,6 @@ const Graph * restrict const          grafptr)
 
   if (matcptr->levltab[0].grafdat.edlotax != NULL) { /* If original graph has edge loads */
     Gnum                edgenbr;
-    Gnum                baseval;
 
     edgenbr = matcptr->levltab[0].grafdat.edgenbr;
     if ((matcptr->lewgtab[0].edwgtab = memAlloc (edgenbr * sizeof (Gnum))) == NULL) {
@@ -218,37 +216,33 @@ archDeco2BuildMatchMate (
 ArchDeco2BuildMatch * restrict const          matcptr,
 ArchCoarsenMulti * restrict * restrict const  multptr)
 {
-  const ArchDeco2BuildMatch * restrict  finematcptr;
-  const Graph * restrict                finegrafptr;
-  const Gnum * restrict                 fineedwgtax;
-  const Gnum * restrict                 finevewgtax;
-  const Gnum * restrict                 fineedgetax;
-  const Gnum * restrict                 fineverttax;
-  const Gnum * restrict                 finevendtax;
-  Anum                                  finevertnbr;
-  Anum                                  finevertnum;
-  Gnum * restrict                       finecoartax;
-  const ArchDeco2Levl * restrict        finelevlptr;
-  ArchDeco2Levl * restrict              coarlevlptr;
-  const ArchDeco2BuildMatch * restrict  coarmatcptr;
-  ArchCoarsenMulti * restrict           coarmulttax;
-  Graph * restrict                      coargrafptr;
-  Gnum * restrict                       coaredwgtax;
-  Gnum * restrict                       coarvewgtax;
-  Gnum                                  coarvewgsum;
-  Gnum                                  coaredwgsum;
-  Gnum                                  coarvertmax; /* Maximum coarse vertex index to be processed for matching */
-  Gnum                                  coarvertnnd;
-  Gnum                                  coarvertnum;
-  Gnum                                  coarvertsum; /* Sum of all coarse vertices kept in coarsening tree       */
-  Gnum * restrict                       coarvelotax;
-  Gnum                                  coaredgenum;
-  ArchDeco2BuildHash * restrict         coarhashtab;
-  Gnum                                  coarhashmax;
-  Gnum                                  coarhashsiz;
-  Gnum                                  coarhashmsk;
-  Gnum                                  levlmax;
-  Gnum                                  levlnum;
+  const Graph * restrict          finegrafptr;
+  const Gnum * restrict           fineedwgtax;
+  const Gnum * restrict           finevewgtax;
+  const Gnum * restrict           fineedgetax;
+  const Gnum * restrict           fineverttax;
+  const Gnum * restrict           finevendtax;
+  Anum                            finevertnbr;
+  Gnum * restrict                 finecoartax;
+  const ArchDeco2Levl * restrict  finelevlptr;
+  ArchDeco2Levl * restrict        coarlevlptr;
+  ArchCoarsenMulti * restrict     coarmulttax;
+  Graph * restrict                coargrafptr;
+  Gnum * restrict                 coaredwgtax;
+  Gnum * restrict                 coarvewgtax;
+  Gnum                            coarvewgsum;
+  Gnum                            coaredwgsum;
+  Gnum                            coarvertnnd;
+  Gnum                            coarvertnum;
+  Gnum                            coarvertsum;    /* Sum of all coarse vertices kept in coarsening tree       */
+  Gnum * restrict                 coarvelotax;
+  Gnum                            coaredgenum;
+  ArchDeco2BuildHash * restrict   coarhashtab;
+  Gnum                            coarhashmax;
+  Gnum                            coarhashsiz;
+  Gnum                            coarhashmsk;
+  Gnum                            levlmax;
+  Gnum                            levlnum;
 
   levlnum     = matcptr->levlnum;
   finelevlptr = &matcptr->levltab[levlnum];
@@ -537,7 +531,6 @@ const Gnum * restrict const vnumtab)              /*+ vertex array              
   Anum                vnumnum;
   Gnum *              vnumtmp;
   Anum                levlnum;
-  ArchDeco2Levl *     levlptr;                    /* Pointer to coarsest level            */
   const char *        messptr;                    /* Pointer to error message             */
 
   ArchDeco2 * restrict const  decoptr = &archptr->data.deco2;

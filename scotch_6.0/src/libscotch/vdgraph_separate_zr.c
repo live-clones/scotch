@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 07 feb 2006     **/
 /**                                 to     07 feb 2006     **/
+/**                # Version 6.0  : from : 23 feb 2018     **/
+/**                                 to     23 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,7 +75,7 @@ int
 vdgraphSeparateZr (
 Vdgraph * const             grafptr)              /*+ Active graph +*/
 {
-  if (grafptr->compglbload[0] != grafptr->s.veloglbsum) /* If not all vertices already in part zero */
+  if (grafptr->compglbsize[0] != grafptr->s.vertglbnbr) /* If not all vertices already in part zero */
     vdgraphZero (grafptr);
 
   return (0);

@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routine.                                **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 10 may 2010     **/
-/**                                 to   : 11 sep 2012     **/
+/**                                 to   : 07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -48,12 +48,8 @@
 ** The function prototypes.
 */
 
-#ifndef DGRAPH_REDIST
-#define static
-#endif
+#ifdef DGRAPH_REDIST
+static int                  dgraphRedist2       (Dgraph * restrict const, const Gnum * restrict const, const Gnum * restrict const, const Gnum * const, const Gnum * const, const Gnum, const Gnum, Dgraph * restrict const);
+#endif /* DGRAPH_REDIST */
 
 int                         dgraphRedist        (Dgraph * restrict const, const Gnum * restrict const, const Gnum * restrict const, const Gnum, const Gnum, Dgraph * restrict const);
-
-static int                  dgraphRedist2       (Dgraph * restrict const, const Gnum * restrict const, const Gnum * restrict const, const Gnum * const, const Gnum * const, const Gnum, const Gnum, Dgraph * restrict const);
-
-#undef static

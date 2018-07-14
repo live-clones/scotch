@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**   DATES      : # Version 5.1  : from : 21 jun 2008     **/
 /**                                 to     31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     31 aug 2014     **/
+/**                                 to     03 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -206,7 +206,6 @@ const ArchDom * restrict const          domnsubtab,
 KdgraphMapRbPartGraph * restrict const  fldgrafptr)
 {
   KdgraphMapRbPartThread  fldthrdtab[2];
-  int                     fldprocnbr;             /* Number of processes in part of this process  */
   int                     fldprocnbr0;            /* Number of processes in first part            */
   int                     fldprocnum;
   int                     fldproccol;
@@ -275,12 +274,10 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   if (actgrafptr->s.proclocnum < fldprocnbr0) {   /* Compute color and rank in our future subpart */
     fldpartval = 0;
     fldprocnum = actgrafptr->s.proclocnum;
-    fldprocnbr = fldprocnbr0;
   }
   else {
     fldpartval = 1;
     fldprocnum = actgrafptr->s.proclocnum - fldprocnbr0;
-    fldprocnbr = actgrafptr->s.procglbnbr - fldprocnbr0;
   }
 
   fldgrafptr->domnorg = *fldthrdtab[fldpartval].inddomnptr; /* Set data of our folded graph */

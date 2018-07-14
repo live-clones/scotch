@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 27 jul 2008     **/
 /**                                 to     27 mar 2010     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,12 +67,12 @@
 **
 */
 
-FORTRAN (                                       \
-SCOTCHFDGRAPHMAPVIEW, scotchfdgraphmapview, (   \
-SCOTCH_Dgraph * const         grafptr,          \
-const SCOTCH_Dmapping * const mapptr,           \
-int * const                   fileptr,          \
-int * const                   revaptr),         \
+SCOTCH_FORTRAN (                        \
+DGRAPHMAPVIEW, dgraphmapview, (         \
+SCOTCH_Dgraph * const         grafptr,  \
+const SCOTCH_Dmapping * const mapptr,   \
+int * const                   fileptr,  \
+int * const                   revaptr), \
 (grafptr, mapptr, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
@@ -83,12 +83,12 @@ int * const                   revaptr),         \
     stream = NULL;
   else {
     if ((filenum = dup (*fileptr)) < 0) {         /* If cannot duplicate file descriptor */
-      errorPrint ("SCOTCHFDGRAPHMAPVIEW: cannot duplicate handle");
+      errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHMAPVIEW)) ": cannot duplicate handle");
       *revaptr = 1;                               /* Indicate error */
       return;
     }
     if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
-      errorPrint ("SCOTCHFDGRAPHMAPVIEW: cannot open output stream");
+      errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (DGRAPHMAPVIEW)) ": cannot open output stream");
       close      (filenum);
       *revaptr = 1;
       return;

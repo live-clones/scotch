@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 03 jul 2012     **/
-/**                                 to     23 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,26 +61,25 @@
 /*                                    */
 /**************************************/
 
-FORTRAN (                                   \
-SCOTCHFGRAPHTABLOAD, scotchfgraphtabload, ( \
-const SCOTCH_Graph * const  grafptr,        \
-SCOTCH_Num * const          parttab,        \
-const int * const           fileptr,        \
-int * const                 revaptr),       \
+SCOTCH_FORTRAN (                      \
+GRAPHTABLOAD, graphtabload, (         \
+const SCOTCH_Graph * const  grafptr,  \
+SCOTCH_Num * const          parttab,  \
+const int * const           fileptr,  \
+int * const                 revaptr), \
 (grafptr, parttab, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
   int                 filenum;                    /* Duplicated handle           */
-  int                 filegeonum;
   int                 o;
 
   if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFGRAPHTABLOAD: cannot duplicate handle");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHTABLOAD)) ": cannot duplicate handle");
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((stream = fdopen (filenum, "r")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFGRAPHTABLOAD: cannot open input stream");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHTABLOAD)) ": cannot open input stream");
     close      (filenum);
     *revaptr = 1;
     return;
@@ -97,12 +96,12 @@ int * const                 revaptr),       \
 **
 */
 
-FORTRAN (                                   \
-SCOTCHFGRAPHMAPLOAD, scotchfgraphmapload, ( \
-const SCOTCH_Graph * const  grafptr,        \
-SCOTCH_Mapping * const      mappptr,        \
-const int * const           fileptr,        \
-int * const                 revaptr),       \
+SCOTCH_FORTRAN (                      \
+GRAPHMAPLOAD, graphmapload, (         \
+const SCOTCH_Graph * const  grafptr,  \
+SCOTCH_Mapping * const      mappptr,  \
+const int * const           fileptr,  \
+int * const                 revaptr), \
 (grafptr, mappptr, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
@@ -110,12 +109,12 @@ int * const                 revaptr),       \
   int                 o;
 
   if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFGRAPHMAPLOAD: cannot duplicate handle");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHMAPLOAD)) ": cannot duplicate handle");
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((stream = fdopen (filenum, "r")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFGRAPHMAPLOAD: cannot open input stream");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHMAPLOAD)) ": cannot open input stream");
     close      (filenum);
     *revaptr = 1;
     return;
@@ -132,12 +131,12 @@ int * const                 revaptr),       \
 **
 */
 
-FORTRAN (                                   \
-SCOTCHFGRAPHMAPSAVE, scotchfgraphmapsave, ( \
-const SCOTCH_Graph * const  grafptr,        \
-SCOTCH_Mapping * const      mappptr,        \
-int * const                 fileptr,        \
-int * const                 revaptr),       \
+SCOTCH_FORTRAN (                      \
+GRAPHMAPSAVE, graphmapsave, (         \
+const SCOTCH_Graph * const  grafptr,  \
+SCOTCH_Mapping * const      mappptr,  \
+const int * const           fileptr,  \
+int * const                 revaptr), \
 (grafptr, mappptr, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
@@ -145,13 +144,13 @@ int * const                 revaptr),       \
   int                 o;
 
   if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */
-    errorPrint ("SCOTCHFGRAPHMAPSAVE: cannot duplicate handle");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHMAPSAVE)) ": cannot duplicate handle");
 
     *revaptr = 1;                                 /* Indicate error */
     return;
   }
   if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
-    errorPrint ("SCOTCHFGRAPHMAPSAVE: cannot open output stream");
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHMAPSAVE)) ": cannot open output stream");
     close      (filenum);
     *revaptr = 1;
     return;

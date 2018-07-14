@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2013,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2013,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,8 +62,8 @@
 /**                                 to     05 nov 2003     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     21 jan 2008     **/
-/**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     30 mar 2015     **/
+/**                # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to     28 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,10 +98,6 @@
 #ifndef ARCH_NOPROTO
 #ifndef ARCH_TORUS_H_PROTO
 #define ARCH_TORUS_H_PROTO
-
-#ifndef ARCH_TORUS
-#define static
-#endif
 
 #define archTorus2ArchLoad          archMesh2ArchLoad
 #define archTorus2ArchSave          archMesh2ArchSave
@@ -161,8 +157,6 @@ Anum                        archTorusXDomDist   (const ArchTorusX * const, const
 #define archTorusXDomSave           archMeshXDomSave
 #define archTorusXDomBipart         archMeshXDomBipart
 #define archTorusXDomIncl           archMeshXDomIncl
-
-#undef static
 
 #endif /* ARCH_TORUS_H_PROTO */
 #endif /* ARCH_NOPROTO       */

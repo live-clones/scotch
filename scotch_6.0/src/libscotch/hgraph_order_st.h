@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 29 dec 2001     **/
 /**                                 to   : 15 jan 2003     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
-/**                                 to   : 17 oct 2012     **/
+/**                                 to   : 05 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,6 +58,7 @@
 
 typedef enum HgraphOrderStMethodType_ {
   HGRAPHORDERSTMETHBL = 0,                        /*+ Block splitting post-processing       +*/
+  HGRAPHORDERSTMETHCC,                            /*+ Splitting of connected components     +*/
   HGRAPHORDERSTMETHCP,                            /*+ Graph compression                     +*/
   HGRAPHORDERSTMETHGP,                            /*+ Gibbs-Poole-Stockmeyer                +*/
   HGRAPHORDERSTMETHHD,                            /*+ Block Halo Approximate Minimum Degree +*/
@@ -78,10 +79,4 @@ extern StratTab             hgraphorderststratab;
 **  The function prototypes.
 */
 
-#ifndef HGRAPH_ORDER_ST
-#define static
-#endif
-
 int                         hgraphOrderSt       (const Hgraph * restrict const, Order * restrict const, const Gnum, OrderCblk * restrict const, const Strat * const);
-
-#undef static

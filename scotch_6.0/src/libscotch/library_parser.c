@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 4.0  : from : 23 dec 2001     **/
 /**                                 to   : 23 dec 2001     **/
 /**                # Version 6.0  : from : 07 jan 2014     **/
-/**                                 to     07 jan 2014     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,7 +81,7 @@ SCOTCH_stratInit (
 SCOTCH_Strat * const        stratptr)
 {
   if (sizeof (SCOTCH_Strat) < sizeof (Strat *)) {
-    errorPrint ("SCOTCH_stratInit: internal error (1)");
+    errorPrint (STRINGIFY (SCOTCH_stratInit) ": internal error (1)");
     return     (1);
   }
 

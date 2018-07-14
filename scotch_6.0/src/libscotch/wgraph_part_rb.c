@@ -1,4 +1,4 @@
-/* Copyright 2010,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                sive bipartitioning approach.           **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 mar 2010     **/
-/**                                 to     12 aug 2014     **/
+/**                                 to     26 feb 2018     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kgraph_map_rb_part.c for the vertex   **/
@@ -248,7 +248,6 @@ Wgraph * restrict const                   grafptr,
 const WgraphPartRbParam * restrict const  paraptr)
 {
   const Anum * restrict         parttax;
-  Anum				partval;
   Gnum                          vertnum;
   Gnum                          velomsk;
   const Gnum * restrict         velobax;              /* Data for handling of optional arrays  */

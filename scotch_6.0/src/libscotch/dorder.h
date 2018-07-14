@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     14 oct 2007     **/
 /**                # Version 5.1  : from : 28 nov 2007     **/
 /**                                 to     04 nov 2010     **/
+/**                # Version 6.0  : from : 08 may 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,7 +63,7 @@
 
 #define DORDERCBLKNONE              0x0000        /*+ Not yet assigned                 +*/
 #define DORDERCBLKNEDI              0x0001        /*+ Nested dissection separator node +*/
-#define DORDERCBLKLEAF              0x0002        /*+ Distributed leaf                 +*/
+#define DORDERCBLKLEAF              0x0004        /*+ Distributed leaf                 +*/
 
 /*
 **  The type and structure definitions.
@@ -158,10 +160,6 @@ typedef struct Dorder_ {
 **  The function prototypes.
 */
 
-#ifndef DORDER
-#define static
-#endif
-
 int                         dorderInit          (Dorder * const, const Gnum, const Gnum, MPI_Comm);
 void                        dorderExit          (Dorder * const);
 void                        dorderFree          (Dorder * const);
@@ -187,5 +185,3 @@ DorderCblk *                dorderNew           (DorderCblk * const, MPI_Comm);
 DorderCblk *                dorderNewSequ       (DorderCblk * const);
 Gnum                        dorderNewSequIndex  (DorderCblk * const, const Gnum);
 void                        dorderDispose       (DorderCblk * const);
-
-#undef static

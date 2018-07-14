@@ -1,4 +1,4 @@
-/* Copyright 2011,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 07 aug 2011     **/
 /**                                 to     07 aug 2011     **/
 /**                # Version 6.0  : from : 28 feb 2015     **/
-/**                                 to     15 aug 2015     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,49 +67,49 @@
 **
 */
 
-FORTRAN (                                   \
-SCOTCHFGRAPHCOARSEN, scotchfgraphcoarsen, ( \
-SCOTCH_Graph * const        finegrafptr,    \
-const SCOTCH_Num * const    coarvertptr,    \
-const double * const        coarptr,        \
-const SCOTCH_Num * const    flagptr,        \
-SCOTCH_Graph * const        coargrafptr,    \
-SCOTCH_Num * const          coarmulttab,    \
-int * const                 revaptr),       \
-(finegrafptr, coarvertptr, coarptr, flagptr, coargrafptr, coarmulttab, revaptr))
+SCOTCH_FORTRAN (                         \
+GRAPHCOARSEN, graphcoarsen, (            \
+SCOTCH_Graph * const        finegrafptr, \
+const SCOTCH_Num * const    coarvertptr, \
+const double * const        coarnbr,     \
+const SCOTCH_Num * const    flagval,     \
+SCOTCH_Graph * const        coargrafptr, \
+SCOTCH_Num * const          coarmulttab, \
+int * const                 revaptr),    \
+(finegrafptr, coarvertptr, coarnbr, flagval, coargrafptr, coarmulttab, revaptr))
 {
-  *revaptr = SCOTCH_graphCoarsen (finegrafptr, *coarvertptr, *coarptr, *flagptr, coargrafptr, coarmulttab);
+  *revaptr = SCOTCH_graphCoarsen (finegrafptr, *coarvertptr, *coarnbr, *flagval, coargrafptr, coarmulttab);
 }
 
 /*
 **
 */
 
-FORTRAN (                                             \
-SCOTCHFGRAPHCOARSENMATCH, scotchfgraphcoarsenmatch, ( \
-SCOTCH_Graph * const        finegrafptr,              \
-SCOTCH_Num * const          coarvertptr,              \
-const double * const        coarptr,                  \
-const SCOTCH_Num * const    flagptr,                  \
-SCOTCH_Num * const          finematetab,              \
-int * const                 revaptr),                 \
-(finegrafptr, coarvertptr, coarptr, flagptr, finematetab, revaptr))
+SCOTCH_FORTRAN (                         \
+GRAPHCOARSENMATCH, graphcoarsenmatch, (  \
+SCOTCH_Graph * const        finegrafptr, \
+SCOTCH_Num * const          coarvertptr, \
+const double * const        coarnbr,     \
+const SCOTCH_Num * const    flagval,     \
+SCOTCH_Num * const          finematetab, \
+int * const                 revaptr),    \
+(finegrafptr, coarvertptr, coarnbr, flagval, finematetab, revaptr))
 {
-  *revaptr = SCOTCH_graphCoarsenMatch (finegrafptr, coarvertptr, *coarptr, *flagptr, finematetab);
+  *revaptr = SCOTCH_graphCoarsenMatch (finegrafptr, coarvertptr, *coarnbr, *flagval, finematetab);
 }
 
 /*
 **
 */
 
-FORTRAN (                                             \
-SCOTCHFGRAPHCOARSENBUILD, scotchfgraphcoarsenbuild, ( \
-SCOTCH_Graph * const        finegrafptr,              \
-SCOTCH_Num * const          coarvertptr,              \
-SCOTCH_Num * const          finematetab,              \
-SCOTCH_Graph * const        coargrafptr,              \
-SCOTCH_Num * const          coarmulttab,              \
-int * const                 revaptr),                 \
+SCOTCH_FORTRAN (                         \
+GRAPHCOARSENBUILD, graphcoarsenbuild, (  \
+SCOTCH_Graph * const        finegrafptr, \
+SCOTCH_Num * const          coarvertptr, \
+SCOTCH_Num * const          finematetab, \
+SCOTCH_Graph * const        coargrafptr, \
+SCOTCH_Num * const          coarmulttab, \
+int * const                 revaptr),    \
 (finegrafptr, coarvertptr, finematetab, coargrafptr, coarmulttab, revaptr))
 {
   *revaptr = SCOTCH_graphCoarsenBuild (finegrafptr, *coarvertptr, finematetab, coargrafptr, coarmulttab);

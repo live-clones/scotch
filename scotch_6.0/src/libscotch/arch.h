@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2011,2013-2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2011,2013-2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,8 +64,8 @@
 /**                                 to     07 dec 2004     **/
 /**                # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     11 aug 2010     **/
-/**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     01 may 2015     **/
+/**                # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to     28 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -137,7 +137,7 @@ typedef struct ArchClass_ {
   int                    (* archFree)  ();        /*+ Architecture freeing function       +*/
   int                    (* matchInit) ();        /*+ Architecture matching init function +*/
   void                   (* matchExit) ();        /*+ Architecture matching exit function +*/
-  int                    (* matchMate) ();        /*+ Architecture matching function      +*/
+  Anum                   (* matchMate) ();        /*+ Architecture matching function      +*/
   ArchDomNum             (* domNum)    ();        /*+ Domain labeling function            +*/
   int                    (* domTerm)   ();        /*+ Terminal domain building function   +*/
   Anum                   (* domSize)   ();        /*+ Domain size function                +*/
@@ -223,10 +223,6 @@ typedef struct ArchMatch_ {
 **  The function prototypes.
 */
 
-#ifndef ARCH
-#define static
-#endif
-
 int                         archInit            (Arch * restrict const);
 int                         archExit            (Arch * restrict const);
 int                         archFree            (Arch * restrict const);
@@ -249,8 +245,6 @@ int                         archDomIncl         (const Arch * const, const ArchD
 #ifdef SCOTCH_PTSCOTCH
 int                         archDomMpiType      (const Arch * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
-
-#undef static
 
 /*
 **  The macro definitions.

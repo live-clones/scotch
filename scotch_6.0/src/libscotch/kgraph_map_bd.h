@@ -1,4 +1,4 @@
-/* Copyright 2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2010,2011,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routine for distributed graphs.         **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 jan 2010     **/
-/**                                 to   : 20 feb 2012     **/
+/**                                 to   : 07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,11 +70,4 @@ typedef struct KgraphMapBdParam_ {
 **  The function prototypes.
 */
 
-#ifndef KGRAPH_MAP_BD
-#define static
-#endif
-
-int                         kgraphMapBd      (Kgraph * const, const KgraphMapBdParam * const);
-
-#undef static
-
+int                         kgraphMapBd         (Kgraph * const, const KgraphMapBdParam * const);

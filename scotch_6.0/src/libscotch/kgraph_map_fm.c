@@ -1,4 +1,4 @@
-/* Copyright 2004,2010-2012,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2010-2012,2014,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**                method.                                 **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 03 mar 2011     **/ 
-/**                                 to     27 aug 2016     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -570,9 +570,6 @@ KgraphMapFmTabl * restrict const    tablptr)
 {
   KgraphMapFmEdge * restrict    edxxtab;
   Gnum                          edxxidx;
-  Gnum                          edgenum;
-  Gnum                          edlosum;
-  Gnum                          edgenbr;
   Gnum                          edxxtmp;
   Gnum                          commgain;
 
@@ -807,7 +804,6 @@ KgraphMapFmEdge *                 edxxtab,        /*+ Extended edge array       
 KgraphMapFmVertex ** const        lockptr)        /*+ Pointer to locked list     +*/
 {
   KgraphMapFmVertex * restrict    vexxtab;        /* Extended vertex array                */
-  KgraphMapFmSave * restrict      saveold;        /* Pointer to translated old save array */
   Gnum                            savenum;
   Gnum                            hashold;        /* Size of old hash table (half of new) */
   Gnum                            hashsiz;
@@ -1332,7 +1328,6 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
       Gnum                edxxidx;
       Gnum *              edxpptr;
       Gnum *              vpexptr;
-      Gnum                vexdflg;
 
       vexxidx = edxxptr->vexxidx;                 /* Get relevant information */
       vertnum = vexxtab[vexxidx].vertnum;
@@ -1421,7 +1416,6 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
       edxxptr->commgain = - edxxptr->commgain;
       edxxptr->cmiggain = - edxxptr->cmiggain;
 
-      vexdflg = 0;
       if (edgenbr == 0) {
         Gnum              edxxidx;  
  
@@ -1451,18 +1445,12 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
         Gnum                edxnidx;              /* index of extended edge to new domain                    */
         Gnum                vertend;              /* Number of current end neighbor vertex                   */
         Gnum                edxfidx;              /* Index of first extended edge to update                  */ 
-        Gnum                edgeend;
-        Gnum                edodnbr;
-        Gnum                edndnbr;
         Anum                divoval;              /* Distance between current neighbor domain and old domain */
         Anum                divnval;              /* Distance between current neighbor domain and new domain */
         Gnum                edloval;
 
         vertend = edgetax[edgenum];
         edloval = (edlotax != NULL) ? edlotax[edgenum] : 1;
-
-        if (parttax[edgetax[edgenum]] == domnnum)
-          vexdflg = 1;
 
         if ((pfixtax != NULL) && (pfixtax[vertend] != -1)) /* Do not link fixed vertices */
           continue;
@@ -1625,7 +1613,9 @@ const KgraphMapFmParam * const    paraptr)        /*+ Method parameters +*/
         }
 
         if ((edxnidx == -1) && (vexxtab[vexxend].domnnum != domnend)) { /* If was first vertex linked to this domain, add edge to new domain */
+#ifdef SCOTCH_DEBUG_KGRAPH2 
           Gnum        edxxidx;
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
 
           kgraphMapFmPartAdd2 (grafptr, vexxtab, vexxend, &edxxtab, &edxxsiz, &edxxnbr, vexxtab[vexxend].domnnum, domnend, edloval, tablptr); /* Add new extended edge */
 #ifdef SCOTCH_DEBUG_KGRAPH2 

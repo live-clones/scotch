@@ -1,4 +1,4 @@
-/* Copyright 2015,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                architecture building routine.          **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
-/**                                 to     30 dec 2016     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -112,4 +112,4 @@ static void                 archDeco2BuildMatchExit (ArchDeco2BuildMatch * restr
 static Anum                 archDeco2BuildMatchMate (ArchDeco2BuildMatch * restrict const, ArchCoarsenMulti * restrict * restrict const);
 #endif /* ARCH_BUILD2 */
 
-int                         archBuild2          (Arch * const, const Graph * const, const Gnum, const Gnum * restrict const);
+int                         archDeco2ArchBuild  (Arch * const, const Graph * const, const Gnum, const Gnum * restrict const);

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     19 mar 2016     **/
+/**                                 to     14 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,6 +110,8 @@
 
 #ifdef COMMON_PTHREAD
 #include            <pthread.h>
+#else /* COMMON_PTHREAD */
+#include            <sys/wait.h>
 #endif /* COMMON_PTHREAD */
 
 /*
@@ -119,11 +121,11 @@
 #ifdef COMMON_MEMORY_TRACE
 #define memAlloc(size)              memAllocRecord ((size) | 8)
 #define memRealloc(ptr,size)        memReallocRecord ((ptr), ((size) | 8))
-#define memFree(ptr)                (memFreeRecord ((void *) (ptr)), 0)
+#define memFree(ptr)                memFreeRecord ((void *) (ptr))
 #else /* COMMON_MEMORY_TRACE */
 #define memAlloc(size)              malloc ((size) | 8) /* For platforms which return NULL for malloc(0) */
 #define memRealloc(ptr,size)        realloc ((ptr),((size) | 8))
-#define memFree(ptr)                (free ((char *) (ptr)), 0)
+#define memFree(ptr)                free ((char *) (ptr))
 #endif /* COMMON_MEMORY_TRACE */
 
 #define memSet(ptr,val,siz)         memset ((void *) (ptr), (val), (siz))
@@ -327,13 +329,20 @@ typedef struct ThreadHeader_ {
 **  Handling of files.
 */
 
+/** The file flags **/
+
+#define FILEMODE                    0x0001
+#define FILEMODER                   0x0000
+#define FILEMODEW                   0x0001
+#define FILEFREENAME                0x0002
+
 /** The file structure. **/
 
 typedef struct File_ {
-  char *                    modeptr;              /*+ Opening mode  +*/
-  char *                    nameptr;              /*+ File name     +*/
-  FILE *                    fileptr;              /*+ File pointer  +*/
-  char *                    dataptr;              /*+ Array to free +*/
+  int                       flagval;              /*+ File mode            +*/
+  char *                    nameptr;              /*+ File name            +*/
+  FILE *                    fileptr;              /*+ File pointer         +*/
+  void *                    compptr;              /*+ (Un)compression data +*/
 } File;
 
 /*
@@ -357,11 +366,12 @@ void                        fileBlockInit       (File * const, const int);
 int                         fileBlockOpen       (File * const, const int);
 int                         fileBlockOpenDist   (File * const, const int, const int, const int, const int);
 void                        fileBlockClose      (File * const, const int);
-FILE *                      fileCompress        (FILE * const, const int);
+int                         fileCompress        (File * const, const int);
+void                        fileCompressExit    (File * const);
 int                         fileCompressType    (const char * const);
-FILE *                      fileUncompress      (FILE * const, const int);
-int                         fileUncompressType  (const char * const);
-int                         fileNameDistExpand  (char ** const, const int, const int, const int);
+int                         fileDecompress      (File * const, const int);
+int                         fileDecompressType  (const char * const);
+char *                      fileNameDistExpand  (char * const, const int, const int);
 
 void                        errorProg           (const char * const);
 void                        errorPrint          (const char * const, ...);
@@ -372,11 +382,13 @@ int                         intSave             (FILE * const, const INT);
 void                        intAscn             (INT * const, const INT, const INT);
 void                        intPerm             (INT * const, const INT);
 void                        intRandInit         (void);
+int                         intRandLoad         (FILE * const);
 void                        intRandProc         (int);
 void                        intRandReset        (void);
+int                         intRandSave         (FILE * const);
 void                        intRandSeed         (INT);
 #ifndef COMMON_RANDOM_SYSTEM
-INT                         intRandVal          (INT);
+UINT                        intRandVal          (UINT);
 #endif /* COMMON_RANDOM_SYSTEM */
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
@@ -415,9 +427,9 @@ void                        threadScan          (void * const, void * const, Thr
 
 #ifdef COMMON_RANDOM_SYSTEM
 #ifdef COMMON_RANDOM_RAND
-#define intRandVal(ival)            ((INT) (((UINT) rand ()) % ((UINT) (ival))))
+#define intRandVal(ival)            ((UINT) (((UINT) rand ()) % ((UINT) (ival))))
 #else /* COMMON_RANDOM_RAND */
-#define intRandVal(ival)            ((INT) (((UINT) random ()) % ((UINT) (ival))))
+#define intRandVal(ival)            ((UINT) (((UINT) random ()) % ((UINT) (ival))))
 #endif /* COMMON_RANDOM_RAND */
 #endif /* COMMON_RANDOM_SYSTEM */
 

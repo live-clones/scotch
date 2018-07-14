@@ -1,4 +1,4 @@
-/* Copyright 2015-2017 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015-2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                architecture.                           **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 30 apr 2015     **/
-/**                                 to     26 jan 2017     **/
+/**                                 to     15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -275,7 +275,6 @@ FILE * restrict const             stream)
   Anum                termnum;
   Anum                domnnum;
   Anum                levlnum;
-  Anum                vnummax;
   Anum                vnumnum;
   int                 o;
 
@@ -494,7 +493,6 @@ const ArchDeco2Dom * const  dom1ptr)
   Anum                  levlnum1;
   Anum                  domnidx0;
   Anum                  domnidx1;
-  Anum                  domnlvl;
   const ArchDeco2Levl * levlptr;
   Gnum * restrict       queutab;
   Gnum * restrict       disttax;
@@ -653,14 +651,12 @@ loop: vertnum = queutab[queutailidx ++];          /* Get vertex number from queu
       for (edgenum = verttax[vertnum], edgennd = vendtax[vertnum];
            edgenum < edgennd; edgenum ++) {
         Gnum                vertend;
-        Gnum                distend;
         Gnum                disttmp;
 
         vertend = edgetax[edgenum];
-        distend = disttax[vertend];
         disttmp = distval + ((edlotax != NULL) ? edlotax[edgenum] : 1);
 
-        if (vertend == vertnum1) {                /* If to end vertex path found */
+        if (vertend == vertnum1) {                /* If path to end vertex found */
           if (disttmp < distmin)
             distmin = disttmp;
           passnbr = 0;                            /* Abort at end of this pass       */

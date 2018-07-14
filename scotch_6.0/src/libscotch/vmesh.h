@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 10 sep 2002     **/
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to   : 04 nov 2010     **/
+/**                # Version 6.0  : from : 31 may 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,10 +81,6 @@ typedef struct VmeshStore_ {
 **  The function prototypes.
 */
 
-#ifndef VMESH
-#define static
-#endif
-
 void                        vmeshExit           (Vmesh * const);
 void                        vmeshZero           (Vmesh * const);
 int                         vmeshCheck          (const Vmesh * const);
@@ -91,5 +89,3 @@ int                         vmeshStoreInit      (const Vmesh * const, VmeshStore
 void                        vmeshStoreExit      (VmeshStore * const);
 void                        vmeshStoreSave      (const Vmesh * const , VmeshStore * const);
 void                        vmeshStoreUpdt      (Vmesh * const, const VmeshStore * const);
-
-#undef static

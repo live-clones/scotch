@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                of the libSCOTCH library.               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 apr 2011     **/
-/**                                 to     28 dec 2015     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,7 +88,6 @@ FILE * const                  stream)             /*+ Input stream  +*/
   Gnum                  mappfileval;
   Gnum                  mappfilenbr;              /* Number of mapping pairs in file          */
   Gnum                  mappfilenum;              /* Counter of mapping pairs in file         */
-  Gnum *                mappfiletab;              /* Pointer to mapping data read from file   */
   Graph *               grafptr;
   Gnum                  vertnbr;
 
@@ -98,7 +97,7 @@ FILE * const                  stream)             /*+ Input stream  +*/
 
   if ((fscanf (stream, GNUMSTRING, &mappfileval) != 1) || /* Read number of mapping pairs */
       (mappfileval < 1)) {
-    errorPrint ("SCOTCH_graphTabLoad: bad input (1)");
+    errorPrint (STRINGIFY (SCOTCH_graphTabLoad) ": bad input (1)");
     return     (1);
   }
   mappfilenbr = (Gnum) mappfileval;
@@ -110,8 +109,8 @@ FILE * const                  stream)             /*+ Input stream  +*/
   if (memAllocGroup ((void **) (void *)           /* Allocate temporary data */
                      &mappsorttab, (size_t) (mappfilenbr * sizeof (VertSort)),
                      &vertsorttab, (size_t) (vertsortnbr * sizeof (VertSort)), NULL) == NULL) {
-    errorPrint ("SCOTCH_graphTabLoad: out of memory (1)");
-    return (1);
+    errorPrint (STRINGIFY (SCOTCH_graphTabLoad) ": out of memory (1)");
+    return     (1);
   }
 
   mappsortflag = 1;                               /* Assume mapping data sorted */
@@ -120,7 +119,7 @@ FILE * const                  stream)             /*+ Input stream  +*/
     if (fscanf (stream, GNUMSTRING GNUMSTRING,
                 &mappsortval,
                 &mappfileval) != 2) {
-      errorPrint ("SCOTCH_graphTabLoad: bad input (2)");
+      errorPrint (STRINGIFY (SCOTCH_graphTabLoad) ": bad input (2)");
       memFree    (mappsorttab);                   /* Free group leader */
       return     (1);
     }
@@ -136,7 +135,7 @@ FILE * const                  stream)             /*+ Input stream  +*/
 
   for (mappfilenum = 1; mappfilenum < mappfilenbr; mappfilenum ++) { /* Check mapping data integrity */
     if (mappsorttab[mappfilenum].labl == mappsorttab[mappfilenum - 1].labl) {
-      errorPrint ("SCOTCH_graphTabLoad: duplicate vertex label");
+      errorPrint (STRINGIFY (SCOTCH_graphTabLoad) ": duplicate vertex label");
       memFree    (mappsorttab);                   /* Free group leader */
       return     (1);
     }
@@ -209,14 +208,14 @@ FILE * const                  stream)             /*+ Output stream   +*/
   lmapptr = (LibMapping *) mappptr;
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (grafptr != lmapptr->grafptr) {
-    errorPrint ("SCOTCH_graphMapLoad: mapping structure must derive from graph");
+    errorPrint (STRINGIFY (SCOTCH_graphMapLoad) ": mapping structure must derive from graph");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_GRAPH2 */
 
   if (lmapptr->parttab == NULL) {                 /* Allocate array if necessary */
     if ((lmapptr->parttab = (Gnum *) memAlloc (grafptr->vertnbr * sizeof (Gnum))) == NULL) {
-      errorPrint ("SCOTCH_graphMapLoad: out of memory");
+      errorPrint (STRINGIFY (SCOTCH_graphMapLoad) ": out of memory");
       return     (1);
     }
     lmapptr->flagval |= LIBMAPPINGFREEPART;       /* As the array was not allocated by the user, it will be freed */
@@ -248,7 +247,7 @@ FILE * const                  stream)             /*+ Output stream   +*/
   lmapptr = (LibMapping *) mappptr;
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (grafptr != lmapptr->grafptr) {
-    errorPrint ("SCOTCH_graphMapSave: mapping structure must derive from graph");
+    errorPrint (STRINGIFY (SCOTCH_graphMapSave) ": mapping structure must derive from graph");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_GRAPH2 */
@@ -258,7 +257,7 @@ FILE * const                  stream)             /*+ Output stream   +*/
 
   if (fprintf (stream, GNUMSTRING "\n",
                (Gnum) grafptr->vertnbr) == EOF) {
-    errorPrint ("SCOTCH_graphMapSave: bad output (1)");
+    errorPrint (STRINGIFY (SCOTCH_graphMapSave) ": bad output (1)");
     return     (1);
   }
 
@@ -267,7 +266,7 @@ FILE * const                  stream)             /*+ Output stream   +*/
     if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
                  (Gnum) ((vlbltax != NULL) ? vlbltax[vertnum] : vertnum),
                  (Gnum) parttab[vertnum - baseval]) == EOF) {
-      errorPrint ("SCOTCH_graphMapSave: bad output (2)");
+      errorPrint (STRINGIFY (SCOTCH_graphMapSave) ": bad output (2)");
       return     (1);
     }
   }

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012-2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012-2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to     14 aug 2010     **/
 /**                # Version 6.0  : from : 08 jan 2012     **/
-/**                                 to     15 nov 2014     **/
+/**                                 to     10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,7 +100,7 @@ SCOTCH_Num * const          treetab)              /*+ Separator tree array      
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Ordering) < sizeof (LibOrder)) {
-    errorPrint ("SCOTCH_graphOrderInit: internal error");
+    errorPrint (STRINGIFY (SCOTCH_graphOrderInit) ": internal error");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
@@ -254,13 +254,13 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if ((listnbr < 0) || (listnbr > srcgrafptr->vertnbr)) {
-    errorPrint ("SCOTCH_graphOrderComputeList: invalid parameters (1)");
+    errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": invalid parameters (1)");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 #ifdef SCOTCH_DEBUG_LIBRARY2
   if (graphCheck (srcgrafptr) != 0) {
-    errorPrint ("SCOTCH_graphOrderComputeList: invalid input graph");
+    errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": invalid input graph");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
@@ -275,7 +275,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hgraphorderststratab) {
-    errorPrint ("SCOTCH_graphOrderComputeList: not an ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": not an ordering strategy");
     return     (1);
   }
 
@@ -287,7 +287,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   halgrafdat.vnhdtax    = halgrafdat.s.vendtax;   /* End of non-halo vertices    */
   halgrafdat.vnlosum    = halgrafdat.s.velosum;   /* Sum of node vertex weights  */
   halgrafdat.enohnbr    = halgrafdat.s.edgenbr;   /* No halo present             */
-  halgrafdat.enohsum    = halgrafdat.s.edlosum;
+  halgrafdat.enlosum    = halgrafdat.s.edlosum;
   halgrafdat.levlnum    = 0;                      /* No nested dissection yet */
 
   if (listnbr == srcgrafptr->vertnbr) {           /* If work on full graph */
@@ -295,14 +295,13 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     cblkptr    = &libordeptr->o.cblktre;
   }
   else {
-    VertList              listdat;
     Gnum * restrict       peritax;
     Gnum                  listnum;
     Gnum                  vertnum;
     Gnum                  halonum;
 
     if ((cblkptr = (OrderCblk *) memAlloc (2 * sizeof (OrderCblk))) == NULL) {
-      errorPrint ("SCOTCH_graphOrderComputeList: out of memory");
+      errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": out of memory");
       return     (1);
     }
     libordeptr->o.treenbr = 3;
@@ -327,7 +326,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 #ifdef SCOTCH_DEBUG_LIBRARY2
       if ((listtab[listnum] <  srcgrafptr->baseval) ||
           (listtab[listnum] >= srcgrafptr->vertnnd)) {
-        errorPrint ("SCOTCH_graphOrderComputeList: invalid parameters (2)");
+        errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": invalid parameters (2)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
@@ -339,15 +338,13 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     }
 #ifdef SCOTCH_DEBUG_LIBRARY2
     if (halonum != (listnbr + srcgrafptr->baseval - 1)) { 
-      errorPrint ("SCOTCH_graphOrderComputeList: internal error");
+      errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": internal error");
       return     (1);
     }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
-    listdat.vnumnbr = listnbr;
-    listdat.vnumtab = (Gnum * const) listtab;
-    if (hgraphInduceList (&halgrafdat, &listdat, srcgrafptr->vertnbr - listnbr, &halgraftmp) != 0) {
-      errorPrint ("SCOTCH_graphOrderComputeList: cannot create induced subgraph");
+    if (hgraphInduceList (&halgrafdat, listnbr, (Gnum * const) listtab, srcgrafptr->vertnbr - listnbr, &halgraftmp) != 0) {
+      errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": cannot create induced subgraph");
       return     (1);
     }
     halgrafptr = &halgraftmp;
@@ -470,7 +467,7 @@ const char * const          string)
     stratExit (*((Strat **) stratptr));
 
   if ((*((Strat **) stratptr) = stratInit (&hgraphorderststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratGraphOrder: error in ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphOrder) ": error in ordering strategy");
     return     (1);
   }
 
@@ -502,7 +499,8 @@ const double                balrat)               /*+ Desired imbalance ratio   
   sprintf (bbaltab, "%lf", balrat);
   sprintf (levltab, GNUMSTRING, levlnbr);
 
-  strcpy (bufftab, "c{rat=0.7,cpr=n{sep=/(<TSTS>)?m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}<SEPA>;,ole=<OLEA>,ose=<OSEP>},unc=n{sep=/(<TSTS>)?m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}<SEPA>;,ole=<OLEA>,ose=<OSEP>}}");
+  sprintf (bufftab, (((flagval & SCOTCH_STRATDISCONNECTED) != 0) ? "o{strat=%s}" : "%s"),
+           "c{rat=0.7,cpr=n{sep=/(<TSTS>)?m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}<SEPA>;,ole=<OLEA>,ose=<OSEP>},unc=n{sep=/(<TSTS>)?m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<BBAL>},org=(|h{pass=10})f{bal=<BBAL>}}}<SEPA>;,ole=<OLEA>,ose=<OSEP>}}");
 
   switch (flagval & (SCOTCH_STRATLEVELMIN | SCOTCH_STRATLEVELMAX)) {
     case SCOTCH_STRATLEVELMIN :
@@ -539,7 +537,7 @@ const double                balrat)               /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<BBAL>", bbaltab);
 
   if (SCOTCH_stratGraphOrder (stratptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratGraphOrderBuild: error in sequential ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratGraphOrderBuild) ": error in sequential ordering strategy");
     return     (1);
   }
 

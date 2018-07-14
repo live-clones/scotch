@@ -40,7 +40,7 @@
 /**                it can.                                 **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 27 may 2011     **/
-/**                                 to     11 feb 2018     **/
+/**                                 to     06 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -249,14 +249,17 @@ Anum * restrict const                   treeptr,
 const ArchDom * restrict const          domnptr)  /*+ Pointer to subdomain to consider for this node +*/
 {
   Anum                treenum;
-  int                 o;
 
   if (archDomSize (archptr, domnptr) > 1) {       /* If not variable-sized architecture and can bipartition */
     ArchDom             domntab[2];               /* Temporary area to store subdomains                     */
     Anum                sonstab[2];
     int                 i, j;
+#ifdef SCOTCH_DEBUG_KGRAPH2
+    int                 o;
 
-    o = archDomBipart (archptr, domnptr, &domntab[0], &domntab[1]);
+    o =                                           /* Only collect value in debug mode */
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
+    archDomBipart (archptr, domnptr, &domntab[0], &domntab[1]);
 #ifdef SCOTCH_DEBUG_KGRAPH2
     if (o != 0) {
       errorPrint ("kgraphMapExTree: internal error");

@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 28 sep 2014     **/
-/**                                 to   : 28 sep 2014     **/
+/**                                 to   : 07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,12 +68,8 @@ typedef struct DgraphFoldDupData_ {
 **  The function prototypes.
 */
 
-#ifndef DGRAPH_FOLD_DUP
-#define static
-#endif
-
+#ifdef DGRAPH_FOLD_DUP
 #ifdef SCOTCH_PTHREAD
 static void *               dgraphFoldDup2      (void *);
 #endif /* SCOTCH_PTHREAD */
-
-#undef static
+#endif /* DGRAPH_FOLD_DUP */

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     31 may 1999     **/
 /**                # Version 4.0  : from : 18 may 2004     **/
 /**                                 to     18 may 2004     **/
+/**                # Version 6.0  : from : 30 apr 2018     **/
+/**                                 to   : 30 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,10 +52,4 @@
 **  The function prototypes.
 */
 
-#ifndef VGRAPH_SEPARATE_VW
-#define static
-#endif
-
 int                         vgraphSeparateVw    (Vgraph * const);
-
-#undef static

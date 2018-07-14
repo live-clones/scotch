@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 31 mar 2008     **/
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 6.0  : from : 29 aug 2012     **/
-/**                                 to   : 13 sep 2012     **/
+/**                                 to   : 25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,23 +74,21 @@ const Gnum                    indvertlocnbr,      /* Number of vertices in induc
 Gnum *                        indvnumloctmp,      /* Pointer to temporary index array; TRICK: [alias] */
 Dgraph * restrict const       indgrafptr)
 {
-  Gnum * restrict       orgindxgsttax;            /* Based access to vertex translation array       */
-  Gnum                  indvertlocnnd;            /* Based index of end of local vertex array       */
-  Gnum                  indvertlocnum;            /* Number of current vertex in induced graph      */
-  Gnum                  indvertglbnum;            /* Number of current vertex in global ordering    */
-  Gnum                  indvelolocnbr;            /* Size of local vertex load array                */
-  Gnum                  indvelolocsum;            /* Sum of vertex loads                            */
-  Gnum *                indvnumloctax;            /* TRICK: maybe alias of indvnumloctmp            */
-  Gnum                  indvlbllocnbr;            /* Size of local vertex label array               */
-  Gnum                  indedgelocmax;            /* (Approximate) number of edges in induced graph */
-  Gnum                  indedgelocnbr;            /* Real number of edges in induced graph          */
-  Gnum                  indedgelocnum;
-  Gnum * restrict       indedloloctax;
-  Gnum                  inddegrlocmax;            /* Local maximum degree                           */
-  const Gnum * restrict indlisttax;
-  Gnum                  baseval;
-  int                   cheklocval;
-  int                   chekglbval;
+  Gnum * restrict     orgindxgsttax;              /* Based access to vertex translation array       */
+  Gnum                indvertlocnnd;              /* Based index of end of local vertex array       */
+  Gnum                indvertlocnum;              /* Number of current vertex in induced graph      */
+  Gnum                indvelolocnbr;              /* Size of local vertex load array                */
+  Gnum                indvelolocsum;              /* Sum of vertex loads                            */
+  Gnum *              indvnumloctax;              /* TRICK: maybe alias of indvnumloctmp            */
+  Gnum                indvlbllocnbr;              /* Size of local vertex label array               */
+  Gnum                indedgelocmax;              /* (Approximate) number of edges in induced graph */
+  Gnum                indedgelocnbr;              /* Real number of edges in induced graph          */
+  Gnum                indedgelocnum;
+  Gnum * restrict     indedloloctax;
+  Gnum                inddegrlocmax;              /* Local maximum degree                           */
+  Gnum                baseval;
+  int                 cheklocval;
+  int                 chekglbval;
 
   const Gnum * restrict const orgvertloctax = orggrafptr->vertloctax;
   const Gnum * restrict const orgvendloctax = orggrafptr->vendloctax;

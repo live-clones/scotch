@@ -1,4 +1,4 @@
-/* Copyright 2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 31 mar 2008     **/
 /**                                 to     04 nov 2010     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,14 +91,8 @@ typedef struct DmappingTermSort_ {
 **  The function prototypes.
 */
 
-#ifndef DMAPPING
-#define static
-#endif
-
 int                         dmapInit            (Dmapping * restrict const, const Arch * restrict const);
 void                        dmapExit            (Dmapping * const);
 void                        dmapAdd             (Dmapping * restrict const, DmappingFrag * restrict const);
 int                         dmapSave            (const Dmapping * restrict const, const Dgraph * restrict const, FILE * restrict const);
 int                         dmapTerm            (const Dmapping * restrict const, const Dgraph * restrict const, Gnum * restrict const);
-
-#undef static

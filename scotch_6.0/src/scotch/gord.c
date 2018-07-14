@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,11 +73,11 @@
 
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* File array              */
-                              { "r" },
-                              { "w" },
-                              { "w" },
-                              { "w" },
-                              { "w" } };
+                              { FILEMODER },
+                              { FILEMODEW },
+                              { FILEMODEW },
+                              { FILEMODEW },
+                              { FILEMODEW } };
 
 static const char *         C_usageList[] = {
   "gord [<input source file> [<output ordering file> [<output log file>]]] <options>",
@@ -193,7 +193,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "gord, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         case 'v' :                               /* Output control info */
@@ -282,8 +282,5 @@ char *                      argv[])
   SCOTCH_graphExit      (&grafdat);
   memFree               (permtab);
 
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
   return (0);
 }

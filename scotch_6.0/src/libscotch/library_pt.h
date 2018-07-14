@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     01 dec 2012     **/
+/**                                 to     29 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,6 +78,16 @@
 #ifndef SCOTCH_PTSCOTCH
 #define SCOTCH_DUMMYPTFLAG
 #endif /* SCOTCH_PTSCOTCH */
+
+/*+ Version flags. +*/
+
+#ifdef SCOTCH_VERSION
+#if ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL))
+#ifndef SCOTCH_WARNING_RENAME_UNSAFE
+#define SCOTCH_WARNING_RENAME_UNSAFE
+#endif /* SCOTCH_WARNING_RENAME_UNSAFE */
+#endif /* ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL)) */
+#endif /* SCOTCH_VERSION */
 
 /*+ Opaque objects. The dummy sizes of these
 objects, computed at compile-time by program

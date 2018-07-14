@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 29 mar 2010     **/
 /**                                 to     14 aug 2010     **/
 /**                # Version 6.0  : from : 14 nov 2012     **/
-/**                                 to     14 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -101,7 +101,7 @@ SCOTCH_Num * const          treetab)              /*+ Separator tree array      
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Ordering) < sizeof (LibOrder)) {
-    errorPrint ("SCOTCH_meshOrderInit: internal error");
+    errorPrint (STRINGIFY (SCOTCH_meshOrderInit) ": internal error");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
@@ -225,7 +225,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 
 #ifdef SCOTCH_DEBUG_MESH2
   if (meshCheck (srcmeshptr) != 0) {
-    errorPrint ("SCOTCH_meshOrderComputeList: invalid input mesh");
+    errorPrint (STRINGIFY (SCOTCH_meshOrderComputeList) ": invalid input mesh");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
@@ -235,7 +235,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hmeshorderststratab) {
-    errorPrint ("SCOTCH_meshOrderComputeList: not a mesh ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_meshOrderComputeList) ": not a mesh ordering strategy");
     return     (1);
   }
 
@@ -256,7 +256,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
                 (srclistdat.vnumnbr == srcmeshdat.m.vnodnbr))
                ? NULL : &srclistdat;              /* Is the list really necessary */
   if (srclistptr != NULL) {
-    errorPrint ("SCOTCH_meshOrderComputeList: node lists not yet implemented");
+    errorPrint (STRINGIFY (SCOTCH_meshOrderComputeList) ": node lists not yet implemented");
     return     (1);
   }
 
@@ -373,7 +373,7 @@ const char * const          string)
     stratExit (*((Strat **) stratptr));
 
   if ((*((Strat **) stratptr) = stratInit (&hmeshorderststratab, string)) == NULL) {
-    errorPrint ("SCOTCH_stratMeshOrder: error in ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratMeshOrder) ": error in ordering strategy");
     return     (1);
   }
 
@@ -402,7 +402,7 @@ const double                balrat)               /*+ Desired imbalance ratio +*
   stringSubst (bufftab, "<BBAL>", bbaltab);
 
   if (SCOTCH_stratMeshOrder (stratptr, bufftab) != 0) {
-    errorPrint ("SCOTCH_stratMeshOrderBuild: error in sequential ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_stratMeshOrderBuild) ": error in sequential ordering strategy");
     return     (1);
   }
 

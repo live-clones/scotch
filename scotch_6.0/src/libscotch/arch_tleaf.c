@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,8 +63,8 @@
 /**                                 to     10 mar 2005     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     11 aug 2010     **/
-/**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     12 apr 2015     **/
+/**                # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /**   NOTES      : # The ltleaf architecture was proposed  **/
 /**                  by Emmanuel Jeannot and Francois      **/
@@ -290,7 +290,6 @@ ArchCoarsenMulti ** restrict const  multptr)
   Anum                        levlsiz;            /* Number of fine vertices in each block */
   Anum                        bloksiz;            /* Number of multinodes in each block    */
   Anum                        bloknbr;            /* Number of blocks                      */
-  Anum                        bloknum;
   Anum                        passnum;
 
   levlsiz = matcptr->levlsiz;
@@ -675,8 +674,6 @@ archLtleafArchLoad (
 ArchTleaf * restrict const  archptr,
 FILE * restrict const       stream)
 {
-  Anum                sizeval;
-  Anum                levlnum;
   Anum                permnum;
 
   if (archTleafArchLoad (archptr, stream) != 0)   /* Read tree part */
@@ -690,6 +687,9 @@ FILE * restrict const       stream)
 
 #ifdef SCOTCH_DEBUG_ARCH2
   if (archptr->permnbr != 1) {                    /* Valid empty permutation is of size 1 */
+    Anum                levlnum;
+    Anum                sizeval;
+
     for (levlnum = archptr->levlnbr - 1, sizeval = archptr->sizetab[levlnum];
          sizeval != archptr->permnbr; levlnum --, sizeval *= archptr->sizetab[levlnum]) {
       if (levlnum < 0) {

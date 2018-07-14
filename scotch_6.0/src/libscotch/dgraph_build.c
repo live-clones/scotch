@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2013,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 30 jul 2010     **/
 /**                                 to   : 03 nov 2010     **/
 /**                # Version 6.0  : from : 23 dec 2013     **/
-/**                                 to   : 05 jun 2014     **/
+/**                                 to   : 03 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,7 +163,6 @@ const Gnum                  degrlocmax)
 {
   Gnum                  procnum;
   int                   reduloctab[2];
-  int                   cheklocval;               /* Local consistency flag */
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if ((vertlocmax < vertlocnbr) ||
@@ -173,7 +172,6 @@ const Gnum                  degrlocmax)
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  cheklocval = 0;
   if (grafptr->procdsptab == NULL) {              /* If private data not yet allocated */
     int                 procglbnbr;
 
@@ -222,8 +220,8 @@ const Gnum                  degrlocmax)
     grafptr->procvrttab[procnum + 1] = grafptr->procvrttab[procnum] + (Gnum) grafptr->procngbtab[2 * procnum + 1];
     grafptr->proccnttab[procnum]     = grafptr->procdsptab[procnum + 1] - grafptr->procdsptab[procnum];
   }
-
   grafptr->flagval |= DGRAPHFREEPRIV;
+
   return (dgraphBuild3 (grafptr, baseval,
                         vertlocnbr, vertloctax, vendloctax, veloloctax, velolocsum, vnumloctax, vlblloctax,
                         edgelocnbr, edgelocsiz, edgeloctax, edgegsttax, edloloctax, degrlocmax));

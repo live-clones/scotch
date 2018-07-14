@@ -67,7 +67,7 @@
 /**                # Version 5.1  : from : 22 nov 2007     **/
 /**                                 to     07 oct 2008     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     12 feb 2018     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -115,13 +115,7 @@ const KgraphMapRbParam * restrict const paraptr)
   Graph * restrict              indgrafptr;       /* Pointer to top-level graph without fixed vertices */
   KgraphMapRbVflo * restrict    vflotab;          /* Array of fixed vertex load slots                  */
   Anum                          vflonbr;          /* Number of fixed vertex load slots                 */
-  Gnum                          vertnum;
   int                           o;
-
-  Gnum * const                frontab = grafptr->frontab;
-  const Gnum * restrict const verttax = grafptr->s.verttax;
-  const Gnum * restrict const vendtax = grafptr->s.vendtax;
-  const Gnum * restrict const edgetax = grafptr->s.edgetax;
 
   grafptr->kbalval = paraptr->kbalval;            /* Store last k-way imbalance ratio */
 
@@ -443,8 +437,6 @@ const Gnum                  vfixnbr,              /*+ Number of fixed vertices i
 const Anum * restrict const pfixtax,              /*+ Array of fixed vertex terminal domains +*/
 const Anum                  vflonbr)              /*+ Number of fixed vertex load slots      +*/
 {
-  ArchDom                         domndat;
-  Anum                            domnmax;
   Anum                            domnnum;
   Gnum                            vertnum;
   Gnum                            vertnnd;
@@ -483,7 +475,6 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
     }
   }
 
-  domnmax = mappptr->domnmax;
   for (vertnum = mappptr->grafptr->baseval, vertnnd = mappptr->grafptr->vertnnd; vertnum < vertnnd; vertnum ++) {
     Anum                pfixval;
 
@@ -568,7 +559,6 @@ const Gnum * restrict const             vflowgttab) /*+ Array of vertex weight b
   const Arch * restrict const     archptr    = dataptr->mappptr->archptr;
   const Gnum * restrict const     orgverttax = dataptr->grafptr->verttax;
   const Gnum * restrict const     orgvendtax = dataptr->grafptr->vendtax;
-  const Gnum * restrict const     orgvelotax = dataptr->grafptr->velotax;
   const Gnum * restrict const     orgedgetax = dataptr->grafptr->edgetax;
   const Gnum * restrict const     orgedlotax = dataptr->grafptr->edlotax;
   const Mapping * restrict const  oldmappptr = dataptr->r.mappptr;
@@ -714,7 +704,7 @@ const Gnum * restrict const             vflowgttab) /*+ Array of vertex weight b
   }
   o = 0;                                          /* Computations succeeded */
 
-fail:
+fail :
   if ((o != 0) || (veexmsk == 0)) {               /* If external gain array is useless */
     memFree (veextax + actgrafptr->s.baseval);    /* Forget about it                   */
     return  (o);                                  /* Return error code                 */

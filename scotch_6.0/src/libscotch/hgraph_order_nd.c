@@ -49,7 +49,7 @@
 /**                # Version 5.1  : from : 24 oct 2010     **/
 /**                                 to     24 oct 2010     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
-/**                                 to     14 jan 2018     **/
+/**                                 to     23 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -209,7 +209,7 @@ const HgraphOrderNdParam * restrict const paraptr)
     indgrafdat.vnhdtax = indgrafdat.s.vendtax;
     indgrafdat.vnlosum = indgrafdat.s.velosum;
     indgrafdat.enohnbr = indgrafdat.s.edgenbr;
-    indgrafdat.enohsum = indgrafdat.s.edlosum;
+    indgrafdat.enlosum = indgrafdat.s.edlosum;
     indgrafdat.levlnum = grafptr->levlnum;        /* Separator graph is at level of original graph */
 
     o = hgraphOrderSt (&indgrafdat, ordeptr, ordenum + vsplisttab[0].vnumnbr + vsplisttab[1].vnumnbr,
@@ -223,7 +223,7 @@ const HgraphOrderNdParam * restrict const paraptr)
     o = 0;                                        /* No separator ordering computed */
   }
   if (o == 0) {
-    if ((hgraphInduceList (grafptr, &vsplisttab[0], vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat)) != 0) {
+    if ((hgraphInduceList (grafptr, vsplisttab[0].vnumnbr, vsplisttab[0].vnumtab, vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat)) != 0) {
       errorPrint ("hgraphOrderNd: cannot build induced subgraph (2)");
       memFree    (vspgrafdat.frontab);            /* Free remaining space */
       return     (1);
@@ -232,7 +232,7 @@ const HgraphOrderNdParam * restrict const paraptr)
     hgraphExit (&indgrafdat);
   }
   if (o == 0) {
-    if ((hgraphInduceList (grafptr, &vsplisttab[1], vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat)) != 0) {
+    if ((hgraphInduceList (grafptr, vsplisttab[1].vnumnbr, vsplisttab[1].vnumtab, vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat)) != 0) {
       errorPrint ("hgraphOrderNd: cannot build induced subgraph (3)");
       memFree    (vspgrafdat.frontab);            /* Free remaining space */
       return     (1);

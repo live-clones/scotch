@@ -1,4 +1,4 @@
-/* Copyright 2015,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                functions.                              **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 13 mar 2015     **/
-/**                                 to   : 31 dec 2016     **/
+/**                                 to   : 15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,16 +55,12 @@
 #include "arch.h"
 #include "arch_sub.h"
 
-/**************************************/
-/*                                    */
-/* These are the entry points for the */
-/* distance graph routines. They are  */
-/* used only in debugging mode, to    */
-/* provide breakpoints for routines   */
-/* which are else implemented as      */
-/* macros for the sake of efficiency. */
-/*                                    */
-/**************************************/
+/**********************************/
+/*                                */
+/* These are the sub-architecture */
+/* meta-architecture routines.    */
+/*                                */
+/**********************************/
 
 /* This routine loads the distance
 ** graph architecture.
@@ -112,6 +108,7 @@ FILE * restrict const       stream)
 
   if ((orgarchptr = memAlloc (sizeof (Arch))) == NULL) {
     errorPrint ("archSubArchLoad: out of memory (2)");
+    memFree    (termtab);
     return     (1);
   }
 

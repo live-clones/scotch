@@ -1,4 +1,4 @@
-/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     16 jun 2007     **/
 /**                # Version 5.1  : from : 11 nov 2008     **/
 /**                                 to     04 nov 2010     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,13 +95,9 @@ typedef struct HdgraphOrderNdData_ {
 **  The function prototypes.
 */
 
-#ifndef HDGRAPH_ORDER_ND
-#define static
-#endif
-
+#ifdef HDGRAPH_ORDER_ND
 static void *               hdgraphOrderNdFold2 (void * const);
 static int                  hdgraphOrderNdFold  (Hdgraph * restrict const, const Gnum, const Gnum * restrict const, const Gnum, const Gnum * restrict const, HdgraphOrderNdGraph * restrict const);
+#endif /* HDGRAPH_ORDER_ND */
 
 int                         hdgraphOrderNd      (Hdgraph * const, DorderCblk * const, const HdgraphOrderNdParam * const);
-
-#undef static

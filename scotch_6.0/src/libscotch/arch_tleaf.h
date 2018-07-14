@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,8 +62,8 @@
 /**                                 to     10 dec 2003     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     24 jun 2010     **/
-/**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     10 apr 2015     **/
+/**                # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to     28 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,10 +117,6 @@ typedef struct ArchTleafMatch_ {
 #ifndef ARCH_TLEAF_H_PROTO
 #define ARCH_TLEAF_H_PROTO
 
-#ifndef ARCH_TLEAF
-#define static
-#endif
-
 int                         archTleafArchLoad   (ArchTleaf * restrict const, FILE * restrict const);
 int                         archTleafArchSave   (const ArchTleaf * const, FILE * restrict const);
 int                         archTleafArchFree   (ArchTleaf * restrict const);
@@ -164,8 +160,6 @@ int                         archLtleafDomTerm   (const ArchTleaf * const, ArchTl
 #ifdef SCOTCH_PTSCOTCH
 #define archLtleafDomMpiType        archTleafDomMpiType
 #endif /* SCOTCH_PTSCOTCH */
-
-#undef static
 
 #endif /* ARCH_TLEAF_H_PROTO */
 #endif /* ARCH_NOPROTO       */

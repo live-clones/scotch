@@ -1,4 +1,4 @@
-/* Copyright 2017 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2017,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 17 jan 2017     **/
-/**                                 to     26 jan 2017     **/
+/**                                 to     22 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,8 +96,7 @@ graphDiamPV (
 const Graph * const         grafptr)
 {
   FiboHeap                    fibodat;
-  GraphDiamVertex * restrict  vexxtax;            /* Extended vertex array        */
-  Gnum                        vertnbr;            /* Number of vertices processed */
+  GraphDiamVertex * restrict  vexxtax;            /* Extended vertex array */
   Gnum                        vertnum;
   Gnum                        rootnum;
   Gnum                        diammax;

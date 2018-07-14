@@ -1,4 +1,4 @@
-/* Copyright 2007-2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to     01 mar 2008     **/
 /**                # Version 5.1  : from : 18 apr 2009     **/
 /**                                 to     30 jul 2010     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -88,14 +90,14 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
   int * restrict     froncnttab;                  /* Count array for gather operations        */
   int * restrict     frondsptab;                  /* Displacement array for gather operations */
   int                fronlocnbr;                  /* Also int to enforce MPI standard         */
-  int                cheklocval;
 #ifdef SCOTCH_DEBUG_VDGRAPH1
+  int                cheklocval;
   int                chekglbval;
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
   int                procnum;
 
-  cheklocval = 0;
 #ifdef SCOTCH_DEBUG_VDGRAPH1
+  cheklocval = 0;
   if (cgrfptr == NULL)                            /* Centralized graphs should be provided by all */
     cheklocval = 1;
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, dgrfptr->s.proccomm) != MPI_SUCCESS) {
@@ -200,7 +202,7 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
   memFree (froncnttab);                           /* Free group leader */
 
   for (procnum = 0; procnum < dgrfptr->s.proclocnum; procnum ++) /* Desynchronize random generators across processes */
-    cheklocval = intRandVal (2);
+    intRandVal (2);
   intPerm (cgrfptr->frontab, dgrfptr->compglbsize[2]); /* Compute permutation of frontier array to have different solutions on every process */
 
   cgrfptr->compload[0] = dgrfptr->compglbload[0]; /* Update other fields */

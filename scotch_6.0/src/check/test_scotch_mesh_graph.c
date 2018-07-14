@@ -39,7 +39,7 @@
 /**                the SCOTCH_graphColor() routine.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 11 feb 2018     **/
-/**                                 to     11 feb 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,39 +70,43 @@ char *              argv[])
   FILE *              fileptr;
   SCOTCH_Mesh         meshdat;
   SCOTCH_Graph        grafdat;
-  SCOTCH_Num          diamval;
 
   SCOTCH_errorProg (argv[0]);
 
+  if (argc != 2) {
+    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+    exit (EXIT_FAILURE);
+  }
+
   if (SCOTCH_meshInit (&meshdat) != 0) {          /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize mesh");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_meshLoad (&meshdat, fileptr, -1) != 0) { /* Read source mesh */
     SCOTCH_errorPrint ("main: cannot load mesh");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
 
   if (SCOTCH_meshGraph (&meshdat, &grafdat) != 0) {
     SCOTCH_errorPrint ("main: cannot create graph from mesh");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   SCOTCH_graphExit (&grafdat);
   SCOTCH_meshExit (&meshdat);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

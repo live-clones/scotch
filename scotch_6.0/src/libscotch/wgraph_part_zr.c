@@ -37,10 +37,9 @@
 /**                Charles-Edmond BICHOT (v5.1b)           **/
 /**                Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module is the vertex overlapped    **/
-/**                graph partitioning rountine based on    **/
-/**                a vertex-oriented version of the Greedy **/
-/**                Graph Growing algorithm.                **/
+/**   FUNCTION   : This module moves all of the vertices   **/
+/**                to the first subdomain of the           **/
+/**                partition.                              **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 01 dec 2007     **/
 /**                                 to   : 01 jul 2008     **/

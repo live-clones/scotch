@@ -1,4 +1,4 @@
-/* Copyright 2012,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                matching routines.                      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 oct 2012     **/
-/**                                 to     25 feb 2015     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,20 +80,13 @@
 **  The function prototypes.
 */
 
+#ifdef GRAPH_MATCH
+GRAPHMATCHFUNCDECL (Seq);
+GRAPHMATCHFUNCDECL (ThrBeg);
+GRAPHMATCHFUNCDECL (ThrMid);
+GRAPHMATCHFUNCDECL (ThrEnd);
+#endif /* GRAPH_MATCH */
+
 void                        graphMatchNone      (GraphCoarsenData *);
 int                         graphMatchInit      (GraphCoarsenData *);
 void                        graphMatch          (GraphCoarsenThread * restrict const);
-
-#ifndef GRAPH_MATCH
-#define static
-#endif
-
-GRAPHMATCHFUNCDECL (Seq);
-
-GRAPHMATCHFUNCDECL (ThrBeg);
-
-GRAPHMATCHFUNCDECL (ThrMid);
-
-GRAPHMATCHFUNCDECL (ThrEnd);
-
-#undef static

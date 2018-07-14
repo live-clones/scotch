@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : dgraph_io.c                             **/
+/**   NAME       : dgraph_io_save.c                        **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Cedric CHEVALIER                        **/

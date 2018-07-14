@@ -1,4 +1,4 @@
-/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to     16 jun 2007     **/
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,10 +95,6 @@ typedef struct Hdgraph_ {
 **  The function prototypes.
 */
 
-#ifndef HDGRAPH
-#define static
-#endif
-
 int                         hdgraphInit         (Hdgraph * const);
 void                        hdgraphExit         (Hdgraph * const);
 void                        hdgraphFree         (Hdgraph * const);
@@ -107,5 +105,3 @@ int                         hdgraphCheck        (const Hdgraph *);
 int                         hdgraphGather       (Hdgraph *, Hgraph *);
 #endif /* HGRAPH_H */
 int                         hdgraphInduceList   (Hdgraph * restrict const, const Gnum, const Gnum * restrict const, Hdgraph * restrict const);
-
-#undef static

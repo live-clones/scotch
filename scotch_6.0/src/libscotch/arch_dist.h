@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,8 +42,8 @@
 /**                tioning routines to handle floating-    **/
 /**                point migration costs.                  **/
 /**                                                        **/
-/**   DATES      : # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to   : 01 jul 2014     **/
+/**   DATES      : # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to   : 28 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,10 +73,6 @@ typedef struct ArchDist_ {
 #ifndef ARCH_DIST_H_PROTO
 #define ARCH_DIST_H_PROTO
 
-#ifndef ARCH_DIST
-#define static
-#endif
-
 int                         archDistArchLoad    (ArchDist * restrict const, FILE * restrict const);
 int                         archDistArchSave    (const ArchDist * const, FILE * restrict const);
 #define archDistArchFree            NULL
@@ -99,8 +95,6 @@ int                         archDistDomIncl     (const ArchDist * const, const A
 #ifdef SCOTCH_PTSCOTCH
 int                         archDistDomMpiType  (const ArchDist * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
-
-#undef static
 
 #endif /* ARCH_DIST_H_PROTO */
 #endif /* ARCH_NOPROTO      */

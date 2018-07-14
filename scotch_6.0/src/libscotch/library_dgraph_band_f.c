@@ -1,4 +1,4 @@
-/* Copyright 2011,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                of the libSCOTCH library.               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 03 nov 2011     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,14 +66,14 @@
 **
 */
 
-FORTRAN (                                 \
-SCOTCHFDGRAPHBAND, scotchfdgraphband, (   \
-SCOTCH_Dgraph * const         srcgrafptr, \
-const SCOTCH_Num              fronlocnbr, \
-SCOTCH_Num * const            fronloctab, \
-const SCOTCH_Num              distval,    \
-SCOTCH_Dgraph * const         bndgrafptr, \
-int * const                   revaptr),   \
+SCOTCH_FORTRAN (                        \
+DGRAPHBAND, dgraphband, (               \
+SCOTCH_Dgraph * const       srcgrafptr, \
+const SCOTCH_Num            fronlocnbr, \
+SCOTCH_Num * const          fronloctab, \
+const SCOTCH_Num            distval,    \
+SCOTCH_Dgraph * const       bndgrafptr, \
+int * const                 revaptr),   \
 (srcgrafptr, fronlocnbr, fronloctab, distval, bndgrafptr, revaptr))
 {
   *revaptr = SCOTCH_dgraphBand (srcgrafptr, fronlocnbr, fronloctab, distval, bndgrafptr);

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,8 +59,8 @@
 /**                                 to     11 nov 2003     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     21 jan 2008     **/
-/**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     12 apr 2015     **/
+/**                # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to     28 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -97,10 +97,6 @@ typedef struct ArchHcubMatch_ {
 #ifndef ARCH_HCUB_H_PROTO
 #define ARCH_HCUB_H_PROTO
 
-#ifndef ARCH_HCUB
-#define static
-#endif
-
 int                         archHcubArchLoad    (ArchHcub * restrict const, FILE * restrict const);
 int                         archHcubArchSave    (const ArchHcub * const, FILE * restrict const);
 #define archHcubArchFree            NULL
@@ -122,8 +118,6 @@ int                         archHcubDomIncl     (const ArchHcub * const, const A
 #ifdef SCOTCH_PTSCOTCH
 int                         archHcubDomMpiType  (const ArchHcub * const, MPI_Datatype * const);
 #endif /* SCOTCH_PTSCOTCH */
-
-#undef static
 
 #endif /* ARCH_HCUB_H_PROTO */
 #endif /* ARCH_NOPROTO      */

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010-2012 IPB, INRIA & CNRS
+/* Copyright 2004,2007,2010-2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 13 jul 2010     **/
 /**                                 to     13 jul 2010     **/
 /**                # Version 6.0  : from : 08 jun 2011     **/
-/**                                 to     16 jan 2012     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,10 +81,4 @@ extern StratTab             kgraphmapststratab;
 **  The function prototypes.
 */
 
-#ifndef KGRAPH_MAP_ST
-#define static
-#endif
-
 int                         kgraphMapSt         (Kgraph * restrict const, const Strat * restrict const);
-
-#undef static

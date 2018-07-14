@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 07 aug 2011     **/
 /**                                 to     07 aug 2011     **/
 /**                # Version 6.0  : from : 11 sep 2012     **/
-/**                                 to     28 sep 2014     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,7 +98,7 @@ SCOTCH_Num * restrict const     multloctab)       /* Pointer to multinode array 
   MPI_Comm_compare (((Dgraph * restrict const) coargrafptr)->proccomm,
                     ((Dgraph * restrict const) finegrafptr)->proccomm, &o);
   if ((o != MPI_IDENT) && (o != MPI_CONGRUENT)) {
-    errorPrint ("SCOTCH_dgraphCoarsen: communicators are not congruent");
+    errorPrint (STRINGIFY (SCOTCH_dgraphCoarsen) ": communicators are not congruent");
     return     (3);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */

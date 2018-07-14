@@ -1,4 +1,4 @@
-/* Copyright 2007-2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2011,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 01 dec 2007     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 6.0  : from : 05 nov 2009     **/
-/**                                 to   : 16 apr 2011     **/
+/**                                 to   : 31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,14 +64,10 @@ typedef struct WgraphPartMlParam_ {
 **  The function prototypes.
 */
 
-#ifndef WGRAPH_PART_ML
-#define static
-#endif
-
+#ifdef WGRAPH_PART_ML
 static int                  wgraphPartMlCoarsen (const Wgraph * const, Wgraph * const, GraphCoarsenMulti * restrict * const, const WgraphPartMlParam * const);
 static int                  wgraphPartMlUncoarsen (Wgraph * const, const Wgraph * const, const GraphCoarsenMulti * restrict const);
+static int                  wgraphPartMl2       (Wgraph * const, const WgraphPartMlParam * const);
+#endif /* WGRAPH_PART_ML */
 
 int                         wgraphPartMl        (Wgraph * const, const WgraphPartMlParam * const);
-static int                  wgraphPartMl2       (Wgraph * const, const WgraphPartMlParam * const);
-
-#undef static

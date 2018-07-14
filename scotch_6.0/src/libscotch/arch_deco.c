@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,8 +63,8 @@
 /**                                 to     28 feb 2008     **/
 /**                # Version 5.1  : from : 21 jan 2008     **/
 /**                                 to     11 aug 2010     **/
-/**                # Version 6.0  : from : 14 fev 2011     **/
-/**                                 to     01 may 2015     **/
+/**                # Version 6.0  : from : 14 feb 2011     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -616,7 +616,7 @@ const ArchDecoDom * const   dom1ptr)
   Anum          dom1num;
 
   for (dom1num = dom1ptr->num, dom0num = dom0ptr->num; dom1num != 0; dom1num >>= 1)
-    if (dom1num == dom0ptr->num)
+    if (dom1num == dom0num)
       return (1);
 
   return (0);

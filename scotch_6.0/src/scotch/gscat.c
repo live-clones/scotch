@@ -1,4 +1,4 @@
-/* Copyright 2009-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 26 apr 2009     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,8 +64,8 @@
 static int                  C_paraNum = 0;        /* Number of parameters       */
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* File array              */
-                              { "r" },
-                              { "w" } };
+                              { FILEMODER },
+                              { FILEMODEW } };
 
 static const char *         C_usageList[] = {     /* Usage */
   "gscat <nparts> <input source file> <output target file pattern> <options>",
@@ -120,7 +120,7 @@ char *                      argv[])
           return     (0);
         case 'V' :
           fprintf (stderr, "gscat, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2009-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2009-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -136,9 +136,6 @@ char *                      argv[])
 
   fileBlockClose (C_fileTab, 1);                  /* Always close explicitely to end eventual (un)compression tasks */
 
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
   return (0);
 }
 
@@ -182,18 +179,25 @@ char * const                nameptr)
   flagtab[2] = proptab[2] - '0';                  /* Vertex loads flag       */
 
   for (procnum = 0; procnum < procnbr; procnum ++) {
-    char *              nametmp;
+    char *              naexptr;                  /* Expanded name */
     FILE *              ostream;
     SCOTCH_Num          vertlocnbr;
     SCOTCH_Num          vertlocnum;
     SCOTCH_Num          edgelocnbr;
 
-    nametmp = nameptr;
     ostream = NULL;
-    if (fileNameDistExpand (&nametmp, procnbr, procnum, -1) == 0) {
-      ostream = fopen (nametmp, "w+");
-      memFree (nametmp);                            /* Expanded name no longer needed anyway */
+    naexptr = fileNameDistExpand (nameptr, procnbr, procnum);
+    if (naexptr == nameptr) {
+      errorPrint ("C_graphScat: not a distributed file name");
+      return     (1);
     }
+    if (naexptr == NULL) {
+      errorPrint ("C_graphScat: cannot create distributed file name");
+      return     (1);
+    }
+
+    ostream = fopen (naexptr, "w+");
+    memFree (naexptr);                            /* Expanded name no longer needed anyway */
     if (ostream == NULL) {
       errorPrint ("C_graphScat: cannot open file");
       return     (1);
@@ -211,6 +215,7 @@ char * const                nameptr)
                  (SCOTCH_Num) baseval,
                  proptab) == EOF) {
       errorPrint ("C_graphScat: bad output (1)");
+      fclose     (ostream);
       return     (1);
     }
 
@@ -222,6 +227,7 @@ char * const                nameptr)
 
         if (intLoad (stream, &vlblval) != 1) {    /* Read label data */
           errorPrint ("C_graphScat: bad input (3)");
+          fclose     (ostream);
           return     (1);
         }
         intSave (ostream, vlblval);
@@ -232,6 +238,7 @@ char * const                nameptr)
 
         if (intLoad (stream, &veloval) != 1) {    /* Read vertex load data    */
           errorPrint ("C_graphScat: bad input (4)");
+          fclose     (ostream);
           return     (1);
         }
         intSave (ostream, veloval);
@@ -239,6 +246,7 @@ char * const                nameptr)
       }
       if (intLoad (stream, &degrval) != 1) {      /* Read vertex degree */
         errorPrint ("C_graphScat: bad input (5)");
+        fclose     (ostream);
         return     (1);
       }
       intSave (ostream, degrval);
@@ -253,6 +261,7 @@ char * const                nameptr)
 
           if (intLoad (stream, &edloval) != 1) {  /* Read edge load data    */
             errorPrint ("C_graphScat: bad input (6)");
+            fclose     (ostream);
             return     (1);
           }
           putc ('\t', ostream);
@@ -261,6 +270,7 @@ char * const                nameptr)
 
         if (intLoad (stream, &edgeval) != 1) {    /* Read edge data */
           errorPrint ("C_graphScat: bad input (7)");
+          fclose     (ostream);
           return     (1);
         }
         putc ('\t', ostream);

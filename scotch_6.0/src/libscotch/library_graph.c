@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 17 nov 2010     **/
 /**                                 to     17 nov 2010     **/
 /**                # Version 6.0  : from : 04 dec 2012     **/
-/**                                 to     04 dec 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,11 +100,11 @@ SCOTCH_graphInit (
 SCOTCH_Graph * const        grafptr)
 {
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
-    errorPrint ("SCOTCH_graphInit: internal error (1)");
+    errorPrint (STRINGIFY (SCOTCH_graphInit) ": internal error (1)");
     return     (1);
   }
   if (sizeof (SCOTCH_Graph) < sizeof (Graph)) {
-    errorPrint ("SCOTCH_graphInit: internal error (2)");
+    errorPrint (STRINGIFY (SCOTCH_graphInit) ": internal error (2)");
     return     (1);
   }
 
@@ -160,11 +160,11 @@ const SCOTCH_Num            flagval)
   GraphFlag           srcgrafflag;                /* Graph flags */
 
   if ((baseval < -1) || (baseval > 1)) {
-    errorPrint ("SCOTCH_graphLoad: invalid base parameter");
+    errorPrint (STRINGIFY (SCOTCH_graphLoad) ": invalid base parameter");
     return     (1);
   }
   if ((flagval < 0) || (flagval > 3)) {
-    errorPrint ("SCOTCH_graphLoad: invalid flag parameter");
+    errorPrint (STRINGIFY (SCOTCH_graphLoad) ": invalid flag parameter");
     return     (1);
   }
 
@@ -217,12 +217,12 @@ const SCOTCH_Num * const    edlotab)              /* Edge load array            
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Graph) < sizeof (Graph)) {
-    errorPrint ("SCOTCH_graphBuild: internal error");
+    errorPrint (STRINGIFY (SCOTCH_graphBuild) ": internal error");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
   if ((baseval < 0) || (baseval > 1)) {
-    errorPrint ("SCOTCH_graphBuild: invalid base parameter");
+    errorPrint (STRINGIFY (SCOTCH_graphBuild) ": invalid base parameter");
     return     (1);
   }
 

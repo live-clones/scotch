@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,12 +35,14 @@
 /**                                                        **/
 /**   AUTHOR     : Jun-Ho HER (v6.0)                       **/
 /**                                                        **/
-/**   FUNCTION   : These lines are the data declaration    **/
+/**   FUNCTION   : These lines are the data declarations   **/
 /**                for the sequential bipartitioning       **/
 /**                routine for distributed graphs.         **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 19 nov 2007     **/
 /**                                 to   : 20 nov 2007     **/
+/**                # Version 6.0  : from : 07 jun 2018     **/
+/**                                 to     07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,12 +60,8 @@ typedef struct BdgraphBipartSqParam_ {
 **  The function prototypes.
 */
 
-#ifndef BDGRAPH_BIPART_SQ
-#define static
-#endif
-
-int                         bdgraphBipartSq   (Bdgraph * const, const BdgraphBipartSqParam * const);
-
+#ifdef BDGRAPH_BIPART_SQ
 static void                 bdgraphBipartSqOpBest (const Gnum * const, Gnum * const, const int * const, const MPI_Datatype * const);
+#endif /* BDGRAPH_BIPART_SQ */
 
-#undef static
+int                         bdgraphBipartSq     (Bdgraph * const, const BdgraphBipartSqParam * const);

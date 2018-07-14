@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to     24 jul 2011     **/
 /**                # Version 6.0  : from : 30 sep 2014     **/
-/**                                 to     30 sep 2014     **/
+/**                                 to     27 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -795,7 +795,7 @@ const char * const          string)               /*+ Strategy string to parse  
   parserstrattab  = strattab;                     /* Point to the parsing tables             */
   parserstratcurr = NULL;                         /* Clear up the temporary strategy pointer */
 
-  if (stratParserParse2 () != 0) {                /* Parse the strategy string */
+  if (yyparse () != 0) {                          /* Parse the strategy string */
     if (parserstratcurr != NULL)
       stratExit (parserstratcurr);
     return (NULL);
@@ -811,7 +811,7 @@ const char * const          string)               /*+ Strategy string to parse  
 
 static
 int
-stratParserError (
+yyerror (
 const char * const          errstr)
 {
   errorPrint ("stratParserParse: invalid strategy string, before \"%s\"", stratParserRemain ());

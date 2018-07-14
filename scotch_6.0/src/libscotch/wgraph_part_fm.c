@@ -1,4 +1,4 @@
-/* Copyright 2007-2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2013,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 5.1  : from : 01 dec 2007     **/
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 6.0  : from : 05 nov 2009     **/
-/**                                 to     24 dec 2013     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -911,5 +911,5 @@ wgraphPartFmResize ()
 {
   errorPrint ("wgraphPartFmResize: not implemented");
 
-  return (0);
+  return (1);
 }

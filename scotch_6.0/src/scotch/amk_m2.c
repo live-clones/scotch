@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 10 jul 2018     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -92,7 +92,7 @@
 static int                  C_paraNum = 0;        /* Number of parameters       */
 static int                  C_fileNum = 0;        /* Number of file in arg list */
 static File                 C_fileTab[C_FILENBR] = { /* File array              */
-                              { "w" } };
+                              { FILEMODEW } };
 
 static const char *         C_usageList[] = {
   "amk_m2 <dimX> [<dimY> [<output target file>]] <options>",
@@ -121,6 +121,7 @@ char *                      argv[])
   ArchMesh2Dom     dom;                           /* Initial domain             */
   C_MethType       methtype;                      /* Bipartitioning method      */
   unsigned int     termnbr;                       /* Number of terminal domains */
+  unsigned int     termnum;
   unsigned int     termmax;                       /* Maximum terminal number    */
   unsigned int *   termtab;                       /* Terminal numbers table     */
   unsigned int     x0, y0, x1, y1;
@@ -179,7 +180,7 @@ char *                      argv[])
           return     (0);
         case 'V' :
           fprintf (stderr, "amk_m2, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -210,9 +211,9 @@ char *                      argv[])
   fprintf (C_filepntrarcout, "deco\n0\n%u\t%u\n", /* Print file header                */
            termnbr,                               /* Print number of terminal domains */
            termmax);                              /* Print biggest terminal value     */
-  for (i = 0; i < termnbr; i ++)                  /* For all terminals                */
+  for (termnum = 0; termnum < termnbr; termnum ++) /* For all terminals               */
     fprintf (C_filepntrarcout, "%u\t1\t%u\n",     /* Print terminal data              */
-             i, termtab[i]);
+             termnum, termtab[termnum]);
 
   for (y0 = 0; y0 < arch.c[1]; y0 ++) {           /* For all vertices */
     for (x0 = 0; x0 < arch.c[0]; x0 ++) {
@@ -230,9 +231,6 @@ char *                      argv[])
 
   memFree (termtab);                              /* Free terminal number array */
 
-#ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
-#endif /* COMMON_PTHREAD */
   return (0);
 }
 

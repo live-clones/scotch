@@ -1,4 +1,4 @@
-/* Copyright 2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_graphMap*() routines.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 12 aug 2014     **/
-/**                                 to     20 sep 2014     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,7 +83,6 @@ char *              argv[])
   SCOTCH_Strat            stratab[STRANBR];
   int                     stranum;
   int                     typenum;
-  SCOTCH_Num              baseval;
   SCOTCH_Num              vertnbr;
   SCOTCH_Num              vertnum;
   SCOTCH_Num *            parttab;
@@ -93,19 +92,24 @@ char *              argv[])
 
   SCOTCH_errorProg (argv[0]);
 
+  if (argc != 2) {
+    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+    exit (EXIT_FAILURE);
+  }
+
   if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) { /* Read a square 2D grid graph */
     SCOTCH_errorPrint ("main: cannot open file (1)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
     SCOTCH_errorPrint ("main: cannot load graph");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
@@ -114,14 +118,14 @@ char *              argv[])
   xdimsiz = (SCOTCH_Num) sqrt ((double) vertnbr);
   if (vertnbr != (xdimsiz * xdimsiz)) {
     SCOTCH_errorPrint ("main: graph is not a square grid");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   if (((parttab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) ||
       ((parotab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) ||
       ((vmlotab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL)) {
     SCOTCH_errorPrint ("main: out of memory");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   for (vertnum = 0; vertnum < vertnbr; vertnum ++) /* Fill vertex migration load array */
@@ -130,7 +134,7 @@ char *              argv[])
   for (stranum = 0; stranum < STRANBR; stranum ++) { /* Initialize mapping strategies */
     if (SCOTCH_stratInit (&stratab[stranum]) != 0) {
       SCOTCH_errorPrint ("main: cannot initialize strategy");
-      return            (1);
+      exit (EXIT_FAILURE);
     }
   }
   SCOTCH_stratGraphMapBuild (&stratab[0], SCOTCH_STRATRECURSIVE, 4, 0.05);
@@ -139,7 +143,7 @@ char *              argv[])
   for (archnum = 0; archnum < ARCHNBR; archnum ++) { /* Initialize architectures */
     if (SCOTCH_archInit (&archtab[archnum]) != 0) {
       SCOTCH_errorPrint ("main: cannot initialize architecture");
-      return            (1);
+      exit (EXIT_FAILURE);
     }
   }
   SCOTCH_archCmplt (&archtab[0], 5);
@@ -149,7 +153,7 @@ char *              argv[])
 
   if ((fileptr = tmpfile ()) == NULL) {           /* Open temporary file for resulting output */
     SCOTCH_errorPrint ("main: cannot open file (2)");
-    return            (1);
+    exit (EXIT_FAILURE);
   }
 
   for (stranum = 0; stranum < STRANBR; stranum ++) {
@@ -158,11 +162,11 @@ char *              argv[])
 
       if (SCOTCH_graphMapInit (&grafdat, &mappdat, &archtab[archnum], parttab) != 0) { /* Initialize new mapping */
         SCOTCH_errorPrint ("main: cannot initialize mapping (1)");
-        return            (1);
+        exit (EXIT_FAILURE);
       }
       if (SCOTCH_graphMapInit (&grafdat, &mapodat, &archtab[archnum], parotab) != 0) { /* Initialize old mapping */
         SCOTCH_errorPrint ("main: cannot initialize mapping (2)");
-        return            (1);
+        exit (EXIT_FAILURE);
       }
 
       archsiz = SCOTCH_archSize (&archtab[archnum]);
@@ -214,7 +218,7 @@ char *              argv[])
 
         if (o != 0) {
           SCOTCH_errorPrint ("main: cannot compute mapping");
-          return (1);
+          exit (EXIT_FAILURE);
         }
       }
 
@@ -239,5 +243,5 @@ char *              argv[])
 
   fclose (fileptr);
 
-  return (0);
+  exit (EXIT_SUCCESS);
 }

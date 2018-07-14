@@ -1,4 +1,4 @@
-/* Copyright 2007-2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to   : 14 apr 2011     **/
 /**              : # Version 6.0  : from : 11 sep 2011     **/
-/**                                 to   : 28 sep 2014     **/
+/**                                 to   : 07 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -234,7 +234,6 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   Gnum                            finefronlocnum;
   Gnum                            fineedlolocval;
   Gnum                            finevertlocadj; /* Global vertex adjustment                            */
-  Gnum                            finevertlocnum;
   Gnum                            finevertlocnnd; /* Index for frontier array fronloctab                 */
   Gnum                            finecomplocsize1;
   Gnum                            finecomplocload1;
@@ -262,6 +261,9 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   GraphPart * restrict            coarpartgsttax;
   GraphPart * restrict            finepartgsttax;
   Gnum * restrict                 finefronloctab;
+#ifdef SCOTCH_DEBUG_BDGRAPH2
+  Gnum                            finevertlocnum;
+#endif /* SCOTCH_DEBUG_BDGRAPH2 */
 
   const int                   fineprocglbnbr = finegrafptr->s.procglbnbr;
   const Gnum * restrict const fineprocvrttab = finegrafptr->s.procvrttab;
@@ -488,7 +490,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   }
 
   if (MPI_Alltoall (vsndcnttab, 1, MPI_INT, vrcvcnttab, 1, MPI_INT, finegrafptr->s.proccomm) != MPI_SUCCESS) {
-    errorPrint ("bdgraphBipartMlUncoarsen: communication error (3)");
+    errorPrint ("bdgraphBipartMlUncoarsen: communication error (6)");
     return     (1);
   }
 
@@ -508,7 +510,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   }
 #ifdef SCOTCH_DEBUG_BDGRAPH1                      /* Communication cannot be overlapped by a useful one */
   if (MPI_Allreduce (&reduloctab[5], &reduglbtab[5], 1, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS)  {
-    errorPrint ("bdgraphBipartMlUncoarsen: communication error (4)");
+    errorPrint ("bdgraphBipartMlUncoarsen: communication error (7)");
     return     (1);
   }
 #else /* SCOTCH_DEBUG_BDGRAPH1 */
@@ -568,7 +570,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 #ifdef SCOTCH_DEBUG_BDGRAPH2
     if (((partval < 3) && (vsndidxtab[4 * procngbnum + partval] >= vsndidxtab[4 * procngbnum + partval + 1])) ||
         (vsndidxtab[4 * procngbnum + partval] >= (vsnddsptab[procngbnum] + vsndcnttab[procngbnum]))) {
-      errorPrint ("bdgraphBipartMlUncoarsen: internal error (3)");
+      errorPrint ("bdgraphBipartMlUncoarsen: internal error (2)");
       return     (1);
     }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -577,7 +579,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
   if (MPI_Alltoallv (vsnddattab, vsndcnttab, vsnddsptab, GNUM_MPI, 
                      vrcvdattab, vrcvcnttab, vrcvdsptab, GNUM_MPI, finegrafptr->s.proccomm) != MPI_SUCCESS) {
-    errorPrint ("bdgraphBipartMlUncoarsen: communication error (5)");
+    errorPrint ("bdgraphBipartMlUncoarsen: communication error (8)");
     return     (1);
   }
     
@@ -597,7 +599,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
       finevertlocnum = vrcvdattab[vrcvidxnum] - finevertlocadj;
 #ifdef SCOTCH_DEBUG_BDGRAPH2
       if ((finevertlocnum < baseval) || (finevertlocnum >= finevertlocnnd)) {
-        errorPrint ("bdgraphBipartMlUncoarsen: internal error (4)");
+        errorPrint ("bdgraphBipartMlUncoarsen: internal error (3)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -611,7 +613,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
       finevertlocnum = vrcvdattab[vrcvidxnum] - finevertlocadj;
 #ifdef SCOTCH_DEBUG_BDGRAPH2
       if ((finevertlocnum < baseval) || (finevertlocnum >= finevertlocnnd)) {
-        errorPrint ("bdgraphBipartMlUncoarsen: internal error (5)");
+        errorPrint ("bdgraphBipartMlUncoarsen: internal error (4)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -634,7 +636,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
       finevertlocnum = vrcvdattab[vrcvidxnum] - finevertlocadj;
 #ifdef SCOTCH_DEBUG_BDGRAPH2
       if ((finevertlocnum < baseval) || (finevertlocnum >= finevertlocnnd)) {
-        errorPrint ("bdgraphBipartMlUncoarsen: internal error (6)");
+        errorPrint ("bdgraphBipartMlUncoarsen: internal error (5)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -649,7 +651,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
       finevertlocnum = vrcvdattab[vrcvidxnum] - finevertlocadj;
 #ifdef SCOTCH_DEBUG_BDGRAPH2
       if ((finevertlocnum < baseval) || (finevertlocnum >= finevertlocnnd)) {
-        errorPrint ("bdgraphBipartMlUncoarsen: internal error (7)");
+        errorPrint ("bdgraphBipartMlUncoarsen: internal error (6)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
@@ -670,7 +672,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 #ifdef SCOTCH_DEBUG_BDGRAPH2
   for (finevertlocnum = baseval; finevertlocnum < finevertlocnnd; finevertlocnum ++) {
     if (finepartgsttax[finevertlocnum] == ((GraphPart) ~0)) {
-      errorPrint ("bdgraphBipartMlUncoarsen: internal error (8)");
+      errorPrint ("bdgraphBipartMlUncoarsen: internal error (7)");
       return     (1);
     }
   }

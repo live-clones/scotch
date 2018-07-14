@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011,2012,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011,2012,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 5.0  : from : 13 dec 2006     **/
 /**                                 to     02 oct 2007     **/
 /**                # Version 6.0  : from : 27 jun 2011     **/
-/**                                 to     03 aug 2016     **/
+/**                                 to     23 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,13 +88,12 @@ int
 graphCheck (
 const Graph * const         grafptr)
 {
-  Gnum                vertnum;                    /* Number of current vertex       */
-  Gnum                velosum;                    /* Sum of vertex loads            */
-  Gnum                velstab;                    /* Vertex load sum array (if any) */
-  Gnum                edlosum;                    /* Sum of edge loads              */
-  Gnum                edgenbr;                    /* Number of edges (arcs)         */
-  Gnum                edgenum;                    /* Number of current edge         */
-  Gnum                degrmax;                    /* Maximum degree                 */
+  Gnum                vertnum;                    /* Number of current vertex */
+  Gnum                velosum;                    /* Sum of vertex loads      */
+  Gnum                edlosum;                    /* Sum of edge loads        */
+  Gnum                edgenbr;                    /* Number of edges (arcs)   */
+  Gnum                edgenum;                    /* Number of current edge   */
+  Gnum                degrmax;                    /* Maximum degree           */
 
   const Gnum                  baseval = grafptr->baseval; /* Fast accesses */
   const Gnum * restrict const verttax = grafptr->verttax;

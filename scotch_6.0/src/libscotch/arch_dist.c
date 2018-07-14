@@ -43,7 +43,7 @@
 /**                to handle floating-point migration      **/
 /**                costs.                                  **/
 /**                                                        **/
-/**   DATES      : # Version 6.0  : from : 14 fev 2011     **/
+/**   DATES      : # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 30 jun 2014     **/
 /**                                                        **/
 /************************************************************/

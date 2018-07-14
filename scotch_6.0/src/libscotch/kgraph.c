@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 28 sep 2008     **/
 /**                                 to     31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     12 nov 2014     **/
+/**                                 to     26 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,7 +95,6 @@ const Gnum                      cmloval,          /*+ Coefficient load for migra
 const Gnum * restrict const     vmlotax)          /*+ Vertex migration cost array          +*/
 {
   ArchDom                   domndat;              /* First, largest domain */
-  const ArchDom * restrict  domntmp;
 
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if ((crloval < 1) || (cmloval < 0)) {
@@ -209,15 +208,14 @@ void
 kgraphFrst (
 Kgraph * restrict const     grafptr)
 {
-  archDomFrst (grafptr->m.archptr, &grafptr->m.domntab[0]);
-  grafptr->m.domnnbr = 1;
+  grafptr->m.domnnbr    = 1;
+  grafptr->m.domntab[0] = grafptr->m.domnorg;     /* Use initial (sub)domain as root */
 
   memSet (grafptr->m.parttax + grafptr->s.baseval, 0, grafptr->s.vertnbr * sizeof (Anum)); /* Set all vertices to subdomain 0 */
   memSet (grafptr->comploadavg + 1, 0, (2 * grafptr->m.domnmax - 1) * sizeof (Gnum));
 
   grafptr->comploadavg[0] = grafptr->s.velosum;
   grafptr->commload       = 0;
-  grafptr->m.domntab[0]   = grafptr->m.domnorg;   /* Point to first domain */
   grafptr->fronnbr        = 0;                    /* No frontier vertices  */
 }
 

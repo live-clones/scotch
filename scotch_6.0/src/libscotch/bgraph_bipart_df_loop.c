@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011-2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011-2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 29 oct 2007     **/
 /**                                 to     27 mar 2011     **/
 /**                # Version 6.0  : from : 07 nov 2011     **/
-/**                                 to   : 08 aug 2014     **/
+/**                                 to   : 03 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,13 +79,11 @@ BgraphBipartDfThread * restrict thrdptr)          /* Thread-dependent data */
   float * restrict      difntax;                  /* New diffusion value array        */
   Gnum                  vertnum;
   Gnum                  fronnum;
-  Gnum                  compload0;
   Gnum                  compload1;
   Gnum                  compsize1;
   Gnum                  commloadintn;
   Gnum                  commloadextn;
   Gnum                  commgainextn;
-  Gnum                  veexnbr;
   Gnum                  veexval;
   Gnum                  veexval1;                 /* Negative external gain to part 1 */
   Gnum                  veexsum;
@@ -314,7 +312,9 @@ BgraphBipartDfThread * restrict thrdptr)          /* Thread-dependent data */
     }
 #endif /* BGRAPHBIPARTDFLOOPTHREAD */
   }
+#ifndef BGRAPHBIPARTDFLOOPTHREAD
 abort : ;
+#endif /* BGRAPHBIPARTDFLOOPTHREAD */
 
   for (vertnum = vertbas; vertnum < vertnnd; vertnum ++) /* Update part according to diffusion state */
     parttax[vertnum] = (difotax[vertnum] <= 0.0F) ? 0 : 1;

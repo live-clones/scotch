@@ -1,4 +1,4 @@
-/* Copyright 2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                as a mapping result.                    **/ 
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 jan 2012     **/
-/**                                 to     23 aug 2014     **/
+/**                                 to     31 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,22 +71,18 @@
 ** - 1 : on error.
 */
 
-/* TODO handle the case when the old and the new architectures are differents. */
+/* TODO handle the case when the old and the new architectures are different. */
 
 int
 kgraphMapCp (
 Kgraph * restrict const     grafptr)              /*+ Graph +*/
 {
-  Gnum                          baseval;
-  Anum                          domnnbr;
-
   const Anum * restrict const pfixtax = grafptr->pfixtax;
 
   if (grafptr->r.m.parttax == NULL) {             /* If we do not have an old partition */
     errorPrint ("kgraphMapCp: inconsistent old mapping data");
     return     (1);
   }
-  baseval = grafptr->s.baseval;
 
   if (mapCopy (&grafptr->m, &grafptr->r.m) != 0) {
     errorPrint ("kgraphMapCp: cannot copy old mapping");

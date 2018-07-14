@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,6 +56,8 @@
 /**                                 to     03 mar 2004     **/
 /**                # Version 3.0  : from : 23 nov 2004     **/
 /**                                 to     03 mar 2005     **/
+/**                # Version 6.0  : from : 22 may 2018     **/
+/**                                 to     22 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,10 +66,6 @@
 /*
 **  The function prototypes.
 */
-
-#ifndef FAX
-#define static
-#endif
 
 int                         symbolCompact       (SymbolMatrix * const symbptr);
 int                         symbolFax           (SymbolMatrix * const symbptr, const INT vertnbr, const INT edgenbr, const INT baseval, void * const ngbdptr, INT ngbfrst (void * const, const INT), INT ngbnext (void * const), INT ngbdegr (void * const, const INT), const Order * const ordeptr);
@@ -92,5 +90,3 @@ int                         symbolFaxiGrid2D    (SymbolMatrix * const symbptr, c
 int                         symbolFaxiGrid2E    (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT baseval, const Order * const ordeptr, const INT levfmax);
 int                         symbolFaxiGrid3D    (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT znbr, const INT baseval, const Order * const ordeptr, const INT levfmax);
 int                         symbolFaxiGrid3E    (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT znbr, const INT baseval, const Order * const ordeptr, const INT levfmax);
-
-#undef static

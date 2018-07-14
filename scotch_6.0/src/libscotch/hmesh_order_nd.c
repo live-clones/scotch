@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 09 nov 2008     **/
+/**                # Version 6.0  : from : 15 may 2018     **/
+/**                                 to   : 15 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -200,5 +202,5 @@ const HmeshOrderNdParam * const   paraptr)
 
   vmeshExit (&nspmeshdat);
 
-  return (0);
+  return (o);
 }

@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.0  : from : 12 jul 2007     **/
 /**                                 to     17 jul 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
-/**                                 to     29 nov 2012     **/
+/**                                 to     25 apr 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -112,7 +112,7 @@ SCOTCH_Graph * const        cgrfptr)
   }
 
   if (MPI_Allreduce (reduloctab, reduglbtab, 3, GNUM_MPI, MPI_SUM, srcdgrfptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("SCOTCH_dgraphGather: communication error");
+    errorPrint (STRINGIFY (SCOTCH_dgraphGather) ": communication error");
     return     (1);
   }
   if (reduglbtab[0] == 1)                         /* If only one single root */
@@ -120,6 +120,6 @@ SCOTCH_Graph * const        cgrfptr)
   else if (reduglbtab[0] == srcdgrfptr->procglbnbr) /* If all processes are roots */
     return (dgraphGatherAll2 (srcdgrfptr, (Graph *) cgrfptr, reduglbtab[2], -1));
 
-  errorPrint ("SCOTCH_dgraphGather: invalid number of roots");
+  errorPrint (STRINGIFY (SCOTCH_dgraphGather) ": invalid number of roots");
   return     (1);
 }

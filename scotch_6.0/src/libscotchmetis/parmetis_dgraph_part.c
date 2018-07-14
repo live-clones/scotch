@@ -1,4 +1,4 @@
-/* Copyright 2008-2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 19 jun 2008     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
-/**                                 to     13 sep 2012     **/
+/**                                 to     21 may 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,7 +65,7 @@
 /*                                  */
 /************************************/
 
-void
+int
 METISNAMEU(ParMETIS_V3_PartKway) (
 const SCOTCH_Num * const    vtxdist,
 SCOTCH_Num * const          xadj,
@@ -100,10 +100,10 @@ MPI_Comm *                  comm)
   SCOTCH_Num          i;
 
   if ((vwgttab = malloc (*nparts * sizeof (double))) == NULL)
-    return;
+    return (METIS_ERROR_MEMORY);
   if ((velotab = malloc (*nparts * sizeof (SCOTCH_Num))) == NULL) {
     free (vwgttab);
-    return;
+    return (METIS_ERROR_MEMORY);
   }
   for (i = 0; i < *nparts; i ++)
     vwgttab[i] = (double) tpwgts[i] * (double) (*nparts);
@@ -122,8 +122,11 @@ MPI_Comm *                  comm)
     velotab[i] = (SCOTCH_Num) (vwgttab[i] + 0.5);
 
   proccomm = *comm;
-  if (SCOTCH_dgraphInit (&grafdat, proccomm) != 0)
-    return;
+  if (SCOTCH_dgraphInit (&grafdat, proccomm) != 0) {
+    free   (velotab);
+    free   (vwgttab);
+    return (METIS_ERROR);
+  }
 
   MPI_Comm_size (proccomm, &procglbnbr);
   MPI_Comm_rank (proccomm, &proclocnum);
@@ -157,8 +160,8 @@ MPI_Comm *                  comm)
 
   *edgecut = 0;                                   /* TODO : compute real edge cut for people who might want it */
 
-  free (vwgttab);
   free (velotab);
+  free (vwgttab);
 
   if (baseval != 0) {                             /* MeTiS part array is based, Scotch is not */
     SCOTCH_Num          vertlocnum;
@@ -166,13 +169,15 @@ MPI_Comm *                  comm)
     for (vertlocnum = 0; vertlocnum < vertlocnbr; vertlocnum ++)
       part[vertlocnum] += baseval;
   }
+
+  return (METIS_OK);
 }
 
 /*
 **
 */
 
-void
+int
 METISNAMEU(ParMETIS_V3_PartGeomKway) (
 const SCOTCH_Num * const    vtxdist,
 SCOTCH_Num * const          xadj,
@@ -192,5 +197,5 @@ SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part,
 MPI_Comm *                  commptr)
 {
-  METISNAMEU(ParMETIS_V3_PartKway) (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr);
+  return (METISNAMEU(ParMETIS_V3_PartKway) (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr));
 }
