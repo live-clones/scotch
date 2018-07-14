@@ -7,12 +7,13 @@ Scotch 6.0 installation instructions
 
 In order for you to compile Scotch and/or PT-Scotch, you must have GNU
 Make installed on your system, as well as an implementation of the MPI
-message-passing library in the case of PT-Scotch. Lex and Yacc are
-optional. There is a possibility to install Scotch without having Lex
-or Yacc, but it may require the tuning of sample Flex and Bison (i.e.,
-the GNU equivalents of Lex and Yacc) outputs created on a Linux
-system, which may need some tricky work to compile on other systems,
-because of different C library implementations.
+message-passing library in the case of PT-Scotch. Flex and Bison are
+optional. There is a possibility to install Scotch without having Flex
+or Bison, but it may require the tuning of pre-compiled Flex and Bison
+outputs created on a Linux system, which may need some tricky work to
+compile on other systems, because of different C library
+implementations. Therefore, it is much more secure to have them
+installed.
 
 To check if GNU Make is installed and is found first, please type:
 
@@ -30,12 +31,12 @@ executables, you can try to locate it using the which command:
 
 %prompt% which make
 
-If several occurences of make are found, one might be GNU Make,
+If several occurrences of make are found, one might be GNU Make,
 so try to figure out which of them.
 
-To see if lex and yacc are present, type
-%prompt% which lex
-%prompt% which yacc    (or "Bison", the GNU flavor of yacc)
+To see if Flex and Bison are present, type
+%prompt% which flex
+%prompt% which bison
 
 If some of these are missing, please:
 - check your path variable (just in case they are located in
@@ -48,8 +49,8 @@ If some of these are missing, please:
   available from the FSF website, at:
   http://www.gnu.org/software/make/ and
   http://ftp.gnu.org/pub/gnu/make/ .
-  A GNU version of lex and yacc is also available from the
-  very same FSF website, at:
+  Flex and Bison are also available from the very same FSF
+  website, at:
   http://www.gnu.org/software/flex/
   http://ftp.gnu.org/non-gnu/flex/
   http://www.gnu.org/software/bison/
@@ -67,8 +68,8 @@ If some of these are missing, please:
   compiles properly on your system. Else, you will have to dig in
   their code to have them compile properly...
   The Makefile of the libScotch library has been designed so as
-  to copy the last_resort/* files automatically when the lex or
-  yacc tools are not found.
+  to copy the last_resort/* files automatically when the Flex or
+  Bison tools are not found.
   In this case, depending on your platform, you may also have to set
   the "-DSCOTCH_RENAME_PARSER" flag in order for all symbols to be
   properly redefined (see Section 2.2).
@@ -193,7 +194,7 @@ a "_64" suffix can be appended to routines and data types of a
 To do so, the following actions must be performed :
 - the variable "SCOTCH_NAME_SUFFIX" must be defined in Makefile.inc
   (e.g., "SCOTCH_NAME_SUFFIX=_64");
-- the proprocessor variable definition
+- the preprocessor variable definition
   "-DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)"
   must be added to the CFLAGS variable (with the double quotes
   for increased safety).
@@ -262,22 +263,22 @@ systems that do not allow process forking.
 
 The binaries of the Scotch distribution can handle compressed
 graphs in input or output. Three compressed graph formats are
-currently supported: bzip2, gzip and lzma. In order for them to be
+currently supported: bzip2, gzip and xz/lzma. In order for them to be
 actually activated, the proper libraries must be available on your
-system. On a Linux platform, they are called "zlib" for the gzip
-format, "libbz2" for the bzip2 format, and "liblzma" for the lzma
+system. On a Linux platform, they are called "libz" for the gzip
+format, "libbzip2" for the bzip2 format, and "liblzma" for the lzma
 format. Note that it is the "development" version (also called
-"devel", for short, within package names) of each of these libraries
-which is required for the compilation to succeed.
-According to the libraries installed on your system, you may set
-flags "-DCOMMON_FILE_COMPRESS_BZ2", "-DCOMMON_FILE_COMPRESS_GZ" and/or
-"-DCOMMON_FILE_COMPRESS_LZMA" in the CFLAGS variable of your
+"-devel" or "-dev", for short, as a post-fix in package names) of
+each of these libraries, which is required for the compilation to
+succeed. According to the libraries installed on your system, you may
+set flags "-DCOMMON_FILE_COMPRESS_BZ2", "-DCOMMON_FILE_COMPRESS_GZ"
+and/or "-DCOMMON_FILE_COMPRESS_LZMA" in the CFLAGS variable of your
 Makefile.inc configuration file, to have these formats and their
-respective extensions ".bz2", ".gz" and ".lzma", recognized and
+respective extensions ".bz2", ".gz" and ".xz"/".lzma", recognized and
 handled by Scotch.
 
 Compression and decompression are handled either by extra threads
-or by fork'ed child processes if threads are not available. On
+or by fork()'ed child processes if threads are not available. On
 systems which do not provide a functional fork() system call,
 compressed files cannot be handled when the "-DCOMMON_PTHREAD_FILE"
 flag is not set (see below).
@@ -289,7 +290,7 @@ flag is not set (see below).
 Scotch can also take advantage of Posix threads when they are
 available. They are used in several places:
 
-- to compress and uncompress file data. This can be done either
+- to compress and decompress file data. This can be done either
   by launching a service thread, or else by creating a separate
   process by means of a Posix fork() system call. This choice is
   controlled by the "-DCOMMON_PTHREAD_FILE" flag: if it is set,
@@ -337,7 +338,7 @@ The available number of threads can only be set at compile-time, and
 the assignment of threads to cores is performed in increasing order,
 starting from 0, which may not always prove to be the most efficient
 mapping in terms of memory affinity. We plan to add a mechanism for
-dynamic thread allocation in the near future, based upon the hwloc
+dynamic thread allocation in the near future, based upon the Hwloc
 library.
 
 The compilation flags used to manage threads are the following:
@@ -359,14 +360,14 @@ on other flags (see below).
 "-DSCOTCH_PTHREAD" is necessary to enable multi-threaded algorithms
 in Scotch and/or PT-Scotch.
 
-"-DSCOTCH_PTHREAD_NUMBER=x" sets the overall number of threads to be
+"-DSCOTCH_PTHREAD_NUMBER=x" sets the maximum number of threads to be
 used by multi-threaded algorithms. This number may not necessarily be
 a power of two. Some algorithms have had to be reformulated to
-accomodate for multi-threading, and will be most probably much more
+accommodate for multi-threading, and will be most probably much more
 efficient than sequential processing only for a number of
 threads strictly greater than 2. Setting "-DSCOTCH_PTHREAD_NUMBER=1"
 allows you to run sequential algorithms instead of multi-threaded
-ones, while benefitting from multi-threading for file compression and
+ones, while benefiting from multi-threading for file compression and
 distributed graph handling.
 
 When compiling under mingw32 on Windows systems, it is possible to
@@ -572,7 +573,7 @@ and MPI implementations. Yet, on some platforms, programs compiled for
 parallel execution cannot be run interactively. Moreover,
 "ptdummysizes" itself does not contain any MPI calls, as it just wants
 to know the sizes of the data structures, and the communication
-susbystem of the platform may not want to run it. In any of these
+subsystem of the platform may not want to run it. In any of these
 cases, compilation will break. It is possible to solve this problem by
 specifying, in the CCD variable of "Makefile.inc", how to compile
 "ptdummysizes" sequentially but with knowledge of the location of the
