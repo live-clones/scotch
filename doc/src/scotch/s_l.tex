@@ -702,6 +702,8 @@ Use the strategy for remapping an existing partition.
 \paragraph{Ordering flags}
 
 \begin{itemize}
+\iteme[{\tt SCOTCH\_STRATDISCONNECTED}]
+Find and handle independently disconnected components.
 \iteme[{\tt SCOTCH\_STRATLEVELMAX}]
 Create at most the prescribed levels of nested dissection separators.
 \iteme[{\tt SCOTCH\_STRATLEVELMIN}]
@@ -1377,6 +1379,14 @@ tree.
 Set the node separation strategy that is used on every leaf of the
 separators tree to make it grow. Node separation strategies are
 described below, in section~\ref{sec-lib-format-nsep}.
+\end{itemize}
+\iteme[{\tt o}]
+Disconnected subgraph detection method. This method is used at the
+global level to search for connected components, and run independently
+the provided graph ordering strategy on each of them.
+\begin{itemize}
+\iteme[{\tt strat=}{\it strat}]
+Ordering strategy to apply to each of the connected components.
 \end{itemize}
 \iteme[{\tt s}]
 Simple method. Vertices are ordered in their natural order. This
