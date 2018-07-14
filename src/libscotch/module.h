@@ -286,8 +286,8 @@
 #define errorPrintW                 SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrintW)
 #define errorProg                   SCOTCH_NAME_MACRO2 (SCOTCH_, errorProg)
 
-#define memCur                      SCOTCH_NAME_PUBLIC (memCur)
-#define memMax                      SCOTCH_NAME_PUBLIC (memMax)
+#define memCur                      SCOTCH_NAME_MACRO2 (SCOTCH_, memCur)
+#define memMax                      SCOTCH_NAME_MACRO2 (SCOTCH_, memMax)
 
 #define clockGet                    SCOTCH_NAME_INTERN (clockGet)
 
@@ -1193,9 +1193,6 @@
 #define SCOTCH_graphStat            SCOTCH_NAME_PUBLIC (SCOTCH_graphStat)
 #define SCOTCH_graphTabLoad         SCOTCH_NAME_PUBLIC (SCOTCH_graphTabLoad)
 #define SCOTCH_mapAlloc             SCOTCH_NAME_PUBLIC (SCOTCH_mapAlloc)
-#define SCOTCH_memCur               SCOTCH_NAME_PUBLIC (SCOTCH_memCur)
-#define SCOTCH_memFree              SCOTCH_NAME_PUBLIC (SCOTCH_memFree)
-#define SCOTCH_memMax               SCOTCH_NAME_PUBLIC (SCOTCH_memMax)
 #define SCOTCH_meshAlloc            SCOTCH_NAME_PUBLIC (SCOTCH_meshAlloc)
 #define SCOTCH_meshBuild            SCOTCH_NAME_PUBLIC (SCOTCH_meshBuild)
 #define SCOTCH_meshCheck            SCOTCH_NAME_PUBLIC (SCOTCH_meshCheck)
