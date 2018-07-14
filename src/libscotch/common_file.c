@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 27 jun 2010     **/
 /**                                 to     27 jun 2010     **/
 /**                # Version 6.0  : from : 10 nov 2014     **/
-/**                                 to     10 jul 2018     **/
+/**                                 to     14 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -218,12 +218,12 @@ const int                   filenbr)
           return     (1);
         }
       }
-      compval = (((filetab[i].flagval & FILEMODE) == FILEMODER) ? fileUncompressType : fileCompressType) (filetab[i].nameptr);
+      compval = (((filetab[i].flagval & FILEMODE) == FILEMODER) ? fileDecompressType : fileCompressType) (filetab[i].nameptr);
       if (compval < 0) {
         errorPrint ("fileBlockOpen: (un)compression method not implemented");
         return     (2);
       }
-      if ((((filetab[i].flagval & FILEMODE) == FILEMODER) ? fileUncompress : fileCompress) (&filetab[i], compval) != 0) {
+      if ((((filetab[i].flagval & FILEMODE) == FILEMODER) ? fileDecompress : fileCompress) (&filetab[i], compval) != 0) {
         errorPrint ("fileBlockOpen: cannot create (un)compression subprocess");
         return     (1);
       }

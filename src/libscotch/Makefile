@@ -257,7 +257,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			common$(OBJ)				\
 			common_file$(OBJ)			\
 			common_file_compress$(OBJ)		\
-			common_file_uncompress$(OBJ)		\
+			common_file_decompress$(OBJ)		\
 			common_integer$(OBJ)			\
 			common_memory$(OBJ)			\
 			common_string$(OBJ)			\
@@ -460,7 +460,7 @@ common_file_compress$(OBJ)	:	common_file_compress.c			\
 					common_file_compress.h
 					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
-common_file_uncompress$(OBJ)	:	common_file_uncompress.c		\
+common_file_decompress$(OBJ)	:	common_file_decompress.c		\
 					module.h				\
 					common.h				\
 					common_file.h				\

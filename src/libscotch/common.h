@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     10 jul 2018     **/
+/**                                 to     14 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -369,8 +369,8 @@ void                        fileBlockClose      (File * const, const int);
 int                         fileCompress        (File * const, const int);
 void                        fileCompressExit    (File * const);
 int                         fileCompressType    (const char * const);
-int                         fileUncompress      (File * const, const int);
-int                         fileUncompressType  (const char * const);
+int                         fileDecompress      (File * const, const int);
+int                         fileDecompressType  (const char * const);
 char *                      fileNameDistExpand  (char * const, const int, const int);
 
 void                        errorProg           (const char * const);

@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 12 mar 2008     **/
 /**                                 to     17 mar 2008     **/
 /**                # Version 6.0  : from : 08 jul 2018     **/
-/**                                 to     10 jul 2018     **/
+/**                                 to     14 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,23 +94,23 @@ typedef struct FileCompress_ {
 #ifdef COMMON_FILE_COMPRESS
 static void                 fileCompressBz2     (FileCompress * const  dataptr);
 #endif /* COMMON_FILE_COMPRESS */
-#ifdef COMMON_FILE_UNCOMPRESS
-static void                 fileUncompressBz2   (FileCompress * const  dataptr);
-#endif /* COMMON_FILE_UNCOMPRESS */
+#ifdef COMMON_FILE_DECOMPRESS
+static void                 fileDecompressBz2   (FileCompress * const  dataptr);
+#endif /* COMMON_FILE_DECOMPRESS */
 #endif /* COMMON_FILE_COMPRESS_Bz2 */
 #ifdef COMMON_FILE_COMPRESS_GZ
 #ifdef COMMON_FILE_COMPRESS
 static void                 fileCompressGz      (FileCompress * const  dataptr);
 #endif /* COMMON_FILE_COMPRESS */
-#ifdef COMMON_FILE_UNCOMPRESS
-static void                 fileUncompressGz    (FileCompress * const  dataptr);
-#endif /* COMMON_FILE_UNCOMPRESS */
+#ifdef COMMON_FILE_DECOMPRESS
+static void                 fileDecompressGz    (FileCompress * const  dataptr);
+#endif /* COMMON_FILE_DECOMPRESS */
 #endif /* COMMON_FILE_COMPRESS_GZ */
 #ifdef COMMON_FILE_COMPRESS_LZMA
 #ifdef COMMON_FILE_COMPRESS
 static void                 fileCompressLzma    (FileCompress * const  dataptr);
 #endif /* COMMON_FILE_COMPRESS */
-#ifdef COMMON_FILE_UNCOMPRESS
-static void                 fileUncompressLzma  (FileCompress * const  dataptr);
-#endif /* COMMON_FILE_UNCOMPRESS */
+#ifdef COMMON_FILE_DECOMPRESS
+static void                 fileDecompressLzma  (FileCompress * const  dataptr);
+#endif /* COMMON_FILE_DECOMPRESS */
 #endif /* COMMON_FILE_COMPRESS_LZMA */

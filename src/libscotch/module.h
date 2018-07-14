@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     31 may 2018     **/
+/**                                 to     14 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -299,8 +299,8 @@
 #define fileBlockOpenDist           SCOTCH_NAME_INTERN (fileBlockOpenDist)
 #define fileCompress                SCOTCH_NAME_INTERN (fileCompress)
 #define fileCompressType            SCOTCH_NAME_INTERN (fileCompressType)
-#define fileUncompress              SCOTCH_NAME_INTERN (fileUncompress)
-#define fileUncompressType          SCOTCH_NAME_INTERN (fileUncompressType)
+#define fileDecompress              SCOTCH_NAME_INTERN (fileDecompress)
+#define fileDecompressType          SCOTCH_NAME_INTERN (fileDecompressType)
 #define fileNameDistExpand          SCOTCH_NAME_INTERN (fileNameDistExpand)
 
 #define intLoad                     SCOTCH_NAME_INTERN (intLoad)
