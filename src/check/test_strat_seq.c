@@ -39,7 +39,7 @@
 /**                strategy building routines.             **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 08 jan 2012     **/
-/**                                 to     22 may 2018     **/
+/**                                 to     14 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,6 +103,12 @@ char *              argv[])
 
   SCOTCH_stratInit (&stradat);
   SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATDEFAULT, 0, 0.2);
+  SCOTCH_stratExit (&stradat);
+
+  printf ("Sequential ordering strategy, SCOTCH_STRATDISCONNECTED\n");
+
+  SCOTCH_stratInit (&stradat);
+  SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATDISCONNECTED, 3, 0.2);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential ordering strategy, SCOTCH_STRATLEVELMAX\n");
