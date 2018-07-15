@@ -15,7 +15,7 @@ LDFLAGS		= -lz -lm -pthread
 CP		= cp
 LEX		= flex -Pscotchyy -D_XOPEN_SOURCE=600 -olex.yy.c
 LN		= ln
-MKDIR		= mkdir
+MKDIR		= mkdir -p
 MV		= mv
 RANLIB		= ranlib
 YACC		= bison -pscotchyy -y -b y
