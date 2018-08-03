@@ -62,7 +62,7 @@
 /**                # Version 5.1  : from : 07 oct 2008     **/
 /**                                 to     28 mar 2011     **/
 /**                # Version 6.0  : from : 07 aug 2014     **/
-/**                                 to     07 jun 2018     **/
+/**                                 to     03 aug 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,14 +92,14 @@
 /*+ Job selection policy types. +*/
 
 typedef enum KgraphMapRbPolicy_ {
-  KGRAPHMAPRBPOLIRANDOM = 0,                      /*+ Random job selection policy                       +*/
-  KGRAPHMAPRBPOLILEVEL,                           /*+ Select job with highest level                     +*/
-  KGRAPHMAPRBPOLISIZE,                            /*+ Select job with largest size                      +*/
-  KGRAPHMAPRBPOLINEIGHBOR,                        /*+ Priority level computed with respect to neighbors +*/
-  KGRAPHMAPRBPOLINGLEVEL,                         /*+ Select job with most neighbors of higher level    +*/
-  KGRAPHMAPRBPOLINGSIZE,                          /*+ Select job with most neighbors of smaller size    +*/
-  KGRAPHMAPRBPOLIOLD                              /*+ Select job in old style (version 2.x)             +*/
+  KGRAPHMAPRBPOLIRANDOM = 0,                      /*+ Random job selection policy                    +*/
+  KGRAPHMAPRBPOLILEVEL,                           /*+ Select job with highest level                  +*/
+  KGRAPHMAPRBPOLISIZE,                            /*+ Select job with largest size                   +*/
+  KGRAPHMAPRBPOLINGLEVEL,                         /*+ Select job with most neighbors of higher level +*/
+  KGRAPHMAPRBPOLINGSIZE                           /*+ Select job with most neighbors of smaller size +*/
 } KgraphMapRbPolicy;
+
+#define KGRAPHMAPRBPOLINEIGHBOR     KGRAPHMAPRBPOLINGLEVEL /*+ Priority level computed with respect to neighbors +*/
 
 /*+ Method parameters. +*/
 
