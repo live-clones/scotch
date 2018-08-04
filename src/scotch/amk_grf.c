@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 11 dec 2008     **/
 /**                                 to   : 17 jul 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 10 jul 2018     **/
+/**                                 to   : 04 aug 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -161,7 +161,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "amk_grf, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :

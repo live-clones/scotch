@@ -51,16 +51,17 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     14 jul 2018     **/
+/**                                 to     04 aug 2018     **/
 /**                                                        **/
 /************************************************************/
 
 #define MODULE_H
 
 /*
-** Version string.
+** Version and copyright strings.
 */
 
+#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2018 IPB, Universite de Bordeaux, INRIA & CNRS, France"
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL)
 
 /*
