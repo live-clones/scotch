@@ -2456,6 +2456,7 @@ library_mesh_io_scot$(OBJ)	:	library_mesh_io_scot.c			\
 					geom.h					\
 					graph.h					\
 					mesh.h					\
+					mesh_io_scot.h				\
 					scotch.h
 
 library_mesh_io_scot_f$(OBJ)	:	library_mesh_io_scot_f.c		\
