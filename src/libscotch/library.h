@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     16 apr 2019     **/
+/**                                 to     17 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -190,7 +190,13 @@ int                         SCOTCH_archTorusX   (SCOTCH_Arch * const, const SCOT
 int                         SCOTCH_archVcmplt   (SCOTCH_Arch * const);
 int                         SCOTCH_archVhcub    (SCOTCH_Arch * const);
 
+SCOTCH_Num                  SCOTCH_archDomNum   (SCOTCH_Arch * const, const SCOTCH_ArchDom * const);
+int                         SCOTCH_archDomTerm  (SCOTCH_Arch * const, SCOTCH_ArchDom * const, const SCOTCH_Num);
+SCOTCH_Num                  SCOTCH_archDomSize  (SCOTCH_Arch * const, const SCOTCH_ArchDom * const);
+SCOTCH_Num                  SCOTCH_archDomWght  (SCOTCH_Arch * const, const SCOTCH_ArchDom * const);
+SCOTCH_Num                  SCOTCH_archDomDist  (SCOTCH_Arch * const, const SCOTCH_ArchDom * const, const SCOTCH_ArchDom * const);
 int                         SCOTCH_archDomFrst  (SCOTCH_Arch * const, SCOTCH_ArchDom * const);
+int                         SCOTCH_archDomBipart (SCOTCH_Arch * const, const SCOTCH_ArchDom * const, SCOTCH_ArchDom * const, SCOTCH_ArchDom * const);
 
 void                        SCOTCH_errorProg    (const char * const);
 void                        SCOTCH_errorPrint   (const char * const, ...);
