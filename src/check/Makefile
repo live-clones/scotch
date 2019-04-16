@@ -87,6 +87,7 @@ realclean			:	clean
 					test_scotch_graph_coarsen	\
 					test_scotch_graph_color		\
 					test_scotch_graph_diam		\
+					test_scotch_graph_induce	\
 					test_scotch_graph_map		\
 					test_scotch_graph_map_copy	\
 					test_scotch_graph_order		\
@@ -114,6 +115,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_scotch_graph_coarsen		\
 			check_scotch_graph_color		\
 			check_scotch_graph_diam			\
+			check_scotch_graph_induce		\
 			check_scotch_graph_map			\
 			check_scotch_graph_map_copy		\
 			check_scotch_graph_order		\
@@ -221,6 +223,15 @@ check_scotch_graph_diam		:	test_scotch_graph_diam
 					$(EXECS) ./test_scotch_graph_diam data/p2-p2.grf
 
 test_scotch_graph_diam		:	test_scotch_graph_diam.c	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_graph_induce	:	test_scotch_graph_induce
+					$(EXECS) ./test_scotch_graph_induce data/bump.grf
+					$(EXECS) ./test_scotch_graph_induce data/bump_b1.grf
+
+test_scotch_graph_induce	:	test_scotch_graph_induce.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
