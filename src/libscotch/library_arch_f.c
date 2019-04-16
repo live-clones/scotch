@@ -36,7 +36,7 @@
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This file contains the Fortran API for  **/
-/**                the source graph handling routines of   **/
+/**                the architecture handling routines of   **/
 /**                the libSCOTCH library.                  **/
 /**                                                        **/
 /**   DATES      : # Version 3.4  : from : 02 dec 1999     **/
