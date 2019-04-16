@@ -41,7 +41,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 apr 2019     **/
-/**                                 to     16 apr 2019     **/
+/**                                 to     17 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,6 +68,78 @@
 */
 
 SCOTCH_FORTRAN (                      \
+ARCHDOMNUM, archdomnum, (             \
+SCOTCH_Arch * const         archptr,  \
+SCOTCH_ArchDom * const      domnptr,  \
+SCOTCH_Num * const          dnumptr), \
+(archptr, domnptr, dnumptr))
+{
+  *dnumptr = SCOTCH_archDomNum (archptr, domnptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                      \
+ARCHDOMTERM, archdomterm, (           \
+SCOTCH_Arch * const         archptr,  \
+SCOTCH_ArchDom * const      domnptr,  \
+const SCOTCH_Num * const    dnumptr,  \
+int * const                 revaptr), \
+(archptr, domnptr, dnumptr, revaptr))
+{
+  *revaptr = SCOTCH_archDomTerm (archptr, domnptr, *dnumptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                        \
+ARCHDOMSIZE, archdomsize, (             \
+SCOTCH_Arch * const           archptr,  \
+const SCOTCH_ArchDom * const  domnptr,  \
+SCOTCH_Num * const            sizeptr), \
+(archptr, domnptr, sizeptr))
+{
+  *sizeptr = SCOTCH_archDomSize (archptr, domnptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                        \
+ARCHDOMWGHT, archdomwght, (             \
+SCOTCH_Arch * const           archptr,  \
+const SCOTCH_ArchDom * const  domnptr,  \
+SCOTCH_Num * const            wghtptr), \
+(archptr, domnptr, wghtptr))
+{
+  *wghtptr = SCOTCH_archDomWght (archptr, domnptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                        \
+ARCHDOMDIST, archdomdist, (             \
+SCOTCH_Arch * const           archptr,  \
+const SCOTCH_ArchDom * const  dom0ptr,  \
+const SCOTCH_ArchDom * const  dom1ptr,  \
+SCOTCH_Num * const            distptr), \
+(archptr, dom0ptr, dom1ptr, distptr))
+{
+  *distptr = SCOTCH_archDomDist (archptr, dom0ptr, dom1ptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                      \
 ARCHDOMFRST, archdomfrst, (           \
 SCOTCH_Arch * const         archptr,  \
 SCOTCH_ArchDom * const      domnptr,  \
@@ -75,4 +147,20 @@ int * const                 revaptr), \
 (archptr, domnptr, revaptr))
 {
   *revaptr = SCOTCH_archDomFrst (archptr, domnptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                        \
+ARCHDOMBIPART, archdombipart, (         \
+SCOTCH_Arch * const           archptr,  \
+const SCOTCH_ArchDom * const  domnptr,  \
+SCOTCH_ArchDom * const        dom0ptr,  \
+SCOTCH_ArchDom * const        dom1ptr,  \
+int * const                   revaptr), \
+(archptr, domnptr, dom0ptr, dom1ptr, revaptr))
+{
+  *revaptr = SCOTCH_archDomBipart (archptr, domnptr, dom0ptr, dom1ptr);
 }
