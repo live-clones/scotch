@@ -96,6 +96,7 @@ realclean			:	clean
 					test_scotch_dgraph_check	\
 					test_scotch_dgraph_coarsen	\
 					test_scotch_dgraph_grow		\
+					test_scotch_dgraph_induce   \
 					test_scotch_dgraph_redist	\
 					test_scotch_mesh_graph		\
 					test_strat_par			\
@@ -132,6 +133,7 @@ CHECKPTSCOTCH = 	check_strat_par				\
 			check_scotch_dgraph_band		\
 			check_scotch_dgraph_coarsen		\
 			check_scotch_dgraph_grow		\
+			check_scotch_dgraph_induce      \
 			check_scotch_dgraph_redist		\
 			check_prog_dgscat-dggath
 
@@ -329,6 +331,15 @@ check_scotch_dgraph_grow	:	test_scotch_dgraph_grow
 					$(EXECP) ./test_scotch_dgraph_grow data/bump.grf
 
 test_scotch_dgraph_grow		:	test_scotch_dgraph_grow.c	\
+					$(SCOTCHLIBDIR)/libptscotch$(LIB)
+
+##
+
+check_scotch_dgraph_induce	:	test_scotch_dgraph_induce
+					$(EXECP) ./test_scotch_dgraph_induce data/bump.grf
+					$(EXECP) ./test_scotch_dgraph_induce data/bump_b1.grf
+
+test_scotch_dgraph_induce	:	test_scotch_dgraph_induce.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
 
 ##
