@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 04 aug 2018     **/
+/**                                 to   : 16 apr 2019     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -120,11 +120,11 @@ char *                      argv[])
   ArchMesh2        arch;                          /* Mesh dimensions            */
   ArchMesh2Dom     dom;                           /* Initial domain             */
   C_MethType       methtype;                      /* Bipartitioning method      */
-  unsigned int     termnbr;                       /* Number of terminal domains */
-  unsigned int     termnum;
-  unsigned int     termmax;                       /* Maximum terminal number    */
-  unsigned int *   termtab;                       /* Terminal numbers table     */
-  unsigned int     x0, y0, x1, y1;
+  Anum             termnbr;                       /* Number of terminal domains */
+  Anum             termnum;
+  Anum             termmax;                       /* Maximum terminal number    */
+  Anum *           termtab;                       /* Terminal numbers table     */
+  Anum             x0, y0, x1, y1;
   int              i;
 
   errorProg ("amk_m2");
@@ -197,22 +197,22 @@ char *                      argv[])
   dom.c[1][0] = 0;
   dom.c[1][1] = arch.c[1] - 1;
 
-  termnbr = arch.c[0] * arch.c[1];                /* Compute number of terminals                                    */
-  termmax = 0;                                    /* Maximum terminal value not known yet                           */
-  if ((termtab = (unsigned int *) memAlloc (termnbr * sizeof (unsigned int))) == NULL) { /* Allocate terminal array */
+  termnbr = arch.c[0] * arch.c[1];                /* Compute number of terminals                    */
+  termmax = 0;                                    /* Maximum terminal value not known yet           */
+  if ((termtab = (Anum *) memAlloc (termnbr * sizeof (Anum))) == NULL) { /* Allocate terminal array */
     errorPrint ("main: out of memory");
     return     (1);
   }
   memset (termtab, -1, termnbr * sizeof (unsigned int)); /* Initilize mapping table */
 
   C_termBipart (&arch, &dom, 1, termtab, &termmax, /* Compute terminal numbers */
-                (methtype == C_METHNESTED) ? archMesh2DomBipart : C_methBipartOne);
+                (methtype == C_METHNESTED) ? archMesh2DomBipart : archMesh2DomBipartO);
 
-  fprintf (C_filepntrarcout, "deco\n0\n%u\t%u\n", /* Print file header                */
-           termnbr,                               /* Print number of terminal domains */
-           termmax);                              /* Print biggest terminal value     */
-  for (termnum = 0; termnum < termnbr; termnum ++) /* For all terminals               */
-    fprintf (C_filepntrarcout, "%u\t1\t%u\n",     /* Print terminal data              */
+  fprintf (C_filepntrarcout, "deco\n0\n" ANUMSTRING "\t" ANUMSTRING "\n", /* Print file header */
+           termnbr,
+           termmax);
+  for (termnum = 0; termnum < termnbr; termnum ++) /* For all terminals                   */
+    fprintf (C_filepntrarcout, ANUMSTRING "\t1\t" ANUMSTRING "\n", /* Print terminal data */
              termnum, termtab[termnum]);
 
   for (y0 = 0; y0 < arch.c[1]; y0 ++) {           /* For all vertices */
@@ -220,7 +220,7 @@ char *                      argv[])
       for (y1 = 0; y1 <= y0; y1 ++) {             /* Compute distance to smaller vertices */
         for (x1 = 0; (x1 < arch.c[0]) && ((y1 < y0) || (x1 < x0)); x1 ++)
           fprintf (C_filepntrarcout,
-                   ((x1 == 0) && (y1 == 0)) ? "%u" : " %u",
+                   ((x1 == 0) && (y1 == 0)) ? ANUMSTRING : " " ANUMSTRING,
                    C_termDist (x0, y0, x1, y1));
       }
       fprintf (C_filepntrarcout, "\n");
@@ -243,9 +243,9 @@ void
 C_termBipart (
 ArchMesh2 *                 archptr,
 ArchMesh2Dom *              domptr,
-unsigned int                num,
-unsigned int *              termtab,
-unsigned int *              termmax,
+Anum                        num,
+Anum *                      termtab,
+Anum *                      termmax,
 int                     (*  methfunc) ())
 {
   ArchMesh2Dom        dom0;
@@ -261,45 +261,4 @@ int                     (*  methfunc) ())
     if (*termmax < num)                           /* If we have reached a new maximum */
       *termmax = num;                             /* Record it                        */
   }
-}
-
-/* This function tries to split a rectangular domain into
-** two subdomains using a one-way dissection method, by
-** cutting first in the Y dimension, then in the X one.
-** It returns:
-** - 1  : if the domain has been bipartitioned.
-** - 0  : else.
-*/
-
-int
-C_methBipartOne (
-const ArchMesh2 * const       archptr,
-const ArchMesh2Dom * const    domptr,
-ArchMesh2Dom * restrict const dom0ptr,
-ArchMesh2Dom * restrict const dom1ptr)
-{
-  if ((domptr->c[0][0] == domptr->c[0][1]) &&     /* Return if cannot split more */
-      (domptr->c[1][0] == domptr->c[1][1]))
-    return (0);
-
-  if (domptr->c[1][1] == domptr->c[1][0]) {       /* If the Y dimension cannot be cut */
-    dom0ptr->c[0][0] = domptr->c[0][0];           /* Cut in the X dimension           */
-    dom0ptr->c[0][1] = (domptr->c[0][0] + domptr->c[0][1]) / 2;
-    dom1ptr->c[0][0] = dom0ptr->c[0][1] + 1;
-    dom1ptr->c[0][1] = domptr->c[0][1];
-
-    dom0ptr->c[1][0] = dom1ptr->c[1][0] = domptr->c[1][0];
-    dom0ptr->c[1][1] = dom1ptr->c[1][1] = domptr->c[1][1];
-  }
-  else {                                          /* If the Y dimension can be cut, cut it */
-    dom0ptr->c[0][0] = dom1ptr->c[0][0] = domptr->c[0][0];
-    dom0ptr->c[0][1] = dom1ptr->c[0][1] = domptr->c[0][1];
-
-    dom0ptr->c[1][0] = domptr->c[1][0];
-    dom0ptr->c[1][1] = (domptr->c[1][0] + domptr->c[1][1]) / 2;
-    dom1ptr->c[1][0] = dom0ptr->c[1][1] + 1;
-    dom1ptr->c[1][1] = domptr->c[1][1];
-  }
-
-  return (1);
 }
