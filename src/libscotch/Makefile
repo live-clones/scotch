@@ -332,6 +332,8 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_arch_f$(OBJ)			\
 			library_arch_build$(OBJ)		\
 			library_arch_build_f$(OBJ)		\
+			library_arch_dom$(OBJ)			\
+			library_arch_dom_f$(OBJ)		\
 			library_common_f$(OBJ)			\
 			library_geom$(OBJ)			\
 			library_geom_f$(OBJ)			\
@@ -1864,6 +1866,17 @@ library_arch_build$(OBJ)	:	library_arch_build.c			\
 					scotch.h
 
 library_arch_build_f$(OBJ)	:	library_arch_build_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
+library_arch_dom$(OBJ)		:	library_arch.c				\
+					module.h				\
+					common.h				\
+					arch.h					\
+					scotch.h
+
+library_arch_dom_f$(OBJ)	:	library_arch_dom_f.c			\
 					module.h				\
 					common.h				\
 					scotch.h
