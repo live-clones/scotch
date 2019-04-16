@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     10 jul 2018     **/
+/**                                 to     16 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -129,6 +129,10 @@ typedef struct {
 } SCOTCH_Arch;
 
 typedef struct {
+  double                    dummy[DUMMYSIZEARCHDOM];
+} SCOTCH_ArchDom;
+
+typedef struct {
   double                    dummy[DUMMYSIZEGEOM];
 } SCOTCH_Geom;
 
@@ -185,6 +189,8 @@ int                         SCOTCH_archTorus3   (SCOTCH_Arch * const, const SCOT
 int                         SCOTCH_archTorusX   (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num * const);
 int                         SCOTCH_archVcmplt   (SCOTCH_Arch * const);
 int                         SCOTCH_archVhcub    (SCOTCH_Arch * const);
+
+int                         SCOTCH_archDomFrst  (SCOTCH_Arch * const, SCOTCH_ArchDom * const);
 
 void                        SCOTCH_errorProg    (const char * const);
 void                        SCOTCH_errorPrint   (const char * const, ...);
