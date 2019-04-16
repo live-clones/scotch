@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2013,2015,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2013,2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,7 +64,7 @@
 /**                # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     25 jun 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
-/**                                 to     22 feb 2016     **/
+/**                                 to     17 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -297,9 +297,9 @@ const int                   num)
 ArchDomNum
 archDomNum (
 const Arch * const          archptr,
-const ArchDom * const       domptr)
+const ArchDom * const       domnptr)
 {
-  return (archDomNum2 (archptr, domptr));         /* Call proper routine */
+  return (archDomNum2 (archptr, domnptr));        /* Call proper routine */
 }
 
 #endif /* SCOTCH_DEBUG_ARCH2 */
@@ -317,10 +317,10 @@ const ArchDom * const       domptr)
 int
 archDomTerm (
 const Arch * const          archptr,
-ArchDom * restrict const    domptr,
-const ArchDomNum            domnum)
+ArchDom * restrict const    domnptr,
+const ArchDomNum            domnnum)
 {
-  return (archDomTerm2 (archptr, domptr, domnum)); /* Call proper routine */
+  return (archDomTerm2 (archptr, domnptr, domnnum)); /* Call proper routine */
 }
 
 #endif /* SCOTCH_DEBUG_ARCH2 */
@@ -337,9 +337,9 @@ const ArchDomNum            domnum)
 Anum
 archDomSize (
 const Arch * const          archptr,
-const ArchDom * const       domptr)
+const ArchDom * const       domnptr)
 {
-  return (archDomSize2 (archptr, domptr));        /* Call proper routine */
+  return (archDomSize2 (archptr, domnptr));       /* Call proper routine */
 }
 
 #endif /* SCOTCH_DEBUG_ARCH2 */
@@ -356,9 +356,9 @@ const ArchDom * const       domptr)
 Anum
 archDomWght (
 const Arch * const          archptr,
-const ArchDom * const       domptr)
+const ArchDom * const       domnptr)
 {
-  return (archDomWght2 (archptr, domptr));        /* Call proper routine */
+  return (archDomWght2 (archptr, domnptr));       /* Call proper routine */
 }
 
 #endif /* SCOTCH_DEBUG_ARCH2 */
@@ -396,9 +396,9 @@ const ArchDom * const       dom1ptr)
 int
 archDomFrst (
 const Arch * const          archptr,
-ArchDom * const             domptr)
+ArchDom * const             domnptr)
 {
-  return (archDomFrst2 (archptr, domptr));        /* Call proper routine */
+  return (archDomFrst2 (archptr, domnptr));       /* Call proper routine */
 }
 
 #endif /* SCOTCH_DEBUG_ARCH2 */
@@ -413,11 +413,11 @@ ArchDom * const             domptr)
 int
 archDomLoad (
 const Arch * const          archptr,
-ArchDom * const             domptr,
+ArchDom * const             domnptr,
 FILE * const                stream)
 {
   return (archptr->class->domLoad (&archptr->data, /* Call proper routine */
-                                   &domptr->data,
+                                   &domnptr->data,
                                    stream));
 }
 
@@ -431,11 +431,11 @@ FILE * const                stream)
 int
 archDomSave (
 const Arch * const          archptr,
-const ArchDom * const       domptr,
+const ArchDom * const       domnptr,
 FILE * const                stream)
 {
   return (archptr->class->domSave (&archptr->data, /* Call proper routine */
-                                   &domptr->data,
+                                   &domnptr->data,
                                    stream));
 }
 
@@ -454,17 +454,17 @@ FILE * const                stream)
 int
 archDomBipart (
 const Arch * const          archptr,
-const ArchDom * const       domptr,
+const ArchDom * const       domnptr,
 ArchDom * const             dom0ptr,
 ArchDom * const             dom1ptr)
 {
   int                 o;
 
-  o = archDomBipart2 (archptr, domptr, dom0ptr, dom1ptr); /* Call proper routine */
+  o = archDomBipart2 (archptr, domnptr, dom0ptr, dom1ptr); /* Call proper routine */
 
   if ((o == 0) &&                                 /* Check domain number consistency for fixed-sized architectures */
       (strncmp (archName (archptr), "var", 3) != 0) &&
-      (archDomNum (archptr, dom0ptr) != archDomNum (archptr, domptr))) {
+      (archDomNum (archptr, dom0ptr) != archDomNum (archptr, domnptr))) {
     errorPrint ("archDomBipart: domain number mismatch");
     return     (2);
   }
