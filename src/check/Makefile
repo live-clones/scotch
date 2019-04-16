@@ -125,6 +125,8 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_amk				\
 			check_prog_amk_grf			\
 			check_prog_gmk				\
+			check_prog_mmk				\
+			check_prog_mord				\
 			check_prog_gord				\
 			check_prog_gpart_remap
 
@@ -354,17 +356,17 @@ test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
 ##
 
 check_prog_amk			:
-					$(EXECS) $(SCOTCHBINDIR)/amk_ccc 5 /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_ccc 5 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_fft2 5 /dev/null
-					$(EXECS) $(SCOTCHBINDIR)/amk_hy 5 /dev/null
-					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 /dev/null
-					$(EXECS) $(SCOTCHBINDIR)/amk_m2 -mo 5 12 /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_hy 5 | $(SCOTCHBINDIR)/atst
+					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 | $(SCOTCHBINDIR)/atst
+					$(EXECS) $(SCOTCHBINDIR)/amk_m2 -mo 5 12 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_p2 5 7 /dev/null
 
 check_prog_amk_grf		:
-					$(EXECS) $(SCOTCHBINDIR)/amk_grf data/m16x16.grf /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf data/m16x16.grf | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_grf -2 data/m16x16.grf /dev/null
-					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt data/m4x4.grf /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt data/m4x4.grf | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt -2 data/m4x4.grf /dev/null
 
 check_prog_gmk			:
@@ -377,9 +379,36 @@ check_prog_gmk			:
 					$(EXECS) $(SCOTCHBINDIR)/gmk_msh data/ship001.msh | $(SCOTCHBINDIR)/gtst
 					$(EXECS) $(SCOTCHBINDIR)/gmk_ub2 5 | $(SCOTCHBINDIR)/gtst
 
+check_prog_mmk                  :
+					$(EXECS) $(SCOTCHBINDIR)/mmk_m2 5 1 $(TMPDIR)/m2_5_1.msh
+					$(EXECS) $(SCOTCHBINDIR)/mmk_m2 5 4 $(TMPDIR)/m2_5_4.msh
+					$(EXECS) $(SCOTCHBINDIR)/mmk_m3 5 4 3 $(TMPDIR)/m2_5_4_3.msh
+					$(EXECS) $(SCOTCHBINDIR)/mtst $(TMPDIR)/m2_5_1.msh
+					$(EXECS) $(SCOTCHBINDIR)/mtst $(TMPDIR)/m2_5_4.msh
+					$(EXECS) $(SCOTCHBINDIR)/mtst $(TMPDIR)/m2_5_4_3.msh
+
+check_prog_mcv			        : check_prog_mmk
+					$(EXECS) $(SCOTCHBINDIR)/mcv $(TMPDIR)/m2_5_1.msh $(TMPDIR)/output_m2_5_1.msh -is -os
+					$(EXECS) $(SCOTCHBINDIR)/mcv $(TMPDIR)/m2_5_4.msh $(TMPDIR)/output_m2_5_4.msh -is -os
+					$(EXECS) $(SCOTCHBINDIR)/mcv $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/output_m2_5_4_3.msh -is -os
+					$(EXECS) cmp $(TMPDIR)/m2_5_1.msh $(TMPDIR)/output_m2_5_1.msh
+					$(EXECS) cmp $(TMPDIR)/m2_5_4.msh $(TMPDIR)/output_m2_5_4.msh
+					$(EXECS) cmp $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/output_m2_5_4_3.msh
+
+
+check_prog_mord                 : check_prog_mmk
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh $(TMPDIR)/m2_5_1.msh $(TMPDIR)/m2_5_1.grf
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh $(TMPDIR)/m2_5_4.msh $(TMPDIR)/m2_5_4.grf
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/m2_5_4_3.grf
+					$(EXECS) $(SCOTCHBINDIR)/mord $(TMPDIR)/m2_5_1.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/m2_5_1.grf
+					$(EXECS) $(SCOTCHBINDIR)/mord $(TMPDIR)/m2_5_4.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/m2_5_4.grf
+					$(EXECS) $(SCOTCHBINDIR)/mord $(TMPDIR)/m2_5_4_3.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/m2_5_4_3.grf
+
 check_prog_gord			:
-					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf /dev/null -vt
-					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf /dev/null -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf $(TMPDIR)/bump.ord -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf $(TMPDIR)/bump_b1.ord -vt
+					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump.grf $(TMPDIR)/bump.ord
+					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump_b1.grf $(TMPDIR)/bump_b1.ord
 
 ##
 
