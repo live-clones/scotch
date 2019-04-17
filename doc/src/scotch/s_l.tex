@@ -2366,6 +2366,238 @@ of dimensions is defined at compile-time.
 successfully built, and $1$ else.
 \end{itemize}
 
+\subsection{Target domain handling routines}
+\label{sec-lib-arch-dom-handling}
+
+\subsubsection{{\tt SCOTCH\_archDomFrst}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archDomFrst ( & SCOTCH\_Arch *    & archptr, \\
+                          & SCOTCH\_ArchDom * & domnptr) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomfrst ( & doubleprecision (*) & archdat, \\
+                     & doubleprecision (*) & domndat, \\
+                     & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomFrst} function initializes the domain
+structure referred to by {\tt domnptr} with the biggest domain
+of the target architecture referred to {\tt archptr}, that is, the
+domain that contains all terminal domains.
+
+\progret
+
+{\tt SCOTCH\_archDomFrst} returns $0$ if the domain could be created,
+and $1$ on error.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomTerm}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archDomTerm ( & SCOTCH\_Arch *    & archptr, \\
+                          & SCOTCH\_ArchDom * & domnptr, \\
+                          & const SCOTCH\_Num & domnnum) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomterm ( & doubleprecision (*) & archdat, \\
+                     & doubleprecision (*) & domndat, \\
+                     & integer*{\it num}   & domnnum, \\
+                     & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomTerm} function initializes the domain
+structure referred to by {\tt domnptr} to correspond to the
+terminal domain of index {\tt domnnum} in the target architecture
+referred to {\tt archptr}.
+
+Applying the {\tt arch\lbt Dom\lbt Num} function to this domain
+yields back {\tt domnnum}.
+
+\progret
+
+{\tt SCOTCH\_archDomTerm} returns $0$ if the domain could be created,
+$1$ if {\tt domnnum} does not correspond to a valid terminal number
+for this architecture, and $2$ on error.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomBipart}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archDomBipart ( & SCOTCH\_Arch *          & archptr, \\
+                            & const SCOTCH\_ArchDom * & domnptr, \\
+                            & SCOTCH\_ArchDom *       & dom0ptr, \\
+                            & SCOTCH\_ArchDom *       & dom1ptr) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdombipart ( & doubleprecision (*) & archdat, \\
+                       & doubleprecision (*) & domndat, \\
+                       & doubleprecision (*) & dom0dat, \\
+                       & doubleprecision (*) & dom1dat, \\
+                       & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomBipart} function tries to split the domain
+referred to by {\tt domnptr} into two disjoint subdomains referred to
+by {\tt dom0ptr} and {\tt dom1ptr}, in the target architecture
+referred to {\tt archptr}.
+
+\progret
+
+{\tt SCOTCH\_archDomBipart} returns $0$ if the domain could be
+bipartitioned, $1$ if bipartitioning could not be performed (because
+the domain is terminal), and $2$ on error.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomSize}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+SCOTCH\_Num SCOTCH\_archDomSize ( & SCOTCH\_Arch *          & archptr, \\
+                                  & const SCOTCH\_ArchDom * & domnptr) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomsize ( & doubleprecision (*) & archdat, \\
+                     & doubleprecision (*) & domndat, \\
+                     & integer*{\it num}   & sizeval)
+\end{tabular}}
+
+\progdes
+The {\tt SCOTCH\_archDomSize} function returns the size of the domain
+referred to by {\tt domnptr}, that is, the number of terminal domains
+comprised in the domain, within the architecture referred to by
+{\tt archptr}.
+The Fortran routine has a third parameter, of {\tt SCOTCH\_\lbt Num}
+type, which is set on return with the domain size.
+
+\progret
+
+{\tt SCOTCH\_archDomSize} yields an integer value of type
+{\tt SCOTCH\_\lbt Num} that ranges between $1$ and the number of
+terminal domains in the architecture.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomWght}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+SCOTCH\_Num SCOTCH\_archDomWght ( & SCOTCH\_Arch *          & archptr, \\
+                                  & const SCOTCH\_ArchDom * & domnptr) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomwght ( & doubleprecision (*) & archdat, \\
+                     & doubleprecision (*) & domndat, \\
+                     & integer*{\it num}   & wghtval)
+\end{tabular}}
+
+\progdes
+The {\tt SCOTCH\_archDomWght} function returns the weight of the
+domain referred to by {\tt domnptr} in the architecture referred to by
+{\tt archptr}. The Fortran routine has a third parameter, of {\tt
+SCOTCH\_\lbt Num} type, which is set on return with this weight. The
+weight of a domain is the sum of the weights of all the terminal
+domains included within this domain.
+
+\progret
+
+{\tt SCOTCH\_archDomWght} yields an integer value of type
+{\tt SCOTCH\_\lbt Num} that ranges between $1$ and the sum of the
+weights of all terminal domains in the architecture.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomDist}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+SCOTCH\_Num SCOTCH\_archDomDist ( & SCOTCH\_Arch *          & archptr, \\
+                                  & const SCOTCH\_ArchDom * & dom0ptr, \\
+                                  & const SCOTCH\_ArchDom * & dom1ptr) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomwght ( & doubleprecision (*) & archdat, \\
+                     & doubleprecision (*) & dom0dat, \\
+                     & doubleprecision (*) & dom1dat, \\
+                     & integer*{\it num}   & distval)
+\end{tabular}}
+
+\progdes
+The {\tt SCOTCH\_archDomDist} function returns the estimated distance
+between the two domains referred to by {\tt dom0ptr} and {\tt dom1ptr}
+in the architecture referred to by {\tt archptr}. The Fortran routine
+has a fourth parameter, of {\tt SCOTCH\_\lbt Num} type, which is set
+on return with this distance.
+
+The desirable properties of distance functions are described in
+Section~\ref{sec-algo-drb}. Basically, they should provide more
+accurate results as domain sizes decrease and as distance decreases.
+
+\progret
+
+{\tt SCOTCH\_archDomDist} yields an integer value of type
+{\tt SCOTCH\_\lbt Num} that is always greater than or equal to zero.
+It is equal to the maximum available integer value when the two
+domains belong to different connected components of a disconnected
+target architecture.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomNum}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+SCOTCH\_Num SCOTCH\_archDomNum ( & SCOTCH\_Arch *          & archptr, \\
+                                 & const SCOTCH\_ArchDom * & domnptr) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomnum ( & doubleprecision (*) & archdat, \\
+                    & doubleprecision (*) & domndat, \\
+                    & integer*{\it num}   & domnnum)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomNum} function returns the smallest number of
+terminal domain included within the domain referred to by
+{\tt domnptr} of the architecture referred to by {\tt archptr}.
+The Fortran routine has a third parameter, of {\tt SCOTCH\_\lbt Num}
+type, which is set on return with this terminal number.
+
+\progret
+
+{\tt SCOTCH\_archDomNum} yields an integer value of type
+{\tt SCOTCH\_\lbt Num} that ranges between $0$ and the number of
+terminal domains in the architecture, minus $1$.
+\end{itemize}
+
 \subsection{Graph handling routines}
 \label{sec-lib-graph}
 
