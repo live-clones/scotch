@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 04 aug 2018     **/
+/**                                 to   : 17 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,9 +67,6 @@
 #include "module.h"
 #include "common.h"
 #include "scotch.h"
-#include "arch.h"
-#include "arch_deco.h"
-#include "arch_mesh.h"
 #include "atst.h"
 
 /*
@@ -98,16 +95,18 @@ main (argc, argv)
 int                 argc;
 char *              argv[];
 {
-  Arch                archdat;                    /* The architecture read */
-  ArchDeco *          deco;                       /* Its decomposition     */
-  ArchDecoDom         dom0;
-  ArchDecoDom         dom1;
-  Anum                dstval;
-  Anum                dstmin;
-  Anum                dstmax;
-  Anum                dstsum;
-  double              dstavg;
-  double              dstdlt;
+  SCOTCH_Arch         archdat;
+  SCOTCH_Num          archsiz;
+  SCOTCH_ArchDom      dom0dat;
+  SCOTCH_Num          dom0num;
+  SCOTCH_ArchDom      dom1dat;
+  SCOTCH_Num          dom1num;
+  SCOTCH_Num          distval;
+  SCOTCH_Num          distmin;
+  SCOTCH_Num          distmax;
+  SCOTCH_Num          distsum;
+  double              distavg;
+  double              distdlt;
   int                 i;
 
   errorProg ("atst");
@@ -148,55 +147,57 @@ char *              argv[];
 
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
-  archInit (&archdat);                            /* Initialize architecture structure */
-  archLoad (&archdat, C_filepntrtgtinp);          /* Load architecture                 */
-  if (strcmp (archName (&archdat), "deco") != 0) { /* If it is not a decomposition     */
-    errorPrint ("main: architecture is not decomposition-defined");
-    return     (1);
+  SCOTCH_archInit (&archdat);                     /* Initialize architecture structure */
+  if (SCOTCH_archLoad (&archdat, C_filepntrtgtinp) != 0) { /* Load architecture        */
+    SCOTCH_errorPrint ("main: cannot load architecture");
+    return (1);
   }
-  deco = (ArchDeco *) (void *) &archdat.data;     /* Point to the decomposition */
 
-  dstmin = (Anum) (((unsigned long) ((Anum) -1)) >> 1); /* Set to maximum number in Anum */
-  dstmax = 0;
-  dstsum = 0;
+  SCOTCH_archDomFrst (&archdat, &dom0dat);
+  archsiz = SCOTCH_archDomSize (&archdat, &dom0dat);
 
-  for (dom0.num = 1; dom0.num <= deco->domvertnbr; dom0.num ++) { /* For all pairs of vertices */
-    if (archDecoDomSize (deco, &dom0) == 1) {     /* If vertex is a terminal                   */
-      for (dom1.num = dom0.num + 1; dom1.num <= deco->domvertnbr; dom1.num ++) {
-        if (archDecoDomSize (deco, &dom1) == 1) { /* If vertex is a terminal               */
-          dstval = archDecoDomDist (deco, &dom0, &dom1); /* Compute distance between pairs */
-          if (dstmin > dstval)
-            dstmin = dstval;
-          if (dstmax < dstval)
-            dstmax = dstval;
-          dstsum += dstval;                       /* Compute distance between pairs */
-        }
-      }
+  distmin = (SCOTCH_Num) (((unsigned long) ((SCOTCH_Num) -1)) >> 1); /* Set to maximum number in Anum */
+  distmax = 0;
+  distsum = 0;
+
+  for (dom0num = 0; dom0num < archsiz; dom0num ++) { /* For all pairs of vertices */
+    SCOTCH_archDomTerm (&archdat, &dom0dat, dom0num);
+   
+    for (dom1num = 0; dom1num < archsiz; dom1num ++) {
+      SCOTCH_archDomTerm (&archdat, &dom1dat, dom1num);
+
+      distval = SCOTCH_archDomDist (&archdat, &dom0dat, &dom1dat); /* Compute distance between pairs */
+      if (distmin > distval)
+        distmin = distval;
+      if (distmax < distval)
+        distmax = distval;
+      distsum += distval;
     }
   }
-  dstavg = (deco->domtermnbr > 1)
-           ? (double) dstsum / (double) (deco->domtermnbr * (deco->domtermnbr - 1) / 2)
-           : 0.0L;
-  dstdlt = 0.0L;
-  for (dom0.num = 1; dom0.num <= deco->domvertnbr; dom0.num ++) { /* For all pairs of vertices */
-    if (archDecoDomSize (deco, &dom0) == 1) {     /* If vertex is a terminal                   */
-      for (dom1.num = dom0.num + 1; dom1.num <= deco->domvertnbr; dom1.num ++) {
-        if (archDecoDomSize (deco, &dom1) == 1)   /* If vertex is a terminal */
-          dstdlt += fabs (archDecoDomDist (deco, &dom0, &dom1) - dstavg);
-      }
+  distavg = (archsiz > 1)
+            ? (double) distsum / ((double) archsiz * (double) (archsiz - 1) / 2.0)
+            : 0.0L;
+  distdlt = 0.0L;
+
+  for (dom0num = 0; dom0num < archsiz; dom0num ++) { /* For all pairs of vertices */
+    SCOTCH_archDomTerm (&archdat, &dom0dat, dom0num);
+   
+    for (dom1num = 0; dom1num < archsiz; dom1num ++) {
+      SCOTCH_archDomTerm (&archdat, &dom1dat, dom1num);
+      distdlt += fabs ((double) SCOTCH_archDomDist (&archdat, &dom0dat, &dom1dat) - distavg);
     }
   }
-  if (deco->domtermnbr > 1)
-    dstdlt /= (double) (deco->domtermnbr * (deco->domtermnbr - 1) / 2);
+  if (archsiz > 1)
+    distdlt /= (double) archsiz * (double) (archsiz - 1) / 2.0;
 
   fprintf (C_filepntrlogout, "A\tTerminals\tnbr=" SCOTCH_NUMSTRING "\n",
-           (SCOTCH_Num) deco->domtermnbr);
+           archsiz);
   fprintf (C_filepntrlogout, "A\tDistance\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
-           (SCOTCH_Num) dstmin, (SCOTCH_Num) dstmax, dstavg, dstdlt);
+           distmin, distmax, distavg, distdlt);
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
-  archExit (&archdat);
+  SCOTCH_archExit (&archdat);
 
   return (0);
 }
