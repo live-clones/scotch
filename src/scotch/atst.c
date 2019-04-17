@@ -113,7 +113,7 @@ char *              argv[];
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -124,7 +124,7 @@ char *              argv[];
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        return     (1);
+        return     (EXIT_FAILURE);
       }
     }
     else {                                        /* If found an option name */
@@ -132,15 +132,15 @@ char *              argv[];
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "atst, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (1);
+          return     (EXIT_FAILURE);
       }
     }
   }
@@ -150,7 +150,7 @@ char *              argv[];
   SCOTCH_archInit (&archdat);                     /* Initialize architecture structure */
   if (SCOTCH_archLoad (&archdat, C_filepntrtgtinp) != 0) { /* Load architecture        */
     SCOTCH_errorPrint ("main: cannot load architecture");
-    return (1);
+    return            (EXIT_FAILURE);
   }
 
   SCOTCH_archDomFrst (&archdat, &dom0dat);
@@ -199,5 +199,5 @@ char *              argv[];
 
   SCOTCH_archExit (&archdat);
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

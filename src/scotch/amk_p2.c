@@ -98,7 +98,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -108,7 +108,7 @@ char *                      argv[])
       if (C_paraNum < 2) {                        /* If number of parameters not reached              */
         if ((wght[C_paraNum ++] = atoi (argv[i])) < 1) { /* Get vertex weights                        */
           errorPrint ("main: invalid weight '%s'", argv[i]);
-          return     (1);
+          return     (EXIT_FAILURE);
         }
         continue;                                 /* Process remaining parameters */
       }
@@ -116,7 +116,7 @@ char *                      argv[])
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        return     (1);
+        return     (EXIT_FAILURE);
       }
     }
     else {                                       /* If found an option name */
@@ -124,15 +124,15 @@ char *                      argv[])
         case 'H' :                               /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "amk_p2, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (1);
+          return     (EXIT_FAILURE);
       }
     }
   }
@@ -145,5 +145,5 @@ char *                      argv[])
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

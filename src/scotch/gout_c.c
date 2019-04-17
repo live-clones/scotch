@@ -149,7 +149,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -171,7 +171,7 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'M' :                                /* No-mapping flag */
         case 'm' :
           if (((argv[i][2] != 'N') && (argv[i][2] != 'n')) || (argv[i][3] != '\0'))
@@ -188,7 +188,7 @@ char *                      argv[])
           fprintf (stderr, "gout, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: Unprocessed option '%s'", argv[i]);
       }
@@ -218,7 +218,7 @@ char *                      argv[])
   C_geoExit        (&geo);
   SCOTCH_graphExit (&grafdat.grafdat);
 
-  return (0);
+  return (EXIT_SUCCESS);
 }
 
 /***********************************/

@@ -119,7 +119,7 @@ char *              argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   flagval = C_FLAGNONE;
@@ -148,7 +148,7 @@ char *              argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'R' :                                /* Root process (if necessary) */
         case 'r' :
           protglbnum = atoi (&argv[i][2]);
@@ -162,7 +162,7 @@ char *              argv[])
           fprintf (stderr, "dgscat, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
       }
@@ -198,5 +198,5 @@ char *              argv[])
 
   MPI_Finalize ();
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

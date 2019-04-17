@@ -110,7 +110,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -121,7 +121,7 @@ char *                      argv[])
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        return     (1);
+        return     (EXIT_FAILURE);
       }
     }
     else {                                       /* If found an option name */
@@ -129,15 +129,15 @@ char *                      argv[])
         case 'H' :                               /* Give help */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "gotst, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (1);
+          return     (EXIT_FAILURE);
       }
     }
   }
@@ -150,20 +150,20 @@ char *                      argv[])
 #ifdef SCOTCH_DEBUG_ALL
   if (vendtab != (verttab + 1)) {
     errorPrint ("main: graph should be compact");
-    return     (1);
+    return     (EXIT_FAILURE);
   }
 #endif /* SCOTCH_DEBUG_ALL */
   if (memAllocGroup ((void **) (void *)
                      &peritab, (size_t) (vertnbr * sizeof (SCOTCH_Num)),
                      &permtab, (size_t) (vertnbr * sizeof (SCOTCH_Num)), NULL) == NULL) {
     errorPrint ("main: out of memory");
-    return     (1);
+    return     (EXIT_FAILURE);
   }
   SCOTCH_graphOrderInit (&grafdat, &ordedat, permtab, peritab, NULL, NULL, NULL);
   SCOTCH_graphOrderLoad (&grafdat, &ordedat, C_filepntrordinp);
   if (SCOTCH_graphOrderCheck (&grafdat, &ordedat) != 0) {
     errorPrint ("main: invalid ordering");
-    return     (1);
+    return     (EXIT_FAILURE);
   }
 
   factorView (baseval, vertnbr, verttab, edgenbr, edgetab, permtab, peritab, C_filepntrdatout);
@@ -174,7 +174,7 @@ char *                      argv[])
   SCOTCH_graphOrderExit (&grafdat, &ordedat);
   SCOTCH_graphExit      (&grafdat);
 
-  return (0);
+  return (EXIT_SUCCESS);
 }
 
 /*************************************/

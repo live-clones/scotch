@@ -148,7 +148,7 @@ char *              argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   SCOTCH_randomProc (proclocnum);                 /* Record process number to initialize pseudo-random seed */
@@ -211,7 +211,7 @@ char *              argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'M' :                                /* Output separator mapping */
         case 'm' :
           flagval |= C_FLAGMAPOUT;
@@ -243,7 +243,7 @@ char *              argv[])
           fprintf (stderr, "dgord, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         case 'v' :                                /* Output control info */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
@@ -409,7 +409,7 @@ char *              argv[])
 
   MPI_Finalize ();
 
-  return (0);
+  return (EXIT_SUCCESS);
 }
 
 /* Reduction routine for statistics output.

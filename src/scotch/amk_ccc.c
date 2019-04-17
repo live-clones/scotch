@@ -117,7 +117,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -127,7 +127,7 @@ char *                      argv[])
       if (C_paraNum < 1) {                        /* If number of parameters not reached              */
         if ((ccdim = atoi (argv[i])) < 1) {       /* Get the dimension                                */
           errorPrint ("main: invalid dimension '%s'", argv[i]);
-          return     (1);
+          return     (EXIT_FAILURE);
         }
         C_paraNum ++;
         continue;                                 /* Process the other parameters */
@@ -136,7 +136,7 @@ char *                      argv[])
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        return     (1);
+        return     (EXIT_FAILURE);
       }
     }
     else {                                        /* If found an option name */
@@ -144,15 +144,15 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "amk_ccc, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (1);
+          return     (EXIT_FAILURE);
       }
     }
   }
@@ -193,7 +193,7 @@ char *                      argv[])
   if ((C_queueInit (&C_distaQueue, ccmax) != 0) || /* Allocate the distance array */
       ((C_distaTab = (C_VertDist *) memAlloc (ccmax * sizeof (C_VertDist))) == NULL)) {
     errorPrint ("main: out of memory");
-    return     (1);
+    return     (EXIT_FAILURE);
   }
 
   for (v.lvl = 0; v.lvl < ccdim; v.lvl ++) {      /* For all levels                    */
@@ -233,5 +233,5 @@ char *                      argv[])
   C_queueExit (&C_distaQueue);
   memFree     (C_distaTab);
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

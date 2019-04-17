@@ -124,7 +124,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   flagval = C_FLAGNONE;                           /* Default behavior  */
@@ -171,7 +171,7 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'M' :                                /* Output separator mapping */
         case 'm' :
           flagval |= C_FLAGMAPOUT;
@@ -195,7 +195,7 @@ char *                      argv[])
           fprintf (stderr, "gord, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         case 'v' :                               /* Output control info */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
@@ -240,7 +240,7 @@ char *                      argv[])
 
   if ((permtab = (SCOTCH_Num *) memAlloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) {
     errorPrint ("main: out of memory");
-    return     (1);
+    return     (EXIT_FAILURE);
   }
   SCOTCH_graphOrderInit    (&grafdat, &ordedat, permtab, NULL, NULL, NULL, NULL); /* Create ordering */
   SCOTCH_graphOrderCompute (&grafdat, &ordedat, &stradat); /* Perform ordering */
@@ -249,7 +249,7 @@ char *                      argv[])
 
 #ifdef SCOTCH_DEBUG_ALL
   if (SCOTCH_graphOrderCheck (&grafdat, &ordedat) != 0)
-    return (1);
+    return (EXIT_FAILURE);
 #endif /* SCOTCH_DEBUG_ALL */
 
   clockStart (&runtime[0]);
@@ -282,5 +282,5 @@ char *                      argv[])
   SCOTCH_graphExit      (&grafdat);
   memFree               (permtab);
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

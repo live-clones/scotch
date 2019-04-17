@@ -109,7 +109,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    exit       (0);
+    exit       (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -120,7 +120,7 @@ char *                      argv[])
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        exit       (1);
+        exit       (EXIT_FAILURE);
       }
     }
     else {                                        /* If found an option name */
@@ -128,15 +128,15 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          exit       (0);
+          exit       (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "mtst, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          exit       (1);
+          exit       (EXIT_FAILURE);
       }
     }
   }
@@ -169,5 +169,5 @@ char *                      argv[])
 
   SCOTCH_meshExit (&meshdat);
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

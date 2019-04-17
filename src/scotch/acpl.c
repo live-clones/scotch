@@ -104,7 +104,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -115,7 +115,7 @@ char *                      argv[])
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        return     (1);
+        return     (EXIT_FAILURE);
       }
     }
     else {                                        /* If found an option name */
@@ -123,15 +123,15 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "acpl, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (1);
+          return     (EXIT_FAILURE);
       }
     }
   }
@@ -142,7 +142,7 @@ char *                      argv[])
   SCOTCH_archLoad (&arch, C_filepntrtgtinp);      /* Load architecture                 */
   if (strcmp (SCOTCH_archName (&arch), "deco") != 0) { /* If not a decomposition       */
     errorPrint ("main: architecture is not decomposition-defined");
-    return     (1);
+    return     (EXIT_FAILURE);
   }
   SCOTCH_archSave (&arch, C_filepntrtgtout);      /* Save the compiled architecture */
 
@@ -150,5 +150,5 @@ char *                      argv[])
 
   SCOTCH_archExit (&arch);
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

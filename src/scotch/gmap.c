@@ -179,7 +179,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   grafflag = 0;                                   /* Use vertex and edge weights  */
@@ -250,7 +250,7 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'M' :
         case 'm' :
           straptr = &argv[i][2];
@@ -318,7 +318,7 @@ char *                      argv[])
           fprintf (stderr, "gmap/gpart, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
-          return  (0);
+          return  (EXIT_SUCCESS);
         case 'v' :                                /* Output control info */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
@@ -503,7 +503,7 @@ char *                      argv[])
 
   memFree (parttab);                              /* Free hand-made partition array */
 
-  return (0);
+  return (EXIT_SUCCESS);
 }
 
 /* This routine writes a partition to
