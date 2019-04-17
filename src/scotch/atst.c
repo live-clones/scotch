@@ -136,7 +136,7 @@ char *              argv[];
         case 'V' :
           fprintf (stderr, "atst, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
-          fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
+          fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
           return  (0);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);

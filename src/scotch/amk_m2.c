@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 16 apr 2019     **/
+/**                                 to   : 17 apr 2019     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -181,7 +181,7 @@ char *                      argv[])
         case 'V' :
           fprintf (stderr, "amk_m2, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
-          fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
+          fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
           return  (0);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
