@@ -40,7 +40,7 @@
 /**                the SCOTCH_dgraphInducePart() routine.  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 apr 2019     **/
-/**                                 to     17 apr 2019     **/
+/**                                 to     22 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,13 +80,13 @@ char *              argv[])
   int                 proclocnum;                 /* Number of this process                 */
   FILE *              fileptr;
   SCOTCH_Num          baseval;
-  SCOTCH_Num          orgvertnbr;
-  SCOTCH_Num *        orgparttab;
+  SCOTCH_Num          orgvertlocnbr;
+  SCOTCH_Num *        orgpartloctab;
   SCOTCH_Dgraph       orggrafdat;
   SCOTCH_Dgraph       indgrafdat;
-  SCOTCH_Num *        indlisttab;
-  SCOTCH_Num          indvertnbr;
-  SCOTCH_Num          indvertnum;
+  SCOTCH_Num *        indlistloctab;
+  SCOTCH_Num          indvertlocnbr;
+  SCOTCH_Num          indvertlocnum;
 #ifdef SCOTCH_PTHREAD
   int                 thrdlvlreqval;
   int                 thrdlvlproval;
@@ -155,32 +155,32 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  SCOTCH_dgraphData (&orggrafdat, &baseval, NULL, &orgvertnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &proccomm);
+  SCOTCH_dgraphData (&orggrafdat, &baseval, NULL, &orgvertlocnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &proccomm);
 
-  if ((orgparttab = malloc (orgvertnbr * sizeof (SCOTCH_Num))) == NULL) {
+  if ((orgpartloctab = malloc (orgvertlocnbr * sizeof (SCOTCH_Num))) == NULL) {
     SCOTCH_errorPrint ("main: out of memory (1)");
     exit (EXIT_FAILURE);
   }
-  if ((indlisttab = malloc (orgvertnbr * sizeof (SCOTCH_Num))) == NULL) { /* TRICK: size is orgvertnbr */
+  if ((indlistloctab = malloc (orgvertlocnbr * sizeof (SCOTCH_Num))) == NULL) { /* TRICK: size is orgvertlocnbr */
     SCOTCH_errorPrint ("main: out of memory (2)");
     exit (EXIT_FAILURE);
   }
 
   intRandInit ();                                 /* Initialize random generator */
-  intAscn (indlisttab, orgvertnbr, baseval);
-  intPerm (indlisttab, orgvertnbr);               /* Random permutation of all original graph vertices */
+  intAscn (indlistloctab, orgvertlocnbr, baseval);
+  intPerm (indlistloctab, orgvertlocnbr);         /* Random permutation of all original graph vertices */
 
-  indvertnbr = (orgvertnbr + 1) / 2;              /* Keep only half of the original vertices */
+  indvertlocnbr = (orgvertlocnbr + 1) / 2;        /* Keep only half of the original vertices */
 
-  memset (orgparttab, 0, orgvertnbr * sizeof (SCOTCH_Num));
-  for (indvertnum = 0; indvertnum < indvertnbr; indvertnum ++) /* Flag kept vertices as belonging to part 1 */
-    orgparttab[indlisttab[indvertnum] - baseval] = 1;
+  memset (orgpartloctab, 0, orgvertlocnbr * sizeof (SCOTCH_Num));
+  for (indvertlocnum = 0; indvertlocnum < indvertlocnbr; indvertlocnum ++) /* Flag kept vertices as belonging to part 1 */
+    orgpartloctab[indlistloctab[indvertlocnum] - baseval] = 1;
 
   if (SCOTCH_dgraphInit (&indgrafdat, proccomm) != 0) {
     SCOTCH_errorPrint ("main: cannot initialize graph (2)");
     exit (EXIT_FAILURE);
   }
-  if (SCOTCH_dgraphInducePart (&orggrafdat, orgparttab, 1, indvertnbr, &indgrafdat) != 0) {
+  if (SCOTCH_dgraphInducePart (&orggrafdat, orgpartloctab, 1, indvertlocnbr, &indgrafdat) != 0) {
     SCOTCH_errorPrint ("main: cannot induce graph");
     exit (EXIT_FAILURE);
   }
@@ -188,12 +188,12 @@ char *              argv[])
     SCOTCH_errorPrint ("main: invalid induced graph");
     exit (EXIT_FAILURE);
   }
-  
+
   SCOTCH_dgraphExit (&indgrafdat);
   SCOTCH_dgraphExit (&orggrafdat);
 
-  free (indlisttab);
-  free (orgparttab);
+  free (indlistloctab);
+  free (orgpartloctab);
 
   MPI_Finalize ();
   exit (EXIT_SUCCESS);
