@@ -104,11 +104,11 @@
 \newcommand{\eg}{{\it e\@.g\@.\/\ }}             % e.g.
 \newcommand{\ie}{{\it i\@.e\@.\/\ }}             % i.e.
 
-\newcommand{\chaco}{{\sc Chaco}}                 % "chaco"
-\newcommand{\scotch}{{\sc Scotch}}               % "scotch"
-\newcommand{\libscotch}{{\sc libScotch}}         % "libscotch"
-\newcommand{\ptscotch}{{\sc PT-Scotch}}          % "PT-Scotch"
-\newcommand{\metis}{\mbox{\sc Me$\!$T$\!$iS}}    % "MeTiS"
+\newcommand{\chaco}{\textsc{Chaco}}                 % "chaco"
+\newcommand{\scotch}{\textsc{Scotch}}               % "scotch"
+\newcommand{\libscotch}{\textsc{libScotch}}         % "libscotch"
+\newcommand{\ptscotch}{\textsc{PT-Scotch}}          % "PT-Scotch"
+\newcommand{\metis}{\mbox{\textsc{Me$\!$T$\!$iS}}}  % "MeTiS"
 
 \newcommand{\eqdef}{\stackrel{\scriptscriptstyle \rm def}{=}}       % = as definition
 \newcommand{\isapprox}{\mathop{\approx}\limits}
@@ -172,7 +172,7 @@
 %\date{Revision 0.4 $\beta$\\\today}
 
 \title{\includegraphics{s_f_logo.ps}\\[1em]
-       {\LARGE\bf \scotch\ and \libscotch\ {\sc \scotchver} User's Guide}\\[1em]%
+       {\LARGE\bf \scotch\ and \libscotch\ \textsc{\scotchver} User's Guide}\\[1em]%
        {\normalsize (version \scotchversub)}
 }
 
@@ -227,32 +227,38 @@ I wish to thank all of the following people:
 \item
 Patrick Amestoy collaborated to the design of the Halo Approximate
 Minimum Degree algorithm~\cite{peroam99} that had been embedded into
-\scotch\ {\sc 3.3}, and provided versions of his Approximate Minimum
-Degree algorithm, available since version {\sc 3.2}, and of his
+\scotch\ \textsc{3.3}, and provided versions of his Approximate Minimum
+Degree algorithm, available since version \textsc{3.2}, and of his
 Halo Approximate Minimum Fill algorithm, available since version
-{\sc 3.4}. He designed the mesh versions of the approximate
+\textsc{3.4}. He designed the mesh versions of the approximate
 minimum degree and approximate minimum fill algorithms, which are
-available since version {\sc 4.0};
+available since version \textsc{4.0};
 \item
 S\'ebastien Fourestier coded the mapping with fixed vertices,
 remapping, and remapping with fixed vertices sequential routines that
-are available since version {\sc 6.0};
+are available since version \textsc{6.0};
 \item
 Jun-Ho Her coded the graph partitioning with overlap routines that
-were introduced in the unpublished {\sc 5.2} release, and publicly
-released in version {\sc 6.0};
+were introduced in the unpublished \textsc{5.2} release, and publicly
+released in version \textsc{6.0};
+\item
+Amaury Jacques improved the development environment and contributed to
+the consistency checking and non-regression testing routines;
+\item
+C\'édric Lachat contributed to the robustness of the software, in
+relation with his development of the \textsc{PaMPA} software;
 \item
 Alex Pothen kindly provided a version of his Multiple Minimum Degree
-algorithm, which was embedded into \scotch\ from version {\sc 3.2} to
-version {\sc 3.4};
+algorithm, which was embedded into \scotch\ from version \textsc{3.2} to
+version \textsc{3.4};
 \item
-Luca Scarano, visiting Erasmus student from the {\it Universit\'a
+Luca Scarano, visiting Erasmus student from the \textit{Universit\'a
 degli Studi di Bologna}, coded the multilevel graph algorithm
-in \scotch\ {\sc 3.1};
+in \scotch\ \textsc{3.1};
 \item
-Yves Secretan contributed to the MinGW32 port;
+Yves Secretan contributed to the \textsc{MinGW32} port;
 \item
-David Sherman proofread version {\sc 3.2} of this manual.
+David Sherman proofread version \textsc{3.2} of this manual.
 \end{itemize}
 
 %% Bibliographie.
