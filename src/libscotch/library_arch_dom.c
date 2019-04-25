@@ -34,13 +34,14 @@
 /**   NAME       : library_arch_dom.c                      **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Amaury JACQUES (v6.0)                   **/
 /**                                                        **/
 /**   FUNCTION   : This module is the API for the target   **/
 /**                architecture domain handling routines   **/
 /**                of the libSCOTCH library.               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 apr 2019     **/
-/**                                 to     17 apr 2019     **/
+/**                                 to     25 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -169,7 +170,7 @@ SCOTCH_ArchDom * const      domnptr)
 +*/
 
 int
-SCOTCH_ArchDomBipart (
+SCOTCH_archDomBipart (
 SCOTCH_Arch * const           archptr,
 const SCOTCH_ArchDom * const  domnptr,
 SCOTCH_ArchDom * const        dom0ptr,
