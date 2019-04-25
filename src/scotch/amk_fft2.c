@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 26 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -157,9 +157,11 @@ char *                      argv[])
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
   fnbr = (fdim + 1) * (1 << fdim);                /* Compute number of vertices      */
-  fmax = (1 << (fdim * 2 - 1)) - 1;               /* Compute maximum terminal number */
   fmsk = (1 << fdim) - 1;                         /* Get maximum position number     */
-
+  for (i = fdim, fmax = 1; i > 0; i --)           /* Compute maximum terminal number */
+    fmax = (fmax << 2) | 2;
+  fmax  |= 1;
+  
   fprintf (C_filepntrarcout, "deco\n0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n", /* Print file header */
            (SCOTCH_Num) fnbr,                     /* Print number of terminal domains */
            (SCOTCH_Num) fmax);                    /* Print the biggest terminal value */
@@ -183,8 +185,9 @@ char *                      argv[])
         t |= v.pos & ((1 << (v.lvl - 1)) - 1);    /* Bipartition the chain following the lowest bits */
       }
 
-      printf (((v.lvl == fdim) && (v.pos == fmsk)) /* Print terminal domain number */
-               ? SCOTCH_NUMSTRING "\n\n" : SCOTCH_NUMSTRING " ", t);
+      fprintf (C_filepntrarcout, SCOTCH_NUMSTRING "\t1\t" SCOTCH_NUMSTRING "\n",
+               (SCOTCH_Num) C_vertLabl (&v),      /* Print terminal label  */
+               (SCOTCH_Num) t);                   /* Print terminal number */
     }
   }
 
