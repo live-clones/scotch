@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 11 dec 2008     **/
 /**                                 to   : 17 jul 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 27 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -189,7 +189,7 @@ char *                      argv[])
       errorPrint ("main: bad list input (1)");
       return     (EXIT_FAILURE);
     }
-    if ((listtab = (SCOTCH_Num *) memAlloc (listnbr * sizeof (SCOTCH_Num) + 1)) == NULL) {
+    if ((listtab = (SCOTCH_Num *) memAlloc (listnbr * sizeof (SCOTCH_Num))) == NULL) {
       errorPrint ("main: out of memory (1)");
       return     (EXIT_FAILURE);
     }
@@ -203,7 +203,6 @@ char *                      argv[])
     for (listnum = 0; listnum < listnbr - 1; listnum ++) { /* Search for duplicates */
       if (listtab[listnum] == listtab[listnum + 1]) {
         errorPrint ("main: duplicate list labels");
-        memFree    (listtab);
         return     (EXIT_FAILURE);
       }
     }
@@ -213,7 +212,6 @@ char *                      argv[])
 
       if ((sorttab = (C_VertSort *) memAlloc (vertnbr * sizeof (C_VertSort))) == NULL) {
         errorPrint ("main: out of memory (2)");
-        memFree    (listtab);
         return     (EXIT_FAILURE);
       }
       for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Initialize sort area */
@@ -228,8 +226,6 @@ char *                      argv[])
         if ((vertnum >= vertnbr) ||               /* If label not found                           */
             (sorttab[vertnum].vlblnum > listtab[listnum])) {
           errorPrint ("main: list label '" SCOTCH_NUMSTRING "' not in graph", (SCOTCH_Num) listtab[listnum]);
-          memFree    (sorttab);
-          memFree    (listtab);
           return     (EXIT_FAILURE);
         }
         listtab[listnum] = sorttab[vertnum ++].vertnum; /* Replace label by number */
