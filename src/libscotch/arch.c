@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2013,2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2013,2015,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,7 +64,7 @@
 /**                # Version 5.1  : from : 11 dec 2007     **/
 /**                                 to     25 jun 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
-/**                                 to     17 apr 2019     **/
+/**                                 to     28 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -458,18 +458,7 @@ const ArchDom * const       domnptr,
 ArchDom * const             dom0ptr,
 ArchDom * const             dom1ptr)
 {
-  int                 o;
-
-  o = archDomBipart2 (archptr, domnptr, dom0ptr, dom1ptr); /* Call proper routine */
-
-  if ((o == 0) &&                                 /* Check domain number consistency for fixed-sized architectures */
-      (strncmp (archName (archptr), "var", 3) != 0) &&
-      (archDomNum (archptr, dom0ptr) != archDomNum (archptr, domnptr))) {
-    errorPrint ("archDomBipart: domain number mismatch");
-    return     (2);
-  }
-
-  return (o);
+  return (archDomBipart2 (archptr, domnptr, dom0ptr, dom1ptr)); /* Call proper routine */
 }
 
 #endif /* SCOTCH_DEBUG_ARCH2 */
