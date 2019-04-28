@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to     05 may 2004     **/
 /**                # Version 5.0  : from : 10 sep 2007     **/
 /**                                 to   : 10 sep 2007     **/
+/**                # Version 6.0  : from : 28 apr 2019     **/
+/**                                 to   : 28 apr 2019     **/
 /**                                                        **/
 /**   NOTES      : # From a given halo mesh is created a   **/
 /**                  halo graph, such that all vertices of **/
@@ -235,6 +237,7 @@ Hgraph * restrict const       grafptr)            /*+ Graph to build +*/
     if ((edgenum - grafptr->s.verttax[vertnum]) > degrmax) /* Compute maximum degree */
       degrmax = (edgenum - grafptr->s.verttax[vertnum]);
   }
+  grafptr->enlosum =                              /* Graph edges are not weighted       */
   grafptr->enohnbr = enohnbr;                     /* All other edges will be halo edges */
 
   for ( ; vertnum < grafptr->s.vertnnd; vertnum ++) { /* Build graph edges for halo vertices */
@@ -302,7 +305,8 @@ Hgraph * restrict const       grafptr)            /*+ Graph to build +*/
     if ((edgenum - grafptr->s.verttax[vertnum]) > degrmax) /* Compute maximum degree */
       degrmax = (edgenum - grafptr->s.verttax[vertnum]);
   }
-  grafptr->s.verttax[vertnum] = edgenum;          /* Set end of vertex array */
+  grafptr->s.verttax[vertnum] = edgenum;          /* Set end of vertex array      */
+  grafptr->s.edlosum =                            /* Graph edges are not weighted */
   grafptr->s.edgenbr = edgenum - grafptr->s.baseval;
   grafptr->s.degrmax = degrmax;
 
