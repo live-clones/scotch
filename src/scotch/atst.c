@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 28 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,25 +95,26 @@ main (argc, argv)
 int                 argc;
 char *              argv[];
 {
-  SCOTCH_Arch         archdat;
-  SCOTCH_Num          archsiz;
-  SCOTCH_ArchDom      dom0dat;
-  SCOTCH_Num          dom0num;
-  SCOTCH_ArchDom      dom1dat;
-  SCOTCH_Num          dom1num;
-  SCOTCH_Num          distval;
-  SCOTCH_Num          distmin;
-  SCOTCH_Num          distmax;
-  SCOTCH_Num          distsum;
-  double              distavg;
-  double              distdlt;
-  int                 i;
+  SCOTCH_Arch               archdat;
+  SCOTCH_ArchDom            domndat;
+  SCOTCH_ArchDom * restrict termtab;
+  SCOTCH_Num                termnbr;
+  SCOTCH_Num                termnum;
+  SCOTCH_Num                ter0num;
+  SCOTCH_Num                ter1num;
+  SCOTCH_Num                distval;
+  SCOTCH_Num                distmin;
+  SCOTCH_Num                distmax;
+  SCOTCH_Num                distsum;
+  double                    distavg;
+  double                    distdlt;
+  int                       i;
 
   errorProg ("atst");
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (EXIT_SUCCESS);
+    return (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -124,7 +125,7 @@ char *              argv[];
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        return     (EXIT_FAILURE);
+        return (EXIT_FAILURE);
       }
     }
     else {                                        /* If found an option name */
@@ -132,7 +133,7 @@ char *              argv[];
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (EXIT_SUCCESS);
+          return (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "atst, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
@@ -140,7 +141,7 @@ char *              argv[];
           return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (EXIT_FAILURE);
+          return (EXIT_FAILURE);
       }
     }
   }
@@ -150,23 +151,32 @@ char *              argv[];
   SCOTCH_archInit (&archdat);                     /* Initialize architecture structure */
   if (SCOTCH_archLoad (&archdat, C_filepntrtgtinp) != 0) { /* Load architecture        */
     SCOTCH_errorPrint ("main: cannot load architecture");
-    return            (EXIT_FAILURE);
+    return (EXIT_FAILURE);
   }
 
-  SCOTCH_archDomFrst (&archdat, &dom0dat);
-  archsiz = SCOTCH_archDomSize (&archdat, &dom0dat);
+  SCOTCH_archDomFrst (&archdat, &domndat);
+  termnbr = SCOTCH_archDomSize (&archdat, &domndat);
+  if ((termtab = (SCOTCH_ArchDom *) malloc (termnbr * sizeof (SCOTCH_ArchDom))) == NULL) {
+    SCOTCH_errorPrint ("main: out of memory");
+    return (EXIT_FAILURE);
+  }
+  termnum = 0;
+  if ((C_termList (&archdat, termtab, termnbr, &termnum, &domndat) != 0) ||
+      (termnum != termnbr)) {
+    SCOTCH_errorPrint ("main: cannot enumerate terminal domains");
+    return (EXIT_FAILURE);
+  }
 
   distmin = (SCOTCH_Num) (((unsigned long) ((SCOTCH_Num) -1)) >> 1); /* Set to maximum number in Anum */
   distmax = 0;
   distsum = 0;
 
-  for (dom0num = 0; dom0num < archsiz; dom0num ++) { /* For all pairs of vertices */
-    SCOTCH_archDomTerm (&archdat, &dom0dat, dom0num);
-   
-    for (dom1num = 0; dom1num < archsiz; dom1num ++) {
-      SCOTCH_archDomTerm (&archdat, &dom1dat, dom1num);
+  for (ter0num = 0; ter0num < termnbr; ter0num ++) { /* For all pairs of terminal domains */
+    for (ter1num = 0; ter1num < termnbr; ter1num ++) {
+      if (ter1num == ter0num)
+	continue;
 
-      distval = SCOTCH_archDomDist (&archdat, &dom0dat, &dom1dat); /* Compute distance between pairs */
+      distval = SCOTCH_archDomDist (&archdat, &termtab[ter0num], &termtab[ter1num]); /* Compute distance between pairs */
       if (distmin > distval)
         distmin = distval;
       if (distmax < distval)
@@ -174,30 +184,66 @@ char *              argv[];
       distsum += distval;
     }
   }
-  distavg = (archsiz > 1)
-            ? (double) distsum / ((double) archsiz * (double) (archsiz - 1) / 2.0)
+  distavg = (termnbr > 1)
+            ? (double) distsum / ((double) termnbr * (double) (termnbr - 1) / 2.0)
             : 0.0L;
   distdlt = 0.0L;
 
-  for (dom0num = 0; dom0num < archsiz; dom0num ++) { /* For all pairs of vertices */
-    SCOTCH_archDomTerm (&archdat, &dom0dat, dom0num);
-   
-    for (dom1num = 0; dom1num < archsiz; dom1num ++) {
-      SCOTCH_archDomTerm (&archdat, &dom1dat, dom1num);
-      distdlt += fabs ((double) SCOTCH_archDomDist (&archdat, &dom0dat, &dom1dat) - distavg);
+  for (ter0num = 0; ter0num < termnbr; ter0num ++) { /* For all pairs of terminal domains */
+    for (ter1num = 0; ter1num < termnbr; ter1num ++) {
+      if (ter1num == ter0num)
+	continue;
+
+      distdlt += fabs ((double) SCOTCH_archDomDist (&archdat, &termtab[ter0num], &termtab[ter1num]) - distavg);
     }
   }
-  if (archsiz > 1)
-    distdlt /= (double) archsiz * (double) (archsiz - 1) / 2.0;
+  if (termnbr > 1)
+    distdlt /= (double) termnbr * (double) (termnbr - 1) / 2.0;
 
   fprintf (C_filepntrlogout, "A\tTerminals\tnbr=" SCOTCH_NUMSTRING "\n",
-           archsiz);
+           termnbr);
   fprintf (C_filepntrlogout, "A\tDistance\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
            distmin, distmax, distavg, distdlt);
+
+  free (termtab);
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
   SCOTCH_archExit (&archdat);
 
   return (EXIT_SUCCESS);
+}
+
+/* This routine recursively enumerates all terminal
+** domains of an architecture.
+** It returns:
+** - 0  : if architecture successfully traversed.
+** - 1  : on error.
+*/
+
+int
+C_termList (
+SCOTCH_Arch * restrict const    archptr,
+SCOTCH_ArchDom * restrict const termtab,
+const SCOTCH_Num                termnum,
+SCOTCH_Num * const              termptr,
+SCOTCH_ArchDom * const          domnptr)
+{
+  SCOTCH_ArchDom      domntab[2];
+  int                 o;
+
+  if (SCOTCH_archDomSize (archptr, domnptr) == 1) { /* If domain is terminal */
+    if (*termptr >= termnum)                      /* If too many terminals   */
+      return (1);
+    
+    termtab[(*termptr) ++] = *domnptr;            /* Copy terminal domain to array */
+    return (0);
+  }
+
+  o = SCOTCH_archDomBipart (archptr, domnptr, &domntab[0], &domntab[1]);
+  if (o != 0)
+    return (o - 1);
+
+  return (C_termList (archptr, termtab, termnum, termptr, &domntab[0]) || /* Anticipated return in case of error */
+          C_termList (archptr, termtab, termnum, termptr, &domntab[1]));
 }
