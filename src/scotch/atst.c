@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 28 apr 2019     **/
+/**                                 to   : 03 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,7 +102,6 @@ char *              argv[];
   SCOTCH_Num                termnum;
   SCOTCH_Num                ter0num;
   SCOTCH_Num                ter1num;
-  SCOTCH_Num                distval;
   SCOTCH_Num                distmin;
   SCOTCH_Num                distmax;
   SCOTCH_Num                distsum;
@@ -172,9 +171,8 @@ char *              argv[];
   distsum = 0;
 
   for (ter0num = 0; ter0num < termnbr; ter0num ++) { /* For all pairs of terminal domains */
-    for (ter1num = 0; ter1num < termnbr; ter1num ++) {
-      if (ter1num == ter0num)
-	continue;
+    for (ter1num = ter0num + 1; ter1num < termnbr; ter1num ++) {
+      SCOTCH_Num          distval;
 
       distval = SCOTCH_archDomDist (&archdat, &termtab[ter0num], &termtab[ter1num]); /* Compute distance between pairs */
       if (distmin > distval)

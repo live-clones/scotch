@@ -1,4 +1,4 @@
-## Copyright 2011,2012,2014-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2011,2012,2014-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -357,17 +357,17 @@ test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
 
 check_prog_amk			:
 					$(EXECS) $(SCOTCHBINDIR)/amk_ccc 5 | $(SCOTCHBINDIR)/atst
-					$(EXECS) $(SCOTCHBINDIR)/amk_fft2 5 /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_fft2 5 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_hy 5 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_m2 -mo 5 12 | $(SCOTCHBINDIR)/atst
-					$(EXECS) $(SCOTCHBINDIR)/amk_p2 5 7 /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_p2 5 7 | $(SCOTCHBINDIR)/atst
 
 check_prog_amk_grf		:
 					$(EXECS) $(SCOTCHBINDIR)/amk_grf data/m16x16.grf | $(SCOTCHBINDIR)/atst
-					$(EXECS) $(SCOTCHBINDIR)/amk_grf -2 data/m16x16.grf /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf -2 data/m16x16.grf | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt data/m4x4.grf | $(SCOTCHBINDIR)/atst
-					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt -2 data/m4x4.grf /dev/null
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt -2 data/m4x4.grf | $(SCOTCHBINDIR)/atst
 
 check_prog_gmk			:
 					$(EXECS) $(SCOTCHBINDIR)/gmk_hy 5 | $(SCOTCHBINDIR)/gtst
