@@ -47,7 +47,7 @@ EXECP			?= mpirun -n 3
 # EXECP			?= mpirun -n 3 valgrind --leak-check=full --track-origins=yes
 # EXECP			?= mpirun -n 3 --oversubscribe
 
-PROGDIFF		?= diff
+PROGDIFF		?= diff -q
 
 ##
 ##  General inference rules.
@@ -147,15 +147,15 @@ check_common_file_compress	:	test_common_file_compress
 					-cp "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
 					$(EXECS) ./test_common_file_compress "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf.gz"
 					$(EXECS) ./test_common_file_compress "$(TMPDIR)/bump_b1.grf.gz" "$(TMPDIR)/bump_b1.grf"
-					diff -q "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+					$(PROGDIFF) "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
 					-cp "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
 					$(EXECS) ./test_common_file_compress "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf.bz2"
 					$(EXECS) ./test_common_file_compress "$(TMPDIR)/bump_b1.grf.bz2" "$(TMPDIR)/bump_b1.grf"
-					diff -q "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+					$(PROGDIFF) "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
 					-cp "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
 					$(EXECS) ./test_common_file_compress "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf.lzma"
 					$(EXECS) ./test_common_file_compress "$(TMPDIR)/bump_b1.grf.lzma" "$(TMPDIR)/bump_b1.grf"
-					diff -q "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+					$(PROGDIFF) "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
 
 test_common_file_compress	:	test_common_file_compress.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -387,13 +387,13 @@ check_prog_mmk                  :
 					$(EXECS) $(SCOTCHBINDIR)/mtst $(TMPDIR)/m2_5_4.msh
 					$(EXECS) $(SCOTCHBINDIR)/mtst $(TMPDIR)/m2_5_4_3.msh
 
-check_prog_mcv			        : check_prog_mmk
+check_prog_mcv		        : check_prog_mmk
 					$(EXECS) $(SCOTCHBINDIR)/mcv $(TMPDIR)/m2_5_1.msh $(TMPDIR)/output_m2_5_1.msh -is -os
 					$(EXECS) $(SCOTCHBINDIR)/mcv $(TMPDIR)/m2_5_4.msh $(TMPDIR)/output_m2_5_4.msh -is -os
 					$(EXECS) $(SCOTCHBINDIR)/mcv $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/output_m2_5_4_3.msh -is -os
-					$(EXECS) cmp $(TMPDIR)/m2_5_1.msh $(TMPDIR)/output_m2_5_1.msh
-					$(EXECS) cmp $(TMPDIR)/m2_5_4.msh $(TMPDIR)/output_m2_5_4.msh
-					$(EXECS) cmp $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/output_m2_5_4_3.msh
+					$(PROGDIFF) $(TMPDIR)/m2_5_1.msh $(TMPDIR)/output_m2_5_1.msh
+					$(PROGDIFF) $(TMPDIR)/m2_5_4.msh $(TMPDIR)/output_m2_5_4.msh
+					$(PROGDIFF) $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/output_m2_5_4_3.msh
 
 
 check_prog_mord                 : check_prog_mmk
