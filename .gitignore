@@ -7,10 +7,11 @@ doc/src/*/*.blg
 doc/src/*/*.dvi
 doc/src/*/*.log
 doc/src/*/*.toc
-doc/src/ptscotch/p.ps
-doc/src/ptscotch/p.pdf
+doc/src/*/*scotch*.pdf
+doc/src/*/*scotch*.ps.gz
+doc/src/scotch/m.ps
 doc/src/scotch/s.ps
-doc/src/scotch/s.pdf
+doc/src/ptscotch/p.ps
 src/Makefile.inc*
 src/check/*
 !src/check/*[.][ch]
