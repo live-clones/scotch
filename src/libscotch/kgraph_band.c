@@ -1,4 +1,4 @@
-/* Copyright 2009-2011,2013-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2011,2013-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                array.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 jan 2009     **/
-/**                                 to   : 31 may 2018     **/
+/**                                 to   : 28 apr 2019     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -226,14 +226,19 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     errorPrint ("kgraphBand: out of memory (2)");
     return     (1);
   }
+  bandgrafptr->s.verttax -= bandgrafptr->s.baseval;
+  bandgrafptr->s.velotax -= bandgrafptr->s.baseval;
+
   if ((bandvnumtax = memAlloc ((bandvertnbr) * sizeof (Gnum))) == NULL) { /* Allocate alone since it is an output */
     errorPrint ("kgraphBand: out of memory (3)");
+    kgraphExit (bandgrafptr);
     return     (1);
   }
   bandvmlotax = NULL;
   if (vmlotax != NULL) {
     if ((bandvmlotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("kgraphBand: out of memory (4)");
+      kgraphExit (bandgrafptr);
       memFree    (bandvnumtax);
       return     (1);
     }
@@ -248,8 +253,9 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
       errorPrint ("kgraphBand: out of memory (5)");
       if (bandvmlotax != NULL)
         memFree (bandvmlotax + bandgrafptr->s.baseval);
-      memFree (bandvnumtax);
-      return  (1);
+      kgraphExit (bandgrafptr);
+      memFree    (bandvnumtax);
+      return     (1);
     }
     memSet (bandparotax + bandvertnbr - bandgrafptr->r.m.domnnbr, ~0, bandgrafptr->r.m.domnnbr * sizeof (Gnum)); /* Prevent Valgrind from yelling when centralizing band graphs */
     bandparotax -= bandgrafptr->s.baseval;
@@ -257,15 +263,13 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     bandgrafptr->r.m.flagval |= MAPPINGFREEPART;
   }
 
-  bandgrafptr->s.verttax -= bandgrafptr->s.baseval;
-  bandvnumtax            -= bandgrafptr->s.baseval;
-  bandgrafptr->s.velotax -= bandgrafptr->s.baseval;
-
   if ((bandgrafptr->s.edgetax = memAlloc ((bandedgenbr + bandedlonbr) * sizeof (Gnum))) == NULL) {
     errorPrint ("kgraphBand: out of memory (6)");
     kgraphExit (bandgrafptr);
+    memFree    (bandvnumtax);
     return     (1);
   }
+  bandvnumtax            -= bandgrafptr->s.baseval;
   bandedlotax             = NULL;
   bandedgetax             =
   bandgrafptr->s.edgetax -= bandgrafptr->s.baseval;
@@ -691,4 +695,3 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 
   return (0);
 }
-
