@@ -1,4 +1,4 @@
-## Copyright 2018 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -30,45 +30,56 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
-DOCUMENT	= scotch_user6.0
+VERSION		= 6.0
+
+UMAN		= scotch_user$(VERSION)
+MMAN		= scotch_maint$(VERSION)
 
 FLAGS		= -sPAPERSIZE=a4
 
 DEPS		= $(wildcard *.tex) $(wildcard *.eps)
 
-MANS		= $(DOCUMENT).ps.gz $(DOCUMENT).pdf
+MANS		= $(MMAN).ps.gz $(MMAN).pdf $(UMAN).ps.gz $(UMAN).pdf
 
 CP		= cp -f
 RM		= rm -f
 
 .PHONY				:	clean	default	install	realclean
 
+default				:	$(MANS)
+
 %.eps				:	%.fig
 					fig2dev -L eps $(<)
 
-default				:	$(MANS)
+%.dvi				:	%.tex $(DEPS)
+					latex $(<)
+					-bibtex $(<)
+					latex $(<)
+					latex $(<)
 
-s.dvi				:	s.tex $(DEPS)
-					latex s
-					bibtex s
-					latex s
-					latex s
-
-s.ps				:	s.dvi
+%.ps				:	%.dvi
 					dvips $(FLAGS) $(<)
 
-$(DOCUMENT).pdf			:	s.dvi
+$(MMAN).pdf			:	m.dvi
 					dvipdf $(FLAGS) $(<) $(@)
 
-$(DOCUMENT).ps.gz		:	s.ps
+$(MMAN).ps.gz			:	m.ps
+					gzip -9 -c < $(<) > $(@)
+
+$(UMAN).pdf			:	s.dvi
+					dvipdf $(FLAGS) $(<) $(@)
+
+$(UMAN).ps.gz			:	s.ps
 					gzip -9 -c < $(<) > $(@)
 
 install				:	$(MANS)
-					-$(CP) $(DOCUMENT).ps.gz ../../
-					-$(CP) $(DOCUMENT).pdf ../../
+					-$(CP) $(MMAN).ps.gz ../../
+					-$(CP) $(MMAN).pdf ../../
+					-$(CP) $(UMAN).ps.gz ../../
+					-$(CP) $(UMAN).pdf ../../
 
 clean				:
 					-$(RM) *~ s.aux s.blg s.log s.toc
 
 realclean			:	clean
-					-$(RM) *~ s.bbl s.dvi s.ps $(MANS)
+					-$(RM) *~ s.bbl *dvi $(MMAN)* $(UMAN)*
