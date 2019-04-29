@@ -57,7 +57,7 @@
 /**                # Version 5.1  : from : 30 oct 2009     **/
 /**                                 to     30 oct 2009     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     16 feb 2016     **/
+/**                                 to     29 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -372,8 +372,11 @@ GraphCoarsenData * restrict const     coarptr)
   if ((coarptr->flagval & GRAPHCOARSENUSEMATE) != 0) /* If mating array provided              */
     graphMatchNone (coarptr);                     /* Initialize global data to avoid matching */
   else {
-    if (graphMatchInit (coarptr) != 0)            /* Initialize global data needed for matching */
+    if (graphMatchInit (coarptr) != 0) {          /* Initialize global data needed for matching */
+      if (finematetab != NULL)
+        memFree (finematetab);
       return (1);
+    }
   }
 
   if (coarptr->coarmulttab != NULL)               /* Record that multinode array was provided */
