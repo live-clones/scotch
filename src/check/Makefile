@@ -128,6 +128,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_mmk				\
 			check_prog_mord				\
 			check_prog_gord				\
+			check_prog_gpart_overlap		\
 			check_prog_gpart_remap
 
 CHECKPTSCOTCH = 	check_strat_par				\
@@ -409,6 +410,12 @@ check_prog_gord			:
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf $(TMPDIR)/bump_b1.ord -vt
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump.grf $(TMPDIR)/bump.ord
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump_b1.grf $(TMPDIR)/bump_b1.ord
+
+##
+
+check_prog_gpart_overlap	:
+					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump_b1.grf /dev/null -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gpart -o 32 data/bump_imbal_32.grf /dev/null -vmt
 
 ##
 
