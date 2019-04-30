@@ -32,9 +32,10 @@
 
 TMPDIR			= /tmp
 
-SCOTCHINCLUDEDIR	= ../../include
-SCOTCHLIBDIR		= ../../lib
 SCOTCHBINDIR		= ../../bin
+SCOTCHINCDIR		= ../../include
+SCOTCHLIBDIR		= ../../lib
+SCOTCHTGTDIR		= ../../tgt
 
 LIBPTSCOTCH		= -lptscotch -lscotch -lptscotcherr
 LIBSCOTCH		= -lscotch -lscotcherr
@@ -56,10 +57,10 @@ PROGDIFF		?= diff -q
 include ../Makefile.inc
 
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(SCOTCHINCLUDEDIR) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(SCOTCHINCDIR) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
 
 ##
 ##  Project rules.
@@ -128,6 +129,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_mmk				\
 			check_prog_mord				\
 			check_prog_gord				\
+			check_prog_gpart_clustering		\
 			check_prog_gpart_overlap		\
 			check_prog_gpart_remap
 
@@ -413,9 +415,19 @@ check_prog_gord			:
 
 ##
 
+check_prog_gpart_clustering	:
+					$(EXECS) $(SCOTCHBINDIR)/gpart -q 9 data/bump_b1.grf $(TMPDIR)/bump_b1_part_cls_9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_b1.grf $(SCOTCHTGTDIR)/vcmplt.tgt $(TMPDIR)/bump_b1_part_cls_9.map
+					$(EXECS) $(SCOTCHBINDIR)/gpart -q 32 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_cls_32.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_imbal_32.grf $(SCOTCHTGTDIR)/vhcub.tgt $(TMPDIR)/bump_imbal_32_part_cls_32.map
+##
+
 check_prog_gpart_overlap	:
-					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump_b1.grf /dev/null -vmt
-					$(EXECS) $(SCOTCHBINDIR)/gpart -o 32 data/bump_imbal_32.grf /dev/null -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump_b1.grf $(TMPDIR)/bump_b1_part_ovl_9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_b1.grf $(SCOTCHTGTDIR)/k9.tgt $(TMPDIR)/bump_b1_part_ovl_9.map
+					$(EXECS) $(SCOTCHBINDIR)/gpart -o 32 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_ovl_32.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_imbal_32.grf $(SCOTCHTGTDIR)/k32.tgt $(TMPDIR)/bump_imbal_32_part_ovl_32.map
+
 
 ##
 
