@@ -45,6 +45,7 @@ DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)
 
 EXECS			?=
 EXECP			?= mpirun -n 3
+EXECP4			?= mpirun -n 4
 # EXECP			?= mpirun -n 3 valgrind --leak-check=full --track-origins=yes
 # EXECP			?= mpirun -n 3 --oversubscribe
 
@@ -140,6 +141,7 @@ CHECKPTSCOTCH = 	check_strat_par				\
 			check_scotch_dgraph_grow		\
 			check_scotch_dgraph_induce      	\
 			check_scotch_dgraph_redist		\
+			check_prog_dgord			\
 			check_prog_dgscat-dggath
 
 ##
@@ -446,3 +448,8 @@ check_prog_dgscat-dggath	:
 					$(EXECP) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b1.grf "$(TMP)2_%r.grf"
 					$(EXECP) $(SCOTCHBINDIR)/dggath -c "$(TMP)2_%r.grf" "$(TMP)2.grf"
 					$(PROGDIFF) data/m16x16_b1.grf "$(TMP)2.grf"
+
+check_prog_dgord		:
+					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump_b1.grf /dev/null -vt
+					$(EXECP4) $(SCOTCHBINDIR)/dgord data/small_%r.grf $(TMPDIR)/small.ord
+
