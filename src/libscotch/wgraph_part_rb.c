@@ -268,7 +268,7 @@ const WgraphPartRbParam * restrict const  paraptr)
     errorPrint ("wgraphPartRb: out of memory (1)");
     return     (1);
   }
-  listtab ++;                                     /* TRICK: Trim array so that listtab[-1] is valid */
+  listtab ++;                                     /* TRICK: trim array so that listtab[-1] is valid */
   memSet (listtab, ~0, grafptr->partnbr * sizeof (WgraphPartList)); /* Set vertex indices to ~0     */
   
   datadat.grafptr  = &grafptr->s;

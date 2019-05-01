@@ -163,7 +163,7 @@ const GraphCoarsenMulti * restrict const  coarmulttab) /*+ Un-based multinode ar
     errorPrint ("wgraphPartMlUncoarsen: out of memory (2)");
     return     (1);
   }
-  finelisttab ++;                                 /* TRICK: Trim array so that finelisttab[-1] is valid */
+  finelisttab ++;                                 /* TRICK: trim array so that finelisttab[-1] is valid */
   memSet (finelisttab, ~0, finegrafptr->partnbr * sizeof (WgraphPartList)); /* Set vertex indices to ~0 */
 
   memSet (finecompload, 0, finegrafptr->partnbr * sizeof (Gnum)); /* Reset load arrays to 0 */
