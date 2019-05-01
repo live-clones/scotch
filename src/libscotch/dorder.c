@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -103,8 +103,10 @@ dorderFreeCblk (
 DorderCblk * restrict const cblkptr)
 {
 #ifdef SCOTCH_DEBUG_DORDER2
-  if ((cblkptr->typeval < DORDERCBLKNEDI) ||
-      (cblkptr->typeval > (DORDERCBLKNEDI | DORDERCBLKLEAF)))
+  if ((cblkptr->typeval !=  DORDERCBLKNONE) &&    /* If sub-ordering has been computed elsewhere by hdgraphOrderSq() */
+      (cblkptr->typeval !=  DORDERCBLKNEDI) &&
+      (cblkptr->typeval !=  DORDERCBLKLEAF) &&
+      (cblkptr->typeval != (DORDERCBLKNEDI | DORDERCBLKLEAF))) /* If distributed leaf of a local sequential nested dissection */
     errorPrint ("dorderFreeCblk: invalid column block type");
 #endif /* SCOTCH_DEBUG_DORDER2 */
 
