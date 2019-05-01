@@ -142,6 +142,7 @@ CHECKPTSCOTCH = 	check_strat_par				\
 			check_scotch_dgraph_induce      	\
 			check_scotch_dgraph_redist		\
 			check_prog_dgord			\
+			check_prog_dgpart			\
 			check_prog_dgscat-dggath
 
 ##
@@ -437,6 +438,10 @@ check_prog_gpart_remap		:
 check_prog_dgord		:
 					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump_b1.grf /dev/null -vt
 					$(EXECP4) $(SCOTCHBINDIR)/dgord data/small_%r.grf $(TMPDIR)/small.ord
+
+check_prog_dgpart		:
+					$(EXECP) $(SCOTCHBINDIR)/dgpart 9 data/bump_b1.grf /dev/null -vmt
+					$(EXECP4) $(SCOTCHBINDIR)/dgpart 50 data/small_%r.grf /dev/null -vmt
 
 check_prog_dgscat-dggath	:	TMP := $(shell mktemp -u)
 check_prog_dgscat-dggath	:
