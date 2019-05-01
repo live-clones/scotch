@@ -132,7 +132,8 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_gord				\
 			check_prog_gpart_clustering		\
 			check_prog_gpart_overlap		\
-			check_prog_gpart_remap
+			check_prog_gpart_remap			\
+			check_prog_gscat
 
 CHECKPTSCOTCH = 	check_strat_par				\
 			check_scotch_dgraph_check		\
@@ -430,6 +431,9 @@ check_prog_gpart_overlap	:
 
 check_prog_gpart_remap		:
 					$(EXECS) $(SCOTCHBINDIR)/gpart 32 data/bump_imbal_32.grf /dev/null -rodata/bump_old.map -vmt
+
+check_prog_gscat		:
+					$(EXECS) $(SCOTCHBINDIR)/gscat 4 data/small.grf $(TMPDIR)/small_%r.grf
 
 ##
 ##  Parallel program tests.
