@@ -415,14 +415,11 @@ check_prog_gord			:
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump.grf $(TMPDIR)/bump.ord
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump_b1.grf $(TMPDIR)/bump_b1.ord
 
-##
-
 check_prog_gpart_clustering	:
-					$(EXECS) $(SCOTCHBINDIR)/gpart -q 9 data/bump_b1.grf $(TMPDIR)/bump_b1_part_cls_9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gpart -q 1 data/bump_b1.grf $(TMPDIR)/bump_b1_part_cls_9.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_b1.grf $(SCOTCHTGTDIR)/vcmplt.tgt $(TMPDIR)/bump_b1_part_cls_9.map
-					$(EXECS) $(SCOTCHBINDIR)/gpart -q 32 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_cls_32.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gpart -q 1 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_cls_32.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_imbal_32.grf $(SCOTCHTGTDIR)/vhcub.tgt $(TMPDIR)/bump_imbal_32_part_cls_32.map
-##
 
 check_prog_gpart_overlap	:
 					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump_b1.grf $(TMPDIR)/bump_b1_part_ovl_9.map -vmt
@@ -430,15 +427,16 @@ check_prog_gpart_overlap	:
 					$(EXECS) $(SCOTCHBINDIR)/gpart -o 32 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_ovl_32.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_imbal_32.grf $(SCOTCHTGTDIR)/k32.tgt $(TMPDIR)/bump_imbal_32_part_ovl_32.map
 
-
-##
-
 check_prog_gpart_remap		:
 					$(EXECS) $(SCOTCHBINDIR)/gpart 32 data/bump_imbal_32.grf /dev/null -rodata/bump_old.map -vmt
 
 ##
 ##  Parallel program tests.
 ##
+
+check_prog_dgord		:
+					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump_b1.grf /dev/null -vt
+					$(EXECP4) $(SCOTCHBINDIR)/dgord data/small_%r.grf $(TMPDIR)/small.ord
 
 check_prog_dgscat-dggath	:	TMP := $(shell mktemp -u)
 check_prog_dgscat-dggath	:
@@ -448,8 +446,3 @@ check_prog_dgscat-dggath	:
 					$(EXECP) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b1.grf "$(TMP)2_%r.grf"
 					$(EXECP) $(SCOTCHBINDIR)/dggath -c "$(TMP)2_%r.grf" "$(TMP)2.grf"
 					$(PROGDIFF) data/m16x16_b1.grf "$(TMP)2.grf"
-
-check_prog_dgord		:
-					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump_b1.grf /dev/null -vt
-					$(EXECP4) $(SCOTCHBINDIR)/dgord data/small_%r.grf $(TMPDIR)/small.ord
-
