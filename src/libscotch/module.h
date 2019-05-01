@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     17 apr 2019     **/
+/**                                 to     01 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -824,6 +824,7 @@
 #define hdgraphGather               SCOTCH_NAME_INTERN (hdgraphGather)
 #define hdgraphInduceList           SCOTCH_NAME_INTERN (hdgraphInduceList)
 #define hdgraphOrderNd              SCOTCH_NAME_INTERN (hdgraphOrderNd)
+#define hdgraphOrderNd2             SCOTCH_NAME_INTERN (hdgraphOrderNd2)
 #define hdgraphOrderSi              SCOTCH_NAME_INTERN (hdgraphOrderSi)
 #define hdgraphOrderSq              SCOTCH_NAME_INTERN (hdgraphOrderSq)
 #define hdgraphOrderSq2             SCOTCH_NAME_INTERN (hdgraphOrderSq2)
