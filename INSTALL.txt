@@ -562,13 +562,13 @@ determine, on the target platform, the sizes of the opaque data
 structures of Scotch and PT-Scotch, respectively. They have to be
 compiled and run before any library function can be compiled. The
 sequential case poses no specific problems, as "dummysizes" is always
-compiled with the same command as the one used to compile the
+compiled with the same command as that used to compile the
 sequential Scotch package (hence, "CCD=$(CCS)" when executing "make
 scotch"). In the parallel case, "ptdummysizes" has to take into
 account the sizes of some MPI data structures, such as MPI_Comm, and
 the most common way to have access to this information is to use some
-flavor of MPI-aware compilers such as "mpicc" which automatically
-refer to "mpi.h". Therefore, "CCD=mpicc" will work for most systems
+flavor of MPI-aware compiler such as "mpicc" which automatically
+refers to "mpi.h". Therefore, "CCD=mpicc" will work for most systems
 and MPI implementations. Yet, on some platforms, programs compiled for
 parallel execution cannot be run interactively. Moreover,
 "ptdummysizes" itself does not contain any MPI calls, as it just wants
@@ -579,6 +579,10 @@ specifying, in the CCD variable of "Makefile.inc", how to compile
 "ptdummysizes" sequentially but with knowledge of the location of the
 "mpi.h" include file, for instance with the following line: "CCD =
 my_sequential_cc -I/path/to/my/mpi/implementation/include/dir/".
+In case of cross-compilation, e.g. for architectures that have
+different word size and/or compiler tools for the front-end and the
+compute nodes, it is possible to provide alternate flags, by setting
+the "CCDFLAGS" variable.
 
 If no error occurs, all of the relevant header, library and executable
 files will be created and copied to the "../include/", "../lib/" and
@@ -631,7 +635,7 @@ and PT-Scotch libraries. However, some of these programs test internal
 features, and interact with the library through non-standard and
 non-documented procedures. It is therefore recommended NOT to imitate
 these calling practices and rather to follow the guidelines provided
-in the Scotch and PT-Scotch user manuals.
+in the Scotch and PT-Scotch user's manuals.
 
 
 5) Use

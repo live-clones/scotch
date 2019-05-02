@@ -33,6 +33,8 @@
 includedir	= ../../include
 libdir		= ../../lib
 
+CCDFLAGS	?= $(CFLAGS)
+
 ##
 ##  General inference rules.
 ##
@@ -52,19 +54,24 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:
-					$(MAKE) CC="$(CCS)" CCD="$(CCS)"	\
-					scotch.h				\
-					scotchf.h				\
-					libscotch$(LIB)				\
-					libscotcherr$(LIB)			\
+					$(MAKE) 					\
+					CC="$(CCS)"					\
+					CCD="$(CCS)"					\
+					scotch.h					\
+					scotchf.h					\
+					libscotch$(LIB)					\
+					libscotcherr$(LIB)				\
 					libscotcherrexit$(LIB)
 
 ptscotch			:	scotch
-					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)"	\
-					ptscotch.h							\
-					ptscotchf.h							\
-					libptscotch$(LIB)						\
-					libptscotcherr$(LIB)						\
+					$(MAKE) 					\
+					CC="$(CCP)"					\
+					CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH"		\
+					CCDFLAGS="$(CCDFLAGS) -DSCOTCH_PTSCOTCH"	\
+					ptscotch.h					\
+					ptscotchf.h					\
+					libptscotch$(LIB)				\
+					libptscotcherr$(LIB)				\
 					libptscotcherrexit$(LIB)
 
 install				:	$(includedir)/scotch.h			\
@@ -3053,14 +3060,14 @@ dummysizes$(EXE)		:	dummysizes.c				\
 					mapping.h				\
 					order.h					\
 					parser.h
-			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+			 		$(CCD) $(CCDFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 ptdummysizes$(EXE)		:	dummysizes.c				\
 					module.h				\
 					common.h				\
 					dgraph.h				\
 					dorder.h
-			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+			 		$(CCD) $(CCDFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
