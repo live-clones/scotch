@@ -1189,6 +1189,7 @@ graph_match$(OBJ)		:	graph_match.c				\
 					graph_match_scan.c			\
 					module.h				\
 					common.h				\
+					arch.h					\
 					graph.h					\
 					graph_coarsen.h				\
 					graph_match.h
