@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2012,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2015,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 30 jun 2010     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
-/**                                 to     27 apr 2015     **/
+/**                                 to     18 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,61 +66,160 @@
 /*                                    */
 /**************************************/
 
-/*
-**
-*/
-
-FORTRAN (                                             \
-METISNAMEU(METIS_EDGEND), METISNAMEL(metis_edgend), ( \
-const SCOTCH_Num * const    n,                        \
-const SCOTCH_Num * const    xadj,                     \
-const SCOTCH_Num * const    adjncy,                   \
-const SCOTCH_Num * const    numflag,                  \
-const SCOTCH_Num * const    options,                  \
-SCOTCH_Num * const          perm,                     \
-SCOTCH_Num * const          iperm),                   \
-(n, xadj, adjncy, numflag, options, perm, iperm))
+FORTRAN (                                         \
+SCOTCH_METIS_V3_EDGEND, scotch_metis_v3_edgend, ( \
+const SCOTCH_Num * const    n,                    \
+const SCOTCH_Num * const    xadj,                 \
+const SCOTCH_Num * const    adjncy,               \
+const SCOTCH_Num * const    numflag,              \
+const SCOTCH_Num * const    options,              \
+SCOTCH_Num * const          perm,                 \
+SCOTCH_Num * const          iperm,                \
+int * const                 revaptr),             \
+(n, xadj, adjncy, numflag, options, perm, iperm, revaptr))
 {
-  METISNAMEU(METIS_EdgeND) (n, xadj, adjncy, numflag, options, perm, iperm);
+  *revaptr = SCOTCH_METIS_V3_EdgeND (n, xadj, adjncy, numflag, options, perm, iperm);
 }
 
 /*
 **
 */
 
-FORTRAN (                                             \
-METISNAMEU(METIS_NODEND), METISNAMEL(metis_nodend), ( \
-const SCOTCH_Num * const    n,                        \
-const SCOTCH_Num * const    xadj,                     \
-const SCOTCH_Num * const    adjncy,                   \
-const SCOTCH_Num * const    numflag,                  \
-const SCOTCH_Num * const    options,                  \
-SCOTCH_Num * const          perm,                     \
-SCOTCH_Num * const          iperm),                   \
-(n, xadj, adjncy, numflag, options, perm, iperm))
+FORTRAN (                                         \
+SCOTCH_METIS_V3_NODEND, scotch_metis_v3_nodend, ( \
+const SCOTCH_Num * const    n,                    \
+const SCOTCH_Num * const    xadj,                 \
+const SCOTCH_Num * const    adjncy,               \
+const SCOTCH_Num * const    numflag,              \
+const SCOTCH_Num * const    options,              \
+SCOTCH_Num * const          perm,                 \
+SCOTCH_Num * const          iperm,                \
+int * const                 revaptr),             \
+(n, xadj, adjncy, numflag, options, perm, iperm, revaptr))
 {
-  METISNAMEU(METIS_NodeND) (n, xadj, adjncy, numflag, options, perm, iperm);
+  *revaptr = SCOTCH_METIS_V3_NodeND (n, xadj, adjncy, numflag, options, perm, iperm);
 }
 
-/* When an input stream is built from the given
-** file handle, it is set as unbuffered, so as to
-** allow for multiple stream reads from the same
-** file handle. If it were buffered, too many
-** input characters would be read on the first
-** block read.
+/*
+**
 */
+
+FORTRAN (                                           \
+SCOTCH_METIS_V3_NODEWND, scotch_metis_v3_nodewnd, ( \
+const SCOTCH_Num * const    n,                      \
+const SCOTCH_Num * const    xadj,                   \
+const SCOTCH_Num * const    adjncy,                 \
+const SCOTCH_Num * const    vwgt,                   \
+const SCOTCH_Num * const    numflag,                \
+const SCOTCH_Num * const    options,                \
+SCOTCH_Num * const          perm,                   \
+SCOTCH_Num * const          iperm,                  \
+int * const                 revaptr),               \
+(n, xadj, adjncy, vwgt, numflag, options, perm, iperm, revaptr))
+{
+  *revaptr = SCOTCH_METIS_V3_NodeWND (n, xadj, adjncy, vwgt, numflag, options, perm, iperm);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                         \
+SCOTCH_METIS_V5_NODEND, scotch_metis_v5_nodend, ( \
+const SCOTCH_Num * const    nvtxs,                \
+const SCOTCH_Num * const    xadj,                 \
+const SCOTCH_Num * const    adjncy,               \
+const SCOTCH_Num * const    vwgt,                 \
+const SCOTCH_Num * const    options,              \
+SCOTCH_Num * const          perm,                 \
+SCOTCH_Num * const          iperm,                \
+int * const                 revaptr),             \
+(nvtxs, xadj, adjncy, vwgt, options, perm, iperm, revaptr))
+{
+  *revaptr = SCOTCH_METIS_V5_NodeND (nvtxs, xadj, adjncy, vwgt, options, perm, iperm);
+}
+
+/*******************/
+/*                 */
+/* MeTiS v3 stubs. */
+/*                 */
+/*******************/
+
+#if (SCOTCH_METIS_VERSION == 3)
 
 FORTRAN (                                               \
-METISNAMEU(METIS_NODEWND), METISNAMEL(metis_nodewnd), ( \
+METISNAMEU (METIS_EDGEND), METISNAMEL (metis_edgend), ( \
 const SCOTCH_Num * const    n,                          \
 const SCOTCH_Num * const    xadj,                       \
 const SCOTCH_Num * const    adjncy,                     \
-const SCOTCH_Num * const    vwgt,                       \
 const SCOTCH_Num * const    numflag,                    \
 const SCOTCH_Num * const    options,                    \
 SCOTCH_Num * const          perm,                       \
 SCOTCH_Num * const          iperm),                     \
+(n, xadj, adjncy, numflag, options, perm, iperm))
+{
+  METISNAMEU (METIS_EdgeND) (n, xadj, adjncy, numflag, options, perm, iperm);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                               \
+METISNAMEU (METIS_NODEND), METISNAMEL (metis_nodend), ( \
+const SCOTCH_Num * const    n,                          \
+const SCOTCH_Num * const    xadj,                       \
+const SCOTCH_Num * const    adjncy,                     \
+const SCOTCH_Num * const    numflag,                    \
+const SCOTCH_Num * const    options,                    \
+SCOTCH_Num * const          perm,                       \
+SCOTCH_Num * const          iperm),                     \
+(n, xadj, adjncy, numflag, options, perm, iperm))
+{
+  METISNAMEU (METIS_NodeND) (n, xadj, adjncy, numflag, options, perm, iperm);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                                 \
+METISNAMEU (METIS_NODEWND), METISNAMEL (metis_nodewnd), ( \
+const SCOTCH_Num * const    n,                            \
+const SCOTCH_Num * const    xadj,                         \
+const SCOTCH_Num * const    adjncy,                       \
+const SCOTCH_Num * const    vwgt,                         \
+const SCOTCH_Num * const    numflag,                      \
+const SCOTCH_Num * const    options,                      \
+SCOTCH_Num * const          perm,                         \
+SCOTCH_Num * const          iperm),                       \
 (n, xadj, adjncy, vwgt, numflag, options, perm, iperm))
 {
-  METISNAMEU(METIS_NodeWND) (n, xadj, adjncy, vwgt, numflag, options, perm, iperm);
+  METISNAMEU (METIS_NodeWND) (n, xadj, adjncy, vwgt, numflag, options, perm, iperm);
 }
+
+#endif /* (SCOTCH_METIS_VERSION == 3) */
+
+/*******************/
+/*                 */
+/* MeTiS v5 stubs. */
+/*                 */
+/*******************/
+
+#if (SCOTCH_METIS_VERSION == 5)
+
+FORTRAN (                                               \
+METISNAMEU (METIS_NODEND), METISNAMEL (metis_nodend), ( \
+const SCOTCH_Num * const    nvtxs,                      \
+const SCOTCH_Num * const    xadj,                       \
+const SCOTCH_Num * const    adjncy,                     \
+const SCOTCH_Num * const    vwgt,                       \
+const SCOTCH_Num * const    options,                    \
+SCOTCH_Num * const          perm,                       \
+SCOTCH_Num * const          iperm),                     \
+(nvtxs, xadj, adjncy, vwgt, options, perm, iperm))
+{
+  METISNAMEU (METIS_NodeND) (nvtxs, xadj, adjncy, vwgt, options, perm, iperm);
+}
+
+#endif /* (SCOTCH_METIS_VERSION == 5) */

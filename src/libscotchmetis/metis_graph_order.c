@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : metis_graph_order.c                     **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Amaury JACQUES (v6.0)                   **/
 /**                                                        **/
 /**   FUNCTION   : This module is the compatibility        **/
 /**                library for the MeTiS ordering          **/
@@ -44,7 +45,7 @@
 /**                # Version 5.1  : from : 30 jun 2010     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
-/**                                 to     14 feb 2018     **/
+/**                                 to     18 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,46 +67,9 @@
 /*                                  */
 /************************************/
 
-/*
-**
-*/
-
-int
-METISNAMEU(METIS_EdgeND) (
-const SCOTCH_Num * const    n,
-const SCOTCH_Num * const    xadj,
-const SCOTCH_Num * const    adjncy,
-const SCOTCH_Num * const    numflag,
-const SCOTCH_Num * const    options,
-SCOTCH_Num * const          perm,
-SCOTCH_Num * const          iperm)
-{
-  return (METISNAMEU(METIS_NodeWND) (n, xadj, adjncy, NULL, numflag, options, perm, iperm));
-}
-
-/*
-**
-*/
-
-int
-METISNAMEU(METIS_NodeND) (
-const SCOTCH_Num * const    n,
-const SCOTCH_Num * const    xadj,
-const SCOTCH_Num * const    adjncy,
-const SCOTCH_Num * const    numflag,
-const SCOTCH_Num * const    options,
-SCOTCH_Num * const          perm,
-SCOTCH_Num * const          iperm)
-{
-  return (METISNAMEU(METIS_NodeWND) (n, xadj, adjncy, NULL, numflag, options, perm, iperm));
-}
-
-/*
-**
-*/
-
-int
-METISNAMEU(METIS_NodeWND) (
+static
+int 
+_SCOTCH_METIS_Node (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -136,7 +100,7 @@ SCOTCH_Num * const          iperm)
                                  NULL, NULL, NULL) == 0) {
         if (SCOTCH_graphOrderCompute (&grafdat, &ordedat, &stradat) == 0)
           o = METIS_OK;
-        SCOTCH_graphOrderExit    (&grafdat, &ordedat);
+        SCOTCH_graphOrderExit (&grafdat, &ordedat);
       }
     }
     SCOTCH_stratExit (&stradat);
@@ -145,3 +109,155 @@ SCOTCH_Num * const          iperm)
 
   return (o);
 }
+
+/*
+**
+*/
+
+int
+SCOTCH_METIS_V3_EdgeND (
+const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    numflag,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          perm,
+SCOTCH_Num * const          iperm)
+{
+  return (_SCOTCH_METIS_Node (n, xadj, adjncy, NULL, numflag, options, perm, iperm));
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_METIS_V3_NodeND (
+const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    numflag,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          perm,
+SCOTCH_Num * const          iperm)
+{
+  return (_SCOTCH_METIS_Node (n, xadj, adjncy, NULL, numflag, options, perm, iperm));
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_METIS_V3_NodeWND (
+const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    vwgt,
+const SCOTCH_Num * const    numflag,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          perm,
+SCOTCH_Num * const          iperm)
+{
+  return (_SCOTCH_METIS_Node (n, xadj, adjncy, vwgt, numflag, options, perm, iperm));
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_METIS_V5_NodeND (
+const SCOTCH_Num * const    nvtxs,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    vwgt,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          perm,
+SCOTCH_Num * const          iperm)
+{
+  const SCOTCH_Num    numflag = 0;
+
+  return (_SCOTCH_METIS_Node (nvtxs, xadj, adjncy, vwgt, &numflag, options, perm, iperm));
+}
+
+/*******************/
+/*                 */
+/* MeTiS v3 stubs. */
+/*                 */
+/*******************/
+
+#if (SCOTCH_METIS_VERSION == 3)
+
+int
+METISNAMEU (METIS_EdgeND) (
+const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    numflag,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          perm,
+SCOTCH_Num * const          iperm)
+{
+  return (SCOTCH_METIS_V3_EdgeND (n, xadj, adjncy, numflag, options, perm, iperm));
+}
+
+/*
+**
+*/
+
+int
+METISNAMEU (METIS_NodeND) (
+const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    numflag,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          perm,
+SCOTCH_Num * const          iperm)
+{
+  return (SCOTCH_METIS_V3_NodeND (n, xadj, adjncy, numflag, options, perm, iperm));
+}
+
+/*
+**
+*/
+
+int
+METISNAMEU (METIS_NodeWND) (
+const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    vwgt,
+const SCOTCH_Num * const    numflag,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          perm,
+SCOTCH_Num * const          iperm)
+{
+  return (SCOTCH_METIS_V3_NodeWND (n, xadj, adjncy, vwgt, numflag, options, perm, iperm));
+}
+
+#endif /* (SCOTCH_METIS_VERSION == 3) */
+
+/*******************/
+/*                 */
+/* MeTiS v5 stubs. */
+/*                 */
+/*******************/
+
+#if (SCOTCH_METIS_VERSION == 5)
+
+int
+METISNAMEU (METIS_NodeND) (
+const SCOTCH_Num * const    nvtxs,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    vwgt,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          perm,
+SCOTCH_Num * const          iperm)
+{
+  return (SCOTCH_METIS_V5_NodeND (nvtxs, xadj, adjncy, vwgt, options, perm, iperm));
+}
+
+#endif /* (SCOTCH_METIS_VERSION == 5) */
