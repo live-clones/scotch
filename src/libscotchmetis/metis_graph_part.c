@@ -86,7 +86,7 @@ const SCOTCH_Num * const    numflag,
 const SCOTCH_Num * const    nparts,
 SCOTCH_Num * const          part,
 SCOTCH_Num                  flagval,
-double                      kbalval)
+const double * const        kbalval)
 {
   SCOTCH_Graph        grafdat;                    /* Scotch graph object to interface with libScotch */
   SCOTCH_Strat        stradat;
@@ -103,7 +103,7 @@ double                      kbalval)
   if (SCOTCH_graphBuild (&grafdat, baseval, vertnbr, xadj, xadj + 1, vwgt, NULL,
                          xadj[vertnbr] - baseval, adjncy, adjwgt) == 0) {
     SCOTCH_stratInit          (&stradat);
-    SCOTCH_stratGraphMapBuild (&stradat, flagval, *nparts, kbalval);
+    SCOTCH_stratGraphMapBuild (&stradat, flagval, *nparts, *kbalval);
 #ifdef SCOTCH_DEBUG_ALL
     if (SCOTCH_graphCheck (&grafdat) == 0)        /* TRICK: next instruction called only if graph is consistent */
 #endif /* SCOTCH_DEBUG_ALL */
@@ -137,17 +137,14 @@ const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
 const SCOTCH_Num * const    vwgt,
 const SCOTCH_Num * const    adjwgt,
-const SCOTCH_Num * const    wgtflag,
 const SCOTCH_Num * const    numflag,
 const SCOTCH_Num * const    nparts,
 const SCOTCH_Num * const    options,
 SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part,
 SCOTCH_Num                  flagval,
-double                      kbalval)
+const double * const        kbalval)
 {
-  const SCOTCH_Num *          vwgt2;
-  const SCOTCH_Num *          adjwgt2;
   const SCOTCH_Num * restrict parttax;
   const SCOTCH_Num * restrict verttax;
   const SCOTCH_Num * restrict edgetax;
@@ -156,10 +153,8 @@ double                      kbalval)
   SCOTCH_Num                  edgenum;
   SCOTCH_Num                  commcut;
 
-  vwgt2   = (((*wgtflag & 2) != 0) ? vwgt   : NULL);
-  adjwgt2 = (((*wgtflag & 1) != 0) ? adjwgt : NULL);
 
-  if (_SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt2, adjwgt2, numflag, nparts, part, flagval, kbalval) != 0) {
+  if (_SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt, adjwgt, numflag, nparts, part, flagval, kbalval) != 0) {
     *edgecut = -1;                                /* Indicate error */
     return (METIS_ERROR);
   }
@@ -172,7 +167,7 @@ double                      kbalval)
   vertnnd = *n + vertnum;
   commcut = 0;
 
-  if (adjwgt2 == NULL) {                          /* If graph does not have edge weights */
+  if (adjwgt == NULL) {                          /* If graph does not have edge weights */
     for ( ; vertnum < vertnnd; vertnum ++) {
       SCOTCH_Num          edgennd;
       SCOTCH_Num          partval;
@@ -187,7 +182,7 @@ double                      kbalval)
   else {                                          /* Graph has edge weights */
     const SCOTCH_Num * restrict edlotax;
 
-    edlotax = adjwgt2 - *numflag;
+    edlotax = adjwgt - *numflag;
     for ( ; vertnum < vertnnd; vertnum ++) {
       SCOTCH_Num          edgennd;
       SCOTCH_Num          partval;
@@ -207,47 +202,6 @@ double                      kbalval)
   return (METIS_OK);
 }
 
-/*
-**
-*/
-
-int
-METISNAMEU (METIS_PartGraphKway) (
-const SCOTCH_Num * const    n,
-const SCOTCH_Num * const    xadj,
-const SCOTCH_Num * const    adjncy,
-const SCOTCH_Num * const    vwgt,
-const SCOTCH_Num * const    adjwgt,
-const SCOTCH_Num * const    wgtflag,
-const SCOTCH_Num * const    numflag,
-const SCOTCH_Num * const    nparts,
-const SCOTCH_Num * const    options,
-SCOTCH_Num * const          edgecut,
-SCOTCH_Num * const          part)
-{
-  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt, adjwgt, wgtflag,
-                                   numflag, nparts, options, edgecut, part,
-                                   SCOTCH_STRATDEFAULT, 0.01));
-}
-
-int
-METISNAMEU (METIS_PartGraphRecursive) (
-const SCOTCH_Num * const    n,
-const SCOTCH_Num * const    xadj,
-const SCOTCH_Num * const    adjncy,
-const SCOTCH_Num * const    vwgt,
-const SCOTCH_Num * const    adjwgt,
-const SCOTCH_Num * const    wgtflag,
-const SCOTCH_Num * const    numflag,
-const SCOTCH_Num * const    nparts,
-const SCOTCH_Num * const    options,
-SCOTCH_Num * const          edgecut,
-SCOTCH_Num * const          part)
-{
-  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt, adjwgt, wgtflag,
-                                   numflag, nparts, options, edgecut, part,
-                                   SCOTCH_STRATRECURSIVE, 0.01));
-}
 
 /* Scotch does not directly consider communication volume.
 ** Instead, wertex communication loads are added to the edge
@@ -255,24 +209,23 @@ SCOTCH_Num * const          part)
 ** edges, connected to heavily communicating vertices, will
 ** be less likely to be cut.
 */
-
+static
 int
-METISNAMEU (METIS_PartGraphVKway) (
+_SCOTCH_METIS_PartGraph_Volume (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
 const SCOTCH_Num * const    vwgt,
 const SCOTCH_Num * const    vsize,
-const SCOTCH_Num * const    wgtflag,
 const SCOTCH_Num * const    numflag,
 const SCOTCH_Num * const    nparts,
 const SCOTCH_Num * const    options,
 SCOTCH_Num * const          volume,
-SCOTCH_Num * const          part)
+SCOTCH_Num * const          part,
+SCOTCH_Num                  flagval,
+const double * const        kbalval)
 {
   SCOTCH_Num                  baseval;
-  const SCOTCH_Num *          vwgt2;
-  const SCOTCH_Num *          vsize2;
   SCOTCH_Num                  vsizval;            /* Communication volume of current vertex */
   SCOTCH_Num                  vertnbr;
   SCOTCH_Num                  vertnum;
@@ -282,14 +235,12 @@ SCOTCH_Num * const          part)
   SCOTCH_Num * restrict       nghbtab;
   SCOTCH_Num                  commvol;
 
-  vsize2  = ((*wgtflag & 1) != 0) ? vsize : NULL;
-  vwgt2   = ((*wgtflag & 2) != 0) ? vwgt  : NULL;
   baseval = *numflag;
   vertnbr = *n;
   edgetax = adjncy - baseval;
 
-  if (vsize2 == NULL) {                           /* If no communication load data provided */
-    if (_SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt2, NULL, numflag, nparts, part, SCOTCH_STRATDEFAULT, 0.01) != 0)
+  if (vsize == NULL) {                           /* If no communication load data provided */
+    if (_SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt, NULL, numflag, nparts, part, flagval, kbalval) != 0)
       return (METIS_ERROR);
   }
   else {                                          /* Will have to turn communication volumes into edge loads */
@@ -302,14 +253,14 @@ SCOTCH_Num * const          part)
     if ((edlotax = memAlloc (edgenbr * sizeof (SCOTCH_Num))) == NULL)
       return (METIS_ERROR);
     edlotax -= baseval;                           /* Base access to edlotax */
-    vsiztax  = vsize2 - baseval;
+    vsiztax  = vsize - baseval;
 
     for (vertnum = 0, edgenum = baseval;          /* Un-based scan of vertex array xadj */
          vertnum < vertnbr; vertnum ++) {
       SCOTCH_Num          vsizval;                /* Communication size of current vertex */
       SCOTCH_Num          edgennd;
 
-      vsizval = vsize2[vertnum];
+      vsizval = vsize[vertnum];
       for (edgennd = xadj[vertnum + 1]; edgenum < edgennd; edgenum ++) { /* Based traversal of edge array adjncy */
         SCOTCH_Num          vertend;              /* Based end vertex number                                     */
 
@@ -318,8 +269,8 @@ SCOTCH_Num * const          part)
       }
     }
 
-    o = _SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt2, edlotax + baseval, numflag, nparts, part,
-                                  SCOTCH_STRATDEFAULT, 0.01);
+    o = _SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt, edlotax + baseval, numflag, nparts, part,
+                                  flagval, kbalval);
 
     memFree (edlotax + baseval);
 
@@ -340,8 +291,8 @@ SCOTCH_Num * const          part)
 
     partval = part[vertnum];
     nghbtab[partval] = vertnum;                   /* Do not count local neighbors in communication volume */
-    if (vsize2 != NULL)
-      vsizval = vsize2[vertnum];
+    if (vsize != NULL)
+      vsizval = vsize[vertnum];
 
     for (edgennd = xadj[vertnum + 1]; edgenum < edgennd; edgenum ++) { /* Based traversal of edge array adjncy */
       SCOTCH_Num          vertend;                /* Based end vertex number                                   */
@@ -361,3 +312,89 @@ SCOTCH_Num * const          part)
 
   return (METIS_OK);
 }
+
+
+//#ifdef _SCOTCH_METIS3
+int
+METISNAMEU (METIS_PartGraphKway) (
+const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    vwgt,
+const SCOTCH_Num * const    adjwgt,
+const SCOTCH_Num * const    wgtflag,
+const SCOTCH_Num * const    numflag,
+const SCOTCH_Num * const    nparts,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          edgecut,
+SCOTCH_Num * const          part)
+{
+    const SCOTCH_Num *          vwgt2;
+    const SCOTCH_Num *          adjwgt2;
+    double                      kbalval;
+
+    kbalval = 0.01;
+    vwgt2   = (((*wgtflag & 2) != 0) ? vwgt   : NULL);
+    adjwgt2 = (((*wgtflag & 1) != 0) ? adjwgt : NULL);
+
+
+    return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt2, adjwgt2,
+                                   numflag, nparts, options, edgecut, part,
+                                   SCOTCH_STRATDEFAULT, &kbalval));
+}
+
+int
+METISNAMEU (METIS_PartGraphRecursive) (
+const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    vwgt,
+const SCOTCH_Num * const    adjwgt,
+const SCOTCH_Num * const    wgtflag,
+const SCOTCH_Num * const    numflag,
+const SCOTCH_Num * const    nparts,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          edgecut,
+SCOTCH_Num * const          part)
+{
+    const SCOTCH_Num *          vwgt2;
+    const SCOTCH_Num *          adjwgt2;
+    double                      kbalval;
+
+    kbalval = 0.01;
+    vwgt2   = (((*wgtflag & 2) != 0) ? vwgt   : NULL);
+    adjwgt2 = (((*wgtflag & 1) != 0) ? adjwgt : NULL);
+
+    return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt, adjwgt,
+                                     numflag, nparts, options, edgecut, part,
+                                     SCOTCH_STRATRECURSIVE, &kbalval));
+}
+
+int
+METISNAMEU (METIS_PartGraphVKway) (
+const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    xadj,
+const SCOTCH_Num * const    adjncy,
+const SCOTCH_Num * const    vwgt,
+const SCOTCH_Num * const    vsize,
+const SCOTCH_Num * const    wgtflag,
+const SCOTCH_Num * const    numflag,
+const SCOTCH_Num * const    nparts,
+const SCOTCH_Num * const    options,
+SCOTCH_Num * const          volume,
+SCOTCH_Num * const          part)
+{
+    const SCOTCH_Num *          vwgt2;
+    const SCOTCH_Num *          vsize2;
+    double                      kbalval;
+
+    kbalval = 0.01;
+    vsize2  = ((*wgtflag & 1) != 0) ? vsize : NULL;
+    vwgt2   = ((*wgtflag & 2) != 0) ? vwgt  : NULL;
+
+    return (_SCOTCH_METIS_PartGraph_Volume(n, xadj, adjncy, vwgt, vsize,
+                                     numflag, nparts, options, volume, part,
+                                     SCOTCH_STRATDEFAULT, &kbalval));
+}
+
+//#endif /* _SCOTCH_METIS_3 */
