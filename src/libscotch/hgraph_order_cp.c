@@ -56,7 +56,7 @@
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
-/**                  will be compressed very few writes    **/
+/**                  will be compressed, very few writes   **/
 /**                  will be performed in the pre-hashing  **/
 /**                  array, and for others, for which pre- **/
 /**                  hashing costs much more, it will save **/
