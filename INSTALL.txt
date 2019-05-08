@@ -492,8 +492,8 @@ compile time.
 
 In order to ease the adoption of Scotch/PT-Scotch by people who
 already developed code based on the MeTiS/ParMeTiS interface, a MeTiS
-V3 compatibility library is included in the Scotch package. It
-provides stubs for the graph partitioning and ordering routines of
+compatibility library is included in the Scotch package. It provides
+stubs for the graph partitioning and ordering routines of
 MeTiS/ParMeTiS, but not for the service routines that are comprised
 in this package. Consequently, for people willing to use both
 libraries, that is, experiment with the graph partitioning features of
@@ -501,10 +501,10 @@ Scotch while using the service routines of the genuine MeTiS package,
 special measures have to be taken.
 
 A first solution can be to coerce the linker to pick partitioning
-routines from the libscotch, and service routines from the
-libmetis. This can be done by placing the library names in this
-order as arguments to the linker command. Yet, some linkers may still
-report an error, as some symbols are multiply defined.
+routines from the libScotch, and service routines from the
+libmetis. This can be done by placing the library names in this order
+as arguments to the linker command. Yet, some linkers may report an
+error, as some symbols are multiply defined.
 
 Alternately, the names of the compatibility routines can be changed so
 as to avoid conflicts. When the "-DSCOTCH_METIS_PREFIX" flag is set at
@@ -512,12 +512,33 @@ compile time, all Scotch versions of the MeTiS routines are prefixed
 with "SCOTCH_". Of course, this will require an equivalent change in
 the user's application code.
 
+In this case, an improved solution can be to call directly the Scotch
+versions of these routines. Of course, this will require a change in
+the user's application code, but it can be limited to a small set of
+"#define's". The advantage of this solution is that it will make the
+code insensitive to changes in the MeTiS API, because matching Scotch
+routines are prefixed by "SCOTCH_" and by the MeTiS API version
+number. This prevents all naming conflicts, such as those which
+appeared between MeTiS v3 and MeTiS v5.
+
+Because of these naming conflicts, users have to choose between the v3
+or v5 versions of the MeTiS API when compiling and/or linking with the
+Scotch stubs. To expose the relevant version of the API when using the
+"metis.h" file provided by Scotch, compile Scotch and/or your code
+with the "-DSCOTCH_METIS_VERSION=x" flag set. For Scotch v6.0, the
+default MeTiS API version is 3. This might change in the future.
+By setting "-DSCOTCH_METIS_VERSION=0", no MeTiS version will be
+exposed, hence avoiding potential conflicts with the genuine MeTiS
+include and library files. The same holds for ParMeTiS and the flag
+"-DSCOTCH_PARMETIS_VERSION=x", for which only the ParMeTiS v3 API is
+available.
+
 An advantage of the Scotch/PT-Scotch stubs over the genuine
-MeTiS/ParMeTiS V3 routines is that they can be available in a 64-bit
+MeTiS/ParMeTiS routines is that they can be available in a 64-bit
 version. In this case, all int's that were passed to MeTiS/ParMeTiS
 routines must be replaced by 64-bit integer values (even the option
 configuration values). However, in this case, users will not be able
-to link against the service routines of the genuine MeTiS/ParMeTiS V3
+to link against the service routines of the genuine MeTiS/ParMeTiS
 libraries, as the latter are only available as 32-bit implementations.
 
 
@@ -666,7 +687,7 @@ of an error.
 ========================
 
 The Scotch and PT-Scotch user's manuals are available in the "doc/"
-directory. They describe how to use the libscotch and libptscotch
+directory. They describe how to use the libScotch and libPTScotch
 libraries, as well as the standalone programs of the Scotch and
 PT-Scotch distributions.
 
