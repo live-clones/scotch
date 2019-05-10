@@ -120,7 +120,19 @@ $(libdir)/libptscotch$(LIB)	:	libptscotch$(LIB)
 ##  Library dependencies.
 ##
 
-LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
+LIBPTSCOTCHDEPS =	arch_mpi$(OBJ)				\
+			arch_cmplt_mpi$(OBJ)			\
+			arch_cmpltw_mpi$(OBJ)			\
+			arch_deco_mpi$(OBJ)			\
+			arch_deco2_mpi$(OBJ)			\
+			arch_dist_mpi$(OBJ)			\
+			arch_hcub_mpi$(OBJ)			\
+			arch_mesh_mpi$(OBJ)			\
+			arch_sub_mpi$(OBJ)			\
+			arch_tleaf_mpi$(OBJ)			\
+			arch_vcmplt_mpi$(OBJ)			\
+			arch_vhcub_mpi$(OBJ)			\
+			bdgraph$(OBJ)				\
 			bdgraph_bipart_bd$(OBJ)			\
 			bdgraph_bipart_df$(OBJ)			\
 			bdgraph_bipart_ex$(OBJ)			\
@@ -572,6 +584,24 @@ arch$(OBJ)			:	arch.c					\
 					arch_vcmplt.h				\
 					arch_vhcub.h
 
+arch_mpi$(OBJ)			:	arch_mpi.c				\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_cmplt_mpi.h			\
+					arch_cmpltw_mpi.h			\
+					arch_deco_mpi.h				\
+					arch_deco2_mpi.h			\
+					arch_dist_mpi.h				\
+					arch_hcub_mpi.h				\
+					arch_mesh_mpi.h				\
+					arch_sub_mpi.h				\
+					arch_tleaf_mpi.h			\
+					arch_torus_mpi.h			\
+					arch_vcmplt_mpi.h			\
+					arch_vhcub_mpi.h
+
 arch_build$(OBJ)		:	arch_build.c				\
 					module.h				\
 					common.h				\
@@ -602,11 +632,25 @@ arch_cmplt$(OBJ)		:	arch_cmplt.c				\
 					arch.h					\
 					arch_cmplt.h
 
+arch_cmplt_mpi$(OBJ)		:	arch_cmplt_mpi.c			\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_cmplt_mpi.h
+
 arch_cmpltw$(OBJ)		:	arch_cmpltw.c				\
 					module.h				\
 					common.h				\
 					arch.h					\
 					arch_cmpltw.h
+
+arch_cmpltw_mpi$(OBJ)		:	arch_cmpltw_mpi.c			\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_cmpltw_mpi.h
 
 arch_deco$(OBJ)			:	arch_deco.c				\
 					module.h				\
@@ -615,6 +659,13 @@ arch_deco$(OBJ)			:	arch_deco.c				\
 					arch_deco2.h				\
 					arch_deco.h
 
+arch_deco_mpi$(OBJ)		:	arch_deco_mpi.c				\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_deco_mpi.h
+
 arch_deco2$(OBJ)		:	arch_deco2.c				\
 					module.h				\
 					common.h				\
@@ -622,17 +673,38 @@ arch_deco2$(OBJ)		:	arch_deco2.c				\
 					arch.h					\
 					arch_deco2.h
 
+arch_deco2_mpi$(OBJ)		:	arch_deco2_mpi.c			\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_deco2_mpi.h
+
 arch_dist$(OBJ)			:	arch_dist.c				\
 					module.h				\
 					common.h				\
 					arch.h					\
 					arch_dist.h
 
+arch_dist_mpi$(OBJ)		:	arch_dist_mpi.c				\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_dist_mpi.h
+
 arch_hcub$(OBJ)			:	arch_hcub.c				\
 					module.h				\
 					common.h				\
 					arch.h					\
 					arch_hcub.h
+
+arch_hcub_mpi$(OBJ)		:	arch_hcub_mpi.c				\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_hcub_mpi.h
 
 arch_mesh$(OBJ)			:	arch_mesh.c				\
 					module.h				\
@@ -641,11 +713,25 @@ arch_mesh$(OBJ)			:	arch_mesh.c				\
 					arch.h					\
 					arch_mesh.h
 
+arch_mesh_mpi$(OBJ)		:	arch_mesh_mpi.c				\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_mesh_mpi.h
+
 arch_tleaf$(OBJ)		:	arch_tleaf.c				\
 					module.h				\
 					common.h				\
 					arch.h					\
 					arch_tleaf.h
+
+arch_tleaf_mpi$(OBJ)		:	arch_tleaf_mpi.c			\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_tleaf_mpi.h
 
 arch_sub$(OBJ)			:	arch_sub.c				\
 					module.h				\
@@ -654,6 +740,13 @@ arch_sub$(OBJ)			:	arch_sub.c				\
 					arch.h					\
 					graph_coarsen.h				\
 					arch_sub.h
+
+arch_sub_mpi$(OBJ)		:	arch_sub_mpi.c				\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_sub_mpi.h
 
 arch_torus$(OBJ)		:	arch_torus.c				\
 					module.h				\
@@ -668,11 +761,25 @@ arch_vcpmlt$(OBJ)		:	arch_vcmplt.c				\
 					arch.h					\
 					arch_vcmplt.h
 
+arch_vcmplt_mpi$(OBJ)		:	arch_vcmplt_mpi.c			\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_vcmplt_mpi.h
+
 arch_vhcub$(OBJ)		:	arch_vhcub.c				\
 					module.h				\
 					common.h				\
 					arch.h					\
 					arch_vhcub.h
+
+arch_vhcub_mpi$(OBJ)		:	arch_vhcub_mpi.c			\
+					module.h				\
+					common.h				\
+					arch.h					\
+					arch_mpi.h				\
+					arch_vhcub_mpi.h
 
 bdgraph$(OBJ)			:	bdgraph.c				\
 					module.h				\

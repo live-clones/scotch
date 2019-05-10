@@ -592,6 +592,31 @@ add_dependencies(scotcherrexit scotch_h)
 #################
 
 set(PTSCOTCH_C_SOURCES
+  arch_mpi.c
+  arch_mpi.h
+  arch_cmplt_mpi.c
+  arch_cmplt_mpi.h
+  arch_cmpltw_mpi.c
+  arch_cmpltw_mpi.h
+  arch_deco_mpi.c
+  arch_deco_mpi.h
+  arch_deco2_mpi.c
+  arch_deco2_mpi.h
+  arch_dist_mpi.c
+  arch_dist_mpi.h
+  arch_hcub_mpi.c
+  arch_hcub_mpi.h
+  arch_mesh_mpi.c
+  arch_mesh_mpi.h
+  arch_sub_mpi.c
+  arch_sub_mpi.h
+  arch_tleaf_mpi.c
+  arch_tleaf_mpi.h
+  arch_torus_mpi.h
+  arch_vcmplt_mpi.c
+  arch_vcmplt_mpi.h
+  arch_vhcub_mpi.c
+  arch_vhcub_mpi.h
   bdgraph.c
   bdgraph.h
   bdgraph_bipart_bd.c
