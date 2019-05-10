@@ -2640,6 +2640,7 @@ parser$(OBJ)			:	parser.c				\
 					module.h				\
 					common.h				\
 					parser.h				\
+					parser_ly.h				\
 					parser_yy.h
 
 parser_ll.c			:	parser_ll.l				\
@@ -2655,7 +2656,7 @@ parser_ll.c			:	parser_ll.l				\
 parser_ll$(OBJ)			:	parser_ll.c				\
 					parser_ly.h
 
-parser_ly.h			:	parser_yy$(OBJ)
+parser_ly.h			:	parser_yy.c
 
 parser_yy.c			:	parser_yy.y				\
 					module.h				\
