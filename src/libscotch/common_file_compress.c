@@ -100,13 +100,11 @@ static FileCompressTab      filetab[] = {
 /*                               */
 /*********************************/
 
-/* This routine searches the given file name
-** for relevant extensions and returns the
-** corresponding code if it is the case.
+/* This routine waits until the termination
+** of the de/compressing task associated with
+** the given file.
 ** It returns:
-** - FILECOMPRESSTYPENONE     : no recognized file extension.
-** - FILECOMPRESSTYPENOTIMPL  : compression algorithm not implemented.
-** - FILECOMPRESSTYPExxxx     : implemented compression algorithm.
+** - VOID  : in all cases.
 */
 
 void
