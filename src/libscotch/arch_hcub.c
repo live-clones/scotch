@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2011,2015,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2011,2015,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,7 +61,7 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 02 may 2015     **/
-/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                # Version 7.0  : from : 19 feb 2018     **/
 /**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /************************************************************/
@@ -402,22 +402,3 @@ const ArchHcubDom * const   dom1ptr)
 
   return (0);
 }
-
-/* This function creates the MPI_Datatype for
-** hypercube domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archHcubDomMpiType (
-const ArchHcub * const        archptr,
-MPI_Datatype * const          typeptr)
-{
-  MPI_Type_contiguous (2, ANUM_MPI, typeptr);
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */

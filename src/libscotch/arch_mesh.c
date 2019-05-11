@@ -63,7 +63,7 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 15 may 2018     **/
-/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                # Version 7.0  : from : 19 feb 2018     **/
 /**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
@@ -87,11 +87,11 @@
 #include "arch.h"
 #include "arch_mesh.h"
 
-/***********************************************/
-/*                                             */
+/**********************************************/
+/*                                            */
 /* These are the 2-dimensional mesh routines. */
-/*                                             */
-/***********************************************/
+/*                                            */
+/**********************************************/
 
 /* This routine loads the
 ** bidimensional mesh architecture.
@@ -359,30 +359,11 @@ const ArchMesh2Dom * const  dom1ptr)
   return (0);
 }
 
-/* This function creates the MPI_Datatype for
-** 2D mesh domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archMesh2DomMpiType (
-const ArchMesh2 * const       archptr,
-MPI_Datatype * const          typeptr)
-{
-  MPI_Type_contiguous (4, ANUM_MPI, typeptr);
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */
-
-/***********************************************/
-/*                                             */
+/**********************************************/
+/*                                            */
 /* These are the 3-dimensional mesh routines. */
-/*                                             */
-/***********************************************/
+/*                                            */
+/**********************************************/
 
 /* This routine loads the
 ** tridimensional mesh architecture.
@@ -621,25 +602,6 @@ const ArchMesh3Dom * const  dom1ptr)
 
   return (0);
 }
-
-/* This function creates the MPI_Datatype for
-** 3D mesh domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archMesh3DomMpiType (
-const ArchMesh3 * const       archptr,
-MPI_Datatype * const          typeptr)
-{
-  MPI_Type_contiguous (6, ANUM_MPI, typeptr);
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */
 
 /**********************************************/
 /*                                            */
@@ -1118,22 +1080,3 @@ const ArchMeshXDom * const  dom1ptr)
 
   return (1);
 }
-
-/* This function creates the MPI_Datatype for
-** xD torus domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archMeshXDomMpiType (
-const ArchMeshX * const     archptr,
-MPI_Datatype * const        typeptr)
-{
-  MPI_Type_contiguous (2 * archptr->dimnnbr, ANUM_MPI, typeptr);
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */

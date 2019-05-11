@@ -41,7 +41,7 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
 /**                                 to   : 22 feb 2018     **/
-/**                # Version 7.0  : from : 22 aug 2019     **/
+/**                # Version 7.0  : from : 03 aug 2016     **/
 /**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # The code of the main routine derives  **/

@@ -67,6 +67,8 @@
 /**                                 to   : 24 aug 2020     **/
 /**                # Version 6.1  : from : 05 apr 2021     **/
 /**                                 to   : 05 apr 2021     **/
+/**                # Version 7.0  : from : 18 feb 2018     **/
+/**                                 to   : 18 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -481,48 +483,3 @@ const ArchDom * const       dom1ptr)
 }
 
 #endif /* SCOTCH_DEBUG_ARCH2 */
-
-/* This function creates the MPI_Datatype for
-** complete graph domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-
-int
-archDomMpiType (
-const Arch * const          archptr,
-MPI_Datatype * const        typeptr)
-{
-  MPI_Aint            disptab[2];
-  int                 o;
-#if ((defined MPI_VERSION) && (MPI_VERSION >= 3))
-  MPI_Datatype        typedat;
-
-  disptab[0] = 0;                                 /* Displacement of real datatype is base of array */
-  disptab[1] = sizeof (ArchDom);                  /* Displacement of upper bound is size of ArchDom */
-  o = ((int (*) (const void * const, const void * const)) archptr->class->domMpiType) ((const void * const) &archptr->data, &typedat);
-  if (o == 0)
-    o = MPI_Type_create_resized (typedat, disptab[0], disptab[1] - disptab[0], typeptr);
-#else /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
-  int                 bloktab[2];
-  MPI_Datatype        typetab[2];
-
-  bloktab[0] =                                    /* Build structured type to set up upper bound of domain datatype */
-  bloktab[1] = 1;
-  disptab[0] = 0;                                 /* Displacement of real datatype is base of array */
-  disptab[1] = sizeof (ArchDom);                  /* Displacement of upper bound is size of ArchDom */
-  typetab[1] = MPI_UB;
-  o = ((int (*) (const void * const, const void * const)) archptr->class->domMpiType) ((const void * const) &archptr->data, &typetab[0]);
-  if (o == 0)
-    o = (MPI_Type_struct (2, bloktab, disptab, typetab, typeptr) != MPI_SUCCESS);
-#endif /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
-  if (o == 0)
-    o = (MPI_Type_commit (typeptr) != MPI_SUCCESS); /* Created MPI types have to be committed */
-
-  return (o);
-}
-
-#endif /* SCOTCH_PTSCOTCH */

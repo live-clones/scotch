@@ -41,7 +41,7 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 13 mar 2015     **/
 /**                                 to   : 15 may 2018     **/
-/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                # Version 7.0  : from : 18 feb 2018     **/
 /**                                 to   : 13 aug 2024     **/
 /**                                                        **/
 /************************************************************/
@@ -839,22 +839,3 @@ const ArchSubDom * const    dom1ptr)
 
   return (0);
 }
-
-/* This function creates the MPI_Datatype for
-** distance graph domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archSubDomMpiType (
-const ArchSub * const         archptr,
-MPI_Datatype * const          typeptr)
-{
-  *typeptr = ANUM_MPI;
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */

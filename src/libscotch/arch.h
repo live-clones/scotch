@@ -66,7 +66,7 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 28 may 2018     **/
-/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                # Version 7.0  : from : 18 feb 2018     **/
 /**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
@@ -93,7 +93,6 @@ typedef INT Anum;                                 /*+ Generic integer for archit
 
 #define ANUMMAX                     INTVALMAX
 #define ANUMSTRING                  INTSTRING
-#define ANUM_MPI                    COMM_INT      /*+ MPI type for Gnum is MPI type for INT +*/
 
 /*+ The domain number type. +*/
 
@@ -148,9 +147,6 @@ typedef struct ArchClass_ {
   int                    (* domSave)   ();        /*+ Domain saving routine               +*/
   int                    (* domBipart) ();        /*+ Domain bipartitioning routine       +*/
   int                    (* domIncl)   ();        /*+ Domain inclusion routine            +*/
-#ifdef SCOTCH_PTSCOTCH
-  int                    (* domMpiType) ();       /*+ Domain MPI type building routine    +*/
-#endif /* SCOTCH_PTSCOTCH */
   int                       domsizeof;            /*+ Size in bytes of domain data        +*/
 } ArchClass;
 
@@ -242,9 +238,6 @@ int                         archDomLoad         (const Arch * const, ArchDom * c
 int                         archDomSave         (const Arch * const, const ArchDom * const, FILE * const);
 int                         archDomBipart       (const Arch * const, const ArchDom * const, ArchDom * const, ArchDom * const);
 int                         archDomIncl         (const Arch * const, const ArchDom * const, const ArchDom * const);
-#ifdef SCOTCH_PTSCOTCH
-int                         archDomMpiType      (const Arch * const, MPI_Datatype * const);
-#endif /* SCOTCH_PTSCOTCH */
 
 /*
 **  The macro definitions.
@@ -277,27 +270,6 @@ int                         archDomMpiType      (const Arch * const, MPI_Datatyp
 #define archDomIncl                 archDomIncl2
 #endif /* SCOTCH_DEBUG_ARCH2 */
 
-#ifdef SCOTCH_PTSCOTCH
-#define ARCHCLASSBLOCK(s,n,f)       { s, f,		   \
-                                      arch##n##ArchLoad,   \
-                                      arch##n##ArchSave,   \
-                                      arch##n##ArchFree,   \
-                                      arch##n##MatchInit,  \
-                                      arch##n##MatchExit,  \
-                                      arch##n##MatchMate,  \
-                                      arch##n##ArchLoad,   \
-                                      arch##n##DomTerm,    \
-                                      arch##n##DomSize,    \
-                                      arch##n##DomWght,    \
-                                      arch##n##DomDist,    \
-                                      arch##n##DomFrst,    \
-                                      arch##n##DomLoad,    \
-                                      arch##n##DomSave,    \
-                                      arch##n##DomBipart,  \
-                                      arch##n##DomIncl,    \
-                                      arch##n##DomMpiType, \
-                                      sizeof (Arch##n##Dom) }
-#else /* SCOTCH_PTSCOTCH */
 #define ARCHCLASSBLOCK(s,n,f)       { s, f,		  \
                                       arch##n##ArchLoad,  \
                                       arch##n##ArchSave,  \
@@ -316,7 +288,6 @@ int                         archDomMpiType      (const Arch * const, MPI_Datatyp
                                       arch##n##DomBipart, \
                                       arch##n##DomIncl,   \
                                       sizeof (Arch##n##Dom) }
-#endif /* SCOTCH_PTSCOTCH */
 
 #define ARCHCLASSBLOCKNULL          { NULL, ARCHNONE }
 

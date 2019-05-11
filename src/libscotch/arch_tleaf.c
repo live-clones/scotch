@@ -65,7 +65,7 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 03 may 2019     **/
-/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                # Version 7.0  : from : 19 feb 2018     **/
 /**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # The ltleaf architecture was proposed  **/
@@ -658,25 +658,6 @@ const ArchTleafDom * const  dom1ptr)
   return (((idx0min >= (idx1min + idx1nbr)) ||
            (idx1min >= (idx0min + idx0nbr))) ? 0 : 1);
 }
-
-/* This function creates the MPI_Datatype for
-** tree-leaf domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archTleafDomMpiType (
-const ArchTleaf * const       archptr,
-MPI_Datatype * const          typeptr)
-{
-  MPI_Type_contiguous (3, ANUM_MPI, typeptr);
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */
 
 /***********************************/
 /*                                 */
