@@ -58,6 +58,8 @@
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
 /**                                 to   : 21 jan 2023     **/
+/**                # Version 8.0  : from : 18 feb 2018     **/
+/**                                 to   : 18 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -276,8 +278,8 @@ const SCOTCH_Num            termnbr)
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchCmplt *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("cmplt");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("cmplt");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->termnbr = (Anum) termnbr;
 
   return (0);
@@ -301,8 +303,8 @@ const SCOTCH_Num * const    velotab)
   }
 
   tgtarchptr          = (Arch *) archptr;
-  tgtarchptr->class   = archClass ("cmpltw");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("cmpltw");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   return (archCmpltwArchBuild ((ArchCmpltw *) (void *) (&tgtarchptr->data), vertnbr, velotab));
 }
@@ -327,8 +329,8 @@ const SCOTCH_Num            dimnnbr)              /*+ Number of dimensions +*/
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchHcub *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("hcub");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("hcub");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = (Anum) dimnnbr;
 
   return (0);
@@ -355,8 +357,8 @@ const SCOTCH_Num            dimyval)
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchMesh2 *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class   = archClass ("mesh2D");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("mesh2D");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = 2;
   tgtarchdatptr->c[0]    = (Anum) dimxval;
   tgtarchdatptr->c[1]    = (Anum) dimyval;
@@ -386,8 +388,8 @@ const SCOTCH_Num            dimzval)
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchMesh3 *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class   = archClass ("mesh3D");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("mesh3D");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = 3;
   tgtarchdatptr->c[0]    = (Anum) dimxval;
   tgtarchdatptr->c[1]    = (Anum) dimyval;
@@ -421,8 +423,8 @@ const SCOTCH_Num * const    dimntab)              /*+ Array of dimensions       
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchMeshX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("meshXD");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("meshXD");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = dimnnbr;
   memCpy (tgtarchdatptr->c, dimntab, dimnnbr * sizeof (SCOTCH_Num)); /* Copy dimension array */
 
@@ -451,8 +453,8 @@ const SCOTCH_Num * const    vnumtab)
   tgtarchptr    = (Arch *) subarchptr;
   tgtarchdatptr = (ArchSub *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class   = archClass ("sub");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("sub");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   return (archSubArchBuild (tgtarchdatptr, (Arch *) orgarchptr, (Gnum) vnumnbr, (Gnum *) vnumtab));
 }
@@ -480,8 +482,8 @@ const SCOTCH_Num * const    linktab)              /*+ Link cost array, by increa
 
   tgtarchptr          = (Arch *) archptr;
   tgtarchdatptr       = (ArchTleaf *) (void *) (&tgtarchptr->data);
-  tgtarchptr->class   = archClass ("tleaf");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("tleaf");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   if ((tgtarchdatptr->sizetab = memAlloc ((levlnbr * 2 + 1) * sizeof (Anum))) == NULL) { /* TRICK: One more slot for linktab[-1] */
     errorPrint (STRINGIFY (SCOTCH_archTleaf) ": out of memory");
@@ -521,9 +523,9 @@ const SCOTCH_Num * const    permtab)              /*+ Permutation array         
 
   if (SCOTCH_archTleaf (archptr, levlnbr, sizetab, linktab) != 0) /* Build tree part */
     return (1);
-  tgtarchptr        = (Arch *) archptr;
-  tgtarchdatptr     = (ArchTleaf *) (void *) (&tgtarchptr->data);
-  tgtarchptr->class = archClass ("ltleaf");       /* Override class */
+  tgtarchptr          = (Arch *) archptr;
+  tgtarchdatptr       = (ArchTleaf *) (void *) (&tgtarchptr->data);
+  tgtarchptr->clasptr = archClass ("ltleaf");     /* Override class */
 
   if ((tgtarchdatptr->permtab = memAlloc (permnbr * 2 * sizeof (Anum))) == NULL) { /* TRICK: space for peritab too */
     errorPrint (STRINGIFY (SCOTCH_archLtleaf) ": out of memory");
@@ -561,8 +563,8 @@ const SCOTCH_Num            dimyval)
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("torus2D");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("torus2D");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = 2;
   tgtarchdatptr->c[0]    = (Anum) dimxval;
   tgtarchdatptr->c[1]    = (Anum) dimyval;
@@ -592,8 +594,8 @@ const SCOTCH_Num            dimzval)
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("torus3D");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("torus3D");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = 3;
   tgtarchdatptr->c[0]    = (Anum) dimxval;
   tgtarchdatptr->c[1]    = (Anum) dimyval;
@@ -627,8 +629,8 @@ const SCOTCH_Num * const    dimntab)              /*+ Array of dimensions       
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("torusXD");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("torusXD");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = dimnnbr;
   memCpy (tgtarchdatptr->c, dimntab, dimnnbr * sizeof (SCOTCH_Num)); /* Copy dimension array */
 
@@ -652,8 +654,8 @@ SCOTCH_Arch * const         archptr)
 
   tgtarchptr = (Arch *) archptr;
 
-  tgtarchptr->class   = archClass ("varcmplt");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("varcmplt");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   return (0);
 }
@@ -675,8 +677,8 @@ SCOTCH_Arch * const         archptr)
 
   tgtarchptr = (Arch *) archptr;
 
-  tgtarchptr->class   = archClass ("varhcub");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("varhcub");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   return (0);
 }

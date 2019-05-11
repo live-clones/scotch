@@ -378,11 +378,11 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
   const char *            messptr;                /* Pointer to error message              */
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((orgarchptr->class->flagval & ARCHVAR) != 0) {
+  if ((orgarchptr->clasptr->flagval & ARCHVAR) != 0) {
     errorPrint ("archSubArchBuild: variable-sized architectures not supported");
     return (1);
   }
-  if (orgarchptr->class->matchInit == NULL) {
+  if (orgarchptr->clasptr->matchInit == NULL) {
     errorPrint ("archSubArchBuild: architecture not supported");
     return (1);
   }
@@ -411,7 +411,7 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
     return (2);
   }
 
-  if (orgarchptr->class->matchInit (&matcdat, &orgarchptr->data) != 0) { /* Initialize matching structure with original architecture data */
+  if (orgarchptr->clasptr->matchInit (&matcdat, &orgarchptr->data) != 0) { /* Initialize matching structure with original architecture data */
     errorPrint ("archSubArchBuild: cannot initialize matching structure");
     memFree    (treetab);
     memFree    (termtab);
@@ -449,7 +449,7 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
       messptr = "archSubArchBuild: duplicate vertex number in vertex list";
     if (messptr != NULL) {
       errorPrint (messptr);
-      orgarchptr->class->matchExit (&matcdat);    /* Free matching structure */
+      orgarchptr->clasptr->matchExit (&matcdat);  /* Free matching structure */
       memFree (treetab - 1);
       memFree (termtab);
       return  (2);
@@ -475,9 +475,9 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
     treetab[orgtermnum].vertnum = orgtermnum;     /* Vertex number in original architecture                    */
   }
 
-  rootptr = archSubArchBuild2 (&matcdat, (Anum (*) (void *, ArchCoarsenMulti * restrict *)) orgarchptr->class->matchMate, treetab, vnumnbr);
+  rootptr = archSubArchBuild2 (&matcdat, (Anum (*) (void *, ArchCoarsenMulti * restrict *)) orgarchptr->clasptr->matchMate, treetab, vnumnbr);
 
-  orgarchptr->class->matchExit (&matcdat);        /* Free matching structure */
+  orgarchptr->clasptr->matchExit (&matcdat);      /* Free matching structure */
 
   if (rootptr == NULL) {
     errorPrint ("archSubArchBuild: cannot create sub-architecture (1)");

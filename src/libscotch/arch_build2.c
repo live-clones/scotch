@@ -557,7 +557,7 @@ Context * const             contptr)              /*+ Execution context         
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   archInit (archptr);                             /* Initialize architecture body  */
-  archptr->class = archClass2 ("deco", 1);        /* Set type-2 architecture class */
+  archptr->clasptr = archClass2 ("deco", 1);      /* Set type-2 architecture class */
 
   domnnbr = 2 * vnumnbr - 1;
   if (memAllocGroup ((void **) (void *)

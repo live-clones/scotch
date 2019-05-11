@@ -143,7 +143,7 @@ const Anum                  crloval)
   ArchDist *          archdataptr;
 
   archInit (archptr);                             /* Initialize architecture body */
-  archptr->class   = archClass ("dist");          /* Set architecture class       */
+  archptr->clasptr = archClass ("dist");          /* Set architecture class       */
   archptr->flagval = orgarchptr->flagval;         /* Set architecture flag        */
   archdataptr = (ArchDist *) (void *) &archptr->data;
   archdataptr->archptr = orgarchptr;

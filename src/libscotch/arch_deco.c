@@ -65,7 +65,7 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 28 apr 2019     **/
-/**                # Version 7.0  : from : 18 feb 2018     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
 /**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
@@ -243,7 +243,7 @@ FILE * restrict const       stream)
   }
 
   if (typeval == 2) {                             /* If type-2 decomposition                      */
-    archArch (archptr)->class = archClass2 ("deco", 1); /* Switch class for future routines       */
+    archArch (archptr)->clasptr = archClass2 ("deco", 1); /* Switch class for future routines     */
     return (archDeco2ArchLoad2 ((ArchDeco2 *) archptr, stream)); /* Call subclass loading routine */
   }
 

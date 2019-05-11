@@ -54,7 +54,7 @@
 /**                                 to   : 24 aug 2020     **/
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
-/**                # Version 7.0  : from : 02 mar 2018     **/
+/**                # Version 7.0  : from : 19 feb 2018     **/
 /**                                 to   : 02 aug 2024     **/
 /**                                                        **/
 /************************************************************/
@@ -392,6 +392,7 @@
 /* #define archName                 SCOTCH_NAME_INTERN (archName) Already a macro */
 #define archClass                   SCOTCH_NAME_INTERN (archClass)
 #define archClass2                  SCOTCH_NAME_INTERN (archClass2)
+#define archClassNum                SCOTCH_NAME_INTERN (archClassNum)
 #define archClassTab                SCOTCH_NAME_INTERN (archClassTab)
 #define archDomLoad                 SCOTCH_NAME_INTERN (archDomLoad)
 #define archDomSave                 SCOTCH_NAME_INTERN (archDomSave)
