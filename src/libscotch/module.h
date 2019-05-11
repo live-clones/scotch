@@ -407,6 +407,7 @@
 #define archDomBipart               SCOTCH_NAME_INTERN (archDomBipart)
 #endif /* SCOTCH_DEBUG_ARCH2 */
 #define archDomMpiType              SCOTCH_NAME_INTERN (archDomMpiType)
+#define archDomMpiTypeAnum          SCOTCH_NAME_INTERN (archDomMpiTypeAnum)
 #define archBuild                   SCOTCH_NAME_INTERN (archBuild)
 #define archCmpltArchLoad           SCOTCH_NAME_INTERN (archCmpltArchLoad)
 #define archCmpltArchSave           SCOTCH_NAME_INTERN (archCmpltArchSave)
