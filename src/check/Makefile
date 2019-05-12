@@ -129,13 +129,13 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_acpl				\
 			check_prog_gbase			\
 			check_prog_gmk				\
-			check_prog_mmk				\
-			check_prog_mord				\
 			check_prog_gord				\
 			check_prog_gpart_clustering		\
 			check_prog_gpart_overlap		\
 			check_prog_gpart_remap			\
-			check_prog_gscat
+			check_prog_gscat			\
+			check_prog_mmk				\
+			check_prog_mord
 
 CHECKPTSCOTCH = 	check_strat_par				\
 			check_scotch_dgraph_check		\
