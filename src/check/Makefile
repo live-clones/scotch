@@ -127,6 +127,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_amk				\
 			check_prog_amk_grf			\
 			check_prog_acpl				\
+			check_prog_gbase			\
 			check_prog_gmk				\
 			check_prog_mmk				\
 			check_prog_mord				\
@@ -383,6 +384,14 @@ check_prog_amk_grf		:	check_prog_atst
 
 check_prog_atst			:
 					$(EXECS) $(SCOTCHBINDIR)/atst $(SCOTCHTGTDIR)/t4x4x4.tgt
+
+check_prog_gbase		:
+					$(EXECS) $(SCOTCHBINDIR)/gbase 1 data/m4x4.grf $(TMPDIR)/m4x4_b1.grf
+					$(PROGDIFF) "data/m4x4_b1.grf" "$(TMPDIR)/m4x4_b1.grf"
+					$(EXECS) $(SCOTCHBINDIR)/gbase 1 data/m4x4_b1.grf $(TMPDIR)/m4x4_b1.grf
+					$(PROGDIFF) "data/m4x4_b1.grf" "$(TMPDIR)/m4x4_b1.grf"
+					$(EXECS) $(SCOTCHBINDIR)/gbase 0 data/m4x4_b1.grf $(TMPDIR)/m4x4.grf
+					$(PROGDIFF) "data/m4x4.grf" "$(TMPDIR)/m4x4.grf"
 
 check_prog_gmk			:
 					$(EXECS) $(SCOTCHBINDIR)/gmk_hy 5 | $(SCOTCHBINDIR)/gtst
