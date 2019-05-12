@@ -126,6 +126,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_scotch_mesh_graph			\
 			check_prog_amk				\
 			check_prog_amk_grf			\
+			check_prog_acpl				\
 			check_prog_gmk				\
 			check_prog_mmk				\
 			check_prog_mord				\
@@ -369,6 +370,9 @@ check_prog_amk			:
 					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_m2 -mo 5 12 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_p2 5 7 | $(SCOTCHBINDIR)/atst
+
+check_prog_acpl			:	check_prog_amk
+					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 | $(SCOTCHBINDIR)/acpl | $(SCOTCHBINDIR)/atst
 
 check_prog_amk_grf		:
 					$(EXECS) $(SCOTCHBINDIR)/amk_grf data/m16x16.grf | $(SCOTCHBINDIR)/atst
