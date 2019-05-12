@@ -145,7 +145,8 @@ CHECKPTSCOTCH = 	check_strat_par				\
 			check_scotch_dgraph_redist		\
 			check_prog_dgord			\
 			check_prog_dgpart			\
-			check_prog_dgscat-dggath
+			check_prog_dgscat-dggath		\
+			check_prog_dgtst
 
 ##
 ##  Sequential library tests.
@@ -462,3 +463,6 @@ check_prog_dgscat-dggath	:
 					$(EXECP) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b1.grf "$(TMP)2_%r.grf"
 					$(EXECP) $(SCOTCHBINDIR)/dggath -c "$(TMP)2_%r.grf" "$(TMP)2.grf"
 					$(PROGDIFF) data/m16x16_b1.grf "$(TMP)2.grf"
+
+check_prog_dgtst		:
+					$(EXECP4) $(SCOTCHBINDIR)/dgtst data/small_%r.grf
