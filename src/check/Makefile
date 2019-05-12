@@ -130,6 +130,8 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_gbase			\
 			check_prog_gmk				\
 			check_prog_gord				\
+			check_prog_gout				\
+			check_prog_gpart			\
 			check_prog_gpart_clustering		\
 			check_prog_gpart_overlap		\
 			check_prog_gpart_remap			\
@@ -433,6 +435,15 @@ check_prog_gord			:
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf $(TMPDIR)/bump_b1.ord -vt
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump.grf $(TMPDIR)/bump.ord
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump_b1.grf $(TMPDIR)/bump_b1.ord
+
+check_prog_gout			:	check_prog_gord		\
+					check_prog_gpart
+					$(EXECS) $(SCOTCHBINDIR)/gout '-Om{e}' -gn data/bump.grf /dev/null $(TMPDIR)/bump.ord $(TMPDIR)/bump_ord.eps
+					$(EXECS) $(SCOTCHBINDIR)/gout '-Op{d,e,g,r,s}' data/bump.grf data/bump.xyz $(TMPDIR)/bump_k9.map $(TMPDIR)/bump_k9.eps
+					$(EXECS) $(SCOTCHBINDIR)/gout '-Oi{c,r}' data/bump.grf data/bump.xyz $(TMPDIR)/bump_k9.map $(TMPDIR)/bump_k9.iv
+
+check_prog_gpart		:
+					$(EXECS) $(SCOTCHBINDIR)/gpart 9 data/bump.grf $(TMPDIR)/bump_k9.map -vmt
 
 check_prog_gpart_clustering	:
 					$(EXECS) $(SCOTCHBINDIR)/gpart -q 1 data/bump_b1.grf $(TMPDIR)/bump_b1_part_cls_9.map -vmt
