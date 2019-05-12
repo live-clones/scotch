@@ -363,7 +363,10 @@ test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
 ##  Sequential program tests.
 ##
 
-check_prog_amk			:
+check_prog_acpl			:	check_prog_amk
+					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 | $(SCOTCHBINDIR)/acpl | $(SCOTCHBINDIR)/atst
+
+check_prog_amk			:	check_prog_atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_ccc 5 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_fft2 5 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_hy 5 | $(SCOTCHBINDIR)/atst
@@ -371,14 +374,14 @@ check_prog_amk			:
 					$(EXECS) $(SCOTCHBINDIR)/amk_m2 -mo 5 12 | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_p2 5 7 | $(SCOTCHBINDIR)/atst
 
-check_prog_acpl			:	check_prog_amk
-					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 | $(SCOTCHBINDIR)/acpl | $(SCOTCHBINDIR)/atst
-
-check_prog_amk_grf		:
+check_prog_amk_grf		:	check_prog_atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_grf data/m16x16.grf | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_grf -2 data/m16x16.grf | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt data/m4x4.grf | $(SCOTCHBINDIR)/atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_grf -ldata/m4x4_vertlist.txt -2 data/m4x4.grf | $(SCOTCHBINDIR)/atst
+
+check_prog_atst			:
+					$(EXECS) $(SCOTCHBINDIR)/atst $(SCOTCHTGTDIR)/t4x4x4.tgt
 
 check_prog_gmk			:
 					$(EXECS) $(SCOTCHBINDIR)/gmk_hy 5 | $(SCOTCHBINDIR)/gtst
