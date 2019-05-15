@@ -2216,10 +2216,14 @@ The \texttt{SCOTCH\_archSub} routine fills the
 \texttt{SCOTCH\_\lbt Arch} structure pointed to by \texttt{subarchptr}
 with the description of a subset of the \texttt{orgarchptr}
 architecture, restricted to \texttt{vertnbr} processors which are
-listed in the \texttt{vnumtab} array. The order in which these
+listed in the \texttt{vnumtab} array. The order in which the
 processor indices in the original architecture are stored in the
 \texttt{vnumtab} array defines the rank of these processors in the
 sub-architecture.
+
+Since the sub-architecture depends on the original architecture, the
+latter must not be de-allocated (by way of \texttt{SCOTCH\_\lbt
+arch\lbt Exit}) as long as the sub-architecture is being used.
 
 \progret
 
