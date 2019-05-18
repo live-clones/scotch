@@ -38,7 +38,7 @@ SCOTCHLIBDIR		= ../../lib
 SCOTCHTGTDIR		= ../../tgt
 
 LIBPTSCOTCH		= -lptscotch -lscotch -lptscotcherr
-LIBSCOTCH		= -lscotch -lscotcherr
+LIBSCOTCH		= -lscotchmetis -lscotch -lscotcherr
 
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
 DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -84,6 +84,7 @@ realclean			:	clean
 					test_common_random		\
 					test_common_thread		\
 					test_fibo			\
+					test_libmetis			\
 					test_scotch_arch		\
 					test_scotch_arch_deco		\
 					test_scotch_graph_coarsen	\
@@ -124,6 +125,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_scotch_graph_order		\
 			check_scotch_graph_part_ovl		\
 			check_scotch_mesh_graph			\
+			check_libmetis				\
 			check_prog_amk				\
 			check_prog_amk_grf			\
 			check_prog_acpl				\
@@ -196,6 +198,17 @@ check_fibo			:	test_fibo
 
 test_fibo			:	test_fibo.c			\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_libmetis			:	test_libmetis
+					$(EXECS) ./test_libmetis data/bump.grf
+					$(EXECS) ./test_libmetis data/bump_b1.grf
+					$(EXECS) ./test_libmetis data/bump_imbal_32.grf
+
+test_libmetis			:	test_libmetis.c			\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
+					$(SCOTCHLIBDIR)/libscotchmetis$(LIB)
 
 ##
 
