@@ -41,7 +41,7 @@ build_scotch_32-d:
   script:
     - cd src
     - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL#1' Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_METIS_VERSION=5#1' Makefile.inc
     - make scotch ptscotch esmumps ptesmumps
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_32
