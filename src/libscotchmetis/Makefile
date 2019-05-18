@@ -1,4 +1,4 @@
-## Copyright 2007-2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2007-2010,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -53,13 +53,16 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:
-					$(MAKE) CC="$(CCS)" SCOTCHLIB=ptscotch						\
-					metis.h										\
+					$(MAKE)						\
+					CC="$(CCS)"					\
+					metis.h						\
 					libscotchmetis$(LIB)
 
 ptscotch			:
-					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIB=ptscotch	\
-					parmetis.h									\
+					$(MAKE)						\
+					CC="$(CCP)"					\
+					CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH"		\
+					parmetis.h					\
 					libptscotchparmetis$(LIB)
 
 install				:	scotch
