@@ -122,7 +122,7 @@ typedef int GraphFlag;                            /*+ Graph property flags +*/
 typedef struct Graph_ {
   GraphFlag                 flagval;              /*+ Graph properties                          +*/
   Gnum                      baseval;              /*+ Base index for edge/vertex arrays         +*/
-  Gnum                      vertnbr;              /*+ Nmber of vertices in graph                +*/
+  Gnum                      vertnbr;              /*+ Number of vertices in graph               +*/
   Gnum                      vertnnd;              /*+ Number of vertices in graph, plus baseval +*/
   Gnum *                    verttax;              /*+ Vertex array [based]                      +*/
   Gnum *                    vendtax;              /*+ End vertex array [based]                  +*/
@@ -137,7 +137,7 @@ typedef struct Graph_ {
   Gnum                      degrmax;              /*+ Maximum degree                            +*/
 #ifdef SCOTCH_PTSCOTCH
   MPI_Comm                  proccomm;             /*+ Communicator used for parallel algorithm  +*/
-  int                       procglbnbr;           /*+ Number of processes in communictor        +*/
+  int                       procglbnbr;           /*+ Number of processes in communicator       +*/
   int                       proclocnum;           /*+ Rank of process in current communicator   +*/
 #endif /* SCOTCH_PTSCOTCH */
 } Graph;

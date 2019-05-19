@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009-2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009-2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,6 +51,8 @@
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 5.1  : from : 05 jun 2009     **/
 /**                                 to   : 13 feb 2011     **/
+/**                # Version 6.0  : from : 19 aug 2014     **/
+/**                                 to   : 19 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -485,7 +487,7 @@ SCOTCH_Arch * const         archptr)
 
   tgtarchptr = (Arch *) archptr;
 
-  tgtarchptr->class = archClass ("vhcub");
+  tgtarchptr->class = archClass ("varhcub");
 
   return (0);
 }

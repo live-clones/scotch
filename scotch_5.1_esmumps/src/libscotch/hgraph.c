@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,17 +31,21 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : hgraph.c                                **/
+/**   NAME       : hgraph_order_si.c                       **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module handles the source graph    **/
-/**                functions.                              **/
+/**   FUNCTION   : This module orders halo graph vertices  **/
+/**                using a simple method.                  **/
 /**                                                        **/
-/**   DATES      : # Version 4.0  : from : 17 jan 2002     **/
-/**                                 to     01 dec 2003     **/
-/**                # Version 5.0  : from : 19 dec 2006     **/
-/**                                 to     30 may 2008     **/
+/**   DATES      : # Version 3.2  : from : 01 nov 1996     **/
+/**                                 to     21 aug 1998     **/
+/**                # Version 3.3  : from : 02 oct 1998     **/
+/**                                 to     02 oct 1998     **/
+/**                # Version 4.0  : from : 19 dec 2001     **/
+/**                                 to     11 dec 2002     **/
+/**                # Version 6.0  : from : 17 oct 2012     **/
+/**                                 to   : 04 aug 2014     **/
 /**                                                        **/
 /************************************************************/
 
@@ -49,64 +53,52 @@
 **  The defines and includes.
 */
 
-#define HGRAPH
+#define HGRAPH_ORDER_SI
 
 #include "module.h"
 #include "common.h"
 #include "graph.h"
+#include "order.h"
 #include "hgraph.h"
+#include "hgraph_order_si.h"
 
-/****************************************/
-/*                                      */
-/* These routines handle source graphs. */
-/*                                      */
-/****************************************/
+/*****************************/
+/*                           */
+/* This is the main routine. */
+/*                           */
+/*****************************/
 
-/* This routine initializes a source graph
-** structure.
+/* This routine performs the ordering.
 ** It returns:
-** - 0  : in all cases.
+** - 0   : if the ordering could be computed.
+** - !0  : on error.
 */
 
 int
-hgraphInit (
-Hgraph * restrict const     grafptr)
+hgraphOrderSi (
+const Hgraph * restrict const   grafptr,
+Order * restrict const          ordeptr,
+const Gnum                      ordenum,          /*+ Zero-based ordering number +*/
+OrderCblk * restrict const      cblkptr)          /*+ Single column-block        +*/
 {
-  memSet (grafptr, 0, sizeof (Hgraph));           /* Initialize graph fields     */
-  grafptr->s.flagval = GRAPHFREETABS;             /* By default, free all arrays */
+  Gnum                vnohnnd;
+  Gnum                vertnum;
+  Gnum                vnumnum;
+
+  Gnum * restrict const       peritab = ordeptr->peritab;
+  const Gnum * restrict const vnumtax = grafptr->s.vnumtax;
+
+  vnohnnd = grafptr->vnohnnd;
+  if (vnumtax == NULL) {                          /* If graph is original graph */
+    for (vertnum = grafptr->s.baseval, vnumnum = ordenum;
+         vertnum < vnohnnd; vertnum ++, vnumnum ++)
+      peritab[vnumnum] = vertnum;
+  }
+  else {                                          /* Graph is not original graph */
+    for (vertnum = grafptr->s.baseval, vnumnum = ordenum;
+         vertnum < vnohnnd; vertnum ++, vnumnum ++)
+      peritab[vnumnum] = vnumtax[vertnum];
+  }
 
   return (0);
-}
-
-/* This routine frees a source graph structure.
-** It returns:
-** - VOID  : in all cases.
-*/
-
-void
-hgraphExit (
-Hgraph * restrict const     grafptr)
-{
-  hgraphFree (grafptr);
-}
-
-/* This routine frees a source graph structure.
-** It returns:
-** - VOID  : in all cases.
-*/
-
-void
-hgraphFree (
-Hgraph * restrict const     grafptr)
-{
-  if ((grafptr->vnhdtax != NULL)               && /* Free end vertex array for non-halo vertices */
-      (grafptr->vnhdtax != grafptr->s.vendtax) &&
-      ((grafptr->s.flagval & HGRAPHFREEVNHD) != 0))
-    memFree (grafptr->vnhdtax);
-
-  graphFree (&grafptr->s);                        /* Free graph data */
-
-#ifdef SCOTCH_DEBUG_HGRAPH2
-  memSet (grafptr, ~0, sizeof (Hgraph));          /* Purge graph fields */
-#endif /* SCOTCH_DEBUG_HGRAPH2 */
 }
