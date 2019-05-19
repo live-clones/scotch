@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2013 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,7 +63,7 @@
 /**                # Version 5.0  : from : 23 dec 2007     **/
 /**                                 to   : 18 jun 2008     **/
 /**                # Version 5.1  : from : 30 jun 2010     **/
-/**                                 to   : 31 aug 2011     **/
+/**                                 to   : 28 dec 2013     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,6 +117,8 @@ static const char *         C_usageList[] = {     /* Usage */
   "",
   "See default strategy with option '-vs'",
   NULL };
+
+static const SCOTCH_Num     C_loadOne = 1;
 
 /******************************/
 /*                            */
@@ -325,10 +327,12 @@ char *                      argv[])
   if (((straval != 0) || ((flagval & C_FLAGKBALVAL) != 0)) && (straptr != NULL))
     errorPrint ("main: options '-b' / '-c' and '-m' are exclusive");
 
-  if ((flagval & C_FLAGCLUSTER) != 0)             /* If clustering wanted */
-    SCOTCH_stratGraphClusterBuild (&stradat, straval, (SCOTCH_Num) C_partNbr, 1.0, kbalval);
-  else
-    SCOTCH_stratGraphMapBuild (&stradat, straval, (SCOTCH_Num) C_partNbr, kbalval);
+  if (straptr == NULL) {
+    if ((flagval & C_FLAGCLUSTER) != 0)           /* If clustering wanted */
+      SCOTCH_stratGraphClusterBuild (&stradat, straval, (SCOTCH_Num) C_partNbr, 1.0, kbalval);
+    else
+      SCOTCH_stratGraphMapBuild (&stradat, straval, (SCOTCH_Num) C_partNbr, kbalval);
+  }
 
   clockStop  (&runtime[0]);                       /* Get input time */
   clockInit  (&runtime[1]);

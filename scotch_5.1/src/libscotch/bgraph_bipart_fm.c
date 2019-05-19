@@ -62,7 +62,7 @@
 /**                # Version 5.0  : from : 24 mar 2008     **/
 /**                                 to   : 22 may 2008     **/
 /**                # Version 5.1  : from : 30 oct 2008     **/
-/**                                 to   : 14 apr 2011     **/
+/**                                 to   : 15 nov 2011     **/
 /**                                                        **/
 /************************************************************/
 
@@ -794,7 +794,7 @@ BgraphBipartFmVertex ** const     lockptr)        /*+ Pointer to locked list    
         }
 
         if (hashtab[hashnew].gainlink.next >= BGRAPHBIPARTFMSTATELINK) /* If vertex was linked, re-link it */
-          gainTablAdd (tablptr, &hashtab[hashnew].gainlink, hashtab[hashnew].compgain);
+          gainTablAdd (tablptr, &hashtab[hashnew].gainlink, hashtab[hashnew].commgain);
         else if (hashtab[hashnew].gainlink.next == BGRAPHBIPARTFMSTATEUSED) { /* Re-lock used vertices */
           hashtab[hashnew].gainlink.prev = (GainLink *) *lockptr; /* Lock it */
           *lockptr = &hashtab[hashnew];

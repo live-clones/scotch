@@ -326,7 +326,6 @@ gpart$(EXE)			:	gmap.c					\
 					gmap.h
 			 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(<) -DSCOTCH_COMPILE_PART -o $(@) -L$(libdir) -l$(SCOTCHLIB) -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
-
 gscat$(EXE)			:	gscat.c					\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
