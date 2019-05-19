@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 26 oct 2008     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 10 jul 2018     **/
+/**                                 to   : 17 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -134,7 +134,7 @@ char *              argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
 #ifdef SCOTCH_DEBUG_ALL
@@ -162,7 +162,7 @@ char *              argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'R' :                                /* Root process (if necessary) */
         case 'r' :
           protglbnum = atoi (&argv[i][2]);
@@ -174,9 +174,9 @@ char *              argv[])
         case 'V' :
         case 'v' :
           fprintf (stderr, "dgtst, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
-          fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
-          return  (0);
+          fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
+          fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
       }
@@ -226,5 +226,5 @@ char *              argv[])
 
   MPI_Finalize ();
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

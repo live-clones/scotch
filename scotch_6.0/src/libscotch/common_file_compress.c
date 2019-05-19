@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 27 jun 2010     **/
 /**                                 to     27 jun 2010     **/
 /**                # Version 6.0  : from : 27 apr 2015     **/
-/**                                 to     10 jul 2018     **/
+/**                                 to     14 jul 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,29 +100,24 @@ static FileCompressTab      filetab[] = {
 /*                               */
 /*********************************/
 
-/* This routine searches the given file name
-** for relevant extensions and returns the
-** corresponding code if it is the case.
+/* This routine waits until the termination
+** of the de/compressing task associated with
+** the given file.
 ** It returns:
-** - FILECOMPRESSTYPENONE     : no recognized file extension.
-** - FILECOMPRESSTYPENOTIMPL  : compression algorithm not implemented.
-** - FILECOMPRESSTYPExxxx     : implemented compression algorithm.
+** - VOID  : in all cases.
 */
 
 void
 fileCompressExit (
 File * const                fileptr)
 {
-  FileCompress *      compptr;
-
   if (fileptr->compptr == NULL)                   /* If nothing to do */
     return;
 
-  compptr = (FileCompress *) fileptr->compptr;
 #ifdef COMMON_PTHREAD_FILE
-  pthread_join (compptr->thrdval, NULL);          /* Wait for (un)compression thread to terminate */
+  pthread_join (fileptr->compptr->thrdval, NULL); /* Wait for (un)compression thread to terminate */
 #else /* COMMON_PTHREAD_FILE */
-  waitpid (compptr->procval, NULL, 0);
+  waitpid (fileptr->compptr->procval, NULL, 0);
 #endif /* COMMON_PTHREAD_FILE */
 
   memFree (fileptr->compptr);                     /* Free compression structure */

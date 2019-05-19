@@ -172,8 +172,8 @@ char *              argv[])
   for (stranum = 0; stranum < STRANBR; stranum ++)
     SCOTCH_stratExit (&stratab[stranum]);
 
-  free             (parotab);
-  free             (parttab);
+  free (parotab);
+  free (parttab);
   SCOTCH_graphExit (&grafdat);
 
   exit (EXIT_SUCCESS);

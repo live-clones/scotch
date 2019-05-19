@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 08 sep 2008     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 10 jul 2018     **/
+/**                                 to   : 17 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -115,7 +115,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   flagval = C_FLAGNONE;                           /* Default behavior  */
@@ -131,7 +131,7 @@ char *                      argv[])
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        return     (1);
+        return     (EXIT_FAILURE);
       }
     }
     else {                                        /* If found an option name */
@@ -164,7 +164,7 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'M' :                                /* Output separator mapping */
         case 'm' :
           flagval |= C_FLAGMAPOUT;
@@ -178,14 +178,14 @@ char *                      argv[])
           SCOTCH_stratInit (&stradat);
           if ((SCOTCH_stratMeshOrder (&stradat, straptr)) != 0) {
             errorPrint ("main: invalid ordering strategy");
-            return     (1);
+            return     (EXIT_FAILURE);
           }
           break;
         case 'V' :
           fprintf (stderr, "mord, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
-          fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
-          return  (0);
+          fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
+          fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
+          return  (EXIT_SUCCESS);
           break;
         case 'v' :                               /* Output control info */
           for (j = 2; argv[i][j] != '\0'; j ++) {
@@ -201,13 +201,13 @@ char *                      argv[])
               default :
                 errorPrint ("main: unprocessed parameter '%c' in '%s'",
                             argv[i][j], argv[i]);
-                return     (1);
+                return     (EXIT_FAILURE);
             }
           }
           break;
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (1);
+          return     (EXIT_FAILURE);
       }
     }
   }
@@ -234,7 +234,7 @@ char *                      argv[])
 
   if ((permtab = (SCOTCH_Num *) memAlloc (vnodnbr * sizeof (SCOTCH_Num))) == NULL) {
     errorPrint ("main: out of memory");
-    return     (1);
+    return     (EXIT_FAILURE);
   }
   SCOTCH_meshOrderInit    (&meshdat, &ordedat, permtab, NULL, NULL, NULL, NULL); /* Create ordering */
   SCOTCH_meshOrderCompute (&meshdat, &ordedat, &stradat); /* Perform ordering */
@@ -243,7 +243,7 @@ char *                      argv[])
 
 #ifdef SCOTCH_DEBUG_ALL
   if (SCOTCH_meshOrderCheck (&meshdat, &ordedat) != 0)
-    return (1);
+    return (EXIT_FAILURE);
 #endif /* SCOTCH_DEBUG_ALL */
 
   clockStart (&runtime[0]);
@@ -274,7 +274,7 @@ char *                      argv[])
   SCOTCH_meshExit      (&meshdat);
   memFree              (permtab);
 
-  return (0);
+  return (EXIT_SUCCESS);
 }
 
 /*******************************************/

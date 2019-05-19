@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,16 +51,18 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     14 jul 2018     **/
+/**                                 to     10 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
 #define MODULE_H
 
 /*
-** Version string.
+** Version and copyright strings.
 */
 
+#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2019 IPB, Universite de Bordeaux, INRIA & CNRS, France"
+#define SCOTCH_LICENSE_STRING       "This software is libre/free software under CeCILL-C -- see the user's manual for more information"
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL)
 
 /*
@@ -298,6 +300,7 @@
 #define fileBlockOpen               SCOTCH_NAME_INTERN (fileBlockOpen)
 #define fileBlockOpenDist           SCOTCH_NAME_INTERN (fileBlockOpenDist)
 #define fileCompress                SCOTCH_NAME_INTERN (fileCompress)
+#define fileCompressExit            SCOTCH_NAME_INTERN (fileCompressExit)
 #define fileCompressType            SCOTCH_NAME_INTERN (fileCompressType)
 #define fileDecompress              SCOTCH_NAME_INTERN (fileDecompress)
 #define fileDecompressType          SCOTCH_NAME_INTERN (fileDecompressType)
@@ -822,6 +825,7 @@
 #define hdgraphGather               SCOTCH_NAME_INTERN (hdgraphGather)
 #define hdgraphInduceList           SCOTCH_NAME_INTERN (hdgraphInduceList)
 #define hdgraphOrderNd              SCOTCH_NAME_INTERN (hdgraphOrderNd)
+#define hdgraphOrderNd2             SCOTCH_NAME_INTERN (hdgraphOrderNd2)
 #define hdgraphOrderSi              SCOTCH_NAME_INTERN (hdgraphOrderSi)
 #define hdgraphOrderSq              SCOTCH_NAME_INTERN (hdgraphOrderSq)
 #define hdgraphOrderSq2             SCOTCH_NAME_INTERN (hdgraphOrderSq2)

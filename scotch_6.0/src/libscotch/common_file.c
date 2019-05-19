@@ -177,7 +177,7 @@ const int                   filenbr)
   for (i = 0; i < filenbr; i ++) {                /* For all file names     */
     filetab[i].nameptr = "-";                     /* Assume standard stream */
     filetab[i].fileptr = ((filetab[i].flagval & FILEMODE) == FILEMODER) ? stdin : stdout;
-    filetab[i].compptr = NULL;                    /* No (un)compression yet */
+    filetab[i].compptr = NULL;                    /* No (de)compression yet */
   }
 }
 
@@ -186,7 +186,7 @@ const int                   filenbr)
 ** It returns:
 ** - 0  : on success.
 ** - 1  : if could not open a stream.
-** - 2  : if (un)compression method not implemented.
+** - 2  : if (de)compression method not implemented.
 */
 
 int
@@ -220,11 +220,11 @@ const int                   filenbr)
       }
       compval = (((filetab[i].flagval & FILEMODE) == FILEMODER) ? fileDecompressType : fileCompressType) (filetab[i].nameptr);
       if (compval < 0) {
-        errorPrint ("fileBlockOpen: (un)compression method not implemented");
+        errorPrint ("fileBlockOpen: (de)compression method not implemented");
         return     (2);
       }
       if ((((filetab[i].flagval & FILEMODE) == FILEMODER) ? fileDecompress : fileCompress) (&filetab[i], compval) != 0) {
-        errorPrint ("fileBlockOpen: cannot create (un)compression subprocess");
+        errorPrint ("fileBlockOpen: cannot create (de)compression subprocess");
         return     (1);
       }
     }
@@ -299,6 +299,6 @@ const int                   filenbr)
         memFree (filetab[i].nameptr);
     }
 
-    fileCompressExit (&filetab[i]);               /* After stream closed, if there is (un)compression data to free */
+    fileCompressExit (&filetab[i]);               /* After stream closed, if there is (de)compression data to free */
   }
 }

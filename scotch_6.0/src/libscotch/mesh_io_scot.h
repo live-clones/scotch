@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -29,4 +29,29 @@
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
-#undef static
+/************************************************************/
+/**                                                        **/
+/**   NAME       : mesh_io_scot.h                          **/
+/**                                                        **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                                                        **/
+/**   FUNCTION   : This module contains the data declara-  **/
+/**                tions for the Scotch graph format       **/
+/**                module.                                 **/
+/**                                                        **/
+/**   DATES      : # Version 6.0  : from : 09 apr 2019     **/
+/**                                 to     09 apr 2019     **/
+/**                                                        **/
+/************************************************************/
+
+/*
+**  The type and structure definitions.
+*/
+
+/*+ The sort structure, used to sort graph vertices by label.
+    Field labl is first because of intSort2asc1.              +*/
+
+typedef struct MeshGeomScotSort_ {
+  Gnum                      labl;                 /*+ Node label: FIRST +*/
+  Gnum                      num;                  /*+ Node number       +*/
+} MeshGeomScotSort;

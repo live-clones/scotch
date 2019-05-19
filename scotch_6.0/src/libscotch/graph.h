@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014-2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014-2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -62,7 +62,7 @@
 /**                # Version 5.1  : from : 11 aug 2010     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     07 jun 2018     **/
+/**                                 to     10 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -123,13 +123,15 @@ typedef int GraphFlag;                            /*+ Graph property flags +*/
 
 /*+ The graph parallel context structure. +*/
 
-typedef struct GraphProc_ {
 #ifdef SCOTCH_PTSCOTCH
+
+typedef struct GraphProc_ {
   MPI_Comm                  proccomm;             /*+ Communicator used for parallel algorithm +*/
   int                       procglbnbr;           /*+ Number of processes in communicator      +*/
   int                       proclocnum;           /*+ Rank of process in current communicator  +*/
-#endif /* SCOTCH_PTSCOTCH */
 } GraphProc;
+
+#endif /* SCOTCH_PTSCOTCH */
 
 /*+ The graph structure. +*/
 
@@ -149,7 +151,7 @@ typedef struct Graph_ {
   Gnum *                    edlotax;              /*+ Edge load array (if present)              +*/
   Gnum                      edlosum;              /*+ Sum of edge (in fact arc) loads           +*/
   Gnum                      degrmax;              /*+ Maximum degree                            +*/
-  GraphProc *               procptr;              /*+ Pointer to parallel context (if any)      +*/
+  struct GraphProc_ *       procptr;              /*+ Pointer to parallel context (if any)      +*/
 } Graph;
 
 /*

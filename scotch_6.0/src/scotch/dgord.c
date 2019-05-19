@@ -1,4 +1,4 @@
-/* Copyright 2007-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 26 oct 2008     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 10 jul 2018     **/
+/**                                 to   : 17 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -148,7 +148,7 @@ char *              argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   SCOTCH_randomProc (proclocnum);                 /* Record process number to initialize pseudo-random seed */
@@ -211,7 +211,7 @@ char *              argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'M' :                                /* Output separator mapping */
         case 'm' :
           flagval |= C_FLAGMAPOUT;
@@ -241,9 +241,9 @@ char *              argv[])
           break;
         case 'V' :
           fprintf (stderr, "dgord, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2007-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
-          fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
-          return  (0);
+          fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
+          fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
+          return  (EXIT_SUCCESS);
         case 'v' :                                /* Output control info */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
@@ -409,7 +409,7 @@ char *              argv[])
 
   MPI_Finalize ();
 
-  return (0);
+  return (EXIT_SUCCESS);
 }
 
 /* Reduction routine for statistics output.

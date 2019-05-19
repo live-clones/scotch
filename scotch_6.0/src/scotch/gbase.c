@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 10 jul 2018     **/
+/**                                 to   : 17 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,7 +95,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    exit       (0);
+    exit       (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -107,7 +107,7 @@ char *                      argv[])
         baseval = atoi (argv[i]);                 /* Get the base value                               */
         if ((baseval < 0) || (baseval > 1)) {
           errorPrint ("main: invalid base value '%s'", argv[i]);
-          return     (1);
+          return     (EXIT_FAILURE);
         }
         continue;                                 /* Process the other parameters */
       }
@@ -115,7 +115,7 @@ char *                      argv[])
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        exit       (1);
+        exit       (EXIT_FAILURE);
       }
     }
     else {                                        /* If found an option name */
@@ -123,15 +123,15 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          exit       (0);
+          exit       (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "gbase, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
-          fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
-          return  (0);
+          fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
+          fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          exit       (1);
+          exit       (EXIT_FAILURE);
       }
     }
   }
@@ -146,5 +146,5 @@ char *                      argv[])
 
   SCOTCH_graphExit (&grafdat);
 
-  return (0);
+  return (EXIT_SUCCESS);
 }

@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 04 nov 2010     **/
 /**                                 to     04 nov 2010     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
-/**                                 to     07 jun 2018     **/
+/**                                 to     01 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,7 +57,7 @@
 /*+ Graph option flags. +*/
 
 #define HDGRAPHFREEVHND             0x0400        /* Free vnhdtab array */
-#define HDGRAPHFREETABS             (DGRAPHFREETABS | HGRAPHFREEVHND)
+#define HDGRAPHFREETABS             (DGRAPHFREETABS | HDGRAPHFREEVHND)
 
 /*
 **  The type and structure definitions.

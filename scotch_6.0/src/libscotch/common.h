@@ -342,7 +342,7 @@ typedef struct File_ {
   int                       flagval;              /*+ File mode            +*/
   char *                    nameptr;              /*+ File name            +*/
   FILE *                    fileptr;              /*+ File pointer         +*/
-  void *                    compptr;              /*+ (Un)compression data +*/
+  struct FileCompress_ *    compptr;              /*+ (De)compression data +*/
 } File;
 
 /*

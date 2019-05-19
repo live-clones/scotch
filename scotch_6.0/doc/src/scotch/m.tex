@@ -1,9 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                  %
 % Titre  : m.tex                   %
-% Sujet  : Manuel de maintenance   %
-%          de Scotch 4.0           %
-%          Corps du document       %
+% Sujet  : Maintenance manual      %
+%          Document body           %
 % Auteur : Francois Pellegrini     %
 %                                  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -96,6 +95,9 @@
 
 \newcommand{\scotch}{{\sc Scotch}}               % "scotch"
 \newcommand{\libscotch}{{\sc libScotch}}         % "libscotch"
+\newcommand{\ptscotch}{\textsc{PT-Scotch}}       % "PT-Scotch"
+
+\newcommand{\UB}{{\rm UB}}                       % UB
 
 %% Page de garde.
 
@@ -104,33 +106,29 @@
 \date{\today}
 
 \title{\includegraphics{s_f_logo.ps}\\[1em]
-       {\LARGE\bf \libscotch\ {\sc 4.0} Maintainer's Guide}\\[1em]}
+       {\LARGE\bf \libscotch\ {\sc 6.0} Maintainer's Guide}\\[1em]}
 
 \author{Fran\c cois Pellegrini\\
-ScAlApplix project, INRIA Bordeaux Sud-Ouest\\
-ENSEIRB \& LaBRI, URM CNRS 5800\\
-Universit\'e Bordeaux~I\\
+Universit\'e de Bordeaux \& LaBRI, UMR CNRS 5800\\
+TadAAM team, INRIA Bordeaux Sud-Ouest\\
 351 cours de la Lib\'eration, 33405 TALENCE, FRANCE\\
-{\tt pelegrin@labri.fr}}
+{\tt francois.pellegrini@labri.fr}}
 
 \maketitle
 
 \begin{abstract}
-This document briefly describes the internals of the \libscotch\
-library, and mainly focuses on the way for contributors to add new
-partitioning and ordering methods to it.
+This document describes some internals of the \libscotch\
+library.
 \end{abstract}
 
 \clearpage
 
-%% Table des matieres.
-
 \tableofcontents
 
-%% Corps du document.
-
 \input{m_i.tex}                                  % Introduction
-\input{m_s.tex}                                  % Structure de la libScotch
-\input{m_m.tex}                                  % Ajout d'une methode
+\input{m_n.tex}                                  % Naming conventions
+\input{m_s.tex}                                  % Structure of the libScotch
+\input{m_f.tex}                                  % File formats
+\input{m_m.tex}                                  % Adding a graph processing method
 
 \end{document}

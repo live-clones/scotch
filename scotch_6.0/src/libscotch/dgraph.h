@@ -85,7 +85,7 @@
 #define DGRAPHHASEDGEGST            0x0020        /* Edge ghost array computed           */
 #define DGRAPHVERTGROUP             0x0040        /* All vertex arrays grouped           */
 #define DGRAPHEDGEGROUP             0x0080        /* All edge arrays grouped             */
-#define DGRAPHFREEALL               (DGRAPHFREEPRIV | DGRAPHFREECOMM | DGRAPHFREETABS | DGRAPHFREEPSID  | DGRAPHFREEEDGEGST)
+#define DGRAPHFREEALL               (DGRAPHFREEPRIV | DGRAPHFREECOMM | DGRAPHFREETABS | DGRAPHFREEPSID | DGRAPHFREEEDGEGST)
 #define DGRAPHCOMMPTOP              0x0100        /* Use point-to-point collective communication */
 
 #define DGRAPHBITSUSED              0x01FF        /* Significant bits for plain distributed graph routines               */

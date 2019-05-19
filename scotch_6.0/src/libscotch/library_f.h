@@ -1,4 +1,4 @@
-!* Copyright 2004,2007,2009,2010,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+!* Copyright 2004,2007,2009,2010,2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 !*
 !* This file is part of the Scotch software package for static mapping,
 !* graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 !*                # Version 5.1  : from : 26 mar 2009     **
 !*                                 to     12 feb 2011     **
 !*                # Version 6.0  : from : 22 oct 2011     **
-!*                                 to     10 jul 2018     **
+!*                                 to     16 apr 2019     **
 !*                                                        **
 !***********************************************************
 
@@ -104,6 +104,7 @@
 !* program "dummysizes".
 
         INTEGER SCOTCH_ARCHDIM
+        INTEGER SCOTCH_ARCHDOMDIM
         INTEGER SCOTCH_GEOMDIM
         INTEGER SCOTCH_GRAPHDIM
         INTEGER SCOTCH_MAPDIM
@@ -111,6 +112,7 @@
         INTEGER SCOTCH_ORDERDIM
         INTEGER SCOTCH_STRATDIM
         PARAMETER (SCOTCH_ARCHDIM          = DUMMYSIZEARCH)
+        PARAMETER (SCOTCH_ARCHDOMDIM       = DUMMYSIZEARCHDOM)
         PARAMETER (SCOTCH_GEOMDIM          = DUMMYSIZEGEOM)
         PARAMETER (SCOTCH_GRAPHDIM         = DUMMYSIZEGRAPH)
         PARAMETER (SCOTCH_MAPDIM           = DUMMYSIZEMAP)

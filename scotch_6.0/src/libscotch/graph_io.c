@@ -240,7 +240,7 @@ const GraphFlag             flagval)              /* Graph loading flags        
       grafptr->edgetax[edgenum] = edgeval + baseadj;
     }
   }
-  grafptr->verttax[vertnum] = edgenum;            /* Set end of edge array */
+  grafptr->verttax[vertnum] = edgenum;            /* Set end of edge array             */
   if (edgenum != edgennd) {                       /* Check if number of edges is valid */
     errorPrint ("graphLoad: invalid arc count (2)");
     graphFree  (grafptr);

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 10 jul 2018     **/
+/**                                 to   : 03 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,9 +67,6 @@
 #include "module.h"
 #include "common.h"
 #include "scotch.h"
-#include "arch.h"
-#include "arch_deco.h"
-#include "arch_mesh.h"
 #include "atst.h"
 
 /*
@@ -98,23 +95,25 @@ main (argc, argv)
 int                 argc;
 char *              argv[];
 {
-  Arch                archdat;                    /* The architecture read */
-  ArchDeco *          deco;                       /* Its decomposition     */
-  ArchDecoDom         dom0;
-  ArchDecoDom         dom1;
-  Anum                dstval;
-  Anum                dstmin;
-  Anum                dstmax;
-  Anum                dstsum;
-  double              dstavg;
-  double              dstdlt;
-  int                 i;
+  SCOTCH_Arch               archdat;
+  SCOTCH_ArchDom            domndat;
+  SCOTCH_ArchDom * restrict termtab;
+  SCOTCH_Num                termnbr;
+  SCOTCH_Num                termnum;
+  SCOTCH_Num                ter0num;
+  SCOTCH_Num                ter1num;
+  SCOTCH_Num                distmin;
+  SCOTCH_Num                distmax;
+  SCOTCH_Num                distsum;
+  double                    distavg;
+  double                    distdlt;
+  int                       i;
 
   errorProg ("atst");
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -125,7 +124,7 @@ char *              argv[];
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
       else {
         errorPrint ("main: too many file names given");
-        return     (1);
+        return (EXIT_FAILURE);
       }
     }
     else {                                        /* If found an option name */
@@ -133,70 +132,116 @@ char *              argv[];
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "atst, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
-          fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
-          return  (0);
+          fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
+          fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
+          return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (1);
+          return (EXIT_FAILURE);
       }
     }
   }
 
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
-  archInit (&archdat);                            /* Initialize architecture structure */
-  archLoad (&archdat, C_filepntrtgtinp);          /* Load architecture                 */
-  if (strcmp (archName (&archdat), "deco") != 0) { /* If it is not a decomposition     */
-    errorPrint ("main: architecture is not decomposition-defined");
-    return     (1);
+  SCOTCH_archInit (&archdat);                     /* Initialize architecture structure */
+  if (SCOTCH_archLoad (&archdat, C_filepntrtgtinp) != 0) { /* Load architecture        */
+    SCOTCH_errorPrint ("main: cannot load architecture");
+    return (EXIT_FAILURE);
   }
-  deco = (ArchDeco *) (void *) &archdat.data;     /* Point to the decomposition */
 
-  dstmin = (Anum) (((unsigned long) ((Anum) -1)) >> 1); /* Set to maximum number in Anum */
-  dstmax = 0;
-  dstsum = 0;
+  SCOTCH_archDomFrst (&archdat, &domndat);
+  termnbr = SCOTCH_archDomSize (&archdat, &domndat);
+  if ((termtab = (SCOTCH_ArchDom *) malloc (termnbr * sizeof (SCOTCH_ArchDom))) == NULL) {
+    SCOTCH_errorPrint ("main: out of memory");
+    return (EXIT_FAILURE);
+  }
+  termnum = 0;
+  if ((C_termList (&archdat, termtab, termnbr, &termnum, &domndat) != 0) ||
+      (termnum != termnbr)) {
+    SCOTCH_errorPrint ("main: cannot enumerate terminal domains");
+    return (EXIT_FAILURE);
+  }
 
-  for (dom0.num = 1; dom0.num <= deco->domvertnbr; dom0.num ++) { /* For all pairs of vertices */
-    if (archDecoDomSize (deco, &dom0) == 1) {     /* If vertex is a terminal                   */
-      for (dom1.num = dom0.num + 1; dom1.num <= deco->domvertnbr; dom1.num ++) {
-        if (archDecoDomSize (deco, &dom1) == 1) { /* If vertex is a terminal               */
-          dstval = archDecoDomDist (deco, &dom0, &dom1); /* Compute distance between pairs */
-          if (dstmin > dstval)
-            dstmin = dstval;
-          if (dstmax < dstval)
-            dstmax = dstval;
-          dstsum += dstval;                       /* Compute distance between pairs */
-        }
-      }
+  distmin = (SCOTCH_Num) (((unsigned long) ((SCOTCH_Num) -1)) >> 1); /* Set to maximum number in Anum */
+  distmax = 0;
+  distsum = 0;
+
+  for (ter0num = 0; ter0num < termnbr; ter0num ++) { /* For all pairs of terminal domains */
+    for (ter1num = ter0num + 1; ter1num < termnbr; ter1num ++) {
+      SCOTCH_Num          distval;
+
+      distval = SCOTCH_archDomDist (&archdat, &termtab[ter0num], &termtab[ter1num]); /* Compute distance between pairs */
+      if (distmin > distval)
+        distmin = distval;
+      if (distmax < distval)
+        distmax = distval;
+      distsum += distval;
     }
   }
-  dstavg = (deco->domtermnbr > 1)
-           ? (double) dstsum / (double) (deco->domtermnbr * (deco->domtermnbr - 1) / 2)
-           : 0.0L;
-  dstdlt = 0.0L;
-  for (dom0.num = 1; dom0.num <= deco->domvertnbr; dom0.num ++) { /* For all pairs of vertices */
-    if (archDecoDomSize (deco, &dom0) == 1) {     /* If vertex is a terminal                   */
-      for (dom1.num = dom0.num + 1; dom1.num <= deco->domvertnbr; dom1.num ++) {
-        if (archDecoDomSize (deco, &dom1) == 1)   /* If vertex is a terminal */
-          dstdlt += fabs (archDecoDomDist (deco, &dom0, &dom1) - dstavg);
-      }
+  distavg = (termnbr > 1)
+            ? (double) distsum / ((double) termnbr * (double) (termnbr - 1) / 2.0)
+            : 0.0L;
+  distdlt = 0.0L;
+
+  for (ter0num = 0; ter0num < termnbr; ter0num ++) { /* For all pairs of terminal domains */
+    for (ter1num = 0; ter1num < termnbr; ter1num ++) {
+      if (ter1num == ter0num)
+	continue;
+
+      distdlt += fabs ((double) SCOTCH_archDomDist (&archdat, &termtab[ter0num], &termtab[ter1num]) - distavg);
     }
   }
-  if (deco->domtermnbr > 1)
-    dstdlt /= (double) (deco->domtermnbr * (deco->domtermnbr - 1) / 2);
+  if (termnbr > 1)
+    distdlt /= (double) termnbr * (double) (termnbr - 1) / 2.0;
 
   fprintf (C_filepntrlogout, "A\tTerminals\tnbr=" SCOTCH_NUMSTRING "\n",
-           (SCOTCH_Num) deco->domtermnbr);
+           termnbr);
   fprintf (C_filepntrlogout, "A\tDistance\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tavg=%g\tdlt=%g\n",
-           (SCOTCH_Num) dstmin, (SCOTCH_Num) dstmax, dstavg, dstdlt);
+           distmin, distmax, distavg, distdlt);
+
+  free (termtab);
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
-  archExit (&archdat);
+  SCOTCH_archExit (&archdat);
 
-  return (0);
+  return (EXIT_SUCCESS);
+}
+
+/* This routine recursively enumerates all terminal
+** domains of an architecture.
+** It returns:
+** - 0  : if architecture successfully traversed.
+** - 1  : on error.
+*/
+
+int
+C_termList (
+SCOTCH_Arch * restrict const    archptr,
+SCOTCH_ArchDom * restrict const termtab,
+const SCOTCH_Num                termnum,
+SCOTCH_Num * const              termptr,
+SCOTCH_ArchDom * const          domnptr)
+{
+  SCOTCH_ArchDom      domntab[2];
+  int                 o;
+
+  if (SCOTCH_archDomSize (archptr, domnptr) == 1) { /* If domain is terminal */
+    if (*termptr >= termnum)                      /* If too many terminals   */
+      return (1);
+    
+    termtab[(*termptr) ++] = *domnptr;            /* Copy terminal domain to array */
+    return (0);
+  }
+
+  o = SCOTCH_archDomBipart (archptr, domnptr, &domntab[0], &domntab[1]);
+  if (o != 0)
+    return (o - 1);
+
+  return (C_termList (archptr, termtab, termnum, termptr, &domntab[0]) || /* Anticipated return in case of error */
+          C_termList (archptr, termtab, termnum, termptr, &domntab[1]));
 }

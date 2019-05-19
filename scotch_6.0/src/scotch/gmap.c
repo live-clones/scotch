@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -66,7 +66,7 @@
 /**                # Version 5.1  : from : 30 jun 2010     **/
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 29 may 2010     **/
-/**                                 to   : 10 jul 2018     **/
+/**                                 to   : 17 apr 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -179,7 +179,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    return     (0);
+    return     (EXIT_SUCCESS);
   }
 
   grafflag = 0;                                   /* Use vertex and edge weights  */
@@ -250,7 +250,7 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          return     (0);
+          return     (EXIT_SUCCESS);
         case 'M' :
         case 'm' :
           straptr = &argv[i][2];
@@ -316,9 +316,9 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "gmap/gpart, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007,2008,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
-          fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
-          return  (0);
+          fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
+          fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
+          return  (EXIT_SUCCESS);
         case 'v' :                                /* Output control info */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
@@ -503,7 +503,7 @@ char *                      argv[])
 
   memFree (parttab);                              /* Free hand-made partition array */
 
-  return (0);
+  return (EXIT_SUCCESS);
 }
 
 /* This routine writes a partition to

@@ -33,6 +33,8 @@
 includedir	= ../../include
 libdir		= ../../lib
 
+CCDFLAGS	?= $(CFLAGS)
+
 ##
 ##  General inference rules.
 ##
@@ -52,19 +54,24 @@ include ../Makefile.inc
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
 scotch				:
-					$(MAKE) CC="$(CCS)" CCD="$(CCS)"	\
-					scotch.h				\
-					scotchf.h				\
-					libscotch$(LIB)				\
-					libscotcherr$(LIB)			\
+					$(MAKE) 					\
+					CC="$(CCS)"					\
+					CCD="$(CCS)"					\
+					scotch.h					\
+					scotchf.h					\
+					libscotch$(LIB)					\
+					libscotcherr$(LIB)				\
 					libscotcherrexit$(LIB)
 
 ptscotch			:	scotch
-					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)"	\
-					ptscotch.h							\
-					ptscotchf.h							\
-					libptscotch$(LIB)						\
-					libptscotcherr$(LIB)						\
+					$(MAKE) 					\
+					CC="$(CCP)"					\
+					CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH"		\
+					CCDFLAGS="$(CCDFLAGS) -DSCOTCH_PTSCOTCH"	\
+					ptscotch.h					\
+					ptscotchf.h					\
+					libptscotch$(LIB)				\
+					libptscotcherr$(LIB)				\
 					libptscotcherrexit$(LIB)
 
 install				:	$(includedir)/scotch.h			\
@@ -332,6 +339,8 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_arch_f$(OBJ)			\
 			library_arch_build$(OBJ)		\
 			library_arch_build_f$(OBJ)		\
+			library_arch_dom$(OBJ)			\
+			library_arch_dom_f$(OBJ)		\
 			library_common_f$(OBJ)			\
 			library_geom$(OBJ)			\
 			library_geom_f$(OBJ)			\
@@ -1180,6 +1189,7 @@ graph_match$(OBJ)		:	graph_match.c				\
 					graph_match_scan.c			\
 					module.h				\
 					common.h				\
+					arch.h					\
 					graph.h					\
 					graph_coarsen.h				\
 					graph_match.h
@@ -1868,6 +1878,17 @@ library_arch_build_f$(OBJ)	:	library_arch_build_f.c			\
 					common.h				\
 					scotch.h
 
+library_arch_dom$(OBJ)		:	library_arch.c				\
+					module.h				\
+					common.h				\
+					arch.h					\
+					scotch.h
+
+library_arch_dom_f$(OBJ)	:	library_arch_dom_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
 library_common_f$(OBJ)		:	library_common_f.c			\
 					module.h				\
 					common.h				\
@@ -2456,6 +2477,7 @@ library_mesh_io_scot$(OBJ)	:	library_mesh_io_scot.c			\
 					geom.h					\
 					graph.h					\
 					mesh.h					\
+					mesh_io_scot.h				\
 					scotch.h
 
 library_mesh_io_scot_f$(OBJ)	:	library_mesh_io_scot_f.c		\
@@ -2618,6 +2640,7 @@ parser$(OBJ)			:	parser.c				\
 					module.h				\
 					common.h				\
 					parser.h				\
+					parser_ly.h				\
 					parser_yy.h
 
 parser_ll.c			:	parser_ll.l				\
@@ -2633,7 +2656,7 @@ parser_ll.c			:	parser_ll.l				\
 parser_ll$(OBJ)			:	parser_ll.c				\
 					parser_ly.h
 
-parser_ly.h			:	parser_yy$(OBJ)
+parser_ly.h			:	parser_yy.c
 
 parser_yy.c			:	parser_yy.y				\
 					module.h				\
@@ -3039,14 +3062,14 @@ dummysizes$(EXE)		:	dummysizes.c				\
 					mapping.h				\
 					order.h					\
 					parser.h
-			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+			 		$(CCD) $(CCDFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 ptdummysizes$(EXE)		:	dummysizes.c				\
 					module.h				\
 					common.h				\
 					dgraph.h				\
 					dorder.h
-			 		$(CCD) $(CFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
+			 		$(CCD) $(CCDFLAGS) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL) $(<) -o $(@) $(LDFLAGS)
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
