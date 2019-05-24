@@ -1,11 +1,11 @@
 Scotch : a software package for graph and mesh/hypergraph partitioning, graph clustering, and sparse matrix ordering
 ==============================
 
-The SCOTCH distribution is a set of programs and libraries which implement the static mapping and sparse matrix reordering algorithms developed within the SCOTCH project.
+The Scotch distribution is a set of programs and libraries which implement the static mapping and sparse matrix reordering algorithms developed within the Scotch project.
 
-SCOTCH has many interesting features:
+Scotch has many interesting features:
 
-* Its capabilities can be used through a set of stand-alone programs as well as through the libSCOTCH library, which offers both C and Fortran interfaces.
+* Its capabilities can be used through a set of stand-alone programs as well as through the libScotch library, which offers both C and Fortran interfaces.
 
 * It provides algorithms to partition graph structures, as well as mesh structures defined as node-element bipartite graphs and which can also represent hypergraphs.
 
@@ -21,15 +21,15 @@ SCOTCH has many interesting features:
 
 * It is dynamically parametrizable thanks to strategy strings that are interpreted at run-time.
 
-* It uses system memory efficiently, to process large graphs and meshes without incurring out-of-memory faults;
+* It uses system memory efficiently, to process large graphs and meshes without incurring out-of-memory faults.
 
 * It is highly modular and documented. Since it has been released under the CeCILL-C free/libre software license, it can be used as a testbed for the easy and quick development and testing of new partitioning and ordering methods.
 
-* It can be easily interfaced to other programs. The programs comprising the SCOTCH project have been designed to run in command-line mode without any interactive prompting, so that they can be called easily from other programs by means of system() or popen() calls, or piped together on a single command line. Moreover, vertex labeling capabilities allow for easy renumbering of vertices.
+* It can be easily interfaced to other programs. The programs comprising the Scotch project have been designed to run in command-line mode without any interactive prompting, so that they can be called easily from other programs by means of system() or popen() calls, or piped together on a single command line. Moreover, vertex labeling capabilities allow for easy renumbering of vertices.
 
 * It provides many tools to build, check, and display graphs, meshes and matrix patterns.
 
-* It is written in C and uses the POSIX interface, which makes it highly portable. PT-SCOTCH uses the MPI interface, and optionally the POSIX threads.
+* It is written in C and uses the POSIX interface, which makes it highly portable. PT-Scotch uses the MPI interface, and optionally the POSIX threads.
 
 
 Get Scotch
@@ -47,14 +47,16 @@ branch.
       git submodule init
       git submodule update
 
-Last releases of Scotch are hosted on the
+Releases of Scotch are hosted on the
 [gforge.inria.fr](https://gforge.inria.fr/frs/?group_id=248) for now.
-Future releases will be available on this gitlab project.
+Future releases will be available on this Gitlab project repository.
 
 Documentation
 -------------
 
-A temporary link to the User Guide [documentation](https://gforge.inria.fr/docman/view.php/248/8260/scotch_user6.0.pdf). (we are waiting for availability of pages functionality in gitlab...)
+All user and maintenance manuals are available here:
+
+https://gitlab.inria.fr/scotch/scotch/tree/master/doc
 
 Installation
 ------------
@@ -66,7 +68,7 @@ Get involved!
 
 ### Reporting an issue
 
-We strongly recommend all users to use the issue tracker to report any problems with the software, or for any feature request. We will try our best to answer them in a short time frame.
+We strongly recommend all users to use the issue tracker to report any problems with the software, or for any feature request. We will try our best to answer them.
 
 ### Contributions
 
@@ -74,19 +76,25 @@ https://gitlab.inria.fr/scotch/scotch/blob/master/CONTRIBUTING.md
 
 ### Authors
 
-The following people contribute or contributed to the development of Scotch:
-  * François Pellegrini, PI
-  * ...
-
-If we forgot your name, please let us know that we can fix that mistake.
+The following people contribute(d) to the development of Scotch:
+* Cédric CHEVALIER
+* Sébastien FOURESTIER
+* Jun-Ho HER
+* Cédric LACHAT
+* Amaury JACQUES
+* François PELLEGRINI (PI)
+* Luca SCARANO
 
 ### Citing Scotch
 
 Feel free to use the following publications to reference Scotch:
 
-* Original paper:
-  - HAL ...
+* "Scotch and PT-Scotch Graph Partitioning Software: An Overview"
+  https://hal.inria.fr/hal-00770422
+
+* "PT-Scotch: A tool for efficient parallel graph ordering"
+  https://hal.inria.fr/hal-00402893
 
 ### Licence
 
-https://gitlab.inria.fr/solverstack/pastix/blob/master/LICENCE.txt
+https://gitlab.inria.fr/scotch/scotch/blob/master/LICENSE_en.txt
