@@ -56,7 +56,7 @@
 /**                # Version 5.1  : from : 30 jun 2010     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
-/**                                 to     18 may 2019     **/
+/**                                 to     17 jun 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,6 +84,12 @@
 #define METISNAME3(s)               s
 #define METISNAME4(p,s)             p##s
 #endif /* METISNAMEL */
+
+#ifndef SCOTCH_METIS_DATATYPES
+#define SCOTCH_METIS_DATATYPES
+typedef SCOTCH_Num          idx_t;
+typedef double              real_t;
+#endif /* SCOTCH_METIS_DATATYPES */
 
 #ifndef SCOTCH_METIS_RETURN
 #define SCOTCH_METIS_RETURN
