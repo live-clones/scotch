@@ -58,6 +58,8 @@ include Makefile.inc
 prefix		?= /usr/local
 bindir		?= $(prefix)/bin
 includedir	?= $(prefix)/include
+includestub     ?= include_stub
+includestubdir	?= $(prefix)/$(includestub)
 libdir		?= $(prefix)/lib
 datarootdir	?= $(prefix)/share
 mandir		?= $(datarootdir)/man
@@ -79,6 +81,7 @@ $(datarootdir)			:
 
 $(includedir)			:
 					-$(MKDIR) $(includedir)
+					-$(MKDIR) $(includestubdir)
 
 $(libdir)			:
 					-$(MKDIR) $(libdir)
@@ -123,6 +126,9 @@ install				:	required	$(bindir)	$(includedir)	$(libdir)	$(mandir)/man1
 					-$(CP) -f ../lib/*esmumps*$(LIB) $(libdir)
 					-$(CP) -f ../lib/*scotch*$(LIB) $(libdir)
 					-$(CP) -Rf ../man/* $(mandir)
+
+installstub			:	required	$(includedir)
+					-$(CP) -f ../include/*metis*.h $(includestubdir)
 
 clean				:	required
 					(cd libscotch ;      $(MAKE) clean)
