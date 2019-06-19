@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 06 jun 2009     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 23 dec 2011     **/
-/**                                 to     18 may 2019     **/
+/**                                 to     19 jun 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -386,7 +386,7 @@ SCOTCH_Num * const          part)
   vwgt2   = ((*wgtflag & 2) != 0) ? vwgt   : NULL;
   adjwgt2 = ((*wgtflag & 1) != 0) ? adjwgt : NULL;
 
-  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt, adjwgt,
+  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt2, adjwgt2,
                                    numflag, nparts, NULL, options, edgecut, part,
                                    SCOTCH_STRATRECURSIVE, &kbalval));
 }
@@ -417,7 +417,7 @@ SCOTCH_Num * const          part)
   vsize2  = ((*wgtflag & 1) != 0) ? vsize : NULL;
   vwgt2   = ((*wgtflag & 2) != 0) ? vwgt  : NULL;
 
-  return (_SCOTCH_METIS_PartGraph_Volume (n, xadj, adjncy, vwgt, vsize,
+  return (_SCOTCH_METIS_PartGraph_Volume (n, xadj, adjncy, vwgt2, vsize2,
                                           numflag, nparts, NULL, options, volume, part,
                                           SCOTCH_STRATDEFAULT, &kbalval));
 }
