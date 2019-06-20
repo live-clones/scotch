@@ -10,7 +10,7 @@ cppcheck -v --max-configs=1 --language=c ${CPPCHECK_DEFINITIONS_VM:---platform=n
 rats -w 3 --xml `cat filelist.txt` > scotch-rats.xml
 
 cat > sonar-project.properties << EOF
-sonar.host.url=https://sonarqube.bordeaux.inria.fr/sonarqube
+sonar.host.url=https://sonarqube.inria.fr/sonarqube
 sonar.login=$SONARQUBE_LOGIN
 sonar.links.homepage=$CI_PROJECT_URL
 sonar.links.scm=$CI_REPOSITORY_URL
