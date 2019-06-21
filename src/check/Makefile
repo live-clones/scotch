@@ -130,6 +130,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_amk_grf			\
 			check_prog_acpl				\
 			check_prog_gbase			\
+			check_prog_gmap				\
 			check_prog_gmk				\
 			check_prog_gord				\
 			check_prog_gout				\
@@ -442,6 +443,10 @@ check_prog_mord                 : check_prog_mmk
 					$(EXECS) $(SCOTCHBINDIR)/mord $(TMPDIR)/m2_5_1.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/m2_5_1.grf
 					$(EXECS) $(SCOTCHBINDIR)/mord $(TMPDIR)/m2_5_4.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/m2_5_4.grf
 					$(EXECS) $(SCOTCHBINDIR)/mord $(TMPDIR)/m2_5_4_3.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/m2_5_4_3.grf
+
+check_prog_gmap			:
+					$(EXECS) $(SCOTCHBINDIR)/gmap data/bump.grf $(SCOTCHTGTDIR)/h3.tgt $(TMPDIR)/bump_h3.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gmap data/small.grf $(SCOTCHTGTDIR)/m11x13.tgt $(TMPDIR)/small_m11x13.map -vmt
 
 check_prog_gord			:
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf $(TMPDIR)/bump.ord -vt
