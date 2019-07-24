@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 17 nov 2010     **/
 /**                                 to     17 nov 2010     **/
 /**                # Version 6.0  : from : 04 dec 2012     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     24 jul 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -483,7 +483,7 @@ double *                    edlodltptr)
         }
       }
       edloavg = (double) edlosum /
-                (double) (2 * srcgrafptr->edgenbr);
+                (double) srcgrafptr->edgenbr;
 
       for (vertnum = srcgrafptr->baseval; vertnum < srcgrafptr->vertnnd; vertnum ++) {
         for (edgenum = srcgrafptr->verttax[vertnum]; edgenum < srcgrafptr->vendtax[vertnum]; edgenum ++) /* For all edges */
