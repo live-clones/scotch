@@ -139,6 +139,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_gpart_overlap		\
 			check_prog_gpart_remap			\
 			check_prog_gscat			\
+			check_prog_gtst				\
 			check_prog_mmk				\
 			check_prog_mord
 
@@ -480,6 +481,11 @@ check_prog_gpart_remap		:
 
 check_prog_gscat		:
 					$(EXECS) $(SCOTCHBINDIR)/gscat 4 data/small.grf $(TMPDIR)/small_%r.grf
+
+check_prog_gtst			:
+					$(EXECS) $(SCOTCHBINDIR)/gtst data/m4x4_b1_ev.grf $(TMPDIR)/gtst_ev.txt
+					$(EXECS) $(SCOTCHBINDIR)/gtst data/m4x4_b1_elv.grf $(TMPDIR)/gtst_elv.txt
+					$(PROGDIFF) "$(TMPDIR)/gtst_ev.txt" "$(TMPDIR)/gtst_elv.txt"
 
 ##
 ##  Parallel program tests.
