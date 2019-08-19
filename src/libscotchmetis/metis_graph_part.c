@@ -353,8 +353,8 @@ SCOTCH_Num * const          part)
   double              kbalval;
 
   kbalval = 0.01;
-  vwgt2   = ((*wgtflag & 2) != 0) ? vwgt   : NULL;
-  adjwgt2 = ((*wgtflag & 1) != 0) ? adjwgt : NULL;
+  vwgt2   = ((wgtflag == NULL) || ((*wgtflag & 2) != 0)) ? vwgt   : NULL;
+  adjwgt2 = ((wgtflag == NULL) || ((*wgtflag & 1) != 0)) ? adjwgt : NULL;
 
   return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt2, adjwgt2,
                                    numflag, nparts, NULL, options, edgecut, part,
@@ -384,8 +384,8 @@ SCOTCH_Num * const          part)
   double              kbalval;
 
   kbalval = 0.01;
-  vwgt2   = ((*wgtflag & 2) != 0) ? vwgt   : NULL;
-  adjwgt2 = ((*wgtflag & 1) != 0) ? adjwgt : NULL;
+  vwgt2   = ((wgtflag == NULL) || ((*wgtflag & 2) != 0)) ? vwgt   : NULL;
+  adjwgt2 = ((wgtflag == NULL) || ((*wgtflag & 1) != 0)) ? adjwgt : NULL;
 
   return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt2, adjwgt2,
                                    numflag, nparts, NULL, options, edgecut, part,
@@ -415,8 +415,8 @@ SCOTCH_Num * const          part)
   double              kbalval;
 
   kbalval = 0.01;
-  vsize2  = ((*wgtflag & 1) != 0) ? vsize : NULL;
-  vwgt2   = ((*wgtflag & 2) != 0) ? vwgt  : NULL;
+  vsize2  = ((wgtflag == NULL) || ((*wgtflag & 1) != 0)) ? vsize : NULL;
+  vwgt2   = ((wgtflag == NULL) || ((*wgtflag & 2) != 0)) ? vwgt  : NULL;
 
   return (_SCOTCH_METIS_PartGraph_Volume (n, xadj, adjncy, vwgt2, vsize2,
                                           numflag, nparts, NULL, options, volume, part,
