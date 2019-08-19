@@ -165,6 +165,13 @@ test_scotch_32-dnt:
     name: scotch_build_32-dnt
   <<: *job_test_32
 
+test_scotch_32-64d:
+  dependencies:
+    - build_scotch_32-64d
+  artifacts:
+    name: scotch_build_32-64d
+  <<: *job_test_32
+
 test_scotch_64:
   dependencies:
     - build_scotch_64
