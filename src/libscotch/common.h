@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     14 jul 2018     **/
+/**                                 to     19 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,6 +79,7 @@
 #include            <stdlib.h>
 #if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H))
 #include            <stdint.h>
+#include            <inttypes.h>
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
 #ifdef HAVE_MALLOC_H
 #include            <malloc.h>                    /* Deprecated, but required on some old systems */
@@ -152,8 +153,13 @@
 #define INT                         int32_t
 #define UINT                        UINT32
 #define COMM_INT                    MPI_INTEGER4
+#ifdef PRId32
+#define INTSTRING                   "%" PRId32
+#define UINTSTRING                  "%" PRIu32
+#else /* PRId32 */
 #define INTSTRING                   "%d"
 #define UINTSTRING                  "%u"
+#endif /* PRId32 */
 #else /* INTSIZE32 */
 #ifdef INTSIZE64
 #define INT                         int64_t
@@ -163,8 +169,13 @@
 #define UINT                        u_int64_t
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T)) */
 #define COMM_INT                    MPI_LONG_LONG
+#ifdef PRId64
+#define INTSTRING                   "%" PRId64
+#define UINTSTRING                  "%" PRIu64
+#else /* PRId64 */
 #define INTSTRING                   "%lld"
 #define UINTSTRING                  "%llu"
+#endif /* PRId64 */
 #else /* INTSIZE64 */
 #ifdef LONG                                       /* Better not use it */
 #define INT                         long          /* Long integer type */
