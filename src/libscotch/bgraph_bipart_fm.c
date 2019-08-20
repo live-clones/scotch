@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2016,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -65,7 +65,7 @@
 /**                # Version 5.1  : from : 30 oct 2008     **/
 /**                                 to   : 14 apr 2011     **/
 /**                # Version 6.0  : from : 23 feb 2011     **/
-/**                                 to     27 aug 2016     **/
+/**                                 to     20 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -679,21 +679,23 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
           mswpnum ++;
         }
       }
-      if ((compload0dltmin < compload0dltmit) ||  /* If must restrict distance bounds */
-          (compload0dltmax > compload0dltmat)) {
-        if ((compload0dlt > compload0dltmin) &&   /* If we have done something useful */
-            (compload0dlt < compload0dltmax)) {
-          compload0dltmin = MIN (compload0dltmit, compload0dlt); /* Update bounds */
-          compload0dltmax = MAX (compload0dltmat, compload0dlt);
-          compload0dltbst = compload0dlt;         /* Record best move done */
-          commloadbst     = commload;
-          commgainextnbst = commgainextn;
-          swapvalbst      = swapval;
-          moveflag        = 1;
-          movenbr         =
-          savenbr         = 0;
-          mswpnum ++;
-        }
+
+      if (((compload0dltmin <  compload0dltmit) && /* If must restrict distance bounds  */
+           (compload0dlt    >  compload0dltmin) && /* And we have done something useful */
+           (compload0dlt    <= compload0dltmax)) ||
+          ((compload0dltmax >  compload0dltmat) &&
+           (compload0dlt    <  compload0dltmax) &&
+           (compload0dlt    >= compload0dltmin))) {
+        compload0dltmin = MIN (compload0dltmit, compload0dlt); /* Update bounds */
+        compload0dltmax = MAX (compload0dltmat, compload0dlt);
+        compload0dltbst = compload0dlt;           /* Record best move done */
+        commloadbst     = commload;
+        commgainextnbst = commgainextn;
+        swapvalbst      = swapval;
+        moveflag        = 1;
+        movenbr         =
+        savenbr         = 0;
+        mswpnum ++;
       }
 #ifdef SCOTCH_DEBUG_BGRAPH2
 #ifdef SCOTCH_DEBUG_BGRAPH3
