@@ -575,10 +575,10 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
             hashtab[hashnum].commgain += (domndist * 2) * edloval * partdlt;
             hashtab[hashnum].commcut  -= partdlt;
 
-            if (! bgraphBipartFmIsUsed(&hashtab[hashnum])) {        /* If vertex is of use      */
-              if (bgraphBipartFmIsTabl(&hashtab[hashnum])) {        /* If vertex is linked      */
-                bgraphBipartFmTablDel (tablptr, &hashtab[hashnum]); /* Remove it from table     */
-                bgraphBipartFmSetFree (&hashtab[hashnum]);          /* Mark it as free anyway   */
+            if (! bgraphBipartFmIsUsed(&hashtab[hashnum])) { /* If vertex is of use         */
+              if (bgraphBipartFmIsTabl(&hashtab[hashnum])) { /* If vertex is linked         */
+                bgraphBipartFmTablDel (tablptr, &hashtab[hashnum]); /* Remove it from table */
+                bgraphBipartFmSetFree (&hashtab[hashnum]); /* Mark it as free anyway        */
               }
               if (hashtab[hashnum].commcut > 0)   /* If vertex belongs to the frontier */
                 bgraphBipartFmTablAdd (tablptr, &hashtab[hashnum]); /* Re-link it      */
