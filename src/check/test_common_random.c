@@ -121,7 +121,7 @@ char *              argv[])
     switch (SCOTCH_randomSave (fileptr)) {        /* Try to save random state, if enabled */
       case 0 :
         if (fprintf (fileptr, "#") != 1) {        /* Write separator character */
-          SCOTCH_errorPrint ("main: cannot write to file (3)");
+          SCOTCH_errorPrint ("main: cannot write to file (2)");
           exit (EXIT_FAILURE);
         }
 
