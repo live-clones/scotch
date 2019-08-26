@@ -66,7 +66,7 @@
 /**                # Version 5.1  : from : 22 nov 2007     **/
 /**                                 to     04 feb 2009     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     25 feb 2018     **/
+/**                                 to     21 jun 2019     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -961,9 +961,14 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
 
       if ((partval = 1, actgrafdat.compsize0 == 0) || /* If no bipartition found */
           (partval = 0, actgrafdat.compsize0 == actgrafdat.s.vertnbr)) {
-        if (((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) != 0) || /* If architecture is variable-sized     */
-            (archDomSize (mappptr->archptr, &domnsubtab[partval]) <= 1)) { /* Or if domain is terminal   */
-          pooldat.domntab[0][jobsubnum[0]] = joborgdat.domnorg; /* Update domain in next pool            */
+        if ((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) != 0) { /* If architecture is variable-sized       */
+          pooldat.domntab[0][jobsubnum[0]] = joborgdat.domnorg; /* Propagate domain in next pool         */
+          kgraphMapRbMapPoolRemv (&pooldat, &joborgdat); /* Remove job from pool as long as graph exists */
+          bgraphExit (&actgrafdat);               /* Free bipartitioning data as well as current graph   */
+          continue;                               /* Process next job in current pool                    */
+        }
+        if (archDomSize (mappptr->archptr, &domnsubtab[partval]) <= 1) { /* If domain is terminal        */
+          pooldat.domntab[0][jobsubnum[0]] = domnsubtab[partval]; /* Refine domain in next pool          */
           kgraphMapRbMapPoolRemv (&pooldat, &joborgdat); /* Remove job from pool as long as graph exists */
           bgraphExit (&actgrafdat);               /* Free bipartitioning data as well as current graph   */
           continue;                               /* Process next job in current pool                    */

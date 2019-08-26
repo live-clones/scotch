@@ -223,7 +223,7 @@ const GraphFlag             flagval)              /* Graph loading flags        
       if (proptab[1] != 0) {                      /* If must read edge load        */
         Gnum                edloval;              /* Value where to read edge load */
 
-        if (intLoad (stream, &edloval) != 1) {    /* Read edge load data    */
+        if (intLoad (stream, &edloval) != 1) {    /* Read edge load data */
           errorPrint ("graphLoad: bad input (6)");
           graphFree  (grafptr);
           return     (1);

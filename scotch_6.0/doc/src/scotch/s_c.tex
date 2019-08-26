@@ -80,11 +80,12 @@ page~\pageref{sec-lib-format-strat-default}.
 
 The \metis\ compatibility library now provides optionally version~5 of
 the \metis\ API, in addition to version~3. In the \texttt{6.0} branch
-of \scotch, version~3 of the API will remain the default, and
-version~5 of the \metis\ API must be activated by compiling
-\scotch\ with flag \texttt{SCOTCH\_\lbt METIS\lbt V5} set. In further
-branches, version~5 of the API may become the default, version~3
-requiring the \texttt{SCOTCH\_\lbt METIS\lbt V3} flag to be set.
+of \scotch, version~3 of the API will remain the default. To expose
+version~5 of the \metis\ API, \scotch\ must be compiled with flag
+\texttt{SCOTCH\_\lbt METIS\_\lbt VERSION=5} set. In further branches,
+version~5 of the API may become the default, requiring the
+\texttt{SCOTCH\_\lbt METIS\_\lbt VERSION=3} flag to be set to expose
+version~3 of the \metis\ API.
 
 \subsection{Changes in version 5.1 from version 5.0}
 

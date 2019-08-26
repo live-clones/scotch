@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 06 jun 2009     **/
 /**                                 to     30 jun 2010     **/
 /**                # Version 6.0  : from : 23 dec 2011     **/
-/**                                 to     18 may 2019     **/
+/**                                 to     19 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -248,7 +248,7 @@ const double * const        kbalval)
   SCOTCH_Num                  edgenum;
   const SCOTCH_Num * restrict edgetax;
   const SCOTCH_Num * restrict parttax;
-  SCOTCH_Num * restrict       nghbtab;
+  SCOTCH_Num * restrict       nghbtax;
   SCOTCH_Num                  commvol;
 
   baseval = *numflag;
@@ -294,9 +294,10 @@ const double * const        kbalval)
       return (METIS_ERROR);
   }
 
-  if ((nghbtab = memAlloc (*nparts * sizeof (SCOTCH_Num))) == NULL)
+  if ((nghbtax = memAlloc (*nparts * sizeof (SCOTCH_Num))) == NULL) /* Part array is un-based at allocation */
     return (METIS_ERROR_MEMORY);
-  memSet (nghbtab, ~0, *nparts * sizeof (SCOTCH_Num));
+  memSet (nghbtax, ~0, *nparts * sizeof (SCOTCH_Num));
+  nghbtax -= baseval;                               /* Base part array since parts are based in MeTiS */
 
   parttax = part - baseval;
   vsizval = 1;                                      /* Assume no vertex communication sizes */
@@ -306,7 +307,7 @@ const double * const        kbalval)
     SCOTCH_Num          edgennd;
 
     partval = part[vertnum];
-    nghbtab[partval] = vertnum;                   /* Do not count local neighbors in communication volume */
+    nghbtax[partval] = vertnum;                   /* Do not count local neighbors in communication volume */
     if (vsize != NULL)
       vsizval = vsize[vertnum];
 
@@ -316,15 +317,15 @@ const double * const        kbalval)
 
       vertend = edgetax[edgenum];
       partend = parttax[vertend];
-      if (nghbtab[partend] != vertnum) {          /* If first neighbor in this part */
-        nghbtab[partend] = vertnum;               /* Set part as accounted for      */
+      if (nghbtax[partend] != vertnum) {          /* If first neighbor in this part */
+        nghbtax[partend] = vertnum;               /* Set part as accounted for      */
         commvol += vsizval;
       }
     }
   }
   *volume = commvol;
 
-  memFree (nghbtab);
+  memFree (nghbtax + baseval);                    /* Free un-based array */
 
   return (METIS_OK);
 }
@@ -352,8 +353,8 @@ SCOTCH_Num * const          part)
   double              kbalval;
 
   kbalval = 0.01;
-  vwgt2   = ((*wgtflag & 2) != 0) ? vwgt   : NULL;
-  adjwgt2 = ((*wgtflag & 1) != 0) ? adjwgt : NULL;
+  vwgt2   = ((wgtflag == NULL) || ((*wgtflag & 2) != 0)) ? vwgt   : NULL;
+  adjwgt2 = ((wgtflag == NULL) || ((*wgtflag & 1) != 0)) ? adjwgt : NULL;
 
   return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt2, adjwgt2,
                                    numflag, nparts, NULL, options, edgecut, part,
@@ -383,10 +384,10 @@ SCOTCH_Num * const          part)
   double              kbalval;
 
   kbalval = 0.01;
-  vwgt2   = ((*wgtflag & 2) != 0) ? vwgt   : NULL;
-  adjwgt2 = ((*wgtflag & 1) != 0) ? adjwgt : NULL;
+  vwgt2   = ((wgtflag == NULL) || ((*wgtflag & 2) != 0)) ? vwgt   : NULL;
+  adjwgt2 = ((wgtflag == NULL) || ((*wgtflag & 1) != 0)) ? adjwgt : NULL;
 
-  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt, adjwgt,
+  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt2, adjwgt2,
                                    numflag, nparts, NULL, options, edgecut, part,
                                    SCOTCH_STRATRECURSIVE, &kbalval));
 }
@@ -414,10 +415,10 @@ SCOTCH_Num * const          part)
   double              kbalval;
 
   kbalval = 0.01;
-  vsize2  = ((*wgtflag & 1) != 0) ? vsize : NULL;
-  vwgt2   = ((*wgtflag & 2) != 0) ? vwgt  : NULL;
+  vsize2  = ((wgtflag == NULL) || ((*wgtflag & 1) != 0)) ? vsize : NULL;
+  vwgt2   = ((wgtflag == NULL) || ((*wgtflag & 2) != 0)) ? vwgt  : NULL;
 
-  return (_SCOTCH_METIS_PartGraph_Volume (n, xadj, adjncy, vwgt, vsize,
+  return (_SCOTCH_METIS_PartGraph_Volume (n, xadj, adjncy, vwgt2, vsize2,
                                           numflag, nparts, NULL, options, volume, part,
                                           SCOTCH_STRATDEFAULT, &kbalval));
 }

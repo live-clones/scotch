@@ -39,7 +39,7 @@
 /**                generator module.                       **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 01 oct 2014     **/
-/**                                 to     22 may 2018     **/
+/**                                 to     24 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +121,7 @@ char *              argv[])
     switch (SCOTCH_randomSave (fileptr)) {        /* Try to save random state, if enabled */
       case 0 :
         if (fprintf (fileptr, "#") != 1) {        /* Write separator character */
-          SCOTCH_errorPrint ("main: cannot write to file (3)");
+          SCOTCH_errorPrint ("main: cannot write to file (2)");
           exit (EXIT_FAILURE);
         }
 
@@ -140,7 +140,7 @@ char *              argv[])
         break;
     }
 
-    sleep (1);                                    /* Next run will not get the same time() value */
+    sleep (2);                                    /* Next run will not get the same time() value */
   }
   else {                                          /* Second pass */
     char *              charptr;

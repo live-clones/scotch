@@ -67,7 +67,7 @@
 /**                # Version 5.1  : from : 22 nov 2007     **/
 /**                                 to     07 oct 2008     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     31 may 2018     **/
+/**                                 to     21 jun 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,12 +110,15 @@ kgraphMapRb (
 Kgraph * const                          grafptr,
 const KgraphMapRbParam * restrict const paraptr)
 {
-  KgraphMapRbData               datadat;          /* Data passed to each bipartitioning job            */
-  Graph                         indgrafdat;       /* Induced graph without fixed vertices              */
-  Graph * restrict              indgrafptr;       /* Pointer to top-level graph without fixed vertices */
-  KgraphMapRbVflo * restrict    vflotab;          /* Array of fixed vertex load slots                  */
-  Anum                          vflonbr;          /* Number of fixed vertex load slots                 */
-  int                           o;
+  KgraphMapRbData             datadat;            /* Data passed to each bipartitioning job            */
+  Graph                       indgrafdat;         /* Induced graph without fixed vertices              */
+  Graph * restrict            indgrafptr;         /* Pointer to top-level graph without fixed vertices */
+  KgraphMapRbVflo * restrict  vflotab;            /* Array of fixed vertex load slots                  */
+  Anum                        vflonbr;            /* Number of fixed vertex load slots                 */
+#ifdef SCOTCH_DEBUG_KGRAPH2
+  Anum                        domnnum;
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
+  int                         o;
 
   grafptr->kbalval = paraptr->kbalval;            /* Store last k-way imbalance ratio */
 
@@ -168,6 +171,13 @@ const KgraphMapRbParam * restrict const paraptr)
   kgraphCost (grafptr);                           /* Compute cost of full k-way partition */
 
 #ifdef SCOTCH_DEBUG_KGRAPH2
+  for (domnnum = 0; domnnum < grafptr->m.domnnbr; domnnum ++) {
+    if (archDomSize (grafptr->m.archptr, &grafptr->m.domntab[domnnum]) != 1) {
+      errorPrint ("kgraphMapRb: invalid mapping");
+      return     (1);
+    }
+  }
+
   if (kgraphCheck (grafptr) != 0) {
     errorPrint ("kgraphMapRb: inconsistent graph data");
     return     (1);
