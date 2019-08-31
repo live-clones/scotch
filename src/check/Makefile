@@ -233,7 +233,7 @@ test_scotch_arch_deco		:	test_scotch_arch_deco.c		\
 
 check_scotch_graph_coarsen	:	test_scotch_graph_coarsen
 					$(EXECS) ./test_scotch_graph_coarsen data/bump.grf
-					$(EXECS) ./test_scotch_graph_coarsen data/bump_b1.grf
+					$(EXECS) ./test_scotch_graph_coarsen data/bump_b100000.grf
 
 test_scotch_graph_coarsen	:	test_scotch_graph_coarsen.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -242,6 +242,7 @@ test_scotch_graph_coarsen	:	test_scotch_graph_coarsen.c	\
 
 check_scotch_graph_color	:	test_scotch_graph_color
 					$(EXECS) ./test_scotch_graph_color data/bump.grf
+					$(EXECS) ./test_scotch_graph_color data/bump_b100000.grf
 
 test_scotch_graph_color		:	test_scotch_graph_color.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -250,6 +251,7 @@ test_scotch_graph_color		:	test_scotch_graph_color.c	\
 
 check_scotch_graph_diam		:	test_scotch_graph_diam
 					$(EXECS) ./test_scotch_graph_diam data/bump.grf
+					$(EXECS) ./test_scotch_graph_diam data/bump_b100000.grf
 					$(EXECS) ./test_scotch_graph_diam data/m16x16_b1.grf
 					$(EXECS) ./test_scotch_graph_diam data/p2-p2.grf
 
@@ -260,7 +262,7 @@ test_scotch_graph_diam		:	test_scotch_graph_diam.c	\
 
 check_scotch_graph_induce	:	test_scotch_graph_induce
 					$(EXECS) ./test_scotch_graph_induce data/bump.grf
-					$(EXECS) ./test_scotch_graph_induce data/bump_b1.grf
+					$(EXECS) ./test_scotch_graph_induce data/bump_b100000.grf
 
 test_scotch_graph_induce	:	test_scotch_graph_induce.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -279,7 +281,8 @@ test_scotch_graph_map		:	test_scotch_graph_map.c		\
 ##
 
 check_scotch_graph_map_copy	:	test_scotch_graph_map_copy
-					$(EXECS) ./test_scotch_graph_map_copy data/bump_b1.grf
+					$(EXECS) ./test_scotch_graph_map_copy data/bump.grf
+					$(EXECS) ./test_scotch_graph_map_copy data/bump_b100000.grf
 
 test_scotch_graph_map_copy	:	test_scotch_graph_map_copy.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -288,7 +291,7 @@ test_scotch_graph_map_copy	:	test_scotch_graph_map_copy.c	\
 
 check_scotch_graph_order	:	test_scotch_graph_order
 					$(EXECS) ./test_scotch_graph_order data/bump.grf
-					$(EXECS) ./test_scotch_graph_order data/bump_b1.grf
+					$(EXECS) ./test_scotch_graph_order data/bump_b100000.grf
 
 test_scotch_graph_order		:	test_scotch_graph_order.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -331,7 +334,8 @@ test_strat_par			:	test_strat_par.c		\
 ##
 
 check_scotch_dgraph_band	:	test_scotch_dgraph_band
-					$(EXECP) ./test_scotch_dgraph_band data/bump_b1.grf
+					$(EXECP) ./test_scotch_dgraph_band data/bump.grf
+					$(EXECP) ./test_scotch_dgraph_band data/bump_b100000.grf
 
 test_scotch_dgraph_band		:	test_scotch_dgraph_band.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -340,7 +344,7 @@ test_scotch_dgraph_band		:	test_scotch_dgraph_band.c	\
 
 check_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen
 					$(EXECP) ./test_scotch_dgraph_coarsen data/bump.grf
-					$(EXECP) ./test_scotch_dgraph_coarsen data/bump_b1.grf
+					$(EXECP) ./test_scotch_dgraph_coarsen data/bump_b100000.grf
 
 test_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -349,7 +353,7 @@ test_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen.c	\
 
 check_scotch_dgraph_check	:	test_scotch_dgraph_check
 					$(EXECP) ./test_scotch_dgraph_check data/bump.grf
-					$(EXECP) ./test_scotch_dgraph_check data/bump_b1.grf
+					$(EXECP) ./test_scotch_dgraph_check data/bump_b100000.grf
 
 test_scotch_dgraph_check	:	test_scotch_dgraph_check.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -358,6 +362,7 @@ test_scotch_dgraph_check	:	test_scotch_dgraph_check.c	\
 
 check_scotch_dgraph_grow	:	test_scotch_dgraph_grow
 					$(EXECP) ./test_scotch_dgraph_grow data/bump.grf
+					$(EXECP) ./test_scotch_dgraph_grow data/bump_b100000.grf
 
 test_scotch_dgraph_grow		:	test_scotch_dgraph_grow.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -366,7 +371,7 @@ test_scotch_dgraph_grow		:	test_scotch_dgraph_grow.c	\
 
 check_scotch_dgraph_induce	:	test_scotch_dgraph_induce
 					$(EXECP) ./test_scotch_dgraph_induce data/bump.grf
-					$(EXECP) ./test_scotch_dgraph_induce data/bump_b1.grf
+					$(EXECP) ./test_scotch_dgraph_induce data/bump_b100000.grf
 
 test_scotch_dgraph_induce	:	test_scotch_dgraph_induce.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -375,6 +380,7 @@ test_scotch_dgraph_induce	:	test_scotch_dgraph_induce.c	\
 
 check_scotch_dgraph_redist	:	test_scotch_dgraph_redist
 					$(EXECP) ./test_scotch_dgraph_redist data/bump.grf
+					$(EXECP) ./test_scotch_dgraph_redist data/bump_b100000.grf
 
 test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
 
@@ -463,16 +469,19 @@ check_prog_gout			:	check_prog_gord		\
 
 check_prog_gpart		:
 					$(EXECS) $(SCOTCHBINDIR)/gpart 9 data/bump.grf $(TMPDIR)/bump_k9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gpart 9 data/bump_b100000.grf $(TMPDIR)/bump_k9.map -vmt
 
 check_prog_gpart_clustering	:
-					$(EXECS) $(SCOTCHBINDIR)/gpart -q 1 data/bump_b1.grf $(TMPDIR)/bump_b1_part_cls_9.map -vmt
-					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_b1.grf $(SCOTCHTGTDIR)/vcmplt.tgt $(TMPDIR)/bump_b1_part_cls_9.map
+					$(EXECS) $(SCOTCHBINDIR)/gpart -q 1 data/bump.grf $(TMPDIR)/bump_part_cls_9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gpart -q 1 data/bump_b100000.grf $(TMPDIR)/bump_b100000_part_cls_9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_b100000.grf $(SCOTCHTGTDIR)/vcmplt.tgt $(TMPDIR)/bump_b100000_part_cls_9.map
 					$(EXECS) $(SCOTCHBINDIR)/gpart -q 1 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_cls_32.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_imbal_32.grf $(SCOTCHTGTDIR)/vhcub.tgt $(TMPDIR)/bump_imbal_32_part_cls_32.map
 
 check_prog_gpart_overlap	:
-					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump_b1.grf $(TMPDIR)/bump_b1_part_ovl_9.map -vmt
-					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_b1.grf $(SCOTCHTGTDIR)/k9.tgt $(TMPDIR)/bump_b1_part_ovl_9.map
+					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump.grf $(TMPDIR)/bump_part_ovl_9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump_b100000.grf $(TMPDIR)/bump_b100000_part_ovl_9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_b100000.grf $(SCOTCHTGTDIR)/k9.tgt $(TMPDIR)/bump_b100000_part_ovl_9.map
 					$(EXECS) $(SCOTCHBINDIR)/gpart -o 32 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_ovl_32.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_imbal_32.grf $(SCOTCHTGTDIR)/k32.tgt $(TMPDIR)/bump_imbal_32_part_ovl_32.map
 
@@ -492,11 +501,13 @@ check_prog_gtst			:
 ##
 
 check_prog_dgord		:
-					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump_b1.grf /dev/null -vt
+					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump.grf /dev/null -vt
+					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump_b100000.grf /dev/null -vt
 					$(EXECP4) $(SCOTCHBINDIR)/dgord data/small_%r.grf $(TMPDIR)/small.ord
 
 check_prog_dgpart		:
-					$(EXECP) $(SCOTCHBINDIR)/dgpart 9 data/bump_b1.grf /dev/null -vmt
+					$(EXECP) $(SCOTCHBINDIR)/dgpart 9 data/bump.grf /dev/null -vmt
+					$(EXECP) $(SCOTCHBINDIR)/dgpart 9 data/bump_b100000.grf /dev/null -vmt
 					$(EXECP4) $(SCOTCHBINDIR)/dgpart 50 data/small_%r.grf /dev/null -vmt
 
 check_prog_dgscat-dggath	:	TMP := $(shell mktemp -u)
