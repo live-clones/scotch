@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,6 +99,8 @@ char *                      argv[])
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
+
+  baseval = 0;                                    /* Assume base 0 by default */
 
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
