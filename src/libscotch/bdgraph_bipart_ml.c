@@ -1,4 +1,4 @@
-/* Copyright 2007-2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to   : 14 apr 2011     **/
 /**              : # Version 6.0  : from : 11 sep 2011     **/
-/**                                 to   : 07 jun 2018     **/
+/**                                 to   : 31 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -185,9 +185,10 @@ const MPI_Datatype * const  typedat)              /* MPI datatype ; not used    
 
   if (inout[0] == 1) {                            /* Handle cases when at least one of them is erroneous */
     if (in[0] == 1) {
-      if (inout[1] > in[1])                       /* To enforce commutativity, always keep smallest process number */
+      if (inout[1] > in[1]) {                     /* To enforce commutativity, always keep smallest process number */
         inout[1] = in[1];
         inout[2] = in[2];
+      }
       return;
     }
 
