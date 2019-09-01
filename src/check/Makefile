@@ -503,7 +503,7 @@ check_prog_gtst			:
 check_prog_dgord		:
 					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump.grf /dev/null -vt
 					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump_b100000.grf /dev/null -vt
-					$(EXECP4) $(SCOTCHBINDIR)/dgord data/small_%r.grf $(TMPDIR)/small.ord
+					$(EXECP4) $(SCOTCHBINDIR)/dgord data/small_%r.grf $(TMPDIR)/small.ord -vt
 
 check_prog_dgpart		:
 					$(EXECP) $(SCOTCHBINDIR)/dgpart 9 data/bump.grf /dev/null -vmt
