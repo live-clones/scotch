@@ -1,4 +1,4 @@
-/* Copyright 2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 aug 2014     **/
-/**                                 to     22 may 2018     **/
+/**                                 to     01 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,6 +163,8 @@ char *              argv[])
   SCOTCH_graphOrderSave     (&grafdat, &ordedat, fileptr); /* Test ordering data output routines */
   SCOTCH_graphOrderSaveMap  (&grafdat, &ordedat, fileptr);
   SCOTCH_graphOrderSaveTree (&grafdat, &ordedat, fileptr);
+
+  fclose (fileptr);
 
   free (listtab);
   SCOTCH_stratExit      (&stradat);
