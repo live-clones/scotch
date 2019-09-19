@@ -71,6 +71,30 @@ In this case, compare your data formats with the definitions
 given in section~\ref{sec-file}, and use the \texttt{gtst} and \texttt{mtst}
 programs to check the consistency of source graphs and meshes.
 
+\subsection{Using multi-threading}
+\label{sec-prog-multithread}
+
+Starting from version \textsc{6.1.0}, thread management in \scotch\ is
+dynamic. This allows the user to control dynamically the number of
+threads that are used by the threaded algorithms of the
+\libscotch\ library and, consequently, by the \scotch\ standalone
+programs that call them. These algorithms are enabled when \scotch\ is
+compiled with the flag ``\texttt{-DSCOTCH\_\lbt PTHREAD}'' set.
+
+Unless explicitly prevented to do so, \scotch\ standalone programs
+will detect the number of cores available on the user's system and
+will use as many of them as prescribed at compile time or, if no upper
+threshold was set at that time, all of those which are currently
+available. This behavior can be controlled further by means of the
+shell environment variable
+``\texttt{SCOTCH\_\lbt PTHREAD\_\lbt NUMBER=}$x$'', where $x$ is the
+prescribed maximum number of threads to be used. Setting a thread
+number to $1$ will coerce \scotch\ into using only purely sequential
+algorithms (which may differ in nature from their multi-threaded
+counterparts). Setting the thread number to $-1$ will make
+\scotch\ use all available cores, overriding the value possibly set at
+compile time.
+
 \subsection{Using compressed files}
 \label{sec-prog-compressed}
 

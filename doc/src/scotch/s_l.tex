@@ -271,6 +271,48 @@ longer be able to link against the service routines of the genuine
 \metis\ v3 library, as they are only available as a 32-bit
 implementation.
 
+\subsubsection{Using multi-threading}
+\label{sec-lib-multithread}
+
+Starting from version \textsc{6.1.0}, thread management in \scotch\ is
+dynamic. This allows the user to control dynamically the number of
+threads that are used by the threaded algorithms of the
+\libscotch\ library. These algorithms are enabled when \scotch\ is
+compiled with the flag ``\texttt{-DSCOTCH\_\lbt PTHREAD}'' set.
+
+Unless explicitly prevented to do so, \libscotch\ library routines
+will detect the number of cores available on the user's system and
+will use as many of them as prescribed at compile time or, if no upper
+threshold was set at that time, all of those which are currently
+available. This behavior can be controlled further by means of the
+shell environment variable
+``\texttt{SCOTCH\_\lbt PTHREAD\_\lbt NUMBER=}$x$'', where $x$ is the
+prescribed maximum number of threads to be used. Setting a thread
+number to $1$ will coerce \scotch\ into using only purely sequential
+algorithms (which may differ in nature from their multi-threaded
+counterparts). Setting the thread number to $-1$ will make
+\scotch\ use all available cores, overriding the value possibly set at
+compile time.
+
+Another way for users to control concurrency is to use
+\texttt{SCOTCH\_\lbt Context} objects (see
+Section~\ref{sec-lib-context}). These objects define user-configurable
+execution contexts, in which \libscotch\ library routines can be
+executed independently from others. They allow the user to prescribe a
+given number of threads, as well as their binding to the available
+cores, or even to capture a pool of existing threads, to make them
+participate in the computation of \libscotch\ library routines. They
+also allow the user to create private pseudo-random generators, so
+that concurrently executing library routines do not interfere with
+each other and produce fully reproducible results.
+
+Thread binding is essential to achieve good performance of
+multi-threaded programs. In \scotch, the only thread binding mechanism
+implemented to date relies on the Linux binding API. Please make sure
+to compile with flag ``\texttt{-DCOMMON\_\lbt PTHREAD\_\lbt
+AFFINITY\_\lbt LINUX}'' set whenever possible, to benefit from these
+features.
+
 \subsection{Data formats}
 
 All of the data used in the \libscotch\ interface are of integer type
