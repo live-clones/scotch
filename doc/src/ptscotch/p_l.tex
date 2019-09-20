@@ -3659,8 +3659,226 @@ is defined in {\tt lib\lbt scotch\lbt err.a} and is used by the
 standalone programs of the \scotch\ distribution.
 \end{itemize}
 
-\subsection{Miscellaneous routines}
-\label{sec-lib-misc}
+\subsection{Random generator handling}
+\label{sec-lib-random}
+
+In order not to be influenced by the concurrent execution of third-party
+software and/or library routines, the \libscotch\ library embeds its
+own pseudo-random number generator. This generator is used by default
+by all \libscotch\ routines.
+
+When \scotch\ has been compiled with any of the flags {\tt
+COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt SEED} or {\tt SCOTCH\_\lbt
+DETERMINISTIC} set, this random number generator is initialized with
+a prescribed, default seed. In this case, any two runs of the same
+sequence of \libscotch\ routines will yield the same result. The
+first flag will be sufficient when \scotch\ is run on a single thread,
+while he second one is necessary when \scotch\ is run on several
+threads, because multi-threaded versions of the \libscotch\ routines
+may rely by default on non-deterministic algorithms that are not only
+sensitive to the pseudo-random sequence but also to system artifacts
+(see Section~\ref{sec-lib-thread}).
+
+In certain cases, it may be interesting, when running the same
+sequential \scotch\ routine on different processors, to explore
+different solution spaces. The \texttt{SCOTCH\_\lbt random\lbt Proc}
+routine allows the user to set an instance (processor) number that
+will be used to parametrize the random seed, hence providing different
+pseudo-random sequences for each instance number. However, when any of
+the two aforementioned compilation flags have been set, these sequence
+will still be deterministic: two runs of a sequence of
+\libscotch\ routines taking place after a call to \texttt{SCOTCH\_\lbt
+random\lbt Reset} will always yield the same results.
+
+In the case where the user wants to run concurrently
+\libscotch\ routines on different threads or sets of threads,
+determinism cannot be ensured using the global pseudo-random
+generator, because of the non-determinism in the way concurrent
+routines retrieve the values of the pseudo-random sequence. Moreover,
+because the global pseudo-number generator is not protected against
+race conditions, calling it concurrently from several threads may
+yield unpredictable results. Hence, in this case, users should use a
+different \texttt{SCOTCH\_\lbt Context} for each master thread, that
+will contain its own pseudo-random generator (see
+Section~\ref{sec-lib-context}).
+
+\subsubsection{\texttt{SCOTCH\_randomProc}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+void SCOTCH\_randomProc ( & SCOTCH\_Num & procnum)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfrandomproc ( & integer*{\it num} & procnum)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_randomProc} routine sets to \texttt{procnum} the
+internal instance of the \libscotch\ library. This instance number
+influences the random seed that is used to initialize pseudo-random
+number generators.
+
+In order for this instance number to be taken into account as a seed
+for the global pseudo-random generator of the \libscotch\ library,
+\texttt{SCOTCH\_randomProc} must be either called before any other
+library routine, or followed by a call to
+\texttt{SCOTCH\_\lbt random\lbt Reset}. Subsequent calls to
+\texttt{SCOTCH\_\lbt random\lbt Reset} will make use of this number as
+well.
+
+The current value of \texttt{procnum} is copied along with the random
+seed, when the global pseudo-random number generator is cloned into a
+context by routine \texttt{SCOTCH\_\lbt context\lbt Random\lbt Clone}.
+
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_randomReset}}
+\label{sec-lib-random-reset}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+void SCOTCH\_randomReset ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}l}
+scotchfrandomreset ( & )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_randomReset} routine resets the seed of the
+global pseudo-random generator used by default by the routines
+of the \libscotch\ library.
+
+Two consecutive calls to the same \libscotch\ partitioning or ordering
+routines within the same program, separated by a call to
+{\tt SCOTCH\_\lbt random\lbt Reset}, will always yield the same
+results. Moreover, when \scotch\ has been compiled with any of the
+flags {\tt COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt SEED} or
+{\tt SCOTCH\_\lbt DETERMINISTIC} set, any two runs of the same program
+at different times will yield the same result.
+
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_randomSeed}}
+\label{sec-lib-random-seed}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+void SCOTCH\_randomSeed ( & SCOTCH\_Num & seedval)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfrandomseed ( & integer*{\it num} & seedval)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_randomSeed} routine sets to {\tt seedval} the
+seed of the global pseudo-random generator used by default by
+some \scotch\ algorithms. All subsequent calls to {\tt SCOTCH\_\lbt
+random\lbt Reset} will use this value to reset the pseudo-random
+generator. In he case when no random seed is defined by the user, then
+depending whether \scotch\ has been compiled with any of the flags
+{\tt COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt SEED} or {\tt SCOTCH\_\lbt
+DETERMINISTIC} set or not, either the same pseudo-random seed will be
+always used, or a situation-dependent seed will be used,
+respectively.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_randomVal}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+SCOTCH\_Num SCOTCH\_randomVal ( & SCOTCH\_Num & randmax)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfrandomval ( & integer*{\it num} & randmax, \\
+                   & integer*{\it num} & randval)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_randomVal} routine returns a positive integer random
+value from the global pseudo-random generator, in the range
+$[0;\mbox{textsc{randmax}}[$.
+\end{itemize}
+
+\subsection{Context handling routines}
+\label{sec-lib-context}
+
+By default, \scotch\ uses a global pseudo-random number generator and
+takes advantage of as many threads as it can discover on the
+system. This behavior makes sense when only one call to the
+\libscotch\ is made at a time. However, cases may arise where the user
+wants to perform different tasks on the same graph or mesh at the same
+time, by calling concurrently \libscotch\ routines from different sets
+of threads. This is when \texttt{SCOTCH\_\lbt Context} objects are
+necessary.
+
+A \texttt{SCOTCH\_\lbt Context} is a data structure that encapsulates
+an environment execution for the routines of the
+\libscotch\ library. Essentially, it contains the set of threads that
+will be used for performing computations, and a private, independent
+pseudo-random number generator.
+
+For a detailed description of the use of \texttt{SCOTCH\_\lbt Context}'s,
+please refer to the {\it\scotch\ User's Guide}~\scotchcitesuser.
+
+\subsubsection{\texttt{SCOTCH\_contextBindDgraph}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextBindDgraph ( & SCOTCH\_Context * & contptr,    \\
+                                & SCOTCH\_Graph *   & orggrafptr, \\
+                                & SCOTCH\_Graph *   & cntgrafptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextbinddgraph ( & doubleprecision (*) & contdat,    \\
+                           & doubleprecision (*) & orggrafdat, \\
+                           & doubleprecision (*) & cntgrafdat, \\
+                           & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextBindDgraph} function initializes a context
+container object \texttt{cnt\lbt graf}, with a type compatible with a
+\texttt{SCOTCH\_\lbt Dgraph} structure, to make it reference both the
+given genuine \texttt{SCOTCH\_\lbt Dgraph} structure
+\texttt{org\lbt graf} and the \texttt{SCOTCH\_\lbt Context} structure
+\texttt{cont}. The context container can then be used by routines of
+the \libptscotch\ library that expect a \texttt{SCOTCH\_\lbt Dgraph},
+which will take advantage of all the features offered by the given
+context.
+
+When the context container is no longer of use, call function
+\texttt{SCOTCH\_\lbt dgraph\lbt Exit} to free its internal
+structures. The original distributed graph and the context can then
+also be freed by using the adequate routines.
+
+\progret
+
+\texttt{SCOTCH\_contextBindDgraph} returns $0$ if the context container
+graph structure has been successfully initialized, and $1$ else.
+\end{itemize}
+
+\subsection{Memory management}
+\label{sec-lib-mem}
 
 \subsubsection{{\tt SCOTCH\_memCur}}
 
@@ -3748,89 +3966,6 @@ sake of interface homogeneity, especially for Fortran. It is therefore
 the installer's responsibility to make sure that the support integer
 type of {\tt SCOTCH\_\lbt Idx} is large enough to not overflow. See
 section~\ref{sec-lib-inttypesize} for more information.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_randomProc}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_randomProc ( & int & procnum)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfrandomproc ( & integer & procnum )
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_randomProc} routine records internally the provided
-number, which contributes to the initialization of the pseudo-random
-generator. Hence, providing different values for each process,
-e.g. process rank, will result in different random seeds across
-processors. This allows processes to compute concurrently different
-initial partitions, in the course of the parallel multilevel framework
-with folding and duplication.
-
-In order for the provided number to be taken into account,
-{\tt SCOTCH\_\lbt random\lbt Proc} must be called before any other
-routine of the \libscotch\ that is likely to use (and consequently
-to initialize) the pseudo-random number generator. By default, it is
-set to zero.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_randomReset}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}l}
-void SCOTCH\_randomReset ( & void)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}l}
-scotchfrandomreset ( & )
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_randomReset} routine resets the seed of the
-pseudo-random generator used by the graph partitioning routines
-of the \libscotch\ library. Two consecutive calls to
-the same \libscotch\ partitioning or ordering routines, separated
-by a call to {\tt SCOTCH\_\lbt random\lbt Reset}, will always yield
-the same results.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_randomSeed}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_randomSeed ( & SCOTCH\_Num & seedval)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfrandomseed ( & integer*{\it num} & seedval )
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_randomSeed} routine sets to {\tt seedval} the
-seed of the pseudo-random generator used internally by several
-algorithms of \scotch. All subsequent calls to {\tt SCOTCH\_\lbt
-random\lbt Reset} will use this value to reset the pseudo-random
-generator.
-
-This routine needs only to be used by users willing to evaluate
-the robustness and quality of partitioning algorithms with respect to
-the variability of random seeds. Else, depending whether \scotch\ has
-been compiled with any of the flags {\tt COMMON\_\lbt RANDOM\_\lbt
-FIXED\_\lbt SEED} or {\tt SCOTCH\_\lbt DETERMINISTIC} set or not,
-either the same pseudo-random seed will be always used, or a
-process-dependent seed will be used, respectively.
 \end{itemize}
 
 \subsection{\parmetis\ compatibility library}
