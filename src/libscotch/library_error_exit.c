@@ -47,6 +47,8 @@
 /**                                 to     24 may 2008     **/
 /**                # Version 5.1  : from : 27 sep 2008     **/
 /**                                 to     17 jul 2011     **/
+/**                # Version 6.0  : from : 24 sep 2019     **/
+/**                                 to     24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -137,7 +139,7 @@ const char * const          errstr,               /*+ printf-like variable argum
   sleep (SCOTCH_ERROR_SLEEP);                     /* Wait for messages to be propagated */
 #endif /* SCOTCH_ERROR_SLEEP */
 
-  exit (1);
+  exit (EXIT_FAILURE);
 }
 
 /* This routine prints a warning message with
