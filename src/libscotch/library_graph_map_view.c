@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2015,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 27 jul 2008     **/
 /**                                 to     11 aug 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     15 may 2018     **/
+/**                                 to     24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,6 +81,102 @@
 /*                                  */
 /************************************/
 
+/*+ This routine computes the pseudo-diameter of
+*** the given part.
+*** It returns:
+*** - 0   : on success.
+*** - !0  : on error.
++*/
+
+static
+Gnum
+graphMapView3 (
+const Graph * const         grafptr,              /*+ Graph      +*/
+const Anum * const          parttax,              /*+ Part array +*/
+const Anum                  partval)              /*+ Part value +*/
+{
+  GraphMapViewQueue             queudat;          /* Neighbor queue                         */
+  GraphMapViewVertex * restrict vexxtax;          /* Based access to vexxtab                */
+  Gnum                          rootnum;          /* Number of current root vertex          */
+  Gnum                          vertdist;         /* Vertex distance                        */
+  int                           diamflag;         /* Flag set if diameter changed           */
+  Gnum                          diambase;         /* Base distance for connected components */
+  Gnum                          diamdist;         /* Current diameter distance              */
+  Gnum                          passnum;          /* Pass number                            */
+  const Gnum * restrict         verttax;          /* Based access to vertex array           */
+  const Gnum * restrict         vendtax;          /* Based access to vertex end array       */
+  const Gnum * restrict         edgetax;
+
+  if (memAllocGroup ((void **) (void *)
+                     &queudat.qtab, (size_t) (grafptr->vertnbr * sizeof (Gnum)),
+                     &vexxtax,      (size_t) (grafptr->vertnbr * sizeof (GraphMapViewVertex)), NULL) == NULL) {
+    errorPrint ("graphMapView3: out of memory");
+    return     (-1);
+  }
+
+  memSet (vexxtax, 0, grafptr->vertnbr * sizeof (GraphMapViewVertex)); /* Initialize pass numbers */
+  edgetax  = grafptr->edgetax;
+  verttax  = grafptr->verttax;
+  vendtax  = grafptr->vendtax;
+  vexxtax -= grafptr->baseval;
+
+  diamdist = 0;                                   /* Start distances from zero                  */
+  for (passnum = 1, rootnum = grafptr->baseval; ; passnum ++) { /* For all connected components */
+    Gnum                diamnum;                  /* Vertex which achieves diameter             */
+
+    while ((rootnum < grafptr->vertnbr) &&
+           ((vexxtax[rootnum].passnum != 0) ||    /* Find first unallocated vertex */
+            (parttax[rootnum] != partval)))
+      rootnum ++;
+    if (rootnum >= grafptr->vertnbr)              /* Exit if all of graph processed */
+      break;
+
+    diambase = ++ diamdist;                       /* Start from previous distance */
+    diamnum  = rootnum;                           /* Start from found root        */
+
+    for (diamflag = 1; diamflag -- != 0; passnum ++) { /* Loop if modifications */
+      graphMapViewQueueFlush (&queudat);          /* Flush vertex queue         */
+      graphMapViewQueuePut   (&queudat, diamnum); /* Start from diameter vertex */
+      vexxtax[diamnum].passnum  = passnum;        /* It has been enqueued       */
+      vexxtax[diamnum].vertdist = diambase;       /* It is at base distance     */
+
+      do {                                        /* Loop on vertices in queue */
+        Gnum                vertnum;
+        Gnum                edgenum;
+
+        vertnum  = graphMapViewQueueGet (&queudat); /* Get vertex from queue */
+        vertdist = vexxtax[vertnum].vertdist;     /* Get vertex distance     */
+
+        if ((vertdist > diamdist) ||              /* If vertex increases diameter */
+            ((vertdist == diamdist) &&            /* Or is at diameter distance   */
+             ((vendtax[vertnum] - verttax[vertnum]) < /* With smaller degree  */
+              (vendtax[diamnum] - verttax[diamnum])))) {
+          diamnum  = vertnum;                     /* Set it as new diameter vertex */
+          diamdist = vertdist;
+          diamflag = 1;
+        }
+
+        vertdist ++;                              /* Set neighbor distance */
+        for (edgenum = verttax[vertnum]; edgenum < vendtax[vertnum]; edgenum ++) {
+          Gnum                vertend;
+
+          vertend = edgetax[edgenum];
+          if ((vexxtax[vertend].passnum < passnum) && /* If vertex not queued yet */
+              (parttax[vertend] == partval)) {    /* And of proper part           */
+            graphMapViewQueuePut (&queudat, vertend); /* Enqueue neighbor vertex  */
+            vexxtax[vertend].passnum  = passnum;
+            vexxtax[vertend].vertdist = vertdist;
+          }
+        }
+      } while (! graphMapViewQueueEmpty (&queudat)); /* As long as queue is not empty */
+    }
+  }
+
+  memFree (queudat.qtab);                         /* Free group leader */
+
+  return (diamdist);
+}
+
 /*+ This routine writes standard or raw
 *** mapping or remapping statistics to
 *** the given stream.
@@ -97,7 +193,7 @@ const SCOTCH_Mapping * const  libmappptr,         /*+ Computed mapping          
 const SCOTCH_Mapping * const  libmapoptr,         /*+ Old mapping (equal to NULL if no repartitioning) +*/
 const double                  emraval,            /*+ Edge migration ratio                             +*/
 SCOTCH_Num *                  vmlotab,            /*+ Vertex migration cost array                      +*/
-Gnum                          flagval,            /*+ 0 : standard output, !0 : raw output for curves  +*/
+Gnum                          flagval,            /*+ 0: standard output, !0: raw output for curves    +*/
 FILE * const                  stream)             /*+ Output stream                                    +*/
 {
   const Graph * restrict    grafptr;
@@ -201,7 +297,7 @@ FILE * const                  stream)             /*+ Output stream             
   }
 
   for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) {
-    domntab[vertnum].labl = parttax[vertnum];
+    domntab[vertnum].labl = parttax[vertnum];     /* Un-based array at this stage    */
     domntab[vertnum].peri = vertnum + grafptr->baseval; /* Build inverse permutation */
   }
   parttax -= grafptr->baseval;
@@ -387,7 +483,7 @@ FILE * const                  stream)             /*+ Output stream             
       migrdistavg /= migrnbr;
       migrloadavg /= migrnbr;
     }
-  } 
+  }
 
   if (flagval == 0) {
     fprintf (stream, "M\tCommDilat=%f\t(" GNUMSTRING ")\n", /* Print expansion parameters */
@@ -553,98 +649,127 @@ FILE * const                  stream)             /*+ Output stream             
   return (graphMapView2 (libgrafptr, libmappptr, libmapoptr, emraval, vmlotab, 1, stream));
 }
 
-/*+ This routine computes the pseudo-diameter of
-*** the given part.    
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine writes the characteristics
+** of the given overlap partition to the
+** given stream.
+** It returns :
+** - void  : in case of success
+** - exit  : on error (because of errorPrint)
+*/
 
-static
-Gnum
-graphMapView3 (
-const Graph * const         grafptr,              /*+ Graph      +*/
-const Anum * const          parttax,              /*+ Part array +*/
-const Anum                  partval)              /*+ Part value +*/
+int
+SCOTCH_graphPartOvlView (
+const SCOTCH_Graph * restrict const libgrafptr,
+const SCOTCH_Num                    partnbr,
+const SCOTCH_Num * restrict const   parttab,
+FILE * const                        stream)
 {
-  GraphMapViewQueue             queudat;          /* Neighbor queue                         */
-  GraphMapViewVertex * restrict vexxtax;          /* Based access to vexxtab                */
-  Gnum                          rootnum;          /* Number of current root vertex          */
-  Gnum                          vertdist;         /* Vertex distance                        */
-  int                           diamflag;         /* Flag set if diameter changed           */
-  Gnum                          diambase;         /* Base distance for connected components */
-  Gnum                          diamdist;         /* Current diameter distance              */
-  Gnum                          passnum;          /* Pass number                            */
-  const Gnum * restrict         verttax;          /* Based access to vertex array           */
-  const Gnum * restrict         vendtax;          /* Based access to vertex end array       */
-  const Gnum * restrict         edgetax;
+  const Gnum * restrict       parttax;
+  Gnum                        partnum;
+  GraphMapViewList * restrict listtab;
+  Gnum                        vertnum;
+  Gnum                        fronnbr;
+  Gnum                        fronload;
+  Gnum * restrict             compload;
+  Gnum * restrict             compsize;
+  Gnum                        comploadsum;
+  Gnum                        comploadmax;
+  Gnum                        comploadmin;
+  double                      comploadavg;
+
+  const Graph * restrict const  grafptr = (Graph *) libgrafptr;
+  const Gnum * restrict const   verttax = grafptr->verttax;
+  const Gnum * restrict const   velotax = grafptr->velotax;
+  const Gnum * restrict const   vendtax = grafptr->vendtax;
+  const Gnum * restrict const   edgetax = grafptr->edgetax;
 
   if (memAllocGroup ((void **) (void *)
-                     &queudat.qtab, (size_t) (grafptr->vertnbr * sizeof (Gnum)),
-                     &vexxtax,      (size_t) (grafptr->vertnbr * sizeof (GraphMapViewVertex)), NULL) == NULL) {
-    errorPrint ("graphMapView3: out of memory");
-    return     (-1);
+                     &compload, (size_t) (partnbr * sizeof (Gnum)),
+                     &compsize, (size_t) (partnbr * sizeof (Gnum)),
+                     &listtab,  (size_t) ((partnbr + 1) * sizeof (GraphMapViewList)), NULL) == NULL) {
+    errorPrint (STRINGIFY (SCOTCH_graphPartOvlView) ": out of memory");
   }
+  listtab ++;                                     /* TRICK: Trim array so that listtab[-1] is valid */
+  memSet (listtab, ~0, partnbr * sizeof (GraphMapViewList)); /* Set vertex indices to ~0            */
+  memSet (compload, 0, partnbr * sizeof (Gnum));
+  memSet (compsize, 0, partnbr * sizeof (Gnum));
 
-  memSet (vexxtax, 0, grafptr->vertnbr * sizeof (GraphMapViewVertex)); /* Initialize pass numbers */
-  edgetax  = grafptr->edgetax;
-  verttax  = grafptr->verttax;
-  vendtax  = grafptr->vendtax;
-  vexxtax -= grafptr->baseval;
+  parttax = ((Gnum *) parttab) - grafptr->baseval;
 
-  diamdist = 0;                                   /* Start distances from zero                  */
-  for (passnum = 1, rootnum = grafptr->baseval; ; passnum ++) { /* For all connected components */
-    Gnum                diamnum;                  /* Vertex which achieves diameter             */
+  fronnbr  =
+  fronload = 0;
+  for (vertnum = grafptr->baseval; vertnum < grafptr->vertnnd; vertnum ++) {
+    Gnum          partval;
 
-    while ((rootnum < grafptr->vertnbr) &&
-           ((vexxtax[rootnum].passnum != 0) ||    /* Find first unallocated vertex */
-            (parttax[rootnum] != partval)))
-      rootnum ++;
-    if (rootnum >= grafptr->vertnbr)              /* Exit if all of graph processed */
-      break;
+    partval = parttax[vertnum];
+    if (partval >= 0) {
+      compload[partval] += (velotax != NULL) ? velotax[vertnum] : 1;
+      compsize[partval] ++;
+    }
+    else {                                  /* Vertex is in separator       */
+      Gnum          listidx;                /* Index of first neighbor part */
+      Gnum          edgenum;
+      Gnum          veloval;
 
-    diambase = ++ diamdist;                       /* Start from previous distance */
-    diamnum  = rootnum;                           /* Start from found root        */
+      veloval = (velotax != NULL) ? velotax[vertnum] : 1;
 
-    for (diamflag = 1; diamflag -- != 0; passnum ++) { /* Loop if modifications */
-      graphMapViewQueueFlush (&queudat);          /* Flush vertex queue         */
-      graphMapViewQueuePut   (&queudat, diamnum); /* Start from diameter vertex */
-      vexxtax[diamnum].passnum  = passnum;        /* It has been enqueued       */
-      vexxtax[diamnum].vertdist = diambase;       /* It is at base distance     */
+      fronnbr  ++;                                /* Add vertex to frontier */
+      fronload += veloval;
 
-      do {                                        /* Loop on vertices in queue */
-        Gnum                vertnum;
-        Gnum                edgenum;
+      listidx = -1;                               /* No neighboring parts recorded yet          */
+      listtab[-1].vertnum = vertnum;              /* Separator neighbors will not be considered */
+      for (edgenum = verttax[vertnum];
+           edgenum < vendtax[vertnum]; edgenum ++) { /* Compute gain */
+        Gnum          vertend;
+        Gnum          partend;
 
-        vertnum  = graphMapViewQueueGet (&queudat); /* Get vertex from queue */
-        vertdist = vexxtax[vertnum].vertdist;     /* Get vertex distance     */
-
-        if ((vertdist > diamdist) ||              /* If vertex increases diameter */
-            ((vertdist == diamdist) &&            /* Or is at diameter distance   */
-             ((vendtax[vertnum] - verttax[vertnum]) < /* With smaller degree  */
-              (vendtax[diamnum] - verttax[diamnum])))) {
-          diamnum  = vertnum;                     /* Set it as new diameter vertex */
-          diamdist = vertdist;
-          diamflag = 1;
+        vertend = edgetax[edgenum];
+        partend = parttax[vertend];
+        if (listtab[partend].vertnum != vertnum) { /* If part not yet considered  */
+          listtab[partend].vertnum = vertnum;     /* Link it in list of neighbors */
+          listtab[partend].nextidx = listidx;
+          listidx = partend;
         }
+      }
 
-        vertdist ++;                              /* Set neighbor distance */
-        for (edgenum = verttax[vertnum]; edgenum < vendtax[vertnum]; edgenum ++) {
-          Gnum                vertend;
-
-          vertend = edgetax[edgenum];
-          if ((vexxtax[vertend].passnum < passnum) && /* If vertex not queued yet */
-              (parttax[vertend] == partval)) {    /* And of proper part           */
-            graphMapViewQueuePut (&queudat, vertend); /* Enqueue neighbor vertex  */
-            vexxtax[vertend].passnum  = passnum;
-            vexxtax[vertend].vertdist = vertdist;
-          }
-        }
-      } while (! graphMapViewQueueEmpty (&queudat)); /* As long as queue is not empty */
+      while (listidx != -1) {                     /* For all neighboring parts found      */
+        compload[listidx] += veloval;             /* Add load of separator vertex to part */
+        compsize[listidx] ++;
+        listidx = listtab[listidx].nextidx;
+      }
     }
   }
 
-  memFree (queudat.qtab);                         /* Free group leader */
+  comploadsum = 0;
+  for (partnum = 0; partnum < partnbr; partnum ++)
+    comploadsum += compload[partnum];
 
-  return (diamdist);
+  comploadmax = 0;
+  comploadmin = comploadsum;
+  for (partnum = 0; partnum < partnbr; partnum ++) {
+    if (compload[partnum] > comploadmax)
+      comploadmax = compload[partnum];
+    if (compload[partnum] < comploadmin)
+      comploadmin = compload[partnum];
+  }
+  comploadavg = (double) comploadsum / (double) partnbr;
+  fprintf (stream, "P\tsep=" GNUMSTRING "\n",
+	   (Gnum) fronload);
+  fprintf (stream, "P\tmin=" GNUMSTRING "\tmax=" GNUMSTRING "\tavg=%g\n",
+	   (Gnum) comploadmin,
+           (Gnum) comploadmax,
+           (double) comploadavg);
+#if 0 /* TODO REMOVE */
+  for (partnum = 0; partnum < partnbr; partnum ++)
+    fprintf (stream, "P\tload[" GNUMSTRING "]=" GNUMSTRING "\n",
+             (Gnum) partnum,
+             (Gnum) compload[partnum]);
+#endif
+  fprintf (stream, "P\tmaxavg=%g\tminavg=%g\n",
+           ((double) comploadmax / comploadavg),
+           ((double) comploadmin / comploadavg));
+
+  memFree (compload);
+
+  return (0);
 }

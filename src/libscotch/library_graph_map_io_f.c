@@ -1,4 +1,4 @@
-/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 03 jul 2012     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,6 +88,42 @@ int * const                 revaptr), \
   o = SCOTCH_graphTabLoad (grafptr, parttab, stream);
 
   fclose (stream);                                /* This closes file descriptor too */
+
+  *revaptr = o;
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                      \
+GRAPHTABSAVE, graphtabsave, (         \
+const SCOTCH_Graph * const  grafptr,  \
+const SCOTCH_Num * const    parttab,  \
+const int * const           fileptr,  \
+int * const                 revaptr), \
+(grafptr, parttab, fileptr, revaptr))
+{
+  FILE *              stream;                     /* Stream to build from handle */
+  int                 filenum;                    /* Duplicated handle           */
+  int                 o;
+
+  if ((filenum = dup (*fileptr)) < 0) {           /* If cannot duplicate file descriptor */
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHTABSAVE)) ": cannot duplicate handle");
+
+    *revaptr = 1;                                 /* Indicate error */
+    return;
+  }
+  if ((stream = fdopen (filenum, "w")) == NULL) { /* Build stream from handle */
+    errorPrint (STRINGIFY (SCOTCH_NAME_PUBLICFU (GRAPHTABSAVE)) ": cannot open output stream");
+    close      (filenum);
+    *revaptr = 1;
+    return;
+  }
+
+  o = SCOTCH_graphTabSave (grafptr, parttab, stream);
+
+  fclose (stream);                                /* This closes filenum too */
 
   *revaptr = o;
 }

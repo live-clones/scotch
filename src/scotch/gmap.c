@@ -66,7 +66,7 @@
 /**                # Version 5.1  : from : 30 jun 2010     **/
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 29 may 2010     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -129,8 +129,6 @@ static const char *         C_usageList[] = {     /* Usage */
   "",
   "See default strategy with option '-vs'",
   NULL };
-
-static const SCOTCH_Num     C_loadOne = 1;
 
 /******************************/
 /*                            */
@@ -434,7 +432,7 @@ char *                      argv[])
     clockStop  (&runtime[1]);                     /* Get computation time */
     clockStart (&runtime[0]);
 
-    C_partSave (&grafdat, parttab, C_filepntrmapout); /* Write partitioning */
+    SCOTCH_graphTabSave (&grafdat, parttab, C_filepntrmapout); /* Write partitioning */
   }
   else {                                          /* Regular partitioning / mapping / clustering wanted */
     if (straptr != NULL)                          /* Set static mapping strategy if needed              */
@@ -477,7 +475,7 @@ char *                      argv[])
   }
   if ((flagval & C_FLAGPARTOVL) != 0) {           /* If overlap partitioning wanted */
     if (flagval & C_FLAGVERBMAP)
-      C_partViewOvl (&grafdat, parttab, C_filepntrlogout);
+      SCOTCH_graphPartOvlView (&grafdat, C_partNbr, parttab, C_filepntrlogout);
   }
   else {                                          /* Regular partitioning / mapping wanted */
     if (flagval & C_FLAGVERBMAP) {
@@ -504,183 +502,4 @@ char *                      argv[])
   memFree (parttab);                              /* Free hand-made partition array */
 
   return (EXIT_SUCCESS);
-}
-
-/* This routine writes a partition to
-** the given stream.
-** It returns :
-** - void  : in case of success
-** - exit  : on error (because of errorPrint)
-*/
-
-void
-C_partSave (
-SCOTCH_Graph * restrict const grafptr,
-SCOTCH_Num * restrict const   parttab,
-FILE * const                  stream)
-{
-  SCOTCH_Num                  baseval;
-  const SCOTCH_Num * restrict parttax;
-  SCOTCH_Num *                vlbltab;
-  const SCOTCH_Num * restrict vlbltax;
-  SCOTCH_Num                  vertnbr;
-  SCOTCH_Num                  vertnum;
-
-  SCOTCH_graphData (grafptr, &baseval, &vertnbr, NULL, NULL, NULL, &vlbltab, NULL, NULL, NULL);
-
-  parttax = parttab - baseval;
-  vlbltax = (vlbltab != NULL) ? (vlbltab - baseval) : NULL;
-
-  if (fprintf (stream, SCOTCH_NUMSTRING "\n", (SCOTCH_Num) vertnbr) == EOF)
-    errorPrint ("C_partSave: bad output (1)");
-
-  for (vertnum = baseval; vertnum < (vertnbr + baseval); vertnum ++) {
-    if (fprintf (stream, SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n",
-                 (SCOTCH_Num) ((vlbltax != NULL) ? vlbltax[vertnum] : vertnum),
-                 (SCOTCH_Num) parttax[vertnum]) == EOF) {
-      errorPrint ("C_mapSave: bad output (2)");
-    }
-  }
-}
-
-/* This routine writes the characteristics
-** of the given overlap partition to the
-** given stream.
-** It returns :
-** - void  : in case of success
-** - exit  : on error (because of errorPrint)
-*/
-
-void
-C_partViewOvl (
-SCOTCH_Graph * restrict const grafptr,
-SCOTCH_Num * restrict const   parttab,
-FILE * const                  stream)
-{
-  SCOTCH_Num                  baseval;
-  SCOTCH_Num                  vertnbr;
-  SCOTCH_Num                  vertnum;
-  SCOTCH_Num *                verttab;
-  const SCOTCH_Num * restrict verttax;
-  SCOTCH_Num *                vendtab;
-  const SCOTCH_Num * restrict vendtax;
-  SCOTCH_Num *                velotab;
-  SCOTCH_Num                  velomsk;
-  const SCOTCH_Num * restrict velobax;              /* Data for handling of optional arrays */
-  SCOTCH_Num *                edgetab;
-  const SCOTCH_Num * restrict edgetax;
-  const SCOTCH_Num * restrict parttax;
-  SCOTCH_Num                  partnum;
-  C_PartList * restrict       listtab;
-  SCOTCH_Num                  fronnbr;
-  SCOTCH_Num                  fronload;
-  SCOTCH_Num * restrict       compload;
-  SCOTCH_Num * restrict       compsize;
-  SCOTCH_Num                  comploadsum;
-  SCOTCH_Num                  comploadmax;
-  SCOTCH_Num                  comploadmin;
-  double                      comploadavg;
-
-  if (memAllocGroup ((void **) (void *)
-                     &compload, (size_t) (C_partNbr * sizeof (SCOTCH_Num)),
-                     &compsize, (size_t) (C_partNbr * sizeof (SCOTCH_Num)),
-                     &listtab,  (size_t) ((C_partNbr + 1) * sizeof (C_PartList)), NULL) == NULL) {
-    errorPrint ("C_partViewOvl: out of memory");
-  }
-  listtab ++;                                     /* TRICK: Trim array so that listtab[-1] is valid */
-  memSet (listtab, ~0, C_partNbr * sizeof (C_PartList)); /* Set vertex indices to ~0                */
-  memSet (compload, 0, C_partNbr * sizeof (SCOTCH_Num));
-  memSet (compsize, 0, C_partNbr * sizeof (SCOTCH_Num));
-
-  SCOTCH_graphData (grafptr, &baseval,
-                    &vertnbr, &verttab, &vendtab, &velotab, NULL,
-                    NULL, &edgetab, NULL);
-
-  if (velotab == NULL) {                          /* Set accesses to optional arrays             */
-    velobax = &C_loadOne;                         /* In case vertices not weighted (least often) */
-    velomsk = 0;
-  }
-  else {
-    velobax = velotab - baseval;
-    velomsk = ~((SCOTCH_Num) 0);
-  }
-  verttax = verttab - baseval;
-  vendtax = vendtab - baseval;
-  edgetax = edgetab - baseval;
-  parttax = parttab - baseval;
-
-  fronnbr  =
-  fronload = 0;
-  for (vertnum = baseval; vertnum < (vertnbr + baseval); vertnum ++) {
-    SCOTCH_Num          partval;
-
-    partval = parttax[vertnum];
-    if (partval >= 0) {
-      compload[partval] += velobax[vertnum & velomsk];
-      compsize[partval] ++;
-    }
-    else {                                        /* Vertex is in separator       */
-      SCOTCH_Num          listidx;                /* Index of first neighbor part */
-      SCOTCH_Num          edgenum;
-      SCOTCH_Num          veloval;
-
-      fronnbr  ++;                                /* Add vertex to frontier */
-      fronload += velobax[vertnum & velomsk];
-
-      listidx = -1;                               /* No neighboring parts recorded yet          */
-      listtab[-1].vertnum = vertnum;              /* Separator neighbors will not be considered */
-      for (edgenum = verttax[vertnum];
-           edgenum < vendtax[vertnum]; edgenum ++) { /* Compute gain */
-        SCOTCH_Num          vertend;
-        SCOTCH_Num          partend;
-
-        vertend = edgetax[edgenum];
-        partend = parttax[vertend];
-        if (listtab[partend].vertnum != vertnum) { /* If part not yet considered  */
-          listtab[partend].vertnum = vertnum;     /* Link it in list of neighbors */
-          listtab[partend].nextidx = listidx;
-          listidx = partend;
-        }
-      }
-
-      veloval = velobax[vertnum & velomsk];
-
-      while (listidx != -1) {                     /* For all neighboring parts found      */
-        compload[listidx] += veloval;             /* Add load of separator vertex to part */
-        compsize[listidx] ++;
-        listidx = listtab[listidx].nextidx;
-      }
-    }
-  }
-
-  comploadsum = 0;
-  for (partnum = 0; partnum < C_partNbr; partnum ++)
-    comploadsum += compload[partnum];
-
-  comploadmax = 0;
-  comploadmin = comploadsum;
-  for (partnum = 0; partnum < C_partNbr; partnum ++) {
-    if (compload[partnum] > comploadmax)
-      comploadmax = compload[partnum];
-    if (compload[partnum] < comploadmin)
-      comploadmin = compload[partnum];
-  }
-  comploadavg = (double) comploadsum / (double) C_partNbr;
-  fprintf (stream, "P\tsep=" SCOTCH_NUMSTRING "\n",
-	   (SCOTCH_Num) fronload);
-  fprintf (stream, "P\tmin=" SCOTCH_NUMSTRING "\tmax=" SCOTCH_NUMSTRING "\tavg=%g\n",
-	   (SCOTCH_Num) comploadmin,
-           (SCOTCH_Num) comploadmax,
-           (double) comploadavg);
-#if 0 /* TODO REMOVE */
-  for (partnum = 0; partnum < C_partNbr; partnum ++)
-    fprintf (stream, "P\tload[" SCOTCH_NUMSTRING "]=" SCOTCH_NUMSTRING "\n",
-             (SCOTCH_Num) partnum,
-             (SCOTCH_Num) compload[partnum]);
-#endif
-  fprintf (stream, "P\tmaxavg=%g\tminavg=%g\n",
-           ((double) comploadmax / comploadavg),
-           ((double) comploadmin / comploadavg));
-
-  memFree (compload);
 }

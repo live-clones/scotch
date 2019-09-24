@@ -481,7 +481,7 @@ check_prog_gpart_clustering	:
 check_prog_gpart_overlap	:
 					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump.grf $(TMPDIR)/bump_part_ovl_9.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump_b100000.grf $(TMPDIR)/bump_b100000_part_ovl_9.map -vmt
-					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_b100000.grf $(SCOTCHTGTDIR)/k9.tgt $(TMPDIR)/bump_b100000_part_ovl_9.map
+					$(EXECS) $(SCOTCHBINDIR)/gmtst -o data/bump_b100000.grf $(SCOTCHTGTDIR)/k9.tgt $(TMPDIR)/bump_b100000_part_ovl_9.map
 					$(EXECS) $(SCOTCHBINDIR)/gpart -o 32 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_ovl_32.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_imbal_32.grf $(SCOTCHTGTDIR)/k32.tgt $(TMPDIR)/bump_imbal_32_part_ovl_32.map
 

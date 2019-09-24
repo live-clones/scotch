@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 30 nov 2007     **/
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     17 apr 2019     **/
+/**                                 to     24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -236,26 +236,28 @@ int                         SCOTCH_graphInducePart (const SCOTCH_Graph * const, 
 
 int                         SCOTCH_graphMapInit (const SCOTCH_Graph * const, SCOTCH_Mapping * const, const SCOTCH_Arch * const, SCOTCH_Num * const);
 void                        SCOTCH_graphMapExit (const SCOTCH_Graph * const, SCOTCH_Mapping * const);
-int                         SCOTCH_graphMapLoad (const SCOTCH_Graph * const, const SCOTCH_Mapping * const, FILE * const);
-int                         SCOTCH_graphTabLoad (const SCOTCH_Graph * const, SCOTCH_Num * const, FILE * const);
+int                         SCOTCH_graphMapLoad (const SCOTCH_Graph * const, SCOTCH_Mapping * const, FILE * const);
 int                         SCOTCH_graphMapSave (const SCOTCH_Graph * const, const SCOTCH_Mapping * const, FILE * const);
-int                         SCOTCH_graphMapView (const SCOTCH_Graph * const, const SCOTCH_Mapping * const, FILE * const);
-int                         SCOTCH_graphRemapView (const SCOTCH_Graph * const, const SCOTCH_Mapping * const, const SCOTCH_Mapping * const, const double, SCOTCH_Num *, FILE * const);
-int                         SCOTCH_graphRemapViewRaw (const SCOTCH_Graph * const, const SCOTCH_Mapping * const, const SCOTCH_Mapping * const, const double, SCOTCH_Num *, FILE * const);
 int                         SCOTCH_graphMapCompute (SCOTCH_Graph * const, SCOTCH_Mapping * const, SCOTCH_Strat * const);
 int                         SCOTCH_graphMapFixedCompute (SCOTCH_Graph * const, SCOTCH_Mapping * const, SCOTCH_Strat * const);
-int                         SCOTCH_graphRemapCompute (SCOTCH_Graph * const, SCOTCH_Mapping * const, SCOTCH_Mapping * const, const double, const SCOTCH_Num *, SCOTCH_Strat * const);
-int                         SCOTCH_graphRemapFixedCompute (SCOTCH_Graph * const, SCOTCH_Mapping * const, SCOTCH_Mapping * const, const double, const SCOTCH_Num *, SCOTCH_Strat * const);
 int                         SCOTCH_graphMap     (SCOTCH_Graph * const, const SCOTCH_Arch * const, SCOTCH_Strat * const, SCOTCH_Num * const);
 int                         SCOTCH_graphMapFixed (SCOTCH_Graph * const, const SCOTCH_Arch * const, SCOTCH_Strat * const, SCOTCH_Num * const);
-int                         SCOTCH_graphRemap   (SCOTCH_Graph * const, const SCOTCH_Arch * const, SCOTCH_Num *, const double, const SCOTCH_Num *, SCOTCH_Strat * const, SCOTCH_Num * const);
-int                         SCOTCH_graphRemapFixed (SCOTCH_Graph * const, const SCOTCH_Arch * const, SCOTCH_Num *, const double, const SCOTCH_Num *, SCOTCH_Strat * const, SCOTCH_Num * const);
+int                         SCOTCH_graphMapView (const SCOTCH_Graph * const, const SCOTCH_Mapping * const, FILE * const);
 int                         SCOTCH_graphPart    (SCOTCH_Graph * const, const SCOTCH_Num, SCOTCH_Strat * const, SCOTCH_Num * const);
 int                         SCOTCH_graphPartFixed (SCOTCH_Graph * const, const SCOTCH_Num, SCOTCH_Strat * const, SCOTCH_Num * const);
 int                         SCOTCH_graphPartOvl (SCOTCH_Graph * const, const SCOTCH_Num, SCOTCH_Strat * const, SCOTCH_Num * const);
+int                         SCOTCH_graphPartOvlView (const SCOTCH_Graph * const, const SCOTCH_Num, const SCOTCH_Num * const, FILE * const);
+int                         SCOTCH_graphRemap   (SCOTCH_Graph * const, const SCOTCH_Arch * const, SCOTCH_Num *, const double, const SCOTCH_Num *, SCOTCH_Strat * const, SCOTCH_Num * const);
+int                         SCOTCH_graphRemapFixed (SCOTCH_Graph * const, const SCOTCH_Arch * const, SCOTCH_Num *, const double, const SCOTCH_Num *, SCOTCH_Strat * const, SCOTCH_Num * const);
+int                         SCOTCH_graphRemapCompute (SCOTCH_Graph * const, SCOTCH_Mapping * const, SCOTCH_Mapping * const, const double, const SCOTCH_Num *, SCOTCH_Strat * const);
+int                         SCOTCH_graphRemapFixedCompute (SCOTCH_Graph * const, SCOTCH_Mapping * const, SCOTCH_Mapping * const, const double, const SCOTCH_Num *, SCOTCH_Strat * const);
+int                         SCOTCH_graphRemapView (const SCOTCH_Graph * const, const SCOTCH_Mapping * const, const SCOTCH_Mapping * const, const double, SCOTCH_Num *, FILE * const);
+int                         SCOTCH_graphRemapViewRaw (const SCOTCH_Graph * const, const SCOTCH_Mapping * const, const SCOTCH_Mapping * const, const double, SCOTCH_Num *, FILE * const);
 int                         SCOTCH_graphRepart  (SCOTCH_Graph * const, const SCOTCH_Num, SCOTCH_Num * const, const double, const SCOTCH_Num *, SCOTCH_Strat * const, SCOTCH_Num * const);
 int                         SCOTCH_graphRepartFixed (SCOTCH_Graph * const, const SCOTCH_Num, SCOTCH_Num * const, const double, const SCOTCH_Num *, SCOTCH_Strat * const, SCOTCH_Num * const);
-
+int                         SCOTCH_graphTabLoad (const SCOTCH_Graph * const, SCOTCH_Num * const, FILE * const);
+int                         SCOTCH_graphTabSave (const SCOTCH_Graph * const, const SCOTCH_Num * const, FILE * const);
+  
 int                         SCOTCH_graphOrderInit (const SCOTCH_Graph * const, SCOTCH_Ordering * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 void                        SCOTCH_graphOrderExit (const SCOTCH_Graph * const, SCOTCH_Ordering * const);
 int                         SCOTCH_graphOrderLoad (const SCOTCH_Graph * const, SCOTCH_Ordering * const, FILE * const);

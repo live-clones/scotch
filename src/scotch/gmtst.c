@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,6 +80,7 @@ static File                 C_fileTab[C_FILENBR] = { /* The file array          
 static const char *         C_usageList[] = {     /* Usage */
   "gmtst [<input source file> [<input target file> [<input mapping file> [<output data file>]]]] <options>",
   "  -h  : Display this help",
+  "  -o  : Consider it is a partitioning with overlap (from gpart)",
   "  -V  : Print program version and copyright",
   "",
   NULL };
@@ -100,6 +101,7 @@ char *                      argv[])
   SCOTCH_Num *        vlbltab;                    /* Source graph vertex label array */
   SCOTCH_Arch         archdat;                    /* Target architecture             */
   SCOTCH_Mapping      mappdat;                    /* Mapping data                    */
+  int                 flagval;
   int                 i;
 
   errorProg ("gmtst");
@@ -110,6 +112,8 @@ char *                      argv[])
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
+
+  flagval = C_FLAGNONE;                           /* Default behavior */
 
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
@@ -126,10 +130,9 @@ char *                      argv[])
         case 'h' :
           usagePrint (stdout, C_usageList);
           return     (EXIT_SUCCESS);
-        case 'M' :                                /* No mapping flag */
-        case 'm' :
-          C_filenamemapinp = "-";                 /* Default name to avoid opening   */
-          C_filepntrmapinp = NULL;                /* NULL file pointer means no file */
+        case 'O' :
+        case 'o' :
+          flagval |= C_FLAGPARTOVL;
           break;
         case 'V' :
           fprintf (stderr, "gmtst, version " SCOTCH_VERSION_STRING "\n");
@@ -158,15 +161,33 @@ char *                      argv[])
     return     (EXIT_FAILURE);
   }
 
-  SCOTCH_graphMapInit (&grafdat, &mappdat, &archdat, NULL); /* Create mapping structure */
-  if (SCOTCH_graphMapLoad (&grafdat, &mappdat, C_filepntrmapinp) != 0)
-    errorPrint ("main: bad input (1)");
+  if ((flagval & C_FLAGPARTOVL) != 0) {           /* If we are considering a partition with overlap */
+    SCOTCH_Num          archsiz;
+    SCOTCH_Num *        parttab;
 
-  SCOTCH_graphMapView (&grafdat, &mappdat, C_filepntrdatout); /* Display mapping statistics */
+    if (strcmp (SCOTCH_archName (&archdat), "cmplt") != 0) /* If the given target architecture is not a complete graph */
+      errorPrint ("main: option '-o' only valid for graph partitioning");
+    archsiz = SCOTCH_archSize (&archdat);
+
+    if ((parttab = memAlloc (vertnbr * sizeof (SCOTCH_Num))) == NULL)
+      errorPrint ("main: out of memory");
+
+    SCOTCH_graphTabLoad (&grafdat, parttab, C_filepntrmapinp);
+
+    SCOTCH_graphPartOvlView (&grafdat, archsiz, parttab, C_filepntrdatout); /* Display mapping statistics */
+
+    memFree (parttab);
+  }
+  else {
+    SCOTCH_graphMapInit (&grafdat, &mappdat, &archdat, NULL); /* Create mapping structure */
+    SCOTCH_graphMapLoad (&grafdat, &mappdat, C_filepntrmapinp);
+
+    SCOTCH_graphMapView (&grafdat, &mappdat, C_filepntrdatout); /* Display mapping statistics */
+    SCOTCH_graphMapExit (&grafdat, &mappdat);
+  }
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
-  SCOTCH_graphMapExit (&grafdat, &mappdat);
   SCOTCH_archExit     (&archdat);
   SCOTCH_graphExit    (&grafdat);
 

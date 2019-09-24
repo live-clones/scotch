@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2015,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                of the libSCOTCH library.               **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 apr 2011     **/
-/**                                 to     25 apr 2018     **/
+/**                                 to     26 oct 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -187,6 +187,42 @@ end: ;
   return (0);
 }
 
+/*+ This routine saves the contents of the
+*** given mapping array to the given stream.
+*** It returns:
+*** - 0   : on success.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_graphTabSave (
+const SCOTCH_Graph * const  libgrafptr,           /*+ Graph to map  +*/
+const SCOTCH_Num * const    parttab,              /*+ Array to save +*/
+FILE * const                stream)               /*+ Input stream  +*/
+{
+  Gnum                vertnum;
+
+  const Graph * restrict const  grafptr = (Graph *) libgrafptr;
+  const Gnum * restrict const   vlbltax = grafptr->vlbltax;
+  const Gnum * restrict const   parttax = parttab - grafptr->baseval;
+
+  if (fprintf (stream, GNUMSTRING "\n", (Gnum) grafptr->vertnbr) == EOF) {
+    errorPrint (STRINGIFY (SCOTCH_graphTabSave) ": bad output (1)");
+    return (1);
+  }
+
+  for (vertnum = grafptr->baseval; vertnum < grafptr->vertnnd; vertnum ++) {
+    if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
+                 (Gnum) ((vlbltax != NULL) ? vlbltax[vertnum] : vertnum),
+                 (Gnum) parttax[vertnum]) == EOF) {
+      errorPrint (STRINGIFY (SCOTCH_graphTabSave) ": bad output (2)");
+      return (1);
+    }
+  }
+
+  return (0);
+}
+
 /*+ This routine loads the contents of
 *** the given user mapping from the 
 *** given stream.
@@ -197,15 +233,12 @@ end: ;
 
 int
 SCOTCH_graphMapLoad (
-const SCOTCH_Graph * const    actgrafptr,         /*+ Graph to map    +*/
-const SCOTCH_Mapping * const  mappptr,            /*+ Mapping to save +*/
-FILE * const                  stream)             /*+ Output stream   +*/
+const SCOTCH_Graph * const  actgrafptr,           /*+ Graph to map    +*/
+SCOTCH_Mapping * const      mappptr,              /*+ Mapping to save +*/
+FILE * const                stream)               /*+ Output stream   +*/
 {
-  Graph *               grafptr;
-  LibMapping * restrict lmapptr;
-
-  grafptr = (Graph *) actgrafptr;
-  lmapptr = (LibMapping *) mappptr;
+  const Graph * restrict const  grafptr = (Graph *) actgrafptr;
+  LibMapping * restrict         lmapptr = (LibMapping *) mappptr;
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (grafptr != lmapptr->grafptr) {
     errorPrint (STRINGIFY (SCOTCH_graphMapLoad) ": mapping structure must derive from graph");
@@ -238,38 +271,13 @@ const SCOTCH_Graph * const    actgrafptr,         /*+ Graph to map    +*/
 const SCOTCH_Mapping * const  mappptr,            /*+ Mapping to save +*/
 FILE * const                  stream)             /*+ Output stream   +*/
 {
-  Graph *               grafptr;
-  LibMapping * restrict lmapptr;
-  Gnum                  vertnum;
-  Gnum                  baseval;
-
-  grafptr = (Graph *) actgrafptr;
-  lmapptr = (LibMapping *) mappptr;
 #ifdef SCOTCH_DEBUG_GRAPH2
-  if (grafptr != lmapptr->grafptr) {
+  const Graph * restrict const  grafptr = (Graph *) actgrafptr;
+  if (grafptr != (((LibMapping *) mappptr)->grafptr)) {
     errorPrint (STRINGIFY (SCOTCH_graphMapSave) ": mapping structure must derive from graph");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_GRAPH2 */
 
-  const Gnum * restrict vlbltax = grafptr->vlbltax;
-  const Gnum * restrict parttab = lmapptr->parttab;
-
-  if (fprintf (stream, GNUMSTRING "\n",
-               (Gnum) grafptr->vertnbr) == EOF) {
-    errorPrint (STRINGIFY (SCOTCH_graphMapSave) ": bad output (1)");
-    return     (1);
-  }
-
-  baseval = grafptr->baseval;
-  for (vertnum = baseval; vertnum < grafptr->vertnnd; vertnum ++) {
-    if (fprintf (stream, GNUMSTRING "\t" GNUMSTRING "\n",
-                 (Gnum) ((vlbltax != NULL) ? vlbltax[vertnum] : vertnum),
-                 (Gnum) parttab[vertnum - baseval]) == EOF) {
-      errorPrint (STRINGIFY (SCOTCH_graphMapSave) ": bad output (2)");
-      return     (1);
-    }
-  }
-
-  return (0);
+  return (SCOTCH_graphTabSave (actgrafptr, (SCOTCH_Num *) ((LibMapping *) mappptr)->parttab, stream));
 }
