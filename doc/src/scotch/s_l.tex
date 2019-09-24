@@ -4311,6 +4311,10 @@ SCOTCH\_\lbt Mapping} structure pointed to by {\tt mappptr} to stream
 {\tt stream}, in the \scotch\ mapping format (see
 section~\ref{sec-file-map}).
 
+Users willing to save a partition data array rather than an opaque
+{\tt SCOTCH\_\lbt Mapping} structure are invited to use the
+{\tt SCOTCH\_\lbt graph\lbt Tab\lbt Save} routine instead.
+
 Fortran users must use the {\tt PXFFILENO} or {\tt FNUM} functions to
 obtain the number of the Unix file descriptor {\tt fildes} associated
 with the logical unit of the mapping file.
@@ -4491,7 +4495,7 @@ int SCOTCH\_graphTabLoad ( & const SCOTCH\_Graph * & grafptr, \\
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-scotchfgraphmapload ( & doubleprecision (*)   & grafdat, \\
+scotchfgraphtabload ( & doubleprecision (*)   & grafdat, \\
                       & integer*{\it num} (*) & parttab, \\
                       & integer               & fildes, \\
                       & integer               & ierr)
@@ -4499,9 +4503,9 @@ scotchfgraphmapload ( & doubleprecision (*)   & grafdat, \\
 
 \progdes
 
-The {\tt SCOTCH\_graphTabLoad} routine fills the
-{\tt parttab} part array pointed to by {\tt parttab} with the mapping
-data available in the \scotch\ mapping format (see section~\ref{sec-file-map})
+The {\tt SCOTCH\_graphTabLoad} routine fills the part array pointed to
+by {\tt parttab} with the mapping data available in the
+\scotch\ mapping format (see section~\ref{sec-file-map})
 from stream {\tt stream}.
 
 This routine allows users to fill plain partition arrays rather than
@@ -4523,8 +4527,53 @@ with the logical unit of the mapping file.
 
 \progret
 
-{\tt SCOTCH\_graphMapLoad} returns $0$ if the mapping structure
+{\tt SCOTCH\_graphTabLoad} returns $0$ if the part array
 has been successfully loaded from {\tt stream}, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_graphTabSave}}
+\label{sec-lib-graph-tab-load}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_graphTabSave ( & const SCOTCH\_Graph * & grafptr, \\
+                           & SCOTCH\_Num *         & parttab, \\
+                           & FILE *                & stream)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgraphtabsave ( & doubleprecision (*)   & grafdat, \\
+                      & integer*{\it num} (*) & parttab, \\
+                      & integer               & fildes, \\
+                      & integer               & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_graphTabSave} routine saves to stream {\tt stream}
+the contents of the part array pointed to by \texttt{parttab}, on the
+form of mapping data in the \scotch\ mapping format (see
+section~\ref{sec-file-map}).
+
+This routine allows users to save plain partition arrays rather than
+opaque mapping structures, as routine \texttt{SCOTCH\_\lbt graph\lbt
+Map\lbt Save} does.
+
+Upon completion, the produced mapping file contain the indices of the
+parts to which vertices belong according to the given part array. If
+the source graph has vertex labels attached to its vertices, mapping
+indices in the output stream are replaced by the vertex labels.
+
+Fortran users must use the {\tt PXFFILENO} or {\tt FNUM} functions to
+obtain the number of the Unix file descriptor {\tt fildes} associated
+with the logical unit of the mapping file.
+
+\progret
+
+{\tt SCOTCH\_graphTabSave} returns $0$ if the part array 
+has been successfully saved to  \texttt{stream}, and $1$ else.
 \end{itemize}
 
 \subsection{High-level graph ordering routines}
