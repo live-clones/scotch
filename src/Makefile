@@ -32,7 +32,7 @@
 
 VERSION	= 6
 RELEASE = 0
-PATCHLEVEL = 8
+PATCHLEVEL = 9
 
 .PHONY				:	clean	default	install	ptscotch	realclean	required	scotch
 
