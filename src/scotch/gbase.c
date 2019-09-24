@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 27 aug 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,7 +95,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    exit       (EXIT_SUCCESS);
+    return     (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -107,25 +107,21 @@ char *                      argv[])
       if (C_paraNum < 1) {                        /* If number of parameters not reached              */
         C_paraNum ++;                             /* One more parameter                               */
         baseval = atoi (argv[i]);                 /* Get the base value                               */
-        if ((baseval < 0) || (baseval > 1)) {
+        if ((baseval < 0) || (baseval > 1))
           errorPrint ("main: invalid base value '%s'", argv[i]);
-          return     (EXIT_FAILURE);
-        }
         continue;                                 /* Process the other parameters */
       }
       if (C_fileNum < C_FILEARGNBR)               /* A file name has been given */
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        exit       (EXIT_FAILURE);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          exit       (EXIT_SUCCESS);
+          return     (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "gbase, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
@@ -133,7 +129,6 @@ char *                      argv[])
           return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          exit       (EXIT_FAILURE);
       }
     }
   }

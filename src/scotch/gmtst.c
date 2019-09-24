@@ -119,10 +119,8 @@ char *                      argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (EXIT_FAILURE);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -141,7 +139,6 @@ char *                      argv[])
           return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (EXIT_FAILURE);
       }
     }
   }
@@ -154,12 +151,10 @@ char *                      argv[])
                     &vertnbr, NULL, NULL, NULL, &vlbltab,
                     NULL, NULL, NULL);
 
-  SCOTCH_archInit (&archdat);                     /* Create architecture structure                    */
-  SCOTCH_archLoad (&archdat, C_filepntrtgtinp);   /* Read target architecture                         */
-  if (strcmp (SCOTCH_archName (&archdat), "term") == 0) { /* If target architecture is variable-sized */
+  SCOTCH_archInit (&archdat);                     /* Create architecture structure                  */
+  SCOTCH_archLoad (&archdat, C_filepntrtgtinp);   /* Read target architecture                       */
+  if (strcmp (SCOTCH_archName (&archdat), "term") == 0) /* If target architecture is variable-sized */
     errorPrint ("main: variable-sized architectures cannot be mapped");
-    return     (EXIT_FAILURE);
-  }
 
   if ((flagval & C_FLAGPARTOVL) != 0) {           /* If we are considering a partition with overlap */
     SCOTCH_Num          archsiz;

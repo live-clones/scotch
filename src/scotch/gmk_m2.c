@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -127,18 +127,14 @@ char *                      argv[])
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_paraNum < 2) {                        /* If number of parameters not reached              */
-        if ((d[C_paraNum ++] = atoi (argv[i])) < 1) { /* Get the dimension                            */
+        if ((d[C_paraNum ++] = atoi (argv[i])) < 1) /* Get the dimension                              */
           errorPrint ("main: invalid dimension '%s'", argv[i]);
-          return     (EXIT_FAILURE);
-        }
         continue;                                 /* Process the other parameters */
       }
       if (C_fileNum < C_FILEARGNBR)               /* A file name has been given */
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (EXIT_FAILURE);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -174,17 +170,14 @@ char *                      argv[])
           return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (EXIT_FAILURE);
       }
     }
   }
 
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
-  if (flagval & C_FLAGELEM) {                     /* Build a 8-neighbor grid */
+  if ((flagval & C_FLAGELEM) != 0)                /* Build a 8-neighbor grid */
     errorPrint ("main: elements not supported");
-    return     (EXIT_FAILURE);
-  }
 
   if (flagval & C_FLAGTORUS) {                    /* Build a torus */
     fprintf (C_filepntrsrcout, "0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t000\n",

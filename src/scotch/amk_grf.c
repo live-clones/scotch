@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 11 dec 2008     **/
 /**                                 to   : 17 jul 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 27 apr 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -130,10 +130,8 @@ char *                      argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (EXIT_FAILURE);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -144,10 +142,8 @@ char *                      argv[])
         case 'b' :
           SCOTCH_stratExit (&bipastrat);
           SCOTCH_stratInit (&bipastrat);
-          if ((SCOTCH_stratGraphBipart (&bipastrat, &argv[i][2])) != 0) {
+          if ((SCOTCH_stratGraphBipart (&bipastrat, &argv[i][2])) != 0)
             errorPrint ("main: invalid bipartitioning strategy");
-            return     (EXIT_FAILURE);
-          }
           break;
         case 'H' :                                /* Give the usage message */
         case 'h' :
@@ -166,7 +162,6 @@ char *                      argv[])
           return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (EXIT_FAILURE);
       }
     }
   }
@@ -185,35 +180,28 @@ char *                      argv[])
 
     if ((intLoad (C_filepntrvrtinp, &listnbr) != 1) || /* Read list size */
         (listnbr < 0)                               ||
-        (listnbr > vertnbr)) {
+        (listnbr > vertnbr))
       errorPrint ("main: bad list input (1)");
-      return     (EXIT_FAILURE);
-    }
-    if ((listtab = (SCOTCH_Num *) memAlloc (listnbr * sizeof (SCOTCH_Num))) == NULL) {
+
+    if ((listtab = (SCOTCH_Num *) memAlloc (listnbr * sizeof (SCOTCH_Num))) == NULL)
       errorPrint ("main: out of memory (1)");
-      return     (EXIT_FAILURE);
-    }
+
     for (listnum = 0; listnum < listnbr; listnum ++) { /* Read list data */
-      if (intLoad (C_filepntrvrtinp, &listtab[listnum]) != 1) {
+      if (intLoad (C_filepntrvrtinp, &listtab[listnum]) != 1)
         errorPrint ("main: bad list input (2)");
-        return     (EXIT_FAILURE);
-      }
     }
     intSort1asc1 (listtab, listnbr);
     for (listnum = 0; listnum < listnbr - 1; listnum ++) { /* Search for duplicates */
-      if (listtab[listnum] == listtab[listnum + 1]) {
+      if (listtab[listnum] == listtab[listnum + 1])
         errorPrint ("main: duplicate list labels");
-        return     (EXIT_FAILURE);
-      }
     }
 
     if (vlbltab != NULL) {                        /* If graph has vertex labels */
       SCOTCH_Num          vertnum;
 
-      if ((sorttab = (C_VertSort *) memAlloc (vertnbr * sizeof (C_VertSort))) == NULL) {
+      if ((sorttab = (C_VertSort *) memAlloc (vertnbr * sizeof (C_VertSort))) == NULL)
         errorPrint ("main: out of memory (2)");
-        return     (EXIT_FAILURE);
-      }
+
       for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Initialize sort area */
         sorttab[vertnum].vlblnum = vlbltab[vertnum];
         sorttab[vertnum].vertnum = vertnum;
@@ -224,10 +212,9 @@ char *                      argv[])
         while ((vertnum < vertnbr) && (sorttab[vertnum].vlblnum < listtab[listnum]))
           vertnum ++;                             /* Search vertex graph with corresponding label */
         if ((vertnum >= vertnbr) ||               /* If label not found                           */
-            (sorttab[vertnum].vlblnum > listtab[listnum])) {
+            (sorttab[vertnum].vlblnum > listtab[listnum]))
           errorPrint ("main: list label '" SCOTCH_NUMSTRING "' not in graph", (SCOTCH_Num) listtab[listnum]);
-          return     (EXIT_FAILURE);
-        }
+
         listtab[listnum] = sorttab[vertnum ++].vertnum; /* Replace label by number */
       }
       memFree (sorttab);                          /* Free sort area */

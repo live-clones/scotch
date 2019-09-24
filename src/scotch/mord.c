@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 08 sep 2008     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -129,10 +129,8 @@ char *                      argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (EXIT_FAILURE);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -176,10 +174,8 @@ char *                      argv[])
           straptr = &argv[i][2];
           SCOTCH_stratExit (&stradat);
           SCOTCH_stratInit (&stradat);
-          if ((SCOTCH_stratMeshOrder (&stradat, straptr)) != 0) {
+          if ((SCOTCH_stratMeshOrder (&stradat, straptr)) != 0)
             errorPrint ("main: invalid ordering strategy");
-            return     (EXIT_FAILURE);
-          }
           break;
         case 'V' :
           fprintf (stderr, "mord, version " SCOTCH_VERSION_STRING "\n");
@@ -199,15 +195,12 @@ char *                      argv[])
                 flagval |= C_FLAGVERBTIM;
                 break;
               default :
-                errorPrint ("main: unprocessed parameter '%c' in '%s'",
-                            argv[i][j], argv[i]);
-                return     (EXIT_FAILURE);
+                errorPrint ("main: unprocessed parameter '%c' in '%s'", argv[i][j], argv[i]);
             }
           }
           break;
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (EXIT_FAILURE);
       }
     }
   }
@@ -232,18 +225,16 @@ char *                      argv[])
   clockInit  (&runtime[1]);
   clockStart (&runtime[1]);
 
-  if ((permtab = (SCOTCH_Num *) memAlloc (vnodnbr * sizeof (SCOTCH_Num))) == NULL) {
+  if ((permtab = (SCOTCH_Num *) memAlloc (vnodnbr * sizeof (SCOTCH_Num))) == NULL)
     errorPrint ("main: out of memory");
-    return     (EXIT_FAILURE);
-  }
+
   SCOTCH_meshOrderInit    (&meshdat, &ordedat, permtab, NULL, NULL, NULL, NULL); /* Create ordering */
   SCOTCH_meshOrderCompute (&meshdat, &ordedat, &stradat); /* Perform ordering */
 
   clockStop (&runtime[1]);                        /* Get ordering time */
 
 #ifdef SCOTCH_DEBUG_ALL
-  if (SCOTCH_meshOrderCheck (&meshdat, &ordedat) != 0)
-    return (EXIT_FAILURE);
+  SCOTCH_meshOrderCheck (&meshdat, &ordedat);
 #endif /* SCOTCH_DEBUG_ALL */
 
   clockStart (&runtime[0]);
