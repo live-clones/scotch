@@ -209,8 +209,8 @@ const int                   filenbr)
         break;
       }
     }
-    if (j == i) {                                 /* If original stream                */
-      int                 compval;                /* Compression type */
+    if (j == i) {                                 /* If original stream */
+      int                 compval;                /* Compression type   */
 
       if (filetab[i].nameptr[0] != '-') {         /* If not standard stream, open it */
         if ((filetab[i].fileptr = fopen (filetab[i].nameptr, ((filetab[i].flagval & FILEMODE) == FILEMODER) ? "r" : "w")) == NULL) { /* Open the file */
