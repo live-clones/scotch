@@ -73,8 +73,7 @@ For instance, the {\tt SCOTCH\_\lbt graph\lbt Init} and
 sections~\ref{sec-lib-func-graphinit}
 and~\ref{sec-lib-func-graphload}, respectively, can
 be called from C by using the following code.
-{\tt
-\begin{verbatim}
+\begin{lstlisting}[style=language-c]
 #include <stdio.h>
 #include "scotch.h"
   ...
@@ -91,8 +90,7 @@ be called from C by using the following code.
     ... /* Error handling */
   }
   ...
-\end{verbatim}
-}
+\end{lstlisting}
 
 Since ``{\tt scotch.h}'' uses several system objects which are
 declared in ``{\tt stdio.h}'', this latter file must be
@@ -144,8 +142,7 @@ For instance, the {\tt SCOTCH\_\lbt graph\lbt Init} and
 sections~\ref{sec-lib-func-graphinit}
 and~\ref{sec-lib-func-graphload}, respectively, can
 be called from Fortran by using the following code.
-{\tt
-\begin{verbatim}
+\begin{lstlisting}[style=language-f]
         INCLUDE "scotchf.h"
         DOUBLEPRECISION GRAFDAT(SCOTCH_GRAPHDIM)
         INTEGER RETVAL
@@ -158,8 +155,7 @@ be called from Fortran by using the following code.
         CLOSE (10)
         IF (RETVAL .NE. 0) THEN
         ...
-\end{verbatim}
-}
+\end{lstlisting}
 
 Although the ``{\tt scotchf.h}'' and ``{\tt ptscotchf.h}'' files may
 look very similar on your system, never mistake them, and always use

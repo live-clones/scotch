@@ -18,19 +18,28 @@
 \usepackage{a4}
 \usepackage{url}
 \usepackage[dvips]{graphicx}
-%\documentstyle[11pt,a4,fullpage,epsf]{article}
-%\textwidth      16.0cm
-%\oddsidemargin   -0.5cm
-%\evensidemargin  -0.5cm
-%\marginparwidth  0.0cm
-%\marginparsep    0.0cm
-%\marginparpush   0.0cm
-%\topmargin        0.5cm
-%\headheight      0.0cm
-%\headsep         0.0cm
-%\textheight     25.0cm
-%\footheight      0.0cm
-%\footskip        0.0cm
+\usepackage{courier}
+\usepackage{listings}
+\lstdefinestyle{language-c}
+{
+  language=C,
+  basicstyle=\small\sffamily,
+  numbers=left,
+  numberstyle=\tiny,
+  frame=tlrb,
+  columns=fullflexible,
+  showstringspaces=false
+}
+\lstdefinestyle{language-f}
+{
+  language=Fortran,
+  basicstyle=\small\sffamily,
+  numbers=left,
+  numberstyle=\tiny,
+  frame=tlrb,
+  columns=fullflexible,
+  showstringspaces=false
+}
 
 \sloppy                                          % Gestion des overfull hbox
 \renewcommand{\baselinestretch}{1.05}            % Hauteur lignes x 1.05
