@@ -53,7 +53,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     19 aug 2019     **/
+/**                                 to     30 oct 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,8 +70,25 @@
 #define __USE_XOPEN2K                             /* For POSIX pthread_barrier_t */
 #endif /* __USE_XOPEN2K */
 
-#include            <ctype.h>
+#ifdef COMMON_WINDOWS
+#include            <io.h>                        /* For _pipe ()              */
 #include            <fcntl.h>                     /* Fow Windows _pipe () call */
+#include            <stddef.h>                    /* For intptr_t              */
+#include            <windows.h>
+#define HAVE_STDINT_H
+#define HAVE_UINT_T
+#define HAVE_NOT_SYS_WAIT_H
+#ifdef _MSC_VER
+#define HAVE_NOT_STRINGS_H
+#endif /* _MSC_VER */
+#ifdef _WIN32
+#define strncasecmp                 strnicmp
+#define strcasecmp                  stricmp
+#endif /* _WIN32 */
+#define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
+#endif /* COMMON_WINDOWS */
+
+#include            <ctype.h>
 #include            <math.h>
 #include            <memory.h>
 #include            <stdio.h>
@@ -85,7 +102,9 @@
 #include            <malloc.h>                    /* Deprecated, but required on some old systems */
 #endif /* HAVE_MALLOC_H */
 #include            <string.h>
+#ifndef HAVE_NOT_STRINGS_H
 #include            <strings.h>
+#endif /* HAVE_NOT_STRINGS_H */
 #include            <time.h>                      /* For the effective calls to clock () */
 #include            <limits.h>
 #include            <float.h>
@@ -96,11 +115,6 @@
 #if ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H))
 #include            <sys/resource.h>
 #endif /* ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H)) */
-#if ((defined COMMON_WINDOWS) || (defined HAVE_WINDOWS_H))
-#include            <io.h>                        /* For _pipe () */
-#include            <stddef.h>                    /* For intptr_t */
-#include            <windows.h>
-#endif /* ((defined COMMON_WINDOWS) || (defined HAVE_WINDOWS_H)) */
 #if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
 #include            <unistd.h>
 #endif /* ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
@@ -112,7 +126,9 @@
 #ifdef COMMON_PTHREAD
 #include            <pthread.h>
 #else /* COMMON_PTHREAD */
-#include            <sys/wait.h>
+#ifndef HAVE_NOT_SYS_WAIT_H
+#include            <sys/wait.h>                  /* For waitpid () */
+#endif /* HAVE_NOT_SYS_WAIT_H */
 #endif /* COMMON_PTHREAD */
 
 /*
@@ -253,14 +269,6 @@ typedef struct Clock_ {
 } Clock;
 
 /*
-**  Handling of Windows constructs.
-*/
-
-#if defined COMMON_WINDOWS
-#define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
-#endif /* COMMON_WINDOWS */
-
-/*
 **  Handling of threads.
 */
 
@@ -316,8 +324,8 @@ typedef void (* ThreadScanFunc)   (void * const, void * const, void * const, con
 /** The thread group header block. **/
 
 typedef struct ThreadGroupHeader_ {
-#ifdef COMMON_PTHREAD
   int                       flagval;              /*+ Thread block flags       +*/
+#ifdef COMMON_PTHREAD
   size_t                    datasiz;              /*+ Size of data array cell  +*/
   int                       thrdnbr;              /*+ Number of threads        +*/
   ThreadLaunchStartFunc     stafptr;              /*+ Pointer to start routine +*/
