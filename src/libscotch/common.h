@@ -149,10 +149,18 @@
 #define memCpy(dst,src,siz)         memcpy ((void *) (dst), (void *) (src), (siz))
 #define memMov(dst,src,siz)         memmove ((void *) (dst), (void *) (src), (siz))
 
+#ifndef MIN
 #define MIN(x,y)                    (((x) < (y)) ? (x) : (y))
+#endif /* MIN */
+#ifndef MAX
 #define MAX(x,y)                    (((x) < (y)) ? (y) : (x))
+#endif /* MAX */
+#ifndef ABS
 #define ABS(x)                      MAX ((x), -(x))
+#endif /* ABS */
+#ifndef SIGN
 #define SIGN(x)                     (((x) < 0) ? -1 : 1)
+#endif /* SIGN */
 
 /*
 **  Handling of generic types.
