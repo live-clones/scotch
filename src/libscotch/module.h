@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     10 may 2019     **/
+/**                                 to     26 oct 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -215,8 +215,11 @@
 */
 
 #ifndef SCOTCH_NAME_SUFFIX
-#define SCOTCH_NAME_SUFFIX
+#define SCOTCH_NAME_SUFFIXC
 #else /* SCOTCH_NAME_SUFFIX */
+#ifndef SCOTCH_NAME_SUFFIXC
+#define SCOTCH_NAME_SUFFIXC         SCOTCH_NAME_SUFFIX
+#endif /* SCOTCH_NAME_SUFFIXC */
 #ifndef SCOTCH_RENAME
 #define SCOTCH_RENAME
 #endif /* SCOTCH_RENAME */
@@ -225,8 +228,8 @@
 #endif /* SCOTCH_RENAME_PUBLIC */
 #endif /* SCOTCH_NAME_SUFFIX   */
 #ifndef SCOTCH_NAME_SUFFIXFL
-#define SCOTCH_NAME_SUFFIXFL        SCOTCH_NAME_SUFFIX
-#define SCOTCH_NAME_SUFFIXFU        SCOTCH_NAME_SUFFIX
+#define SCOTCH_NAME_SUFFIXFL        SCOTCH_NAME_SUFFIXC
+#define SCOTCH_NAME_SUFFIXFU        SCOTCH_NAME_SUFFIXC
 #else /* SCOTCH_NAME_SUFFIXFL */
 #ifndef SCOTCH_RENAME
 #define SCOTCH_RENAME
@@ -243,8 +246,8 @@
 #define SCOTCH_NAME_GLUE3(p,n,s)    p##n##s
 #define SCOTCH_NAME_MACRO2(n,s)     SCOTCH_NAME_GLUE2 (n,s)
 #define SCOTCH_NAME_MACRO3(p,n,s)   SCOTCH_NAME_GLUE3 (p,n,s)
-#define SCOTCH_NAME_INTERN(f)       SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_INTERN,f,SCOTCH_NAME_SUFFIX)
-#define SCOTCH_NAME_PUBLIC(f)       SCOTCH_NAME_MACRO2 (f,SCOTCH_NAME_SUFFIX)
+#define SCOTCH_NAME_INTERN(f)       SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_INTERN,f,SCOTCH_NAME_SUFFIXC)
+#define SCOTCH_NAME_PUBLIC(f)       SCOTCH_NAME_MACRO2 (f,SCOTCH_NAME_SUFFIXC)
 #define SCOTCH_NAME_PUBLICFL(f)     SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_PUBLICFL,f,SCOTCH_NAME_SUFFIXFL)
 #define SCOTCH_NAME_PUBLICFU(f)     SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_PUBLICFU,f,SCOTCH_NAME_SUFFIXFU)
 #define SCOTCH_FORTRAN(nu,nl,pl,pc) FORTRAN (SCOTCH_NAME_PUBLICFU(nu),SCOTCH_NAME_PUBLICFL(nl),pl,pc)

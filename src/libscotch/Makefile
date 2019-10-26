@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2018 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2019 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -33,13 +33,18 @@
 includedir	= ../../include
 libdir		= ../../lib
 
+include ../Makefile.inc
+
 CCDFLAGS	?= $(CFLAGS)
+
+ifneq ($(strip $(SCOTCH_NAME_SUFFIX)),)
+CFLAGS		+= -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+CCDFLAGS	+= -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+endif
 
 ##
 ##  General inference rules.
 ##
-
-include ../Makefile.inc
 
 %$(OBJ)	:	%.c
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -o $(@) -DSCOTCH_VERSION_NUM=$(VERSION) -DSCOTCH_RELEASE_NUM=$(RELEASE) -DSCOTCH_PATCHLEVEL_NUM=$(PATCHLEVEL)

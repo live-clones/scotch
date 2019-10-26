@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 09 jun 2009     **/
 /**                                 to     07 aug 2010     **/
 /**                # Version 6.0  : from : 27 apr 2018     **/
-/**                                 to     27 apr 2018     **/
+/**                                 to     26 oct 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,7 +63,7 @@
 #if ((defined SCOTCH_RENAME_PARSER) || (defined yylex)) /* If prefix renaming    */
 #define scotchyyparse               stratParserParse2 /* Parser function name    */
 #ifndef yylval
-#define yylval                      SCOTCH_NAME_MACRO3 (scotchyy, SCOTCH_NAME_SUFFIX, lval) /* It should be Yacc/Bison's job to redefine it! */
+#define yylval                      SCOTCH_NAME_MACRO3 (scotchyy, SCOTCH_NAME_SUFFIXC, lval) /* It should be Yacc/Bison's job to redefine it! */
 #endif /* yylval              */
 #else /* SCOTCH_RENAME_PARSER */
 #define yylex                       stratParserLex /* Lexical analyzer           */
