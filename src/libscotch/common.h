@@ -71,6 +71,11 @@
 #define _XOPEN_SOURCE               600
 #endif /* _XOPEN_SOURCE */
 
+#ifdef COMMON_OS_MACOS
+#define _DARWIN_C_SOURCE
+#define HAVE_SYS_SYSCTL_H
+#endif /* COMMON_OS_MACOS */
+
 #ifdef COMMON_OS_WINDOWS
 #include            <io.h>                        /* For _pipe ()              */
 #include            <fcntl.h>                     /* Fow Windows _pipe () call */
@@ -88,6 +93,9 @@
 #define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
 #endif /* COMMON_OS_WINDOWS */
 
+#if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
+#include            <unistd.h>
+#endif /* ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
 #include            <ctype.h>
 #include            <math.h>
 #include            <memory.h>
@@ -116,12 +124,9 @@
 #if ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H))
 #include            <sys/resource.h>
 #endif /* ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H)) */
-#if ((defined COMMON_OS_MACOS) || (defined HAVE_OS_MACOS_H))
+#if (defined HAVE_SYS_SYSCTL_H)
 #include            <sys/sysctl.h>
-#endif /* ((defined COMMON_OS_MACOS) || (defined HAVE_OS_MACOS_H)) */
-#if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
-#include            <unistd.h>
-#endif /* ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
+#endif /* (defined HAVE_SYS_SYSCTL_H) */
 
 #ifdef COMMON_MPI
 #include            <mpi.h>
