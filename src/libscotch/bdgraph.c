@@ -97,11 +97,11 @@ const ArchDom                   domnsubtab[])     /* Subdomains                 
   actgrafptr->veexglbsum   = 0;
   actgrafptr->partgsttax   = NULL;                   /* Do not allocate frontier arrays yet */
   actgrafptr->fronloctab   = NULL;
- 
+
   bdgraphInit2 (actgrafptr, domndist, domnwght0, domnwght1);
 
 /* TODO: Compute external gains */
-  
+
 #ifdef SCOTCH_DEBUG_BDGRAPH2
   if (bdgraphCheck (actgrafptr) != 0) {
     errorPrint ("bdgraphInit: inconsistent graph data");
@@ -132,7 +132,7 @@ const Anum                      domnwght1)
   actgrafptr->commglbload      = 0;
   actgrafptr->commglbloadextn0 = 0;
   actgrafptr->commglbgainextn  = 0;
-  actgrafptr->commglbgainextn0 = 0; 
+  actgrafptr->commglbgainextn0 = 0;
   actgrafptr->bbalglbval       = (double) actgrafptr->compglbload0dlt / (double) actgrafptr->compglbload0avg;
   actgrafptr->domndist         = domndist;
   actgrafptr->domnwght[0]      = domnwght0;

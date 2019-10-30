@@ -325,7 +325,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
 
   if (typeval == BGRAPHBIPARTFMTYPEALL)           /* Take maximum space so that hashmax will fit */
     hashnbr = grafptr->s.vertnbr * 4;
-    
+
   for (hashsiz = 256; hashsiz < hashnbr; hashsiz <<= 1) ; /* Get upper power of two */
   hashmsk = hashsiz - 1;
   hashmax = hashsiz >> 2;
@@ -333,7 +333,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
   if (bgraphBipartFmTablInit (&tabldat) != 0) {
     errorPrint ("bgraphBipartFm: internal error (1)"); /* Unable to do proper initialization */
     bgraphBipartFmTablExit (&tabldat);
-    return (1);  
+    return (1);
   }
 
   tablptr = &tabldat;
@@ -675,7 +675,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
           compload0dltbst = compload0dlt;         /* Forget backtracking */
           commgainextnbst = commgainextn;
           swapvalbst      = swapval;
-          savenbr         = 0;                   
+          savenbr         = 0;
           mswpnum ++;
         }
       }

@@ -37,7 +37,7 @@
 /**                Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module performs the Dual Recursive **/
-/**                Bipartitioning mapping algorithm        **/ 
+/**                Bipartitioning mapping algorithm        **/
 /**                in parallel.                            **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 16 apr 2008     **/

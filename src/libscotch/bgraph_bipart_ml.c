@@ -245,7 +245,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to un-based multin
     coarvertnum  = coarfrontab[coarfronnum];
     finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
     finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
-      
+
     if (finevertnum0 != finevertnum1) {           /* If multinode is made of two distinct vertices */
       GraphPart           coarpartval;
       Gnum                fineedgenum;

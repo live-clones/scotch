@@ -324,7 +324,7 @@ const Strat * restrict const  strat)              /*+ Separation strategy       
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
 #ifdef SCOTCH_DEBUG_VDGRAPH2
       proccommold = grafptr->s.proccomm;          /* Create new communicator to isolate method communications */
-      MPI_Comm_dup (proccommold, &grafptr->s.proccomm); 
+      MPI_Comm_dup (proccommold, &grafptr->s.proccomm);
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
       o = strat->tabl->methtab[strat->data.method.meth].func (grafptr, (void *) &strat->data.method.data);
 #ifdef SCOTCH_DEBUG_VDGRAPH2

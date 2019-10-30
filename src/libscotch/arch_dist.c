@@ -147,7 +147,7 @@ const Anum                  crloval)
   archdataptr->archptr = orgarchptr;
   archdataptr->crloval = crloval;
 
-  return (0); 
+  return (0);
 }
 
 /* This function returns the smallest number
@@ -184,7 +184,7 @@ const ArchDomNum            domnum)
 ** elements in the distance domain.
 */
 
-Anum 
+Anum
 archDistDomSize (
 const ArchDist * const      archptr,
 const ArchDom * const       domptr)
@@ -196,7 +196,7 @@ const ArchDom * const       domptr)
 ** the given distance domain.
 */
 
-Anum 
+Anum
 archDistDomWght (
 const ArchDist * const      archptr,
 const ArchDom * const       domptr)
@@ -209,7 +209,7 @@ const ArchDom * const       domptr)
 ** subdomains.
 */
 
-Anum 
+Anum
 archDistDomDist (
 const ArchDist * const      archptr,
 const ArchDom * const       dom0ptr,

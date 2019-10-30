@@ -399,12 +399,12 @@ const BdgraphBipartExParam * restrict const paraptr) /*+ Method parameters +*/
     vertlocnum = grafptr->s.baseval;
     procsidnbr = grafptr->s.procsidnbr;
     procsidnum = 0;
-    procsidval = procsidtab[procsidnum ++];  
+    procsidval = procsidtab[procsidnum ++];
 
     while (1) {                                   /* Scan all vertices which have foreign neighbors */
       while (procsidval < 0) {
         vertlocnum -= (Gnum) procsidval;
-        procsidval  = procsidtab[procsidnum ++];  
+        procsidval  = procsidtab[procsidnum ++];
       }
 
       if (flagVal (flagloctab, vertlocnum) == 0) { /* If vertex not already processed */

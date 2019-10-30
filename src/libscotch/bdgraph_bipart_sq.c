@@ -249,7 +249,7 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
     return     (1);
   }
 
-  complocsize1 = 
+  complocsize1 =
   complocload1 = 0;
   for (vertlocnum = dgrfptr->s.baseval, fronlocnbr = 0;
        vertlocnum < dgrfptr->s.vertlocnnd; vertlocnum ++) {
@@ -282,7 +282,7 @@ const BdgraphBipartSqParam * const  paraptr)      /*+ Method parameters +*/
   dgrfptr->fronlocnbr   = fronlocnbr;
   dgrfptr->complocsize0 = dgrfptr->s.vertlocnbr - complocsize1;
   dgrfptr->complocload0 = (dgrfptr->s.veloloctax != NULL) ? (dgrfptr->s.velolocsum - complocload1) : dgrfptr->complocsize0;
-  
+
   bgraphExit (&cgrfdat);
 
 #ifdef SCOTCH_DEBUG_BDGRAPH2

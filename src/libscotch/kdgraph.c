@@ -93,7 +93,7 @@ Dmapping * restrict const        dmapptr)         /* Mapping      */
 }
 
 /* This routine frees the contents
-** of the given active graph 
+** of the given active graph.
 ** It returns:
 ** - VOID  : in all cases.
 */

@@ -421,7 +421,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
   memFree (vspgrafdat.fronloctab);                /* Free remaining space */
   return  (o);
 
-abort :                           
+abort :
   if (vspgrafdat.partgsttax != NULL)
     memFree (vspgrafdat.partgsttax + vspgrafdat.s.baseval);
   if (vspgrafdat.fronloctab != NULL)

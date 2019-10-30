@@ -224,7 +224,7 @@ FILE * const                stream)               /*+ Input stream  +*/
 }
 
 /*+ This routine loads the contents of
-*** the given user mapping from the 
+*** the given user mapping from the
 *** given stream.
 *** It returns:
 *** - 0   : on success.

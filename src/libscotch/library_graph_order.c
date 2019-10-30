@@ -337,7 +337,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
         peritax[halonum --] = vertnum;
     }
 #ifdef SCOTCH_DEBUG_LIBRARY2
-    if (halonum != (listnbr + srcgrafptr->baseval - 1)) { 
+    if (halonum != (listnbr + srcgrafptr->baseval - 1)) {
       errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": internal error");
       return     (1);
     }

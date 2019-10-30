@@ -414,7 +414,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     Gnum              edgelocnnd;
 
     for (bandvertlocnum = bandgrafptr->baseval;   /* For all vertices that do not belong to the last level */
-         bandvertlocnum < bandvertlvlnum; bandvertlocnum ++) { 
+         bandvertlocnum < bandvertlvlnum; bandvertlocnum ++) {
       Gnum              vertlocnum;
       Gnum              bandedgelocnum;
 

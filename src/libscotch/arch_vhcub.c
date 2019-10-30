@@ -116,7 +116,7 @@ const ArchDomNum            domnum)
 ** elements in the domain.
 */
 
-Anum 
+Anum
 archVhcubDomSize (
 const ArchVhcub * const     archptr,
 const ArchVhcubDom * const  domptr)
@@ -128,7 +128,7 @@ const ArchVhcubDom * const  domptr)
 ** distance between two subdomains.
 */
 
-Anum 
+Anum
 archVhcubDomDist (
 const ArchVhcub * const     archptr,
 const ArchVhcubDom * const  dom0ptr,

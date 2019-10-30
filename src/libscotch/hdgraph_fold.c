@@ -88,7 +88,7 @@ Hdgraph * restrict const        fldgrafptr)
   fldprocglbnbr = (orggrafptr->s.procglbnbr + 1) / 2;
   if (partval == 1) {
     fldproclocnum = orggrafptr->s.proclocnum - fldprocglbnbr;
-    fldprocglbnbr = orggrafptr->s.procglbnbr - fldprocglbnbr; 
+    fldprocglbnbr = orggrafptr->s.procglbnbr - fldprocglbnbr;
   }
   else
     fldproclocnum = orggrafptr->s.proclocnum;
@@ -146,7 +146,7 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
   fldprocglbnbr = (orggrafptr->s.procglbnbr + 1) / 2;
   if (partval == 1) {
     fldproclocnum = orggrafptr->s.proclocnum - fldprocglbnbr;
-    fldprocglbnbr = orggrafptr->s.procglbnbr - fldprocglbnbr; 
+    fldprocglbnbr = orggrafptr->s.procglbnbr - fldprocglbnbr;
   }
   else
     fldproclocnum = orggrafptr->s.proclocnum;

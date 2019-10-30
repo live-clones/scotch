@@ -113,7 +113,7 @@ const VdgraphSeparateDfParam * const  paraptr)    /*+ Method parameters +*/
   reduloctab[0] = grafptr->s.vendloctax[grafptr->s.vertlocnnd - 2] - grafptr->s.vertloctax[grafptr->s.vertlocnnd - 2] - (grafptr->s.procglbnbr - 1);
   reduloctab[1] = grafptr->s.vendloctax[grafptr->s.vertlocnnd - 1] - grafptr->s.vertloctax[grafptr->s.vertlocnnd - 1] - (grafptr->s.procglbnbr - 1);
   if (grafptr->s.veloloctax == NULL)
-    reduloctab[2] = 
+    reduloctab[2] =
     reduloctab[3] = 1;
   else {
     reduloctab[2] = grafptr->s.veloloctax[grafptr->s.vertlocnnd - 2];

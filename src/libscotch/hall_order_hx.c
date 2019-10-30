@@ -147,7 +147,7 @@ const float                 fillrat)
     }
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
-  
+
   for (i = baseval, cblknbr = 0, rootnum = ~0;    /* Assume no root found yet */
        i < vnohnnd; i ++) {
     if (nvartax[i] != 0) {                        /* If principal variable         */
@@ -267,7 +267,7 @@ const float                 fillrat)
     if ((peritab[i] < baseval) || (peritab[i] >= vnohnnd)) {
       errorPrint ("hallOrderHxBuild: permutation out of bounds");
       return     (1);
-    } 
+    }
     if (permtax[peritab[i]] != ~0) {
       errorPrint ("hallOrderHxBuild: duplicate permutation index");
       return     (1);

@@ -398,11 +398,11 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
   orgvertlocnum = orggrafptr->s.baseval;
   orgprocsidnum = 0;
   orgprocsidtab = orggrafptr->s.procsidtab;
-  orgprocsidval = orgprocsidtab[orgprocsidnum ++];  
+  orgprocsidval = orgprocsidtab[orgprocsidnum ++];
   while (1) {             /* Scan all vertices which have foreign neighbors */
     while (orgprocsidval < 0) {
       orgvertlocnum -= (Gnum) orgprocsidval;
-      orgprocsidval  = orgprocsidtab[orgprocsidnum ++];  
+      orgprocsidval  = orgprocsidtab[orgprocsidnum ++];
     }
 
     if (flagVal (orgflagloctab, orgvertlocnum) == 0) { /* If vertex not already processed */

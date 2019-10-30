@@ -191,7 +191,7 @@ Dorder * const              ordeptr)
 
 /* This routine gives back a new distributed
 ** column block slot in the same ordering
-** structure as the given column block. 
+** structure as the given column block.
 ** It returns:
 ** - !NULL  : new column block.
 ** - NULL   : on error.
@@ -219,7 +219,7 @@ MPI_Comm                    proccomm)             /* Communicator sharing the bl
     reduloctab[0] = 2;                            /* Indicate error without doubt */
   }
   else {
-    reduloctab[0] = 0;                            
+    reduloctab[0] = 0;
     if (proclocnum == 0) {                        /* If root of sub-tree                 */
       reduloctab[0] = 1;                          /* Indicate it is the root             */
       reduloctab[1] = ordeptr->proclocnum;        /* Broadcast global rank of block root */

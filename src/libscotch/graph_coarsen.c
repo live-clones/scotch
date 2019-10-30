@@ -186,7 +186,7 @@ void *                      dataptr)
                        &coargrafptr->verttax, (size_t) ((coarvertnbr + 1)    * sizeof (Gnum)),
                        &coargrafptr->velotax, (size_t) (coarvertnbr          * sizeof (Gnum)),
                        &coarmulttax,          (size_t) (coarmultsiz          * sizeof (GraphCoarsenMulti)),
-                       &coargrafptr->edgetax, (size_t) (finegrafptr->edgenbr * sizeof (Gnum)), /* Pre-allocate space for edge arrays */ 
+                       &coargrafptr->edgetax, (size_t) (finegrafptr->edgenbr * sizeof (Gnum)), /* Pre-allocate space for edge arrays */
                        &coargrafptr->edlotax, (size_t) (finegrafptr->edgenbr * sizeof (Gnum)), NULL) == NULL) {
       errorPrint ("graphCoarsen3: out of memory (1)"); /* Allocate coarser graph structure */
       return     (2);

@@ -686,7 +686,7 @@ const ArchDomNum            termnum)
 ** elements in the domain.
 */
 
-Anum 
+Anum
 archSubDomSize (
 const ArchSub * const       archptr,
 const ArchSubDom * const    domnptr)
@@ -698,7 +698,7 @@ const ArchSubDom * const    domnptr)
 ** the given distance domain.
 */
 
-Anum 
+Anum
 archSubDomWght (
 const ArchSub * const       archptr,
 const ArchSubDom * const    domnptr)
@@ -711,7 +711,7 @@ const ArchSubDom * const    domnptr)
 ** subdomains.
 */
 
-Anum 
+Anum
 archSubDomDist (
 const ArchSub * const       archptr,
 const ArchSubDom * const    dom0ptr,
