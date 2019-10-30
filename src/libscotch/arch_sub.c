@@ -352,7 +352,7 @@ const Anum                          domnidx)      /*+ Current first free slot in
 ** original architecture.
 ** It returns:
 ** - 0  : if the sub-architecture has been successfully built.
-** - 1  : if the 
+** - 1  : if the initial architecture does not support sub architectures.
 ** - 2  : on error.
 */
 
