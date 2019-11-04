@@ -290,7 +290,7 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
   if (memAllocGroup ((void **) (void *)
                      &termverttab, (size_t) (termdomnbr                            * sizeof (ArchDecoTermVert)),
                      &termdisttab, (size_t) (((termdomnbr * (termdomnbr - 1)) / 2) * sizeof (Anum)),
-                     &disttax,     (size_t) (tgtgrafptr->vertnbr                   * sizeof (ArchDecoBuildDistElem)), 
+                     &disttax,     (size_t) (tgtgrafptr->vertnbr                   * sizeof (ArchDecoBuildDistElem)),
                      &queutab,     (size_t) (tgtgrafptr->vertnbr                   * sizeof (ArchDecoBuildQueuElem)), NULL) == NULL) {
     errorPrint ("archDecoBuild: out of memory (2)");
     mapExit    (&mappdat);

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 4.0  : from : 12 feb 2004     **/
 /**                                 to     29 nov 2005     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -69,3 +69,8 @@
 #define C_filepntrtgtinp            fileBlockFile (C_fileTab, 1) /* Target architecture file  */
 #define C_filepntrmapinp            fileBlockFile (C_fileTab, 2) /* Mapping result input file */
 #define C_filepntrdatout            fileBlockFile (C_fileTab, 3) /* Statistics output file    */
+
+/*+ Process flags. +*/
+
+#define C_FLAGNONE                  0x0000        /* No flags                   */
+#define C_FLAGPARTOVL               0x0002        /* Partitioning with overlap  */

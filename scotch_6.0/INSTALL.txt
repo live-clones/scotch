@@ -191,13 +191,8 @@ function renaming, by adding an appropriate suffix. For instance,
 a "_64" suffix can be appended to routines and data types of a
 64-bit version of the library.
 
-To do so, the following actions must be performed :
-- the variable "SCOTCH_NAME_SUFFIX" must be defined in Makefile.inc
-  (e.g., "SCOTCH_NAME_SUFFIX=_64");
-- the preprocessor variable definition
-  "-DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)"
-  must be added to the CFLAGS variable (with the double quotes
-  for increased safety).
+To activate this feature, the variable "SCOTCH_NAME_SUFFIX" must be
+defined in Makefile.inc (e.g., "SCOTCH_NAME_SUFFIX=_64").
 
 Note that, when libScotch data types are renamed, the programs of the
 Scotch package can no longer be compiled. Hence, users can only

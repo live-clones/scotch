@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,19 +117,15 @@ char *                      argv[])
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_paraNum < 1) {                        /* If number of parameters not reached              */
-        if ((hdim = atoi (argv[i])) < 1) {        /* Get the dimension                                */
+        if ((hdim = atoi (argv[i])) < 1)          /* Get the dimension                                */
           errorPrint ("main: invalid dimension '%s'", argv[i]);
-          return     (EXIT_FAILURE);
-        }
         C_paraNum ++;
         continue;                                 /* Process the other parameters */
       }
       if (C_fileNum < C_FILEARGNBR)               /* A file name has been given */
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (EXIT_FAILURE);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -144,7 +140,6 @@ char *                      argv[])
           return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (EXIT_FAILURE);
       }
     }
   }

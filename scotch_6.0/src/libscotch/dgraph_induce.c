@@ -409,7 +409,7 @@ Gnum * restrict const       orgindxgsttax)
 int
 dgraphInducePart (
 Dgraph * restrict const           orggrafptr,     /* Pointer to original distributed graph       */
-const GraphPart * restrict const  orgpartloctax,  /* Based array of local vertex partition flags */  
+const GraphPart * restrict const  orgpartloctax,  /* Based array of local vertex partition flags */
 const Gnum                        indvertlocnbr,  /* Number of local vertices in selected part   */
 const GraphPart                   indpartval,
 Dgraph * restrict const           indgrafptr)

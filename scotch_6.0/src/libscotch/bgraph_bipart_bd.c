@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 26 mar 2011     **/
 /**                # Version 6.0  : from : 07 nov 2011     **/
-/**                                 to   : 15 may 2018     **/
+/**                                 to   : 31 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -266,7 +266,9 @@ const BgraphBipartBdParam * const paraptr)        /*+ Method parameters +*/
   bndedlotax = bndgrafdat.s.edlotax;
   bndvnumtax = bndgrafdat.s.vnumtax;
 
-  for (bndvertnum = bndedgenum = orggrafptr->s.baseval, bnddegrmax = bndedlosum = bndcommgainextn = bndcommgainextn1 = 0;
+  bndvlvlnum += orggrafptr->s.baseval;            /* Now bndvlvlnum is based */
+  for (bndvertnum = bndedgenum = orggrafptr->s.baseval,
+       bnddegrmax = bndedlosum = bndcommgainextn = bndcommgainextn1 = 0;
        bndvertnum < bndvlvlnum; bndvertnum ++) {  /* Fill index array for vertices not belonging to last level */
     Gnum                orgvertnum;
     GraphPart           orgpartval;

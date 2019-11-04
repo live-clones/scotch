@@ -861,7 +861,7 @@ DgraphCoarsenData * restrict const  coarptr)
   coargrafptr->edgeloctax -= coargrafptr->baseval;
   coargrafptr->edloloctax  = memRealloc (coaredloloctax + coargrafptr->baseval, coargrafptr->edgelocnbr * sizeof (Gnum));
   coargrafptr->edloloctax -= coargrafptr->baseval;
- 
+
   reduloctab[0] = coargrafptr->vertlocnbr;        /* Get maximum over all processes */
   reduloctab[1] = coargrafptr->edgelocnbr;
   reduloctab[2] = coardegrlocmax;                 /* Get local maximum degree */
@@ -977,7 +977,7 @@ const int                             flagval)    /*+ Flag value                
 
   dgraphMatchExit (&matedat);
 
-  vertsndnbr = 
+  vertsndnbr =
   edgesndnbr = 0;
   for (procnum = 0; procnum < finegrafptr->procglbnbr; procnum ++) {
     vertsndnbr += matedat.c.dcntloctab[procnum].vertsndnbr;
@@ -992,7 +992,7 @@ const int                             flagval)    /*+ Flag value                
     return     (2);
   }
 
-  vertrcvnbr = 
+  vertrcvnbr =
   edgercvnbr = 0;
   coargrafptr->procdsptab[0] = finegrafptr->baseval; /* Build vertex-to-process array */
   for (procnum = 0; procnum < finegrafptr->procglbnbr; procnum ++) {

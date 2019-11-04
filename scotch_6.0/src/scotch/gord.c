@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -238,18 +238,16 @@ char *                      argv[])
   clockInit  (&runtime[1]);
   clockStart (&runtime[1]);
 
-  if ((permtab = (SCOTCH_Num *) memAlloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) {
+  if ((permtab = (SCOTCH_Num *) memAlloc (vertnbr * sizeof (SCOTCH_Num))) == NULL)
     errorPrint ("main: out of memory");
-    return     (EXIT_FAILURE);
-  }
+
   SCOTCH_graphOrderInit    (&grafdat, &ordedat, permtab, NULL, NULL, NULL, NULL); /* Create ordering */
   SCOTCH_graphOrderCompute (&grafdat, &ordedat, &stradat); /* Perform ordering */
 
   clockStop (&runtime[1]);                        /* Get ordering time */
 
 #ifdef SCOTCH_DEBUG_ALL
-  if (SCOTCH_graphOrderCheck (&grafdat, &ordedat) != 0)
-    return (EXIT_FAILURE);
+  SCOTCH_graphOrderCheck (&grafdat, &ordedat);
 #endif /* SCOTCH_DEBUG_ALL */
 
   clockStart (&runtime[0]);

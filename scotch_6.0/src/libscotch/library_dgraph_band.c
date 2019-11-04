@@ -306,7 +306,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
 
   if (bandedloloctax != NULL) {                   /* If graph has edge weights                             */
     for (bandvertlocnum = bandgrafptr->baseval;   /* For all vertices that do not belong to the last level */
-         bandvertlocnum < bandvertlvlnum; bandvertlocnum ++) { 
+         bandvertlocnum < bandvertlvlnum; bandvertlocnum ++) {
       Gnum              vertlocnum;
       Gnum              bandedgelocnum;
 

@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -109,7 +109,7 @@ char *                      argv[])
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
-    exit       (EXIT_SUCCESS);
+    return     (EXIT_SUCCESS);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -118,17 +118,15 @@ char *                      argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        exit       (EXIT_FAILURE);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
         case 'H' :                                /* Give the usage message */
         case 'h' :
           usagePrint (stdout, C_usageList);
-          exit       (EXIT_SUCCESS);
+          return     (EXIT_SUCCESS);
         case 'V' :
           fprintf (stderr, "mtst, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
@@ -136,7 +134,6 @@ char *                      argv[])
           return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          exit       (EXIT_FAILURE);
       }
     }
   }

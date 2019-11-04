@@ -60,7 +60,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 17 apr 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -154,10 +154,8 @@ char *                      argv[])
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return     (EXIT_FAILURE);
-      }
     }
     else {                                       /* If found an option name */
       switch (argv[i][1]) {
@@ -174,10 +172,8 @@ char *                      argv[])
               break;
             }
           }
-          if (C_inpFormatTab[j].code == '\0') {
+          if (C_inpFormatTab[j].code == '\0')
             errorPrint ("main: unprocessed option '%s'", argv[i]);
-            return     (EXIT_FAILURE);
-          }
           break;
         case 'O' :                               /* Select input file type */
         case 'o' :
@@ -188,10 +184,8 @@ char *                      argv[])
               break;
             }
           }
-          if (C_inpFormatTab[j].code == '\0') {
+          if (C_inpFormatTab[j].code == '\0')
             errorPrint ("main: unprocessed option '%s'", argv[i]);
-            return     (EXIT_FAILURE);
-          }
           break;
         case 'V' :
           fprintf (stderr, "gcv, version " SCOTCH_VERSION_STRING "\n");
@@ -200,7 +194,6 @@ char *                      argv[])
           return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return     (EXIT_FAILURE);
       }
     }
   }
@@ -211,10 +204,8 @@ char *                      argv[])
   SCOTCH_geomInit  (&geomdat);
   C_inpFormatTab[C_inpFormatType].func (&grafdat, &geomdat, C_filepntrsrcinp, NULL, C_inpFormatData);
 #ifdef SCOTCH_DEBUG_ALL
-  if (SCOTCH_graphCheck (&grafdat) != 0) {
+  if (SCOTCH_graphCheck (&grafdat) != 0)
     errorPrint ("main: bad graph structure");
-    return     (EXIT_FAILURE);
-  }
 #endif /* SCOTCH_DEBUG_ALL */
   C_outFormatTab[C_outFormatType].func (&grafdat, &geomdat, C_filepntrsrcout, C_filepntrgeoout, C_outFormatData);
 

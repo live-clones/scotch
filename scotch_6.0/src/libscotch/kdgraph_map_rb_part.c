@@ -37,7 +37,7 @@
 /**                Sebastien FOURESTIER (v6.0)             **/
 /**                                                        **/
 /**   FUNCTION   : This module performs the Dual Recursive **/
-/**                Bipartitioning mapping algorithm        **/ 
+/**                Bipartitioning mapping algorithm        **/
 /**                in parallel. It does so for complete    **/
 /**                graph architectures, hence performing   **/
 /**                plain graph partitioning, which         **/
@@ -322,7 +322,7 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   return (o);
 }
 
-/* This routine performs the Dual Recursive 
+/* This routine performs the Dual Recursive
 ** Bipartitioning mapping in parallel.
 ** It returns:
 ** - 0   : if the mapping could be computed.
@@ -330,7 +330,7 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
 */
 
 static
-int 
+int
 kdgraphMapRbPart2 (
 KdgraphMapRbPartGraph * restrict const      grafptr,
 const KdgraphMapRbPartData * restrict const dataptr)
@@ -361,7 +361,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
     errorPrint ("kdgraphMapRbPart2: cannot compute ghost edge array");
     return     (1);
   }
-  
+
   o = bdgraphInit (&actgrafdat, &grafptr->data.dgrfdat, NULL, &mappptr->archdat, domnsubtab); /* Create active graph */
   actgrafdat.levlnum = grafptr->levlnum;          /* Initial level of bipartition graph is DRB recursion level       */
 
@@ -392,7 +392,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
   return (o);
 }
 
-int 
+int
 kdgraphMapRbPart (
 Kdgraph * restrict const                  grafptr,
 Kdmapping * restrict const                mappptr,

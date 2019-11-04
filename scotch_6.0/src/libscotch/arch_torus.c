@@ -90,7 +90,7 @@
 ** the centers of the domains).
 */
 
-Anum 
+Anum
 archTorus2DomDist (
 const ArchTorus2 * const    archptr,
 const ArchTorus2Dom * const dom0ptr,
@@ -121,7 +121,7 @@ const ArchTorus2Dom * const dom1ptr)
 ** distance between the centers of the domains).
 */
 
-Anum 
+Anum
 archTorus3DomDist (
 const ArchTorus3 * const    archptr,
 const ArchTorus3Dom * const dom0ptr,
@@ -157,7 +157,7 @@ const ArchTorus3Dom * const dom1ptr)
 ** of the domains).
 */
 
-Anum 
+Anum
 archTorusXDomDist (
 const ArchTorusX * const    archptr,
 const ArchTorusXDom * const dom0ptr,

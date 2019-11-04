@@ -146,7 +146,7 @@ ArchCmpltw * restrict const archptr)
   }
 
   intSort2asc2 (archptr->velotab, archptr->vertnbr); /* Sort load array by both keys to be portable across sorting implementations */
-  
+
   archCmpltwArchBuild3 (archptr->velotab, vesotab, archptr->vertnbr, archptr->velosum);
 
   memFree (vesotab);
@@ -347,7 +347,7 @@ const ArchCmpltwDom * const domnptr)
 
 /* This function returns the terminal domain associated
 ** with the given terminal number in the architecture.
-** 
+**
 ** It returns:
 ** - 0  : if label is valid and domain has been updated.
 ** - 1  : if label is invalid.
@@ -388,7 +388,7 @@ const ArchDomNum            domnnum)
 ** elements in the complete domain.
 */
 
-Anum 
+Anum
 archCmpltwDomSize (
 const ArchCmpltw * const    archptr,
 const ArchCmpltwDom * const domnptr)
@@ -400,7 +400,7 @@ const ArchCmpltwDom * const domnptr)
 ** the complete domain.
 */
 
-Anum 
+Anum
 archCmpltwDomWght (
 const ArchCmpltw * const    archptr,
 const ArchCmpltwDom * const domnptr)
@@ -413,7 +413,7 @@ const ArchCmpltwDom * const domnptr)
 ** subdomains.
 */
 
-Anum 
+Anum
 archCmpltwDomDist (
 const ArchCmpltw * const    archptr,
 const ArchCmpltwDom * const dom0ptr,

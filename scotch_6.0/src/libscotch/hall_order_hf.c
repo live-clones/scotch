@@ -88,7 +88,7 @@
 /**       All 3 sets are disjoint, Ve and V1 can be empty                **/
 /**                                                                      **/
 /**  Modifications w.r.t. previous version :                             **/
-/**                                                                      **/  
+/**                                                                      **/
 /**  New Input:                                                          **/
 /**  ---------                                                           **/
 /**         nbelts : integer holding size of Ve                          **/
@@ -165,10 +165,10 @@ Gnum * restrict     next /* [] */,                /* Linked list structure      
 Gnum * restrict     w /* [] */,                   /* Flag array                               */
 Gnum * restrict     head /* [] */)                /* Linked list structure                    */
 {
-  Gnum                hash, pend, hmod, lenj, dmax, wflg, dext, psrc, pdst, 
-                      wnvi, e, i, j, k, p, degme, x, nelme, nreal, lastd, nleft, 
+  Gnum                hash, pend, hmod, lenj, dmax, wflg, dext, psrc, pdst,
+                      wnvi, e, i, j, k, p, degme, x, nelme, nreal, lastd, nleft,
                       ilast, jlast, inext, jnext, n2, p1, nvpiv, p2, p3, me = 0, nbflag, ln,
-                      we, pj, pn, mindeg, elenme, slenme, maxmem, newmem, wf3, wf4, 
+                      we, pj, pn, mindeg, elenme, slenme, maxmem, newmem, wf3, wf4,
                       deg, eln, mem, nel, pme, pas, nvi, nvj, pme1, pme2, knt1, knt2, knt3;
   Gnum                ncmpa;
   float               rmf, rmf1;
@@ -424,7 +424,7 @@ Gnum * restrict     head /* [] */)                /* Linked list structure      
   memSet (last + 1, 0, n * sizeof (Gnum));
 
   if (nbelts == 0) {                              /* Patch 8/12/03 <PA> */
-    memSet (elen + 1, 0, n * sizeof (Gnum));      
+    memSet (elen + 1, 0, n * sizeof (Gnum));
     for (i = 1; i <= n; i ++) {
       w[i] = 1;
       if (len[i] < 0) {

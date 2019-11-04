@@ -92,7 +92,7 @@ const char * const          string)
 
   if ((*((Strat **) stratptr) = stratInit (&bgraphbipartststratab, string)) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_stratBipart) ": error in bipartitioning strategy");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -116,7 +116,7 @@ const char * const          string)
 #if 0
   if ((*((Strat **) stratptr) = stratInit (&archbuildststratab, "")) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_stratArchBuild) ": error in architecture building strategy");
-    return     (1);
+    return (1);
   }
 #endif
 
@@ -149,7 +149,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Bipartitoning strategy    
   if ((sizeof (SCOTCH_Num) != sizeof (Gnum)) ||
       (sizeof (SCOTCH_Num) != sizeof (Anum))) {
     errorPrint (STRINGIFY (SCOTCH_archBuild0) ": internal error");
-    return     (1);
+    return (1);
   }
 
   if (*((Strat **) stratptr) == NULL)             /* Set default mapping strategy if necessary */
@@ -157,7 +157,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Bipartitoning strategy    
   bipstratptr = *((Strat **) stratptr);
   if (bipstratptr->tabl != &bgraphbipartststratab) {
     errorPrint (STRINGIFY (SCOTCH_archBuild0) ": not a bipartitioning strategy");
-    return     (1);
+    return (1);
   }
 
   if ((listnbr == ((Graph *) grafptr)->vertnbr) || (listnbr == 0) || (listptr == NULL))
@@ -187,7 +187,7 @@ const SCOTCH_Num * const    vnumtab)              /*+ Pointer to sublist        
   if ((sizeof (SCOTCH_Num) != sizeof (Gnum)) ||
       (sizeof (SCOTCH_Num) != sizeof (Anum))) {
     errorPrint (STRINGIFY (SCOTCH_archBuild2) ": internal error");
-    return     (1);
+    return (1);
   }
 
   vertnbr = ((Graph *) grafptr)->vertnbr;

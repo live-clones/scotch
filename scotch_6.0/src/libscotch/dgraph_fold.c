@@ -627,7 +627,7 @@ MPI_Datatype                  datatype)
           return      (1);
         }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
-        
+
         for (procngbnum = 0, procngbmax = fldvertadjnbr; /* Initialize search accelerator */
              procngbmax - procngbnum > 1; ) {
           int               procngbmed;

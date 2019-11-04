@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to     27 apr 2010     **/
 /**                # Version 6.0  : from : 04 aug 2016     **/
-/**                                 to     31 may 2018     **/
+/**                                 to     27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,6 +104,8 @@ const char * const          dataptr)              /* Tag value        */
   Gnum                          edgetmp;          /* Temporary edge number           */
   Gnum                          degrmax;          /* Maximum degree                  */
   int                           c;
+
+  habmattag = 0;                                  /* Read first matrix by default */
 
   if ((dataptr != NULL)                          && /* If tag value provided */
       (dataptr[0] != '\0')                       &&

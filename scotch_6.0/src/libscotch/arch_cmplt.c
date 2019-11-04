@@ -282,7 +282,7 @@ const ArchDomNum            domnnum)
 ** elements in the complete domain.
 */
 
-Anum 
+Anum
 archCmpltDomSize (
 const ArchCmplt * const     archptr,
 const ArchCmpltDom * const  domnptr)
@@ -295,7 +295,7 @@ const ArchCmpltDom * const  domnptr)
 ** subdomains.
 */
 
-Anum 
+Anum
 archCmpltDomDist (
 const ArchCmplt * const     archptr,
 const ArchCmpltDom * const  dom0ptr,

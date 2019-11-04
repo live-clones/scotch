@@ -111,7 +111,7 @@ const FiboNode * const      data1ptr)
     return (1);
   return (0);
 }
- 
+
 #endif /* SCOTCH_TABLE_GAIN */
 
 /* This routine performs the bipartitioning.

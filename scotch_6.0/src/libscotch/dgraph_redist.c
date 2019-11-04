@@ -47,7 +47,7 @@
 ** The defines and includes.
 */
 
-#define DGRAPH_REDIST 
+#define DGRAPH_REDIST
 
 #include "module.h"
 #include "common.h"

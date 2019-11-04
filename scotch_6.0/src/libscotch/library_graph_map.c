@@ -152,7 +152,7 @@ graphMapCompute2 (
 SCOTCH_Graph * const        grafptr,              /*+ Graph to order                         +*/
 SCOTCH_Mapping * const      mappptr,              /*+ Mapping to compute                     +*/
 SCOTCH_Mapping * const      mapoptr,              /*+ Old mapping                            +*/
-const double                emraval,              /*+ Edge migration ratio                   +*/ 
+const double                emraval,              /*+ Edge migration ratio                   +*/
 const SCOTCH_Num *          vmlotab,              /*+ Vertex migration cost array            +*/
 const SCOTCH_Num            vfixnbr,              /*+ Number of fixed vertices in part array +*/
 SCOTCH_Strat * const        straptr)              /*+ Mapping strategy                       +*/
@@ -328,7 +328,7 @@ SCOTCH_graphRemapCompute (
 SCOTCH_Graph * const        grafptr,              /*+ Graph to order              +*/
 SCOTCH_Mapping * const      mappptr,              /*+ Mapping to compute          +*/
 SCOTCH_Mapping * const      mapoptr,              /*+ Old mapping                 +*/
-const double                emraval,              /*+ Edge migration ratio        +*/ 
+const double                emraval,              /*+ Edge migration ratio        +*/
 const SCOTCH_Num *          vmlotab,              /*+ Vertex migration cost array +*/
 SCOTCH_Strat * const        straptr)              /*+ Mapping strategy            +*/
 {
@@ -349,7 +349,7 @@ SCOTCH_graphRemapFixedCompute (
 SCOTCH_Graph * const        grafptr,              /*+ Graph to order              +*/
 SCOTCH_Mapping * const      mappptr,              /*+ Mapping to compute          +*/
 SCOTCH_Mapping * const      mapoptr,              /*+ Old mapping                 +*/
-const double                emraval,              /*+ Edge migration ratio        +*/ 
+const double                emraval,              /*+ Edge migration ratio        +*/
 const SCOTCH_Num *          vmlotab,              /*+ Vertex migration cost array +*/
 SCOTCH_Strat * const        straptr)              /*+ Mapping strategy            +*/
 {
@@ -659,7 +659,7 @@ const double                kbalval)              /*+ Desired imbalance ratio   
 
   if ((flagval & SCOTCH_STRATSAFETY) != 0)
     difsptr = "";
-  else 
+  else
     difsptr = "d{pass=40}";
   difkptr = "d{pass=40}";
 

@@ -312,7 +312,7 @@ const Bdgraph * restrict const grafptr)
     errorPrint ("bdgraphCheck: invalid global communication loads");
     cheklocval |= 32;
   }
- 
+
   if (grafptr->commglbgainextn != reduglbtab[4]) {
     errorPrint ("bdgraphCheck: invalid global communication gains");
     cheklocval |= 64;

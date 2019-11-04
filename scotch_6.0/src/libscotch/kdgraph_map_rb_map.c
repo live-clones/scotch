@@ -36,7 +36,7 @@
 /**   AUTHOR     : Jun-Ho HER (v6.0)                       **/
 /**                                                        **/
 /**   FUNCTION   : This module performs the Dual Recursive **/
-/**                Bipartitioning mapping algorithm        **/ 
+/**                Bipartitioning mapping algorithm        **/
 /**                in parallel for non-complete graphs.    **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 24 jun 2008     **/
@@ -68,7 +68,7 @@
 /*                           */
 /*****************************/
 
-int 
+int
 kdgraphMapRbMap (
 Kdgraph * restrict const                 grafptr,
 Kdmapping * restrict const               mappptr,

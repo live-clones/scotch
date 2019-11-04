@@ -253,7 +253,7 @@ const ArchDomNum            domnnum)
 ** elements in the hypercube domain.
 */
 
-Anum 
+Anum
 archHcubDomSize (
 const ArchHcub * const      archptr,
 const ArchHcubDom * const   domnptr)

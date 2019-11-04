@@ -107,7 +107,7 @@ char *              argv[])
 
   switch (fileBlockOpen (C_fileTab, C_FILENBR)) { /* Open all files */
     case 2 :
-      SCOTCH_errorPrint ("main: (un)compression method not implemented");
+      SCOTCH_errorPrint ("main: (de)compression method not implemented");
       free (bufftab);
       exit (EXIT_SUCCESS);
     case 1 :
@@ -132,10 +132,10 @@ char *              argv[])
 
   free (bufftab);
 
-  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
+  fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (de)compression tasks */
 
 #ifdef COMMON_PTHREAD
-  pthread_exit ((void *) 0);                      /* Allow potential (un)compression tasks to complete */
+  pthread_exit ((void *) 0);                      /* Allow potential (de)compression tasks to complete */
 #endif /* COMMON_PTHREAD */
   exit (EXIT_SUCCESS);
 }

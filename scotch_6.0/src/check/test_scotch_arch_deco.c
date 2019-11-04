@@ -1,4 +1,4 @@
-/* Copyright 2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_arch*() routines.            **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 dec 2015     **/
-/**                                 to     22 may 2018     **/
+/**                                 to     25 sep 2019     **/
 /**                                                        **/
 /**   DATES      : # This code derives from that of        **/
 /**                  test_scotch_arch.c                    **/
@@ -114,12 +114,12 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  SCOTCH_stratInit (&stradat);
-
   if ((fileptr = fopen (argv[2], "w")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file");
     exit (EXIT_FAILURE);
   }
+
+  SCOTCH_stratInit (&stradat);
 
   for (i = 1, archnbr = 0; i <= 2; i ++) {
     int                 j;
@@ -161,6 +161,8 @@ char *              argv[])
   }
 
   fclose (fileptr);
+
+  SCOTCH_stratExit (&stradat);
 
   for (i = archnbr - 1; i >= 0; i --)             /* Destroy architectures in reverse order to destroy sub-architectures first */
     SCOTCH_archExit (&archtab[i]);

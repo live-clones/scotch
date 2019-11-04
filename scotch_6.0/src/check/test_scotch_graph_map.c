@@ -229,19 +229,18 @@ char *              argv[])
     }
   }
 
+  fclose (fileptr);
 
   for (archnum = 0; archnum < ARCHNBR; archnum ++)
     SCOTCH_archExit (&archtab[archnum]);
 
   for (stranum = 0; stranum < STRANBR; stranum ++)
-    SCOTCH_stratExit (&stratab[stranum]);
+   SCOTCH_stratExit (&stratab[stranum]);
 
   free             (vmlotab);
   free             (parotab);
   free             (parttab);
   SCOTCH_graphExit (&grafdat);
-
-  fclose (fileptr);
 
   exit (EXIT_SUCCESS);
 }

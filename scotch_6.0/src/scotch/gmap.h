@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,7 +63,7 @@
 /**                # Version 5.1  : from : 28 aug 2010     **/
 /**                                 to   : 18 jul 2011     **/
 /**                # Version 6.0  : from : 29 may 2010     **/
-/**                                 to   : 12 nov 2014     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -105,21 +105,3 @@
 #define C_FLAGRMAPOLD               0x0100        /* Old mapping file           */
 #define C_FLAGRMAPRAT               0x0200        /* Edge migration ratio       */
 #define C_FLAGRMAPCST               0x0400        /* Vertex migration cost file */
-
-/*
-**  The type and structure definitions.
-*/
-
-/*+ This structure stores part lists. +*/
-
-typedef struct C_PartList_ {
-  SCOTCH_Num                vertnum;              /*+ Number of vertex of which part is neighbor +*/
-  SCOTCH_Num                nextidx;              /*+ Pointer to index of next recorded neighbor +*/
-} C_PartList;
-
-/*
-**  The function prototypes.
-*/
-
-void                        C_partSave          (SCOTCH_Graph * restrict const, SCOTCH_Num * restrict const, FILE * const);
-void                        C_partViewOvl       (SCOTCH_Graph * restrict const, SCOTCH_Num * restrict const, FILE * const);

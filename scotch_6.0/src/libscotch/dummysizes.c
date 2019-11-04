@@ -52,7 +52,7 @@
 /**                # Version 5.1  : from : 16 jun 2008     **/
 /**                                 to   : 15 aug 2010     **/
 /**                # Version 6.0  : from : 01 dec 2012     **/
-/**                                 to   : 16 apr 2019     **/
+/**                                 to   : 26 oct 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,7 +85,9 @@
                                     }
 #define subsSuffix(a)               subsFill (a, subsSuffix2 (a, suffptr))
 
+#ifdef SCOTCH_NAME_SUFFIX
 #include <regex.h>
+#endif /* SCOTCH_NAME_SUFFIX */
 #include "module.h"
 #include "common.h"
 #include "parser.h"
@@ -156,8 +158,10 @@ main (
 int                         argc,
 char *                      argv[])
 {
+#ifdef SCOTCH_NAME_SUFFIX
   regex_t             regedat;                    /* Regular expression for function names */
   regmatch_t          matcdat;                    /* Matching structure                    */
+#endif /* SCOTCH_NAME_SUFFIX */
   char                chartab[CHARMAX];
   char                chartmp[CHARMAX];
   char *              substab[SUBSMAX][2];        /* Substitution array                    */
@@ -289,10 +293,12 @@ char *                      argv[])
     subsSuffix ("SCOTCH_Ordering");
     subsSuffix ("SCOTCH_Strat");
 #endif /* SCOTCH_PTSCOTCH */
+#ifdef SCOTCH_NAME_SUFFIX
     if (regcomp (&regedat, " SCOTCH_[a-z][0-9a-zA-Z_]*", 0) != 0) {
       fprintf (stderr, "dummysizes: ERROR: cannot compile regular expression\n");
       exit    (1);
     }
+#endif /* SCOTCH_NAME_SUFFIX */
   }
 
   while (fgets (chartab, CHARMAX, C_filepntrhedinp) != NULL) { /* Loop on file lines */
@@ -323,18 +329,22 @@ char *                      argv[])
         charptr += strlen (substab[subsnum][1]);  /* Restart search from end of substituted token                    */
       }
     }
+#ifdef SCOTCH_NAME_SUFFIX
     if (suffptr[0] != '\0') {                     /* If suffix provided                     */
       if (regexec (&regedat, chartab, 1, &matcdat, 0) == 0) { /* If matched a function name */
         strcpy (chartmp, chartab + matcdat.rm_eo); /* Save remaining of line                */
         sprintf (chartab + matcdat.rm_eo, "%s%s", suffptr, chartmp); /* Add suffix to name  */
       }
     }
+#endif /* SCOTCH_NAME_SUFFIX */
 
     fputs (chartab, C_filepntrhedout);            /* Output possibly updated line */
   }
 
+#ifdef SCOTCH_NAME_SUFFIX
   if (suffptr[0] != '\0')                         /* If suffix provided      */
     regfree (&regedat);                           /* Free regular expression */
+#endif /* SCOTCH_NAME_SUFFIX */
 
 #ifdef SCOTCH_DEBUG_MAIN1
   for (i = 0; i < C_FILENBR; i ++) {              /* For all file names     */

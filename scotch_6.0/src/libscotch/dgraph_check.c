@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 5.1  : from : 20 nov 2008     **/
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 6.0  : from : 29 sep 2012     **/
-/**                                 to   : 09 feb 2014     **/
+/**                                 to   : 31 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -214,8 +214,7 @@ const Dgraph * restrict const grafptr)
   }
   memFree (procngbtab);
 
-  if ((grafptr->baseval < 0) ||                   /* Elementary constraints on graph fields */
-      (grafptr->baseval > 1) ||                   /* Strong limitation on base value        */
+  if ((grafptr->baseval    < 0) ||                /* Elementary constraints on graph fields */
       (grafptr->vertlocnbr < 0) ||
       (grafptr->vertlocnnd != (grafptr->vertlocnbr + grafptr->baseval)) ||
       (((grafptr->flagval & DGRAPHHASEDGEGST) != 0) &&

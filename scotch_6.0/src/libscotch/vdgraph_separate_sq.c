@@ -226,8 +226,8 @@ const VdgraphSeparateSqParam * const  paraptr)    /*+ Method parameters +*/
     return     (1);
   }
 
-  complocsize1 = 
-  complocload1 = 
+  complocsize1 =
+  complocload1 =
   complocload2 = 0;
   for (vertlocnum = dgrfptr->s.baseval, fronlocnbr = 0;
        vertlocnum < dgrfptr->s.vertlocnnd; vertlocnum ++) {

@@ -1,4 +1,4 @@
-/* Copyright 2007-2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 30 oct 2007     **/
 /**                                 to   : 14 apr 2011     **/
 /**              : # Version 6.0  : from : 11 sep 2011     **/
-/**                                 to   : 07 jun 2018     **/
+/**                                 to   : 31 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -145,7 +145,7 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
       finevertnum0 = coarmulttax[coarvertlocnum].vertglbnum[0];
       finevertnum1 = coarmulttax[coarvertlocnum].vertglbnum[1];
       coarveexloctax[coarvertlocnum] = (finevertnum0 != finevertnum1)
-                                       ? finegrafptr->veexloctax[finevertnum0] + finegrafptr->veexloctax[finevertnum1] 
+                                       ? finegrafptr->veexloctax[finevertnum0] + finegrafptr->veexloctax[finevertnum1]
                                        : finegrafptr->veexloctax[finevertnum0];
     }
   }
@@ -185,9 +185,10 @@ const MPI_Datatype * const  typedat)              /* MPI datatype ; not used    
 
   if (inout[0] == 1) {                            /* Handle cases when at least one of them is erroneous */
     if (in[0] == 1) {
-      if (inout[1] > in[1])                       /* To enforce commutativity, always keep smallest process number */
+      if (inout[1] > in[1]) {                     /* To enforce commutativity, always keep smallest process number */
         inout[1] = in[1];
         inout[2] = in[2];
+      }
       return;
     }
 
@@ -443,7 +444,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
           if (fineveloloctax != NULL) {
             Gnum                veloval;
 
-            veloval = fineveloloctax[finevertlocnum]; 
+            veloval = fineveloloctax[finevertlocnum];
             finecomplocload1 += veloval & (- coarpartmsk);
           }
           if (fineveexloctax != NULL) {
@@ -577,12 +578,12 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     vsnddattab[vsndidxtab[4 * procngbnum + partval] ++] = vertglbend; /* Pack vertex in proper sub-array */
   }
 
-  if (MPI_Alltoallv (vsnddattab, vsndcnttab, vsnddsptab, GNUM_MPI, 
+  if (MPI_Alltoallv (vsnddattab, vsndcnttab, vsnddsptab, GNUM_MPI,
                      vrcvdattab, vrcvcnttab, vrcvdsptab, GNUM_MPI, finegrafptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("bdgraphBipartMlUncoarsen: communication error (8)");
     return     (1);
   }
-    
+
   for (procnum = 0; procnum < fineprocglbnbr; ++ procnum) { /* Update local ones from the buffer for receiving data */
     Gnum                vrcvidxnum;
     Gnum                vrcvidxnnd;
@@ -664,7 +665,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
         Gnum                veexval;
 
         veexval = fineveexloctax[finevertlocnum];
-        finecommlocloadextn += veexval; 
+        finecommlocloadextn += veexval;
         finecommlocgainextn -= veexval;
       }
     }
@@ -682,7 +683,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     errorPrint ("bdgraphBipartMlUncoarsen: cannot perform halo exchange");
     return     (1);
   }
-    
+
   finecommlocloadintn = 0;
   fineedlolocval      = 1;                        /* Assume edges are not weighted */
   for (finefronlocnum = 0; finefronlocnum < finefronlocnbr; finefronlocnum ++) {
@@ -693,7 +694,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
     finevertlocnum = finefronloctab[finefronlocnum];
     partval = finepartgsttax[finevertlocnum];
-    for (fineedgelocnum = finevertloctax[finevertlocnum], commcut = 0; 
+    for (fineedgelocnum = finevertloctax[finevertlocnum], commcut = 0;
          fineedgelocnum < finevendloctax[finevertlocnum]; fineedgelocnum ++) {
       Gnum                partdlt;
 
@@ -711,7 +712,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   memFree (vrcvcnttab);
 
   finegrafptr->fronlocnbr   = finefronlocnbr;
-  finegrafptr->complocsize0 = finegrafptr->s.vertlocnbr - finecomplocsize1; 
+  finegrafptr->complocsize0 = finegrafptr->s.vertlocnbr - finecomplocsize1;
   finegrafptr->complocload0 = (fineveloloctax == NULL) ? finegrafptr->complocsize0 : (finegrafptr->s.velolocsum - finecomplocload1);
 
   reduloctab[0] = finegrafptr->complocload0;

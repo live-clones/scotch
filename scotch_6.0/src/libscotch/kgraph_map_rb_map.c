@@ -199,7 +199,7 @@ KgraphMapRbMapPoolData * restrict const poolptr)
     if ((mappptr->flagval & MAPPINGFREEDOMN) != 0) /* If mapping domain array was privately owned, free it        */
       memFree (mappptr->domntab);
     mappptr->flagval |= MAPPINGFREEDOMN;          /* Keep current domain array as private mapping domain array */
-    mappptr->domntab  = poolptr->domntab[1];      
+    mappptr->domntab  = poolptr->domntab[1];
   }
 
   memFree (poolptr->jobtab);

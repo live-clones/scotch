@@ -267,7 +267,7 @@ Mesh * restrict const             indmeshptr)     /* Pointer to induced submesh 
 
             indedgetax[indedgenum ++] = orgindxtax[orgvnodend]; /* Add node to element edge sub-array */
 
-            for (hashnum = (orgindxtax[orgvnodend] * MESHINDUCESEPAHASHPRIME) & hashmsk; 
+            for (hashnum = (orgindxtax[orgvnodend] * MESHINDUCESEPAHASHPRIME) & hashmsk;
                  hashtab[hashnum].orgvelmnum == orgvelmnum; hashnum = (hashnum + 1) & hashmsk) ;
             hashtab[hashnum].orgvelmnum = orgvelmnum; /* Add vertex to hash table */
             hashtab[hashnum].indvnodnum = orgindxtax[orgvnodend];

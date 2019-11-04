@@ -134,7 +134,7 @@ const ArchDomNum            domnum)
 ** elements in the domain.
 */
 
-Anum 
+Anum
 archVcmpltDomSize (
 const ArchVcmplt * const    archptr,
 const ArchVcmpltDom * const domptr)
@@ -146,7 +146,7 @@ const ArchVcmpltDom * const domptr)
 ** distance between two subdomains.
 */
 
-Anum 
+Anum
 archVcmpltDomDist (
 const ArchVcmplt * const    archptr,
 const ArchVcmpltDom * const dom0ptr,

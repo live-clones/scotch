@@ -197,7 +197,7 @@ const ArchDomNum            domnum)
 ** elements in the rectangular domain.
 */
 
-Anum 
+Anum
 archMesh2DomSize (
 const ArchMesh2 * const     archptr,
 const ArchMesh2Dom * const  domptr)
@@ -212,7 +212,7 @@ const ArchMesh2Dom * const  domptr)
 ** the centers of the domains).
 */
 
-Anum 
+Anum
 archMesh2DomDist (
 const ArchMesh2 * const    archptr,
 const ArchMesh2Dom * const dom0ptr,
@@ -492,7 +492,7 @@ const ArchDomNum            domnum)
 ** elements in the cubic domain.
 */
 
-Anum 
+Anum
 archMesh3DomSize (
 const ArchMesh3 * const     archptr,
 const ArchMesh3Dom * const  domptr)
@@ -507,7 +507,7 @@ const ArchMesh3Dom * const  domptr)
 ** distance between the centers of the domains).
 */
 
-Anum 
+Anum
 archMesh3DomDist (
 const ArchMesh3 * const     archptr,
 const ArchMesh3Dom * const  dom0ptr,
@@ -919,7 +919,7 @@ const ArchDomNum            domnnum)
 ** elements in the cubic domain.
 */
 
-Anum 
+Anum
 archMeshXDomSize (
 const ArchMeshX * const     archptr,
 const ArchMeshXDom * const  domnptr)
@@ -938,7 +938,7 @@ const ArchMeshXDom * const  domnptr)
 ** distance between the centers of the domains).
 */
 
-Anum 
+Anum
 archMeshXDomDist (
 const ArchMeshX * const     archptr,
 const ArchMeshXDom * const  dom0ptr,

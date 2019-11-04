@@ -136,7 +136,7 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
   }
   else {
     cgrfptr->parttax -= cgrfptr->s.baseval;
-  
+
     if (dgrfptr->veexloctax != NULL) {
       if ((cgrfptr->veextax = (Gnum *) memAlloc (cgrfptr->s.vertnbr * sizeof (Gnum))) == NULL) {
         errorPrint ("bdgraphGatherAll: out of memory (3)");
@@ -182,14 +182,14 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
   cgrfptr->compload0min  = dgrfptr->compglbload0min; /* Set constant fields of the centralized graph as those of the distibuted graph */
   cgrfptr->compload0max  = dgrfptr->compglbload0max;
   cgrfptr->compload0avg  = dgrfptr->compglbload0avg;
-  cgrfptr->commloadextn0 = dgrfptr->commglbloadextn0; 
+  cgrfptr->commloadextn0 = dgrfptr->commglbloadextn0;
   cgrfptr->commgainextn0 = dgrfptr->commglbgainextn0;
-  cgrfptr->domndist      = dgrfptr->domndist; 
-  cgrfptr->domnwght[0]   = dgrfptr->domnwght[0]; 
-  cgrfptr->domnwght[1]   = dgrfptr->domnwght[1]; 
+  cgrfptr->domndist      = dgrfptr->domndist;
+  cgrfptr->domnwght[0]   = dgrfptr->domnwght[0];
+  cgrfptr->domnwght[1]   = dgrfptr->domnwght[1];
   cgrfptr->vfixload[0]   =                        /* Fixed vertices will soon be available in PT-Scotch */
   cgrfptr->vfixload[1]   = 0;
-  cgrfptr->levlnum       = dgrfptr->levlnum;           
+  cgrfptr->levlnum       = dgrfptr->levlnum;
 
   if (dgrfptr->partgsttax == NULL) {              /* If distributed graph does not have a part array yet */
     bgraphZero (cgrfptr);
@@ -202,7 +202,7 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
     errorPrint ("bdgraphGatherAll: communication error (4)");
     return     (1);
   }
-  
+
   if (dgrfptr->veexloctax != NULL) {
     if (commAllgatherv (dgrfptr->veexloctax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GNUM_MPI, /* Get veextax of distributed graph */
                         cgrfptr->veextax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GNUM_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
@@ -247,7 +247,7 @@ Bgraph * restrict              cgrfptr)            /* Centralized graph */
   cgrfptr->compsize0     = dgrfptr->compglbsize0;
   cgrfptr->commload      = dgrfptr->commglbload;
   cgrfptr->commgainextn  = dgrfptr->commglbgainextn;
-  cgrfptr->commgainextn0 = dgrfptr->commglbgainextn0; 
+  cgrfptr->commgainextn0 = dgrfptr->commglbgainextn0;
   cgrfptr->fronnbr       = dgrfptr->fronglbnbr;
 
 #ifdef SCOTCH_DEBUG_BDGRAPH2

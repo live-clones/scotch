@@ -413,7 +413,7 @@ const ArchDomNum            domnnum)
 ** elements in the subtree domain.
 */
 
-Anum 
+Anum
 archTleafDomSize (
 const ArchTleaf * const     archptr,
 const ArchTleafDom * const  domnptr)
@@ -433,7 +433,7 @@ const ArchTleafDom * const  domnptr)
 ** subdomains.
 */
 
-Anum 
+Anum
 archTleafDomDist (
 const ArchTleaf * const     archptr,
 const ArchTleafDom * const  dom0ptr,
@@ -496,7 +496,7 @@ const ArchTleafDom * const  dom1ptr)
     lev0num --;
     idx0min /= sizetab[lev0num];
     idx1min /= sizetab[lev0num];
-    distval += linktab[lev0num];    
+    distval += linktab[lev0num];
   } while (idx0min != idx1min);
 
   return (distval);

@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 01 jul 2010     **/
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
-/**                                 to   : 03 may 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,10 +122,8 @@ char *              argv[];
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
         fileBlockName (C_fileTab, C_fileNum ++) = argv[i];
-      else {
+      else
         errorPrint ("main: too many file names given");
-        return (EXIT_FAILURE);
-      }
     }
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
@@ -140,7 +138,6 @@ char *              argv[];
           return  (EXIT_SUCCESS);
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
-          return (EXIT_FAILURE);
       }
     }
   }
@@ -148,23 +145,18 @@ char *              argv[];
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
   SCOTCH_archInit (&archdat);                     /* Initialize architecture structure */
-  if (SCOTCH_archLoad (&archdat, C_filepntrtgtinp) != 0) { /* Load architecture        */
+  if (SCOTCH_archLoad (&archdat, C_filepntrtgtinp) != 0) /* Load architecture          */
     SCOTCH_errorPrint ("main: cannot load architecture");
-    return (EXIT_FAILURE);
-  }
 
   SCOTCH_archDomFrst (&archdat, &domndat);
   termnbr = SCOTCH_archDomSize (&archdat, &domndat);
-  if ((termtab = (SCOTCH_ArchDom *) malloc (termnbr * sizeof (SCOTCH_ArchDom))) == NULL) {
+  if ((termtab = (SCOTCH_ArchDom *) malloc (termnbr * sizeof (SCOTCH_ArchDom))) == NULL)
     SCOTCH_errorPrint ("main: out of memory");
-    return (EXIT_FAILURE);
-  }
+
   termnum = 0;
   if ((C_termList (&archdat, termtab, termnbr, &termnum, &domndat) != 0) ||
-      (termnum != termnbr)) {
+      (termnum != termnbr))
     SCOTCH_errorPrint ("main: cannot enumerate terminal domains");
-    return (EXIT_FAILURE);
-  }
 
   distmin = (SCOTCH_Num) (((unsigned long) ((SCOTCH_Num) -1)) >> 1); /* Set to maximum number in Anum */
   distmax = 0;
