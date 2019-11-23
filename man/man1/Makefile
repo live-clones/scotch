@@ -43,6 +43,7 @@ MANSCOTCHFILES	=	acpl.1		\
 			atst.1		\
 			gbase.1		\
 			gcv.1		\
+			gdump.1		\
 			gmap.1		\
 			gmk_hy.1	\
 			gmk_msh.1	\
@@ -104,6 +105,9 @@ gbase.1		:	gbase.1.txt
 
 gcv.1		:	gcv.1.txt
 			$(TXT2MAN) -v "Scotch user's manual" -s 1 -t gcv -Iifmt -Inum -Iofmt < $(<) > $(@)
+
+gdump.1		:	gdump.1.txt
+			$(TXT2MAN) -v "Scotch user's manual" -s 1 -t gdump -Iprefix -Isuffix -Ibase < $(<) > $(@)
 
 gmap.1		:	gmap.1.txt
 			$(TXT2MAN) -v "Scotch user's manual" -s 1 -t gmap -Bdeco -Idim -IdimX -IdimY -IdimZ -Ihgt -In0 -In1 -Inhgt-1 -Iopt -Ipwght -Istrat -Ival -Iverb -Iw0 -Iw1 -Iwdim-1 -Iwhgt-1 < $(<) > $(@)
