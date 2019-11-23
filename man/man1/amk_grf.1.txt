@@ -19,8 +19,7 @@ DESCRIPTION
   stream is treated as compressed whenever its name is postfixed with
   a compressed file extension, such as in 'brol.tgt.bz2' or '-.gz'. The
   compression formats which can be supported are the bzip2 format
-  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma', on
-  input only).
+  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma').
 
   Since decomposition-defined target architecture files have a size
   which is quadratic in the number of target vertices, because of the

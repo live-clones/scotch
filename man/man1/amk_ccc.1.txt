@@ -55,7 +55,7 @@ DESCRIPTION
   postfixed with a compressed file extension, such as
   in 'brol.tgt.bz2' or '-.gz'. The compression formats which can be
   supported are the bzip2 format ('.bz2'), the gzip format ('.gz'),
-  and the lzma format ('.lzma', on input only).
+  and the lzma format ('.lzma').
 
 OPTIONS
   -mmeth    For amk_m2 only. Perform either recursive dissection or

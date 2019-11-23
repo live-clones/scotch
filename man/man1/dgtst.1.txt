@@ -25,8 +25,7 @@ DESCRIPTION
   stream is treated as compressed whenever its name is postfixed with
   a compressed file extension, such as in 'brol.grf.bz2' or '-.gz'. The
   compression formats which can be supported are the bzip2 format
-  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma', on
-  input only).
+  ('.bz2'), the gzip format ('.gz'), and the lzma format ('.lzma').
 
   dgtst bases on implementations of the MPI interface to spread work
   across the processing elements. It is therefore not likely to be run
