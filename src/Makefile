@@ -125,7 +125,7 @@ install				:	required	$(bindir)	$(includedir)	$(libdir)	$(mandir)/man1
 					-$(CP) -f ../include/*scotch*.h $(includedir)
 					-$(CP) -f ../lib/*esmumps*$(LIB) $(libdir)
 					-$(CP) -f ../lib/*scotch*$(LIB) $(libdir)
-					-$(CP) -Rf ../man/* $(mandir)
+					-$(CP) -f ../man/man1/*[.]1 $(mandir)/man1
 
 installstub			:	required	$(includedir)
 					-$(CP) -f ../include/*metis*.h $(includestubdir)
