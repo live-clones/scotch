@@ -285,6 +285,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			graph_clone$(OBJ)			\
 			graph_coarsen$(OBJ)			\
 			graph_diam$(OBJ)			\
+			graph_dump$(OBJ)			\
 			graph_ielo$(OBJ)			\
 			graph_induce$(OBJ)			\
 			graph_io$(OBJ)				\
@@ -1140,6 +1141,12 @@ graph_diam$(OBJ)		:	graph_diam.c				\
 					graph.h					\
 					fibo.h					\
 					graph_diam.h
+
+graph_dump$(OBJ)		:	graph_dump.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					graph_dump.h
 
 graph_ielo$(OBJ)		:	graph_ielo.c				\
 					module.h				\

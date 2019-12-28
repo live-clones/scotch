@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     26 oct 2019     **/
+/**                                 to     29 dec 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -799,6 +799,10 @@
 #define graphCoarsenBuild           SCOTCH_NAME_INTERN (graphCoarsenBuild)
 #define graphCoarsenMatch           SCOTCH_NAME_INTERN (graphCoarsenMatch)
 #define graphDiamPV                 SCOTCH_NAME_INTERN (graphDiamPV)
+#define graphDump                   SCOTCH_NAME_INTERN (graphDump)
+#define graphDump2                  SCOTCH_NAME_INTERN (graphDump2)
+#define graphDumpArray              SCOTCH_NAME_INTERN (graphDumpArray)
+#define graphDumpArrays             SCOTCH_NAME_INTERN (graphDumpArrays)
 #define graphIelo                   SCOTCH_NAME_INTERN (graphIelo)
 #define graphInduceList             SCOTCH_NAME_INTERN (graphInduceList)
 #define graphInducePart             SCOTCH_NAME_INTERN (graphInducePart)
