@@ -844,6 +844,7 @@
 #define hgraphFree                  SCOTCH_NAME_INTERN (hgraphFree)
 #define hgraphInduceList            SCOTCH_NAME_INTERN (hgraphInduceList)
 #define hgraphCheck                 SCOTCH_NAME_INTERN (hgraphCheck)
+#define hgraphDump                  SCOTCH_NAME_INTERN (hgraphDump)
 #define hgraphOrderBl               SCOTCH_NAME_INTERN (hgraphOrderBl)
 #define hgraphOrderCc               SCOTCH_NAME_INTERN (hgraphOrderCc)
 #define hgraphOrderCp               SCOTCH_NAME_INTERN (hgraphOrderCp)

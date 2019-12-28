@@ -300,6 +300,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			hall_order_hx$(OBJ)			\
 			hgraph$(OBJ)				\
 			hgraph_check$(OBJ)			\
+			hgraph_dump$(OBJ)			\
 			hgraph_induce$(OBJ)			\
 			hgraph_order_bl$(OBJ)			\
 			hgraph_order_cc$(OBJ)			\
@@ -1325,6 +1326,12 @@ hgraph_check$(OBJ)		:	hgraph_check.c				\
 					common.h				\
 					graph.h					\
 					hgraph.h
+
+hgraph_dump$(OBJ)		:	hgraph_dump.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					graph_dump.h
 
 hgraph_induce$(OBJ)		:	hgraph_induce.c				\
 					hgraph_induce_edge.c			\
