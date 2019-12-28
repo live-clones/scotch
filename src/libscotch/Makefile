@@ -363,6 +363,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_graph_color_f$(OBJ)		\
 			library_graph_diam$(OBJ)		\
 			library_graph_diam_f$(OBJ)		\
+			library_graph_dump$(OBJ)		\
 			library_graph_induce$(OBJ)		\
 			library_graph_induce_f$(OBJ)		\
 			library_graph_io_chac$(OBJ)		\
@@ -2299,6 +2300,13 @@ library_graph_diam$(OBJ)	:	library_graph_diam.c			\
 library_graph_diam_f$(OBJ)	:	library_graph_diam_f.c			\
 					module.h				\
 					common.h				\
+					scotch.h
+
+library_graph_dump$(OBJ)	:	library_graph_dump.c			\
+					module.h				\
+					common.h				\
+					graph.h					\
+					graph_dump.h				\
 					scotch.h
 
 library_graph_induce$(OBJ)	:	library_graph_induce.c			\
