@@ -62,13 +62,13 @@
 /*                                  */
 /************************************/
 
-/* This routine returns the vertex-traversal
-** pseudo-diameter of the given graph.
-** It returns:
-*  - [0; GNUMMAX[ : graph pseudo-diameter.
-** - GNUMMAX      : disconnected graph.
-** - < 0          : on error.
-*/
+/*+ This routine returns the vertex-traversal
+*** pseudo-diameter of the given graph.
+*** It returns:
+*** - [0; GNUMMAX[ : graph pseudo-diameter.
+*** - GNUMMAX      : disconnected graph.
+*** - < 0          : on error.
++*/
 
 SCOTCH_Num
 SCOTCH_graphDiamPV (
