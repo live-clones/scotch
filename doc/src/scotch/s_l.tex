@@ -3114,9 +3114,6 @@ Section~\ref{sec-lib-inttypesize} for more information on this
 issue.
 \end{itemize}
 
-
-
-
 \subsubsection{{\tt SCOTCH\_graphDiamPV}}
 
 \begin{itemize}
@@ -3151,6 +3148,36 @@ vertices.
 diameter has been successfully computed, the \texttt{SCOTCH\_\lbt
 NUMMAX} maximum positive value if the graph is disconnected, and $-1$
 on error.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_graphDump}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_graphDump ( & const SCOTCH\_Graph * & grafptr, \\
+                        & const char *          & prefptr, \\
+                        & const char *          & suffptr, \\
+                        & FILE *                & stream)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_graphDump} routine outputs the contents of the
+\texttt{SCOTCH\_\lbt Graph} structure pointed to by \texttt{grafptr}
+to stream \texttt{stream}, in the form of a C source code. The names
+of the data arrays that encode the various graph arrays (see
+Section~\ref{sec-lib-format-graph}), as well as the
+``\texttt{GraphBuild}'' stem of the graph building function name, are
+prefixed and suffixed by the \texttt{prefptr} and \texttt{suffptr}
+strings, respectively.
+
+\progret
+
+{\tt SCOTCH\_graphDump} returns $0$ if the C source code corresponding
+to the graph structure has been successfully written to {\tt stream},
+and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_graphExit}}
