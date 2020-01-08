@@ -36,7 +36,7 @@
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
-/**                the SCOTCH_graphColor() routine.        **/
+/**                the SCOTCH_graphDiamPV () routine.      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 jan 2017     **/
 /**                                 to     22 may 2018     **/
