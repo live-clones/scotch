@@ -15,6 +15,7 @@ doc/src/ptscotch/p.ps
 src/Makefile.inc*
 src/check/*
 !src/check/*[.][ch]
+src/check/test_scotch_graph_dump2.c
 !src/check/Makefile
 !src/check/data
 src/esmumps/*[.][ao]

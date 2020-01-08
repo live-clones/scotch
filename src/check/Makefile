@@ -90,6 +90,8 @@ realclean			:	clean
 					test_scotch_graph_coarsen	\
 					test_scotch_graph_color		\
 					test_scotch_graph_diam		\
+					test_scotch_graph_dump2		\
+					test_scotch_graph_dump2.c	\
 					test_scotch_graph_induce	\
 					test_scotch_graph_map		\
 					test_scotch_graph_map_copy	\
@@ -119,6 +121,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_scotch_graph_coarsen		\
 			check_scotch_graph_color		\
 			check_scotch_graph_diam			\
+			check_scotch_graph_dump			\
 			check_scotch_graph_induce		\
 			check_scotch_graph_map			\
 			check_scotch_graph_map_copy		\
@@ -257,6 +260,20 @@ check_scotch_graph_diam		:	test_scotch_graph_diam
 
 test_scotch_graph_diam		:	test_scotch_graph_diam.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_graph_dump		:	test_scotch_graph_dump2
+					$(EXECS) ./test_scotch_graph_dump2 $(TMPDIR)/m16x16_b1.grf
+					$(PROGDIFF) "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
+
+test_scotch_graph_dump2		:	test_scotch_graph_dump2.c	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+test_scotch_graph_dump2.c	:	test_scotch_graph_dump.c
+					$(EXECS) $(SCOTCHBINDIR)/gdump -ptest data/m16x16_b1.grf $(TMPDIR)/m16x16_b1.c
+					$(CAT) test_scotch_graph_dump.c $(TMPDIR)/m16x16_b1.c > $(@)
+
 
 ##
 
