@@ -1,4 +1,4 @@
-## Copyright 2011,2012,2014-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2011,2012,2014-2016,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -37,13 +37,16 @@ SCOTCHINCDIR		= ../../include
 SCOTCHLIBDIR		= ../../lib
 SCOTCHTGTDIR		= ../../tgt
 
+LIBESMUMPS		= -lesmumps -lscotch -lscotcherr
 LIBPTSCOTCH		= -lptscotch -lscotch -lptscotcherr
 LIBSCOTCH		= -lscotchmetis -lscotch -lscotcherr
 
+DEPESMUMPS		= $(SCOTCHLIBDIR)/libesmumps$(LIB)
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
 DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)
 
 EXECS			?=
+# EXECS			?= valgrind --leak-check=full --show-leak-kinds=all
 EXECP			?= mpirun -n 3
 EXECP4			?= mpirun -n 4
 # EXECP			?= mpirun -n 3 valgrind --leak-check=full --track-origins=yes
@@ -75,6 +78,9 @@ check				:	realclean
 ptcheck				:	realclean
 					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIBS="$(LIBPTSCOTCH)" $(CHECKPTSCOTCH)
 
+escheck				:	realclean
+					$(MAKE) CFLAGS="$(CFLAGS)" CC="$(CCP)" SCOTCHLIBS="$(LIBESMUMPS)" $(CHECKESMUMPS)
+
 clean				:
 					-$(RM) *~ *$(OBJ)
 
@@ -84,6 +90,7 @@ realclean			:	clean
 					test_common_random		\
 					test_common_thread		\
 					test_fibo			\
+					test_libesmumps			\
 					test_libmetis			\
 					test_scotch_arch		\
 					test_scotch_arch_deco		\
@@ -158,6 +165,8 @@ CHECKPTSCOTCH = 	check_strat_par				\
 			check_prog_dgscat-dggath		\
 			check_prog_dgtst
 
+CHECKESMUMPS = 		check_libesmumps
+
 ##
 ##  Sequential library tests.
 ##
@@ -203,6 +212,16 @@ check_fibo			:	test_fibo
 
 test_fibo			:	test_fibo.c			\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_libesmumps		:	test_libesmumps
+					$(EXECS) ./test_libesmumps data/bump.grf
+					$(EXECS) ./test_libesmumps data/bump_imbal_32.grf
+
+test_libesmumps			:	test_libesmumps.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
+					$(SCOTCHLIBDIR)/libesmumps$(LIB)
 
 ##
 

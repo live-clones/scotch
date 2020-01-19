@@ -1,4 +1,4 @@
-## Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007,2008,2010-2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -114,6 +114,9 @@ ptcheck				:	ptscotch
 
 esmumps				:	scotch
 					(cd esmumps ; $(MAKE) scotch && $(MAKE) install)
+
+escheck				:	esmumps
+					(cd check ; $(MAKE) escheck)
 
 ptesmumps			:	scotch	ptscotch
 					(cd esmumps ; $(MAKE) ptscotch && $(MAKE) ptinstall)
