@@ -104,7 +104,7 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  if ((fileptr = fopen (argv[1], "r")) == NULL) { /* Read a square 2D grid graph */
+  if ((fileptr = fopen (argv[1], "r")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file (1)");
     exit (EXIT_FAILURE);
   }
