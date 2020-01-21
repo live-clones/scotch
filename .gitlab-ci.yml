@@ -123,6 +123,7 @@ build_scotch_64-dr:
     - cd src
     - make check
     - make ptcheck
+    - make escheck
     - find . -print0 | xargs -0 touch
     - rsync -acv --filter='+ */' --filter='+ *.c' --filter='+ *.h' --filter='+ *.l' --filter='+ *.y' --filter='+ *.gcno' --filter='- *' ./ $GCOV_PREFIX
     - cd $GCOV_PREFIX
