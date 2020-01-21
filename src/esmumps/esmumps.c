@@ -107,7 +107,7 @@ esmumps (
 const INT                   n,
 const INT                   iwlen,                /* Not used, just here for consistency */
 INT * restrict const        petab,
-const INT                   pfree,
+const INT                   pfree,                /* Not used, just here for consistency */
 INT * restrict const        lentab,
 INT * restrict const        iwtab,
 INT * restrict const        nvtab,

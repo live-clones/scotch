@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to     02 mar 2004     **/
 /**                # Version 5.1  : from : 22 jan 2009     **/
 /**                                 to     22 jan 2009     **/
+/**                # Version 6.0  : from : 21 jan 2020     **/
+/**                                 to     21 jan 2020     **/
 /**                                                        **/
 /**   NOTES      : # symbolFaxGraph() could have called    **/
 /**                  symbolFax() in the regular way, as    **/
@@ -99,31 +101,34 @@
 
 int
 symbolFaxGraph (
-SymbolMatrix * const        symbptr,              /*+ Symbolic block matrix [based]        +*/
-const Graph * const         grafptr,              /*+ Matrix adjacency structure [based]   +*/
-const Order * const         ordeptr)              /*+ Matrix ordering                      +*/
+SymbolMatrix * const        symbptr,              /*+ Symbolic block matrix [based]      +*/
+const Graph * const         grafptr,              /*+ Matrix adjacency structure [based] +*/
+const Order * const         ordeptr)              /*+ Matrix ordering                    +*/
 {
   INT                   baseval;
   INT                   vertnbr;
   INT *                 verttab;
   const INT * restrict  verttax;
+  INT *                 vendtab;
+  const INT * restrict  vendtax;
   INT                   edgenbr;
   INT                   edgenum;
   INT *                 edgetab;
   const INT * restrict  edgetax;
 
-  SCOTCH_graphData (grafptr, &baseval, &vertnbr, &verttab, NULL, NULL, NULL, &edgenbr, &edgetab, NULL);
+  SCOTCH_graphData (grafptr, &baseval, &vertnbr, &verttab, &vendtab, NULL, NULL, &edgenbr, &edgetab, NULL);
   verttax = verttab - baseval;
+  vendtax = vendtab - baseval;
   edgetax = edgetab - baseval;
 
 #define SYMBOL_FAX_ITERATOR(ngbdptr, vertnum, vertend) \
-                                    for (edgenum = verttax[vertnum];     \
-                                         edgenum < verttax[vertnum + 1]; \
-                                         edgenum ++) {                   \
+                                    for (edgenum = verttax[vertnum]; \
+                                         edgenum < vendtax[vertnum]; \
+                                         edgenum ++) {               \
                                       vertend = edgetax[edgenum];
 
 #define SYMBOL_FAX_VERTEX_DEGREE(ngbdptr, vertnum) \
-                                    (verttax[(vertnum) + 1] - verttax[(vertnum)])
+                                    (vendtax[(vertnum)] - verttax[(vertnum)])
 
   {
 #define SYMBOL_FAX_INCLUDED
