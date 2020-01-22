@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,6 +51,8 @@
 /**                                 to     01 jun 2008     **/
 /**                # Version 5.1  : from : 22 jan 2009     **/
 /**                                 to     02 jul 2010     **/
+/**                # Version 6.0  : from : 22 jan 2020     **/
+/**                                 to     22 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,12 +62,9 @@
 
 #define ORDER_GRAPH
 
+#include "module.h"
 #include "common.h"
-#ifdef SCOTCH_PTSCOTCH
-#include "ptscotch.h"
-#else /* SCOTCH_PTSCOTCH */
 #include "scotch.h"
-#endif /* SCOTCH_PTSCOTCH */
 #include "graph.h"
 #include "order.h"
 

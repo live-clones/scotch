@@ -54,7 +54,7 @@
 /**                # Version 5.1  : from : 22 jan 2009     **/
 /**                                 to     22 jan 2009     **/
 /**                # Version 6.0  : from : 21 jan 2020     **/
-/**                                 to     21 jan 2020     **/
+/**                                 to     22 jan 2020     **/
 /**                                                        **/
 /**   NOTES      : # symbolFaxGraph() could have called    **/
 /**                  symbolFax() in the regular way, as    **/
@@ -73,12 +73,9 @@
 #define SYMBOL_FAX
 #define SYMBOL_FAX_GRAPH
 
+#include "module.h"
 #include "common.h"
-#ifdef SCOTCH_PTSCOTCH
-#include "ptscotch.h"
-#else /* SCOTCH_PTSCOTCH */
 #include "scotch.h"
-#endif /* SCOTCH_PTSCOTCH */
 #include "graph.h"
 #include "symbol.h"
 #include "order.h"

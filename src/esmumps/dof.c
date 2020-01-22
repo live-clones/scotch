@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2009,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to     03 feb 2006     **/
 /**                # Version 5.1  : from : 22 jan 2009     **/
 /**                                 to     22 jan 2009     **/
+/**                # Version 6.0  : from : 22 jan 2020     **/
+/**                                 to     22 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,12 +59,9 @@
 
 #define DOF
 
+#include "module.h"
 #include "common.h"
-#ifdef SCOTCH_PTSCOTCH
-#include "ptscotch.h"
-#else /* SCOTCH_PTSCOTCH */
 #include "scotch.h"
-#endif /* SCOTCH_PTSCOTCH */
 #include "graph.h"
 #include "dof.h"
 

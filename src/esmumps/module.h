@@ -51,33 +51,50 @@
 ** Function renaming.
 */
 
-#if ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME))
-#define clockGet                    _SCOTCHclockGet
+#if ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) /* Taken from src/libscotch/module.h */
+#ifndef SCOTCH_NAME_SUFFIX
+#define SCOTCH_NAME_SUFFIXC
+#else /* SCOTCH_NAME_SUFFIX */
+#ifndef SCOTCH_NAME_SUFFIXC
+#define SCOTCH_NAME_SUFFIXC         SCOTCH_NAME_SUFFIX
+#endif /* SCOTCH_NAME_SUFFIXC */
+#ifndef SCOTCH_RENAME
+#define SCOTCH_RENAME
+#endif /* SCOTCH_RENAME */
+#ifndef SCOTCH_RENAME_PUBLIC
+#define SCOTCH_RENAME_PUBLIC
+#endif /* SCOTCH_RENAME_PUBLIC */
+#endif /* SCOTCH_NAME_SUFFIX   */
+#ifndef SCOTCH_NAME_SUFFIXFL
+#define SCOTCH_NAME_SUFFIXFL        SCOTCH_NAME_SUFFIXC
+#define SCOTCH_NAME_SUFFIXFU        SCOTCH_NAME_SUFFIXC
+#else /* SCOTCH_NAME_SUFFIXFL */
+#ifndef SCOTCH_RENAME
+#define SCOTCH_RENAME
+#endif /* SCOTCH_RENAME */
+#ifndef SCOTCH_RENAME_PUBLIC
+#define SCOTCH_RENAME_PUBLIC
+#endif /* SCOTCH_RENAME_PUBLIC */
+#endif /* SCOTCH_NAME_SUFFIXFL */
+#define SCOTCH_NAME_PREFIX_INTERN   _SCOTCH
+#define SCOTCH_NAME_PREFIX_PUBLICFL scotchf
+#define SCOTCH_NAME_PREFIX_PUBLICFU SCOTCHF
 
-#define fileNameDistExpand          _SCOTCHfileNameDistExpand 
+#define SCOTCH_NAME_GLUE2(n,s)      n##s
+#define SCOTCH_NAME_GLUE3(p,n,s)    p##n##s
+#define SCOTCH_NAME_MACRO2(n,s)     SCOTCH_NAME_GLUE2 (n,s)
+#define SCOTCH_NAME_MACRO3(p,n,s)   SCOTCH_NAME_GLUE3 (p,n,s)
+#define SCOTCH_NAME_INTERN(f)       SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_INTERN,f,SCOTCH_NAME_SUFFIXC)
+#define SCOTCH_NAME_PUBLIC(f)       SCOTCH_NAME_MACRO2 (f,SCOTCH_NAME_SUFFIXC)
+#define SCOTCH_NAME_PUBLICFL(f)     SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_PUBLICFL,f,SCOTCH_NAME_SUFFIXFL)
+#define SCOTCH_NAME_PUBLICFU(f)     SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_PUBLICFU,f,SCOTCH_NAME_SUFFIXFU)
+#define SCOTCH_FORTRAN(nu,nl,pl,pc) FORTRAN (SCOTCH_NAME_PUBLICFU(nu),SCOTCH_NAME_PUBLICFL(nl),pl,pc)
 
-#define usagePrint                  _SCOTCHusagePrint
+#define errorPrint                  SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrint) /* Same name whatever the suffix is since external library */
+#define errorPrintW                 SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrintW)
+#define errorProg                   SCOTCH_NAME_MACRO2 (SCOTCH_, errorProg)
 
-#define errorPrint                  SCOTCH_errorPrint
-#define errorPrintW                 SCOTCH_errorPrintW
-#define errorProg                   SCOTCH_errorProg
-
-#define intLoad                     _SCOTCHintLoad
-#define intSave                     _SCOTCHintSave
-#define intAscn                     _SCOTCHintAscn
-#define intPerm                     _SCOTCHintPerm
-#define intRandReset                _SCOTCHintRandReset
-#define intRandInit                 _SCOTCHintRandInit
-/* #define intRandVal               _SCOTCHintRandVal Already a macro */
-#define intSearchDicho              _SCOTCHintSearchDicho
-#define intSort1asc1                _SCOTCHintSort1asc1
-#define intSort2asc1                _SCOTCHintSort2asc1
-#define intSort2asc2                _SCOTCHintSort2asc2
-#define intSort3asc1                _SCOTCHintSort3asc1
-
-#define memAllocGroup               _SCOTCHmemAllocGroup
-#define memReallocGroup             _SCOTCHmemReallocGroup
-#define memOffset                   _SCOTCHmemOffset
+#define intSort1asc1                SCOTCH_NAME_INTERN (intSort1asc1)
 #endif /* ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) */
 
 #ifndef ESMUMPS_NAME_PREFIX_INTERN
