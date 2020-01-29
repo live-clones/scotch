@@ -45,12 +45,13 @@ DEPESMUMPS		= $(SCOTCHLIBDIR)/libesmumps$(LIB)
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
 DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)
 
+EXECPPROG		?= mpirun
+EXECPFLAGS		?= $(if $(findstring Open,$(shell $(EXECPPROG) --version)),--oversubscribe)
+# EXECPFLAGS		+= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes 
 EXECS			?=
-# EXECS			?= valgrind --leak-check=full --show-leak-kinds=all
-EXECP			?= mpirun -n 3
-EXECP4			?= mpirun -n 4
-# EXECP			?= mpirun -n 3 valgrind --leak-check=full --track-origins=yes
-# EXECP			?= mpirun -n 3 --oversubscribe
+# EXECS			+= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
+EXECP3			?= $(EXECPPROG) -n 3 $(EXECPFLAGS)
+EXECP4			?= $(EXECPPROG) -n 4 $(EXECPFLAGS)
 
 PROGDIFF		?= diff -q
 
@@ -370,8 +371,8 @@ test_strat_par			:	test_strat_par.c		\
 ##
 
 check_scotch_dgraph_band	:	test_scotch_dgraph_band
-					$(EXECP) ./test_scotch_dgraph_band data/bump.grf
-					$(EXECP) ./test_scotch_dgraph_band data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_band data/bump.grf
+					$(EXECP3) ./test_scotch_dgraph_band data/bump_b100000.grf
 
 test_scotch_dgraph_band		:	test_scotch_dgraph_band.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -379,8 +380,8 @@ test_scotch_dgraph_band		:	test_scotch_dgraph_band.c	\
 ##
 
 check_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen
-					$(EXECP) ./test_scotch_dgraph_coarsen data/bump.grf
-					$(EXECP) ./test_scotch_dgraph_coarsen data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_coarsen data/bump.grf
+					$(EXECP3) ./test_scotch_dgraph_coarsen data/bump_b100000.grf
 
 test_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -388,8 +389,8 @@ test_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen.c	\
 ##
 
 check_scotch_dgraph_check	:	test_scotch_dgraph_check
-					$(EXECP) ./test_scotch_dgraph_check data/bump.grf
-					$(EXECP) ./test_scotch_dgraph_check data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_check data/bump.grf
+					$(EXECP3) ./test_scotch_dgraph_check data/bump_b100000.grf
 
 test_scotch_dgraph_check	:	test_scotch_dgraph_check.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -397,8 +398,8 @@ test_scotch_dgraph_check	:	test_scotch_dgraph_check.c	\
 ##
 
 check_scotch_dgraph_grow	:	test_scotch_dgraph_grow
-					$(EXECP) ./test_scotch_dgraph_grow data/bump.grf
-					$(EXECP) ./test_scotch_dgraph_grow data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_grow data/bump.grf
+					$(EXECP3) ./test_scotch_dgraph_grow data/bump_b100000.grf
 
 test_scotch_dgraph_grow		:	test_scotch_dgraph_grow.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -406,8 +407,8 @@ test_scotch_dgraph_grow		:	test_scotch_dgraph_grow.c	\
 ##
 
 check_scotch_dgraph_induce	:	test_scotch_dgraph_induce
-					$(EXECP) ./test_scotch_dgraph_induce data/bump.grf
-					$(EXECP) ./test_scotch_dgraph_induce data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_induce data/bump.grf
+					$(EXECP3) ./test_scotch_dgraph_induce data/bump_b100000.grf
 
 test_scotch_dgraph_induce	:	test_scotch_dgraph_induce.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -415,8 +416,8 @@ test_scotch_dgraph_induce	:	test_scotch_dgraph_induce.c	\
 ##
 
 check_scotch_dgraph_redist	:	test_scotch_dgraph_redist
-					$(EXECP) ./test_scotch_dgraph_redist data/bump.grf
-					$(EXECP) ./test_scotch_dgraph_redist data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_redist data/bump.grf
+					$(EXECP3) ./test_scotch_dgraph_redist data/bump_b100000.grf
 
 test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
 
@@ -537,22 +538,22 @@ check_prog_gtst			:
 ##
 
 check_prog_dgord		:
-					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump.grf /dev/null -vt
-					$(EXECP) $(SCOTCHBINDIR)/dgord data/bump_b100000.grf /dev/null -vt
+					$(EXECP3) $(SCOTCHBINDIR)/dgord data/bump.grf /dev/null -vt
+					$(EXECP3) $(SCOTCHBINDIR)/dgord data/bump_b100000.grf /dev/null -vt
 					$(EXECP4) $(SCOTCHBINDIR)/dgord data/small_%r.grf $(TMPDIR)/small.ord -vt
 
 check_prog_dgpart		:
-					$(EXECP) $(SCOTCHBINDIR)/dgpart 9 data/bump.grf /dev/null -vmt
-					$(EXECP) $(SCOTCHBINDIR)/dgpart 9 data/bump_b100000.grf /dev/null -vmt
+					$(EXECP3) $(SCOTCHBINDIR)/dgpart 9 data/bump.grf /dev/null -vmt
+					$(EXECP3) $(SCOTCHBINDIR)/dgpart 9 data/bump_b100000.grf /dev/null -vmt
 					$(EXECP4) $(SCOTCHBINDIR)/dgpart 50 data/small_%r.grf /dev/null -vmt
 
 check_prog_dgscat-dggath	:	TMP := $(shell mktemp -u)
 check_prog_dgscat-dggath	:
-					$(EXECP) $(SCOTCHBINDIR)/dgscat -r1 -c data/m16x16.grf "$(TMP)1_%r.grf"
-					$(EXECP) $(SCOTCHBINDIR)/dggath -r1 -c "$(TMP)1_%r.grf" "$(TMP)1.grf"
+					$(EXECP3) $(SCOTCHBINDIR)/dgscat -r1 -c data/m16x16.grf "$(TMP)1_%r.grf"
+					$(EXECP3) $(SCOTCHBINDIR)/dggath -r1 -c "$(TMP)1_%r.grf" "$(TMP)1.grf"
 					$(PROGDIFF) data/m16x16.grf "$(TMP)1.grf"
-					$(EXECP) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b1.grf "$(TMP)2_%r.grf"
-					$(EXECP) $(SCOTCHBINDIR)/dggath -c "$(TMP)2_%r.grf" "$(TMP)2.grf"
+					$(EXECP3) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b1.grf "$(TMP)2_%r.grf"
+					$(EXECP3) $(SCOTCHBINDIR)/dggath -c "$(TMP)2_%r.grf" "$(TMP)2.grf"
 					$(PROGDIFF) data/m16x16_b1.grf "$(TMP)2.grf"
 
 check_prog_dgtst		:
