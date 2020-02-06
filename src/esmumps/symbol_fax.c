@@ -52,8 +52,8 @@
 /**                                 to     23 aug 2002     **/
 /**                # Version 2.0  : from : 21 mar 2003     **/
 /**                                 to     21 mar 2003     **/
-/**                # Version 6.0  : from : 22 jan 2020     **/
-/**                                 to     22 jan 2020     **/
+/**                # Version 6.0  : from : 06 feb 2020     **/
+/**                                 to     06 feb 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -177,7 +177,7 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
   peritax = ordeptr->peritab - baseval;
   rangtax = ordeptr->rangtab - baseval;
 
-  blokmax  = ordeptr->cblknbr * (2 + edgenbr / vertnbr) + 2; /* Estimate size of initial block array */
+  blokmax = ordeptr->cblknbr * (2 + edgenbr / vertnbr) + 2; /* Estimate size of initial block array */
 
   {                                               /* Allocate arrays for factoring   */
     INT *               ctrbtab;                  /* Array for contribution chaining */
@@ -195,11 +195,11 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
       }
       return (1);
     }
+    memset (ctrbtab, ~0, ordeptr->cblknbr * sizeof (INT)); /* Initialize column block contributions link array */
+
     cblktax = cblktab - baseval;                  /* Set based accesses */
     bloktax = bloktab - baseval;
     ctrbtax = ctrbtab - baseval;
-
-    memset (ctrbtab, ~0, ordeptr->cblknbr * sizeof (INT)); /* Initialize column block contributions link array */
   }
 
   bloknum = baseval;
@@ -236,7 +236,7 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
            ctrbtmp != ~0; ctrbtmp = ctrbtax[ctrbtmp])
         ctrbsum += cblktax[ctrbtmp + 1].bloknum - cblktax[ctrbtmp].bloknum - 2; /* Sum contributing column blocks */
 
-      tlokmax = degrsum + ctrbsum;
+      tlokmax = degrsum + ctrbsum;                /* Maximum possible number of blocks in temporary area */
       sortoft = tlokmax * sizeof (SymbolBlok);
       if ((hashsiz * sizeof (INT)) > sortoft)     /* Compute offset of sort area */
         sortoft = (hashsiz * sizeof (INT));
@@ -249,7 +249,8 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
 
         do
           blokmax = blokmax + (blokmax >> 2) + 4; /* Increase block array size by 25% as long as it does not fit */
-        while (((byte *) (bloktax + bloknum) + tlndoft) > ((byte *) (bloktax + blokmax)));
+        while (((byte *) (bloktax + bloknum) + tlndoft) >
+               ((byte *) (bloktax + blokmax)));
 
         if ((bloktmp = (SymbolBlok *) memRealloc (bloktax + baseval, (blokmax * sizeof (SymbolBlok)))) == NULL) {
           errorPrint ("symbolFax: out of memory (2)");
@@ -380,7 +381,7 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
       tloktab[tloknum].nextnum = 0;               /* Set end of chain (never chain to diagonal block) */
 
       tlokfre = ++ tloknum;                       /* Build free chain for possible contributing blocks */
-      for ( ; tloknum < tlokfre + ctrbsum; tloknum = tloknum + 1)
+      for ( ; tloknum < (tlokfre + ctrbsum - 1); tloknum = tloknum + 1)
         tloktab[tloknum].nextnum = tloknum + 1;
       tloktab[tloknum].nextnum = ~0;              /* Set end of free chain */
 
