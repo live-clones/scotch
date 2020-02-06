@@ -337,19 +337,23 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
         bloknum ++;                               /* One more block */
       }
     }
-    else {                                        /* Column will be updated           */
-      INT                 sortnum;                /* Current index in sort array      */
-      INT                 tloknum;                /* Current index on temporary block */
-      INT                 tlokfre;                /* Index of first free block        */
+    else {                                        /* Column will be updated             */
+      INT                 sortnum;                /* Current index in sort array        */
+      INT                 tloknum;                /* Current index on temporary block   */
+      INT                 tlokfre;                /* Index of first free chained block  */
+      INT                 tlokfrm;                /* Index of next free unchained block */
+#ifdef FAX_DEBUG
+      INT                 tlokmax;                /* Maximum index of reserved space    */
+#endif /* FAX_DEBUG */
 
       tloktab->frownum = cblktax[cblknum].fcolnum; /* Build diagonal chained block */
       tloktab->lrownum = cblktax[cblknum].lcolnum;
       tloktab->cblknum = cblknum;
       tloktab->nextnum = 1;
-      tloknum = 1;
 
-      for (sortnum = 0; sortnum < sortnbr; ) {    /* For all entries in sorted array */
-        INT                 colend;               /* Column number of current entry  */
+      tloknum = 1;                                /* Prepare for extra-diagonal blocks */
+      for (sortnum = 0; sortnum < sortnbr; ) {    /* For all entries in sorted array   */
+        INT                 colend;               /* Column number of current entry    */
 
         colend = sorttab[sortnum];
         if (colend >= rangtax[cblkctr + 1]) {     /* If column block number to be found */
@@ -373,17 +377,18 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
         tloktab[tloknum].lrownum = sorttab[sortnum - 1]; /* Set end of block */
         tloktab[tloknum].cblknum = cblkctr;
         tloktab[tloknum].nextnum = tloknum + 1;   /* Chain block */
-        tloknum = tloknum + 1;
+        tloknum ++;
       }
       tloktab[tloknum].frownum =                  /* Build trailing block */
       tloktab[tloknum].lrownum = vertnbr + baseval;
       tloktab[tloknum].cblknum = ordeptr->cblknbr + baseval;
       tloktab[tloknum].nextnum = 0;               /* Set end of chain (never chain to diagonal block) */
 
-      tlokfre = ++ tloknum;                       /* Build free chain for possible contributing blocks */
-      for ( ; tloknum < (tlokfre + ctrbsum - 1); tloknum = tloknum + 1)
-        tloktab[tloknum].nextnum = tloknum + 1;
-      tloktab[tloknum].nextnum = ~0;              /* Set end of free chain */
+      tlokfre = ~0;                               /* Chain of free blocks is empty          */
+      tlokfrm = tloknum + 1;                      /* First allocatable unchained free block */
+#ifdef FAX_DEBUG
+      tlokmax = tlokfrm + ctrbsum;                /* Index after end of array */
+#endif /* FAX_DEBUG */
 
       for (cblkctr = ctrbtax[cblknum]; cblkctr != ~0; cblkctr = ctrbtax[cblkctr]) { /* Follow chain */
         INT                 blokctr;              /* Current index of contributing column block     */
@@ -404,15 +409,16 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
               (bloktax[blokctr].lrownum < tloktab[tloknum].frownum - 1)) {
             INT                 tloktmp;
 
+            if (tlokfre == ~0) {                  /* If no available chained free block */
 #ifdef FAX_DEBUG
-            if (tlokfre == ~0) {
-              errorPrint ("symbolFax: internal error (1)");
-              memFree    (bloktax + baseval);
-              memFree    (cblktax + baseval);
-              memFree    (ctrbtax + baseval);
-              return     (1);
-            }
+              if (tlokfrm >= tlokmax) {
+                errorPrint ("symbolFax: internal error (1)");
+                return     (1);
+              }
 #endif /* FAX_DEBUG */
+	      tlokfre = tlokfrm ++;               /* New free block is first unchained block */
+              tloktab[tlokfre].nextnum = ~0;      /* Make it the end of its own pseudo-chain */
+            }
             tloktmp                  =
             tloktab[tloklst].nextnum = tlokfre;   /* Chain new block                */
             tloktab[tlokfre].frownum = bloktax[blokctr].frownum; /* Copy block data */
