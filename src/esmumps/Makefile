@@ -79,9 +79,11 @@ realclean			:	clean
 
 LIBESMUMPSDEPS =			graph_graph$(OBJ)			\
 					order$(OBJ)				\
+					order_check$(OBJ)			\
 					order_scotch_graph$(OBJ)		\
 					dof$(OBJ)				\
 					symbol$(OBJ)				\
+					symbol_check$(OBJ)			\
 					symbol_fax_graph$(OBJ)			\
 					esmumps$(OBJ)				\
 					esmumps_f$(OBJ)				\
@@ -105,6 +107,12 @@ order$(OBJ)			:	order.c					\
 					graph.h					\
 					order.h
 
+order_check$(OBJ)		:	order_check.c				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					graph.h					\
+					order.h
+
 order_scotch_graph$(OBJ)	:	order_scotch_graph.c			\
 					module.h				\
 					$(srclibscotchdir)/common.h		\
@@ -120,6 +128,11 @@ dof$(OBJ)			:	dof.c					\
 					dof.h
 
 symbol$(OBJ)			:	symbol.c				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					symbol.h
+
+symbol_check$(OBJ)		:	symbol_check.c				\
 					module.h				\
 					$(srclibscotchdir)/common.h		\
 					symbol.h
