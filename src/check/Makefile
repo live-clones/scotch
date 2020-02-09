@@ -145,6 +145,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_gmk				\
 			check_prog_gmk_msh			\
 			check_prog_gord				\
+			check_prog_gotst			\
 			check_prog_gout				\
 			check_prog_gpart			\
 			check_prog_gpart_clustering		\
@@ -500,11 +501,15 @@ check_prog_gmap			:
 					$(EXECS) $(SCOTCHBINDIR)/gmap data/bump.grf $(SCOTCHTGTDIR)/h3.tgt $(TMPDIR)/bump_h3.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gmap data/small.grf $(SCOTCHTGTDIR)/m11x13.tgt $(TMPDIR)/small_m11x13.map -vmt
 
-check_prog_gord			:
+check_prog_gord			:	check_prog_gmk_msh
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf $(TMPDIR)/bump.ord -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf $(TMPDIR)/bump_b1.ord -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord $(TMPDIR)/ship001.grf $(TMPDIR)/ship001.ord -vt
+
+check_prog_gotst		:	check_prog_gord
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump.grf $(TMPDIR)/bump.ord
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump_b1.grf $(TMPDIR)/bump_b1.ord
+					$(EXECS) $(SCOTCHBINDIR)/gotst $(TMPDIR)/ship001.grf $(TMPDIR)/ship001.ord
 
 check_prog_gout			:	check_prog_gord		\
 					check_prog_gpart
