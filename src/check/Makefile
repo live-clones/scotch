@@ -143,6 +143,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_gbase			\
 			check_prog_gmap				\
 			check_prog_gmk				\
+			check_prog_gmk_msh			\
 			check_prog_gord				\
 			check_prog_gout				\
 			check_prog_gpart			\
@@ -460,8 +461,17 @@ check_prog_gmk			:
 					$(EXECS) $(SCOTCHBINDIR)/gmk_m2 -t 5 4 | $(SCOTCHBINDIR)/gtst
 					$(EXECS) $(SCOTCHBINDIR)/gmk_m2 -b1 -t 5 1 | $(SCOTCHBINDIR)/gtst
 					$(EXECS) $(SCOTCHBINDIR)/gmk_m3 -b1 5 4 3 -g/dev/null | $(SCOTCHBINDIR)/gtst
-					$(EXECS) $(SCOTCHBINDIR)/gmk_msh data/ship001.msh | $(SCOTCHBINDIR)/gtst
 					$(EXECS) $(SCOTCHBINDIR)/gmk_ub2 5 | $(SCOTCHBINDIR)/gtst
+
+check_prog_gmk_msh		:	check_prog_mmk
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh $(TMPDIR)/m2_5_1.msh $(TMPDIR)/m2_5_1.grf
+					$(EXECS) $(SCOTCHBINDIR)/gtst $(TMPDIR)/m2_5_1.grf
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh $(TMPDIR)/m2_5_4.msh $(TMPDIR)/m2_5_4.grf
+					$(EXECS) $(SCOTCHBINDIR)/gtst $(TMPDIR)/m2_5_4.grf
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/m2_5_4_3.grf
+					$(EXECS) $(SCOTCHBINDIR)/gtst $(TMPDIR)/m2_5_4_3.grf
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh data/ship001.msh $(TMPDIR)/ship001.grf
+					$(EXECS) $(SCOTCHBINDIR)/gtst $(TMPDIR)/ship001.grf
 
 check_prog_mmk                  :
 					$(EXECS) $(SCOTCHBINDIR)/mmk_m2 5 1 $(TMPDIR)/m2_5_1.msh
@@ -471,7 +481,7 @@ check_prog_mmk                  :
 					$(EXECS) $(SCOTCHBINDIR)/mtst $(TMPDIR)/m2_5_4.msh
 					$(EXECS) $(SCOTCHBINDIR)/mtst $(TMPDIR)/m2_5_4_3.msh
 
-check_prog_mcv		        : check_prog_mmk
+check_prog_mcv		        :	check_prog_mmk
 					$(EXECS) $(SCOTCHBINDIR)/mcv $(TMPDIR)/m2_5_1.msh $(TMPDIR)/output_m2_5_1.msh -is -os
 					$(EXECS) $(SCOTCHBINDIR)/mcv $(TMPDIR)/m2_5_4.msh $(TMPDIR)/output_m2_5_4.msh -is -os
 					$(EXECS) $(SCOTCHBINDIR)/mcv $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/output_m2_5_4_3.msh -is -os
@@ -480,13 +490,11 @@ check_prog_mcv		        : check_prog_mmk
 					$(PROGDIFF) $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/output_m2_5_4_3.msh
 
 
-check_prog_mord                 : check_prog_mmk
-					$(EXECS) $(SCOTCHBINDIR)/gmk_msh $(TMPDIR)/m2_5_1.msh $(TMPDIR)/m2_5_1.grf
-					$(EXECS) $(SCOTCHBINDIR)/gmk_msh $(TMPDIR)/m2_5_4.msh $(TMPDIR)/m2_5_4.grf
-					$(EXECS) $(SCOTCHBINDIR)/gmk_msh $(TMPDIR)/m2_5_4_3.msh $(TMPDIR)/m2_5_4_3.grf
+check_prog_mord                 :	check_prog_gmk_msh
 					$(EXECS) $(SCOTCHBINDIR)/mord $(TMPDIR)/m2_5_1.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/m2_5_1.grf
 					$(EXECS) $(SCOTCHBINDIR)/mord $(TMPDIR)/m2_5_4.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/m2_5_4.grf
 					$(EXECS) $(SCOTCHBINDIR)/mord $(TMPDIR)/m2_5_4_3.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/m2_5_4_3.grf
+					$(EXECS) $(SCOTCHBINDIR)/mord data/ship001.msh | $(SCOTCHBINDIR)/gotst $(TMPDIR)/ship001.grf
 
 check_prog_gmap			:
 					$(EXECS) $(SCOTCHBINDIR)/gmap data/bump.grf $(SCOTCHTGTDIR)/h3.tgt $(TMPDIR)/bump_h3.map -vmt
