@@ -585,7 +585,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
             }
             break;
           }
-          if (hashtab[hashnum].vertnum == ~0) {   /* If hash slot empty */
+          if (hashtab[hashnum].vertnum == ~0) {   /* If hash slot empty                       */
             Gnum                commgain;         /* Communication gain of current vertex     */
             Gnum                commgainold;      /* Old communication gain of current vertex */
             Gnum                veloval;
