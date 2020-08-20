@@ -132,8 +132,8 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
 
     if ((indedgenbr < 0) ||                       /* If cannot compute real number of edges          */
         (memAllocGroup ((void **) (void *)        /* Or cannot allocate edge arrays with real values */
-                       &indedgetab, (size_t) (indedgesiz            * sizeof (Gnum)),
-                       &orgindxtax, (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL)) {
+                        &indedgetab, (size_t) (indedgesiz            * sizeof (Gnum)),
+                        &orgindxtax, (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL)) {
       errorPrint ("hgraphInduceList: out of memory (2)");
       hgraphExit (indgrafptr);
       return     (1);
