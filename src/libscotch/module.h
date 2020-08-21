@@ -781,6 +781,7 @@
 #define gainTablFrst                SCOTCH_NAME_INTERN (gainTablFrst)
 #define gainTablInit                SCOTCH_NAME_INTERN (gainTablInit)
 #define gainTablNext                SCOTCH_NAME_INTERN (gainTablNext)
+#define gainTablMove                SCOTCH_NAME_INTERN (gainTablMove)
 
 #define geomExit                    SCOTCH_NAME_INTERN (geomExit)
 #define geomInit                    SCOTCH_NAME_INTERN (geomInit)
