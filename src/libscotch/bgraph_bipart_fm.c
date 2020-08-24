@@ -1001,6 +1001,13 @@ const Gnum                                  commgainextn)
   Gnum                  commloadextndlttmp;
   Gnum                  commgainextntmp;
 
+  const Gnum * restrict const verttax = grafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const velotax = grafptr->s.velotax;
+  const Gnum * restrict const edgetax = grafptr->s.edgetax;
+  const Gnum * restrict const edlotax = grafptr->s.edlotax;
+  const Gnum * restrict const veextax = grafptr->veextax;
+
   domndist           = grafptr->domndist;
   compload0tmp       = (swapval == 0) ? grafptr->compload0 : (grafptr->s.velosum - grafptr->compload0);
   commloaddlttmp     = 0;                         /* No difference yet */
