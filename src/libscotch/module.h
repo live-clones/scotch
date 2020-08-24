@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     29 dec 2019     **/
+/**                                 to     24 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -146,6 +146,22 @@
 /*
 ** Debug values.
 */
+
+#ifdef SCOTCH_DEBUG_FULL
+#ifndef SCOTCH_DEBUG_ALL
+#define SCOTCH_DEBUG_ALL
+#endif /* SCOTCH_DEBUG_ALL */
+
+#define SCOTCH_DEBUG_BGRAPH3
+#define SCOTCH_DEBUG_DGRAPH3
+#define SCOTCH_DEBUG_FIBO3
+#define SCOTCH_DEBUG_GAIN3
+#define SCOTCH_DEBUG_KGRAPH3
+#define SCOTCH_DEBUG_PARSER3
+#define SCOTCH_DEBUG_VGRAPH3
+#define SCOTCH_DEBUG_VMESH3
+#define SCOTCH_DEBUG_WGRAPH3
+#endif /* SCOTCH_DEBUG_FULL */
 
 #ifdef SCOTCH_DEBUG_ALL
 #ifndef SCOTCH_DEBUG

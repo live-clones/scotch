@@ -76,8 +76,14 @@ include ../Makefile.inc
 check				:	realclean
 					$(MAKE) CC="$(CCS)" CCD="$(CCS)" SCOTCHLIBS="$(LIBSCOTCH)" $(CHECKSCOTCH)
 
+check_full			:	realclean
+					$(MAKE) CC="$(CCS) -DSCOTCH_DEBUG_FULL" CCD="$(CCS)" SCOTCHLIBS="$(LIBSCOTCH)" check_prog_full
+
 ptcheck				:	realclean
 					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIBS="$(LIBPTSCOTCH)" $(CHECKPTSCOTCH)
+
+ptcheck_full			:	realclean
+					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIBS="$(LIBPTSCOTCH)" check_prog_dfull
 
 escheck				:	realclean
 					$(MAKE) CFLAGS="$(CFLAGS)" CC="$(CCP)" SCOTCHLIBS="$(LIBESMUMPS)" $(CHECKESMUMPS)
@@ -549,6 +555,13 @@ check_prog_gtst			:
 					$(PROGDIFF) "$(TMPDIR)/gtst_ev.txt" "$(TMPDIR)/gtst_elv.txt"
 
 ##
+
+check_prog_full		:
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf $(TMPDIR)/bump_f.ord -vt
+					$(EXECS) $(SCOTCHBINDIR)/gpart 3 data/bump.grf $(TMPDIR)/bump_f.map -vt
+					$(EXECS) $(SCOTCHBINDIR)/gpart -o 3 data/bump.grf $(TMPDIR)/bump_fo.map -vt
+
+##
 ##  Parallel program tests.
 ##
 
@@ -573,3 +586,8 @@ check_prog_dgscat-dggath	:
 
 check_prog_dgtst		:
 					$(EXECP4) $(SCOTCHBINDIR)/dgtst data/small_%r.grf
+##
+
+check_prog_dfull		:
+					$(EXECP4) $(SCOTCHBINDIR)/dgord data/bump.grf $(TMPDIR)/bump_f.ord -vt
+					$(EXECP4) $(SCOTCHBINDIR)/dgpart 3 data/bump.grf $(TMPDIR)/bump_f.map -vmt

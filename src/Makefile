@@ -109,8 +109,14 @@ ptscotch			:	libptscotch
 check				:	scotch
 					(cd check ; $(MAKE) check)
 
+check_full			:	scotch
+					(cd check ; $(MAKE) check_full)
+
 ptcheck				:	ptscotch
 					(cd check ; $(MAKE) ptcheck)
+
+ptcheck_full			:	ptscotch
+					(cd check ; $(MAKE) ptcheck_full)
 
 esmumps				:	scotch
 					(cd esmumps ; $(MAKE) scotch && $(MAKE) install)

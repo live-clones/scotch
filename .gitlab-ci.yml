@@ -46,6 +46,17 @@ build_scotch_32-d:
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
   <<: *job_build_32
 
+build_scotch_32-f:
+  artifacts:
+    name: scotch_build_32-f
+  script:
+    - cd src
+    - cp ../ci/Makefile.inc ./Makefile.inc
+    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_FULL -DDOF_DEBUG -DESMUMPS_DEBUG -DFAX_DEBUG -DGRAPH_DEBUG -DORDER_DEBUG -DSYMBOL_DEBUG -DSCOTCH_METIS_VERSION=5#1' Makefile.inc
+    - make scotch ptscotch esmumps ptesmumps
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
+  <<: *job_build_32
+
 build_scotch_32-dnt:
   artifacts:
     name: scotch_build_32-dnt
@@ -135,6 +146,27 @@ build_scotch_64-dr:
   only:
     - master
 
+.job_template: &job_test_full
+  stage: test
+  artifacts:
+    expire_in: 42 minutes
+    paths:
+      - scotch-coverage.xml
+  script:
+    - cd src
+    - make check_full
+    - make ptcheck_full
+    - find . -print0 | xargs -0 touch
+    - rsync -acv --filter='+ */' --filter='+ *.c' --filter='+ *.h' --filter='+ *.l' --filter='+ *.y' --filter='+ *.gcno' --filter='- *' ./ $GCOV_PREFIX
+    - cd $GCOV_PREFIX
+    - cp libscotch/parser_ll.c libscotch/lex.yy.c
+    - cp libscotch/parser_yy.c libscotch/y.tab.c
+    - cd ..
+    - lcov --directory $GCOV_PREFIX --capture --output-file scotch.lcov
+    - lcov_cobertura.py scotch.lcov --output ../../scotch-coverage.xml
+  only:
+    - master
+
 .job_template: &job_test_32
   <<: *job_test
   tags:
@@ -173,6 +205,15 @@ test_scotch_32-64d:
     name: scotch_build_32-64d
   <<: *job_test_32
 
+test_scotch_32-f:
+  dependencies:
+    - build_scotch_32-f
+  artifacts:
+    name: scotch_build_32-f
+  tags:
+    - 32bits
+  <<: *job_test_full
+
 test_scotch_64:
   dependencies:
     - build_scotch_64
@@ -202,6 +243,16 @@ sonar_scotch_32:
     - test_scotch_32
   artifacts:
     name: scotch_build_32
+  tags:
+    - 32bits
+  <<: *job_sonar
+
+sonar_scotch_32-f:
+  dependencies:
+    - build_scotch_32-f
+    - test_scotch_32-f
+  artifacts:
+    name: scotch_build_32-f
   tags:
     - 32bits
   <<: *job_sonar
