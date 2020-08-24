@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -95,7 +95,10 @@
 
 #define YY_NO_UNPUT                               /* No prototype for yyunput as not defined     */
 #define YY_SKIP_YYWRAP                            /* No prototype for yywrap as defined as macro */
-#define yywrap()                    (1)           /* Always return end-of-file on end-of-string  */
+#ifdef yywrap
+#undef yywrap                                     /* Override any previous definition of yywrap */
+#endif /* yywrap */
+#define yywrap()                    (1)           /* Always return end-of-file on end-of-string */
 
 /*
 **  The static variables.
