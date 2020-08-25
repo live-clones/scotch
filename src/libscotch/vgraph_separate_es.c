@@ -476,7 +476,7 @@ vgraphSeparateEs (
 Vgraph * restrict const             grafptr,      /*+ Active graph      +*/
 const VgraphSeparateEsParam * const paraptr)      /*+ Method parameters +*/
 {
-  Bgraph            actgrafdat;                   /* Active graph  structure   */
+  Bgraph            actgrafdat;                   /* Active graph structure    */
   Graph             bipgrafdat;                   /* Bipartite graph structure */
 
   actgrafdat.s         = grafptr->s;              /* Initialize active graph */
