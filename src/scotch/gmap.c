@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -66,7 +66,7 @@
 /**                # Version 5.1  : from : 30 jun 2010     **/
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 29 may 2010     **/
-/**                                 to   : 24 sep 2019     **/
+/**                                 to   : 26 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -426,7 +426,10 @@ char *                      argv[])
   clockInit  (&runtime[1]);
   clockStart (&runtime[1]);
 
-  if ((flagval & C_FLAGPARTOVL) != 0) {           /* If overlap partitioning wanted               */
+  if ((flagval & C_FLAGPARTOVL) != 0) {           /* If overlap partitioning wanted              */
+    if (straptr != NULL)                          /* Set overlap partitioning strategy if needed */
+      SCOTCH_stratGraphPartOvl (&stradat, straptr);
+
     SCOTCH_graphPartOvl (&grafdat, C_partNbr, &stradat, parttab); /* Perform overlap partitioning */
 
     clockStop  (&runtime[1]);                     /* Get computation time */
