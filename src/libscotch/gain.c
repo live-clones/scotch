@@ -47,7 +47,7 @@
 /**                # Version 5.0  : from : 24 mar 2008     **/
 /**                                 to     24 mar 2008     **/
 /**                # Version 6.0  : from : 20 aug 2020     **/
-/**                                 to     21 aug 2020     **/
+/**                                 to     26 aug 2020     **/
 /**                                                        **/
 /**   NOTES      : # Most of the contents of this module   **/
 /**                  comes from "map_b_fm" of the SCOTCH   **/
@@ -358,21 +358,30 @@ GainTabl * const            tablptr)
 {
   GainEntr *          entrptr;
 
-  for (entrptr  = tablptr->tmin;
-       entrptr <= tablptr->tend;
-       entrptr ++) {
-    if (entrptr->next != &gainLinkDummy) {
-      tablptr->tmin = entrptr;
+  entrptr = tablptr->tmin;
+  if (entrptr->next != &gainLinkDummy) {
+#ifdef SCOTCH_DEBUG_GAIN3
+    if (gainTablCheck (entrptr) != 0) {
+      errorPrint ("gainTablFrst: bad chaining (1)");
+      return     (NULL);
+    }
+#endif /* SCOTCH_DEBUG_GAIN3 */
+    return (entrptr->next);
+  }
+
+  for (entrptr ++; entrptr <= tablptr->tend; entrptr ++) {
+    if (entrptr->next != &gainLinkDummy) {        /* If found non-empty slot */
+      tablptr->tmin = entrptr;                    /* record its position     */
 #ifdef SCOTCH_DEBUG_GAIN3
       if (gainTablCheck (entrptr) != 0) {
-        errorPrint ("gainTablFrst: bad chaining");
+        errorPrint ("gainTablFrst: bad chaining (2)");
         return     (NULL);
       }
 #endif /* SCOTCH_DEBUG_GAIN3 */
       return (entrptr->next);
     }
   }
-  tablptr->tmin = tablptr->tend;
+  tablptr->tmin = tablptr->tend;                  /* Set table as empty */
   tablptr->tmax = tablptr->tabk;
 
   return (NULL);
