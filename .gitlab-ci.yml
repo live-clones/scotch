@@ -3,266 +3,173 @@ stages:
   - test
   - sonar
 
-before_script:
-  - . ci/gitlab-ci-env.sh
+# JOB_INT: [ 32 | 64 | 32-64 ]
+# JOB_THREAD: [ n | c | y ]
+# JOB_DEBUG: [ n | a | f ]
+# JOB_RENAME: [ n | r ]
+
+.job_template: &matrix_32
+  parallel:
+    matrix:
+      - JOB_INT: [ 32, 32-64 ]
+        JOB_THREAD: [ n ]
+        JOB_DEBUG: [ n ]
+        JOB_RENAME: [ n ]
+      - JOB_INT: [ 32-64 ]
+        JOB_THREAD: [ n ]
+        JOB_DEBUG: [ a ]
+        JOB_RENAME: [ n ]
+      - JOB_INT: [ 32 ]
+        JOB_THREAD: [ n ]
+        JOB_DEBUG: [ f ]
+        JOB_RENAME: [ n ]
+
+.job_template: &matrix_64
+  parallel:
+    matrix:
+      - JOB_INT: [ 64 ]
+        JOB_THREAD: [ n ]
+        JOB_DEBUG: [ n ]
+        JOB_RENAME: [ n ]
+      - JOB_INT: [ 64 ]
+        JOB_THREAD: [ n, c ]
+        JOB_DEBUG: [ a ]
+        JOB_RENAME: [ n ]
+#     - JOB_INT: [ 64 ]
+#       JOB_THREAD: [ y ]
+#       JOB_DEBUG: [ a ]
+#       JOB_RENAME: [ r ]
+
+.job_template: &cache_template
+    untracked: true
+    paths:
+      - bin
+      - ci
+      - include
+      - lib
+      - src
+      - tgt
+      - analyzer_reports
+      - scotch-build-*.log
+
+.job_template: &variables_template
+  before_script:
+    - . ci/gitlab-ci-env.sh
+    - export JOBNAME="${JOB_INT}${JOB_THREAD}${JOB_DEBUG}${JOB_RENAME}"
+    - echo ${JOBNAME}
+    - export JOBBUILDFLAGS="-O0 -g -fPIC -DCOMMON_FILE_COMPRESS_LZMA"
+    - case "${JOB_INT}" in
+        32 )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+        32-64 )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DINTSIZE64 -DIDXSIZE64" ;;
+        64 )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+      esac
+    - case "${JOB_THREAD}" in
+        n )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+        c )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD" ;;
+        y )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DSCOTCH_PTHREAD -DSCOTCH_PTHREAD_NUMBER=2" ;;
+      esac
+    - export JOBCHECK=""
+    - case "${JOB_DEBUG}" in
+        n )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+        a )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_METIS_VERSION=5" ;;
+        f )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_FULL"
+          export JOBCHECK=_full ;;
+      esac
+    - case "${JOB_RENAME}" in
+        n )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+        r )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DSCOTCH_RENAME" ;;
+      esac
+    - echo ${JOBBUILDFLAGS}
 
 .job_template: &job_build
   stage: build
-  artifacts:
-    expire_in: 42 minutes
-    untracked: true
-  only:
-    - master
+  <<: *variables_template
+  script:
+    - cp ci/Makefile.inc src/Makefile.inc
+    - cd src
+    - sed -i -e "s#^\(CFLAGS.*\)#\1 ${JOBBUILDFLAGS}#1" Makefile.inc
+    - find . -name Makefile | xargs sed -i -e "s#-c \$(<)#-c \$\(shell pwd\)/\$\(<\)#g"
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build-${JOBNAME}.log
 
-.job_template: &job_build_32
+scotch_build_32:
   <<: *job_build
   tags:
     - 32bits
+  cache:
+    key: scotch32 $CI_NODE_INDEX
+    policy: push
+    <<: *cache_template
+  <<: *matrix_32
 
-.job_template: &job_build_64
+scotch_build_64:
   <<: *job_build
   tags:
     - 64bits
-
-build_scotch_32:
-  artifacts:
-    name: scotch_build_32
-  script:
-    - cd src
-    - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_FILE_COMPRESS_LZMA -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
-    - make scotch ptscotch esmumps ptesmumps
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
-  <<: *job_build_32
-
-build_scotch_32-d:
-  artifacts:
-    name: scotch_build_32-d
-  script:
-    - cd src
-    - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DDOF_DEBUG -DESMUMPS_DEBUG -DFAX_DEBUG -DGRAPH_DEBUG -DORDER_DEBUG -DSYMBOL_DEBUG -DSCOTCH_METIS_VERSION=5#1' Makefile.inc
-    - make scotch ptscotch esmumps ptesmumps
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
-  <<: *job_build_32
-
-build_scotch_32-f:
-  artifacts:
-    name: scotch_build_32-f
-  script:
-    - cd src
-    - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_FULL -DDOF_DEBUG -DESMUMPS_DEBUG -DFAX_DEBUG -DGRAPH_DEBUG -DORDER_DEBUG -DSYMBOL_DEBUG -DSCOTCH_METIS_VERSION=5#1' Makefile.inc
-    - make scotch ptscotch esmumps ptesmumps
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
-  <<: *job_build_32
-
-build_scotch_32-dnt:
-  artifacts:
-    name: scotch_build_32-dnt
-  script:
-    - cd src
-    - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_FILE_COMPRESS_LZMA -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DDOF_DEBUG -DESMUMPS_DEBUG -DFAX_DEBUG -DGRAPH_DEBUG -DORDER_DEBUG -DSYMBOL_DEBUG#1' Makefile.inc
-    - make scotch ptscotch esmumps ptesmumps
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
-  <<: *job_build_32
-
-build_scotch_32-dm2:
-  artifacts:
-    name: scotch_build_32-dm2
-  script:
-    - cd src
-    - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DDOF_DEBUG -DESMUMPS_DEBUG -DFAX_DEBUG -DGRAPH_DEBUG -DORDER_DEBUG -DSYMBOL_DEBUG -DSCOTCH_PTHREAD_NUMBER=2#1' Makefile.inc
-    - make scotch ptscotch esmumps ptesmumps
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
-  <<: *job_build_32
-
-build_scotch_32-64d:
-  artifacts:
-    name: scotch_build_32-64d
-  script:
-    - cd src
-    - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DINTSIZE64 -DIDXSIZE64 -DSCOTCH_DEBUG_ALL -DDOF_DEBUG -DESMUMPS_DEBUG -DFAX_DEBUG -DGRAPH_DEBUG -DORDER_DEBUG -DSYMBOL_DEBUG#1' Makefile.inc
-    - make scotch ptscotch esmumps ptesmumps
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
-  <<: *job_build_32
-
-build_scotch_64:
-  artifacts:
-    name: scotch_build_64
-  script:
-    - cd src
-    - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED#1' Makefile.inc
-    - make scotch ptscotch esmumps ptesmumps
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
-  <<: *job_build_64
-
-build_scotch_64-dm2:
-  artifacts:
-    name: scotch_build_64-dm2
-  script:
-    - cd src
-    - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DDOF_DEBUG -DESMUMPS_DEBUG -DFAX_DEBUG -DGRAPH_DEBUG -DORDER_DEBUG -DSYMBOL_DEBUG -DSCOTCH_PTHREAD_NUMBER=2#1' Makefile.inc
-    - make scotch ptscotch esmumps ptesmumps
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build.log
-  <<: *job_build_64
-
-build_scotch_64-dr:
-  artifacts:
-    name: scotch_build_64-dr
-  script:
-    - cd src
-    - cp ../ci/Makefile.inc ./Makefile.inc
-    - sed -i -e 's#^\(CFLAGS.*\)#\1 -O0 -g -fPIC -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DDOF_DEBUG -DESMUMPS_DEBUG -DFAX_DEBUG -DGRAPH_DEBUG -DORDER_DEBUG -DSYMBOL_DEBUG -DSCOTCH_RENAME_ALL -DSCOTCH_NAME_SUFFIX=_64#1' Makefile.inc
-    - sed -i -e 's#^\(SCOTCH_NAME_SUFFIX.*\)#\1_64#1' Makefile.inc
-    - make libscotch libptscotch
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make libscotch libptscotch 2>&1 | tee ../scotch-build.log
-  <<: *job_build_64
+  cache:
+    key: scotch64 $CI_NODE_INDEX
+    policy: push
+    <<: *cache_template
+  <<: *matrix_64
 
 .job_template: &job_test
   stage: test
+  <<: *variables_template
   artifacts:
-    expire_in: 42 minutes
-    paths:
-      - scotch-coverage.xml
+    untracked: true
   script:
     - cd src
-    - make check
-    - make ptcheck
+    - make check${JOBCHECK}
+    - make ptcheck${JOBCHECK}
     - make escheck
     - find . -print0 | xargs -0 touch
-    - rsync -acv --filter='+ */' --filter='+ *.c' --filter='+ *.h' --filter='+ *.l' --filter='+ *.y' --filter='+ *.gcno' --filter='- *' ./ $GCOV_PREFIX
-    - cd $GCOV_PREFIX
     - cp libscotch/parser_ll.c libscotch/lex.yy.c
     - cp libscotch/parser_yy.c libscotch/y.tab.c
-    - cd ..
-    - lcov --directory $GCOV_PREFIX --capture --output-file scotch.lcov
-    - lcov_cobertura.py scotch.lcov --output ../../scotch-coverage.xml
-  only:
-    - master
+    - cd $CI_PROJECT_DIR
+    - gcovr --xml > scotch-coverage-${JOBNAME}.xml
 
-.job_template: &job_test_full
-  stage: test
-  artifacts:
-    expire_in: 42 minutes
-    paths:
-      - scotch-coverage.xml
-  script:
-    - cd src
-    - make check_full
-    - make ptcheck_full
-    - find . -print0 | xargs -0 touch
-    - rsync -acv --filter='+ */' --filter='+ *.c' --filter='+ *.h' --filter='+ *.l' --filter='+ *.y' --filter='+ *.gcno' --filter='- *' ./ $GCOV_PREFIX
-    - cd $GCOV_PREFIX
-    - cp libscotch/parser_ll.c libscotch/lex.yy.c
-    - cp libscotch/parser_yy.c libscotch/y.tab.c
-    - cd ..
-    - lcov --directory $GCOV_PREFIX --capture --output-file scotch.lcov
-    - lcov_cobertura.py scotch.lcov --output ../../scotch-coverage.xml
-  only:
-    - master
-
-.job_template: &job_test_32
+scotch_test_32:
   <<: *job_test
+  cache:
+    key: scotch32 $CI_NODE_INDEX
+    policy: pull
+    <<: *cache_template
   tags:
     - 32bits
+  <<: *matrix_32
 
-.job_template: &job_test_64
+scotch_test_64:
   <<: *job_test
+  cache:
+    key: scotch64 $CI_NODE_INDEX
+    policy: pull
+    <<: *cache_template
   tags:
     - 64bits
+  <<: *matrix_64
 
-test_scotch_32:
-  dependencies:
-    - build_scotch_32
-  artifacts:
-    name: scotch_build_32
-  <<: *job_test_32
-
-test_scotch_32-d:
-  dependencies:
-    - build_scotch_32-d
-  artifacts:
-    name: scotch_build_32-d
-  <<: *job_test_32
-
-test_scotch_32-dnt:
-  dependencies:
-    - build_scotch_32-dnt
-  artifacts:
-    name: scotch_build_32-dnt
-  <<: *job_test_32
-
-test_scotch_32-64d:
-  dependencies:
-    - build_scotch_32-64d
-  artifacts:
-    name: scotch_build_32-64d
-  <<: *job_test_32
-
-test_scotch_32-f:
-  dependencies:
-    - build_scotch_32-f
-  artifacts:
-    name: scotch_build_32-f
-  tags:
-    - 32bits
-  <<: *job_test_full
-
-test_scotch_64:
-  dependencies:
-    - build_scotch_64
-  artifacts:
-    name: scotch_build_64
-  <<: *job_test_64
-
-.job_template: &job_sonar
+scotch_sonar:
   stage: sonar
   artifacts:
-    expire_in: 1 week
     paths:
-      - scotch-coverage.xml
+      - analyzer_reports
+      - scotch-build-*.log
+      - scotch-coverage-*.xml
       - scotch-cppcheck.xml
       - scotch-rats.xml
       - sonar-project.properties
       - sonar.log
   script:
     - ci/analysis.sh
+    - ls -l
     - sonar-scanner -X > sonar.log
-  only:
-    - master
-
-sonar_scotch_32:
-  dependencies:
-    - build_scotch_32
-    - test_scotch_32
-  artifacts:
-    name: scotch_build_32
-  tags:
-    - 32bits
-  <<: *job_sonar
-
-sonar_scotch_32-f:
-  dependencies:
-    - build_scotch_32-f
-    - test_scotch_32-f
-  artifacts:
-    name: scotch_build_32-f
-  tags:
-    - 32bits
-  <<: *job_sonar
-
-sonar_scotch_64:
-  dependencies:
-    - build_scotch_64
-    - test_scotch_64
-  artifacts:
-    name: scotch_build_64
-  tags:
-    - 64bits
-  <<: *job_sonar
