@@ -48,6 +48,27 @@
 #define MODULE_H
 
 /*
+** Debug values.
+*/
+
+#ifdef SCOTCH_DEBUG_FULL
+#ifndef SCOTCH_DEBUG_ALL
+#define SCOTCH_DEBUG_ALL
+#endif /* SCOTCH_DEBUG_ALL */
+
+#define ESMUMPS_DEBUG_OUTPUT
+#endif /* SCOTCH_DEBUG_FULL */
+
+#ifdef SCOTCH_DEBUG_ALL
+#define DOF_DEBUG
+#define ESMUMPS_DEBUG
+#define FAX_DEBUG
+#define GRAPH_DEBUG
+#define ORDER_DEBUG
+#define SYMBOL_DEBUG
+#endif /* SCOTCH_DEBUG_ALL */
+
+/*
 ** Function renaming.
 */
 
