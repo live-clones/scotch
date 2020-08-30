@@ -151,6 +151,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_gmk				\
 			check_prog_gmk_msh			\
 			check_prog_gord				\
+			check_prog_gord_block			\
 			check_prog_gotst			\
 			check_prog_gout				\
 			check_prog_gpart			\
@@ -519,6 +520,11 @@ check_prog_gotst		:	check_prog_gord
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump_b1.grf $(TMPDIR)/bump_b1.ord
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32.ord
 					$(EXECS) $(SCOTCHBINDIR)/gotst $(TMPDIR)/ship001.grf $(TMPDIR)/ship001.ord
+
+check_prog_gord_block		:	check_prog_gord
+					$(EXECS) $(SCOTCHBINDIR)/gord data/m4x4_b1_ev.grf $(TMPDIR)/m4x4_b1.ord '-ob{cmin=3,strat=s}'
+					$(EXECS) $(SCOTCHBINDIR)/gord data/m4x4_b1_ev.grf $(TMPDIR)/m4x4_b1_ev.ord '-ob{cmin=2,strat=s}'
+					$(EXECS) $(SCOTCHBINDIR)/gord data/m4x4_b1_ev.grf $(TMPDIR)/m4x4_b1_ev.ord '-ob{cmin=1,strat=s}'
 
 check_prog_gout			:	check_prog_gord		\
 					check_prog_gpart
