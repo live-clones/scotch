@@ -585,7 +585,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
             }
             break;
           }
-          if (hashtab[hashnum].vertnum == ~0) {   /* If hash slot empty */
+          if (hashtab[hashnum].vertnum == ~0) {   /* If hash slot empty                       */
             Gnum                commgain;         /* Communication gain of current vertex     */
             Gnum                commgainold;      /* Old communication gain of current vertex */
             Gnum                veloval;
@@ -1000,6 +1000,13 @@ const Gnum                                  commgainextn)
   Gnum                  commloaddlttmp;           /* Difference between old and current communication load */
   Gnum                  commloadextndlttmp;
   Gnum                  commgainextntmp;
+
+  const Gnum * restrict const verttax = grafptr->s.verttax; /* Fast accesses */
+  const Gnum * restrict const vendtax = grafptr->s.vendtax;
+  const Gnum * restrict const velotax = grafptr->s.velotax;
+  const Gnum * restrict const edgetax = grafptr->s.edgetax;
+  const Gnum * restrict const edlotax = grafptr->s.edlotax;
+  const Gnum * restrict const veextax = grafptr->veextax;
 
   domndist           = grafptr->domndist;
   compload0tmp       = (swapval == 0) ? grafptr->compload0 : (grafptr->s.velosum - grafptr->compload0);

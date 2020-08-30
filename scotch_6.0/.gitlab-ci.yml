@@ -1,0 +1,175 @@
+stages:
+  - build
+  - test
+  - sonar
+
+# JOB_INT: [ 32 | 64 | 32-64 ]
+# JOB_THREAD: [ n | c | y ]
+# JOB_DEBUG: [ n | a | f ]
+# JOB_RENAME: [ n | r ]
+
+.job_template: &matrix_32
+  parallel:
+    matrix:
+      - JOB_INT: [ 32, 32-64 ]
+        JOB_THREAD: [ n ]
+        JOB_DEBUG: [ n ]
+        JOB_RENAME: [ n ]
+      - JOB_INT: [ 32-64 ]
+        JOB_THREAD: [ n ]
+        JOB_DEBUG: [ a ]
+        JOB_RENAME: [ n ]
+      - JOB_INT: [ 32 ]
+        JOB_THREAD: [ n ]
+        JOB_DEBUG: [ f ]
+        JOB_RENAME: [ n ]
+
+.job_template: &matrix_64
+  parallel:
+    matrix:
+      - JOB_INT: [ 64 ]
+        JOB_THREAD: [ n ]
+        JOB_DEBUG: [ n ]
+        JOB_RENAME: [ n ]
+      - JOB_INT: [ 64 ]
+        JOB_THREAD: [ n, c ]
+        JOB_DEBUG: [ a ]
+        JOB_RENAME: [ n ]
+      - JOB_INT: [ 64 ]
+        JOB_THREAD: [ y ]
+        JOB_DEBUG: [ a ]
+        JOB_RENAME: [ r ]
+
+.job_template: &cache_template
+    untracked: true
+    paths:
+      - bin
+      - ci
+      - include
+      - lib
+      - src
+      - tgt
+      - analyzer_reports
+      - scotch-build-*.log
+
+.job_template: &variables_template
+  before_script:
+    - . ci/gitlab-ci-env.sh
+    - export JOBNAME="${JOB_INT}${JOB_THREAD}${JOB_DEBUG}${JOB_RENAME}"
+    - echo ${JOBNAME}
+    - export JOBBUILDFLAGS="-O0 -g -fPIC -DCOMMON_FILE_COMPRESS_LZMA"
+    - case "${JOB_INT}" in
+        32 )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+        32-64 )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DINTSIZE64 -DIDXSIZE64" ;;
+        64 )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+      esac
+    - case "${JOB_THREAD}" in
+        n )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+        c )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD" ;;
+        y )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DSCOTCH_PTHREAD -DSCOTCH_PTHREAD_NUMBER=2" ;;
+      esac
+    - export JOBCHECK=""
+    - case "${JOB_DEBUG}" in
+        n )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+        a )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL -DSCOTCH_METIS_VERSION=5" ;;
+        f )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_FULL"
+          export JOBCHECK=_full ;;
+      esac
+    - case "${JOB_RENAME}" in
+        n )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+        r )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DSCOTCH_RENAME" ;;
+      esac
+    - echo ${JOBBUILDFLAGS}
+
+.job_template: &job_build
+  stage: build
+  <<: *variables_template
+  script:
+    - cp ci/Makefile.inc src/Makefile.inc
+    - cd src
+    - sed -i -e "s#^\(CFLAGS.*\)#\1 ${JOBBUILDFLAGS}#1" Makefile.inc
+    - find . -name Makefile | xargs sed -i -e "s#-c \$(<)#-c \$\(shell pwd\)/\$\(<\)#g"
+    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build-${JOBNAME}.log
+
+scotch_build_32:
+  <<: *job_build
+  tags:
+    - 32bits
+  cache:
+    key: scotch32 $CI_NODE_INDEX
+    policy: push
+    <<: *cache_template
+  <<: *matrix_32
+
+scotch_build_64:
+  <<: *job_build
+  tags:
+    - 64bits
+  cache:
+    key: scotch64 $CI_NODE_INDEX
+    policy: push
+    <<: *cache_template
+  <<: *matrix_64
+
+.job_template: &job_test
+  stage: test
+  <<: *variables_template
+  artifacts:
+    untracked: true
+  script:
+    - cd src
+    - make check${JOBCHECK}
+    - make ptcheck${JOBCHECK}
+    - make escheck
+    - find . -print0 | xargs -0 touch
+    - cp libscotch/parser_ll.c libscotch/lex.yy.c
+    - cp libscotch/parser_yy.c libscotch/y.tab.c
+    - cd $CI_PROJECT_DIR
+    - gcovr --xml > scotch-coverage-${JOBNAME}.xml
+
+scotch_test_32:
+  <<: *job_test
+  cache:
+    key: scotch32 $CI_NODE_INDEX
+    policy: pull
+    <<: *cache_template
+  tags:
+    - 32bits
+  <<: *matrix_32
+
+scotch_test_64:
+  <<: *job_test
+  cache:
+    key: scotch64 $CI_NODE_INDEX
+    policy: pull
+    <<: *cache_template
+  tags:
+    - 64bits
+  <<: *matrix_64
+
+scotch_sonar:
+  stage: sonar
+  artifacts:
+    paths:
+      - analyzer_reports
+      - scotch-build-*.log
+      - scotch-coverage-*.xml
+      - scotch-cppcheck.xml
+      - scotch-rats.xml
+      - sonar-project.properties
+      - sonar.log
+  script:
+    - ci/analysis.sh
+    - ls -l
+    - sonar-scanner -X > sonar.log

@@ -285,6 +285,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			graph_clone$(OBJ)			\
 			graph_coarsen$(OBJ)			\
 			graph_diam$(OBJ)			\
+			graph_dump$(OBJ)			\
 			graph_ielo$(OBJ)			\
 			graph_induce$(OBJ)			\
 			graph_io$(OBJ)				\
@@ -299,6 +300,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			hall_order_hx$(OBJ)			\
 			hgraph$(OBJ)				\
 			hgraph_check$(OBJ)			\
+			hgraph_dump$(OBJ)			\
 			hgraph_induce$(OBJ)			\
 			hgraph_order_bl$(OBJ)			\
 			hgraph_order_cc$(OBJ)			\
@@ -361,6 +363,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_graph_color_f$(OBJ)		\
 			library_graph_diam$(OBJ)		\
 			library_graph_diam_f$(OBJ)		\
+			library_graph_dump$(OBJ)		\
 			library_graph_induce$(OBJ)		\
 			library_graph_induce_f$(OBJ)		\
 			library_graph_io_chac$(OBJ)		\
@@ -1141,6 +1144,12 @@ graph_diam$(OBJ)		:	graph_diam.c				\
 					fibo.h					\
 					graph_diam.h
 
+graph_dump$(OBJ)		:	graph_dump.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					graph_dump.h
+
 graph_ielo$(OBJ)		:	graph_ielo.c				\
 					module.h				\
 					common.h				\
@@ -1318,6 +1327,12 @@ hgraph_check$(OBJ)		:	hgraph_check.c				\
 					common.h				\
 					graph.h					\
 					hgraph.h
+
+hgraph_dump$(OBJ)		:	hgraph_dump.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					graph_dump.h
 
 hgraph_induce$(OBJ)		:	hgraph_induce.c				\
 					hgraph_induce_edge.c			\
@@ -2285,6 +2300,13 @@ library_graph_diam$(OBJ)	:	library_graph_diam.c			\
 library_graph_diam_f$(OBJ)	:	library_graph_diam_f.c			\
 					module.h				\
 					common.h				\
+					scotch.h
+
+library_graph_dump$(OBJ)	:	library_graph_dump.c			\
+					module.h				\
+					common.h				\
+					graph.h					\
+					graph_dump.h				\
 					scotch.h
 
 library_graph_induce$(OBJ)	:	library_graph_induce.c			\

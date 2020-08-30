@@ -1,4 +1,4 @@
-/* Copyright 2017,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,15 +31,15 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : test_scotch_graph_diam.c                **/
+/**   NAME       : test_scotch_libesmumps.c                **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
-/**                the SCOTCH_graphDiamPV () routine.      **/
+/**                the libesmumps routines.                **/
 /**                                                        **/
-/**   DATES      : # Version 6.0  : from : 26 jan 2017     **/
-/**                                 to     22 may 2018     **/
+/**   DATES      : # Version 6.0  : from : 19 jan 2020     **/
+/**                                 to     19 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -47,6 +47,7 @@
 **  The defines and includes.
 */
 
+#include <math.h>
 #include <stdio.h>
 #if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H))
 #include <stdint.h>
@@ -55,9 +56,8 @@
 #include <string.h>
 
 #include "scotch.h"
-
-void                        _SCOTCHintRandInit  (void);
-SCOTCH_Num                  _SCOTCHintRandVal   (SCOTCH_Num);
+#define INT                         SCOTCH_Num
+#include "esmumps.h"
 
 /*********************/
 /*                   */
@@ -70,9 +70,18 @@ main (
 int                 argc,
 char *              argv[])
 {
-  FILE *              fileptr;
-  SCOTCH_Graph        grafdat;
-  SCOTCH_Num          diamval;
+  FILE *                  fileptr;
+  SCOTCH_Graph            grafdat;
+  SCOTCH_Num              vertnbr;
+  SCOTCH_Num              vertnum;
+  SCOTCH_Num *            verttab;
+  SCOTCH_Num              edgenbr;
+  SCOTCH_Num *            edgetab;
+  SCOTCH_Num *            elentab;
+  SCOTCH_Num *            lasttab;
+  SCOTCH_Num *            lentab;
+  SCOTCH_Num *            nvtab;
+  SCOTCH_Num *            petab;
 
   SCOTCH_errorProg (argv[0]);
 
@@ -87,26 +96,42 @@ char *              argv[])
   }
 
   if ((fileptr = fopen (argv[1], "r")) == NULL) {
-    SCOTCH_errorPrint ("main: cannot open file");
+    SCOTCH_errorPrint ("main: cannot open file (1)");
     exit (EXIT_FAILURE);
   }
 
-  if (SCOTCH_graphLoad (&grafdat, fileptr, -1, 0) != 0) { /* Read source graph */
+  if (SCOTCH_graphLoad (&grafdat, fileptr, 1, 0) != 0) { /* Read source graph with base 1 for esmumps */
     SCOTCH_errorPrint ("main: cannot load graph");
     exit (EXIT_FAILURE);
   }
 
   fclose (fileptr);
 
-  _SCOTCHintRandInit ();
+  SCOTCH_graphData (&grafdat, NULL, &vertnbr, &verttab, NULL, NULL, NULL, &edgenbr, &edgetab, NULL);
 
-  if ((diamval = SCOTCH_graphDiamPV (&grafdat)) < 0) {
-    SCOTCH_errorPrint ("main: cannot compute graph pseudo-diameter");
+  if (((elentab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) ||
+      ((lasttab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) ||
+      ((lentab  = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) ||
+      ((nvtab   = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) ||
+      ((petab   = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL)) {
+    SCOTCH_errorPrint ("main: out of memory");
     exit (EXIT_FAILURE);
   }
 
-  printf ("Graph pseudo-diameter: %ld\n", (long) diamval);
+  memcpy (petab, verttab, vertnbr * sizeof (SCOTCH_Num));
+  for (vertnum = 0; vertnum < vertnbr; vertnum ++)
+    lentab[vertnum] = verttab[vertnum + 1] - verttab[vertnum];
 
+  if (esmumps (vertnbr, 0, petab, edgenbr + 1, lentab, edgetab, nvtab, elentab, lasttab) != 0) {
+    SCOTCH_errorPrint ("main: cannot run esmumps");
+    exit (EXIT_FAILURE);
+  }
+
+  free (petab);
+  free (nvtab);
+  free (lentab);
+  free (lasttab);
+  free (elentab);
   SCOTCH_graphExit (&grafdat);
 
   exit (EXIT_SUCCESS);

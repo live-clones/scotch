@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to     20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     26 oct 2019     **/
+/**                                 to     24 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -146,6 +146,22 @@
 /*
 ** Debug values.
 */
+
+#ifdef SCOTCH_DEBUG_FULL
+#ifndef SCOTCH_DEBUG_ALL
+#define SCOTCH_DEBUG_ALL
+#endif /* SCOTCH_DEBUG_ALL */
+
+#define SCOTCH_DEBUG_BGRAPH3
+#define SCOTCH_DEBUG_DGRAPH3
+#define SCOTCH_DEBUG_FIBO3
+#define SCOTCH_DEBUG_GAIN3
+#define SCOTCH_DEBUG_KGRAPH3
+#define SCOTCH_DEBUG_PARSER3
+#define SCOTCH_DEBUG_VGRAPH3
+#define SCOTCH_DEBUG_VMESH3
+#define SCOTCH_DEBUG_WGRAPH3
+#endif /* SCOTCH_DEBUG_FULL */
 
 #ifdef SCOTCH_DEBUG_ALL
 #ifndef SCOTCH_DEBUG
@@ -781,6 +797,7 @@
 #define gainTablFrst                SCOTCH_NAME_INTERN (gainTablFrst)
 #define gainTablInit                SCOTCH_NAME_INTERN (gainTablInit)
 #define gainTablNext                SCOTCH_NAME_INTERN (gainTablNext)
+#define gainTablMove                SCOTCH_NAME_INTERN (gainTablMove)
 
 #define geomExit                    SCOTCH_NAME_INTERN (geomExit)
 #define geomInit                    SCOTCH_NAME_INTERN (geomInit)
@@ -799,6 +816,10 @@
 #define graphCoarsenBuild           SCOTCH_NAME_INTERN (graphCoarsenBuild)
 #define graphCoarsenMatch           SCOTCH_NAME_INTERN (graphCoarsenMatch)
 #define graphDiamPV                 SCOTCH_NAME_INTERN (graphDiamPV)
+#define graphDump                   SCOTCH_NAME_INTERN (graphDump)
+#define graphDump2                  SCOTCH_NAME_INTERN (graphDump2)
+#define graphDumpArray              SCOTCH_NAME_INTERN (graphDumpArray)
+#define graphDumpArrays             SCOTCH_NAME_INTERN (graphDumpArrays)
 #define graphIelo                   SCOTCH_NAME_INTERN (graphIelo)
 #define graphInduceList             SCOTCH_NAME_INTERN (graphInduceList)
 #define graphInducePart             SCOTCH_NAME_INTERN (graphInducePart)
@@ -840,6 +861,7 @@
 #define hgraphFree                  SCOTCH_NAME_INTERN (hgraphFree)
 #define hgraphInduceList            SCOTCH_NAME_INTERN (hgraphInduceList)
 #define hgraphCheck                 SCOTCH_NAME_INTERN (hgraphCheck)
+#define hgraphDump                  SCOTCH_NAME_INTERN (hgraphDump)
 #define hgraphOrderBl               SCOTCH_NAME_INTERN (hgraphOrderBl)
 #define hgraphOrderCc               SCOTCH_NAME_INTERN (hgraphOrderCc)
 #define hgraphOrderCp               SCOTCH_NAME_INTERN (hgraphOrderCp)

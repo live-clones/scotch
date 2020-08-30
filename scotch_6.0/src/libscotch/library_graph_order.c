@@ -265,7 +265,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
-  if (listnbr == 0) {                             /* If empty list, return identity peremutation */
+  if (listnbr == 0) {                             /* If empty list, return identity permutation */
     intAscn (libordeptr->o.peritab, srcgrafptr->vertnbr, srcgrafptr->baseval);
     return  (0);
   }

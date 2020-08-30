@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,49 +31,29 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : esmumps_f.c                             **/
+/**   NAME       : gdump.h                                 **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module contains Fortran MUMPS      **/
-/**                stubs for the ordering routines of the  **/
-/**                libSCOTCH + Emilio libfax libraries.    **/
+/**   FUNCTION   : This file contains the declarations     **/
+/**                for the source graph dumper.            **/
 /**                                                        **/
-/**   DATES      : # Version 0.0  : from : 16 may 2001     **/
-/**                                 to     17 may 2001     **/
-/**                # Version 6.0  : from : 22 jan 2020     **/
-/**                                 to     22 jan 2020     **/
+/**   DATES      : # Version 6.0  : from : 23 nov 2019     **/
+/**                                 to   : 28 dec 2019     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The defines and includes.
+**  The defines.
 */
 
-#include "module.h"
-#include "common.h"
-#include "esmumps.h"
+/** File name aliases. **/
 
-/**************************************/
-/*                                    */
-/* These routines are the Fortran API */
-/* for the MUMPS ordering routine.    */
-/*                                    */
-/**************************************/
+#define C_FILENBR                   2             /* Number of files in list                */
+#define C_FILEARGNBR                2             /* Number of files which can be arguments */
 
-ESMUMPS_FORTRAN (                               \
-ESMUMPS_VOID, ESMUMPS_VOID, (                   \
-const INT * const           n,                  \
-const INT * const           iwlen,              \
-INT * const                 petab,              \
-const INT * const           pfree,              \
-INT * const                 lentab,             \
-INT * const                 iwtab,              \
-INT * const                 nvtab,              \
-INT * const                 elentab,            \
-INT * const                 lasttab,            \
-INT * const                 ncmpa),             \
-(n, iwlen, petab, pfree, lentab, iwtab, nvtab, elentab, lasttab, ncmpa))
-{
-  *ncmpa = esmumps (*n, *iwlen, petab, *pfree, lentab, iwtab, nvtab, elentab, lasttab);
-}
+#define C_filenamesrcinp            fileBlockName (C_fileTab, 0) /* Source graph input file name       */
+#define C_filenamecodout            fileBlockName (C_fileTab, 1) /* Graph source code output file name */
+
+#define C_filepntrsrcinp            fileBlockFile (C_fileTab, 0) /* Source graph input file       */
+#define C_filepntrcodout            fileBlockFile (C_fileTab, 1) /* Graph source code output file */

@@ -10,7 +10,7 @@ cppcheck -v --max-configs=1 --language=c ${CPPCHECK_DEFINITIONS_VM:---platform=n
 rats -w 3 --xml `cat filelist.txt` > scotch-rats.xml
 
 cat > sonar-project.properties << EOF
-sonar.host.url=https://sonarqube.bordeaux.inria.fr/sonarqube
+sonar.host.url=https://sonarqube.inria.fr/sonarqube
 sonar.login=$SONARQUBE_LOGIN
 sonar.links.homepage=$CI_PROJECT_URL
 sonar.links.scm=$CI_REPOSITORY_URL
@@ -22,13 +22,13 @@ sonar.projectVersion=6.0
 sonar.language=c
 sonar.sourceEncoding=UTF-8
 sonar.sources=include,src/check,src/esmumps,src/libscotch,src/libscotchmetis,src/misc,src/scotch
+sonar.coverage.exclusions=dummysizes.c,parser_ll.c,parser_yy.c
 sonar.c.includeDirectories=$(echo | gcc -E -Wp,-v - 2>&1 | grep "^ " | tr '\n' ',')include,src/scotch,src/misc,src/libscotch,src/esmumps,src/libscotchmetis
 sonar.c.errorRecoveryEnabled=true
-sonar.c.compiler.charset=UTF-8
-sonar.c.compiler.parser=GCC
-sonar.c.compiler.regex=^(.*):(\\\d+):\\\d+: warning: (.*)\\\[(.*)\\\]$
-sonar.c.compiler.reportPath=scotch-build.log
-sonar.c.coverage.reportPath=scotch-coverage.xml
+sonar.c.gcc.charset=UTF-8
+sonar.c.gcc.regex=(?<file>.*):(?<line>[0-9]+):[0-9]+:\\\x20warning:\\\x20(?<message>.*)\\\x20\\\[(?<id>.*)\\\]
+sonar.c.gcc.reportPath=scotch-build*.log
+sonar.c.coverage.reportPath=scotch-coverage-*.xml
 sonar.c.cppcheck.reportPath=scotch-cppcheck.xml
 sonar.c.rats.reportPath=scotch-rats.xml
 sonar.c.clangsa.reportPath=analyzer_reports/*/*.plist

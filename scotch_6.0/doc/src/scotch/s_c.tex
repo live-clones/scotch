@@ -20,6 +20,7 @@ mappings onto potentially disconnected subsets of a parallel machine,
 e.g. the set of nodes assigned by a batch scheduler; see
 Section~\ref{sec-lib-arch-sub}, page~\pageref{sec-lib-arch-sub} for
 further information.
+
 Also, in order to allow decomposition-defined architectures to
 scale-up to the sizes of modern machines, a new version of the
 \texttt{deco} architecture, called \texttt{deco~2}, has been
@@ -29,6 +30,13 @@ Section~\ref{sec-lib-arch-build-two},
 page~\pageref{sec-lib-arch-build-two} for further information.
 For further information on the rationale and implementation of these
 two features, please refer to~\cite{pellegrini:hal-01671156}.
+
+Also,a new labeled tree-leaf architecture has been created, for nodes
+that label cores in non increasing order. See
+Section~\ref{sec-file-target-algo},
+page~\pageref{sec-file-target-algo} for the description of the
+\texttt{ltleaf} target architecture.
+\\
 
 Direct k-way graph partitioning and static mapping methods are now
 available. They are less expensive than the classical dual recursive
@@ -57,19 +65,7 @@ vertex-separated, k-way partitions, that balance the loads of the
 parts and of the separator vertices that surround them; see
 Sections~\ref{sec-lib-format-part-ovl}
 and~\ref{sec-lib-func-graphpartovl}.
-
-A new labeled tree-leaf architecture has been created, for nodes that
-label cores in non increasing order. See
-Section~\ref{sec-file-target-algo},
-page~\pageref{sec-file-target-algo} for the description of the
-\texttt{ltleaf} target architecture.
-
-Memory footprint measurement routines are now available to users;
-see Section~\ref{sec-lib-misc}, page~\pageref{sec-lib-misc}.
-
-Key algorithms are now multi-threaded. See the installation file
-\texttt{INSTALL.txt} in the main directory for instructions on how to
-compile \scotch\ with thread support enabled.
+\\
 
 A method for computing independently orderings on connected components
 of a graph is now available; see Section~\ref{sec-lib-format-ord},
@@ -77,6 +73,16 @@ page~\pageref{sec-lib-format-ord}, and the \texttt{SCOTCH\_\lbt
 STRAT\lbt DISCON\lbt NECTED} flag in
 Section~\ref{sec-lib-format-strat-default},
 page~\pageref{sec-lib-format-strat-default}.
+\\
+
+Key algorithms are now multi-threaded. See the installation file
+\texttt{INSTALL.txt} in the main directory for instructions on how to
+compile \scotch\ with thread support enabled.
+\\
+
+Memory footprint measurement routines are now available to users;
+see Section~\ref{sec-lib-misc}, page~\pageref{sec-lib-misc}.
+\\
 
 The \metis\ compatibility library now provides optionally version~5 of
 the \metis\ API, in addition to version~3. In the \texttt{6.0} branch

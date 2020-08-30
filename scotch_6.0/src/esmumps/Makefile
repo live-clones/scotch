@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2010,2012,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2010,2012,2015,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -33,6 +33,7 @@
 bindir		= ../../bin
 includedir	= ../../include
 libdir		= ../../lib
+srclibscotchdir	= ../libscotch
 
 ##
 ##  General inference rules.
@@ -41,10 +42,10 @@ libdir		= ../../lib
 include ../Makefile.inc
 
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(includedir) -c $(<) -o $(@)
+				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(srclibscotchdir) -I$(includedir) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -I$(includedir) $(<) -o $(@) -L. -lesmumps -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
+		 		$(CC) $(CFLAGS) -I$(srclibscotchdir) -I$(includedir) $(<) -o $(@) -L. -lesmumps -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
 
 ##
 ##  Project rules.
@@ -73,41 +74,72 @@ clean				:
 realclean			:	clean
 
 ##
+##  Library dependencies.
+##
+
+LIBESMUMPSDEPS =			graph_graph$(OBJ)			\
+					order$(OBJ)				\
+					order_check$(OBJ)			\
+					order_scotch_graph$(OBJ)		\
+					dof$(OBJ)				\
+					symbol$(OBJ)				\
+					symbol_check$(OBJ)			\
+					symbol_fax_graph$(OBJ)			\
+					esmumps$(OBJ)				\
+					esmumps_f$(OBJ)				\
+					esmumps_strats$(OBJ)
+
+##
 ##  Todo list.
 ##
 
-common.h			:	../libscotch/common.h			\
-					module.h
-					$(CAT) module.h ../libscotch/common.h > $(@)
+module.h			:	$(srclibscotchdir)/module.h
 
 graph_graph$(OBJ)		:	graph_graph.c				\
-					common.h				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
 					$(includedir)/scotch.h			\
-					graph.h
+					graph.h					\
 
 order$(OBJ)			:	order.c					\
-					order.h					\
-					common.h				\
-					graph.h
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					graph.h					\
+					order.h
+
+order_check$(OBJ)		:	order_check.c				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					graph.h					\
+					order.h
 
 order_scotch_graph$(OBJ)	:	order_scotch_graph.c			\
-					order.h					\
-					common.h				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					$(includedir)/scotch.h			\
 					graph.h					\
-					$(includedir)/scotch.h
+					order.h
 
 dof$(OBJ)			:	dof.c					\
-					dof.h					\
-					common.h				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					$(includedir)/scotch.h			\
 					graph.h					\
-					$(includedir)/scotch.h
+					dof.h
 
 symbol$(OBJ)			:	symbol.c				\
-					symbol.h				\
-					common.h
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					symbol.h
+
+symbol_check$(OBJ)		:	symbol_check.c				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					symbol.h
 
 symbol_fax$(OBJ)		:	symbol_fax.c				\
-					common.h				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
 					graph.h					\
 					symbol.h				\
 					order.h					\
@@ -115,44 +147,42 @@ symbol_fax$(OBJ)		:	symbol_fax.c				\
 
 symbol_fax_graph$(OBJ)		:	symbol_fax_graph.c			\
 					symbol_fax.c				\
-					common.h				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					$(includedir)/scotch.h			\
 					graph.h					\
 					symbol.h				\
 					order.h					\
-					fax.h					\
-					$(includedir)/scotch.h
+					fax.h
 
 esmumps$(OBJ)			:	esmumps.c				\
-					common.h				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					$(includedir)/scotch.h			\
 					graph.h					\
 					symbol.h				\
 					order.h					\
 					fax.h					\
-					esmumps.h				\
-					$(includedir)/scotch.h
+					esmumps.h
+
 
 esmumps_f$(OBJ)			:	esmumps_f.c				\
-					common.h				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
 					esmumps.h
 
 esmumps_strats$(OBJ)		:	esmumps_strats.c			\
-					common.h				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
 					esmumps.h
 
-libesmumps$(LIB)		:	graph_graph$(OBJ)			\
-					order$(OBJ)				\
-					order_scotch_graph$(OBJ)		\
-					dof$(OBJ)				\
-					symbol$(OBJ)				\
-					symbol_fax_graph$(OBJ)			\
-					esmumps$(OBJ)				\
-					esmumps_f$(OBJ)				\
-					esmumps_strats$(OBJ)
+libesmumps$(LIB)		:	$(LIBESMUMPSDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)
 					-$(RANLIB) $(@)
 
 main_esmumps$(EXE)		:	main_esmumps.c				\
-					common.h				\
+					$(srclibscotchdir)/common.h		\
+					module.h				\
 					graph.h					\
 					order.h					\
 					symbol.h				\
