@@ -608,8 +608,8 @@ Array of ascendants of permuted column blocks in the separators tree.
 {\tt treetab[i]} is the index of the father of column block $i$ in the
 separators tree, or $-1$ if column block $i$ is the root of the
 separators tree. Whenever separators or leaves of the separators tree
-are split into subblocks, as the block splitting, minimum fill or minimum
-degree methods do, all subblocks of the same level are linked to the
+are split into sub-blocks, as the block splitting, minimum fill or minimum
+degree methods do, all sub-blocks of the same level are linked to the
 column block of higher index belonging to the closest separator
 ancestor. Indices in {\tt treetab} are based, in the same way as for
 the other blocking structures. See Figure~\ref{fig-lib-ord-block} for
@@ -1290,11 +1290,16 @@ lead to a significant reduction of the required memory space and time,
 because it helps carving large triangular blocks.
 The parameters of the blocking method are described below.
 \begin{itemize}
-\iteme[{\tt cmin=}{\it size}]
-Set the minimum size of the resulting subblocks, in number of columns.
-Blocks larger than twice this minimum size are cut into sub-blocks of
-equal sizes (within one), having a number of columns comprised between
-{\it size} and $2${\it size}.
+\iteme[{\tt cmin=}{\it wght}]
+Set the minimum span of the resulting sub-blocks, in terms of column
+weights. When the graph has no vertex weights (that is, all columns
+have weight $1$), \texttt{cmin} represents the minimum number of
+colums to be included within each sub-block.
+For unweighted graphs, blocks larger than twice this minimum weight
+are cut into sub-blocks of equal sizes (within one), having a number
+of columns comprised between {\it wght} and $2${\it wght}. For
+weighted graphs, the algorithm performs in a best effort to achieve
+this goal.
 \\
 The definition of {\it size} depends on the size of the graph
 to order. Large graphs cannot afford very small values, because the
@@ -1331,17 +1336,16 @@ The parameters of the Halo Approximate Minimum Degree method are
 listed below. The Block Halo Approximate Minimum Fill method,
 described below, is more efficient and should be preferred.
 \begin{itemize}
-\iteme[{\tt cmin=}{\it size}]
-Minimum number of columns per column block. All column blocks
-of width smaller than {\it size\/} are amalgamated to their
-parent column block in the elimination tree, provided that it
-does not violate the {\tt cmax} constraint.
-\iteme[{\tt cmax=}{\it size}]
-Maximum number of column blocks over which some column block
-will not amalgamate one of its descendents in the elimination
-tree. This parameter is mainly designed to provide an upper
-bound for block size in the context of BLAS3 computations~;
-else, a huge value should be provided.
+\iteme[{\tt cmin=}{\it wght}]
+Minimum weight per column block. All column blocks of weight smaller
+than {\it wght\/} are amalgamated to their parent column block in the
+elimination tree, provided that it does not violate the {\tt cmax}
+constraint.
+\iteme[{\tt cmax=}{\it wght}]
+Maximum weight over which a column block will not amalgamate one of
+its descendents in the elimination tree. This parameter is mainly
+designed to provide an upper bound for block size in the context of
+BLAS3 computations~; else, a huge value should be provided.
 \iteme[{\tt frat=}{\it rat}]
 Fill-in ratio over which some column block will not amalgamate
 one of its descendents in the elimination tree. Typical values
@@ -1352,17 +1356,16 @@ Block Halo Approximate Minimum Fill method.
 The parameters of the Halo Approximate Minimum Fill method are
 listed below.
 \begin{itemize}
-\iteme[{\tt cmin=}{\it size}]
-Minimum number of columns per column block. All column blocks
-of width smaller than {\it size\/} are amalgamated to their
-parent column block in the elimination tree, provided that it
-does not violate the {\tt cmax} constraint.
+\iteme[{\tt cmin=}{\it wght}]
+Minimum weight per column block. All column blocks of weight smaller
+than {\it wght\/} are amalgamated to their parent column block in the
+elimination tree, provided that it does not violate the {\tt cmax}
+constraint.
 \iteme[{\tt cmax=}{\it size}]
-Maximum number of column blocks over which some column block
-will not amalgamate one of its descendents in the elimination
-tree. This parameter is mainly designed to provide an upper
-bound for block size in the context of BLAS3 computations~;
-else, a huge value should be provided.
+Maximum weight over which a column block will not amalgamate one of
+its descendents in the elimination tree. This parameter is mainly
+designed to provide an upper bound for block size in the context of
+BLAS3 computations~; else, a huge value should be provided.
 \iteme[{\tt frat=}{\it rat}]
 Fill-in ratio over which some column block will not amalgamate
 one of its descendents in the elimination tree. Typical values
