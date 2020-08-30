@@ -517,6 +517,7 @@ check_prog_gord			:	check_prog_gmk_msh
 check_prog_gotst		:	check_prog_gord
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump.grf $(TMPDIR)/bump.ord
 					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump_b1.grf $(TMPDIR)/bump_b1.ord
+					$(EXECS) $(SCOTCHBINDIR)/gotst data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32.ord
 					$(EXECS) $(SCOTCHBINDIR)/gotst $(TMPDIR)/ship001.grf $(TMPDIR)/ship001.ord
 
 check_prog_gout			:	check_prog_gord		\
