@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011-2013,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011-2013,2015,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 4.0  : from : 13 dec 2001     **/
 /**                                 to     05 dec 2004     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
-/**                                 to     07 jun 2018     **/
+/**                                 to     30 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -138,7 +138,7 @@ typedef struct GraphCoarsenData_ {
   Gnum                      coarhashmsk;          /*+ Hash table mask                                 +*/
 #ifdef SCOTCH_PTHREAD
   int * restrict            finelocktax;          /*+ Matching lock array (if any)                    +*/
-  Gnum * restrict           finequeutab;          /*+ Matching queue array (if any)                   +*/
+  Gnum * restrict           finequeutax;          /*+ Matching queue array (if any)                   +*/
   void                   (* fendptr) (void *);    /*+ Pointer to final / sequential match routine     +*/
   void                   (* fmidptr) (void *);    /*+ Pointer to intermediate match routine (if any)  +*/
 #endif /* SCOTCH_PTHREAD */
