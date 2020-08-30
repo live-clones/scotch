@@ -1122,6 +1122,17 @@ the form of {\it method\/}{[{\tt \{}{\it parameters\/}{\tt \}}]}\enspace.
 The currently available mapping methods are the following.
 
 \begin{itemize}
+\iteme[{\tt e}]
+K-way edge partitioning method. The parameters of the Fiduccia-Mattheyses method
+are listed below.
+\begin{itemize}
+\iteme[{\tt strat=}{\it strat}]
+K-way partitioning strategy to be performed. It is in fact a k-way
+mapping strategy, that is applied to a complete target graph of as
+many vertices as the prescribed number of parts. The syntax of mapping
+strategy strings is defined within section~\ref{sec-lib-format-map},
+at page~\pageref{sec-lib-format-map}.
+\end{itemize}
 \iteme[{\tt f}]
 Fiduccia-Mattheyses method. The parameters of the Fiduccia-Mattheyses method
 are listed below.
