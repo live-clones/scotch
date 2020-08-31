@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2015,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2015,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,6 +60,8 @@
 /**                                 to   : 28 dec 2015     **/
 /**                # Version 6.1  : from : 19 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
+/**                # Version 7.0  : from : 03 may 2019     **/
+/**                                 to   : 03 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -138,7 +140,7 @@ typedef enum DgraphTag_ {
 
 /*+ The graph flag type. +*/
 
-typedef int DgraphFlag;                           /*+ Graph property flags +*/
+typedef unsigned int DgraphFlag;                  /*+ Graph property flags +*/
 
 /*+ The vertex part type, in compressed form. From graph.h +*/
 
