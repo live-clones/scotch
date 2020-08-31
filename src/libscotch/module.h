@@ -121,22 +121,6 @@
 #endif /* COMMON_PTHREAD_MEMORY */
 #endif /* SCOTCH_PTHREAD        */
 
-/*+ Handle number of threads. +*/
-
-#ifdef SCOTCH_PTHREAD
-#ifndef SCOTCH_PTHREAD_NUMBER
-#define SCOTCH_PTHREAD_NUMBER       1
-#endif /* SCOTCH_PTHREAD_NUMBER */
-
-#else /* SCOTCH_PTHREAD */
-
-#ifdef SCOTCH_PTHREAD_NUMBER
-#undef SCOTCH_PTHREAD_NUMBER
-#endif /* SCOTCH_PTHREAD_NUMBER */
-#define SCOTCH_PTHREAD_NUMBER       1
-
-#endif /* SCOTCH_PTHREAD */
-
 /*+ Handle old semantics of thread affinity. */
 
 #ifdef SCOTCH_PTHREAD_AFFINITY_LINUX
