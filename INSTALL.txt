@@ -1,4 +1,4 @@
-Scotch 6.0 installation instructions
+Scotch 6.1 installation instructions
 ====================================
 
 
@@ -415,17 +415,17 @@ compiled with the "-DCOMMON_RANDOM_FIXED_SEED" flag set, so that
 multiple executions of the same sequential programs will always yield
 the same results.
 
-Prior to version 6.0, Scotch relied on the operating system
+Before version 6.0, Scotch relied on the operating system
 pseudo-random generator. While this posed no problem for most
 sequential programs, parallel runs of PT-Scotch were not reproducible
 on some systems, because the MPI implementation also used this
 pseudo-random generator for its own purposes. In order to avoid this
-problem, Scotch now uses its own pseudo-random generator. Users that
-want to go on using the operating system pseudo-random generator
-(e.g. for regression testing with respect to version 5.x) can still do
-so, by compiling with the "-DCOMMON_RANDOM_SYSTEM" flag set. In this
-case, the "-DCOMMON_RANDOM_RAND" flag allows you to use the srand()
-routine instead of the default srandom() routine.
+problem, Scotch uses its own pseudo-random generator. Users that want
+to go on using the operating system pseudo-random generator (e.g. for
+regression testing with respect to version 5.x) can still do so, by
+compiling with the "-DCOMMON_RANDOM_SYSTEM" flag set. In this case,
+the "-DCOMMON_RANDOM_RAND" flag allows you to use the srand() routine
+instead of the default srandom() routine.
 
 
 2.10) Deterministic behavior
@@ -520,7 +520,7 @@ Because of these naming conflicts, users have to choose between the v3
 or v5 versions of the MeTiS API when compiling and/or linking with the
 Scotch stubs. To expose the relevant version of the API when using the
 "metis.h" file provided by Scotch, compile Scotch and/or your code
-with the "-DSCOTCH_METIS_VERSION=x" flag set. For Scotch v6.0, the
+with the "-DSCOTCH_METIS_VERSION=x" flag set. For Scotch v6.1, the
 default MeTiS API version is 3. This might change in the future.
 By setting "-DSCOTCH_METIS_VERSION=0", no MeTiS version will be
 exposed, hence avoiding potential conflicts with the genuine MeTiS

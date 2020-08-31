@@ -30,7 +30,7 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
-VERSION		= 6.0
+VERSION		= 6.1
 
 UMAN		= ptscotch_user$(VERSION)
 
