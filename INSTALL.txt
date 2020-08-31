@@ -501,23 +501,25 @@ sufficient to link against the proper version of the "libscotchmetis"
 library to use Scotch instead of MeTiS, by adding the two libraries in
 sequence, plus the adequate Scotch error handling library :
 
-  [...] -lscotchmetis -lscotch -lscotcherr [...]
+  [...] -lscotchmetisvX -lscotch -lscotcherr [...]
 
 Note that there exists a naming conflict between versions v3 and v5 of
 the genuine MeTiS library, as some routines have the same name but a
 different prototype across the two versions.
 
-Because of these naming conflicts, users have to choose between the v3
-or v5 versions of the MeTiS API when compiling and/or linking with the
-Scotch compatibility library. To expose the relevant version of the
-API when using the "metis.h" file provided by Scotch, compile Scotch
-and/or your code with the "-DSCOTCH_METIS_VERSION=x" flag set. For
-Scotch v6.1, the default MeTiS API version is 3. This might change in
-the future. By setting "-DSCOTCH_METIS_VERSION=0", no MeTiS version
-will be exposed, hence avoiding potential conflicts with the genuine
-MeTiS include and library files. The same holds for ParMeTiS and the
-flag "-DSCOTCH_PARMETIS_VERSION=x", for which only the ParMeTiS v3 API
-is available.
+Prior to Scotch v7.0, users had to choose which version of the
+libscotchmetis to compile, by using either the macro
+"-DSCOTCH_METIS_VERSION=3" or "-DSCOTCH_METIS_VERSION=5" when building
+the libScotch library. Starting from Scotch v7, both versions of the
+libscotchmetis are created simultaneously. Hence, users can link
+their existing software by using either "-lscotchmetisv3" or
+"-lscotchmetisv5" at link time. However, the
+"-DSCOTCH_METIS_VERSION=x" flag is still necessary when compiling
+third-party software using the alternate "metis.h" file provided by
+Scotch, to expose either the prototypes of the routines of libmetis v3
+or those of v5. The same holds for ParMeTiS and the flag
+"-DSCOTCH_PARMETIS_VERSION=x", for which only the ParMeTiS v3 API is
+available.
 
 An advantage of the Scotch/PT-Scotch stubs over the genuine
 MeTiS/ParMeTiS routines is that they can be available in a 64-bit
