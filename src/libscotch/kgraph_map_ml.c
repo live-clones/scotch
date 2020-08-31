@@ -1,4 +1,4 @@
-/* Copyright 2010,2011,2012,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2011,2012,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 14 jul 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 25 feb 2018     **/
+/**                # Version 7.0  : from : 03 aug 2018     **/
+/**                                 to   : 03 aug 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -101,8 +103,8 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
   *coarmultptr = NULL;                            /* Allocate coarmulttab along with coarse graph */
-  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, NULL, coarmultptr, paraptr->coarnbr, paraptr->coarval, GRAPHCOARSENNONE,
-                    finegrafptr->r.m.parttax, finegrafptr->pfixtax, finegrafptr->vfixnbr, &coargrafptr->vfixnbr) != 0)
+  if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, NULL, coarmultptr, paraptr->coarnbr, paraptr->coarval, GRAPHCOARSENNOCOMPACT,
+                    finegrafptr->r.m.parttax, finegrafptr->pfixtax, finegrafptr->vfixnbr, finegrafptr->contptr) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   finegrafptr->s.flagval  &= ~KGRAPHFREECOMP;     /* Now it's the coarse graph job to handle the load array             */
@@ -120,6 +122,7 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
   coargrafptr->m.domnorg   = finegrafptr->m.domnorg;
   coargrafptr->m.domnnbr   = 0;                   /* Number of domains not known yet  */
   coargrafptr->m.domnmax   = finegrafptr->m.domnmax; /* Propagate relevant estimation */
+  coargrafptr->contptr     = finegrafptr->contptr;
 
   coarmulttab = *coarmultptr;
 
@@ -156,7 +159,7 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
                                  : ((finevertnum0 == finevertnum1) ? 1 : 2);
 #ifdef SCOTCH_DEBUG_KGRAPH2
       if ((fineparotax[finevertnum1] != fineparotax[finevertnum0]) && /* If vertices were not in the same part */
-          ((finegrafptr->pfixtax == NULL) || 
+          ((finegrafptr->pfixtax == NULL) ||
            ((finepfixtax[finevertnum1] == -1) &&  /* And both are not fixed */
             (finepfixtax[finevertnum0] == -1)))) {
         errorPrint ("kgraphMapMlCoarsen: internal error (2)");
@@ -181,7 +184,7 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
     coargrafptr->r.vmlotax   = NULL;
   }
 
-  if (finepfixtax != NULL) {                      /* If we have fixed vertices */ 
+  if (finepfixtax != NULL) {                      /* If we have fixed vertices */
     Gnum                coarvertnbr;
     Anum * restrict     coarpfixtab;
     Gnum                coarvfixnbr;
@@ -319,7 +322,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array
     coarvertnum  = coarfrontab[coarfronnum];
     finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
     finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
-     
+
     if (finevertnum0 != finevertnum1) {           /* If multinode si made of two distinct vertices */
       Gnum                fineedgenum;
       Gnum                partval;

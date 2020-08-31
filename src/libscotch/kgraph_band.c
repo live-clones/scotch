@@ -44,6 +44,8 @@
 /**                                 to   : 28 apr 2019     **/
 /**                # Version 6.1  : from : 19 apr 2021     **/
 /**                                 to   : 30 jun 2021     **/
+/**                # Version 7.0  : from : 24 aug 2019     **/
+/**                                 to   : 24 aug 2019     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -221,6 +223,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   bandgrafptr->commload    = grafptr->commload;   /* Communication load is preserved */
   bandgrafptr->kbalval     = grafptr->kbalval;
   bandgrafptr->levlnum     = grafptr->levlnum;
+  bandgrafptr->contptr     = grafptr->contptr;
 
   if ((memAllocGroup ((void **) (void *)          /* Allocate graph data */
                       &bandgrafptr->s.verttax, (size_t) ((bandvertnbr + 1) * sizeof (Gnum)), /* Compact vertex array */

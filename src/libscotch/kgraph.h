@@ -55,6 +55,8 @@
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 6.1  : from : 18 jul 2021     **/
 /**                                 to   : 18 jul 2021     **/
+/**                # Version 7.0  : from : 03 aug 2018     **/
+/**                                 to   : 03 aug 2018     **/
 /**                                                        **/
 /**   NOTES      : # The comploadavg and comploaddlt       **/
 /**                  should always be allocated together,  **/
@@ -125,6 +127,7 @@ typedef struct Kgraph_ {
   Gnum                      commload;             /*+ Communication load                                +*/
   double                    kbalval;              /*+ Last k-way imbalance ratio                        +*/
   INT                       levlnum;              /*+ Graph coarsening level                            +*/
+  Context *                 contptr;              /*+ Execution context                                 +*/
 } Kgraph;
 
 /*+ The save graph structure. +*/

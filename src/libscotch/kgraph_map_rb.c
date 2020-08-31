@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2013,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -68,6 +68,8 @@
 /**                                 to   : 07 oct 2008     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 jun 2019     **/
+/**                # Version 7.0  : from : 23 aug 2019     **/
+/**                                 to   : 23 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -124,6 +126,7 @@ const KgraphMapRbParam * restrict const paraptr)
 
   datadat.grafptr = &grafptr->s;
   datadat.mappptr = &grafptr->m;
+  datadat.contptr = grafptr->contptr;
 
   datadat.r.mappptr   = (grafptr->r.m.parttax != NULL) ? &grafptr->r.m : NULL;
   datadat.r.vmlotax   = grafptr->r.vmlotax;
@@ -583,6 +586,7 @@ const Gnum * restrict const             vflowgttab) /*+ Array of vertex weight b
     errorPrint ("kgraphMapRbBgraph: cannot create bipartition graph");
     return     (1);
   }
+  actgrafptr->contptr = dataptr->contptr;
 
   flagval = KGRAPHMAPRBVEEXNONE;                  /* Assume no processing */
   if ((! archPart (archptr)) && (actvnumtax != NULL))
