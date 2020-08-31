@@ -1772,7 +1772,6 @@ kgraph_map_cp$(OBJ)		:	kgraph_map_cp.c				\
 					kgraph_map_cp.h
 
 kgraph_map_df$(OBJ)		:	kgraph_map_df.c				\
-					kgraph_map_df_loop.c			\
 					module.h				\
 					common.h				\
 					parser.h				\
