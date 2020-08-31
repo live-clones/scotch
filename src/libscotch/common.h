@@ -119,6 +119,9 @@
 #if ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H))
 #include            <sys/resource.h>
 #endif /* ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H)) */
+#if ((defined COMMON_OS_MACOS) || (defined HAVE_OS_MACOS_H))
+#include            <sys/sysctl.h>
+#endif /* ((defined COMMON_OS_MACOS) || (defined HAVE_OS_MACOS_H)) */
 #if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
 #include            <unistd.h>
 #endif /* ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */

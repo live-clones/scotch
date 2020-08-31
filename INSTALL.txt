@@ -242,6 +242,9 @@ Some common platform configurations are available in the
 The compilation flags used to manage portability issues are the
 following:
 
+"-DCOMMON_OS_MACOS" tweaks some includes and definitions to resolve
+most issues encountered on MacOS platforms.
+
 "-DCOMMON_OS_WINDOWS" tweaks some includes and definitions to resolve
 most issues encountered on Windows platforms.
 
