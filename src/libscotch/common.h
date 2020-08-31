@@ -74,7 +74,7 @@
 #define __USE_XOPEN2K                             /* For POSIX pthread_barrier_t */
 #endif /* __USE_XOPEN2K */
 
-#ifdef COMMON_WINDOWS
+#ifdef COMMON_OS_WINDOWS
 #include            <io.h>                        /* For _pipe ()              */
 #include            <fcntl.h>                     /* Fow Windows _pipe () call */
 #include            <windows.h>
@@ -89,7 +89,7 @@
 #define strcasecmp                  stricmp
 #endif /* _WIN32 */
 #define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
-#endif /* COMMON_WINDOWS */
+#endif /* COMMON_OS_WINDOWS */
 
 #include            <ctype.h>
 #include            <math.h>
@@ -121,7 +121,7 @@
 #endif /* ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H)) */
 #if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
 #include            <unistd.h>
-#endif /* ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
+#endif /* ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
 
 #ifdef COMMON_MPI
 #include            <mpi.h>
