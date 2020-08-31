@@ -46,6 +46,8 @@
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 6.0  : from : 27 nov 2012     **/
 /**                                 to   : 23 may 2018     **/
+/**                # Version 7.0  : from : 04 aug 2018     **/
+/**                                 to   : 04 aug 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -176,7 +178,6 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
       cgrfptr->s.edgenbr = edgenbr;
       cgrfptr->s.edlotax = NULL;
       cgrfptr->s.edlosum = edgenbr;
-      cgrfptr->s.procptr = NULL;                  /* Not a multi-sequential gather: no communication possible */
       cgrfptr->vnohnbr   = vnohnbr;
       cgrfptr->vnohnnd   = vnohnbr + dgrfptr->s.baseval;
       cgrfptr->vnlosum   = dgrfptr->s.veloglbsum;
