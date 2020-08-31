@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -63,6 +63,8 @@
 /**                                 to   : 28 mar 2011     **/
 /**                # Version 6.0  : from : 07 aug 2014     **/
 /**                                 to   : 03 aug 2018     **/
+/**                # Version 7.0  : from : 23 aug 2019     **/
+/**                                 to   : 23 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,7 +119,7 @@ typedef struct KgraphMapRbData_ {
   const Graph *             grafptr;              /*+ Pointer to top-level graph, possibly with fixed vertices +*/
   Mapping *                 mappptr;              /*+ Mapping to compute                                       +*/
   struct {                                        /*+ Remapping structure                                      +*/
-    const Mapping *         mappptr;              /*+ Old mapping (for remapping only)                         +*/ 
+    const Mapping *         mappptr;              /*+ Old mapping (for remapping only)                         +*/
     const Gnum *            vmlotax;              /*+ Array of vertex migration costs                          +*/
     Gnum                    cmloval;              /*+ Migration edge load for remapping                        +*/
     Gnum                    crloval;              /*+ Regular edge load for mapping                            +*/
@@ -127,6 +129,7 @@ typedef struct KgraphMapRbData_ {
   double                    comploadrat;          /*+ Ideal load balance per weight unit                       +*/
   double                    comploadmin;          /*+ Minimum vertex load per target load                      +*/
   double                    comploadmax;          /*+ Maximum vertex load per target load                      +*/
+  Context *                 contptr;              /*+ Execution context                                        +*/
 } KgraphMapRbData;
 
 /*+ Fixed vertex load type. An array of such
