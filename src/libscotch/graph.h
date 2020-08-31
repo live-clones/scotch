@@ -63,6 +63,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 10 may 2019     **/
+/**                # Version 7.0  : from : 08 jun 2018     **/
+/**                                 to   : 04 aug 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,18 +123,6 @@ typedef struct VertList_ {
 
 typedef int GraphFlag;                            /*+ Graph property flags +*/
 
-/*+ The graph parallel context structure. +*/
-
-#ifdef SCOTCH_PTSCOTCH
-
-typedef struct GraphProc_ {
-  MPI_Comm                  proccomm;             /*+ Communicator used for parallel algorithm +*/
-  int                       procglbnbr;           /*+ Number of processes in communicator      +*/
-  int                       proclocnum;           /*+ Rank of process in current communicator  +*/
-} GraphProc;
-
-#endif /* SCOTCH_PTSCOTCH */
-
 /*+ The graph structure. +*/
 
 typedef struct Graph_ {
@@ -151,7 +141,6 @@ typedef struct Graph_ {
   Gnum *                    edlotax;              /*+ Edge load array (if present)              +*/
   Gnum                      edlosum;              /*+ Sum of edge (in fact arc) loads           +*/
   Gnum                      degrmax;              /*+ Maximum degree                            +*/
-  struct GraphProc_ *       procptr;              /*+ Pointer to parallel context (if any)      +*/
 } Graph;
 
 /*
