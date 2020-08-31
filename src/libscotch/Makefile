@@ -776,7 +776,6 @@ bgraph_bipart_bd$(OBJ)		:	bgraph_bipart_bd.c			\
 					bgraph_bipart_st.h
 
 bgraph_bipart_df$(OBJ)		:	bgraph_bipart_df.c			\
-					bgraph_bipart_df_loop.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
