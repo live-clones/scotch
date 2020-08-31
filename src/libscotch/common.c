@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,6 +51,8 @@
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 21 sep 2013     **/
 /**                                 to   : 21 sep 2013     **/
+/**                # Version 7.0  : from : 10 jun 2018     **/
+/**                                 to   : 10 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +66,29 @@
 #include "module.h"
 #endif /* COMMON_NOMODULE */
 #include "common.h"
+
+/*********************************/
+/*                               */
+/* Environment reading routines. */
+/*                               */
+/*********************************/
+
+int
+envGetInt (
+const char * const          nameptr,              /*+ Variable name +*/
+const int                   defaval)              /*+ Default value +*/
+{
+  char *              envvptr;                    /* Pointer to environment value */
+  char *              envvend;
+  long                envvval;
+
+  envvptr = getenv (nameptr);
+  if ((envvptr == NULL) || (*envvptr == '\0'))
+    return (defaval);
+
+  envvval = strtol (envvptr, &envvend, 0);
+  return ((*envvend == '\0') ? (int) envvval : defaval);
+}
 
 /*******************/
 /*                 */

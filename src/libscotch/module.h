@@ -54,6 +54,8 @@
 /**                                 to   : 24 aug 2020     **/
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
+/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -120,22 +122,6 @@
 #define COMMON_PTHREAD_MEMORY
 #endif /* COMMON_PTHREAD_MEMORY */
 #endif /* SCOTCH_PTHREAD        */
-
-/*+ Handle number of threads. +*/
-
-#ifdef SCOTCH_PTHREAD
-#ifndef SCOTCH_PTHREAD_NUMBER
-#define SCOTCH_PTHREAD_NUMBER       1
-#endif /* SCOTCH_PTHREAD_NUMBER */
-
-#else /* SCOTCH_PTHREAD */
-
-#ifdef SCOTCH_PTHREAD_NUMBER
-#undef SCOTCH_PTHREAD_NUMBER
-#endif /* SCOTCH_PTHREAD_NUMBER */
-#define SCOTCH_PTHREAD_NUMBER       1
-
-#endif /* SCOTCH_PTHREAD */
 
 /*+ Handle old semantics of thread affinity. */
 
@@ -316,6 +302,14 @@
 
 #define commonStubDummy             SCOTCH_NAME_INTERN (commonStubDummy)
 
+#define contextCommit               SCOTCH_NAME_INTERN (contextCommit)
+#define contextExit                 SCOTCH_NAME_INTERN (contextExit)
+#define contextInit                 SCOTCH_NAME_INTERN (contextInit)
+#define contextThreadInit           SCOTCH_NAME_INTERN (contextThreadInit)
+#define contextThreadInit2          SCOTCH_NAME_INTERN (contextThreadInit2)
+
+#define envGetInt                   SCOTCH_NAME_INTERN (envGetInt)
+
 #define fileBlockInit               SCOTCH_NAME_INTERN (fileBlockInit)
 #define fileBlockClose              SCOTCH_NAME_INTERN (fileBlockClose)
 #define fileBlockOpen               SCOTCH_NAME_INTERN (fileBlockOpen)
@@ -360,6 +354,16 @@
 #define memOffset                   SCOTCH_NAME_INTERN (memOffset)
 
 #define stringSubst                 SCOTCH_NAME_INTERN (stringSubst)
+
+#define threadContextBarrier        SCOTCH_NAME_INTERN (threadContextBarrier)
+#define threadContextExit           SCOTCH_NAME_INTERN (threadContextExit)
+#define threadContextImport1        SCOTCH_NAME_INTERN (threadContextImport1)
+#define threadContextImport2        SCOTCH_NAME_INTERN (threadContextImport2)
+#define threadContextInit           SCOTCH_NAME_INTERN (threadContextInit)
+#define threadContextNbr            SCOTCH_NAME_INTERN (threadContextNbr)
+#define threadContextParam          SCOTCH_NAME_INTERN (threadContextParam)
+
+#define threadSystemCoreNbr         SCOTCH_NAME_INTERN (threadSystemCoreNbr)
 
 #define usagePrint                  SCOTCH_NAME_INTERN (usagePrint)
 #endif /* ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) */

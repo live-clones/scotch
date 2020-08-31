@@ -79,13 +79,13 @@ ptscotch			:	scotch
 					libptscotcherr$(LIB)				\
 					libptscotcherrexit$(LIB)
 
-install				:	$(includedir)/scotch.h			\
-					$(includedir)/scotchf.h			\
+install				:	$(includedir)/scotch.h				\
+					$(includedir)/scotchf.h				\
 					$(libdir)/libscotch$(LIB)
 
-ptinstall			:	install					\
-					$(includedir)/ptscotch.h		\
-					$(includedir)/ptscotchf.h		\
+ptinstall			:	install						\
+					$(includedir)/ptscotch.h			\
+					$(includedir)/ptscotchf.h			\
 					$(libdir)/libptscotch$(LIB)
 
 clean				:
@@ -267,6 +267,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			bgraph_check$(OBJ)			\
 			bgraph_store$(OBJ)			\
 			common$(OBJ)				\
+			common_context$(OBJ)			\
 			common_file$(OBJ)			\
 			common_file_compress$(OBJ)		\
 			common_file_decompress$(OBJ)		\
@@ -275,6 +276,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			common_string$(OBJ)			\
 			common_stub$(OBJ)			\
 			common_thread$(OBJ)			\
+			common_thread_system$(OBJ)		\
 			fibo$(OBJ)				\
 			gain$(OBJ)				\
 			geom$(OBJ)				\
@@ -463,6 +465,13 @@ common$(OBJ)			:	common.c				\
 					common.h
 					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
+common_context$(OBJ)		:	common_context.c			\
+					module.h				\
+					common.h				\
+					common_thread.h				\
+					common_thread_system.h
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+
 common_file$(OBJ)		:	common_file.c				\
 					module.h				\
 					common.h				\
@@ -506,7 +515,15 @@ common_stub$(OBJ)		:	common_stub.c				\
 
 common_thread$(OBJ)		:	common_thread.c				\
 					module.h				\
-					common.h
+					common.h				\
+					common_thread_system.h			\
+					common_thread.h
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+
+common_thread_system$(OBJ)	:	common_thread_system.c			\
+					module.h				\
+					common.h				\
+					common_thread_system.h
 					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 arch$(OBJ)			:	arch.c					\
