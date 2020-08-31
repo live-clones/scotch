@@ -311,7 +311,6 @@ typedef void (* ThreadScanFunc) (void * const, void * const, const int, const in
 
 typedef struct Context_ {
   ThreadContext *           thrdptr;              /*+ Threading context +*/
-  IntRandContext *          randptr;              /*+ Random context    +*/
 } Context;
 
 /*
