@@ -242,11 +242,11 @@ Some common platform configurations are available in the
 The compilation flags used to manage portability issues are the
 following:
 
-"-DCOMMON_WINDOWS" tweaks some includes and definitions to resolve
+"-DCOMMON_OS_WINDOWS" tweaks some includes and definitions to resolve
 most issues encountered on Windows platforms.
 
 "-DCOMMON_TIMING_OLD" selects the getrusage()-based timing routine,
-when "-DCOMMON_WINDOWS" is not set. Else, either clock_gettime() or
+when "-DCOMMON_OS_WINDOWS" is not set. Else, either clock_gettime() or
 gettimeofday() are selected, depending on POSIX compilation flags.
 
 "-DCOMMON_STUB_FORK" provides a stub for the fork() system call on
