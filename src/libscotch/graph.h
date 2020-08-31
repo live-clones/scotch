@@ -64,7 +64,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 10 may 2019     **/
 /**                # Version 7.0  : from : 08 jun 2018     **/
-/**                                 to   : 04 aug 2018     **/
+/**                                 to   : 03 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +121,7 @@ typedef struct VertList_ {
 
 /*+ The graph flag type. +*/
 
-typedef int GraphFlag;                            /*+ Graph property flags +*/
+typedef unsigned int GraphFlag;                   /*+ Graph property flags +*/
 
 /*+ The graph structure. +*/
 
