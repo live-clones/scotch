@@ -880,6 +880,11 @@ comm$(OBJ)			:	comm.c					\
 					common.h				\
 					comm.h
 
+context$(OBJ)			:	context.c				\
+					module.h				\
+					common.h				\
+					context.h
+
 dgraph$(OBJ)			:	dgraph.c				\
 					module.h				\
 					common.h				\

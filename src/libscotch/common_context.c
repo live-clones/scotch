@@ -72,9 +72,6 @@ contextInit (
 Context * const             contptr)
 {
   contptr->thrdptr = NULL;                        /* Thread context not initialized yet     */
-  contptr->randptr = &intranddat;                 /* Use global random generator by default */
-
-  intRandInit (&intranddat);                      /* Make sure random context is initialized before cloning */
 }
 
 /* This routine frees a context structure.
@@ -86,16 +83,13 @@ void
 contextExit (
 Context * const             contptr)
 {
-  if (contptr->thrdptr != NULL) {                 /* If context has been commited */
+  if (contptr->thrdptr != NULL) {
     threadContextExit (contptr->thrdptr);
     memFree (contptr->thrdptr);
   }
-  if (contptr->randptr != &intranddat)            /* If not global random generator */
-    memFree (contptr->randptr);
 
 #ifdef SCOTCH_DEBUG_CONTEXT1
   contptr->thrdptr = NULL;
-  contptr->randptr = NULL;
 #endif /* SCOTCH_DEBUG_CONTEXT1 */
 }
 
