@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2012,2014,2016,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2012,2014,2016,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,6 +52,8 @@
 /**                                 to   : 23 may 2018     **/
 /**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
+/**                # Version 7.0  : from : 05 may 2019     **/
+/**                                 to   : 05 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +123,8 @@ const HgraphOrderNdParam * restrict const paraptr)
   vspgrafdat.compsize[0] = vspgrafdat.s.vertnbr;
   vspgrafdat.compsize[1] = 0;
   vspgrafdat.fronnbr     = 0;
-  vspgrafdat.levlnum     = grafptr->levlnum;      /* Set level of separation graph as level of halo graph */
+  vspgrafdat.levlnum     = grafptr->levlnum;      /* Set level of separation graph as that of halo graph */
+  vspgrafdat.contptr     = grafptr->contptr;      /* Use same execution context                          */
 
   if (vgraphSeparateSt (&vspgrafdat, paraptr->sepstrat) != 0) { /* Separate vertex-separation graph */
     vgraphExit (&vspgrafdat);
@@ -213,6 +216,7 @@ const HgraphOrderNdParam * restrict const paraptr)
     indgrafdat.enohnbr = indgrafdat.s.edgenbr;
     indgrafdat.enlosum = indgrafdat.s.edlosum;
     indgrafdat.levlnum = grafptr->levlnum;        /* Separator graph is at level of original graph */
+    indgrafdat.contptr = grafptr->contptr;        /* Use same execution context                    */
 
     o = hgraphOrderSt (&indgrafdat, ordeptr, ordenum + vsplisttab[0].vnumnbr + vsplisttab[1].vnumnbr,
                        cblkptr->cblktab + 2, paraptr->ordstratsep);
