@@ -51,6 +51,8 @@
 /**                                 to   : 16 aug 2015     **/
 /**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
+/**                # Version 7.0  : from : 03 may 2019     **/
+/**                                 to   : 05 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,7 +100,7 @@ const VgraphSeparateMlParam * const   paraptr)    /*+ Method parameters         
   *coarmultptr = NULL;                            /* Allocate coarmulttab along with coarse graph */
   if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, NULL, coarmultptr,
                     paraptr->coarnbr, paraptr->coarval, GRAPHCOARSENNONE,
-                    NULL, NULL, 0, NULL) != 0)
+                    NULL, NULL, 0, finegrafptr->contptr) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   coargrafptr->parttax    = NULL;                 /* Do not allocate partition data yet      */
@@ -106,6 +108,7 @@ const VgraphSeparateMlParam * const   paraptr)    /*+ Method parameters         
   coargrafptr->dwgttab[0] = finegrafptr->dwgttab[0]; /* Preserve respective weights          */
   coargrafptr->dwgttab[1] = finegrafptr->dwgttab[1];
   coargrafptr->levlnum    = finegrafptr->levlnum + 1; /* Graph level is coarsening level */
+  coargrafptr->contptr = finegrafptr->contptr;    /* Use same execution context          */
 
   return (0);
 }

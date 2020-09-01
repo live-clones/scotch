@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 /**                                 to   : 30 apr 2018     **/
 /**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
+/**                # Version 7.0  : from : 05 may 2019     **/
+/**                                 to   : 05 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,6 +81,7 @@ typedef struct Vgraph_ {
   Gnum                      comploaddlt;          /*+ Load difference between both parts                 +*/
   Gnum                      dwgttab[2];           /*+ Weights of the two subdomains                      +*/
   Gnum                      levlnum;              /*+ Nested dissection or coarsening level              +*/
+  Context *                 contptr;              /*+ Execution context                                  +*/
 } Vgraph;
 
 /*+ The graph separator storing structure. +*/
