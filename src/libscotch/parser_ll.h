@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to   : 20 dec 2001     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 02 mar 2018     **/
+/**                                 to   : 06 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,11 +58,9 @@
 **  The function prototypes.
 */
 
-#ifdef PARSER_LL
-static int                  stratParserInput    (void);
-#endif /* PARSER_LL */
-
-void                        stratParserInit     (const char * const);
-int                         stratParserLex      (void);
-const char *                stratParserRemain   (void);
-void                        stratParserSelect   (unsigned int);
+int                         scotchyylex_init    (yyscan_t *);
+int                         scotchyylex         (YYSTYPE *, YYLTYPE *, yyscan_t);
+void                        scotchyy_delete_buffer (YY_BUFFER_STATE, yyscan_t);
+void                        scotchyy_switch_to_buffer (YY_BUFFER_STATE, yyscan_t);
+int                         scotchyylex_destroy (yyscan_t);
+void                        stratParserBegin    (yyscan_t, unsigned int);
