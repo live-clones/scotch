@@ -20,7 +20,7 @@ stages:
         JOB_DEBUG: [ a ]
         JOB_RENAME: [ n ]
       - JOB_INT: [ 32 ]
-        JOB_THREAD: [ n ]
+        JOB_THREAD: [ n, y ]
         JOB_DEBUG: [ f ]
         JOB_RENAME: [ n ]
 
@@ -35,10 +35,10 @@ stages:
         JOB_THREAD: [ n, c ]
         JOB_DEBUG: [ a ]
         JOB_RENAME: [ n ]
-#     - JOB_INT: [ 64 ]
-#       JOB_THREAD: [ y ]
-#       JOB_DEBUG: [ a ]
-#       JOB_RENAME: [ r ]
+      - JOB_INT: [ 64 ]
+        JOB_THREAD: [ y ]
+        JOB_DEBUG: [ a ]
+        JOB_RENAME: [ r ]
 
 .job_template: &cache_template
     untracked: true
