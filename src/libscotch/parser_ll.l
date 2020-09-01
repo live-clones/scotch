@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to   : 23 dec 2001     **/
 /**                # Version 5.1  : from : 09 jun 2009     **/
 /**                                 to   : 24 jul 2011     **/
+/**                # Version 7.0  : from : 02 mar 2018     **/
+/**                                 to   : 06 jul 2021     **/
 /**                                                        **/
 /**   NOTES      : # In order for flex to read its input   **/
 /**                  with getc() instead of fread, we set  **/
@@ -70,50 +72,26 @@
 #undef DOUBLE
 
 #include "parser.h"
-#include "parser_ll.h"
 #include "parser_yy.h"
 #include "parser_ly.h"                            /*+ Definitions produced by yacc +*/
+#include "parser_ll.h"
 
-/* Assume no interactive parsing. */
+#define YY_DECL                     int yylex (YYSTYPE * yylval_param, YYLTYPE * yylloc, yyscan_t yyscanner)
 
-#ifdef X_OSDOS                                    /* Available only with MKS LEX */
-#ifdef YY_INTERACTIVE
-#undef YY_INTERACTIVE
-#endif /* YY_INTERACTIVE */
-#define YY_INTERACTIVE              0
-#endif /* X_OSDOS */
-
-#ifdef FLEX_SCANNER
-#define YY_ALWAYS_INTERACTIVE       1             /* Set the parser as interactive and read one char at a time */
-#define YY_INPUT(buf,result,max_size) { int c = stratParserInput (); result = (c == 0) ? YY_NULL : ((buf)[0] = c, 1); }
-#else /* FLEX_SCANNER */
-#undef  getc                                      /* Redirect I/O functions */
-#define getc                        yygetc
-#undef  yygetc
-#define yygetc(stream)              stratParserInput ()
-#endif /* FLEX_SCANNER */
-
-#define YY_NO_UNPUT                               /* No prototype for yyunput as not defined     */
-#define YY_SKIP_YYWRAP                            /* No prototype for yywrap as defined as macro */
-#ifdef yywrap
-#undef yywrap                                     /* Override any previous definition of yywrap */
-#endif /* yywrap */
-#define yywrap()                    (1)           /* Always return end-of-file on end-of-string */
-
-/*
-**  The static variables.
-*/
-
-static const char *         stratparserstringptr; /* Pointer to the string to parse */
-
+#define YY_USER_ACTION              parserLocationUpdate (yylloc, yytext);
 %}
+
+%option bison-bridge
+%option noinput
+%option nounput
+%option noyywrap
+%option reentrant
 
 IDENT                       [A-Za-z][0-9A-Za-z]*
 INTEGER                     [0-9]+
 FLOAT                       [0-9]+(\.[0-9]+)?([Ee][-+]?[0-9]+)?
 STRING                      \"[^\"]*\"
 
-%s lstrat
 %s lparam
 %s lparamcase
 %s lparamdouble
@@ -122,59 +100,61 @@ STRING                      \"[^\"]*\"
 %s ltest
 
 %%
-<lstrat>[0-9A-Za-z]         {
-                              strncpy (yylval.STRING, yytext, PARSERSTRINGLEN);
-                              yylval.STRING[PARSERSTRINGLEN - 1] = '\0';
+<INITIAL>[0-9A-Za-z]        {
+                              strncpy (PARSERYYLVAL (STRING), yytext, PARSERSTRINGLEN);
+                              PARSERYYLVAL (STRING[PARSERSTRINGLEN - 1]) = '\0';
                               return (METHODNAME);
                             }
 
 <lparam>{IDENT}             {
-                              strncpy (yylval.STRING, yytext, PARSERSTRINGLEN);
-                              yylval.STRING[PARSERSTRINGLEN - 1] = '\0';
+                              strncpy (PARSERYYLVAL (STRING), yytext, PARSERSTRINGLEN);
+                              PARSERYYLVAL (STRING[PARSERSTRINGLEN - 1]) = '\0';
                               return (PARAMNAME);
                             }
 
 <lparamcase>[0-9A-Za-z]     {
-                              yylval.CASEVAL = yytext[0];
+                              PARSERYYLVAL (CASEVAL) = yytext[0];
                               return (VALCASE);
                             }
 
 <lparamdouble>({FLOAT}|{INTEGER}) {
-                              yylval.DOUBLE = atof (yytext);
+                              PARSERYYLVAL (DOUBLE) = atof (yytext);
                               return (VALDOUBLE);
                             }
 
 <lparamint>{INTEGER}        {
-                              yylval.INTEGER = (INT) atol (yytext);
+                              PARSERYYLVAL (INTEGER) = (INT) atol (yytext);
                               return (VALINT);
                             }
 <lparamint>{FLOAT}          {
-                              yylval.INTEGER = (INT) atof (yytext); /* FLOAT is put after so that INTEGER can be matched */
+                              PARSERYYLVAL (INTEGER) = (INT) atof (yytext); /* FLOAT is put after so that INTEGER can be matched */
                               return (VALINT);
                             }
 
 <lparamstring>{STRING}      {
                               yytext[yyleng - 1] = '\0'; /* Remove the heading and trailing \" */
-                              strncpy (yylval.STRING, yytext + 1, PARSERSTRINGLEN);
-                              yylval.STRING[PARSERSTRINGLEN - 1] = '\0';
+                              strncpy (PARSERYYLVAL (STRING), yytext + 1, PARSERSTRINGLEN);
+                              PARSERYYLVAL (STRING[PARSERSTRINGLEN - 1]) = '\0';
                               return (VALSTRING);
                             }
 
 <ltest>{INTEGER}            {
-                              yylval.INTEGER = (INT) atol (yytext);
+                              PARSERYYLVAL (INTEGER) = (INT) atol (yytext);
                               return (VALINT);
                             }
 <ltest>{FLOAT}              {
-                              yylval.DOUBLE = atof (yytext);
+                              PARSERYYLVAL (DOUBLE) = atof (yytext);
                               return (VALDOUBLE);
                             }
 <ltest>{IDENT}              {
-                              strncpy (yylval.STRING, yytext, PARSERSTRINGLEN);
-                              yylval.STRING[PARSERSTRINGLEN - 1] = '\0';
+                              strncpy (PARSERYYLVAL (STRING), yytext, PARSERSTRINGLEN);
+                              PARSERYYLVAL (STRING[PARSERSTRINGLEN - 1]) = '\0';
                               return (PARAMNAME);
                             }
 
-[ \t\n]*                    ;
+[ \t\n]*                    {
+                              parserLocationUpdate (yylloc, yytext); /* Update position without returning */
+                            }
 .                           return (yytext[0]);
 
 %%
@@ -186,51 +166,6 @@ STRING                      \"[^\"]*\"
 /*                                         */
 /*******************************************/
 
-/* This routine initializes the
-** lexical analyzer.
-** It returns:
-** - VOID  : in all cases.
-*/
-
-void
-stratParserInit (
-const char * const          string)               /*+ Strategy string to parse +*/
-{
-#ifdef FLEX_SCANNER
-  yyrestart (yyin);                               /* (Re-)initialize the parser */
-#endif /* FLEX_SCANNER */
-
-  stratParserSelect (VALSTRAT);                   /* Begin with a strategy        */
-  stratparserstringptr = string;                  /* Point to beginning of string */
-}
-
-/* This routine reads a single character
-** from the input string.
-** It returns:
-** - 0   : if end of string reached.
-** - !0  : character from string.
-*/
-
-static
-int
-stratParserInput ()
-{
-  if (*stratparserstringptr == '\0')              /* If end-of-string reached  */
-    return (0);                                   /* Return end-of-file token  */
-  else                                            /* Else return the character */
-    return ((int) (unsigned char) *stratparserstringptr ++);
-}
-
-/* This routine returns the pointer to the
-** remaining part of the string.
-*/
-
-const char *
-stratParserRemain ()
-{
-  return (stratparserstringptr);
-}
-
 /* This routine selects the sub-parser
 ** to parse the input.
 ** It returns:
@@ -238,9 +173,12 @@ stratParserRemain ()
 */
 
 void
-stratParserSelect (
+stratParserBegin (
+yyscan_t          yyscanner,
 unsigned int      type)
 {
+  struct yyguts_t * yyg = (struct yyguts_t *) yyscanner; /* Awful hack to comply with the syntax of BEGIN */
+
   switch (type) {
     case VALCASE :
       BEGIN lparamcase;
@@ -258,7 +196,7 @@ unsigned int      type)
       BEGIN lparam;
       break;
     case VALSTRAT :
-      BEGIN lstrat;
+      BEGIN INITIAL;
       break;
     case VALTEST :
       BEGIN ltest;

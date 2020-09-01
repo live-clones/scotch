@@ -54,7 +54,7 @@
 /**                                 to   : 24 aug 2020     **/
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
-/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                # Version 7.0  : from : 02 mar 2018     **/
 /**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
@@ -993,10 +993,10 @@
 #define orderRang                   SCOTCH_NAME_INTERN (orderRang)
 #define orderTree                   SCOTCH_NAME_INTERN (orderTree)
 
-#define parsermethtokentab          SCOTCH_NAME_INTERN (parsermethtokentab)
-#define parserparamcurr             SCOTCH_NAME_INTERN (parserparamcurr)
-#define parserstratcurr             SCOTCH_NAME_INTERN (parserstratcurr)
-#define parserstrattab              SCOTCH_NAME_INTERN (parserstrattab)
+#define parserLocationUpdate        SCOTCH_NAME_INTERN (parserLocationUpdate)
+
+#define stratmethtokentab           SCOTCH_NAME_INTERN (stratmethtokentab)
+#define stratenvdat                 SCOTCH_NAME_INTERN (stratenvdat)
 
 #define stratdummy                  SCOTCH_NAME_INTERN (stratdummy)
 #define stratInit                   SCOTCH_NAME_INTERN (stratInit)
