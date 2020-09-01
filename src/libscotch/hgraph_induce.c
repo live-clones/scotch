@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012,2014,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 24 oct 2010     **/
 /**                # Version 6.0  : from : 27 mar 2012     **/
 /**                                 to   : 20 aug 2020     **/
+/**                # Version 7.0  : from : 05 may 2019     **/
+/**                                 to   : 05 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -208,6 +210,7 @@ Gnum * restrict const           indedgetab)       /* Pointer to pre-allocated sp
   }
   indgrafptr->s.vendtax = indgrafptr->s.verttax + 1; /* Use compact representation of arrays */
   indgrafptr->levlnum   = orggrafptr->levlnum + 1; /* Induced subgraph is one level below    */
+  indgrafptr->contptr   = orggrafptr->contptr;    /* Use same execution context              */
 
   if (orggrafptr->s.vnumtax != NULL) {            /* Adjust vnumtax */
     const Gnum * restrict const orgvnumtax = orggrafptr->s.vnumtax;
