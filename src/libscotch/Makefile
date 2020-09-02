@@ -351,6 +351,9 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_arch_dom$(OBJ)			\
 			library_arch_dom_f$(OBJ)		\
 			library_common_f$(OBJ)			\
+			library_context$(OBJ)			\
+			library_context_graph$(OBJ)		\
+			library_context_mesh$(OBJ)		\
 			library_geom$(OBJ)			\
 			library_geom_f$(OBJ)			\
 			library_graph$(OBJ)			\
@@ -1930,6 +1933,28 @@ library_arch_dom_f$(OBJ)	:	library_arch_dom_f.c			\
 library_common_f$(OBJ)		:	library_common_f.c			\
 					module.h				\
 					common.h				\
+					scotch.h
+
+library_context$(OBJ)		:	library_context.c			\
+					module.h				\
+					common.h				\
+					common_thread.h				\
+					context.h				\
+					scotch.h
+
+library_context_graph$(OBJ)	:	library_context_graph.c			\
+					module.h				\
+					common.h				\
+					context.h				\
+					graph.h					\
+					scotch.h
+
+library_context_mesh$(OBJ)	:	library_context_mesh.c			\
+					module.h				\
+					common.h				\
+					context.h				\
+					graph.h					\
+					mesh.h					\
 					scotch.h
 
 library_dgraph$(OBJ)		:	library_dgraph.c			\
