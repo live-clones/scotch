@@ -1,4 +1,4 @@
-/* Copyright 2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
 /**                                 to   : 31 may 2018     **/
+/**                # Version 7.0  : from : 22 aug 2019     **/
+/**                                 to   : 22 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,6 +100,7 @@ typedef struct ArchDeco2BuildMatch_ {
   Gnum                      levlmax;              /*+ Maximum number of levels in array        +*/
   Gnum                      levlnum;              /*+ Current number of levels in array        +*/
   Gnum                      vertsum;              /*+ Sum of all vertices at all levels        +*/
+  Context *                 contptr;              /*+ Execution context                        +*/
 } ArchDeco2BuildMatch;
 
 #endif /* ARCH_BUILD2 */
@@ -107,9 +110,9 @@ typedef struct ArchDeco2BuildMatch_ {
 */
 
 #ifdef ARCH_BUILD2
-static int                  archDeco2BuildMatchInit (ArchDeco2BuildMatch * restrict const, const Graph * restrict const);
+static int                  archDeco2BuildMatchInit (ArchDeco2BuildMatch * restrict const, const Graph * restrict const, Context * const);
 static void                 archDeco2BuildMatchExit (ArchDeco2BuildMatch * restrict const);
 static Anum                 archDeco2BuildMatchMate (ArchDeco2BuildMatch * restrict const, ArchCoarsenMulti * restrict * restrict const);
 #endif /* ARCH_BUILD2 */
 
-int                         archDeco2ArchBuild  (Arch * const, const Graph * const, const Gnum, const Gnum * restrict const);
+int                         archDeco2ArchBuild  (Arch * const, const Graph * const, const Gnum, const Gnum * restrict const, Context * restrict const);
