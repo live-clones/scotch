@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,7 +112,8 @@ const KdgraphMapRbPartData * restrict const dataptr)
   }
   kgrfdat.s.flagval   = (kgrfdat.s.flagval & ~GRAPHBITSUSED) | cgrfptr->flagval; /* Free sequential graph along with mapping data */
   kgrfdat.s.vnumtax   = NULL;                     /* Remove index array if any                                                    */
-  kgrfdat.comploadrat = dataptr->comploadrat;     /* Use ideal load of full graph and not of subgraph                             */
+  kgrfdat.comploadrat = dataptr->comploadrat;     /* Use ideal load of full graph and not that of subgraph                        */
+  kgrfdat.contptr     = dataptr->contptr;
 
   if (kgraphMapSt (&kgrfdat, dataptr->paraptr->stratseq) != 0) { /* Compute sequential mapping */
     kgraphExit (&kgrfdat);
@@ -364,6 +367,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
 
   o = bdgraphInit (&actgrafdat, &grafptr->data.dgrfdat, NULL, &mappptr->archdat, domnsubtab); /* Create active graph */
   actgrafdat.levlnum = grafptr->levlnum;          /* Initial level of bipartition graph is DRB recursion level       */
+  actgrafdat.contptr = dataptr->contptr;
 
   comploadavg = (double) actgrafdat.s.veloglbsum / (double) archDomWght (&mappptr->archdat, &grafptr->domnorg);
   actgrafdat.compglbload0min = actgrafdat.compglbload0avg -
@@ -410,6 +414,7 @@ const KdgraphMapRbParam * restrict const  paraptr)
   datadat.comploadrat = (double) grafptr->s.veloglbsum / (double) archDomWght (&mappptr->mappptr->archdat, &grafptr->m.domnorg);
   datadat.comploadmin = (1.0 - paraptr->kbalval) * datadat.comploadrat;
   datadat.comploadmax = (1.0 + paraptr->kbalval) * datadat.comploadrat;
+  datadat.contptr = grafptr->contptr;
 
   if (grafptr->s.procglbnbr <= 1) {               /* If single process, switch immediately to sequential mode */
     if (dgraphGather (&grafptr->s, &grafdat.data.cgrfdat) != 0) {
