@@ -2607,6 +2607,7 @@ library_mesh_io_scot_f$(OBJ)	:	library_mesh_io_scot_f.c		\
 library_mesh_order$(OBJ)	:	library_mesh_order.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					parser.h				\
 					graph.h					\
 					mesh.h					\
