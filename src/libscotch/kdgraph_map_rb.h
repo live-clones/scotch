@@ -44,6 +44,8 @@
 /**                                 to   : 14 apr 2011     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 28 aug 2019     **/
+/**                                 to   : 28 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,6 +69,5 @@ DmappingFrag *              kdgraphMapRbAdd2    (const Gnum, const Anum);
 int                         kdgraphMapRbAddBoth (const Dgraph * restrict const, Dmapping * restrict const, const ArchDom * restrict const, const GraphPart * restrict const);
 int                         kdgraphMapRbAddOne  (const Dgraph * restrict const, Dmapping * restrict const, const ArchDom * restrict const);
 int                         kdgraphMapRbAddPart (const Dgraph * restrict const, Dmapping * restrict const, const ArchDom * restrict const, const Gnum, const GraphPart * const, const GraphPart);
-
 
 int                         kdgraphMapRb        (Kdgraph * const, Kdmapping * const, const KdgraphMapRbParam * const);

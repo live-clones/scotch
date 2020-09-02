@@ -95,4 +95,10 @@ typedef struct KdgraphMapRbPartData_ {
 **  The function prototypes.
 */
 
+#ifdef KDGRAPH_MAP_RB_PART
+static int                  kdgraphMapRbPartFold2 (KdgraphMapRbPartThread * const);
+static void                 kdgraphMapRbPartFold3 (ThreadDescriptor * restrict const, KdgraphMapRbPartThread * restrict const);
+static int                  kdgraphMapRbPartFold (Bdgraph * restrict const, Dmapping * restrict const, const ArchDom * restrict const, KdgraphMapRbPartGraph * restrict const);
+#endif /* KDGRAPH_MAP_RB_PART */
+
 int                         kdgraphMapRbPart    (Kdgraph * const, Kdmapping * const, const KdgraphMapRbParam * const);
