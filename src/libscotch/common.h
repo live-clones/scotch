@@ -260,8 +260,21 @@
    both for 32- and 64-bit integers.             */
 
 typedef struct IntRandState_ {
-  UINT64                    randtab[2];           /* State vector */
+  UINT64                    randtab[2];           /*+ State vector +*/
 } IntRandState;
+
+/** The pseudo-random context. **/
+
+typedef struct IntRandContext_ {
+  volatile int              flagval;              /*+ Initialized flag +*/
+  int                       procval;              /*+ Process number   +*/
+  UINT64                    seedval;              /*+ Seed value       +*/
+  IntRandState              statdat;              /*+ State data       +*/
+} IntRandContext;
+
+/** The global pseudo-random context. **/
+
+extern IntRandContext       intranddat;           /*+ Global random context +*/
 
 /*
 **  Handling of flag arrays.
@@ -311,6 +324,7 @@ typedef void (* ThreadScanFunc) (void * const, void * const, const int, const in
 
 typedef struct Context_ {
   ThreadContext *           thrdptr;              /*+ Threading context +*/
+  IntRandContext *          randptr;              /*+ Random context    +*/
 } Context;
 
 /*
@@ -370,16 +384,14 @@ void                        errorPrintW         (const char * const, ...);
 int                         intLoad             (FILE * const, INT * const);
 int                         intSave             (FILE * const, const INT);
 void                        intAscn             (INT * const, const INT, const INT);
-void                        intPerm             (INT * const, const INT);
-void                        intRandInit         (void);
-int                         intRandLoad         (FILE * const);
-void                        intRandProc         (int);
-void                        intRandReset        (void);
-int                         intRandSave         (FILE * const);
-void                        intRandSeed         (INT);
-#ifndef COMMON_RANDOM_SYSTEM
-UINT                        intRandVal          (UINT);
-#endif /* COMMON_RANDOM_SYSTEM */
+void                        intPerm             (INT * const, const INT, Context * const);
+void                        intRandInit         (IntRandContext * const);
+int                         intRandLoad         (IntRandContext * const, FILE * const);
+void                        intRandProc         (IntRandContext * const, int);
+void                        intRandReset        (IntRandContext * const);
+int                         intRandSave         (IntRandContext * const, FILE * const);
+void                        intRandSeed         (IntRandContext * const, INT);
+UINT                        intRandVal          (IntRandContext * const, UINT);
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
 void                        intSort2asc2        (void * const, const INT);
@@ -409,6 +421,7 @@ void                        threadScan          (const ThreadDescriptor * const,
 void                        contextInit         (Context * const);
 void                        contextExit         (Context * const);
 int                         contextCommit       (Context * const);
+int                         contextRandomClone  (Context * const);
 int                         contextThreadInit2  (Context * const, const int, const int * const);
 int                         contextThreadInit   (Context * const);
 
@@ -425,17 +438,11 @@ int                         contextThreadInit   (Context * const);
 #define fileBlockMode(b,i)          ((b)[i].modeptr)
 #define fileBlockName(b,i)          ((b)[i].nameptr)
 
-#ifdef COMMON_RANDOM_SYSTEM
-#ifdef COMMON_RANDOM_RAND
-#define intRandVal(ival)            ((UINT) (((UINT) rand ()) % ((UINT) (ival))))
-#else /* COMMON_RANDOM_RAND */
-#define intRandVal(ival)            ((UINT) (((UINT) random ()) % ((UINT) (ival))))
-#endif /* COMMON_RANDOM_RAND */
-#endif /* COMMON_RANDOM_SYSTEM */
-
 #define threadBarrier(t)            threadContextBarrier ((t)->contptr)
 #define threadNbr(t)                threadContextNbr ((t)->contptr)
 #define threadNum(t)                ((t)->thrdnum)
+
+#define contextIntRandVal(c,n)      intRandVal ((c)->randptr, (n))
 
 #define contextThreadLaunch(c,f,d)  threadLaunch ((c)->thrdptr, (f), (d))
 #define contextThreadNbr(c)         threadContextNbr ((c)->thrdptr)

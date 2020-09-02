@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 23 aug 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -173,7 +173,6 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
     errorPrint (STRINGIFY (graphMapCompute2) ": cannot initialize context");
     return (o);
   }
-  intRandInit ();                                 /* Check that random number generator is initialized */
 
   const Graph * restrict const  grafptr = (Graph *) CONTEXTGETOBJECT (actgrafptr);
   LibMapping * restrict const   lmapptr = (LibMapping *) mappptr;

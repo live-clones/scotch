@@ -1,4 +1,4 @@
-/* Copyright 2007-2012,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2014,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 27 dec 2021     **/
+/**                # Version 7.0  : from : 14 jan 2020     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -928,7 +930,8 @@ DgraphCoarsenMulti * restrict * const multlocptr, /*+ Pointer to un-based multin
 const Gnum                            passnbr,    /*+ Number of coarsening passes to go   +*/
 const Gnum                            coarnbr,    /*+ Minimum number of coarse vertices   +*/
 const double                          coarrat,    /*+ Maximum contraction ratio           +*/
-const int                             flagval)    /*+ Flag value                          +*/
+const int                             flagval,    /*+ Flag value                          +*/
+Context * restrict const              contptr)    /*+ Execution context                   +*/
 {
   DgraphMatchData           matedat;              /* Matching state data; includes coarsening handling data   */
   Gnum                      vertrcvnbr;           /* Overall number of vertices to be received from neighbors */
@@ -958,6 +961,7 @@ const int                             flagval)    /*+ Flag value                
 
   matedat.c.flagval    = flagval;
   matedat.c.multloctab = *multlocptr;             /* Propagate the provided multinode array or NULL if it has to be allocated */
+  matedat.c.contptr    = contptr;                 /* Set execution context as it might be needed for initialization           */
   cheklocval  = dgraphCoarsenInit (&matedat.c, finegrafptr, coargrafptr);
   cheklocval |= dgraphMatchInit   (&matedat, 0.5F);
 
@@ -1069,9 +1073,9 @@ const int                             flagval)    /*+ Flag value                
       int               loopval;
 
       o = dgraphFoldDup (&coargrafdat, coargrafptr, (void *) matedat.c.multloctab, (void **) (void *) &coarmultptr, coarmultype);
-      loopval = intRandVal (finegrafptr->proclocnum + intRandVal (finegrafptr->proclocnum * 2 + 1) + 1);
+      loopval = contextIntRandVal (contptr, finegrafptr->proclocnum + contextIntRandVal (contptr, finegrafptr->proclocnum * 2 + 1) + 1);
       while (loopval --)                          /* Desynchronize pseudo-random generator across processes */
-        intRandVal (2);
+        contextIntRandVal (contptr, 2);
     }
     dgraphExit    (&coargrafdat);                 /* Free unfolded graph */
     MPI_Type_free (&coarmultype);

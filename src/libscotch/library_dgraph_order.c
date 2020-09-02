@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 24 sep 2021     **/
 /**                                 to   : 25 sep 2021     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 27 aug 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -181,7 +181,6 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot initialize context");
     return (o);
   }
-  intRandInit ();                                 /* Check that random number generator is initialized */
 
   srcgrafptr = (Dgraph *) CONTEXTGETOBJECT (libgrafptr);
 

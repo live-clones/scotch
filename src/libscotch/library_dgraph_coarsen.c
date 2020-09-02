@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 27 aug 2019     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,11 +95,12 @@ SCOTCH_Dgraph * restrict const  clibgrafptr,      /* Coarse graph               
 SCOTCH_Num * restrict const     multloctab)       /* Pointer to multinode array        */
 {
   DgraphCoarsenMulti * restrict multlocptr;
+  CONTEXTDECL                  (flibgrafptr);
+  int                           o;
 
-  Dgraph * restrict const   finegrafptr = (Dgraph *) CONTEXTOBJECT (flibgrafptr);
   Dgraph * restrict const   coargrafptr = (Dgraph *) CONTEXTOBJECT (clibgrafptr);
 #ifdef SCOTCH_DEBUG_LIBRARY1
-  int                           o;
+  Dgraph * restrict const   finegrafptr = (Dgraph *) CONTEXTOBJECT (flibgrafptr);
 
   MPI_Comm_compare (finegrafptr->proccomm, coargrafptr->proccomm, &o);
   if ((o != MPI_IDENT) && (o != MPI_CONGRUENT)) {
@@ -108,24 +109,26 @@ SCOTCH_Num * restrict const     multloctab)       /* Pointer to multinode array 
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-  intRandInit ();                                 /* Check that random number generator is initialized */
+  if (CONTEXTINIT (flibgrafptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_dgraphCoarsen) ": cannot initialize context");
+    return     (1);
+  }
 
   multlocptr = (DgraphCoarsenMulti * restrict) multloctab; /* User-provided multinode array */
-  switch (dgraphCoarsen (finegrafptr, coargrafptr,
-                         &multlocptr, 5, coarnbr, coarrat, (int) flagval)) {
-    case 1 :
-      return (1);
-    case 2 :
-      return (3);
-  }
+  o = dgraphCoarsen (CONTEXTGETOBJECT (flibgrafptr), coargrafptr, &multlocptr,
+                     5, coarnbr, coarrat, (int) flagval, CONTEXTGETDATA (flibgrafptr));
+  if (o >= 2)
+    o = 3;
 
   if (multlocptr != (DgraphCoarsenMulti * restrict) multloctab) { /* If folding occurred */
     if (multlocptr == NULL)
-      return (2);
-
-    memCpy  (multloctab, multlocptr, coargrafptr->vertlocnbr * sizeof (DgraphCoarsenMulti)); /* Update array with folded multinode data */
-    memFree (multlocptr);                         /* Free allocated folded multinode array */
+      o = 2;
+    else {
+      memCpy  (multloctab, multlocptr, coargrafptr->vertlocnbr * sizeof (DgraphCoarsenMulti)); /* Update array with folded multinode data */
+      memFree (multlocptr);                       /* Free allocated folded multinode array */
+    }
   }
 
-  return (0);
+  CONTEXTEXIT (flibgrafptr);
+  return (o);
 }

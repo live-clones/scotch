@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2012,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2012,2014,2016,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 15 jun 2005     **/
 /**                # Version 6.0  : from : 08 oct 2012     **/
 /**                                 to   : 19 mar 2016     **/
+/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                                 to   : 14 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,7 +75,7 @@ int
 SCOTCH_randomLoad (
 FILE *                      stream)
 {
-  return (intRandLoad (stream));
+  return (intRandLoad (&intranddat, stream));
 }
 
 /*+ This routine saves the random state.
@@ -87,7 +89,7 @@ int
 SCOTCH_randomSave (
 FILE *                      stream)
 {
-  return (intRandSave (stream));
+  return (intRandSave (&intranddat, stream));
 }
 
 /*+ This routine sets the process number that
@@ -101,7 +103,7 @@ void
 SCOTCH_randomProc (
 int                         procnum)
 {
-  intRandProc (procnum);
+  intRandProc (&intranddat, procnum);
 }
 
 /*+ This routine resets the random generator
@@ -113,7 +115,8 @@ int                         procnum)
 void
 SCOTCH_randomReset ()
 {
-  intRandReset ();
+  intRandInit  (&intranddat);                     /* In case it was not initialized through a context */
+  intRandReset (&intranddat);
 }
 
 /*+ This routine sets the value of the
@@ -124,7 +127,20 @@ SCOTCH_randomReset ()
 
 void
 SCOTCH_randomSeed (
-INT                         seedval)
+SCOTCH_Num                  seedval)
 {
-  intRandSeed (seedval);
+  intRandSeed (&intranddat, seedval);
+}
+
+/*+ This routine sets the value of the
+*** random seed.
+*** It returns:
+*** - void  : in all cases.
++*/
+
+SCOTCH_Num
+SCOTCH_randomVal (
+SCOTCH_Num                  randmax)
+{
+  return ((SCOTCH_Num) intRandVal (&intranddat, (UINT) randmax));
 }

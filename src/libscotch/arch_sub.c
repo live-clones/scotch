@@ -1,4 +1,4 @@
-/* Copyright 2015,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 13 mar 2015     **/
 /**                                 to   : 15 may 2018     **/
+/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -410,8 +412,6 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
     memFree    (termtab);
     return (2);
   }
-
-  intRandInit ();                                 /* Initialize random generator for coarsening */
 
   if (orgarchptr->class->matchInit (&matcdat, &orgarchptr->data) != 0) { /* Initialize matching structure with original architecture data */
     errorPrint ("archSubArchBuild: cannot initialize matching structure");

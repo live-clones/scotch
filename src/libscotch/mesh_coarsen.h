@@ -115,7 +115,7 @@ typedef struct MeshCoarsenNgHash_ {
 */
 
 #ifdef MESH_COARSEN
-static void                 meshCoarsenMatchNg  (const Mesh * restrict const, MeshCoarsenMult * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const);
+static void                 meshCoarsenMatchNg  (const Mesh * restrict const, MeshCoarsenMult * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Context * restrict const);
 #endif /* MESH_COARSEN */
 
 int                         meshCoarsen         (const Mesh * restrict const, Mesh * restrict const, Gnum * restrict * const, const Gnum, const double, const MeshCoarsenType, Context * restrict const);

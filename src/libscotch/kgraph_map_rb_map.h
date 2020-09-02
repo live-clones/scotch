@@ -66,6 +66,8 @@
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
+/**                # Version 7.0  : from : 14 jan 2020     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -120,6 +122,7 @@ typedef struct KgraphMapRbMapPoolData_ {
   ArchDom *                 domntab[2];           /*+ Pointer to domain arrays (same if tied)    +*/
   KgraphMapRbMapJob *       jobtab;               /*+ Job table                                  +*/
   Mapping *                 mappptr;              /*+ Pointer to original mapping: current state +*/
+  Context *                 contptr;
 } KgraphMapRbMapPoolData;
 
 /*

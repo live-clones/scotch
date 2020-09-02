@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 30 aug 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -173,7 +173,8 @@ const INT                   baseval)              /*+ Base value                
 void
 intPerm (
 INT * const                 permtab,              /*+ Permutation array to build +*/
-const INT                   permnbr)              /*+ Number of entries in array +*/
+const INT                   permnbr,              /*+ Number of entries in array +*/
+Context * restrict const    contptr)
 {
   INT *               permptr;
   UINT                permrmn;
@@ -183,8 +184,8 @@ const INT                   permnbr)              /*+ Number of entries in array
     UINT                permnum;
     INT                 permtmp;
 
-    permnum          = intRandVal (permrmn);      /* Select index to swap       */
-    permtmp          = permptr[0];                /* Swap it with current index */
+    permnum          = intRandVal (contptr->randptr, permrmn); /* Select index to swap */
+    permtmp          = permptr[0];                /* Swap it with current index        */
     permptr[0]       = permptr[permnum];
     permptr[permnum] = permtmp;
   }
@@ -196,9 +197,7 @@ const INT                   permnbr)              /*+ Number of entries in array
 /*                                   */
 /*************************************/
 
-static volatile int         intrandflag = 0;      /*+ Flag set if generator already initialized +*/
-static int                  intrandproc = 0;      /*+ Process number                            +*/
-static UINT64               intrandseed = 1;      /*+ Pseudo-random seed                        +*/
+IntRandContext              intranddat = { 0, 0 }; /*+ Global context: not initialized, process number is 0 +*/
 
 /* This routine sets the process number that is
 ** used to generate a different seed across all
@@ -212,69 +211,54 @@ static UINT64               intrandseed = 1;      /*+ Pseudo-random seed        
 
 void
 intRandProc (
+IntRandContext * const      randptr,
 int                         procnum)
 {
-  intrandproc = procnum;                          /* Set process number */
+  randptr->procval = procnum;                     /* Set process number */
 }
 
-/* This routine initializes the seed used by Scotch
-** with the provided value. Hence, all subsequent
-** calls to intRandInit() will start from this seed.
+/* These routines initialize and/or resets the seed
+** used by the given pseudo-random generator.
 ** It returns:
 ** - VOID  : in all cases.
 */
 
-#ifndef COMMON_RANDOM_SYSTEM
-static IntRandState         intrandstat;          /*+ Pseudo-random state value +*/
-
 static
 void
-intRandSeed3 (
-IntRandState * restrict     randptr,
+intRandSeed2 (
+IntRandState * restrict     statptr,
 UINT                        randval)
 {
   UINT64              seedval;
 
-  UINT64 * restrict const randtab = randptr->randtab; /* Fast access */
+  UINT64 * restrict const randtab = statptr->randtab; /* Fast access */
 
   seedval = (UINT64) (randval | 1);               /* Never have a zero state */
 
   randtab[0] = seedval ^ (seedval << 15);         /* In case of 32-bit INTs */
   randtab[1] = seedval ^ (seedval << 24);
 }
-#endif /* COMMON_RANDOM_SYSTEM */
 
-static
 void
-intRandSeed2 (
-INT                         seedval)
+intRandReset (
+IntRandContext * const      randptr)
 {
-#ifdef COMMON_RANDOM_SYSTEM
-  UINT32              randtmp;
+  INT                 randval;
 
-  randtmp = (((UINT32) seedval) | 1) * (((UINT32) intrandproc) + 1); /* Account for process index */
+  randptr->flagval = 1;                           /* Generator has been initialized */
 
-#ifdef COMMON_RANDOM_RAND
-  srand ((unsigned int) randtmp);
-#else /* COMMON_RANDOM_RAND */
-  srandom ((unsigned int) randtmp);
-#endif /* COMMON_RANDOM_RAND */
-#else /* COMMON_RANDOM_SYSTEM */
-  INT                 randtmp;
-
-  randtmp = (((UINT64) seedval) | 1) * (((UINT64) intrandproc) + 1); /* Account for process index */
-  intRandSeed3 (&intrandstat, randtmp);           /* Initialize state vector from random seed     */
-#endif /* COMMON_RANDOM_SYSTEM */
+  randval = (((UINT64) randptr->seedval) | 1) * (((UINT64) randptr->procval) + 1); /* Account for process index */
+  intRandSeed2 (&randptr->statdat, randval);      /* Initialize state vector from random seed                   */
 }
 
 void
 intRandSeed (
+IntRandContext * const      randptr,
 INT                         seedval)
 {
-  intrandflag = 1;                                /* Generator has been initialized */
-  intrandseed = seedval;                          /* Save new seed                  */
+  randptr->seedval = seedval;                     /* Save new seed */
 
-  intRandSeed2 (intrandseed);                     /* Initialize pseudo-random seed */
+  intRandReset (randptr);                         /* Initialize pseudo-random seed */
 }
 
 /* This routine initializes the pseudo-random
@@ -289,81 +273,67 @@ INT                         seedval)
 */
 
 void
-intRandInit (void)
+intRandInit (
+IntRandContext * const      contptr)              /*+ Random context to initialize +*/
 {
-  if (intrandflag == 0) {                         /* Non thread-safe check          */
-    intrandflag = 1;                              /* Generator has been initialized */
-
+  if (contptr->flagval == 0) {                    /* Non thread-safe check */
 #if ! ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED))
-    intrandseed = (INT) time (NULL);              /* Set random seed if needed */
+    contptr->seedval = (INT) time (NULL);         /* Set random seed if needed */
+#else /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED)) */
+    contptr->seedval = 1;
 #endif /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED)) */
-    intRandSeed2 (intrandseed);                   /* Initialize state vector from seed */
+    intRandReset (contptr);                       /* Initialize state vector from seed */
   }
-}
-
-/* This routine reinitializes the pseudo-random
-** generator to its initial value. This routine
-** is not thread-safe.
-** It returns:
-** - VOID  : in all cases.
-*/
-
-void
-intRandReset (void)
-{
-  if (intrandflag == 0)                           /* Keep seed computed during first initialization */
-    intRandInit ();
-
-  intRandSeed2 (intrandseed);
 }
 
 /* This routine loads the random state.
 ** It returns:
 ** - 0  : on success.
-** - 1  : state cannot be loaded.
 ** - 2  : on error.
 */
-
-#ifndef COMMON_RANDOM_SYSTEM
 
 static
 int
 intRandLoad2 (
-IntRandState * restrict const randptr,            /*+ Random state to load +*/
+IntRandState * restrict const statptr,            /*+ Random state to load +*/
 FILE * restrict const         stream)             /*+ Stream to read from  +*/
 {
-  INT                 versval;
-
-  if (intLoad (stream, &versval) != 1) {          /* Read version number */
-    errorPrint ("intRandLoad2: bad input (1)");
-    return     (2);
-  }
-  if (versval != 1) {                             /* If version not one */
-    errorPrint ("intRandLoad2: invalid version number");
-    return     (2);
-  }
-
   if (fscanf (stream, "%" PRIu64 "%" PRIu64,
-              &randptr->randtab[0],
-              &randptr->randtab[1]) != 2) {
-    errorPrint ("intRandLoad2: bad input (2)");
+              &statptr->randtab[0],
+              &statptr->randtab[1]) != 2) {
+    errorPrint ("intRandLoad2: bad input");
     return     (2);
   }
 
   return (0);
 }
 
-#endif /* COMMON_RANDOM_SYSTEM */
-
 int
 intRandLoad (
-FILE * restrict const         stream)             /*+ Stream to read from  +*/
+IntRandContext * restrict const randptr,          /*+ Random context to load +*/
+FILE * restrict const           stream)           /*+ Stream to read from    +*/
 {
-#ifndef COMMON_RANDOM_SYSTEM
-  return (intRandLoad2 (&intrandstat, stream));
-#else /* COMMON_RANDOM_SYSTEM */
-  return (1);
-#endif /* COMMON_RANDOM_SYSTEM */
+  INT                 versval;
+
+  if (intLoad (stream, &versval) != 1) {          /* Read version number */
+    errorPrint ("intRandLoad: bad input (1)");
+    return (2);
+  }
+  if (versval != 1) {                             /* If version not one */
+    errorPrint ("intRandLoad: invalid version number");
+    return (2);
+  }
+
+  if (fscanf (stream, "%d%" PRIu64,
+              &randptr->procval,
+              &randptr->seedval) != 2) {
+    errorPrint ("intRandLoad: bad input (2)");
+    return (2);
+  }
+
+  randptr->flagval = 1;                           /* Assume state has been initialized */
+
+  return (intRandLoad2 (&randptr->statdat, stream));
 }
 
 /* This routine saves the random state.
@@ -373,17 +343,15 @@ FILE * restrict const         stream)             /*+ Stream to read from  +*/
 ** - 2  : on error.
 */
 
-#ifndef COMMON_RANDOM_SYSTEM
-
 static
 int
 intRandSave2 (
-IntRandState * restrict const randptr,            /*+ Random state to load +*/
+IntRandState * restrict const statptr,            /*+ Random state to load +*/
 FILE * restrict const         stream)             /*+ Stream to read from  +*/
 {
-  if (fprintf (stream, "1\n%" PRIu64 "\t%" PRIu64 "\n",
-               randptr->randtab[0],
-               randptr->randtab[1]) < 0) {
+  if (fprintf (stream, "%" PRIu64 "\t%" PRIu64 "\n",
+               statptr->randtab[0],
+               statptr->randtab[1]) < 0) {
     errorPrint ("intRandSave2: bad output");
     return     (2);
   }
@@ -391,17 +359,24 @@ FILE * restrict const         stream)             /*+ Stream to read from  +*/
   return (0);
 }
 
-#endif /* COMMON_RANDOM_SYSTEM */
-
 int
 intRandSave (
-FILE * restrict const         stream)             /*+ Stream to read from  +*/
+IntRandContext * restrict const randptr,          /*+ Random state to load +*/
+FILE * restrict const           stream)           /*+ Stream to read from  +*/
 {
-#ifndef COMMON_RANDOM_SYSTEM
-  return (intRandSave2 (&intrandstat, stream));
-#else /* COMMON_RANDOM_SYSTEM */
-  return (1);
-#endif /* COMMON_RANDOM_SYSTEM */
+  if (randptr->flagval == 0) {
+    errorPrint ("intRandSave: context not initialized");
+    return (1);
+  }
+
+  if (fprintf (stream, "1\n%d\t%" PRIu64 "\n",
+               randptr->procval,
+               randptr->seedval) < 0) {
+    errorPrint ("intRandSave: bad output");
+    return (2);
+  }
+
+  return (intRandSave2 (&randptr->statdat, stream));
 }
 
 /* This routine computes a new pseudo-random
@@ -418,22 +393,14 @@ FILE * restrict const         stream)             /*+ Stream to read from  +*/
 ** - x  : pseudo-random value.
 */
 
-#ifndef COMMON_RANDOM_SYSTEM
 static
 UINT
 intRandVal2 (
-IntRandState * restrict     randptr)
+IntRandState * restrict     statptr)
 {
   UINT64              x, y;                       /* State variables */
 
-  UINT64 * restrict const randtab = randptr->randtab; /* Fast access */
-
-#ifdef COMMON_DEBUG
-  if (intrandflag == 0) {
-    errorPrint ("intRandVal2: random generator not initialized");
-    return     (~0);
-  }
-#endif /* COMMON_DEBUG */
+  UINT64 * restrict const randtab = statptr->randtab; /* Fast access */
 
   x = randtab[0];
   y = randtab[1];
@@ -444,7 +411,6 @@ IntRandState * restrict     randptr)
 
   return ((UINT) (x + y));
 }
-#endif /* COMMON_RANDOM_SYSTEM */
 
 /* This routine returns a pseudo-random integer
 ** value in the range [0..randmax[. This routine
@@ -454,14 +420,20 @@ IntRandState * restrict     randptr)
 ** - x  : pseudo-random value.
 */
 
-#ifndef COMMON_RANDOM_SYSTEM
 UINT
 intRandVal (
+IntRandContext * const      contptr,              /*+ Random context to load +*/
 UINT                        randmax)
 {
-  return (((UINT) intRandVal2 (&intrandstat)) % randmax);
+#ifdef COMMON_DEBUG
+  if (contptr->flagval == 0) {
+    errorPrint ("intRandVal: random generator not initialized");
+    return     (~0);
+  }
+#endif /* COMMON_DEBUG */
+
+  return (((UINT) intRandVal2 (&contptr->statdat)) % randmax);
 }
-#endif /* COMMON_RANDOM_SYSTEM */
 
 /*********************/
 /*                   */
