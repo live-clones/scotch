@@ -67,7 +67,11 @@
 
 #define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2021 IPB, Universite de Bordeaux, INRIA & CNRS, France"
 #define SCOTCH_LICENSE_STRING       "This software is libre/free software under CeCILL-C -- see the user's manual for more information"
+#ifdef SCOTCH_CODENAME
+#define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL) " (" SCOTCH_CODENAME ")"
+#else /* SCOTCH_CODENAME */
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL)
+#endif /* SCOTCH_CODENAME */
 
 /*
 ** Handling of determinism.
