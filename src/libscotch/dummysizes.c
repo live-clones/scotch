@@ -55,6 +55,8 @@
 /**                                 to   : 26 oct 2019     **/
 /**                # Version 6.1  : from : 09 feb 2021     **/
 /**                                 to   : 22 jun 2021     **/
+/**                # Version 7.0  : from : 25 aug 2019     **/
+/**                                 to   : 25 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -256,6 +258,7 @@ char *                      argv[])
   subsFill ("DUMMYSIZEARCHDOM", subsSize (sizeof (ArchDom)));
   subsFill ("DUMMYSIZEARCH", subsSize (sizeof (Arch)));
   subsFill ("DUMMYSIZEGEOM", subsSize (sizeof (Geom)));
+  subsFill ("DUMMYSIZECONTEXT", subsSize (sizeof (Context)));
   subsFill ("DUMMYSIZEGRAPH", subsSize (sizeof (Graph)));
   subsFill ("DUMMYSIZEMESH",  subsSize (sizeof (Mesh)));
   subsFill ("DUMMYSIZEMAP", subsSize (sizeof (LibMapping)));

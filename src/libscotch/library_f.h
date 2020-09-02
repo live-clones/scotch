@@ -52,6 +52,8 @@
 !*                                 to   : 16 apr 2019     **
 !*                # Version 6.1  : from : 22 jun 2021     **
 !*                                 to   : 22 jun 2021     **
+!*                # Version 7.0  : from : 25 aug 2019     **
+!*                                 to   : 25 aug 2019     **
 !*                                                        **
 !***********************************************************
 
@@ -115,6 +117,7 @@
 
         INTEGER SCOTCH_ARCHDIM
         INTEGER SCOTCH_ARCHDOMDIM
+        INTEGER SCOTCH_CONTEXTDIM
         INTEGER SCOTCH_GEOMDIM
         INTEGER SCOTCH_GRAPHDIM
         INTEGER SCOTCH_MAPDIM
@@ -123,6 +126,7 @@
         INTEGER SCOTCH_STRATDIM
         PARAMETER (SCOTCH_ARCHDIM    = DUMMYSIZEARCH)
         PARAMETER (SCOTCH_ARCHDOMDIM = DUMMYSIZEARCHDOM)
+        PARAMETER (SCOTCH_CONTEXTDIM = DUMMYSIZECONTEXT)
         PARAMETER (SCOTCH_GEOMDIM    = DUMMYSIZEGEOM)
         PARAMETER (SCOTCH_GRAPHDIM   = DUMMYSIZEGRAPH)
         PARAMETER (SCOTCH_MAPDIM     = DUMMYSIZEMAP)

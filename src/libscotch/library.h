@@ -57,6 +57,8 @@
 /**                                 to   : 20 jan 2020     **/
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 01 apr 2021     **/
+/**                # Version 7.0  : from : 25 aug 2019     **/
+/**                                 to   : 20 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -135,6 +137,10 @@ typedef struct {
 } SCOTCH_ArchDom;
 
 typedef struct {
+  double                    dummy[DUMMYSIZECONTEXT];
+} SCOTCH_Context;
+
+typedef struct {
   double                    dummy[DUMMYSIZEGEOM];
 } SCOTCH_Geom;
 
@@ -203,6 +209,15 @@ SCOTCH_Num                  SCOTCH_archDomDist  (SCOTCH_Arch * const, const SCOT
 int                         SCOTCH_archDomFrst  (SCOTCH_Arch * const, SCOTCH_ArchDom * const);
 int                         SCOTCH_archDomBipart (SCOTCH_Arch * const, const SCOTCH_ArchDom * const, SCOTCH_ArchDom * const, SCOTCH_ArchDom * const);
 
+SCOTCH_Context *            SCOTCH_contextAlloc (void);
+int                         SCOTCH_contextInit  (SCOTCH_Context * const);
+void                        SCOTCH_contextExit  (SCOTCH_Context * const);
+int                         SCOTCH_contextThreadImport1 (SCOTCH_Context * const, const int);
+int                         SCOTCH_contextThreadImport2 (SCOTCH_Context * const, const int);
+int                         SCOTCH_contextThreadSpawn (SCOTCH_Context * const, const int, const int * const);
+int                         SCOTCH_contextBindGraph (SCOTCH_Context * const, const SCOTCH_Graph * const, SCOTCH_Graph * const);
+int                         SCOTCH_contextBindMesh (SCOTCH_Context * const, const SCOTCH_Mesh * const, SCOTCH_Mesh * const);
+
 void                        SCOTCH_errorProg    (const char * const);
 void                        SCOTCH_errorPrint   (const char * const, ...);
 void                        SCOTCH_errorPrintW  (const char * const, ...);
@@ -265,7 +280,7 @@ int                         SCOTCH_graphRepart  (SCOTCH_Graph * const, const SCO
 int                         SCOTCH_graphRepartFixed (SCOTCH_Graph * const, const SCOTCH_Num, SCOTCH_Num * const, const double, const SCOTCH_Num *, SCOTCH_Strat * const, SCOTCH_Num * const);
 int                         SCOTCH_graphTabLoad (const SCOTCH_Graph * const, SCOTCH_Num * const, FILE * const);
 int                         SCOTCH_graphTabSave (const SCOTCH_Graph * const, const SCOTCH_Num * const, FILE * const);
- 
+
 int                         SCOTCH_graphOrderInit (const SCOTCH_Graph * const, SCOTCH_Ordering * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 void                        SCOTCH_graphOrderExit (const SCOTCH_Graph * const, SCOTCH_Ordering * const);
 int                         SCOTCH_graphOrderLoad (const SCOTCH_Graph * const, SCOTCH_Ordering * const, FILE * const);
