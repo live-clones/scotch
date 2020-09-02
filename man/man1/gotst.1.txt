@@ -32,6 +32,8 @@ DESCRIPTION
 OPTIONS
   -h          Display some help.
 
+  -v          Do not account for vertex weights when computing factorization costs.
+
   -V          Display program version and copyright.
 
 EXAMPLE
