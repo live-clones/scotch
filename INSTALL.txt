@@ -56,25 +56,7 @@ If some of these are missing, please:
   http://www.gnu.org/software/flex/
   http://ftp.gnu.org/non-gnu/flex/
   http://www.gnu.org/software/bison/
-  http://ftp.gnu.org/pub/gnu/bison/ ;
-- use the "last resort" files placed in a directory judiciously
-  called "last_resort", located in subdirectory "src/libscotch".
-  These files are:
-  . parser_ll.c
-  . parser_ly.h
-  . parser_yy.c .
-  They should be copied in the directory where object files are
-  created, and "touch"ed so that their modification date is more
-  recent than those of the corresponding "parser_ll.l" and
-  "parser_yy.y" files. Then cross your fingers and hope it
-  compiles properly on your system. Else, you will have to dig in
-  their code to have them compile properly...
-  The Makefile of the libScotch library has been designed so as
-  to copy the last_resort/* files automatically when the Flex or
-  Bison tools are not found.
-  In this case, depending on your platform, you may also have to set
-  the "-DSCOTCH_RENAME_PARSER" flag in order for all symbols to be
-  properly redefined (see Section 2.2).
+  http://ftp.gnu.org/pub/gnu/bison/ .
 
 
 2) Configuration
