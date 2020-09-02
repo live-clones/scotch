@@ -45,6 +45,8 @@
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 09 feb 2020     **/
+/**                # Version 7.0  : from : 28 aug 2020     **/
+/**                                 to   : 28 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -361,6 +363,8 @@ loop_failed: ;
   coarmeshdat.vehdtax   = coarmeshdat.m.vendtax;  /* Only element part of vendtab will be accessed through vehdtab */
   coarmeshdat.vnhlsum   = coarmeshdat.m.vnlosum;
   coarmeshdat.enohnbr   = coarmeshdat.m.edgenbr;
+  coarmeshdat.levlnum   = finemeshptr->levlnum;   /* Compression does not change level */
+  coarmeshdat.contptr   = finemeshptr->contptr;
 
   if (finemeshptr->m.vnlotax != NULL) {           /* If fine mesh has node vertex loads */
     memSet (coarmeshdat.m.vnlotax + coarmeshdat.m.vnodbas, 0, coarmeshdat.m.vnodnbr * sizeof (Gnum));

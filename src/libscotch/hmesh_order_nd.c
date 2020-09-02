@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 09 nov 2008     **/
 /**                # Version 6.0  : from : 15 may 2018     **/
 /**                                 to   : 15 may 2018     **/
+/**                # Version 7.0  : from : 12 sep 2019     **/
+/**                                 to   : 28 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,6 +108,7 @@ const HmeshOrderNdParam * const   paraptr)
   nspmeshdat.ncmpsize[1] = 0;
   nspmeshdat.fronnbr     = 0;
   nspmeshdat.levlnum     = meshptr->levlnum;
+  nspmeshdat.contptr     = meshptr->contptr;
 
   vertnbr = nspmeshdat.m.velmnbr + nspmeshdat.m.vnodnbr;
   if (memAllocGroup ((void **) (void *)
@@ -168,6 +171,7 @@ const HmeshOrderNdParam * const   paraptr)
     indmeshdat.vnhlsum = indmeshdat.m.vnlosum;
     indmeshdat.enohnbr = indmeshdat.m.edgenbr;
     indmeshdat.levlnum = meshptr->levlnum;        /* Separator mesh is at level of original mesh */
+    indmeshdat.contptr = meshptr->contptr;
 
     o = hmeshOrderSt (&indmeshdat, ordeptr, ordenum + nspmeshdat.ncmpsize[0] + nspmeshdat.ncmpsize[1],
                       cblkptr->cblktab + 2, paraptr->ordstratsep);
