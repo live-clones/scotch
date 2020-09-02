@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 21 aug 2019     **/
-/**                                 to   : 21 aug 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -161,8 +161,6 @@ Context * const             contptr)              /*+ Execution context         
   termdomnbr = (tgtlistptr != NULL) ? tgtlistptr->vnumnbr : tgtgrafptr->vertnbr;
   if (termdomnbr == 0)                            /* If nothing to do */
     return (0);
-
-  intRandInit ();                                 /* Initialize random generator */
 
   invedlosiz = (tgtedlotax != NULL) ? tgtgrafptr->edgenbr : 0;
   if ((memAllocGroup ((void **) (void *)

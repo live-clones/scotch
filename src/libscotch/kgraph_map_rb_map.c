@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -70,7 +70,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 25 aug 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -168,6 +168,7 @@ const KgraphMapRbData * restrict const  dataptr)
   }
 
   poolptr->flagval = flagval;
+  poolptr->contptr = dataptr->contptr;
 
   return (0);
 }
@@ -382,7 +383,7 @@ KgraphMapRbMapJob * const       jobptr)           /* Job to be added */
   switch (poolptr->polival) {                     /* Set job priority value */
     case KGRAPHMAPRBPOLIRANDOM :
       jobptr->prioval =
-      jobptr->priolvl = intRandVal (INTVALMAX);
+      jobptr->priolvl = contextIntRandVal (poolptr->contptr, INTVALMAX);
       break;
     case KGRAPHMAPRBPOLILEVEL   :
     case KGRAPHMAPRBPOLINGLEVEL :
@@ -433,7 +434,7 @@ const GraphPart                 partval)
   switch (poolptr->polival) {                     /* Set job priority value */
     case KGRAPHMAPRBPOLIRANDOM :
       prioval =
-      priolvl = intRandVal (INTVALMAX);
+      priolvl = contextIntRandVal (poolptr->contptr, INTVALMAX);
       break;
     case KGRAPHMAPRBPOLILEVEL :
       priolvl = joboldptr->priolvl + 1;
@@ -597,7 +598,7 @@ KgraphMapRbMapJob * const       jobnewptr1)
     switch (poolptr->polival) {                   /* Set job priority value */
       case KGRAPHMAPRBPOLIRANDOM :
         prioval =
-        priolvl = intRandVal (INTVALMAX);
+        priolvl = contextIntRandVal (poolptr->contptr, INTVALMAX);
         break;
       case KGRAPHMAPRBPOLILEVEL :
         priolvl = joboldptr->priolvl + 1;

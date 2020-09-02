@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 02 dec 2021     **/
 /**                                 to   : 20 dec 2021     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 23 aug 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -97,7 +97,6 @@ SCOTCH_Num * const          parttab)              /*+ Partition array       +*/
     errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": cannot initialize context");
     return     (o);
   }
-  intRandInit ();                                 /* Check that random number generator is initialized */
 
   if (*((Strat **) straptr) == NULL)              /* Set default partitioning strategy if necessary */
     SCOTCH_stratGraphPartOvlBuild (straptr, SCOTCH_STRATQUALITY, (Gnum) partnbr, (double) 0.05);

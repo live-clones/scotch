@@ -115,6 +115,56 @@ SCOTCH_Context * const      libcontptr)
 
 /************************************/
 /*                                  */
+/* These routines handle the random */
+/* generator features of contexts.  */
+/*                                  */
+/************************************/
+
+/*+ This routine creates a clone of the default
+*** pseudo-random in its current state and places
+*** it in the given context.
+*** It returns:
+*** - 0   : if the cloning succeeded.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_contextRandomClone (
+SCOTCH_Context * const      libcontptr)
+{
+  return (contextRandomClone ((Context *) libcontptr));
+}
+
+/*+ This routine resets the random generator
+*** of the given context, to simulate a start
+*** from scratch.
+*** It returns:
+*** - void  : in all cases.
++*/
+
+void
+SCOTCH_contextRandomReset (
+SCOTCH_Context * const      libcontptr)
+{
+  intRandReset (((Context *) libcontptr)->randptr);
+}
+
+/*+ This routine sets the value of the
+*** random seed.
+*** It returns:
+*** - void  : in all cases.
++*/
+
+void
+SCOTCH_contextRandomSeed (
+SCOTCH_Context * const      libcontptr,
+const SCOTCH_Num            seedval)
+{
+  intRandSeed (((Context *) libcontptr)->randptr, seedval);
+}
+
+/************************************/
+/*                                  */
 /* These routines handle the thread */
 /* features of contexts.            */
 /*                                  */

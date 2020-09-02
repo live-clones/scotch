@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2012,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2012,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to   : 26 feb 2018     **/
 /**                # Version 6.1  : from : 21 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
+/**                # Version 7.0  : from : 12 sep 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -142,7 +144,7 @@ const VgraphSeparateGgParam * const paraptr)      /*+ Method parameters +*/
     comploaddlt = grafptr->s.velosum * dwg1val;   /* Reset separation parameters */
     compload2   = 0;
 
-    vexxptr = vexxtax + (grafptr->s.baseval + intRandVal (grafptr->s.vertnbr)); /* Randomly select first root vertex */
+    vexxptr = vexxtax + (grafptr->s.baseval + contextIntRandVal (grafptr->contptr, grafptr->s.vertnbr)); /* Randomly select first root vertex */
 
     do {                                          /* Loop on root vertices    */
       Gnum                        vertnum;        /* Number of current vertex */
@@ -250,7 +252,7 @@ const VgraphSeparateGgParam * const paraptr)      /*+ Method parameters +*/
           }
           intAscn (permtab, grafptr->s.vertnbr, grafptr->s.baseval); /* Initialize based permutation array */
         }
-        intPerm (permtab, grafptr->s.vertnbr);    /* Build random permutation */
+        intPerm (permtab, grafptr->s.vertnbr, grafptr->contptr); /* Build random permutation */
       }
       for ( ; permnum < grafptr->s.vertnbr; permnum ++) { /* Find next root vertex */
         if (vexxtax[permtab[permnum]].gainlink.next == VGRAPHSEPAGGSTATEPART0) {

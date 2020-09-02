@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2019,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to   : 06 feb 2020     **/
 /**                # Version 6.1  : from : 05 dec 2021     **/
 /**                                 to   : 05 dec 2021     **/
+/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -181,8 +183,8 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
     ncmpload2   = 0;                              /* Reset separation parameters */
     ncmploaddlt = meshptr->m.vnlosum;
 
-    velmnum = meshptr->m.velmbas + intRandVal (meshptr->m.velmnbr); /* Randomly select first root element vertex              */
-    if (meshptr->m.verttax[velmnum] == meshptr->m.vendtax[velmnum]) /* If picked an isolated element, search for another root */
+    velmnum = meshptr->m.velmbas + contextIntRandVal (meshptr->contptr, meshptr->m.velmnbr); /* Randomly select first root element vertex */
+    if (meshptr->m.verttax[velmnum] == meshptr->m.vendtax[velmnum]) /* If picked an isolated element, search for another root      */
       goto next;
 
     velxptr = velxtax + velmnum;                  /* Set root pointer to root element */
@@ -221,7 +223,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
         gainTablDel (tablptr, (GainLink *) velxptr); /* Remove element from table */
         velxptr->gainlink.next = VMESHSEPAGGSTATEPART1; /* Move element to part 1 */
         ncmpload2   += velxptr->ncmpgain2;        /* Update partition parameters  */
-        ncmploaddlt += velxptr->ncmpgaindlt;          
+        ncmploaddlt += velxptr->ncmpgaindlt;
 
         sepaptr = NULL;                           /* No frontier elements to relink yet */
         for (eelmnum = meshptr->m.verttax[velmnum]; /* For all neighbor node vertices   */
@@ -369,8 +371,8 @@ next:                                             /* Select next root element sy
           }
           intAscn (permtab, meshptr->m.velmnbr, meshptr->m.velmbas); /* Initialize permutation array with based element indices */
         }
-        intPerm (permtab, meshptr->m.velmnbr);    /* Build random permutation          */
-        permptr = permtab;                        /* Start at beginning of permutation */
+        intPerm (permtab, meshptr->m.velmnbr, meshptr->contptr); /* Build random permutation */
+        permptr = permtab;                        /* Start at beginning of permutation       */
       }
       for ( ; permptr < permtab + meshptr->m.velmnbr; ) { /* Find next root vertex */
         Gnum                velmnum;

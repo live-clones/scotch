@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
 /**                                 to   : 22 feb 2018     **/
 /**                # Version 7.0  : from : 22 aug 2019     **/
-/**                                 to   : 22 aug 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /**   NOTES      : # The code of the main routine derives  **/
 /**                  from that of archSubArchBuild().      **/
@@ -648,8 +648,6 @@ Context * const             contptr)              /*+ Execution context         
   decoptr->vnumtab = NULL;
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  intRandInit ();                                 /* Initialize random generator for coarsening */
-
   matcdat.vertsum = vnumnbr;                      /* Account for kept vertices of original graph */
   rootptr = archSubArchBuild2 (&matcdat, (Anum (*) (void *, ArchCoarsenMulti * restrict *)) archDeco2BuildMatchMate, treetab, vnumnbr);
 
@@ -698,7 +696,7 @@ Context * const             contptr)              /*+ Execution context         
       return     (1);
     }
 #endif /* SCOTCH_DEBUG_ARCH2 */
-    if ((levlptr->wdiaval = graphDiamPV (&levlptr->grafdat)) < 0) {
+    if ((levlptr->wdiaval = graphDiamPV (&levlptr->grafdat, matcdat.contptr)) < 0) {
       errorPrint ("archDeco2ArchBuild: cannot compute graph diameter");
       return     (1);
     }

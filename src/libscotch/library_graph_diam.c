@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 26 jan 2017     **/
 /**                                 to   : 22 apr 2018     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 07 may 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,5 +77,16 @@ SCOTCH_Num
 SCOTCH_graphDiamPV (
 const SCOTCH_Graph * const  libgrafptr)
 {
-  return ((SCOTCH_Num) graphDiamPV ((Graph * const) CONTEXTOBJECT (libgrafptr)));
+  CONTEXTDECL        (libgrafptr);
+  SCOTCH_Num          diamval;
+
+  if (CONTEXTINIT (libgrafptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_graphDiamPV) ": cannot initialize context");
+    return     (1);
+  }
+
+  diamval = (SCOTCH_Num) graphDiamPV ((Graph * const) CONTEXTGETOBJECT (libgrafptr), CONTEXTGETDATA (libgrafptr));
+
+  CONTEXTEXIT (libgrafptr);
+  return      (diamval);
 }

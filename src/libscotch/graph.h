@@ -64,7 +64,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 10 may 2019     **/
 /**                # Version 7.0  : from : 08 jun 2018     **/
-/**                                 to   : 03 may 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,7 +163,7 @@ Gnum                        graphBase           (Graph * const, const Gnum);
 int                         graphBand           (const Graph * restrict const, const Gnum, Gnum * restrict const, const Gnum, Gnum * restrict * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, const Gnum * restrict const, Gnum * restrict const);
 int                         graphCheck          (const Graph *);
 int                         graphClone          (const Graph *, Graph *);
-Gnum                        graphDiamPV         (const Graph * const);
+Gnum                        graphDiamPV         (const Graph * restrict const, Context * restrict const);
 Gnum                        graphIelo           (const Graph * const, Gnum * const, Gnum * const);
 int                         graphInduceList     (const Graph * restrict const, const Gnum, const Gnum * restrict const, Graph * restrict const);
 int                         graphInducePart     (const Graph * restrict const, const GraphPart * restrict const, const Gnum, const GraphPart, Graph * restrict const);

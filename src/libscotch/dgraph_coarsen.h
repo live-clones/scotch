@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2012,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2012,2014,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 17 jun 2021     **/
+/**                # Version 7.0  : from : 14 jan 2020     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -138,6 +140,7 @@ typedef struct DgraphCoarsenData_ {
   Gnum                      edgekptnbr;           /*+ Upper bound on number of edges kept from finer graph         +*/
   Gnum                      vertsndnbr;           /*+ Number of fine vertices to be sent                           +*/
   Gnum                      edgesndnbr;           /*+ Number of fine edges to be sent                              +*/
+  Context *                 contptr;              /*+ Execution context                                            +*/
 } DgraphCoarsenData;
 
 /*
@@ -150,4 +153,4 @@ static void                 dgraphCoarsenExit   (DgraphCoarsenData * restrict co
 static int                  dgraphCoarsenBuild  (DgraphCoarsenData * restrict const);
 #endif /* DGRAPH_COARSEN */
 
-int                         dgraphCoarsen       (Dgraph * restrict const, Dgraph * restrict const, DgraphCoarsenMulti * restrict * const, const Gnum, const Gnum, const double, const int);
+int                         dgraphCoarsen       (Dgraph * restrict const, Dgraph * restrict const, DgraphCoarsenMulti * restrict * const, const Gnum, const Gnum, const double, const int, Context * restrict const);

@@ -212,6 +212,9 @@ int                         SCOTCH_archDomBipart (SCOTCH_Arch * const, const SCO
 SCOTCH_Context *            SCOTCH_contextAlloc (void);
 int                         SCOTCH_contextInit  (SCOTCH_Context * const);
 void                        SCOTCH_contextExit  (SCOTCH_Context * const);
+int                         SCOTCH_contextRandomClone (SCOTCH_Context * const);
+void                        SCOTCH_contextRandomReset (SCOTCH_Context * const);
+void                        SCOTCH_contextRandomSeed (SCOTCH_Context * const, const SCOTCH_Num);
 int                         SCOTCH_contextThreadImport1 (SCOTCH_Context * const, const int);
 int                         SCOTCH_contextThreadImport2 (SCOTCH_Context * const, const int);
 int                         SCOTCH_contextThreadSpawn (SCOTCH_Context * const, const int, const int * const);
@@ -338,6 +341,7 @@ int                         SCOTCH_randomSave   (FILE *);
 void                        SCOTCH_randomProc   (int);
 void                        SCOTCH_randomReset  (void);
 void                        SCOTCH_randomSeed   (SCOTCH_Num);
+SCOTCH_Num                  SCOTCH_randomVal    (SCOTCH_Num);
 
 SCOTCH_Strat *              SCOTCH_stratAlloc   (void);
 int                         SCOTCH_stratSizeof  (void);

@@ -379,7 +379,8 @@ MeshCoarsenMult * restrict const  finemulttax,    /* Array of fine multielements
 Gnum * restrict const             finecoartax,    /* Fine to coarse vertex array                                */
 Gnum * restrict const             coarvelmptr,    /* Pointer to number of coarse element vertices               */
 Gnum * restrict const             coarvnodptr,    /* Pointer to (upper bound on) number of coarse node vertices */
-Gnum * restrict const             coaredgeptr)    /* Pointer to (upper bound on) number of edges                */
+Gnum * restrict const             coaredgeptr,    /* Pointer to (upper bound on) number of edges                */
+Context * restrict                contptr)
 {
   Gnum                          coarvelmnum;      /* Number of current coarse element vertex */
   Gnum                          finepertbas;      /* Index of base of perturbation area      */
@@ -507,8 +508,8 @@ fprintf (stderr, "++ %ld %ld\n", (long) finevelmnum, (long) finemeshptr->velotax
     }
   }
 
-  for (finepertbas = finemeshptr->velmbas,        /* Run cache-friendly perturbation on elements  */
-       finepertnbr = 2 + intRandVal (MESHCOARSENPERTPRIME - 2); /* Compute perturbation area size */
+  for (finepertbas = finemeshptr->velmbas,        /* Run cache-friendly perturbation on elements                  */
+       finepertnbr = 2 + contextIntRandVal (contptr, MESHCOARSENPERTPRIME - 2); /* Compute perturbation area size */
        finepertbas < finemeshptr->velmnnd; finepertbas += finepertnbr) {
     Gnum                finepertval;              /* Current index in perturbation area */
 

@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 02 jan 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 24 aug 2019     **/
-/**                                 to   : 24 aug 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,6 +82,7 @@ SCOTCH_Num * restrict const         colotab,      /* Pointer to color array     
 SCOTCH_Num * restrict const         coloptr,      /* Pointer to number of colors */
 const SCOTCH_Num                    flagval)      /* Flag value (not used)       */
 {
+  CONTEXTDECL        (libgrafptr);
   Gnum                baseval;
   Gnum                vertnum;
   Gnum                vertnbr;
@@ -91,8 +92,14 @@ const SCOTCH_Num                    flagval)      /* Flag value (not used)      
   Gnum * restrict     randtax;
   Gnum                colonum;
   Gnum * restrict     colotax;
+  int                 o;
 
-  const Graph * restrict const  grafptr = CONTEXTOBJECT (libgrafptr);
+  if (CONTEXTINIT (libgrafptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_graphColor) ": cannot initialize context");
+    return     (1);
+  }
+
+  const Graph * restrict const  grafptr = CONTEXTGETOBJECT (libgrafptr);
   const Gnum * restrict const   verttax = grafptr->verttax;
   const Gnum * restrict const   vendtax = grafptr->vendtax;
   const Gnum * restrict const   edgetax = grafptr->edgetax;
@@ -104,19 +111,19 @@ const SCOTCH_Num                    flagval)      /* Flag value (not used)      
   memSet (colotab, ~0, vertnbr * sizeof (Gnum));
   colotax = ((Gnum *) colotab) - baseval;
 
+  o = 1;                                          /* Assume an error */
+
   if (memAllocGroup ((void **) (void *)
                      &queutax, (size_t) (vertnbr * sizeof (Gnum)),
                      &randtax, (size_t) (vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_graphColor) ": out of memory");
-    return     (1);
+    goto abort;
   }
   queutax -= baseval;
   randtax -= baseval;
 
-  intRandInit ();                                 /* Check that random number generator is initialized */
-
   for (vertnum = baseval; vertnum < vertnnd; vertnum ++)
-    randtax[vertnum] = intRandVal (32768);
+    randtax[vertnum] = contextIntRandVal (CONTEXTGETDATA (libgrafptr), 32768);
 
   queunnd = vertnnd;
   for (colonum = 0; queunnd > baseval; colonum ++) { /* Color numbers are not based */
@@ -157,5 +164,9 @@ const SCOTCH_Num                    flagval)      /* Flag value (not used)      
 
   memFree (queutax + baseval);
 
-  return (0);
+  o = 0;
+
+abort:
+  CONTEXTEXIT (libgrafptr);
+  return (o);
 }

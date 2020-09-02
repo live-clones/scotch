@@ -311,6 +311,7 @@
 #define contextCommit               SCOTCH_NAME_INTERN (contextCommit)
 #define contextExit                 SCOTCH_NAME_INTERN (contextExit)
 #define contextInit                 SCOTCH_NAME_INTERN (contextInit)
+#define contextRandomClone          SCOTCH_NAME_INTERN (contextRandomClone)
 #define contextThreadInit           SCOTCH_NAME_INTERN (contextThreadInit)
 #define contextThreadInit2          SCOTCH_NAME_INTERN (contextThreadInit2)
 
@@ -338,9 +339,7 @@
 #define intRandProc                 SCOTCH_NAME_INTERN (intRandProc)
 #define intRandReset                SCOTCH_NAME_INTERN (intRandReset)
 #define intRandSeed                 SCOTCH_NAME_INTERN (intRandSeed)
-#ifndef COMMON_RANDOM_SYSTEM
 #define intRandVal                  SCOTCH_NAME_INTERN (intRandVal)
-#endif /* COMMON_RANDOM_SYSTEM */
 #define intSort1asc1                SCOTCH_NAME_INTERN (intSort1asc1)
 #define intSort2asc1                SCOTCH_NAME_INTERN (intSort2asc1)
 #define intSort2asc2                SCOTCH_NAME_INTERN (intSort2asc2)

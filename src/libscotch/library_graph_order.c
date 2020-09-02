@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 08 jan 2012     **/
 /**                                 to   : 29 sep 2019     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 23 aug 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -259,7 +259,6 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": cannot initialize context");
     return (o);
   }
-  intRandInit ();                                 /* Check that random number generator is initialized */
 
   const Graph * const srcgrafptr = (Graph *) CONTEXTGETOBJECT (libgrafptr);
   LibOrder * const    libordeptr = (LibOrder *) ordeptr;

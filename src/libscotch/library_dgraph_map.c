@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 14 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 27 aug 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -159,7 +159,6 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy   +*/
     errorPrint (STRINGIFY (SCOTCH_dgraphMapCompute) ": cannot initialize context");
     return (o);
   }
-  intRandInit ();                                 /* Check that random number generator is initialized */
 
   srcgrafptr = (Dgraph *) CONTEXTGETOBJECT (libgrafptr);
   srcmappptr = (LibDmapping *) libmappptr;

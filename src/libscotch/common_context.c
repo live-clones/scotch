@@ -39,7 +39,7 @@
 /**                context management routines.            **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 13 sep 2019     **/
+/**                                 to   : 18 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,6 +72,9 @@ contextInit (
 Context * const             contptr)
 {
   contptr->thrdptr = NULL;                        /* Thread context not initialized yet     */
+  contptr->randptr = &intranddat;                 /* Use global random generator by default */
+
+  intRandInit (&intranddat);                      /* Make sure random context is initialized before cloning */
 }
 
 /* This routine frees a context structure.
@@ -83,13 +86,16 @@ void
 contextExit (
 Context * const             contptr)
 {
-  if (contptr->thrdptr != NULL) {
+  if (contptr->thrdptr != NULL) {                 /* If context has been commited */
     threadContextExit (contptr->thrdptr);
     memFree (contptr->thrdptr);
   }
+  if (contptr->randptr != &intranddat)            /* If not global random generator */
+    memFree (contptr->randptr);
 
 #ifdef SCOTCH_DEBUG_CONTEXT1
   contptr->thrdptr = NULL;
+  contptr->randptr = NULL;
 #endif /* SCOTCH_DEBUG_CONTEXT1 */
 }
 
@@ -111,6 +117,42 @@ Context * const             contptr)
     o = contextThreadInit (contptr);
 
   return (o);
+}
+
+/************************************/
+/*                                  */
+/* These routines handle the random */
+/* generator features of contexts.  */
+/*                                  */
+/************************************/
+
+/*+ This routine creates a clone of the default
+*** pseudo-random in its current state and places
+*** it in the given context.
+*** It returns:
+*** - 0   : if the cloning succeeded.
+*** - !0  : on error.
++*/
+
+int
+contextRandomClone (
+Context * const             contptr)
+{
+  IntRandContext *    randptr;
+
+  if (contptr->randptr == &intranddat) {          /* If no clone yet, allocate space for it */
+    if ((randptr = memAlloc (sizeof (IntRandContext))) == NULL) {
+      errorPrint ("contextRandomClone: out of memory");
+      return (1);
+    }
+    contptr->randptr = randptr;                   /* Context now uses its private clone */
+  }
+  else                                            /* Else re-use old clone */
+    randptr = contptr->randptr;
+
+  *randptr = intranddat;                          /* Clone default generator (always already initialized) */
+
+  return (0);
 }
 
 /************************************/

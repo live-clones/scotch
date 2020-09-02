@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2014,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014,2019,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 28 sep 2014     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 27 aug 2019     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -113,7 +113,7 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
   *coarmultptr = NULL;                            /* Let the routine create the multinode array */
   dgraphInit (&coargrafptr->s, finegrafptr->s.proccomm); /* Re-use fine graph communicator      */
   if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->passnbr,
-                     paraptr->coarnbr, paraptr->coarrat, foldval) != 0)
+                     paraptr->coarnbr, paraptr->coarrat, foldval, finegrafptr->contptr) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   coargrafptr->fronloctab = NULL;

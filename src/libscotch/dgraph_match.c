@@ -1,4 +1,4 @@
-/* Copyright 2008-2010,2012,2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2010,2012,2013,2019,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 6.0  : from : 03 oct 2012     **/
 /**                                 to   : 10 oct 2013     **/
+/**                # Version 7.0  : from : 12 sep 2019     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -143,7 +145,7 @@ DgraphMatchData * restrict const  mateptr)
   probmax = (Gnum) (mateptr->probval * 32768.0);  /* Compute integer threshold of random value */
 #define DGRAPHMATCHSCANCOUNTDECL                 ;
 #define DGRAPHMATCHSCANCOUNTINIT                 \
-      probval = intRandVal (32768);               /* Get proba for this vertex */
+      probval = contextIntRandVal (mateptr->c.contptr, 32768); /* Get proba for this vertex */
 #define DGRAPHMATCHSCANCOUNTSELECT               \
           edgefrenbr ++;
 #define DGRAPHMATCHSCANFINDSELECT                \
@@ -168,7 +170,7 @@ DgraphMatchData * restrict const  mateptr)
       Gnum                edlolocmax;
 #define DGRAPHMATCHSCANCOUNTINIT                                \
       edlolocmax = 0;                                           \
-      probval = intRandVal (32768);               /* Get proba for this vertex */
+      probval = contextIntRandVal (mateptr->c.contptr, 32768); /* Get proba for this vertex */
 #define DGRAPHMATCHSCANCOUNTSELECT                              \
           Gnum                edlolocval;                       \
           edlolocval = edloloctax[edgelocnum];                  \

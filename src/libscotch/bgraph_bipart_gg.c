@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2011,2013,2014,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2011,2013,2014,2016,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,6 +57,8 @@
 /**                                 to   : 22 feb 2011     **/
 /**                # Version 6.0  : from : 23 feb 2011     **/
 /**                                 to   : 01 may 2016     **/
+/**                # Version 7.0  : from : 12 sep 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -215,7 +217,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
     compload0dlt = grafptr->s.velosum - grafptr->compload0avg; /* Reset bipartition parameters */
     commload     = grafptr->commloadextn0;
 
-    vexxptr = vexxtax + (grafptr->s.baseval + intRandVal (grafptr->s.vertnbr)); /* Randomly select first root vertex */
+    vexxptr = vexxtax + (grafptr->s.baseval + contextIntRandVal (grafptr->contptr, grafptr->s.vertnbr)); /* Randomly select first root vertex */
 
     do {                                          /* For all root vertices, till balance  */
 #ifdef SCOTCH_TABLE_GAIN
@@ -280,7 +282,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
           }
           intAscn (permtab, grafptr->s.vertnbr, grafptr->s.baseval); /* Initialize based permutation array */
         }
-        intPerm (permtab, grafptr->s.vertnbr);    /* Build random permutation */
+        intPerm (permtab, grafptr->s.vertnbr, grafptr->contptr); /* Build random permutation */
       }
       for ( ; permnum < grafptr->s.vertnbr; permnum ++) { /* Find next root vertex */
         if (bgraphBipartGgIsFree (&vexxtax[permtab[permnum]])) {

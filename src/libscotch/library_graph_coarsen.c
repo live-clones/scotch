@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 06 sep 2011     **/
 /**                                 to   : 23 apr 2018     **/
 /**                # Version 7.0  : from : 03 may 2019     **/
-/**                                 to   : 22 may 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -101,7 +101,6 @@ SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to multinode array 
     errorPrint (STRINGIFY (SCOTCH_graphCoarsen) ": cannot initialize context");
     return     (1);
   }
-  intRandInit ();                                 /* Check that random number generator is initialized */
 
   coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided */
   o = graphCoarsen ((const Graph * restrict const) CONTEXTGETOBJECT (finegrafptr), (Graph * restrict const) coargrafptr,
@@ -140,7 +139,6 @@ SCOTCH_Num * restrict const             finematetab) /* Mating array to fill    
     errorPrint (STRINGIFY (SCOTCH_graphCoarsenMatch) ": cannot initialize context");
     return     (1);
   }
-  intRandInit ();                                 /* Check that random number generator is initialized */
 
   finemateptr = finematetab;                      /* Slot will not be modified but preserve "const" of finematetab */
   o = graphCoarsenMatch ((const Graph * restrict const) CONTEXTGETOBJECT (finegrafptr), &finemateptr,
@@ -175,7 +173,6 @@ SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to user-provided mu
     errorPrint (STRINGIFY (SCOTCH_graphCoarsenBuild) ": cannot initialize context");
     return     (1);
   }
-  intRandInit ();                                 /* Check that random number generator is initialized */
 
   coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided */
   o = (graphCoarsenBuild ((const Graph * restrict const) CONTEXTGETOBJECT (finegrafptr), (Graph * restrict const) coargrafptr,
