@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 01 oct 2014     **/
 /**                                 to   : 24 aug 2019     **/
+/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,12 +93,12 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  intRandInit ();                                 /* Initialize random generator */
+  intRandInit (&intranddat);                      /* Initialize random generator */
 
   for (randnum = 0; randnum < RANDNBR; randnum ++)
-    randtab[randnum] = intRandVal (INTVALMAX);
+    randtab[randnum] = intRandVal (&intranddat, INTVALMAX);
 
-  intRandReset ();
+  intRandReset (&intranddat);
 
   passnum = (atoi (argv[2]) == 0);                /* First pass to write file; second pass to read it */
 
@@ -107,7 +109,7 @@ char *              argv[])
 
   if (passnum) {                                  /* If first pass */
     for (randnum = 0; randnum < RANDNBR; randnum ++) {
-      if (randtab[randnum] != intRandVal (INTVALMAX)) {
+      if (randtab[randnum] != intRandVal (&intranddat, INTVALMAX)) {
         SCOTCH_errorPrint ("main: cannot replay random sequence");
         exit (EXIT_FAILURE);
       }
@@ -118,7 +120,7 @@ char *              argv[])
       exit (EXIT_FAILURE);
     }
 
-    switch (SCOTCH_randomSave (fileptr)) {        /* Try to save random state, if enabled */
+    switch (intRandSave (&intranddat, fileptr)) { /* Try to save random state, if enabled */
       case 0 :
         if (fprintf (fileptr, "#") != 1) {        /* Write separator character */
           SCOTCH_errorPrint ("main: cannot write to file (2)");
@@ -126,7 +128,7 @@ char *              argv[])
         }
 
         for (randnum = 0; randnum < RANDNBR; randnum ++)
-          randtab[randnum] = intRandVal (INTVALMAX);
+          randtab[randnum] = intRandVal (&intranddat, INTVALMAX);
         if (fwrite (randtab, sizeof (INT), RANDNBR, fileptr) < RANDNBR) {
           SCOTCH_errorPrint ("main: cannot write to file (3)");
           exit (EXIT_FAILURE);
@@ -152,7 +154,7 @@ char *              argv[])
     }
 
     for (randnum = 0; randnum < RANDNBR; randnum ++) {
-      if (randtab[randnum] != intRandVal (INTVALMAX))
+      if (randtab[randnum] != intRandVal (&intranddat, INTVALMAX))
         break;
     }
 
@@ -168,9 +170,9 @@ char *              argv[])
     }
     printf ("Two consecutive runs yield %s values.\n", charptr);
 
-    intRandReset ();                              /* Reset random seed to be sure */
+    intRandReset (&intranddat);                   /* Reset random seed to be sure */
 
-    switch (SCOTCH_randomLoad (fileptr)) {
+    switch (intRandLoad (&intranddat, fileptr)) {
       case 0 :
         while (1) {                               /* Discard all CR(LF) before separator character */
           int                 c;
@@ -190,7 +192,7 @@ char *              argv[])
         }
 
         for (randnum = 0; randnum < RANDNBR; randnum ++) {
-          if (randtab[randnum] != intRandVal (INTVALMAX)) {
+          if (randtab[randnum] != intRandVal (&intranddat, INTVALMAX)) {
             SCOTCH_errorPrint ("main: state not properly saved/restored");
             exit (EXIT_FAILURE);
           }
