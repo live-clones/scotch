@@ -45,7 +45,7 @@
 /**                # Version 6.1  : from : 19 apr 2021     **/
 /**                                 to   : 30 jun 2021     **/
 /**                # Version 7.0  : from : 24 aug 2019     **/
-/**                                 to   : 24 aug 2019     **/
+/**                                 to   : 29 aug 2019     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
