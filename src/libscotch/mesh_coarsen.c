@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2019,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 6.0  : from : 23 jan 2020     **/
 /**                                 to   : 23 jan 2020     **/
+/**                # Version 7.0  : from : 12 sep 2019     **/
+/**                                 to   : 28 aug 2020     **/
 /**                                                        **/
 /**   NOTES      : # The coarsening process is as follows. **/
 /**                  First, node collapsing is performed,  **/
@@ -96,7 +98,8 @@ Mesh * restrict const         coarmeshptr,        /*+ Coarse mesh to build      
 Gnum * restrict * const       finecoarptr,        /*+ Pointer to multinode data      +*/
 const Gnum                    coarnbr,            /*+ Minimum number of coarse nodes +*/
 const double                  coarrat,            /*+ Maximum contraction ratio      +*/
-const MeshCoarsenType         coartype)           /*+ Matching type                  +*/
+const MeshCoarsenType         coartype,           /*+ Matching type                  +*/
+Context * restrict const      contptr)            /*+ Execution context              +*/
 {
   Gnum                        coarhashsiz;        /* Size of the hash table                      */
   Gnum                        coarhashmsk;        /* Mask for access to hash table               */
@@ -160,7 +163,7 @@ const MeshCoarsenType         coartype)           /*+ Matching type             
   memSet (coarhbdgtab, ~0, coarhashsiz * sizeof (MeshCoarsenHbdg));
   finemulttax -= coarmeshptr->baseval;
 
-  meshCoarFuncTab[coartype] (finemeshptr, finemulttax, finecoartax, &coarvelmnbr, &coarvnodnbr, &coaredgenbr); /* Call proper matching function */
+  meshCoarFuncTab[coartype] (finemeshptr, finemulttax, finecoartax, &coarvelmnbr, &coarvnodnbr, &coaredgenbr, contptr); /* Call proper matching function */
 
 #ifndef DEAD_CODE
   coarvnodnbr = finemeshptr->vnodnbr;             /* TODO : coarvnodnbr estimator is wrong : too tight */
