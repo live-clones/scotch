@@ -101,11 +101,12 @@ platform.
 2.2) Parser issues
 ------------------
 
-Scotch uses a parser to analyze its strategy strings. In order for the
-symbols of this parser not to conflict with those of another parser
-used in a third-party library, all "Makefile.inc.*" platform
-configuration files have been tailored to rename local symbols so as
-to prevent such conflicts.
+Since Scotch uses a parser to analyze its strategy strings, it may
+happen that the symbols of this parser conflict with those of
+another parser used in a third-party library. All "Makefile.inc.*"
+platform configuration files which are based on Flex / Bison are
+already tailored so as to prevent such conflicts. If you use other
+parsing tools, you may have to provide other options.
 
 Since version 7.0, Scotch uses reentrant versions of the parsers
 produced by Flex and Bison. They are inherently thread-safe and free
@@ -273,6 +274,14 @@ flag is not set (see below).
 Scotch can also take advantage of Posix threads when they are
 available. They are used in several places:
 
+- to run in a multi-threaded way several key algorithms of the Scotch
+  (no longer really so) sequential library, such as graph coarsening
+  and diffusion-based methods. This choice is controlled by the
+  "-DSCOTCH_PTHREAD" flag (see below). When the
+  "-DSCOTCH_DETERMINISTIC" flag is also set, Scotch will automatically
+  prevent itself from using multi-threaded versions of some algorithms
+  if this would yield undeterministic results.
+
 - to compress and decompress file data. This can be done either
   by launching a service thread, or else by creating a separate
   process by means of a Posix fork() system call. This choice is
@@ -284,7 +293,7 @@ available. They are used in several places:
   error. Therefore, without both fork() and threads, you must set the
   "-DCOMMON_STUB_FORK" flag without setting "-DCOMMON_PTHREAD_FILE",
   so that compilation will successfully complete; however, in this
-  case, compressed graphs shall not be handled in practice.
+  case, compressed graphs shall not be handled in practice;
 
 - to create distributed graphs in parallel. Since this task involves
   concurrent MPI communications, the MPI library must support the
@@ -298,38 +307,51 @@ available. They are used in several places:
   the MPI_Init_thread() MPI call, not MPI_Init(), and the provided
   thread support level value returned by the routine must be
   checked carefully.
-  If you have doubts on the stability of your MPI implementation, it
-  is better not to set "-DSCOTCH_PTHREAD". For instance, on Linux
-  platforms, concurrency problems have been experienced with MPICH2
-  versions prior to 1.0.7 using TCP; consequently, if the MPI
-  implementation on your platform is based on an older MPICH2 version,
-  do not set the "-DSCOTCH_PTHREAD" flag.
 
-  Note that since the Scotch and PT-Scotch libraries are distinct, you
-  can still compile Scotch with threads enabled, and compile PT-Scotch
-  with threads disabled. However, since PT-Scotch calls Scotch
-  routines when operating on a single process, threaded routines will
-  be used on each process, without interfering with MPI.
+  Note also that since the Scotch and PT-Scotch libraries are
+  distinct, you can still compile Scotch with threads enabled, and
+  compile PT-Scotch with threads disabled. However, since PT-Scotch
+  calls Scotch routines when operating on a single process, threaded
+  routines will be used on each process, without interfering with MPI.
 
-- to run in a multi-threaded way several key algorithms of the Scotch
-  (no longer really) sequential library, such as graph coarsening and
-  k-way diffusion. More algorithms will be re-coded in a threaded way
-  in future versions.
-
-To date, thread management is performed in a very rudimentary way.
-The available number of threads can only be set at compile-time, and
-the assignment of threads to cores is performed in increasing order,
-starting from 0, which may not always prove to be the most efficient
-mapping in terms of memory affinity. We plan to add a mechanism for
+Since v7.0 of Scotch, thread management is dynamic. Scotch standalone
+programs and library routines will detect the number of cores
+available on the system and will use all of them, unless explicitly
+prevented to do so (see the use of the "SCOTCH_PTHREAD_NUMBER"
+environment variable below). By default, when the
+"-DCOMMON_PTHREAD_AFFINITY_LINUX" flag is set (see below), the
+assignment of threads to cores is performed in increasing order,
+starting from 0 for the main thread. We plan to add a mechanism for
 dynamic thread allocation in the near future, based upon the Hwloc
 library.
 
 The compilation flags used to manage threads are the following:
 
+"-DSCOTCH_PTHREAD" is mandatory to enable multi-threaded algorithms
+in Scotch and/or PT-Scotch. This has to be used in conjunction with
+the "-DCOMMON_PTHREAD" flag that enables thread management at the
+lower levels of the Scotch implementation.
+
+"-DSCOTCH_PTHREAD_NUMBER=x" (not to be mistaken with the environment
+variable of same name, see below) is an optional flag that sets the
+default number of threads to be used by Scotch. For instance, setting
+it to 1 will make Scotch run sequentially by default, unless otherwise
+prescribed at run time by the SCOTCH_PTHREAD_NUMBER environment
+variable. Indeed, some algorithms have had to be reformulated to
+accommodate for multi-threading, and will be most probably more
+efficient than sequential processing only for a number of
+threads strictly greater than 2. Setting "-DSCOTCH_PTHREAD_NUMBER=1"
+allows the user to run sequential algorithms by default instead of
+multi-threaded ones, while benefiting from multi-threading for file
+compression and distributed graph handling. If the user's platform
+comprises more than 2 cores, the user can set the
+SCOTCH_PTHREAD_NUMBER environment variable to -1, to override the
+compilation flag and take advantage of all available cores. When the
+"-DSCOTCH_PTHREAD_NUMBER" flag is not set, by default, all the
+available cores will be used at run time.
+
 "-DCOMMON_PTHREAD_AFFINITY_LINUX" enables Linux extensions for
-handling thread affinity. As said above, this may not prove
-efficient in all cases. More options will be provided in the
-near future.
+handling thread affinity.
 
 "-DCOMMON_PTHREAD_BARRIER" creates a replacement for missing
 pthread_barrier_t implementations, which unfortunately happens on some
@@ -340,19 +362,6 @@ files. This flag does not interfere with the use of threads by graph
 algorithms, e.g. for graph partitioning and/or ordering, which depends
 on other flags (see below).
 
-"-DSCOTCH_PTHREAD" is necessary to enable multi-threaded algorithms
-in Scotch and/or PT-Scotch.
-
-"-DSCOTCH_PTHREAD_NUMBER=x" sets the maximum number of threads to be
-used by multi-threaded algorithms. This number may not necessarily be
-a power of two. Some algorithms have had to be reformulated to
-accommodate for multi-threading, and will be most probably much more
-efficient than sequential processing only for a number of
-threads strictly greater than 2. Setting "-DSCOTCH_PTHREAD_NUMBER=1"
-allows you to run sequential algorithms instead of multi-threaded
-ones, while benefiting from multi-threading for file compression and
-distributed graph handling.
-
 When compiling under mingw32 on Windows systems, it is possible to
 benefit from multi-threading by including the "semaphore.h" and
 "pthread.h" files, included in the "src/misc" subdirectory, at compile
@@ -360,6 +369,18 @@ time. These files have been kindly provided by Samuel Thibault, under
 a BSD 2-Clause License. These files will not work for Cygwin. This is
 not a problem, as Cygwin provides its own implementation of Posix
 threads.
+
+When Scotch is compiled with "-DSCOTCH_PTHREAD", Scotch makes use by
+default of all available cores on the platform it is running
+on (save for when the "-DSCOTCH_PTHREAD_NUMBER" flag has been used at
+compile time, see above). It is possible to influence this mechanism
+at run time, by setting the "SCOTCH_PTHREAD_NUMBER=x" environment
+variable, where "x" is the prescribed maximum number of threads to be
+used. Setting a thread number to 1 will coerce Scotch into using only
+purely sequential algorithms (which may differ in nature from their
+multi-threaded counterparts). Setting the thread number to -1 will
+make Scotch use all available cores, overriding the value possibly set
+by using the "-DSCOTCH_PTHREAD_NUMBER" flag at compile time.
 
 
 2.8) Monitoring memory allocation
@@ -434,9 +455,8 @@ processes and/or threads will always yield the same result. However,
 it does not mean that two executions of Scotch on different numbers of
 processes and/or threads will always yield the same result. Indeed,
 changing the number of processes impacts graph data distribution and
-consequently the order in which vertices are processed. Consequently,
-coarsening algorithms are likely to produce different coarse graphs,
-leading to different partitions.
+consequently the order in which vertices are processed, leading to
+different results.
 
 This option is likely to have adverse impact on performance, since all
 non-deterministic multi-threaded algorithms will be disabled. In the
@@ -685,21 +705,16 @@ PT-Scotch distributions.
 7) Note to packagers
 ====================
 
-Since version 6.0, the Scotch and PT-Scotch packages can be made
-independent. The libScotch will not be tied by any dependency against
-any MPI package, while the libPTScotch has to depend on the one with
-which it has been compiled, in addition to the libScotch package that
-it uses.
-
-In versions 5.x, the libPTScotch also contained a modified copy of the
-libScotch. It is no longer the case, which will result in lower disk
-footprint.
-
-Regarding the use of threads, since Scotch is at the time being  not
-dynamically configurable, one has to decide whether to compile it with
-threads enabled or not and, additionally, with which number of threads
-it will run. Based on the current processor market, I recommend to
-compile with -DSCOTCH_PTHREAD_NUMBER=2 (and, of course,
--DCOMMON_PTHREAD_AFFINITY_LINUX whenever possible). The penalty for
-single-thread CPUs will not be too high, while hyper-threaded and
-many-core CPUs will benefit from the extra thread.
+Unlike for the v6.1 and earlier branches, Scotch v7.0 now handles
+threads dynamically at run time. Packagers have to decide whether to
+compile it with threads enabled or not. Based on the current processor
+market, I would recommend to compile it with "-DCOMMON_PTHREAD" and
+"-DSCOTCH_PTHREAD" enabled (and with "-DCOMMON_PTHREAD_AFFINITY_LINUX"
+whenever possible). The penalty for single-threaded CPUs will be
+minimal, while hyper-threaded and many-core CPUs will benefit from the
+multi-threaded algorithms. Packagers that do not want to activate
+threads by default can set the compilation flag
+"-DSCOTCH_PTHREAD_NUMBER=1", so that only one thread will be used at
+run time (hence resorting to the sequential algorithms) unless
+explicitly decided by the user by way of the SCOTCH_PTHREAD_NUMBER
+environment variable.
