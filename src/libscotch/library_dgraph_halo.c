@@ -1,4 +1,4 @@
-/* Copyright 2007,2009,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2009,2010,2012,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 17 nov 2010     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 29 nov 2012     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,6 +58,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "graph.h"
 #include "dgraph.h"
 #include "dgraph_halo.h"
@@ -77,9 +80,9 @@
 
 int
 SCOTCH_dgraphGhst (
-SCOTCH_Dgraph * const       grafptr)
+SCOTCH_Dgraph * const       libgrafptr)
 {
-  return (dgraphGhst ((Dgraph *) grafptr));
+  return (dgraphGhst ((Dgraph *) CONTEXTOBJECT (libgrafptr)));
 }
 
 /*+ This routine requests the computation of the
@@ -92,13 +95,13 @@ SCOTCH_Dgraph * const       grafptr)
 
 int
 SCOTCH_dgraphGhstReplace (
-SCOTCH_Dgraph * const       grafptr)
+SCOTCH_Dgraph * const       libgrafptr)
 {
   Dgraph * restrict   srcgrafptr;                 /* Pointer to scotch graph */
   DgraphFlag          srcflagval;                 /* Graph properties        */
   int                 o;
 
-  srcgrafptr = (Dgraph *) grafptr;
+  srcgrafptr = (Dgraph *) CONTEXTOBJECT (libgrafptr);
   srcflagval = srcgrafptr->flagval;
   srcgrafptr->flagval |= DGRAPHFREETABS;          /* If edge array was not allocated internally, assume it was */
 
@@ -119,11 +122,11 @@ SCOTCH_Dgraph * const       grafptr)
 
 int
 SCOTCH_dgraphHalo (
-SCOTCH_Dgraph * const       grafptr,
+SCOTCH_Dgraph * const       libgrafptr,
 void * const                datatab,
 const MPI_Datatype          typeval)
 {
-  return (dgraphHaloSync ((Dgraph *) grafptr, (byte *) datatab, typeval));
+  return (dgraphHaloSync ((Dgraph *) CONTEXTOBJECT (libgrafptr), (byte *) datatab, typeval));
 }
 
 /*+ This routine spreads local information
@@ -137,12 +140,12 @@ const MPI_Datatype          typeval)
 
 int
 SCOTCH_dgraphHaloAsync (
-SCOTCH_Dgraph * const         grafptr,
+SCOTCH_Dgraph * const         libgrafptr,
 void * const                  datatab,
 const MPI_Datatype            typeval,
 SCOTCH_DgraphHaloReq * const  requptr)
 {
-  dgraphHaloAsync ((Dgraph *) grafptr, (byte *) datatab, typeval, (DgraphHaloRequest *) requptr);
+  dgraphHaloAsync ((Dgraph *) CONTEXTOBJECT (libgrafptr), (byte *) datatab, typeval, (DgraphHaloRequest *) requptr);
   return (0);
 }
 

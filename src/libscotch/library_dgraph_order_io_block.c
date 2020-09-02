@@ -44,6 +44,8 @@
 /**                                 to   : 28 may 2008     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 29 nov 2012     **/
+/**                # Version 7.0  : from : 20 sep 2019     **/
+/**                                 to   : 20 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,6 +57,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "dorder.h"
 #include "ptscotch.h"
@@ -81,5 +84,5 @@ const SCOTCH_Dgraph * const     grafptr,          /*+ Graph to order   +*/
 const SCOTCH_Dordering * const  ordeptr,          /*+ Ordering to save +*/
 FILE * const                    stream)           /*+ Output stream    +*/
 {
-  return (dorderSaveBlock ((Dorder *) ordeptr, (Dgraph *) grafptr, stream));
+  return (dorderSaveBlock ((Dorder *) ordeptr, (Dgraph *) CONTEXTOBJECT (grafptr), stream));
 }

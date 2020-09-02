@@ -1960,6 +1960,7 @@ library_context_mesh$(OBJ)	:	library_context_mesh.c			\
 library_dgraph$(OBJ)		:	library_dgraph.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					graph.h					\
 					dgraph.h				\
 					ptscotch.h
@@ -1972,6 +1973,7 @@ library_dgraph_f$(OBJ)		:	library_dgraph_f.c			\
 library_dgraph_band$(OBJ)	:	library_dgraph_band.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -1983,6 +1985,7 @@ library_dgraph_band_f$(OBJ)	:	library_dgraph_band_f.c			\
 library_dgraph_build$(OBJ)	:	library_dgraph_build.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -1994,6 +1997,7 @@ library_dgraph_build_f$(OBJ)	:	library_dgraph_build_f.c		\
 library_dgraph_build_grid3d$(OBJ):	library_dgraph_build_grid3d.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -2005,6 +2009,7 @@ library_dgraph_build_grid3d_f$(OBJ):	library_dgraph_build_grid3d_f.c		\
 library_dgraph_check$(OBJ)	:	library_dgraph_check.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -2016,6 +2021,7 @@ library_dgraph_check_f$(OBJ)	:	library_dgraph_check_f.c		\
 library_dgraph_coarsen$(OBJ)	:	library_dgraph_coarsen.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					dgraph_coarsen.h			\
 					ptscotch.h
@@ -2028,6 +2034,7 @@ library_dgraph_coarsen_f$(OBJ)	:	library_dgraph_coarsen_f.c		\
 library_dgraph_gather$(OBJ)	:	library_dgraph_gather.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -2040,12 +2047,14 @@ library_dgraph_grow$(OBJ)	:	library_dgraph_grow.c			\
 					dgraph_band_grow.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
 library_dgraph_halo$(OBJ)	:	library_dgraph_halo.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					dgraph_halo.h				\
 					ptscotch.h
@@ -2058,6 +2067,7 @@ library_dgraph_halo_f$(OBJ)	:	library_dgraph_halo_f.c			\
 library_dgraph_induce$(OBJ)	:	library_dgraph_induce.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -2069,6 +2079,7 @@ library_dgraph_induce_f$(OBJ)	:	library_dgraph_induce_f.c		\
 library_dgraph_io_load$(OBJ)	:	library_dgraph_io_load.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -2080,6 +2091,7 @@ library_dgraph_io_load_f$(OBJ)	:	library_dgraph_io_load_f.c		\
 library_dgraph_io_save$(OBJ)	:	library_dgraph_io_save.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -2091,6 +2103,7 @@ library_dgraph_io_save_f$(OBJ)	:	library_dgraph_io_save_f.c		\
 library_dgraph_map$(OBJ)	:	library_dgraph_map.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					parser.h				\
 					arch$(OBJ)				\
 					dgraph.h				\
@@ -2108,6 +2121,7 @@ library_dgraph_map_f$(OBJ)	:	library_dgraph_map_f.c			\
 library_dgraph_map_view$(OBJ)	:	library_dgraph_map_view.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					parser.h				\
 					dgraph.h				\
 					dgraph_halo.h				\
@@ -2125,6 +2139,7 @@ library_dgraph_map_view_f$(OBJ)	:	library_dgraph_map_view_f.c		\
 library_dgraph_order$(OBJ)	:	library_dgraph_order.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					parser.h				\
 					dgraph.h				\
 					dorder.h				\
@@ -2140,6 +2155,7 @@ library_dgraph_order_f$(OBJ)	:	library_dgraph_order_f.c		\
 library_dgraph_order_gather$(OBJ):	library_dgraph_order_gather.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					order.h					\
 					dorder.h				\
@@ -2154,6 +2170,7 @@ library_dgraph_order_gather_f$(OBJ):	library_dgraph_order_gather_f.c		\
 library_dgraph_order_io$(OBJ)	:	library_dgraph_order_io.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					dorder.h				\
 					ptscotch.h
@@ -2166,6 +2183,7 @@ library_dgraph_order_io_f$(OBJ)	:	library_dgraph_order_io_f.c		\
 library_dgraph_order_io_block$(OBJ):	library_dgraph_order_io_block.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					dorder.h				\
 					ptscotch.h
@@ -2178,6 +2196,7 @@ library_dgraph_order_io_block_f$(OBJ):	library_dgraph_order_io_block_f.c	\
 library_dgraph_order_perm$(OBJ)	:	library_dgraph_order_perm.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					dorder.h				\
 					ptscotch.h
@@ -2190,6 +2209,7 @@ library_dgraph_order_perm_f$(OBJ):	library_dgraph_order_perm_f.c		\
 library_dgraph_order_tree_dist$(OBJ):	library_dgraph_order_tree_dist.c	\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					dorder.h				\
 					ptscotch.h
@@ -2202,6 +2222,7 @@ library_dgraph_order_tree_dist_f$(OBJ):	library_dgraph_order_tree_dist_f.c	\
 library_dgraph_redist$(OBJ)	:	library_dgraph_redist.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -2213,6 +2234,7 @@ library_dgraph_redist_f$(OBJ)	:	library_dgraph_redist_f.c		\
 library_dgraph_scatter$(OBJ)	:	library_dgraph_scatter.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h
 
@@ -2224,6 +2246,7 @@ library_dgraph_scatter_f$(OBJ)	:	library_dgraph_scatter_f.c		\
 library_dgraph_stat$(OBJ)	:	library_dgraph_stat.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					ptscotch.h				\
 					library_dgraph_stat.h

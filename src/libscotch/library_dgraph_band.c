@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 oct 2011     **/
 /**                                 to   : 21 may 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +54,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "dgraph_halo.h"
 #include "ptscotch.h"
@@ -107,8 +110,8 @@ SCOTCH_Dgraph * const       bndgrafptr)
   int                   cheklocval;
   int                   procngbnum;
 
-  Dgraph * restrict const grafptr     = (Dgraph *) orggrafptr;
-  Dgraph * restrict const bandgrafptr = (Dgraph *) bndgrafptr;
+  Dgraph * restrict const grafptr     = (Dgraph *) CONTEXTOBJECT (orggrafptr);
+  Dgraph * restrict const bandgrafptr = (Dgraph *) CONTEXTOBJECT (bndgrafptr);
   const Gnum * restrict const vertloctax = grafptr->vertloctax;
   const Gnum * restrict const vendloctax = grafptr->vendloctax;
   const Gnum * restrict const vlblloctax = grafptr->vlblloctax;
@@ -118,8 +121,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
 #ifdef SCOTCH_DEBUG_LIBRARY1
   int                   o;
 
-  MPI_Comm_compare (((Dgraph * restrict const) orggrafptr)->proccomm,
-                    ((Dgraph * restrict const) bndgrafptr)->proccomm, &o);
+  MPI_Comm_compare (grafptr->proccomm, bandgrafptr->proccomm, &o);
   if ((o != MPI_IDENT) && (o != MPI_CONGRUENT)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": communicators are not congruent");
     return     (1);

@@ -1,4 +1,4 @@
-/* Copyright 2007,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 26 aug 2006     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 29 nov 2012     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +56,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "ptscotch.h"
 
@@ -74,7 +77,7 @@
 
 int
 SCOTCH_dgraphCheck (
-const SCOTCH_Dgraph * const  grafptr)
+const SCOTCH_Dgraph * const  libgrafptr)
 {
-  return (dgraphCheck ((const Dgraph * const) grafptr));
+  return (dgraphCheck ((const Dgraph * const) CONTEXTOBJECT (libgrafptr)));
 }
