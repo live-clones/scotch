@@ -1,4 +1,4 @@
-/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 18 jul 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 7.0  : from : 20 sep 2019     **/
+/**                                 to   : 20 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +56,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "ptscotch.h"
 
@@ -109,8 +112,8 @@ Gnum * const                edloloctab)           /* Local edge load array (if a
     return     (1);
   }
 
-  srcgrafptr = (Dgraph *) grafptr;                /* Use structure as source graph */
- 
+  srcgrafptr = (Dgraph *) CONTEXTOBJECT (grafptr); /* Use structure as source graph */
+
   vertloctax = (Gnum *) vertloctab - baseval;
   vendloctax = ((vendloctab == NULL) || (vendloctab == vertloctab + 1)) ? vertloctax + 1 : (Gnum *) vendloctab - baseval;
   veloloctax = ((veloloctab == NULL) || (veloloctab == vertloctab)) ? NULL : (Gnum *) veloloctab - baseval;

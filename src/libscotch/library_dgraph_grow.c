@@ -1,4 +1,4 @@
-/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
 /**                                 to   : 21 may 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +54,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "dgraph_halo.h"
 #include "ptscotch.h"
@@ -107,7 +110,7 @@ SCOTCH_Num * const          partgsttab)
   Gnum                bandvertlvlnum;             /* Not used */
   Gnum                bandedgelocsiz;             /* Not used */
 
-  Dgraph * restrict const grafptr = (Dgraph *) orggrafptr;
+  Dgraph * restrict const grafptr = (Dgraph *) CONTEXTOBJECT (orggrafptr);
 
   if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
     errorPrint (STRINGIFY (SCOTCH_dgraphGrow) ": cannot compute ghost edge array");

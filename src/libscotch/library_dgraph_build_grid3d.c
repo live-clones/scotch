@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 06 jun 2010     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 29 nov 2012     **/
+/**                # Version 7.0  : from : 20 sep 2019     **/
+/**                                 to   : 20 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,6 +55,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "ptscotch.h"
 
@@ -80,5 +83,5 @@ const SCOTCH_Num            dimz,                 /* Third dimension  */
 const SCOTCH_Num            incrval,              /* Increment value  */
 const int                   flagval)              /* Flag value       */
 {
-  return (dgraphBuildGrid3D ((Dgraph *) grafptr, baseval, dimx, dimy, dimz, incrval, flagval));
+  return (dgraphBuildGrid3D ((Dgraph *) CONTEXTOBJECT (grafptr), baseval, dimx, dimy, dimz, incrval, flagval));
 }
