@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 06 jun 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +66,7 @@ typedef struct Vdgraph_ {
   Gnum                      complocsize[3];       /*+ Number of vertices in parts; complocsize[2] is fronlocnbr, the separator +*/
   Gnum *                    fronloctab;           /*+ Array of local frontier vertex numbers                                   +*/
   Gnum                      levlnum;              /*+ Nested dissection or coarsening level                                    +*/
+  Context *                 contptr;              /*+ Execution context                                                        +*/
 } Vdgraph;
 
 /*+ The graph separator storing structure. +*/
