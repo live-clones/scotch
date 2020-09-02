@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2019 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -446,6 +446,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			vmesh_store$(OBJ)			\
 			wgraph$(OBJ)				\
 			wgraph_check$(OBJ)			\
+			wgraph_part_es$(OBJ)  			\
 			wgraph_part_fm$(OBJ)  			\
 			wgraph_part_gg$(OBJ)          		\
 			wgraph_part_gp$(OBJ)	        	\
@@ -3003,6 +3004,18 @@ wgraph_check$(OBJ)		:	wgraph_check.c				\
 					graph.h					\
 					wgraph.h
 
+wgraph_part_es$(OBJ)		:	wgraph_part_es.c			\
+					module.h				\
+					common.h				\
+					parser.h				\
+					graph.h					\
+					arch$(OBJ)				\
+					mapping.h				\
+					kgraph.h				\
+					kgraph_map_st.h				\
+					wgraph.h				\
+					wgraph_part_es.h
+
 wgraph_part_fm$(OBJ)		:	wgraph_part_fm.c			\
 					module.h				\
 					common.h				\
@@ -3055,9 +3068,12 @@ wgraph_part_st$(OBJ)		:	wgraph_part_st.c			\
 					parser.h				\
 					graph.h					\
 					graph_coarsen.h				\
+					kgraph.h				\
+					kgraph_map_st.h				\
 					vgraph.h				\
 					vgraph_separate_st.h			\
 					wgraph.h				\
+					wgraph_part_es.h			\
 					wgraph_part_fm.h			\
 					wgraph_part_gg.h			\
 					wgraph_part_gp.h			\

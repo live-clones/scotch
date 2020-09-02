@@ -39,19 +39,21 @@
 /**                for the whole libSCOTCH library module. **/
 /**                                                        **/
 /**   DATES      : # Version 3.2  : from : 22 jun 1998     **/
-/**                                 to     13 may 1998     **/
+/**                                 to   : 13 may 1998     **/
 /**                # Version 3.3  : from : 01 oct 1998     **/
-/**                                 to     03 oct 1998     **/
+/**                                 to   : 03 oct 1998     **/
 /**                # Version 3.4  : from : 01 nov 2001     **/
-/**                                 to     01 nov 2001     **/
+/**                                 to   : 01 nov 2001     **/
 /**                # Version 4.0  : from : 12 dec 2001     **/
-/**                                 to     24 nov 2005     **/
+/**                                 to   : 24 nov 2005     **/
 /**                # Version 5.0  : from : 24 feb 2007     **/
-/**                                 to     24 jul 2007     **/
+/**                                 to   : 24 jul 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
-/**                                 to     20 feb 2011     **/
+/**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
-/**                                 to     24 aug 2020     **/
+/**                                 to   : 24 aug 2020     **/
+/**                # Version 6.1  : from : 24 aug 2020     **/
+/**                                 to   : 24 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -1071,6 +1073,7 @@
 #define wgraphExit                  SCOTCH_NAME_INTERN (wgraphExit)
 #define wgraphCheck                 SCOTCH_NAME_INTERN (wgraphCheck)
 #define wgraphZero                  SCOTCH_NAME_INTERN (wgraphZero)
+#define wgraphPartEs                SCOTCH_NAME_INTERN (wgraphPartEs)
 #define wgraphPartFm                SCOTCH_NAME_INTERN (wgraphPartFm)
 #define wgraphPartGg                SCOTCH_NAME_INTERN (wgraphPartGg)
 #define wgraphPartGp                SCOTCH_NAME_INTERN (wgraphPartGp)

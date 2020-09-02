@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,49 +31,31 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : wgraph_part_st.h                        **/
+/**   NAME       : wgraph_part_es.h                        **/
 /**                                                        **/
-/**   AUTHOR     : Jun-Ho HER (v6.0)                       **/
-/**                Charles-Edmond BICHOT (v5.1b)           **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module contains the data declara-  **/
-/**                tions for vertex overlapped graph par-  **/
-/**                titioning strategy and method tables.   **/
+/**   FUNCTION   : These lines are the data declarations   **/
+/**                for the edge-separation-based vertex    **/
+/**                overlapped graph partitioning module.   **/
 /**                                                        **/
-/**   DATES      : # Version 5.1  : from : 01 dec 2007     **/
-/**                                 to   : 01 jul 2008     **/
-/**                # Version 6.0  : from : 05 nov 2009     **/
-/**                                 to   : 31 may 2018     **/
-/**                # Version 6.1  : from : 25 aug 2020     **/
+/**   DATES      : # Version 6.1  : from : 25 aug 2020     **/
 /**                                 to   : 25 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-** The type definitions.
+**  The type and structure definitions.
 */
 
-/** Method types. **/
+/*+ This structure holds the method parameters. +*/
 
-typedef enum WgraphPartStMethodType_ {
-  WGRAPHPARTSTMETHES = 0,                         /*+ Edge separation        +*/
-  WGRAPHPARTSTMETHFM,                             /*+ Fiduccia-Mattheyses    +*/
-  WGRAPHPARTSTMETHGG,                             /*+ Greedy Graph Growing   +*/
-  WGRAPHPARTSTMETHGP,                             /*+ Gibbs-Poole-Stockmeyer +*/
-  WGRAPHPARTSTMETHML,                             /*+ Multi-level separation +*/
-  WGRAPHPARTSTMETHRB,                             /*+ Recursive bisection    +*/
-  WGRAPHPARTSTMETHZR,                             /*+ Zero method            +*/
-  WGRAPHPARTSTMETHNBR                             /*+ Number of methods      +*/
-} WgraphPartStMethodType;
-
-/*
-**  The external declarations.
-*/
-
-extern StratTab             wgraphpartststratab;
+typedef struct WgraphPartEsParam_ {
+  Strat *                   strat;                /*+ K-way partitioning strategy +*/
+} WgraphPartEsParam;
 
 /*
 **  The function prototypes.
 */
 
-int                         wgraphPartSt        (Wgraph * restrict const, const Strat * restrict const);
+int                         wgraphPartEs        (Wgraph * const, const WgraphPartEsParam * const);
