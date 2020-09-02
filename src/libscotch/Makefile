@@ -181,6 +181,7 @@ LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
 			kdgraph_map_rb_map$(OBJ)		\
 			kdgraph_map_rb_part$(OBJ)		\
 			kdgraph_map_st$(OBJ)			\
+			library_context_dgraph$(OBJ)		\
 			library_dgraph$(OBJ)			\
 			library_dgraph_f$(OBJ)			\
 			library_dgraph_band$(OBJ)		\
@@ -1941,6 +1942,13 @@ library_context$(OBJ)		:	library_context.c			\
 					common_thread.h				\
 					context.h				\
 					scotch.h
+
+library_context_dgraph$(OBJ)	:	library_context_dgraph.c		\
+					module.h				\
+					common.h				\
+					context.h				\
+					dgraph.h				\
+					ptscotch.h
 
 library_context_graph$(OBJ)	:	library_context_graph.c			\
 					module.h				\
