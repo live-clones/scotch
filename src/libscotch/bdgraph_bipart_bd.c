@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 14 apr 2011     **/
 /**                # Version 6.0  : from : 11 sep 2011     **/
 /**                                 to   : 15 may 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -204,6 +206,7 @@ const BdgraphBipartBdParam * const  paraptr)      /*+ Method parameters +*/
   bndgrafdat.domnwght[0]      = orggrafptr->domnwght[0];
   bndgrafdat.domnwght[1]      = orggrafptr->domnwght[1];
   bndgrafdat.levlnum          = orggrafptr->levlnum;
+  bndgrafdat.contptr          = orggrafptr->contptr;
 
   if (bndgrafdat.veexloctax != NULL) {
     Gnum                bndveexglbanc0;
