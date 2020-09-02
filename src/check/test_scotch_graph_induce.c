@@ -33,7 +33,7 @@
 /**                                                        **/
 /**   NAME       : test_graph_induce.c                     **/
 /**                                                        **/
-/**   AUTHOR     : Amaury JACQUES                          **/
+/**   AUTHOR     : Amaury JACQUES (v6.0)                   **/
 /**                Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operations of     **/
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 15 apr 2019     **/
 /**                                 to   : 16 apr 2019     **/
+/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,12 +58,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../libscotch/module.h"
 #include "scotch.h"
-
-void                        intRandInit         (void);
-void                        intAscn             (SCOTCH_Num *, SCOTCH_Num, SCOTCH_Num);
-void                        intPerm             (SCOTCH_Num *, SCOTCH_Num);
 
 /*********************/
 /*                   */
@@ -77,6 +74,7 @@ char *              argv[])
   FILE *              fileptr;
   SCOTCH_Num          baseval;
   SCOTCH_Num          orgvertnbr;
+  SCOTCH_Num          orgvertnum;
   SCOTCH_GraphPart2 * orgparttab;
   SCOTCH_Graph        orggrafdat;
   SCOTCH_Graph        indgrafdat;
@@ -117,9 +115,19 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  intRandInit ();                                 /* Initialize random generator */
-  intAscn (indlisttab, orgvertnbr, baseval);
-  intPerm (indlisttab, orgvertnbr);               /* Random permutation of all original graph vertices */
+  SCOTCH_randomReset ();                          /* Initialize global random generator */
+
+  for (orgvertnum = 0; orgvertnum < orgvertnbr; orgvertnum ++) /* Random permutation of all original graph vertices */
+    indlisttab[orgvertnum] = orgvertnum + baseval;
+  for (orgvertnum = 0; orgvertnum < (orgvertnbr - 1); orgvertnum ++) {
+    SCOTCH_Num          randval;
+    SCOTCH_Num          verttmp;
+
+    randval = SCOTCH_randomVal (orgvertnbr - orgvertnum);
+    verttmp = indlisttab[orgvertnum + randval];
+    indlisttab[orgvertnum + randval] = indlisttab[orgvertnum];
+    indlisttab[orgvertnum] = verttmp;
+  }
 
   indvertnbr = (orgvertnbr + 1) / 2;              /* Keep only half of the original vertices */
 
