@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 26 aug 2010     **/
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 28 sep 2014     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,7 +124,9 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
     return (0);
   }
 
-  coargrafptr->levlnum = finegrafptr->levlnum + 1; /* Graph level is coarsening level                 */
+  coargrafptr->levlnum = finegrafptr->levlnum + 1; /* Graph level is coarsening level */
+  coargrafptr->contptr = finegrafptr->contptr;
+
   if (coargrafptr->s.vertlocnbr <= finegrafptr->s.vertlocnbr) /* If (folded) coarser graph is smaller */
     coargrafptr->fronloctab = finegrafptr->fronloctab; /* Re-use frontier array for coarser graph     */
   else {                                          /* Else allocate new private frontier array         */
@@ -461,7 +465,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
   finegrafptr->complocsize[0] =
   finegrafptr->complocsize[1] =
   finegrafptr->complocsize[2] = 0;
- 
+
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   memSet (finegrafptr->partgsttax + finegrafptr->s.baseval, 3, finegrafptr->s.vertgstnbr * sizeof (GraphPart)); /* Mark all vertices as unvisited */
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
