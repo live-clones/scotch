@@ -94,12 +94,14 @@ static WgraphPartFmVertex   wgraphpartfmvertexdummy; /* Dummy graph vertex actin
 static
 int
 wgraphPartFmTablAdd (
-GainTabl * restrict const             tablptr,    /*+ Gain table   +*/
-Wgraph * restrict const               grafptr,    /*+ Active graph +*/
+GainTabl * restrict const             tablptr,    /*+ Gain table                                +*/
+Wgraph * restrict const               grafptr,    /*+ Active graph                              +*/
 WgraphPartFmVertex * restrict const   hashtab,
 const Gnum                            hashmsk,
 WgraphPartFmLinkData * restrict const linkptr,
 WgraphPartFmPartList * restrict const nplstab,
+const Gnum                            cplomin,    /*+ Minimum with respect to average part load +*/
+const Gnum                            cplomax,    /*+ Maximum with respect to average part load +*/
 WgraphPartFmVertex * const            vexxptr)
 {
   Anum                npmipartnum;                /* Part number of lighter part around frontier vertex        */
@@ -209,7 +211,12 @@ WgraphPartFmVertex * const            vexxptr)
     linktab[linknum].gainval = gainval - nplstab[nplsidx].loadgainval; /* Gain for frontier is loads of neighbor vertices belonging to all other parts */
     linktab[linknum].npmipartnum = (nplsidx != npmipartnum) ? npmipartnum : npmspartnum;
 
-    gainTablAdd (tablptr, (GainLink *) &linktab[linknum], linktab[linknum].gainval); /* Add link to gain table */
+    if ((linktab[linknum].npmipartnum == -1) ||   /* If link would not cause imbalance */
+        ((comploadtab[nplsidx] < cplomax) &&
+         (comploadtab[linktab[linknum].npmipartnum] > cplomin)))
+      gainTablAdd (tablptr, (GainLink *) &linktab[linknum], linktab[linknum].gainval); /* Add link to gain table */
+    else
+      linktab[linknum].gainlink.tabl = NULL;      /* Set link as not chained */
 
     nplstmp = nplstab[nplsidx].nextidx;
     nplstab[nplsidx].nextidx = -2;
@@ -429,6 +436,11 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
     WgraphPartFmLink *  linkptr;
     Gnum                movenbr;                  /* Number of uneffective moves done */
 
+    for (partnum = 0, cplosum = 0; partnum < partnbr; partnum ++) /* Set initial part load sum (after unroll) */
+      cplosum += comploadtab[partnum];
+    cplomin = (Gnum) ((float) cplosum * (1.0F - paraptr->deltrat) / (float) partnbr);
+    cplomax = (Gnum) ((float) cplosum * (1.0F + paraptr->deltrat) / (float) partnbr);
+
     while (hashdat.lockptr != &wgraphpartfmvertexdummy) { /* Purge list of locked vertices */
       WgraphPartFmVertex *  vexxptr;
 
@@ -437,13 +449,8 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
       vexxptr->nlokptr = NULL;
 
       if (vexxptr->partnum == -1)                 /* If vertex belongs to frontier, link it */
-        wgraphPartFmTablAdd (tablptr, grafptr, hashdat.hashtab, hashdat.hashmsk, &linkdat, nplstab, vexxptr);
+        wgraphPartFmTablAdd (tablptr, grafptr, hashdat.hashtab, hashdat.hashmsk, &linkdat, nplstab, cplomin, cplomax, vexxptr);
     }
-
-    for (partnum = 0, cplosum = 0; partnum < partnbr; partnum ++) /* Set initial part load sum (after unroll) */
-      cplosum += comploadtab[partnum];
-    cplomin = (Gnum) ((float) cplosum * (1.0F - paraptr->deltrat) / (float) partnbr);
-    cplomax = (Gnum) ((float) cplosum * (1.0F + paraptr->deltrat) / (float) partnbr);
 
 #ifdef SCOTCH_DEBUG_WGRAPH2
 #ifdef SCOTCH_DEBUG_WGRAPH3
@@ -514,7 +521,8 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
         Anum                partend;
         Gnum                linktmp;
 
-        gainTablDel (tablptr, (GainLink *) &linkdat.linktab[linknum].gainlink); /* Remove link from gain table */
+        if (linkdat.linktab[linknum].gainlink.tabl != NULL) /* If link was chained in gain table, remove it */
+          gainTablDel (tablptr, (GainLink *) &linkdat.linktab[linknum].gainlink);
         partend = linkdat.linktab[linknum].partnum;
         if (partend != partnum) {
 #ifdef SCOTCH_DEBUG_WGRAPH2
@@ -724,7 +732,8 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
           for (linknum = vexxend->linkidx; linknum != -1; ) { /* As frontier vertex incurs change, remove its links if any */
             Gnum                linktmp;
 
-            gainTablDel (tablptr, (GainLink *) &linkdat.linktab[linknum].gainlink); /* Remove link from gain table */
+            if (linkdat.linktab[linknum].gainlink.tabl != NULL) /* If link was chained in gain table, remove it */
+              gainTablDel (tablptr, (GainLink *) &linkdat.linktab[linknum].gainlink);
             linktmp = linknum;
             linknum = linkdat.linktab[linknum].nextidx; /* Get next link       */
             wgraphPartFmLinkPut (&linkdat, linktmp); /* Free old link in table */
@@ -819,12 +828,13 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
 
         if ((vexxend->partnum == -1) &&           /* If vertex belongs to frontier */
             (vexxend->nlokptr == NULL))           /* And is not locked, re-link it */
-          wgraphPartFmTablAdd (tablptr, grafptr, hashdat.hashtab, hashdat.hashmsk, &linkdat, nplstab, vexxend);
+          wgraphPartFmTablAdd (tablptr, grafptr, hashdat.hashtab, hashdat.hashmsk, &linkdat, nplstab, cplomin, cplomax, vexxend);
 
         vexxtmp = vexxend;                        /* Remove vertex from working list */
         vexxend = vexxtmp->nlstptr;
         vexxtmp->nlstptr = NULL;
       }
+
       cplomin = (Gnum) ((float) cplosum * (1.0F - paraptr->deltrat) / (float) partnbr); /* Adjust minimum part load */
       cplomax = (Gnum) ((float) cplosum * (1.0F + paraptr->deltrat) / (float) partnbr); /* Adjust minimum part load */
 
@@ -891,7 +901,8 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
           for (linknum = vexxptr->linkidx; linknum != -1; ) { /* For all potential links of vertex (if frontier vertex) */
             Gnum                linktmp;
 
-            gainTablDel (tablptr, (GainLink *) &linkdat.linktab[linknum].gainlink); /* Remove link from gain table */
+            if (linkdat.linktab[linknum].gainlink.tabl != NULL) /* If link was chained in gain table, remove it */
+              gainTablDel (tablptr, (GainLink *) &linkdat.linktab[linknum].gainlink);
             linktmp = linknum;
             linknum = linkdat.linktab[linknum].nextidx;
             wgraphPartFmLinkPut (&linkdat, linktmp); /* Release link from vertex */
