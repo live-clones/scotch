@@ -1,4 +1,4 @@
-/* Copyright 2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 07 nov 2007     **/
 /**                # Version 5.1  : from : 11 nov 2007     **/
 /**                                 to   : 01 mar 2008     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -140,6 +142,7 @@ const VdgraphSeparateBdParam * const  paraptr)    /*+ Method parameters +*/
   bandgrafdat.compglbsize[2] = grafptr->compglbsize[2]; /* All separator vertices are kept in band graph */
   bandgrafdat.complocsize[2] = grafptr->complocsize[2];
   bandgrafdat.levlnum        = grafptr->levlnum;
+  bandgrafdat.contptr        = grafptr->contptr;
 
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   if (vdgraphCheck (&bandgrafdat) != 0) {
