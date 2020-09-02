@@ -722,6 +722,7 @@ Order nested dissection separators as cheaply as possible.
 
 At the time being, mapping methods only apply to graphs, as there is
 not yet a mesh mapping tool in the \scotch\ package.
+
 Mapping strategies are made of methods, with optional parameters enclosed
 between curly braces, and separated by commas, in the form of
 {\it method\/}{[{\tt \{}{\it parameters\/}{\tt \}}]}\enspace.
@@ -1103,7 +1104,7 @@ condition is true, when mapping onto variable-sized architectures (see
 section~\ref{sec-algo-variable}).
 \end{itemize}
 
-\subsubsection{Vertex partitioning strategy strings}
+\subsubsection{Vertex partitioning (with overlap) strategy strings}
 \label{sec-lib-format-part-ovl}
 
 Vertex partitioning is a special form of graph partitioning, in which
@@ -1158,16 +1159,6 @@ has not yielded any improvement of the cost function, or when the
 maximum number of passes has been reached. Value $-1$ stands for an
 infinite number of passes, that is, as many as needed by the algorithm
 to converge.
-\end{itemize}
-\iteme[{\tt g}]
-Gibbs-Poole-Stockmeyer method. This is a k-way version of the
-original algorithm, in which parts are grown one after the
-other. Consequently, depending on graph topology, this method is
-likely to yield disconnected parts, with higher probability as the
-number of part increases. This method has only one parameter.
-\begin{itemize}
-\iteme[{\tt pass=}{\it nbr}]
-Set the number of sweeps performed by the algorithm.
 \end{itemize}
 \iteme[{\tt h}]
 Greedy-graph-growing method. This is a $k$-way version of the
