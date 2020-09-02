@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,6 +57,8 @@
 /**                                 to   : 29 apr 2018     **/
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,6 +121,8 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+int                         SCOTCH_contextBindDgraph (SCOTCH_Context * const, const SCOTCH_Dgraph * const, SCOTCH_Dgraph * const);
 
 SCOTCH_Dgraph *             SCOTCH_dgraphAlloc  (void);
 int                         SCOTCH_dgraphSizeof (void);
