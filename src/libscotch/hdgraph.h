@@ -47,6 +47,8 @@
 /**                                 to   : 01 may 2019     **/
 /**                # Version 6.1  : from : 19 jun 2021     **/
 /**                                 to   : 07 oct 2021     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,6 +93,7 @@ typedef struct Hdgraph_ {
   Gnum *                    vhndloctax;           /*+ End vertex array including halo vertex indices +*/
   Gnum                      ehallocnbr;           /*+ Local number of halo edges                     +*/
   Gnum                      levlnum;              /*+ Nested dissection level                        +*/
+  Context *                 contptr;              /*+ Execution context                              +*/
 } Hdgraph;
 
 /*
