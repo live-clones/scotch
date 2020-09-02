@@ -1,4 +1,4 @@
-Scotch 6.1 installation instructions
+Scotch 7.0 installation instructions
 ====================================
 
 
@@ -6,14 +6,9 @@ Scotch 6.1 installation instructions
 ==================
 
 In order for you to compile Scotch and/or PT-Scotch, you must have GNU
-Make installed on your system, as well as an implementation of the MPI
-message-passing library in the case of PT-Scotch. Flex and Bison are
-optional. There is a possibility to install Scotch without having Flex
-or Bison, but it may require the tuning of pre-compiled Flex and Bison
-outputs created on a Linux system, which may need some tricky work to
-compile on other systems, because of different C library
-implementations. Therefore, it is much more secure to have them
-installed.
+Make installed on your system, as well as Flex and Bison. An
+implementation of the MPI message-passing library is also mandatory to
+compile PT-Scotch library and software.
 
 To check if GNU Make is installed and is found first, please type:
 
@@ -38,15 +33,22 @@ To see if Flex and Bison are present, type
 %prompt% which flex
 %prompt% which bison
 
+Note: to implement pure parsers, recent versions of the Flex and
+Bison tools are needed (e.g., the 3.4 branch). On MacOs, an older
+version is provided by default; users may get an adequate version from
+the "HomeBrew" repository, using command "brew install bison".
+
 If some of these are missing, please:
 - check your path variable (just in case they are located in
   some unusual place, such as /usr/local/bin, /opt/bin,
   /opt/local/bin/, /opt/gnu/bin, etc). Tools such as "which",
   "locate" or "find" may help you find them;
 - ask your system administrator (highly recommended);
-- install a copy of GNU Make of your own (less recommended,
-  please ask your system administrator first). GNU Make is
-  available from the FSF website, at:
+- if you have system administrator rights, install the packages
+  on your system;
+- install a local copy of the tools on your own (less recommended,
+  please ask your system administrator first).
+  GNU Make is available from the FSF website, at:
   http://www.gnu.org/software/make/ and
   http://ftp.gnu.org/pub/gnu/make/ .
   Flex and Bison are also available from the very same FSF
@@ -114,18 +116,19 @@ Make.inc directory. This is for instance the case for the mingw32
 platform.
 
 
-2.2) Parser symbol conflicts
-----------------------------
+2.2) Parser issues
+------------------
 
-Since Scotch uses a parser to analyze its strategy strings, it may
-happen that the symbols of this parser conflict with those of
-another parser used in a third-party library. All "Makefile.inc.*"
-platform configuration files which base on Flex/Bison are already
-tailored so as to prevent such conflicts. If you use other parsing
-tools, you may have to provide other options. Another solution is to
-use the pre-processed parser files of the "src/libscotch/last_resort"
-subdirectory (corresponding operation instructions are given in
-Section 1).
+Scotch uses a parser to analyze its strategy strings. In order for the
+symbols of this parser not to conflict with those of another parser
+used in a third-party library, all "Makefile.inc.*" platform
+configuration files have been tailored to rename local symbols so as
+to prevent such conflicts.
+
+Since version 7.0, Scotch uses reentrant versions of the parsers
+produced by Flex and Bison. They are inherently thread-safe and free
+all their work memory, which was not the case for the previous
+"un-pure" version.
 
 
 2.3) Integer size issues
