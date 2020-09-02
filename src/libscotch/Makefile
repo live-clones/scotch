@@ -2712,9 +2712,8 @@ parser_ll.c			:	parser_ll.l				\
 					parser.h				\
 					parser_ll.h				\
 					parser_ly.h
-					($(LEX) parser_ll.l &&			\
-					 $(MV) lex.yy.c parser_ll.c) ||		\
-					$(CP) last_resort/parser_ll.c .
+					$(LEX) parser_ll.l &&			\
+					$(MV) lex.yy.c parser_ll.c
 
 parser_ll$(OBJ)			:	parser_ll.c				\
 					parser_ly.h
@@ -2726,10 +2725,9 @@ parser_yy.c			:	parser_yy.y				\
 					common.h				\
 					parser.h				\
 					parser_yy.h
-					($(YACC) -d -v parser_yy.y &&		\
-					 $(MV) y.tab.c parser_yy.c &&		\
-					 $(MV) y.tab.h parser_ly.h) ||		\
-					$(CP) last_resort/parser_ly.h last_resort/parser_yy.c .
+					$(YACC) -d -v parser_yy.y &&		\
+					$(MV) y.tab.c parser_yy.c &&		\
+					$(MV) y.tab.h parser_ly.h
 
 parser_yy$(OBJ)			:	parser_yy.c
 
