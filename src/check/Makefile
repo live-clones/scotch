@@ -106,6 +106,7 @@ realclean			:	clean
 					test_libmetis_dual_f		\
 					test_scotch_arch		\
 					test_scotch_arch_deco		\
+					test_scotch_context		\
 					test_scotch_graph_coarsen	\
 					test_scotch_graph_color		\
 					test_scotch_graph_diam		\
@@ -137,6 +138,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_strat_seq				\
 			check_scotch_arch			\
 			check_scotch_arch_deco			\
+			check_scotch_context			\
 			check_scotch_graph_coarsen		\
 			check_scotch_graph_color		\
 			check_scotch_graph_diam			\
@@ -285,6 +287,14 @@ check_scotch_arch_deco		:	test_scotch_arch_deco
 #					$(EXECS) ./test_scotch_arch_deco data/m4x4_b100000.grf "$(TMPDIR)/arch2.tgt"
 
 test_scotch_arch_deco		:	test_scotch_arch_deco.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_context		:	test_scotch_context
+					$(EXECS) ./test_scotch_context data/bump_b1.grf
+
+test_scotch_context		:	test_scotch_context.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
