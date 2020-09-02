@@ -8,4 +8,3 @@ for dir in ${SRCDIR_TO_ANALYZE}
 do
     find $dir -name '*\.[ch]' >> filelist.txt
 done
-

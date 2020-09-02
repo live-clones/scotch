@@ -1,5 +1,10 @@
 #!/bin/sh
 
+export LCOVFILES=""
+for filename in $(ls -1 scotch-*.lcov); do export LCOVFILES="$LCOVFILES -a $filename"; done
+lcov $LCOVFILES -o scotch.lcov
+lcov_cobertura.py scotch.lcov --output scotch-coverage.xml
+
 export CPPCHECK_DEFINITIONS="$(grep SCOTCH_GITLAB_SEPARATOR < src/Makefile.inc | sed -e 's#^CFLAGS.*SCOTCH_GITLAB_SEPARATOR##1' | sed -e 's#[ ][^-][^ ]*##g' -e 's#[ ][-][^D][^ ]*##g')"
 export CPPCHECK_INCLUDES="-Isrc/scotch -Isrc/misc -Isrc/libscotch -Isrc/esmumps -Isrc/libscotchmetis"
 
@@ -28,7 +33,7 @@ sonar.c.errorRecoveryEnabled=true
 sonar.c.gcc.charset=UTF-8
 sonar.c.gcc.regex=(?<file>.*):(?<line>[0-9]+):[0-9]+:\\\x20warning:\\\x20(?<message>.*)\\\x20\\\[(?<id>.*)\\\]
 sonar.c.gcc.reportPath=scotch-build*.log
-sonar.c.coverage.reportPath=scotch-coverage-*.xml
+sonar.c.coverage.reportPath=scotch-coverage.xml
 sonar.c.cppcheck.reportPath=scotch-cppcheck.xml
 sonar.c.rats.reportPath=scotch-rats.xml
 sonar.c.clangsa.reportPath=analyzer_reports/*/*.plist

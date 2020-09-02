@@ -32,7 +32,7 @@ stages:
         JOB_DEBUG: [ n ]
         JOB_RENAME: [ n ]
       - JOB_INT: [ 64 ]
-        JOB_THREAD: [ n, c ]
+        JOB_THREAD: [ n, c, y ]
         JOB_DEBUG: [ a ]
         JOB_RENAME: [ n ]
       - JOB_INT: [ 64 ]
@@ -135,8 +135,9 @@ scotch_build_64:
     - find . -print0 | xargs -0 touch
     - cp libscotch/parser_ll.c libscotch/lex.yy.c
     - cp libscotch/parser_yy.c libscotch/y.tab.c
-    - cd $CI_PROJECT_DIR
-    - gcovr --xml > scotch-coverage-${JOBNAME}.xml
+    - cat check/test_scotch_graph_dump.c /tmp/m16x16_b1.c > check/test_scotch_graph_dump2.c
+    - cd ..
+    - lcov --capture --directory . --output-file scotch-${JOBNAME}.lcov
 
 scotch_test_32:
   <<: *job_test
@@ -163,13 +164,10 @@ scotch_sonar:
   artifacts:
     paths:
       - analyzer_reports
-      - scotch-build-*.log
-      - scotch-coverage-*.xml
-      - scotch-cppcheck.xml
-      - scotch-rats.xml
       - sonar-project.properties
-      - sonar.log
+      - ./*.log
+      - ./*.lcov
+      - ./*.xml
   script:
     - ci/analysis.sh
-    - ls -l
     - sonar-scanner -X > sonar.log
