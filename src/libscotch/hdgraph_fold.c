@@ -1,4 +1,4 @@
-/* Copyright 2007-2011,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2011,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 04 jan 2011     **/
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 19 jun 2021     **/
+/**                # Version 7.0  : from : 28 aug 2019     **/
+/**                                 to   : 28 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -821,6 +823,7 @@ MPI_Comm                        fldproccomm)      /*+ Pre-computed communicator 
     fldgrafptr->vhndloctax = fldgrafptr->s.vertloctax + 1; /* Compact edge array with halo vertices */
     fldgrafptr->ehallocnbr = fldehallocnbr;
     fldgrafptr->levlnum    = orggrafptr->levlnum; /* Folded graph is of same level */
+    fldgrafptr->contptr    = orggrafptr->contptr;
 
     if (orggrafptr->s.veloloctax == NULL)         /* If no vertex loads, reset graph vertex load to number of vertices */
       fldvelolocsum = fldvertlocnbr;

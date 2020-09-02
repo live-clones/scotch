@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2008,2010,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 27 jun 2008     **/
 /**                                 to   : 22 oct 2010     **/
+/**                # Version 7.0  : from : 28 aug 2019     **/
+/**                                 to   : 28 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -334,6 +336,7 @@ Hdgraph * restrict const    indgrafptr)
   indgrafptr->vhndloctax = indgrafptr->s.vertloctax + 1; /* Compact edge array with halo vertices   */
   indgrafptr->ehallocnbr = indedgelocsiz - indedgelocnbr; /* Get number of halo edges by difference */
   indgrafptr->levlnum    = orggrafptr->levlnum + 1; /* Induced subgraph is one level below          */
+  indgrafptr->contptr    = orggrafptr->contptr;
 
   indgrafptr->s.baseval    = orggrafptr->s.baseval;
   indgrafptr->s.vertlocnbr = indlistnbr;

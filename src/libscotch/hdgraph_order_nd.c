@@ -44,6 +44,8 @@
 /**                                 to   : 11 nov 2008     **/
 /**                # Version 6.0  : from : 12 sep 2012     **/
 /**                                 to   : 01 may 2019     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -290,7 +292,8 @@ const HdgraphOrderNdParam * restrict const  paraptr)
 
   vspgrafdat.partgsttax -= vspgrafdat.s.baseval;
   vspgrafdat.levlnum     = grafptr->levlnum;      /* Set level of separation graph as level of halo graph */
-  vdgraphZero (&vspgrafdat);                      /* Set all local vertices to part 0                     */
+  vspgrafdat.contptr     = grafptr->contptr;
+  vdgraphZero (&vspgrafdat);                      /* Set all local vertices to part 0 */
 
   if (vdgraphSeparateSt (&vspgrafdat, paraptr->sepstrat) != 0) /* Separate vertex-separation graph */
     goto abort;
@@ -353,6 +356,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
     indgrafdat2.vhndloctax = indgrafdat2.s.vendloctax;
     indgrafdat2.ehallocnbr = 0;
     indgrafdat2.levlnum    = 0;                   /* Separator graph is at level zero not to be suppressed as an intermediate graph */
+    indgrafdat2.contptr    = grafptr->contptr;
 
     o = hdgraphOrderSt (&indgrafdat2, cblkptr2, paraptr->ordstratsep);
     hdgraphExit   (&indgrafdat2);
