@@ -69,6 +69,8 @@
 /**                                 to   : 21 jun 2019     **/
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
+/**                # Version 7.0  : from : 25 aug 2019     **/
+/**                                 to   : 25 aug 2019     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -443,13 +445,11 @@ const GraphPart                 partval)
     case KGRAPHMAPRBPOLINGSIZE :
       prioval = jobnewptr->grafdat.vertnbr;
       break;
-#ifdef SCOTCH_DEBUG_KGRAPH2
     default :
       errorPrint ("kgraphMapRbMapPoolUpdt1: unknown job selection policy");
       jobnewptr->prioval = 0;
       jobnewptr->priolvl = 0;
       return;
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
   }
 
   jobnewptr->prioval = prioval;
@@ -609,13 +609,11 @@ KgraphMapRbMapJob * const       jobnewptr1)
       case KGRAPHMAPRBPOLINGSIZE :
         prioval = jobnewptr->grafdat.vertnbr;
         break;
-#ifdef SCOTCH_DEBUG_KGRAPH2
       default :
         errorPrint ("kgraphMapRbMapPoolUpdt2: unknown job selection policy");
         jobnewptr->prioval = 0;
         jobnewptr->priolvl = 0;
         return;
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
     }
 
     jobnewptr0->prioval = prioval + 1;            /* TRICK: when processing subdomain 1, subdomain 0 has higher priority value */
