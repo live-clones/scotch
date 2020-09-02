@@ -419,22 +419,18 @@ pseudo-random numbers. Consequently, while using a different random
 seed for each run is likely to explore better the solution space,
 using a fixed random seed eases the debugging of programs, because
 algorithms behave identically across multiple runs (save for
-asynchronousness issues, see next section). By default, Scotch is
-compiled with the "-DCOMMON_RANDOM_FIXED_SEED" flag set, so that
-multiple executions of the same sequential programs will always yield
-the same results.
+asynchronousness issues, see next section). When Scotch is compiled
+with the "-DCOMMON_RANDOM_FIXED_SEED" flag set, multiple executions of
+the same sequential programs will always yield the same results.
 
 Before version 6.0, Scotch relied on the operating system
 pseudo-random generator. While this posed no problem for most
 sequential programs, parallel runs of PT-Scotch were not reproducible
 on some systems, because the MPI implementation also used this
 pseudo-random generator for its own purposes. In order to avoid this
-problem, Scotch uses its own pseudo-random generator. Users that want
-to go on using the operating system pseudo-random generator (e.g. for
-regression testing with respect to version 5.x) can still do so, by
-compiling with the "-DCOMMON_RANDOM_SYSTEM" flag set. In this case,
-the "-DCOMMON_RANDOM_RAND" flag allows you to use the srand() routine
-instead of the default srandom() routine.
+problem, Scotch now uses its own pseudo-random generator. The use of
+operating system-dependent pseudo-random generators has been
+deprecated since version 7.0.
 
 
 2.10) Deterministic behavior
@@ -454,8 +450,8 @@ consecutive runs of Scotch on the same graph and same number of
 processes and/or threads will always yield the same result. However,
 it does not mean that two executions of Scotch on different numbers of
 processes and/or threads will always yield the same result. Indeed,
-changing the number of processes impacts graph data distribution and
-consequently the order in which vertices are processed, leading to
+changing the number of processes impacts graph data distribution and,
+consequently, the order in which vertices are processed, leading to
 different results.
 
 This option is likely to have adverse impact on performance, since all
@@ -467,10 +463,7 @@ messages will be received in a fixed order rather than being processed
 on a first-come, first-serve basis.
 
 Setting this flag automatically results in setting the
-"-DCOMMON_RANDOM_FIXED_SEED" flag. Users are also strongly advised to
-compile without setting the "-DCOMMON_RANDOM_SYSTEM" flag, in order to
-avoid any interference with third-party libraries that might use the
-operating system pseudo-random generator.
+"-DCOMMON_RANDOM_FIXED_SEED" flag.
 
 
 2.11) Point-to-point or collective communications
