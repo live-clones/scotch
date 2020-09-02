@@ -43,6 +43,8 @@
 /**                                 to   : 14 apr 2011     **/
 /**              : # Version 6.0  : from : 11 sep 2011     **/
 /**                                 to   : 31 aug 2019     **/
+/**              : # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -162,6 +164,7 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
   coargrafptr->domnwght[0]      = finegrafptr->domnwght[0];
   coargrafptr->domnwght[1]      = finegrafptr->domnwght[1];
   coargrafptr->levlnum          = finegrafptr->levlnum + 1;
+  coargrafptr->contptr          = finegrafptr->contptr;
 
   return (0);
 }
