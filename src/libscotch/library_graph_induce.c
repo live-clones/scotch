@@ -1,4 +1,4 @@
-/* Copyright 2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 14 jan 2018     **/
 /**                                 to   : 21 apr 2018     **/
+/**                # Version 7.0  : from : 07 may 2019     **/
+/**                                 to   : 07 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +54,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "graph.h"
 #include "scotch.h"
 
@@ -81,7 +84,7 @@ const SCOTCH_Num                    vnumnbr,
 const SCOTCH_Num * restrict const   vnumtab,
 SCOTCH_Graph * restrict const       indgrafptr)
 {
-  return (graphInduceList ((const Graph * restrict const) orggrafptr,
+  return (graphInduceList ((const Graph * restrict const) CONTEXTOBJECT (orggrafptr),
                            (const Gnum) vnumnbr,
                            (const Gnum * restrict const) vnumtab,
                            (Graph * const) indgrafptr));
@@ -107,7 +110,7 @@ const SCOTCH_GraphPart2 * restrict const  parttab,
 const SCOTCH_GraphPart2                   partval,
 SCOTCH_Graph * restrict const             indgrafptr)
 {
-  return (graphInducePart ((const Graph * restrict const) orggrafptr,
+  return (graphInducePart ((const Graph * restrict const) CONTEXTOBJECT (orggrafptr),
                            ((GraphPart * restrict const) parttab) - ((const Graph * const) orggrafptr)->baseval,
                            (const Gnum) vnumnbr,
                            (const GraphPart) partval,

@@ -55,6 +55,8 @@
 /**                                 to   : 24 sep 2019     **/
 /**                # Version 6.1  : from : 01 jul 2021     **/
 /**                                 to   : 01 jul 2021     **/
+/**                # Version 7.0  : from : 07 may 2019     **/
+/**                                 to   : 07 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,6 +69,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "parser.h"
 #include "graph.h"
 #include "arch.h"
@@ -198,9 +201,7 @@ SCOTCH_Num *                  vmlotab,            /*+ Vertex migration cost arra
 Gnum                          flagval,            /*+ 0: standard output, !0: raw output for curves    +*/
 FILE * const                  stream)             /*+ Output stream                                    +*/
 {
-  const Graph * restrict    grafptr;
   const Arch * restrict     archptr;
-  LibMapping * restrict     lmapptr;
   LibMapping * restrict     lmaoptr;
   Anum * restrict           parttax;              /* Part array                                   */
   Anum * restrict           parotax;              /* Old part array                               */
@@ -242,11 +243,13 @@ FILE * const                  stream)             /*+ Output stream             
   double                    migrcostsum;
   Gnum * restrict           vmlotax;
 
-  const Gnum * restrict const verttax = ((Graph *) libgrafptr)->verttax;
-  const Gnum * restrict const vendtax = ((Graph *) libgrafptr)->vendtax;
-  const Gnum * restrict const velotax = ((Graph *) libgrafptr)->velotax;
-  const Gnum * restrict const edgetax = ((Graph *) libgrafptr)->edgetax;
-  const Gnum * restrict const edlotax = ((Graph *) libgrafptr)->edlotax;
+  const Graph * restrict const  grafptr = (Graph *) CONTEXTOBJECT (libgrafptr);
+  LibMapping * restrict const   lmapptr = (LibMapping *) libmappptr;
+  const Gnum * restrict const   verttax = grafptr->verttax;
+  const Gnum * restrict const   vendtax = grafptr->vendtax;
+  const Gnum * restrict const   velotax = grafptr->velotax;
+  const Gnum * restrict const   edgetax = grafptr->edgetax;
+  const Gnum * restrict const   edlotax = grafptr->edlotax;
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Mapping) < sizeof (LibMapping)) {
@@ -255,11 +258,8 @@ FILE * const                  stream)             /*+ Output stream             
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-  lmapptr = (LibMapping *) libmappptr;
-  grafptr = lmapptr->grafptr;
-
 #ifdef SCOTCH_DEBUG_LIBRARY1
-  if ((Graph *) libgrafptr != grafptr) {
+  if (lmapptr->grafptr != grafptr) {
     errorPrint (STRINGIFY (SCOTCH_graphMapView) ": input graph must be the same as mapping graph");
     return (1);
   }
@@ -704,7 +704,7 @@ FILE * const                        stream)
   Gnum                        comploadmin;
   double                      comploadavg;
 
-  const Graph * restrict const  grafptr = (Graph *) libgrafptr;
+  const Graph * restrict const  grafptr = (Graph *) CONTEXTOBJECT (libgrafptr);
   const Gnum * restrict const   verttax = grafptr->verttax;
   const Gnum * restrict const   velotax = grafptr->velotax;
   const Gnum * restrict const   vendtax = grafptr->vendtax;

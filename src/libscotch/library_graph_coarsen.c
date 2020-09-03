@@ -56,7 +56,7 @@
 
 #include "module.h"
 #include "common.h"
-#include "common_context.h"
+#include "context.h"
 #include "arch.h"
 #include "graph.h"
 #include "graph_coarsen.h"
@@ -94,11 +94,11 @@ SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph               
 SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to multinode array to fill */
 {
   GraphCoarsenMulti * restrict  coarmultptr;      /* Un-based pointer to created, grouped multinode array */
-  CONTEXTINIT                  (finegrafptr);
+  CONTEXTDECL                  (finegrafptr);
   int                           o;
 
-  if (CONTEXTGET (finegrafptr) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_graphCoarsen) ": cannot get context");
+  if (CONTEXTINIT (finegrafptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_graphCoarsen) ": cannot initialize context");
     return     (1);
   }
   intRandInit ();                                 /* Check that random number generator is initialized */
@@ -133,11 +133,11 @@ const SCOTCH_Num                        flagval,  /* Flag value                 
 SCOTCH_Num * restrict const             finematetab) /* Mating array to fill              */
 {
   Gnum * restrict     finemateptr;
-  CONTEXTINIT        (finegrafptr);
+  CONTEXTDECL        (finegrafptr);
   int                 o;
 
-  if (CONTEXTGET (finegrafptr) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_graphCoarsenMatch) ": cannot get context");
+  if (CONTEXTINIT (finegrafptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_graphCoarsenMatch) ": cannot initialize context");
     return     (1);
   }
   intRandInit ();                                 /* Check that random number generator is initialized */
@@ -168,11 +168,11 @@ SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph               
 SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to user-provided multinode array */
 {
   GraphCoarsenMulti * restrict  coarmultptr;      /* Un-based pointer to created, grouped multinode array */
-  CONTEXTINIT                  (finegrafptr);
+  CONTEXTDECL                  (finegrafptr);
   int                           o;
 
-  if (CONTEXTGET (finegrafptr)) {
-    errorPrint (STRINGIFY (SCOTCH_graphCoarsenBuild) ": cannot get context");
+  if (CONTEXTINIT (finegrafptr)) {
+    errorPrint (STRINGIFY (SCOTCH_graphCoarsenBuild) ": cannot initialize context");
     return     (1);
   }
   intRandInit ();                                 /* Check that random number generator is initialized */
