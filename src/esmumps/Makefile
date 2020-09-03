@@ -84,6 +84,7 @@ LIBESMUMPSDEPS =			graph_graph$(OBJ)			\
 					dof$(OBJ)				\
 					symbol$(OBJ)				\
 					symbol_check$(OBJ)			\
+					symbol_cost$(OBJ)			\
 					symbol_fax_graph$(OBJ)			\
 					esmumps$(OBJ)				\
 					esmumps_f$(OBJ)				\
@@ -136,6 +137,12 @@ symbol_check$(OBJ)		:	symbol_check.c				\
 					module.h				\
 					$(srclibscotchdir)/common.h		\
 					symbol.h
+
+symbol_cost$(OBJ)		:	symbol_cost.c				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					symbol.h				\
+					symbol_cost.h
 
 symbol_fax$(OBJ)		:	symbol_fax.c				\
 					module.h				\
