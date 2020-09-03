@@ -271,7 +271,7 @@ flag is not set (see below).
 2.7) Multi-threading
 --------------------
 
-Scotch can also take advantage of Posix threads when they are
+Scotch can take advantage of Posix threads when they are
 available. They are used in several places:
 
 - to run in a multi-threaded way several key algorithms of the Scotch
@@ -280,7 +280,7 @@ available. They are used in several places:
   "-DSCOTCH_PTHREAD" flag (see below). When the
   "-DSCOTCH_DETERMINISTIC" flag is also set, Scotch will automatically
   prevent itself from using multi-threaded versions of some algorithms
-  if this would yield undeterministic results.
+  if this would yield undeterministic results;
 
 - to compress and decompress file data. This can be done either
   by launching a service thread, or else by creating a separate
@@ -297,22 +297,22 @@ available. They are used in several places:
 
 - to create distributed graphs in parallel. Since this task involves
   concurrent MPI communications, the MPI library must support the
-  MPI_THREAD_MULTIPLE level. The use of threads within Scotch itself
-  is controlled by the "-DSCOTCH_PTHREAD" flag, which is completely
-  independent from the "-DCOMMON_PTHREAD_FILE" flag. Any of them can
-  be set without setting the other.
+  MPI_THREAD_MULTIPLE level. In order to take advantage of these
+  features, the "-DSCOTCH_PTHREAD_MPI" flag must be set, in addition
+  to the "-DSCOTCH_PTHREAD" flag. These two flags are completely
+  independent from the "-DCOMMON_PTHREAD_FILE" flag, which can be set
+  independently from the others.
 
-  Note that if you compile Scotch with the "-DSCOTCH_PTHREAD" flag,
-  you will have to initialize your communication subsystem by using
-  the MPI_Init_thread() MPI call, not MPI_Init(), and the provided
-  thread support level value returned by the routine must be
-  checked carefully.
+  Note that if you compile Scotch with the "-DSCOTCH_PTHREAD_MPI"
+  flag, you will have to initialize your communication subsystem by
+  using the MPI_Init_thread() MPI call instead of MPI_Init(), and the
+  provided thread support level value returned by the routine must be
+  checked carefully to assert it is indeed MPI_THREAD_MULTIPLE.
 
-  Note also that since the Scotch and PT-Scotch libraries are
-  distinct, you can still compile Scotch with threads enabled, and
-  compile PT-Scotch with threads disabled. However, since PT-Scotch
-  calls Scotch routines when operating on a single process, threaded
-  routines will be used on each process, without interfering with MPI.
+  Note also that since PT-Scotch calls Scotch routines when operating
+  on a single process, setting "-DSCOTCH_PTHREAD" but not
+  "-DSCOTCH_PTHREAD_MPI" will still allow multiple threads to be used
+  on each MPI process, without interfering with MPI itself.
 
 Since v7.0 of Scotch, thread management is dynamic. Scotch standalone
 programs and library routines will detect the number of cores
@@ -328,9 +328,14 @@ library.
 The compilation flags used to manage threads are the following:
 
 "-DSCOTCH_PTHREAD" is mandatory to enable multi-threaded algorithms
-in Scotch and/or PT-Scotch. This has to be used in conjunction with
+in Scotch and/or PT-Scotch. It has to be used in conjunction with
 the "-DCOMMON_PTHREAD" flag that enables thread management at the
 lower levels of the Scotch implementation.
+
+"-DSCOTCH_PTHREAD_MPI" enables some algorithms of PT-Scotch that may
+make concurrent calls to the MPI communication subsystem. It has to be
+used in conjunction with the "-DCOMMON_PTHREAD" flag (hence also with
+the "-DCOMMON_PTHREAD" flag).
 
 "-DSCOTCH_PTHREAD_NUMBER=x" (not to be mistaken with the environment
 variable of same name, see below) is an optional flag that sets the
