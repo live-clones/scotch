@@ -559,7 +559,7 @@ arch_build$(OBJ)		:	arch_build.c				\
 
 arch_build2$(OBJ)		:	arch_build2.c				\
 					module.h				\
-					common.h				\
+					context.h				\
 					graph.h					\
 					arch.h					\
 					arch$(OBJ)				\
@@ -834,10 +834,10 @@ bgraph_bipart_ml$(OBJ)		:	bgraph_bipart_ml.c			\
 					bgraph_bipart_st.h
 
 bgraph_bipart_st$(OBJ)		:	bgraph_bipart_st.c			\
-					gain.h					\
-					fibo.h					\
 					module.h				\
 					common.h				\
+					gain.h					\
+					fibo.h					\
 					parser.h				\
 					graph.h					\
 					arch$(OBJ)				\
@@ -2289,6 +2289,7 @@ library_graph_check_f$(OBJ)	:	library_graph_check_f.c			\
 library_graph_coarsen$(OBJ)	:	library_graph_coarsen.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					graph.h					\
 					graph_coarsen.h				\
 					scotch.h
