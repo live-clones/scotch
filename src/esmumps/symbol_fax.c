@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -41,19 +41,21 @@
 /**                factorization routine.                  **/
 /**                                                        **/
 /**   DATES      : # Version 0.0  : from : 22 jul 1998     **/
-/**                                 to     29 sep 1998     **/
+/**                                 to   : 29 sep 1998     **/
 /**                # Version 0.1  : from : 04 apr 1999     **/
-/**                                 to     21 apr 1999     **/
+/**                                 to   : 21 apr 1999     **/
 /**                # Version 0.2  : from : 08 may 2000     **/
-/**                                 to     09 may 2000     **/
+/**                                 to   : 09 may 2000     **/
 /**                # Version 1.0  : from : 13 mar 2002     **/
-/**                                 to     08 jun 2002     **/
+/**                                 to   : 08 jun 2002     **/
 /**                # Version 1.2  : from : 23 aug 2002     **/
-/**                                 to     23 aug 2002     **/
+/**                                 to   : 23 aug 2002     **/
 /**                # Version 2.0  : from : 21 mar 2003     **/
-/**                                 to     21 mar 2003     **/
+/**                                 to   : 21 mar 2003     **/
 /**                # Version 6.0  : from : 06 feb 2020     **/
-/**                                 to     06 feb 2020     **/
+/**                                 to   : 06 feb 2020     **/
+/**                # Version 6.1  : from : 24 feb 2020     **/
+/**                                 to   : 24 feb 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -305,7 +307,9 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
       bloktax[bloknum].frownum = cblktax[cblknum].fcolnum; /* Build diagonal block */
       bloktax[bloknum].lrownum = cblktax[cblknum].lcolnum;
       bloktax[bloknum].cblknum = cblknum;
+#ifdef SYMBOL_HAS_LEVFVAL
       bloktax[bloknum].levfval = 0;
+#endif /* SYMBOL_HAS_LEVFVAL */
       bloknum ++;
 
       for (sortnum = 0; sortnum < sortnbr; ) {    /* For all entries in sorted array */
@@ -333,7 +337,9 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
                (sorttab[sortnum] < rangtax[cblkctr + 1])) ;
         bloktax[bloknum].lrownum = sorttab[sortnum - 1]; /* Set end of block */
         bloktax[bloknum].cblknum = cblkctr;
+#ifdef SYMBOL_HAS_LEVFVAL
         bloktax[bloknum].levfval = 0;
+#endif /* SYMBOL_HAS_LEVFVAL */
         bloknum ++;                               /* One more block */
       }
     }
@@ -460,7 +466,9 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
         bloktax[bloknum].frownum = tloktab[tloknum].frownum;
         bloktax[bloknum].lrownum = tloktab[tloknum].lrownum;
         bloktax[bloknum].cblknum = tloktab[tloknum].cblknum;
+#ifdef SYMBOL_HAS_LEVFVAL
         bloktax[bloknum].levfval = 0;
+#endif /* SYMBOL_HAS_LEVFVAL */
       }
     }
     if ((bloknum - cblktax[cblknum].bloknum) > 2) { /* If more than one extra-diagonal blocks exist                 */
