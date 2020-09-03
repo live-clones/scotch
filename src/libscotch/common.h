@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 18 sep 2019     **/
+/**                                 to   : 22 nov 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -402,6 +402,7 @@ void                        intSort2asc1        (void * const, const INT);
 void                        intSort2asc2        (void * const, const INT);
 void                        intSort3asc1        (void * const, const INT);
 void                        intSort3asc2        (void * const, const INT);
+void                        intPsort2asc1       (void * const, const INT, const int);
 INT                         intSearchDicho      (const INT * const, const INT, const INT, const INT);
 INT                         intGcd              (INT, INT);
 

@@ -499,6 +499,7 @@ common_file_decompress$(OBJ)	:	common_file_decompress.c		\
 common_integer$(OBJ)		:	common_integer.c			\
 					module.h				\
 					common.h				\
+					common_psort.c				\
 					common_sort.c
 					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 

@@ -333,6 +333,7 @@
 #define intAscn                     SCOTCH_NAME_INTERN (intAscn)
 #define intGcd                      SCOTCH_NAME_INTERN (intGcd)
 #define intPerm                     SCOTCH_NAME_INTERN (intPerm)
+#define intPsort2asc1               SCOTCH_NAME_INTERN (intPsort2asc1)
 #define intRandInit                 SCOTCH_NAME_INTERN (intRandInit)
 #define intRandLoad                 SCOTCH_NAME_INTERN (intRandLoad)
 #define intRandSave                 SCOTCH_NAME_INTERN (intRandSave)

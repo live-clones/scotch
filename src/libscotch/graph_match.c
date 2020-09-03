@@ -169,7 +169,7 @@ Gnum                                finevertnnd)
   thrdptr->finequeunbr =
   finequeunbr          = finevertnnd - finevertbas;
 
-  intSort2asc1 (thrdptr->finequeutab, finequeunbr);
+  intPsort2asc1 (thrdptr->finequeutab, finequeunbr, 3);
 }
 
 /***********************************/
