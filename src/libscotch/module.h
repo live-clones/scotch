@@ -53,7 +53,7 @@
 /**                # Version 6.0  : from : 12 sep 2008     **/
 /**                                 to   : 24 aug 2020     **/
 /**                # Version 6.1  : from : 24 aug 2020     **/
-/**                                 to   : 24 aug 2020     **/
+/**                                 to   : 31 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -838,7 +838,7 @@
 #define graphPtscotch               SCOTCH_NAME_INTERN (graphPtscotch)
 
 #define hallOrderHdHalmd            SCOTCH_NAME_INTERN (hallOrderHdHalmd)
-#define hallOrderHfR2hamdf4         SCOTCH_NAME_INTERN (hallOrderHfR2hamdf4)
+#define hallOrderHfR3Hamdf4         SCOTCH_NAME_INTERN (hallOrderHfR3Hamdf4)
 #define hallOrderHxBuild            SCOTCH_NAME_INTERN (hallOrderHxBuild)
 #define hallOrderHxTree             SCOTCH_NAME_INTERN (hallOrderHxTree)
 

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -49,6 +49,8 @@
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 6.0  : from : 30 apr 2018     **/
 /**                                 to   : 30 apr 2018     **/
+/**                # Version 6.1  : from : 29 oct 2019     **/
+/**                                 to   : 11 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,13 +91,15 @@ const Gnum                                ordenum, /*+ Zero-based ordering numbe
 OrderCblk * restrict const                cblkptr, /*+ Multiple column-block      +*/
 const HgraphOrderHfParam * restrict const paraptr)
 {
+  Gnum                n;                          /* Number of nodes to order (with halo or not) */
+  Gnum                norig;                      /* Number of nodes in uncompressed graph       */
   Gnum                nbbuck;
   Gnum * restrict     petab;
   Gnum                pfree;
+  Gnum * restrict     lentab;
   Gnum                iwlen;
   Gnum * restrict     iwtab;
-  Gnum * restrict     lentab;
-  Gnum * restrict     nvartab;
+  Gnum * restrict     nvtab;
   Gnum * restrict     elentab;
   Gnum * restrict     lasttab;
   Gnum * restrict     leaftab;
@@ -104,38 +108,38 @@ const HgraphOrderHfParam * restrict const paraptr)
   Gnum * restrict     frsttab;
   Gnum * restrict     headtab;                    /* Head array : nbbuck = 2 * n                 */
   Gnum                ncmpa;
-  Gnum                n;                          /* Number of nodes to order (with halo or not) */
   int                 o;
 
-  if (grafptr->s.vertnbr < paraptr->colmin)       /* If graph is too small, order simply */
+  if (grafptr->vnlosum < paraptr->colmin)         /* If graph is too small, order simply */
     return (hgraphOrderSi (grafptr, ordeptr, ordenum, cblkptr));
 
   n      = grafptr->s.vertnbr;
-  nbbuck = n * 2;
+  norig  = grafptr->s.velosum;
+  nbbuck = norig * 2;
   iwlen  = (Gnum) ((double) grafptr->s.edgenbr * HGRAPHORDERHFCOMPRAT) + 32;
-  if (iwlen < n)                                  /* Prepare to re-use array */
+  if (iwlen < n)                                  /* TRICK: make sure to be able to re-use array */
     iwlen = n;
 
   if (memAllocGroup ((void **) (void *)
-                     &petab,   (size_t) (n     * sizeof (Gnum)),
-                     &iwtab,   (size_t) (iwlen * sizeof (Gnum)),
-                     &lentab,  (size_t) (n     * sizeof (Gnum)),
-                     &nvartab, (size_t) (n     * sizeof (Gnum)),
-                     &elentab, (size_t) (n     * sizeof (Gnum)),
-                     &lasttab, (size_t) (n     * sizeof (Gnum)),
-                     &leaftab, (size_t) (n     * sizeof (Gnum)),
-                     &frsttab, (size_t) (n     * sizeof (Gnum)),
-                     &secntab, (size_t) (n     * sizeof (Gnum)),
-                     &nexttab, (size_t) (n     * sizeof (Gnum)),
-                     &headtab, (size_t) ((nbbuck + 2) * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint  ("hgraphOrderHf: out of memory");
-    return      (1);
+                     &petab,   (size_t) (n * sizeof (Gnum)),
+                     &lentab,  (size_t) (n * sizeof (Gnum)),
+                     &nvtab,   (size_t) (n * sizeof (Gnum)),
+                     &elentab, (size_t) (n * sizeof (Gnum)),
+                     &lasttab, (size_t) (n * sizeof (Gnum)),
+                     &leaftab, (size_t) (n * sizeof (Gnum)),
+                     &frsttab, (size_t) (n * sizeof (Gnum)),
+                     &secntab, (size_t) (n * sizeof (Gnum)),
+                     &nexttab, (size_t) (n * sizeof (Gnum)),
+                     &headtab, (size_t) ((nbbuck + 2) * sizeof (Gnum)),
+                     &iwtab,   (size_t) (iwlen * sizeof (Gnum)), NULL) == NULL) {
+    errorPrint ("hgraphOrderHf: out of memory");
+    return     (1);
   }
 
-  hgraphOrderHxFill (grafptr, petab, lentab, iwtab, nvartab, elentab, &pfree);
+  hgraphOrderHxFill (grafptr, petab, lentab, iwtab, nvtab, elentab, &pfree);
 
-  hallOrderHfR2hamdf4 (n, 0, nbbuck, iwlen, petab, pfree, /* No elements here */
-                       lentab, iwtab, nvartab, elentab, lasttab, &ncmpa,
+  hallOrderHfR3Hamdf4 (norig, n, 0, nbbuck, iwlen, petab, pfree,
+                       lentab, iwtab, nvtab, elentab, lasttab, &ncmpa,
                        leaftab, secntab, nexttab, frsttab, headtab);
   if (ncmpa < 0) {
     errorPrint ("hgraphOrderHf: internal error");
@@ -145,7 +149,7 @@ const HgraphOrderHfParam * restrict const paraptr)
 
   o = hallOrderHxBuild (grafptr->s.baseval, n, grafptr->vnohnbr,
                         grafptr->s.vnumtax, ordeptr, cblkptr,
-                        nvartab - grafptr->s.baseval,
+                        nvtab   - grafptr->s.baseval,
                         lentab  - grafptr->s.baseval,
                         petab   - grafptr->s.baseval,
                         frsttab - grafptr->s.baseval,
