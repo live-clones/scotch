@@ -1,4 +1,4 @@
-/* Copyright 2007,2009,2010,2012,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2009,2010,2012,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 20 sep 2019     **/
-/**                                 to   : 20 sep 2019     **/
+/**                                 to   : 07 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -112,18 +112,7 @@ SCOTCH_dgraphInit (
 SCOTCH_Dgraph * const       grafptr,
 MPI_Comm                    proccomm)             /* Communicator to be used for all communications */
 {
-#ifdef SCOTCH_PTHREAD
-  int                 thrdlvlval;
-#endif /* SCOTCH_PTHREAD */
-
-#ifdef SCOTCH_PTHREAD
-  MPI_Query_thread (&thrdlvlval);
-  if (thrdlvlval < MPI_THREAD_MULTIPLE) {
-    errorPrint (STRINGIFY (SCOTCH_dgraphInit) ": Scotch compiled with SCOTCH_PTHREAD and program not launched with MPI_THREAD_MULTIPLE");
-    return     (1);
-  }
-#endif /* SCOTCH_PTHREAD */
-
+#ifdef SCOTCH_DEBUG_DGRAPH2
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphInit) ": internal error (1)");
     return     (1);
@@ -132,6 +121,7 @@ MPI_Comm                    proccomm)             /* Communicator to be used for
     errorPrint (STRINGIFY (SCOTCH_dgraphInit) ": internal error (2)");
     return     (1);
   }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   return (dgraphInit ((Dgraph *) grafptr, proccomm));
 }

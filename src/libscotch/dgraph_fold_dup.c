@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 28 oct 2009     **/
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 28 sep 2014     **/
+/**                # Version 7.0  : from : 03 sep 2020     **/
+/**                                 to   : 03 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,7 +77,7 @@
 ** - !0  : on error.
 */
 
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
 static
 void *
 dgraphFoldDup2 (
@@ -89,7 +91,7 @@ void * const                    dataptr)          /* Pointer to thread data */
                                            fldthrdptr->fldproccomm, fldthrdptr->orgdataptr,
                                            fldthrdptr->flddataptr, fldthrdptr->datatype));
 }
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 
 int
 dgraphFoldDup (
@@ -103,11 +105,11 @@ MPI_Datatype                  datatype)
   int                       fldprocnum;
   int                       fldproccol;
   MPI_Comm                  fldproccommtab[2];
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
   Dgraph                    orggrafdat;
   DgraphFoldDupData         fldthrdtab[2];
   pthread_t                 thrdval;              /* Data of second thread */
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
   int                       o;
 
   fldprocnbr = (orggrafptr->procglbnbr + 1) / 2;  /* Median cut on number of processors     */
@@ -126,7 +128,7 @@ MPI_Datatype                  datatype)
     return      (1);
   }
 
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
   orggrafdat = *orggrafptr;                       /* Create a separate graph structure to change its communicator */
 
   fldthrdtab[0].orggrafptr  = orggrafptr;
@@ -162,10 +164,10 @@ MPI_Datatype                  datatype)
   }
   MPI_Comm_free (&orggrafdat.proccomm);
 
-#else /* SCOTCH_PTHREAD */
+#else /* SCOTCH_PTHREAD_MPI */
   o = (dgraphFold2 (orggrafptr, 0, fldgrafptr, fldproccommtab[0], orgdataptr, flddataptr, datatype) || /* Call routines in sequence */
        dgraphFold2 (orggrafptr, 1, fldgrafptr, fldproccommtab[1], orgdataptr, flddataptr, datatype));
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 
   fldgrafptr->prockeyval = fldproccol;            /* Discriminate between folded communicators at same level */
 

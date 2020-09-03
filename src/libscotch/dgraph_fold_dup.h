@@ -69,7 +69,7 @@ typedef struct DgraphFoldDupData_ {
 */
 
 #ifdef DGRAPH_FOLD_DUP
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
 static void *               dgraphFoldDup2      (void *);
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 #endif /* DGRAPH_FOLD_DUP */

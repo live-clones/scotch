@@ -76,9 +76,9 @@ typedef struct DgraphHaloRequest_ {
 */
 
 #ifdef DGRAPH_HALO
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
 static void *               dgraphHaloAsync2    (DgraphHaloRequest * restrict);
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 #endif /* DGRAPH_HALO */
 void                        dgraphHaloAsync     (Dgraph * restrict const, void * restrict const, const MPI_Datatype, DgraphHaloRequest * restrict);
 int                         dgraphHaloWait      (DgraphHaloRequest * restrict);
