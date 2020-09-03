@@ -30,10 +30,10 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
-VERSION	= 6
-RELEASE = 1
-PATCHLEVEL = 3
-# CODENAME = ""
+VERSION	= 7
+RELEASE = 0
+PATCHLEVEL = 0
+CODENAME = "Sankara"
 
 .PHONY				:	clean	default	install	ptscotch	realclean	required	scotch
 
