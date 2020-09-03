@@ -69,8 +69,8 @@ clean				:
 
 test_hamf$(EXE)			:	test_hamf.c		\
 					$(hamfobj)
-					$(CC) $(CFLAGS) -Wall -g $(<) hamf*$(OBJ) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lgfortran -lscotch -lscotcherr -lm -pthread -o $(@)
+					$(CC) $(CFLAGS) -Wall -g $(<) $(hamfobj) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lgfortran -lscotch -lscotcherr -lm -pthread -o $(@)
 
 test_hamf_graph$(EXE)		:	test_hamf_graph.c	\
 					$(hamfobj)
-					$(CC) $(CFLAGS) -Wall -g $(<) hamf*$(OBJ) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lgfortran -lscotch -lscotcherr -lm -pthread -o $(@)
+					$(CC) $(CFLAGS) -Wall -g $(<) $(hamfobj) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lgfortran -lscotch -lscotcherr -lm -pthread -o $(@)
