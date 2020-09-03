@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -47,6 +47,8 @@
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
+/**                # Version 6.1  : from : 01 jun 2020     **/
+/**                                 to   : 14 jun 2020     **/
 /**                                                        **/
 /**   NOTES      : # The cost analysis routine leaves the  **/
 /**                  memory management to malloc and free  **/
@@ -80,6 +82,7 @@ static File                 C_fileTab[3] = {      /* File array                 
 static const char *         C_usageList[] = {
   "gotst [<input graph file> [<input ordering file> [<output data file>]]] <options>",
   "  -h  : Display this help",
+  "  -v  : Do not account for vertex weights",
   "  -V  : Print program version and copyright",
   NULL };
 
@@ -98,13 +101,17 @@ char *                      argv[])
   SCOTCH_Num          vertnbr;
   SCOTCH_Num *        verttab;
   SCOTCH_Num *        vendtab;
+  SCOTCH_Num *        velotab;
   SCOTCH_Num          edgenbr;
   SCOTCH_Num *        edgetab;
   SCOTCH_Num          baseval;
   SCOTCH_Ordering     ordedat;
   SCOTCH_Num *        permtab;
   SCOTCH_Num *        peritab;
+  int                 flagval;
   int                 i;
+
+  flagval = C_FLAGNONE;                           /* Default behavior */
 
   errorProg ("gotst");
 
@@ -128,6 +135,9 @@ char *                      argv[])
         case 'h' :
           usagePrint (stdout, C_usageList);
           return     (EXIT_SUCCESS);
+        case 'v' :
+          flagval |= C_FLAGNOVERT;
+          break;
         case 'V' :
           fprintf (stderr, "gotst, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
@@ -142,8 +152,8 @@ char *                      argv[])
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
   SCOTCH_graphInit (&grafdat);
-  SCOTCH_graphLoad (&grafdat, C_filepntrgrfinp, -1, 3);
-  SCOTCH_graphData (&grafdat, &baseval, &vertnbr, &verttab, &vendtab, NULL, NULL, &edgenbr, &edgetab, NULL);
+  SCOTCH_graphLoad (&grafdat, C_filepntrgrfinp, -1, ((flagval & C_FLAGNOVERT) != 0) ? 3 : 2); /* Read source graph with or without vertex weights */
+  SCOTCH_graphData (&grafdat, &baseval, &vertnbr, &verttab, &vendtab, &velotab, NULL, &edgenbr, &edgetab, NULL);
 #ifdef SCOTCH_DEBUG_ALL
   if (vendtab != (verttab + 1))
     errorPrint ("main: graph should be compact");
@@ -158,7 +168,7 @@ char *                      argv[])
   if (SCOTCH_graphOrderCheck (&grafdat, &ordedat) != 0)
     errorPrint ("main: invalid ordering");
 
-  factorView (baseval, vertnbr, verttab, edgenbr, edgetab, permtab, peritab, C_filepntrdatout);
+  factorView (baseval, vertnbr, verttab, velotab, edgenbr, edgetab, permtab, peritab, C_filepntrdatout);
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
@@ -182,21 +192,22 @@ factorView (
 const SCOTCH_Num              baseval,
 const SCOTCH_Num              vertnbr,
 const SCOTCH_Num * const      verttab,
+const SCOTCH_Num * const      velotab,
 const SCOTCH_Num              edgenbr,
 const SCOTCH_Num * const      edgetab,
 const SCOTCH_Num * const      permtab,
 const SCOTCH_Num * const      peritab,
 FILE * restrict const         stream)
 {
-  SCOTCH_Num * restrict   ldadtab;
-  SCOTCH_Num * restrict   lsontab;
-  SCOTCH_Num * restrict   lbrotab;
-  SCOTCH_Num * restrict   fnnztab;
-  double                  fopcsum;
-  double                  heigsum;
-  FactorStat              statdat;
-  SCOTCH_Num              vertnum;
-  int                     o;
+  FactorStat          statdat;                    /* Structure holding data for performing elimination tree statistics              */
+  SCOTCH_Num *        ldadtab;                    /* Array of permuted indices of parent column in factored matrix                  */
+  SCOTCH_Num *        lsontab;                    /* Array of permuted indices of first child column in factored matrix             */
+  SCOTCH_Num *        lbrotab;                    /* Array of permuted indices of sibling column in factored matrix                 */
+  SCOTCH_Num *        fnnztab;                    /* Array of number of row indices, then of weighted factors, in factored matrix   */
+  double              fopcsum;                    /* Sum of OPC values for all independent elimination trees in factored matrix     */
+  double              heigsum;                    /* Sum of branch heights for all independent elimination trees in factored matrix */
+  SCOTCH_Num          fcolnum;                    /* Index of permuted column in factored matrix                                    */
+  int                 o;
 
   if (memAllocGroup ((void **) (void *)
                      &ldadtab, (size_t) (vertnbr * sizeof (SCOTCH_Num)),
@@ -206,12 +217,15 @@ FILE * restrict const         stream)
     errorPrint ("factorView: out of memory");
     return     (1);
   }
+  statdat.velotax = (velotab != NULL) ? (velotab - baseval) : NULL;
+  statdat.peritax = peritab - baseval;
   statdat.ldadtax = ldadtab - baseval;
   statdat.lsontax = lsontab - baseval;
   statdat.lbrotax = lbrotab - baseval;
   statdat.fnnztax = fnnztab - baseval;
 
-  if (factorView2 (baseval, vertnbr, verttab - baseval, edgetab - baseval, permtab - baseval, peritab - baseval,
+  if (factorView2 (baseval, vertnbr, verttab - baseval, statdat.velotax,
+                   edgetab - baseval, permtab - baseval, peritab - baseval,
                    ldadtab - baseval, lsontab - baseval, lbrotab - baseval, fnnztab - baseval) != 0) {
     errorPrint ("factorView: factored matrix too large");
     memFree    (ldadtab);                         /* Free group leader */
@@ -222,17 +236,17 @@ FILE * restrict const         stream)
   statdat.heigmax =
   statdat.heignbr = 0;
   heigsum         = 0.0L;
-  for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Get height sum        */
-    if (ldadtab[vertnum] == -1)                   /* If column is a root      */
-      factorView3 (&statdat, 1, vertnum + baseval, &heigsum); /* Scan subtree */
+  for (fcolnum = 0; fcolnum < vertnbr; fcolnum ++) { /* Get height sum        */
+    if (ldadtab[fcolnum] == -1)                   /* If column is a root      */
+      factorView3 (&statdat, 1, fcolnum + baseval, &heigsum); /* Scan subtree */
   }
   statdat.heigavg = heigsum / (double) statdat.heignbr;
   statdat.heigdlt = 0.0L;
   statdat.fnnzsum = 0.0L;
   fopcsum         = 0.0L;
-  for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Get delta        */
-    if (ldadtab[vertnum] == -1)                   /* If column is a root */
-      factorView4 (&statdat, 1, vertnum + baseval, &fopcsum);
+  for (fcolnum = 0; fcolnum < vertnbr; fcolnum ++) { /* Get delta        */
+    if (ldadtab[fcolnum] == -1)                   /* If column is a root */
+      factorView4 (&statdat, 1, fcolnum + baseval, &fopcsum);
   }
   statdat.heigdlt /= (double) statdat.heignbr;
 
@@ -252,12 +266,19 @@ FILE * restrict const         stream)
   return (o);
 }
 
+/* This routine performs the symbolic factorization
+** and creates the elimination tree structure. Also,
+** it computes the (possibly weighted) sum of factors
+** for each permuted column.
+*/
+
 static
 int
 factorView2 (
 const SCOTCH_Num              baseval,
 const SCOTCH_Num              vertnbr,
 const SCOTCH_Num * const      verttax,
+const SCOTCH_Num * const      velotax,
 const SCOTCH_Num * const      edgetax,
 const SCOTCH_Num * const      permtax,
 const SCOTCH_Num * const      peritax,
@@ -266,9 +287,9 @@ SCOTCH_Num * restrict         lsontax,
 SCOTCH_Num * restrict         lbrotax,
 SCOTCH_Num * restrict         fnnztax)
 {
-  SCOTCH_Num * restrict         frowtab;
-  SCOTCH_Num * restrict         fnxttab;
-  SCOTCH_Num ** restrict        facttax;
+  SCOTCH_Num * restrict         frowtab;          /* Array for sorting permuted row indices in column being factored */
+  SCOTCH_Num * restrict         fnxttab;          /* Index array for chaining permuted row indices in frowtab        */
+  SCOTCH_Num ** restrict        facttax;          /* Array of row index arrays for all factored colums to date       */
   SCOTCH_Num                    vertnnd;
   SCOTCH_Num                    pcolnum;
 
@@ -286,26 +307,27 @@ SCOTCH_Num * restrict         fnnztax)
 
   vertnnd = vertnbr + baseval;
   for (pcolnum = baseval; pcolnum < vertnnd; pcolnum ++) { /* For all columns of the permuted matrix */
-    SCOTCH_Num *          fcoltab;
-    SCOTCH_Num * restrict fcolptr;
-    SCOTCH_Num            frownbr;
-    SCOTCH_Num            frowidx;
-    SCOTCH_Num            frowidd;
-    SCOTCH_Num            scolnum;
-    SCOTCH_Num            icolnum;
-    SCOTCH_Num            irownum;
-    SCOTCH_Num            dcolnum;
+    SCOTCH_Num *        fcoltab;
+    SCOTCH_Num *        fcolptr;
+    SCOTCH_Num          frownbr;
+    SCOTCH_Num          frowidx;
+    SCOTCH_Num          frowidd;
+    SCOTCH_Num          scolnum;
+    SCOTCH_Num          icolnum;                  /* Based non-permuted column index */
+    SCOTCH_Num          edgenum;
+    SCOTCH_Num          edgennd;
+    SCOTCH_Num          dcolnum;
 
-    icolnum = peritax[pcolnum];                   /* Get the original number of the column */
+    icolnum = peritax[pcolnum];                   /* Get the un-permuted index of the column */
 
     frownbr    = 1;                               /* Start array of factored terms for column   */
     frowtab[0] = pcolnum;                         /* Add diagonal element as unmoveable starter */
-    for (irownum = verttax[icolnum]; irownum < verttax[icolnum + 1]; irownum ++) {
+    for (edgenum = verttax[icolnum], edgennd = verttax[icolnum + 1]; edgenum < edgennd; edgenum ++) {
       SCOTCH_Num          prownum;
 
-      prownum = permtax[edgetax[irownum]];        /* Get permuted row */
+      prownum = permtax[edgetax[edgenum]];        /* Get permuted row */
 
-      if (prownum >= pcolnum)
+      if (prownum >= pcolnum)                     /* Include only permuted row indices of higher rank (lower triangular matrix) */
         frowtab[frownbr ++] = prownum;
     }
     intSort1asc1 (frowtab + 1, frownbr - 1);      /* Sort rows in ascending order */
@@ -316,27 +338,33 @@ SCOTCH_Num * restrict         fnnztax)
     frowidd = frowidx;                            /* Save index of trailer */
 
     for (scolnum = lsontax[pcolnum]; scolnum != -1; scolnum = lbrotax[scolnum]) { /* For all son columns in elimination tree */
-      const SCOTCH_Num * restrict srowtab;
+      const SCOTCH_Num * restrict srowtab;        /* Array of factored indices for son column                                */
       SCOTCH_Num                  srownbr;
       SCOTCH_Num                  srowidx;
-      SCOTCH_Num                  frowidx;
-      SCOTCH_Num                  foldidx;
-      SCOTCH_Num                  frownum;
+      SCOTCH_Num                  frowidx;        /* Index of current factor in singly-linked list        */
+      SCOTCH_Num                  foldidx;        /* Index of before-current factor in singly-linked list */
+      SCOTCH_Num                  frownum;        /* Value of current factor in singly-linked list        */
+      SCOTCH_Num                  fnnzsum;
 
-      srowtab = facttax[scolnum];                 /* Point to array of factors for son column */
-      srownbr = fnnztax[scolnum];                 /* Get size of array                        */
+      srowtab = facttax[scolnum];                 /* Point to array of factors for son column                    */
+      srownbr = fnnztax[scolnum];                 /* Get size of array                                           */
+      if (velotax != NULL)                        /* If needed, accumulate weight of first extra-diagonal factor */
+        fnnzsum = velotax[peritax[srowtab[0]]];
+
       for (srowidx = 1, frowidx = 0, foldidx = -1, frownum = frowtab[frowidx];
            srowidx < srownbr; srowidx ++) {
         SCOTCH_Num                  srownum;
 
         srownum = srowtab[srowidx];
+        if (velotax != NULL)                      /* If needed, accumulate loads before freeing factored son column */
+          fnnzsum += velotax[peritax[srownum]];
 
         while (frownum < srownum) {               /* While factor to add not in place */
           foldidx = frowidx;                      /* Skip to next position            */
           frowidx = fnxttab[frowidx];
           frownum = frowtab[frowidx];
         }
-        if (srownum == frownum)                   /* If factor already in column */
+        if (srownum == frownum)                   /* If factor already in column, skip it */
           continue;
 
         frowtab[frownbr] = srownum;               /* Add new slot  */
@@ -345,7 +373,10 @@ SCOTCH_Num * restrict         fnnztax)
         foldidx          = frownbr ++;
       }
 
-      memFree ((void *) srowtab);                 /* Free now useless factored column */
+      if (velotax != NULL)                        /* If needed, accumulate sum of extra-diagonal factors in column */
+        fnnztax[scolnum] = fnnzsum;
+
+      memFree (srowtab);                          /* Free now useless son factored column */
 #ifdef SCOTCH_DEBUG_ALL
       facttax[scolnum] = NULL;
 #endif /* SCOTCH_DEBUG_ALL */
@@ -366,6 +397,7 @@ SCOTCH_Num * restrict         fnnztax)
       errorPrint ("factorView2: out of memory (2)");
       return     (1);
     }
+
     for (frowidx = fnxttab[0], fcolptr = fcoltab; frowidx != frowidd; frowidx = fnxttab[frowidx]) /* Fill factored array for column */
       *fcolptr ++ = frowtab[frowidx];
 
@@ -382,21 +414,25 @@ SCOTCH_Num * restrict         fnnztax)
   return (0);
 }
 
+/* This routine traverses the elimination tree from the root(s),
+** so as to compute minimum, maximum, and sum of tree branches.
+*/
+
 static
 void
 factorView3 (
 FactorStat * restrict const   statptr,
 SCOTCH_Num                    levlnum,
-SCOTCH_Num                    vertnum,
+SCOTCH_Num                    fcolnum,
 double * restrict const       hsumptr)
 {
   double                  hsumtmp;
 
   hsumtmp = 0.0;
-  if (statptr->lsontax[vertnum] != -1) {          /* If node has descendants */
+  if (statptr->lsontax[fcolnum] != -1) {          /* If node has descendants */
     SCOTCH_Num              csonnum;
 
-    for (csonnum = statptr->lsontax[vertnum]; csonnum != -1; csonnum = statptr->lbrotax[csonnum])
+    for (csonnum = statptr->lsontax[fcolnum]; csonnum != -1; csonnum = statptr->lbrotax[csonnum])
       factorView3 (statptr, levlnum + 1, csonnum, &hsumtmp);
   }
   else {
@@ -411,27 +447,32 @@ double * restrict const       hsumptr)
 
   *hsumptr += hsumtmp;
 }
+/* This routine traverses the elimination tree from the root(s),
+** so as to compute minimum, maximum, and sum of tree branches.
+*/
 
 static
 void
 factorView4 (
 FactorStat * restrict const   statptr,
 SCOTCH_Num                    levlnum,
-SCOTCH_Num                    vertnum,
+SCOTCH_Num                    fcolnum,
 double * restrict const       fopcptr)
 {
+  SCOTCH_Num              veloval;
   SCOTCH_Num              fnnztmp;
   double                  fopctmp;
 
-  fnnztmp = statptr->fnnztax[vertnum] + 1;        /* Get extra-diagonals, plus diagonal */
-  fopctmp  = (double) fnnztmp;
+  veloval = (statptr->velotax == NULL) ? 1 : statptr->velotax[statptr->peritax[fcolnum]];
+  fnnztmp = statptr->fnnztax[fcolnum] + veloval;  /* Get extra-diagonals, plus diagonal */
+  fopctmp = (double) (fnnztmp * veloval);
   statptr->fnnzsum += fopctmp;
-  fopctmp *= fopctmp;
+  fopctmp *= (double) fnnztmp;
 
-  if (statptr->lsontax[vertnum] != -1) {          /* If node has descendants */
+  if (statptr->lsontax[fcolnum] != -1) {          /* If node has descendants */
     SCOTCH_Num              csonnum;
 
-    for (csonnum = statptr->lsontax[vertnum]; csonnum != -1; csonnum = statptr->lbrotax[csonnum])
+    for (csonnum = statptr->lsontax[fcolnum]; csonnum != -1; csonnum = statptr->lbrotax[csonnum])
       factorView4 (statptr, levlnum + 1, csonnum, &fopctmp); /* Accumulate OPC on local sum */
   }
   else

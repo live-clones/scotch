@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -45,6 +45,8 @@
 /**                                 to   : 25 jul 2007     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
 /**                                 to   : 12 nov 2014     **/
+/**                # Version 6.1  : from : 01 jun 2020     **/
+/**                                 to   : 14 jun 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,6 +67,11 @@
 #define C_filepntrordinp            fileBlockFile (C_fileTab, 1) /* Ordering output file */
 #define C_filepntrdatout            fileBlockFile (C_fileTab, 2) /* Output data file     */
 
+/*+ Process flags. +*/
+
+#define C_FLAGNONE                  0x0000        /* No flags                          */
+#define C_FLAGNOVERT                0x0001        /* Do not account for vertex weights */
+
 /*
 **  The type and structure definitions.
 */
@@ -80,15 +87,17 @@ typedef struct C_FactorNode_ {
 /* Data structure for computing factored matrix statistics. */
 
 typedef struct FactorStat_ {
-  const SCOTCH_Num *      ldadtax;
-  const SCOTCH_Num *      lsontax;
-  const SCOTCH_Num *      lbrotax;
+  const SCOTCH_Num *      velotax;                /*+ Array of vertex weights (or NULL)                                             +*/
+  const SCOTCH_Num *      peritax;                /*+ Inverse permutation array                                                     +*/
+  const SCOTCH_Num *      ldadtax;                /*+ Array of permuted indices of parent column                                    +*/
+  const SCOTCH_Num *      lsontax;                /*+ Array of permuted indices of first child column                               +*/
+  const SCOTCH_Num *      lbrotax;                /*+ Array of permuted indices of sibling column                                   +*/
   SCOTCH_Num              heigmin;
   SCOTCH_Num              heigmax;
   SCOTCH_Num              heignbr;
   double                  heigavg;
   double                  heigdlt;
-  const SCOTCH_Num *      fnnztax;
+  const SCOTCH_Num *      fnnztax;                /*+ Array of number of factored rows, then sum of vertex weights of factored rows +*/
   double                  fnnzsum;
 } FactorStat;
 
@@ -96,7 +105,7 @@ typedef struct FactorStat_ {
 **  The function prototypes.
 */
 
-static int                  factorView          (const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, FILE * restrict const);
-static int                  factorView2         (const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * restrict, SCOTCH_Num * restrict, SCOTCH_Num * restrict, SCOTCH_Num * restrict);
+static int                  factorView          (const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, FILE * restrict const);
+static int                  factorView2         (const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * restrict, SCOTCH_Num * restrict, SCOTCH_Num * restrict, SCOTCH_Num * restrict);
 static void                 factorView3         (FactorStat * restrict const, SCOTCH_Num, SCOTCH_Num, double * restrict const);
 static void                 factorView4         (FactorStat * restrict const, SCOTCH_Num, SCOTCH_Num, double * restrict const);
