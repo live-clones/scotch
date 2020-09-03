@@ -1,5 +1,5 @@
 /* This file is part of the Scotch distribution.
-** It does not include the standard Scotch header because it is a very
+** It does not include the standard Scotch header because it is a
 ** slight adaptation of the qsort routine of glibc 2.4, taylored to
 ** match Scotch needs.
 ** Consequently, this file is distributed according to the terms of
@@ -9,7 +9,7 @@
 /* Copyright (C) 1991,1992,1996,1997,1999,2004 Free Software Foundation, Inc.
    This file is extracted from the GNU C Library.
    Written by Douglas C. Schmidt (schmidt@ics.uci.edu).
-   Modifications (C) 2005 IPB, Universite de Bordeaux, INRIA & CNRS
+   Modifications (C) 2019 IPB, Universite de Bordeaux, INRIA & CNRS
    Modified by Francois Pellegrini (francois.pellegrini@u-bordeaux.fr).
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -31,17 +31,18 @@
    Engineering a sort function; Jon Bentley and M. Douglas McIlroy;
    Software - Practice and Experience; Vol. 23 (11), 1249-1265, 1993.  */
 
-#ifndef STACK_NODE_DEFINED
-#define STACK_NODE_DEFINED
+#ifndef STACK_NODE_L_DEFINED
+#define STACK_NODE_L_DEFINED
 
 /* Stack node declarations used to store unfulfilled partition obligations. */
 typedef struct
   {
     char *lo;
     char *hi;
-  } stack_node;
+    int lv;
+  } stack_node_l;
 
-#endif /* STACK_NODE_DEFINED */
+#endif /* STACK_NODE_L_DEFINED */
 
 #ifndef MAX_THRESH
 
@@ -55,8 +56,8 @@ typedef struct
    upper bound for log (total_elements):
    bits per byte (CHAR_BIT) * sizeof(size_t).  */
 #define STACK_SIZE	(CHAR_BIT * sizeof (INT))
-#define PUSH(low, high)	((void) ((top->lo = (low)), (top->hi = (high)), ++top))
-#define	POP(low, high)	((void) (--top, (low = top->lo), (high = top->hi)))
+#define PUSH(low, high, lvl)	((void) ((top->lo = (low)), (top->hi = (high)), (top->lv = (lvl)), ++top))
+#define	POP(low, high, lvl)	((void) (--top, (low = top->lo), (high = top->hi), (lvl = top->lv)))
 #define	STACK_NOT_EMPTY	(stack < top)
 
 #endif /* MAX_THRESH */
@@ -98,23 +99,21 @@ INTSORTQUAL
 #endif /* INTSORTQUAL */
 void
 INTSORTNAME (
-void * const                pbase,                /*+ Array to sort             +*/
-const INT                   total_elems)          /*+ Number of entries to sort +*/
+void * const                pbase,                /*+ Array to sort                  +*/
+const INT                   total_elems,          /*+ Number of entries to sort      +*/
+const int                   max_levels)           /*+ Maximum number of levels to go +*/
 {
   register char *base_ptr = (char *) pbase;
-
-  if (total_elems == 0)
-    /* Avoid lossage with unsigned arithmetic below.  */
-    return;
 
   if (total_elems > MAX_THRESH)
     {
       char *lo = base_ptr;
       char *hi = &lo[INTSORTSIZE * (total_elems - 1)];
-      stack_node stack[STACK_SIZE];
-      stack_node *top = stack;
+      int lvl = 0;
+      stack_node_l stack[STACK_SIZE];
+      stack_node_l *top = stack;
 
-      PUSH (NULL, NULL);
+      PUSH (NULL, NULL, 0);
 
       while (STACK_NOT_EMPTY)
         {
@@ -176,11 +175,18 @@ const INT                   total_elems)          /*+ Number of entries to sort 
              ignore one or both.  Otherwise, push the larger partition's
              bounds on the stack and continue sorting the smaller one. */
 
+	  if (++lvl >= max_levels)
+	    {
+	      /* If maximum level achieved, prevent going on further on this branch */
+	      lo = right_ptr;
+	      hi = left_ptr;
+	    }
+
           if ((size_t) (right_ptr - lo) <= max_thresh)
             {
               if ((size_t) (hi - left_ptr) <= max_thresh)
 		/* Ignore both small partitions. */
-                POP (lo, hi);
+                POP (lo, hi, lvl);
               else
 		/* Ignore small left partition. */
                 lo = left_ptr;
@@ -191,68 +197,17 @@ const INT                   total_elems)          /*+ Number of entries to sort 
           else if ((right_ptr - lo) > (hi - left_ptr))
             {
 	      /* Push larger left partition indices. */
-              PUSH (lo, right_ptr);
+              PUSH (lo, right_ptr, lvl);
               lo = left_ptr;
             }
           else
             {
 	      /* Push larger right partition indices. */
-              PUSH (left_ptr, hi);
+              PUSH (left_ptr, hi, lvl);
               hi = right_ptr;
             }
         }
     }
-
-  /* Once the BASE_PTR array is partially sorted by quicksort the rest
-     is completely sorted using insertion sort, since this is efficient
-     for partitions below MAX_THRESH size. BASE_PTR points to the beginning
-     of the array to sort, and END_PTR points at the very last element in
-     the array (*not* one beyond it!). */
-
-  {
-    char *const end_ptr = &base_ptr[INTSORTSIZE * (total_elems - 1)];
-    char *tmp_ptr = base_ptr;
-    char *thresh = MIN (end_ptr, base_ptr + max_thresh);
-    register char *run_ptr;
-
-    /* Find smallest element in first threshold and place it at the
-       array's beginning.  This is the smallest array element,
-       and the operation speeds up insertion sort's inner loop. */
-
-    for (run_ptr = tmp_ptr + INTSORTSIZE; run_ptr <= thresh; run_ptr += INTSORTSIZE)
-      if (INTSORTCMP ((void *) run_ptr, (void *) tmp_ptr))
-        tmp_ptr = run_ptr;
-
-    if (tmp_ptr != base_ptr)
-      INTSORTSWAP (tmp_ptr, base_ptr);
-
-    /* Insertion sort, running from left-hand-side up to right-hand-side.  */
-
-    run_ptr = base_ptr + INTSORTSIZE;
-    while ((run_ptr += INTSORTSIZE) <= end_ptr)
-      {
-	tmp_ptr = run_ptr - INTSORTSIZE;
-	while (INTSORTCMP ((void *) run_ptr, (void *) tmp_ptr))
-	  tmp_ptr -= INTSORTSIZE;
-
-	tmp_ptr += INTSORTSIZE;
-        if (tmp_ptr != run_ptr)
-          {
-            char *trav;
-
-	    trav = run_ptr + INTSORTSIZE;
-	    while (--trav >= run_ptr)
-              {
-                char c = *trav;
-                char *hi, *lo;
-
-                for (hi = lo = trav; (lo -= INTSORTSIZE) >= tmp_ptr; hi = lo)
-                  *hi = *lo;
-                *hi = c;
-              }
-          }
-      }
-  }
 }
 
 #undef MAX_THRESH

@@ -528,6 +528,31 @@ UINT                        randmax)
 #undef INTSORTSWAP
 #undef INTSORTCMP
 
+/*****************************/
+/*                           */
+/* Partial sorting routines. */
+/*                           */
+/*****************************/
+
+/* This routine partially sorts an array of
+** pairs of INT values in ascending order by
+** their first value, used as key.
+** It returns:
+** - VOID  : in all cases.
+*/
+
+#define INTSORTNAME                 intPsort2asc1
+#define INTSORTSIZE                 (2 * sizeof (INT))
+#define INTSORTSWAP(p,q)            do { INT t, u; t = *((INT *) (p)); u = *((INT *) (p) + 1); *((INT *) (p)) = *((INT *) (q)); *((INT *) (p) + 1) = *((INT *) (q) + 1); *((INT *) (q)) = t; *((INT *) (q) + 1) = u; } while (0)
+#define INTSORTCMP(p,q)             (*((INT *) (p)) < *((INT *) (q)))
+#include "common_psort.c"
+#undef INTSORTNAME
+#undef INTSORTSIZE
+#undef INTSORTSWAP
+#undef INTSORTCMP
+
+
+
 /* This routine computes the greatest common
 ** divisor of two non-negative integers u and v.
 ** It returns:
