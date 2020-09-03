@@ -103,40 +103,32 @@
 **   i=last(k) <==> column i est le k-th pivot
 */
 
-int
-esmumps (
+static
+void
+esmumps2 (
+Graph * const               grafptr,              /*+ Pointer to graph to order                +*/
 const INT                   n,
-const INT                   iwlen,                /* Not used, just here for consistency */
 INT * restrict const        petab,
-const INT                   pfree,                /* Not used, just here for consistency */
 INT * restrict const        lentab,
 INT * restrict const        iwtab,
 INT * restrict const        nvtab,
-INT * restrict const        elentab,              /* Permutations computed for debugging only */
-INT * restrict const        lasttab)              /* Permutations computed for debugging only */
+INT * restrict const        elentab,              /*+ Permutations computed for debugging only +*/
+INT * restrict const        lasttab)              /*+ Permutations computed for debugging only +*/
 {
-  INT                 baseval;                    /* Base value            */
-  INT * restrict      vendtab;                    /* Vertex end array      */
-  Graph               grafdat;                    /* Graph                 */
-  Order               ordedat;                    /* Graph ordering        */
-  SymbolMatrix        symbdat;                    /* Block factored matrix */
-  INT                 vertnum;
-  INT                 cblknum;
-  INT                 colnum;
-
-  if ((vendtab = memAlloc (n * sizeof (INT))) == NULL) {
-    errorPrint ("esmumps: out of memory");
-    return     (1);
-  }
-  for (vertnum = 0; vertnum < n; vertnum ++)
-    vendtab[vertnum] = petab[vertnum] + lentab[vertnum];
-
-  baseval = 1;                                    /* Assume Fortran-based indexing */
-  graphInit        (&grafdat);
-  graphBuildGraph2 (&grafdat, baseval, n, pfree - 1, petab, vendtab, NULL, NULL, iwtab, NULL);
+  INT                         baseval;            /* Base value                          */
+  Order                       ordedat;            /* Graph ordering                      */
+  SymbolMatrix                symbdat;            /* Block factored matrix               */
+  INT *                       velotab;
+  const INT * restrict        velotax;            /* Based access to inverse permutation */
+  const INT * restrict        peritax;            /* Based access to inverse permutation */
+  const SymbolCblk * restrict cblktax;            /* Based access to column block array  */
+  const SymbolBlok * restrict bloktax;            /* Based access to block array         */
+  INT * restrict              nvtax;
+  INT * restrict              petax;
+  INT                         cblknum;
 
   orderInit  (&ordedat);
-  orderGraph (&ordedat, &grafdat);                /* Compute ordering with Scotch */
+  orderGraph (&ordedat, grafptr);                 /* Compute ordering with Scotch */
 
 #ifdef ESMUMPS_DEBUG                              /* Permutations are output for debugging only */
   memCpy (elentab, ordedat.permtab, n * sizeof (INT)); /* Copy permutations                     */
@@ -144,7 +136,7 @@ INT * restrict const        lasttab)              /* Permutations computed for d
 #endif /* ESMUMPS_DEBUG */
 
   symbolInit     (&symbdat);
-  symbolFaxGraph (&symbdat, &grafdat, &ordedat);  /* Compute block symbolic factorizaion */
+  symbolFaxGraph (&symbdat, grafptr, &ordedat);   /* Compute block symbolic factorizaion */
 
 #ifdef ESMUMPS_DEBUG_OUTPUT
   {
@@ -153,8 +145,8 @@ INT * restrict const        lasttab)              /* Permutations computed for d
     double              fopcval;
 
     dofInit    (&deofdat);
-    dofGraph   (&deofdat, &grafdat, 1, ordedat.peritab); /* Base on graph weights or constant load of 1 */
-    symbolCost (&symbdat, &deofdat, SYMBOLCOSTLDLT, &fnnzval, &fopcval); /* Compute factorization cost  */
+    dofGraph   (&deofdat, grafptr, 1, ordedat.peritab); /* Base on graph weights or constant load of 1 */
+    symbolCost (&symbdat, &deofdat, SYMBOLCOSTLDLT, &fnnzval, &fopcval); /* Compute factorization cost */
 
     fprintf (stderr, "ESMUMPS CblkNbr=" INTSTRING ", BlokNbr=" INTSTRING ", NNZ=%lg, OPC=%lg\n",
              symbdat.cblknbr, symbdat.bloknbr, fnnzval, fopcval);
@@ -163,34 +155,111 @@ INT * restrict const        lasttab)              /* Permutations computed for d
   }
 #endif /* ESMUMPS_DEBUG_OUTPUT */
 
-  for (cblknum = 0; cblknum < symbdat.cblknbr; cblknum ++) { /* For all column blocks */
-    INT                 degnbr;                   /* True degree of column block      */
+  baseval = 1;                                    /* Assume Fortran-based indexing */
+  peritax = ordedat.peritab - baseval;            /* Based accesses                */
+  cblktax = symbdat.cblktab - baseval;
+  bloktax = symbdat.bloktab - baseval;
+  nvtax   = nvtab - baseval;
+  petax   = petab - baseval;
+  graphData (grafptr, NULL, NULL, NULL, NULL, &velotab, NULL, NULL, NULL, NULL); /* Get vertex load array (based) */
+  velotax = (velotab != NULL) ? velotab - baseval : velotab;
+
+  for (cblknum = baseval; cblknum < (symbdat.cblknbr + baseval); cblknum ++) { /* For all column blocks */
+    INT                 degrval;                  /* True degree of column block                        */
     INT                 bloknum;
+    INT                 colunum;
 
-    for (bloknum = symbdat.cblktab[cblknum].bloknum, degnbr = 0;
-         bloknum < symbdat.cblktab[cblknum + 1].bloknum; bloknum ++)
-      degnbr += symbdat.bloktab[bloknum - baseval].lrownum -
-                symbdat.bloktab[bloknum - baseval].frownum + 1;
-    nvtab[ordedat.peritab[symbdat.cblktab[cblknum].fcolnum - baseval] - baseval] = degnbr; /* Set true block degree */
-
-    for (colnum  = symbdat.cblktab[cblknum].fcolnum + 1; /* For all secondary variables */
-         colnum <= symbdat.cblktab[cblknum].lcolnum; colnum ++) {
-      nvtab[ordedat.peritab[colnum - baseval] - baseval] = 0; /* Set nv = 0 and pe = - principal variable */
-      petab[ordedat.peritab[colnum - baseval] - baseval] =
-        - ordedat.peritab[symbdat.cblktab[cblknum].fcolnum - baseval];
+    if (velotax == NULL) {                        /* If graph has no vertex weights */
+      for (bloknum = cblktax[cblknum].bloknum, degrval = 0;
+           bloknum < cblktax[cblknum + 1].bloknum; bloknum ++)
+        degrval += bloktax[bloknum].lrownum - bloktax[bloknum].frownum + 1;
     }
+    else {                                        /* Graph has vertex weights */
+      for (bloknum = cblktax[cblknum].bloknum, degrval = 0;
+           bloknum < cblktax[cblknum + 1].bloknum; bloknum ++) {
+        INT                 brownum;              /* Block row index in permuted matrix */
 
-    if (symbdat.cblktab[cblknum].bloknum ==       /* If column block has no extra-diagonals */
-        symbdat.cblktab[cblknum + 1].bloknum - 1) /* Then mark block as root of subtree     */
-      petab[ordedat.peritab[symbdat.cblktab[cblknum].fcolnum - baseval] - baseval] = 0;
-    else
-      petab[ordedat.peritab[symbdat.cblktab[cblknum].fcolnum - baseval] - baseval] =
-        - ordedat.peritab[symbdat.cblktab[symbdat.bloktab[symbdat.cblktab[cblknum].bloknum + 1 - baseval].cblknum - baseval].fcolnum - baseval];
+        for (brownum  = bloktax[bloknum].frownum;
+             brownum <= bloktax[bloknum].lrownum; brownum ++)
+          degrval += velotax[peritax[brownum]];
+      }
+    }
+    nvtax[peritax[cblktax[cblknum].fcolnum]] = degrval; /* Set true block degree */
+    petax[peritax[cblktax[cblknum].fcolnum]] = (cblktax[cblknum].bloknum == cblktax[cblknum + 1].bloknum - 1) /* If column block has no extra-diagonals */
+      ? 0                                         /* Then mark block as root of subtree */
+      : - peritax[cblktax[bloktax[cblktax[cblknum].bloknum + 1].cblknum].fcolnum];
+
+    for (colunum  = cblktax[cblknum].fcolnum + 1;  /* For all secondary variables */
+         colunum <= cblktax[cblknum].lcolnum; colunum ++) {
+      nvtax[peritax[colunum]] = 0;                 /* Set nv = 0 and pe = - principal variable */
+      petax[peritax[colunum]] = - peritax[cblktax[cblknum].fcolnum];
+    }
   }
 
   symbolExit (&symbdat);
   orderExit  (&ordedat);
-  graphExit  (&grafdat);
+}
+
+int
+esmumps (
+const INT                   n,
+const INT                   iwlen,                /*+ Not used, just here for consistency      +*/
+INT * restrict const        petab,
+const INT                   pfree,                /*+ Not used, just here for consistency      +*/
+INT * restrict const        lentab,
+INT * restrict const        iwtab,
+INT * restrict const        nvtab,
+INT * restrict const        elentab,              /*+ Permutations computed for debugging only +*/
+INT * restrict const        lasttab)              /*+ Permutations computed for debugging only +*/
+{
+  INT * restrict      vendtab;                    /* Vertex end array */
+  Graph               grafdat;                    /* Graph            */
+  INT                 vertnum;
+
+  if ((vendtab = memAlloc (n * sizeof (INT))) == NULL) {
+    errorPrint ("esmumps: out of memory");
+    return     (1);
+  }
+  for (vertnum = 0; vertnum < n; vertnum ++)
+    vendtab[vertnum] = petab[vertnum] + lentab[vertnum];
+
+  graphInit        (&grafdat);
+  graphBuildGraph2 (&grafdat, 1, n, pfree - 1, petab, vendtab, NULL, NULL, iwtab, NULL); /* Assume Fortran-based indexing */
+
+  esmumps2 (&grafdat, n, petab, lentab, iwtab, nvtab, elentab, lasttab);
+
+  memFree (vendtab);
+
+  return (0);
+}
+
+int
+esmumpsv (
+const INT                   n,
+const INT                   iwlen,                /*+ Not used, just here for consistency      +*/
+INT * restrict const        petab,
+const INT                   pfree,                /*+ Not used, just here for consistency      +*/
+INT * restrict const        lentab,
+INT * restrict const        iwtab,
+INT * restrict const        nvtab,
+INT * restrict const        elentab,              /*+ Permutations computed for debugging only +*/
+INT * restrict const        lasttab)              /*+ Permutations computed for debugging only +*/
+{
+  INT * restrict      vendtab;                    /* Vertex end array */
+  Graph               grafdat;                    /* Graph to order   */
+  INT                 vertnum;
+
+  if ((vendtab = memAlloc (n * sizeof (INT))) == NULL) {
+    errorPrint ("esmumps: out of memory");
+    return     (1);
+  }
+  for (vertnum = 0; vertnum < n; vertnum ++)
+    vendtab[vertnum] = petab[vertnum] + lentab[vertnum];
+
+  graphInit        (&grafdat);
+  graphBuildGraph2 (&grafdat, 1, n, pfree - 1, petab, vendtab, nvtab, NULL, iwtab, NULL); /* Assume Fortran-based indexing */
+
+  esmumps2 (&grafdat, n, petab, lentab, iwtab, nvtab, elentab, lasttab);
 
   memFree (vendtab);
 
