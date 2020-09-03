@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 apr 2011     **/
 /**                                 to   : 26 oct 2019     **/
+/**                # Version 7.0  : from : 07 may 2019     **/
+/**                                 to   : 07 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +54,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "graph.h"
 #include "arch.h"
 #include "library_mapping.h"
@@ -91,7 +94,7 @@ FILE * const                  stream)             /*+ Input stream  +*/
   Graph *               grafptr;
   Gnum                  vertnbr;
 
-  grafptr = (Graph *) actgrafptr;
+  grafptr = (Graph *) CONTEXTOBJECT (actgrafptr);
   vertnbr = grafptr->vertnbr;
   memSet (parttab, ~0, vertnbr * sizeof (Anum));  /* Pre-initialize the partition array */
 
@@ -202,7 +205,7 @@ FILE * const                stream)               /*+ Input stream  +*/
 {
   Gnum                vertnum;
 
-  const Graph * restrict const  grafptr = (Graph *) libgrafptr;
+  const Graph * restrict const  grafptr = (Graph *) CONTEXTOBJECT (libgrafptr);
   const Gnum * restrict const   vlbltax = grafptr->vlbltax;
   const Gnum * restrict const   parttax = parttab - grafptr->baseval;
 
@@ -237,7 +240,7 @@ const SCOTCH_Graph * const  actgrafptr,           /*+ Graph to map    +*/
 SCOTCH_Mapping * const      mappptr,              /*+ Mapping to save +*/
 FILE * const                stream)               /*+ Output stream   +*/
 {
-  const Graph * restrict const  grafptr = (Graph *) actgrafptr;
+  const Graph * restrict const  grafptr = (Graph *) CONTEXTOBJECT (actgrafptr);
   LibMapping * restrict         lmapptr = (LibMapping *) mappptr;
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (grafptr != lmapptr->grafptr) {
@@ -272,7 +275,7 @@ const SCOTCH_Mapping * const  mappptr,            /*+ Mapping to save +*/
 FILE * const                  stream)             /*+ Output stream   +*/
 {
 #ifdef SCOTCH_DEBUG_GRAPH2
-  const Graph * restrict const  grafptr = (Graph *) actgrafptr;
+  const Graph * restrict const  grafptr = (Graph *) CONTEXTOBJECT (actgrafptr);
   if (grafptr != (((LibMapping *) mappptr)->grafptr)) {
     errorPrint (STRINGIFY (SCOTCH_graphMapSave) ": mapping structure must derive from graph");
     return     (1);

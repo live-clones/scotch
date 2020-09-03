@@ -51,6 +51,8 @@
 /**                                 to   : 14 aug 2010     **/
 /**                # Version 6.0  : from : 08 jan 2012     **/
 /**                                 to   : 29 sep 2019     **/
+/**                # Version 7.0  : from : 07 may 2019     **/
+/**                                 to   : 23 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,6 +64,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "parser.h"
 #include "graph.h"
 #include "order.h"
@@ -95,18 +98,16 @@ SCOTCH_Num * const          cblkptr,              /*+ Pointer to number of colum
 SCOTCH_Num * const          rangtab,              /*+ Column block range array           +*/
 SCOTCH_Num * const          treetab)              /*+ Separator tree array               +*/
 {
-  const Graph *       srcgrafptr;
-  LibOrder *          libordeptr;
-
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Ordering) < sizeof (LibOrder)) {
     errorPrint (STRINGIFY (SCOTCH_graphOrderInit) ": internal error");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-  srcgrafptr = (Graph *) grafptr;                 /* Use structure as source graph */
-  libordeptr = (LibOrder *) ordeptr;
+  const Graph * const srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr); /* Use structure as source graph */
+  LibOrder * const    libordeptr = (LibOrder *) ordeptr;
+
   libordeptr->permtab = ((permtab == NULL) || ((void *) permtab == (void *) grafptr)) ? NULL : (Gnum *) permtab;
   libordeptr->peritab = ((peritab == NULL) || ((void *) peritab == (void *) grafptr)) ? NULL : (Gnum *) peritab;
   libordeptr->cblkptr = ((cblkptr == NULL) || ((void *) cblkptr == (void *) grafptr)) ? NULL : (Gnum *) cblkptr;
@@ -142,11 +143,8 @@ const SCOTCH_Graph * const        grafptr,        /*+ Graph to order   +*/
 SCOTCH_Ordering * restrict const  ordeptr,        /*+ Ordering to load +*/
 FILE * restrict const             stream)         /*+ Output stream    +*/
 {
-  const Graph *       srcgrafptr;
-  LibOrder *          libordeptr;
-
-  srcgrafptr = (Graph *) grafptr;
-  libordeptr = (LibOrder *) ordeptr;
+  const Graph * const srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr); /* Use structure as source graph */
+  LibOrder * const    libordeptr = (LibOrder *) ordeptr;
 
   if (orderLoad (&libordeptr->o, srcgrafptr->vlbltax, stream) != 0)
     return (1);
@@ -170,7 +168,9 @@ const SCOTCH_Graph * const    grafptr,            /*+ Graph to order   +*/
 const SCOTCH_Ordering * const ordeptr,            /*+ Ordering to save +*/
 FILE * const                  stream)             /*+ Output stream    +*/
 {
-  return (orderSave (&((LibOrder *) ordeptr)->o, ((Graph *) grafptr)->vlbltax, stream));
+  const Graph * const srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr);
+
+  return (orderSave (&((LibOrder *) ordeptr)->o, srcgrafptr->vlbltax, stream));
 }
 
 /*+ This routine saves to the given stream
@@ -187,7 +187,9 @@ const SCOTCH_Graph * const    grafptr,            /*+ Graph to order   +*/
 const SCOTCH_Ordering * const ordeptr,            /*+ Ordering to save +*/
 FILE * const                  stream)             /*+ Output stream    +*/
 {
-  return (orderSaveMap (&((LibOrder *) ordeptr)->o, ((Graph *) grafptr)->vlbltax, stream));
+  const Graph * const srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr);
+
+  return (orderSaveMap (&((LibOrder *) ordeptr)->o, srcgrafptr->vlbltax, stream));
 }
 
 /*+ This routine saves to the given stream
@@ -204,7 +206,9 @@ const SCOTCH_Graph * const    grafptr,            /*+ Graph to order   +*/
 const SCOTCH_Ordering * const ordeptr,            /*+ Ordering to save +*/
 FILE * const                  stream)             /*+ Output stream    +*/
 {
-  return (orderSaveTree (&((LibOrder *) ordeptr)->o, ((Graph *) grafptr)->vlbltax, stream));
+  const Graph * const srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr);
+
+  return (orderSaveTree (&((LibOrder *) ordeptr)->o, srcgrafptr->vlbltax, stream));
 }
 
 /*+ This routine computes an ordering
@@ -221,7 +225,7 @@ SCOTCH_Graph * const        grafptr,              /*+ Graph to order      +*/
 SCOTCH_Ordering * const     ordeptr,              /*+ Ordering to compute +*/
 SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy   +*/
 {
-  return (SCOTCH_graphOrderComputeList (grafptr, ordeptr, ((Graph *) grafptr)->vertnbr, NULL, stratptr));
+  return (SCOTCH_graphOrderComputeList (grafptr, ordeptr, ((Graph *) CONTEXTOBJECT (grafptr))->vertnbr, NULL, stratptr));
 }
 
 /*+ This routine computes a partial ordering
@@ -235,39 +239,47 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy   +*/
 
 int
 SCOTCH_graphOrderComputeList (
-SCOTCH_Graph * const        grafptr,              /*+ Graph to order                  +*/
+SCOTCH_Graph * const        libgrafptr,           /*+ Graph to order                  +*/
 SCOTCH_Ordering * const     ordeptr,              /*+ Ordering to compute             +*/
 const SCOTCH_Num            listnbr,              /*+ Number of vertices in list      +*/
 const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order +*/
 SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy               +*/
 {
-  const Graph * restrict  srcgrafptr;
-  LibOrder *              libordeptr;             /* Pointer to ordering             */
-  Hgraph                  halgrafdat;             /* Halo source graph structure     */
-  Hgraph                  halgraftmp;             /* Halo source graph structure     */
-  Hgraph *                halgrafptr;             /* Pointer to halo graph structure */
-  const Strat *           ordstratptr;            /* Pointer to ordering strategy    */
-  OrderCblk *             cblkptr;
+  Hgraph              halgrafdat;                 /* Halo source graph structure     */
+  Hgraph              halgraftmp;                 /* Halo source graph structure     */
+  Hgraph *            halgrafptr;                 /* Pointer to halo graph structure */
+  CONTEXTDECL        (libgrafptr);
+  const Strat *       ordstratptr;                /* Pointer to ordering strategy    */
+  OrderCblk *         cblkptr;
+  int                 o;
 
-  srcgrafptr = (Graph *) grafptr;
-  libordeptr = (LibOrder *) ordeptr;              /* Get ordering */
+  o = 1;                                          /* Assume an error */
+
+  if (CONTEXTINIT (libgrafptr)) {
+    errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": cannot initialize context");
+    return (o);
+  }
+  intRandInit ();                                 /* Check that random number generator is initialized */
+
+  const Graph * const srcgrafptr = (Graph *) CONTEXTGETOBJECT (libgrafptr);
+  LibOrder * const    libordeptr = (LibOrder *) ordeptr;
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if ((listnbr < 0) || (listnbr > srcgrafptr->vertnbr)) {
     errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": invalid parameters (1)");
-    return     (1);
+    goto abort;
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 #ifdef SCOTCH_DEBUG_LIBRARY2
   if (graphCheck (srcgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": invalid input graph");
-    return     (1);
+    goto abort;
   }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
   if (listnbr == 0) {                             /* If empty list, return identity permutation */
     intAscn (libordeptr->o.peritab, srcgrafptr->vertnbr, srcgrafptr->baseval);
-    return  (0);
+    goto abort;
   }
 
   if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */
@@ -276,19 +288,20 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hgraphorderststratab) {
     errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": not an ordering strategy");
-    return     (1);
+    goto abort;
   }
 
-  memCpy (&halgrafdat.s, grafptr, sizeof (Graph)); /* Copy non-halo graph data   */
-  halgrafdat.s.flagval &= ~GRAPHFREETABS;         /* Do not allow to free arrays */
-  halgrafdat.s.edlotax  = NULL;                   /* Don't mind about edge loads */
-  halgrafdat.vnohnbr    = halgrafdat.s.vertnbr;   /* All vertices are non-halo   */
-  halgrafdat.vnohnnd    = halgrafdat.s.vertnnd;   /* No halo present             */
-  halgrafdat.vnhdtax    = halgrafdat.s.vendtax;   /* End of non-halo vertices    */
-  halgrafdat.vnlosum    = halgrafdat.s.velosum;   /* Sum of node vertex weights  */
-  halgrafdat.enohnbr    = halgrafdat.s.edgenbr;   /* No halo present             */
+  memCpy (&halgrafdat.s, srcgrafptr, sizeof (Graph)); /* Copy non-halo graph data */
+  halgrafdat.s.flagval &= ~GRAPHFREETABS;         /* Do not allow to free arrays  */
+  halgrafdat.s.edlotax  = NULL;                   /* Don't mind about edge loads  */
+  halgrafdat.vnohnbr    = halgrafdat.s.vertnbr;   /* All vertices are non-halo    */
+  halgrafdat.vnohnnd    = halgrafdat.s.vertnnd;   /* No halo present              */
+  halgrafdat.vnhdtax    = halgrafdat.s.vendtax;   /* End of non-halo vertices     */
+  halgrafdat.vnlosum    = halgrafdat.s.velosum;   /* Sum of node vertex weights   */
+  halgrafdat.enohnbr    = halgrafdat.s.edgenbr;   /* No halo present              */
   halgrafdat.enlosum    = halgrafdat.s.edlosum;
   halgrafdat.levlnum    = 0;                      /* No nested dissection yet */
+  halgrafdat.contptr    = CONTEXTGETDATA (libgrafptr);
 
   if (listnbr == srcgrafptr->vertnbr) {           /* If work on full graph */
     halgrafptr = &halgrafdat;
@@ -302,7 +315,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 
     if ((cblkptr = (OrderCblk *) memAlloc (2 * sizeof (OrderCblk))) == NULL) {
       errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": out of memory");
-      return     (1);
+      goto abort;
     }
     libordeptr->o.treenbr = 3;
     libordeptr->o.cblknbr = 2;
@@ -327,7 +340,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
       if ((listtab[listnum] <  srcgrafptr->baseval) ||
           (listtab[listnum] >= srcgrafptr->vertnnd)) {
         errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": invalid parameters (2)");
-        return     (1);
+        goto abort;
       }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
       peritax[listtab[listnum]] = ~0;             /* TRICK: use peritab as flag array to mark used vertices */
@@ -339,27 +352,28 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 #ifdef SCOTCH_DEBUG_LIBRARY2
     if (halonum != (listnbr + srcgrafptr->baseval - 1)) {
       errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": internal error");
-      return     (1);
+      goto abort;
     }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
     if (hgraphInduceList (&halgrafdat, listnbr, (Gnum * const) listtab, srcgrafptr->vertnbr - listnbr, &halgraftmp) != 0) {
       errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": cannot create induced subgraph");
-      return     (1);
+      goto abort;
     }
     halgrafptr = &halgraftmp;
   }
 
-  intRandInit ();                                 /* Check that random number generator is initialized */
-
-  hgraphOrderSt (halgrafptr, &libordeptr->o, 0, cblkptr, ordstratptr);
+  o = hgraphOrderSt (halgrafptr, &libordeptr->o, 0, cblkptr, ordstratptr);
 
   if (halgrafptr != &halgrafdat)                  /* If induced subgraph created */
     hgraphExit (halgrafptr);                      /* Free it                     */
 
+  if (o != 0)
+    goto abort;
+
 #ifdef SCOTCH_DEBUG_LIBRARY2
   if (orderCheck (&libordeptr->o) != 0)
-    return (1);
+    goto abort;
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
   if (libordeptr->permtab != NULL)                /* Build direct permutation if wanted */
@@ -371,7 +385,9 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   if (libordeptr->cblkptr != NULL)                /* Set number of column blocks if wanted */
     *(libordeptr->cblkptr) = libordeptr->o.cblknbr;
 
-  return (0);
+abort:
+  CONTEXTEXIT (libgrafptr);
+  return (o);
 }
 
 /*+ This routine computes an ordering
@@ -468,7 +484,7 @@ const char * const          string)
 
   if ((*((Strat **) stratptr) = stratInit (&hgraphorderststratab, string)) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_stratGraphOrder) ": error in ordering strategy");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -538,7 +554,7 @@ const double                balrat)               /*+ Desired imbalance ratio   
 
   if (SCOTCH_stratGraphOrder (stratptr, bufftab) != 0) {
     errorPrint (STRINGIFY (SCOTCH_stratGraphOrderBuild) ": error in sequential ordering strategy");
-    return     (1);
+    return (1);
   }
 
   return (0);

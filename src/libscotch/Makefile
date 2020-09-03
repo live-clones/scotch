@@ -559,7 +559,7 @@ arch_build$(OBJ)		:	arch_build.c				\
 
 arch_build2$(OBJ)		:	arch_build2.c				\
 					module.h				\
-					context.h				\
+					common.h				\
 					graph.h					\
 					arch.h					\
 					arch$(OBJ)				\
@@ -1901,6 +1901,7 @@ library_arch_f$(OBJ)		:	library_arch_f.c			\
 library_arch_build$(OBJ)	:	library_arch_build.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					parser.h				\
 					graph.h					\
 					arch$(OBJ)				\
@@ -2254,6 +2255,7 @@ library_geom_f$(OBJ)		:	library_geom_f.c			\
 library_graph$(OBJ)		:	library_graph.c				\
 					module.h				\
 					common.h				\
+					context.h				\
 					graph.h					\
 					graph_io.h				\
 					scotch.h
@@ -2261,11 +2263,13 @@ library_graph$(OBJ)		:	library_graph.c				\
 library_graph_f$(OBJ)		:	library_graph_f.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					scotch.h
 
 library_graph_base$(OBJ)	:	library_graph_base.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					graph.h					\
 					scotch.h
 
@@ -2277,6 +2281,7 @@ library_graph_base_f$(OBJ)	:	library_graph_base_f.c			\
 library_graph_check$(OBJ)	:	library_graph_check.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					graph.h					\
 					scotch.h
 
@@ -2301,6 +2306,7 @@ library_graph_coarsen_f$(OBJ)	:	library_graph_coarsen_f.c		\
 library_graph_color$(OBJ)	:	library_graph_color.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					graph.h					\
 					scotch.h
 
@@ -2312,6 +2318,7 @@ library_graph_color_f$(OBJ)	:	library_graph_color_f.c			\
 library_graph_diam$(OBJ)	:	library_graph_diam.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					graph.h					\
 					scotch.h
 
@@ -2330,6 +2337,7 @@ library_graph_dump$(OBJ)	:	library_graph_dump.c			\
 library_graph_induce$(OBJ)	:	library_graph_induce.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					graph.h					\
 					scotch.h
 
@@ -2341,6 +2349,7 @@ library_graph_induce_f$(OBJ)	:	library_graph_induce_f.c		\
 library_graph_io_chac$(OBJ)	:	library_graph_io_chac.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					geom.h					\
 					graph.h					\
 					scotch.h
@@ -2353,6 +2362,7 @@ library_graph_io_chac_f$(OBJ)	:	library_graph_io_chac_f.c		\
 library_graph_io_habo$(OBJ)	:	library_graph_io_habo.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					geom.h					\
 					graph.h					\
 					scotch.h
@@ -2365,6 +2375,7 @@ library_graph_io_habo_f$(OBJ)	:	library_graph_io_habo_f.c		\
 library_graph_io_mmkt$(OBJ)	:	library_graph_io_mmkt.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					geom.h					\
 					graph.h					\
 					scotch.h
@@ -2377,6 +2388,7 @@ library_graph_io_mmkt_f$(OBJ)	:	library_graph_io_mmkt_f.c		\
 library_graph_io_scot$(OBJ)	:	library_graph_io_scot.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					geom.h					\
 					graph.h					\
 					scotch.h
@@ -2389,6 +2401,7 @@ library_graph_io_scot_f$(OBJ)	:	library_graph_io_scot_f.c		\
 library_graph_map$(OBJ)		:	library_graph_map.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					parser.h				\
 					graph.h					\
 					arch$(OBJ)				\
@@ -2406,6 +2419,7 @@ library_graph_map_f$(OBJ)	:	library_graph_map_f.c			\
 library_graph_map_io$(OBJ)	:	library_graph_map_io.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					graph.h					\
 					arch$(OBJ)				\
 					library_mapping.h			\
@@ -2420,6 +2434,7 @@ library_graph_map_io_f$(OBJ)	:	library_graph_map_io_f.c		\
 library_graph_map_view$(OBJ)	:	library_graph_map_view.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					parser.h				\
 					graph.h					\
 					arch$(OBJ)				\
@@ -2437,6 +2452,7 @@ library_graph_map_view_f$(OBJ)	:	library_graph_map_view_f.c		\
 library_graph_order$(OBJ)	:	library_graph_order.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					parser.h				\
 					graph.h					\
 					order.h					\
@@ -2453,6 +2469,7 @@ library_graph_order_f$(OBJ)	:	library_graph_order_f.c			\
 library_graph_part_ovl$(OBJ)	:	library_graph_part_ovl.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					parser.h				\
 					graph.h					\
 					arch.h					\

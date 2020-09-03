@@ -53,6 +53,8 @@
 /**                                 to   : 24 jul 2019     **/
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 31 may 2021     **/
+/**                # Version 7.0  : from : 07 may 2019     **/
+/**                                 to   : 21 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +66,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "graph.h"
 #include "graph_io.h"
 #include "scotch.h"
@@ -135,7 +138,8 @@ void
 SCOTCH_graphExit (
 SCOTCH_Graph * const        grafptr)
 {
-  graphExit ((Graph *) grafptr);
+  if (! contextContainerTrue (grafptr))
+    graphExit ((Graph *) grafptr);
 }
 
 /*+ This routine frees the contents of the
@@ -148,7 +152,8 @@ void
 SCOTCH_graphFree (
 SCOTCH_Graph * const        grafptr)
 {
-  graphFree ((Graph *) grafptr);
+  if (! contextContainerTrue (grafptr))
+    graphFree ((Graph *) grafptr);
 }
 
 /*+ This routine loads the given opaque graph
@@ -189,7 +194,7 @@ const SCOTCH_Num            flagval)
   srcgrafflag = (((flagval & 1) != 0) ? GRAPHIONOLOADVERT : 0) +
                 (((flagval & 2) != 0) ? GRAPHIONOLOADEDGE : 0);
 
-  return (graphLoad ((Graph * const) grafptr, stream, (Gnum) baseval, srcgrafflag));
+  return (graphLoad ((Graph * const) CONTEXTOBJECT (grafptr), stream, (Gnum) baseval, srcgrafflag));
 }
 
 /*+ This routine saves the contents of the given
@@ -204,7 +209,7 @@ SCOTCH_graphSave (
 const SCOTCH_Graph * const  grafptr,
 FILE * const                stream)
 {
-  return (graphSave ((const Graph * const) grafptr, stream));
+  return (graphSave ((const Graph * const) CONTEXTOBJECT (grafptr), stream));
 }
 
 /*+ This routine fills the contents of the given
@@ -242,7 +247,7 @@ const SCOTCH_Num * const    edlotab)              /* Edge load array            
     errorPrintW (STRINGIFY (SCOTCH_graphBuild) ": non-standard base parameter");
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-  srcgrafptr = (Graph *) grafptr;                 /* Use structure as source graph */
+  srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr); /* Use structure as source graph */
   srcgrafptr->flagval = GRAPHNONE;
   srcgrafptr->baseval = baseval;
   srcgrafptr->vertnbr = vertnbr;
@@ -314,7 +319,7 @@ SCOTCH_Num * const          edgenbr)
 {
   const Graph *       srcgrafptr;
 
-  srcgrafptr = (Graph *) grafptr;
+  srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr);
 
   if (vertnbr != NULL)
     *vertnbr = (SCOTCH_Num) (srcgrafptr->vertnbr);
@@ -345,7 +350,7 @@ SCOTCH_Num ** const         edlotab)              /* Edge load array          */
 {
   const Graph *       srcgrafptr;                 /* Pointer to source graph structure */
 
-  srcgrafptr = (const Graph *) grafptr;
+  srcgrafptr = (const Graph *) CONTEXTOBJECT (grafptr);
 
   if (baseptr != NULL)
     *baseptr = srcgrafptr->baseval;
@@ -410,7 +415,7 @@ double *                    edlodltptr)
   double              edloavg;
   double              edlodlt;
 
-  srcgrafptr = (Graph *) grafptr;
+  srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr);
 
   vertnbr = srcgrafptr->vertnnd - srcgrafptr->baseval;
 

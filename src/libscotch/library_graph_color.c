@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 jan 2012     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 7.0  : from : 24 aug 2019     **/
+/**                                 to   : 24 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +54,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "arch.h"
 #include "graph.h"
 #include "graph_coarsen.h"
@@ -74,7 +77,7 @@
 
 int
 SCOTCH_graphColor (
-const SCOTCH_Graph * restrict const grafptr,      /* Graph to color              */
+const SCOTCH_Graph * restrict const libgrafptr,   /* Graph to color              */
 SCOTCH_Num * restrict const         colotab,      /* Pointer to color array      */
 SCOTCH_Num * restrict const         coloptr,      /* Pointer to number of colors */
 const SCOTCH_Num                    flagval)      /* Flag value (not used)       */
@@ -89,12 +92,13 @@ const SCOTCH_Num                    flagval)      /* Flag value (not used)      
   Gnum                colonum;
   Gnum * restrict     colotax;
 
-  const Gnum * restrict const verttax = ((Graph *) grafptr)->verttax;
-  const Gnum * restrict const vendtax = ((Graph *) grafptr)->vendtax;
-  const Gnum * restrict const edgetax = ((Graph *) grafptr)->edgetax;
+  const Graph * restrict const  grafptr = CONTEXTOBJECT (libgrafptr);
+  const Gnum * restrict const   verttax = grafptr->verttax;
+  const Gnum * restrict const   vendtax = grafptr->vendtax;
+  const Gnum * restrict const   edgetax = grafptr->edgetax;
 
-  baseval = ((Graph *) grafptr)->baseval;
-  vertnbr = ((Graph *) grafptr)->vertnbr;
+  baseval = grafptr->baseval;
+  vertnbr = grafptr->vertnbr;
   vertnnd = vertnbr + baseval;
 
   memSet (colotab, ~0, vertnbr * sizeof (Gnum));
