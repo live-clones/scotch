@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -425,7 +425,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
       else
         bandedgetax[bandedgenum ++] = vnumotbdtax[vertend];
     }
-    
+   
     if (vfixflag == 1) {                          /* If vertex has at least one neighbours that is fixed */
       Gnum                    edloval;
 
@@ -455,7 +455,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     Anum              partval;
 
     vertnum = bandvnumtax[bandvertnum];
-    if (vfixflag == 1) {                          /* Last vertex had neighbours fixed vertices      */ 
+    if (vfixflag == 1) {                          /* Last vertex had neighbours fixed vertices      */
       memSet (bandanlotab, 0, domnnbr * sizeof (Gnum)); /* Reset loads to anchors                   */
       vfixflag = 0;                               /* Guess that these are no extra loads to anchors */
     }
@@ -575,7 +575,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 
   if (bandvertancadj == 1)                        /* Anchors have to be adjusted                       */
     for (domnnum = 0; domnnum < domnnbr; domnnum ++) /* Increase weight of all anchors to keep balance */
-      bandvelotax[bandvertnnd + domnnum] ++;   
+      bandvelotax[bandvertnnd + domnnum] ++;  
 
   bandverttax[bandvertnum] = bandedgenum;         /* Fill last element without anchors */
   if (pfixtax != NULL)
@@ -600,7 +600,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 
   if (pfixtax != NULL) {                          /* We have fixed vertices */
     memFree (termhashtab);                        /* Free group leader      */
-    for (bandvertnum = bandgrafptr->s.baseval, bandedgenum = 0; bandvertnum < bandvertnnd; 
+    for (bandvertnum = bandgrafptr->s.baseval, bandedgenum = 0; bandvertnum < bandvertnnd;
         bandvertnum ++) {                         /* Link anchors to vertices */
       for ( ; bandedgenum < bandverttax[bandvertnum + 1]; bandedgenum ++) {
         Gnum                  bandvertend;
@@ -615,7 +615,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 
           bandedlotax[bandedgetab[partval]] = edloval;
           bandedlosum += edloval;
-          bandedgetax[bandedgetab[partval] ++] = bandvertnum; 
+          bandedgetax[bandedgetab[partval] ++] = bandvertnum;
         }
       }
     }
@@ -626,7 +626,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
       Gnum              edgennd;
 
       for (bandvertnum = bandgrafptr->s.baseval;  /* For all vertices not belonging to last level */
-           bandvertnum < bandvertlvlnum; bandvertnum ++) { 
+           bandvertnum < bandvertlvlnum; bandvertnum ++) {
         Gnum              vertnum;
         Gnum              bandedgenum;
 
@@ -659,13 +659,13 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
       }
     }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
-  }  
+  } 
   bandedgenbr = bandgrafptr->s.verttax[bandvertnnd + domnnbr] - bandgrafptr->s.baseval; /* Set real number of edges */
 
   bandgrafptr->s.vendtax = bandgrafptr->s.verttax + 1; /* Band graph is compact */
   bandgrafptr->s.velosum = grafptr->s.velosum + domnnbr * bandvertancadj;
   bandgrafptr->s.edgenbr = bandedgenbr;
-  if (bandedlotax == NULL) 
+  if (bandedlotax == NULL)
     bandedlosum = bandedgenbr;
   bandgrafptr->s.edlosum = bandedlosum;
   bandgrafptr->s.degrmax = banddegrmax;           /* Local maximum degree will be turned into global maximum degree */

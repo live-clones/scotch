@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -40,21 +40,21 @@
 /**                This module contains the main function. **/
 /**                                                        **/
 /**   DATES      : # Version 0.0  : from : 05 jan 1993     **/
-/**                                 to     12 may 1993     **/
+/**                                 to   : 12 may 1993     **/
 /**                # Version 1.1  : from : 15 oct 1993     **/
-/**                                 to     15 oct 1993     **/
+/**                                 to   : 15 oct 1993     **/
 /**                # Version 1.3  : from : 06 apr 1994     **/
-/**                                 to     18 may 1994     **/
+/**                                 to   : 18 may 1994     **/
 /**                # Version 2.0  : from : 06 jun 1994     **/
-/**                                 to     17 nov 1994     **/
+/**                                 to   : 17 nov 1994     **/
 /**                # Version 2.1  : from : 07 apr 1995     **/
-/**                                 to     18 jun 1995     **/
+/**                                 to   : 18 jun 1995     **/
 /**                # Version 3.0  : from : 01 jul 1995     **/
-/**                                 to     02 oct 1995     **/
+/**                                 to   : 02 oct 1995     **/
 /**                # Version 3.1  : from : 07 nov 1995     **/
-/**                                 to     25 apr 1996     **/
+/**                                 to   : 25 apr 1996     **/
 /**                # Version 3.2  : from : 24 sep 1996     **/
-/**                                 to     26 may 1998     **/
+/**                                 to   : 26 may 1998     **/
 /**                # Version 3.3  : from : 19 oct 1998     **/
 /**                                 to   : 30 mar 1999     **/
 /**                # Version 3.4  : from : 03 feb 2000     **/
@@ -117,7 +117,7 @@ static const char *         C_usageList[] = {     /* Usage */
   "  -q<pwght>  : Do graph clustering instead of static mapping (for gmap)",
   "  -ro<file>  : Old mapping input file (for remapping)",
   "  -rr<val>   : Edge migration ratio (for remapping, default: 1)",
-  "  -rv<file>  : Vertex migration cost input file (for remapping)", 
+  "  -rv<file>  : Vertex migration cost input file (for remapping)",
   "  -s<obj>    : Force unity weights on <obj>:",
   "                 e  : edges",
   "                 v  : vertices",
@@ -283,7 +283,7 @@ char *                      argv[])
             case 'r' :                            /* Edge migration ratio */
               flagval |= C_FLAGRMAPRAT;
               emraval = atof (&argv[i][3]);
-              if (emraval <= 0.0) 
+              if (emraval <= 0.0)
                 errorPrint ("main: invalid edge migration ratio");
               break;
             case 'V' :
@@ -493,7 +493,7 @@ char *                      argv[])
       SCOTCH_graphMapExit (&grafdat, &mapodat);
       if ((flagval & C_FLAGRMAPCST) != 0)
         memFree (vmlotab);
-    } 
+    }
   }
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */

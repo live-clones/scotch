@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -40,17 +40,17 @@
 /**                of the Greedy Graph Growing algorithm.  **/
 /**                                                        **/
 /**   DATES      : # Version 3.2  : from : 10 nov 1997     **/
-/**                                 to     15 jul 1998     **/
+/**                                 to   : 15 jul 1998     **/
 /**                # Version 3.3  : from : 01 oct 1998     **/
-/**                                 to     01 oct 1998     **/
+/**                                 to   : 01 oct 1998     **/
 /**                # Version 4.0  : from : 19 dec 2001     **/
-/**                                 to     22 jan 2004     **/
+/**                                 to   : 22 jan 2004     **/
 /**                # Version 5.0  : from : 02 jan 2007     **/
-/**                                 to     24 mar 2008     **/
+/**                                 to   : 24 mar 2008     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
-/**                                 to     09 nov 2008     **/
+/**                                 to   : 09 nov 2008     **/
 /**                # Version 6.0  : from : 04 feb 2012     **/
-/**                                 to     26 feb 2018     **/
+/**                                 to   : 26 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -184,7 +184,7 @@ const VgraphSeparateGgParam * const paraptr)      /*+ Method parameters +*/
         gainTablDel (tablptr, (GainLink *) vexxptr); /* Remove vertex from table */
         vexxptr->gainlink.next = VGRAPHSEPAGGSTATEPART1; /* Put vertex in part 1 */
         compload2   += vexxptr->compgain2;        /* Update partition parameters */
-        comploaddlt -= vexxptr->compgain2 + 2 * veloval;           
+        comploaddlt -= vexxptr->compgain2 + 2 * veloval;          
 
         sepaptr = NULL;                           /* No separator vertices to relink yet */
         for (edgenum = verttax[vertnum];          /* (Re-)link neighbor vertices         */

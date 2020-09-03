@@ -39,11 +39,11 @@
 /**                mesh subgraph-making functions.         **/
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 07 jan 2002     **/
-/**                                 to     11 may 2004     **/
+/**                                 to   : 11 may 2004     **/
 /**                # Version 5.0  : from : 22 dec 2006     **/
-/**                                 to     11 jun 2007     **/
+/**                                 to   : 11 jun 2007     **/
 /**                # Version 6.0  : from : 23 jan 2020     **/
-/**                                 to     26 jan 2020     **/
+/**                                 to   : 26 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 

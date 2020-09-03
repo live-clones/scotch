@@ -39,11 +39,11 @@
 /**                coarsening functions.                   **/
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 30 jan 2004     **/
-/**                                 to     05 may 2004     **/
+/**                                 to   : 05 may 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
-/**                                 to     12 sep 2007     **/
+/**                                 to   : 12 sep 2007     **/
 /**                # Version 6.0  : from : 23 jan 2020     **/
-/**                                 to     23 jan 2020     **/
+/**                                 to   : 23 jan 2020     **/
 /**                                                        **/
 /**   NOTES      : # The coarsening process is as follows. **/
 /**                  First, node collapsing is performed,  **/

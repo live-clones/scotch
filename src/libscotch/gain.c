@@ -39,15 +39,15 @@
 /**                table structures.                       **/
 /**                                                        **/
 /**   DATES      : # Version 0.0  : from : 26 oct 1996     **/
-/**                                 to     30 nov 1996     **/
+/**                                 to   : 30 nov 1996     **/
 /**                # Version 0.1  : from : 10 may 1999     **/
-/**                                 to     10 may 1999     **/
+/**                                 to   : 10 may 1999     **/
 /**                # Version 4.0  : from : 10 jan 2004     **/
-/**                                 to     18 mar 2005     **/
+/**                                 to   : 18 mar 2005     **/
 /**                # Version 5.0  : from : 24 mar 2008     **/
-/**                                 to     24 mar 2008     **/
+/**                                 to   : 24 mar 2008     **/
 /**                # Version 6.0  : from : 20 aug 2020     **/
-/**                                 to     26 aug 2020     **/
+/**                                 to   : 26 aug 2020     **/
 /**                                                        **/
 /**   NOTES      : # Most of the contents of this module   **/
 /**                  comes from "map_b_fm" of the SCOTCH   **/
@@ -457,7 +457,7 @@ const ptrdiff_t             addrdlt)
       linkptr = (GainLink *) ((byte *) prevptr->next + addrdlt); /* Get new address of link from its predecessor                 */
       prevptr->next = linkptr;                    /* Skew forward chaining of previous link                                      */
       linkptr->prev = prevptr;                    /* Skew backward chaining of current link                                      */
-    }      
+    }     
 
 #ifdef SCOTCH_DEBUG_GAIN3
     if (entrptr->next->prev != (GainLink *) entrptr) {

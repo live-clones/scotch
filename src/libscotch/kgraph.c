@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -42,15 +42,15 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 3.2  : from : 03 oct 1997     **/
-/**                                 to     26 may 1998     **/
+/**                                 to   : 26 may 1998     **/
 /**                # Version 3.4  : from : 30 oct 2001     **/
-/**                                 to     30 oct 2001     **/
+/**                                 to   : 30 oct 2001     **/
 /**                # Version 4.0  : from : 24 jun 2004     **/
-/**                                 to     16 feb 2005     **/
+/**                                 to   : 16 feb 2005     **/
 /**                # Version 5.1  : from : 28 sep 2008     **/
-/**                                 to     31 aug 2011     **/
+/**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     27 aug 2020     **/
+/**                                 to   : 27 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,11 +106,11 @@ const Gnum * restrict const     vmlotax)          /*+ Vertex migration cost arra
 
   archDomFrst (archptr, &domndat);                /* Get first, largest domain */
 
-  if (srcgrafptr != &actgrafptr->s) {             /* If graph not already in place                                           */ 
+  if (srcgrafptr != &actgrafptr->s) {             /* If graph not already in place                                           */
     actgrafptr->s          = *srcgrafptr;         /* Clone source graph                                                      */
     actgrafptr->s.flagval &= (GRAPHBITSUSED & ~GRAPHFREETABS); /* Remove extended graph class flags and do not allow freeing */
   }
-  if (archptr != &actgrafptr->a)                  /* If architecture not already in place */ 
+  if (archptr != &actgrafptr->a)                  /* If architecture not already in place */
     actgrafptr->a = *archptr;                     /* Clone it                             */
 
   mapInit (&actgrafptr->m, &actgrafptr->s, &actgrafptr->a,
@@ -175,7 +175,7 @@ Kgraph * restrict const     grafptr)
   mapExit (&grafptr->m);
   mapExit (&grafptr->r.m);
 
-  if (((grafptr->s.flagval & KGRAPHFREEVMLO) != 0) && /* If vmlotax must be freed */ 
+  if (((grafptr->s.flagval & KGRAPHFREEVMLO) != 0) && /* If vmlotax must be freed */
       (grafptr->r.vmlotax != NULL))               /* And if it exists             */
     memFree (grafptr->r.vmlotax + grafptr->s.baseval); /* Free it                 */
 
@@ -296,7 +296,7 @@ Kgraph * restrict const     grafptr)
         distval = (partend != partlst) ? archDomDist (archptr, &domntab[partval], &domntab[partend]) : distlst;
         distlst = distval;
         partlst = partend;
-          
+         
         commload += (Gnum) distval * ((edlotax != NULL) ? edlotax[edgenum] : 1);
       }
     }
@@ -317,10 +317,10 @@ Kgraph * restrict const     grafptr)
       for (domnnum = 0; domnnum < domnnbr; domnnum ++) {
         if ((grafptr->s.verttax[vertancnnd + domnnum + 1] - grafptr->s.verttax[vertancnnd + domnnum]) == 0) {
           veloval = grafptr->s.velotax[vertancnnd + domnnum];
-  
+ 
           fdomwgt += (double) archDomWght (archptr, &grafptr->m.domntab[domnnum]);
           fvelsum += veloval;
-          compload[domnnum] -= 
+          compload[domnnum] -=
           grafptr->comploadavg[domnnum] = veloval;
 #ifdef SCOTCH_DEBUG_KGRAPH2
           if (compload[domnnum] != 0) {

@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -41,9 +41,9 @@
 /**                using a multi-level scheme.             **/
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 13 jul 2010     **/
-/**                                 to     14 jul 2010     **/
+/**                                 to   : 14 jul 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     25 feb 2018     **/
+/**                                 to   : 25 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,7 +59,7 @@
 #include "graph.h"
 #include "arch.h"
 #include "mapping.h"
-#include "graph_coarsen.h" 
+#include "graph_coarsen.h"
 #include "kgraph.h"
 #include "kgraph_map_ml.h"
 #include "kgraph_map_st.h"
@@ -125,11 +125,11 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
 
   if (finegrafptr->r.m.parttax != NULL) {
     const Gnum * restrict fineparotax;
-    const Gnum * restrict finevmlotax; 
+    const Gnum * restrict finevmlotax;
     Gnum *                coarparotab;
     Gnum *                coarvmlotab;
     Gnum                  coarvertnbr;
- 
+
     coarvertnbr = coargrafptr->s.vertnbr;
     if ((coarparotab = (Anum *) memAlloc (coarvertnbr * sizeof (Anum))) == NULL) {
       errorPrint ("kgraphMapMlCoarsen: out of memory (1)");
@@ -156,7 +156,7 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
                                  : ((finevertnum0 == finevertnum1) ? 1 : 2);
 #ifdef SCOTCH_DEBUG_KGRAPH2
       if ((fineparotax[finevertnum1] != fineparotax[finevertnum0]) && /* If vertices were not in the same part */
-          ((finegrafptr->pfixtax == NULL) ||  
+          ((finegrafptr->pfixtax == NULL) || 
            ((finepfixtax[finevertnum1] == -1) &&  /* And both are not fixed */
             (finepfixtax[finevertnum0] == -1)))) {
         errorPrint ("kgraphMapMlCoarsen: internal error (2)");
@@ -181,7 +181,7 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
     coargrafptr->r.vmlotax   = NULL;
   }
 
-  if (finepfixtax != NULL) {                      /* If we have fixed vertices */  
+  if (finepfixtax != NULL) {                      /* If we have fixed vertices */ 
     Gnum                coarvertnbr;
     Anum * restrict     coarpfixtab;
     Gnum                coarvfixnbr;
@@ -319,7 +319,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array
     coarvertnum  = coarfrontab[coarfronnum];
     finevertnum0 = coarmulttax[coarvertnum].vertnum[0];
     finevertnum1 = coarmulttax[coarvertnum].vertnum[1];
-      
+     
     if (finevertnum0 != finevertnum1) {           /* If multinode si made of two distinct vertices */
       Gnum                fineedgenum;
       Gnum                partval;

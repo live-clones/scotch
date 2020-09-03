@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -40,19 +40,19 @@
 /**                routines of the libSCOTCH library.      **/
 /**                                                        **/
 /**   DATES      : # Version 3.2  : from : 19 aug 1998     **/
-/**                                 to     20 aug 1998     **/
+/**                                 to   : 20 aug 1998     **/
 /**                # Version 3.3  : from : 19 oct 1998     **/
-/**                                 to     30 mar 1999     **/
+/**                                 to   : 30 mar 1999     **/
 /**                # Version 3.4  : from : 01 nov 2001     **/
-/**                                 to     01 nov 2001     **/
+/**                                 to   : 01 nov 2001     **/
 /**                # Version 4.0  : from : 13 jan 2004     **/
-/**                                 to     30 nov 2006     **/
+/**                                 to   : 30 nov 2006     **/
 /**                # Version 5.0  : from : 04 feb 2007     **/
-/**                                 to     03 apr 2008     **/
+/**                                 to   : 03 apr 2008     **/
 /**                # Version 5.1  : from : 27 jul 2008     **/
-/**                                 to     11 aug 2010     **/
+/**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
-/**                                 to     24 sep 2019     **/
+/**                                 to   : 24 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -543,7 +543,7 @@ FILE * const                  stream)             /*+ Output stream             
     fprintf (stream, "M\tMigrCost=%lf\n",
              (double) migrcostsum);
   }
-  
+ 
   if (flagval != 0) {                             /* If raw output */
     fprintf (stream, "" GNUMSTRING "\t" GNUMSTRING "\t" GNUMSTRING "\t" GNUMSTRING "\t%g\t%g\t%g\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf", /* Print standard data */
              (Gnum) mapnbr,

@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -40,19 +40,19 @@
 /**                libSCOTCH matrix ordering library.      **/
 /**                                                        **/
 /**   DATES      : # Version 0.0  : from : 20 aug 1998     **/
-/**                                 to     18 may 1999     **/
+/**                                 to   : 18 may 1999     **/
 /**                # Version 1.0  : from : 18 mar 2003     **/
-/**                                 to     21 jan 2004     **/
+/**                                 to   : 21 jan 2004     **/
 /**                # Version 2.0  : from : 28 feb 2004     **/
-/**                                 to     04 jan 2005     **/
+/**                                 to   : 04 jan 2005     **/
 /**                # Version 2.1  : from : 21 jun 2007     **/
-/**                                 to     21 jun 2007     **/
+/**                                 to   : 21 jun 2007     **/
 /**                # Version 5.0  : from : 08 feb 2008     **/
-/**                                 to     01 jun 2008     **/
+/**                                 to   : 01 jun 2008     **/
 /**                # Version 5.1  : from : 22 jan 2009     **/
-/**                                 to     02 jul 2010     **/
+/**                                 to   : 02 jul 2010     **/
 /**                # Version 6.0  : from : 22 jan 2020     **/
-/**                                 to     22 jan 2020     **/
+/**                                 to   : 22 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 

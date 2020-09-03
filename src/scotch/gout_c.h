@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -40,17 +40,17 @@
 /**                tions for the main module.              **/
 /**                                                        **/
 /**   DATES      : # Version 2.0  : from : 06 oct 1994     **/
-/**                                 to     01 nov 1994     **/
+/**                                 to   : 01 nov 1994     **/
 /**                # Version 3.0  : from : 14 jul 1995     **/
-/**                                 to     02 oct 1995     **/
+/**                                 to   : 02 oct 1995     **/
 /**                # Version 3.2  : from : 02 dec 1996     **/
-/**                                 to     05 jun 1998     **/
+/**                                 to   : 05 jun 1998     **/
 /**                # Version 3.3  : from : 01 jun 1999     **/
-/**                                 to     01 jun 1999     **/
+/**                                 to   : 01 jun 1999     **/
 /**                # Version 4.0  : from : 11 dec 2001     **/
-/**                                 to     11 dec 2001     **/
+/**                                 to   : 11 dec 2001     **/
 /**                # Version 5.0  : from : 13 dec 2007     **/
-/**                                 to     15 mar 2008     **/
+/**                                 to   : 15 mar 2008     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
 /**                                 to   : 12 nov 2014     **/
 /**                                                        **/
