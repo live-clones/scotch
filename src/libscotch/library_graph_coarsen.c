@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2014,2015,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 06 sep 2011     **/
 /**                                 to   : 23 apr 2018     **/
+/**                # Version 7.0  : from : 03 may 2019     **/
+/**                                 to   : 22 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +56,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "common_context.h"
 #include "arch.h"
 #include "graph.h"
 #include "graph_coarsen.h"
@@ -91,12 +94,22 @@ SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph               
 SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to multinode array to fill */
 {
   GraphCoarsenMulti * restrict  coarmultptr;      /* Un-based pointer to created, grouped multinode array */
+  CONTEXTINIT                  (finegrafptr);
+  int                           o;
 
+  if (CONTEXTGET (finegrafptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_graphCoarsen) ": cannot get context");
+    return     (1);
+  }
   intRandInit ();                                 /* Check that random number generator is initialized */
-  coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided        */
-  return (graphCoarsen ((const Graph * restrict const) finegrafptr, (Graph * restrict const) coargrafptr,
-                        NULL, &coarmultptr, coarvertnbr, coarval, flagval & GRAPHCOARSENNOMERGE,
-                        NULL, NULL, 0, NULL));
+
+  coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided */
+  o = graphCoarsen ((const Graph * restrict const) CONTEXTGETOBJECT (finegrafptr), (Graph * restrict const) coargrafptr,
+                    NULL, &coarmultptr, coarvertnbr, coarval, flagval & GRAPHCOARSENNOMERGE,
+                    NULL, NULL, 0, CONTEXTGETDATA (finegrafptr));
+
+  CONTEXTEXIT (finegrafptr);
+  return (o);
 }
 
 /*+ This routine computes a matching of a (coarse)
@@ -120,12 +133,22 @@ const SCOTCH_Num                        flagval,  /* Flag value                 
 SCOTCH_Num * restrict const             finematetab) /* Mating array to fill              */
 {
   Gnum * restrict     finemateptr;
+  CONTEXTINIT        (finegrafptr);
+  int                 o;
 
-  intRandInit ();                                 /* Check that random number generator is initialized             */
+  if (CONTEXTGET (finegrafptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_graphCoarsenMatch) ": cannot get context");
+    return     (1);
+  }
+  intRandInit ();                                 /* Check that random number generator is initialized */
+
   finemateptr = finematetab;                      /* Slot will not be modified but preserve "const" of finematetab */
-  return (graphCoarsenMatch ((const Graph * restrict const) finegrafptr, &finemateptr,
-                             coarvertptr, coarval, flagval & GRAPHCOARSENNOMERGE,
-                             NULL, NULL, 0, NULL));
+  o = graphCoarsenMatch ((const Graph * restrict const) CONTEXTGETOBJECT (finegrafptr), &finemateptr,
+                         coarvertptr, coarval, flagval & GRAPHCOARSENNOMERGE,
+                         NULL, NULL, 0, CONTEXTGETDATA (finegrafptr));
+
+  CONTEXTEXIT (finegrafptr);
+  return (o);
 }
 
 /*+ This routine creates a coarse graph from the
@@ -145,9 +168,19 @@ SCOTCH_Graph * restrict const       coargrafptr,  /* Coarse graph               
 SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to user-provided multinode array */
 {
   GraphCoarsenMulti * restrict  coarmultptr;      /* Un-based pointer to created, grouped multinode array */
+  CONTEXTINIT                  (finegrafptr);
+  int                           o;
 
+  if (CONTEXTGET (finegrafptr)) {
+    errorPrint (STRINGIFY (SCOTCH_graphCoarsenBuild) ": cannot get context");
+    return     (1);
+  }
   intRandInit ();                                 /* Check that random number generator is initialized */
-  coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided        */
-  return (graphCoarsenBuild ((const Graph * restrict const) finegrafptr, (Graph * restrict const) coargrafptr,
-                             finematetab, &coarmultptr, coarvertnbr));
+
+  coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided */
+  o = (graphCoarsenBuild ((const Graph * restrict const) CONTEXTGETOBJECT (finegrafptr), (Graph * restrict const) coargrafptr,
+                          finematetab, &coarmultptr, coarvertnbr, CONTEXTGETDATA (finegrafptr)));
+
+  CONTEXTEXIT (finegrafptr);
+  return (o);
 }
