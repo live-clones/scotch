@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010-2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 17 apr 2019     **/
+/**                # Version 7.0  : from : 03 sep 2020     **/
+/**                                 to   : 03 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,23 +112,23 @@ char *              argv[])
 #ifdef SCOTCH_DEBUG_ALL
   int                 flagval;
 #endif /* SCOTCH_DEBUG_ALL */
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
   int                 thrdlvlreqval;
   int                 thrdlvlproval;
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 
   errorProg ("dgtst");
 
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
   if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (1)");
   if (thrdlvlreqval > thrdlvlproval)
-    errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
-#else /* SCOTCH_PTHREAD */
+    errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD_MPI");
+#else /* SCOTCH_PTHREAD_MPI */
   if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (2)");
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 
   MPI_Comm_size (MPI_COMM_WORLD, &procglbnbr);    /* Get communicator data */
   MPI_Comm_rank (MPI_COMM_WORLD, &proclocnum);
