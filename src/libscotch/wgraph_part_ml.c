@@ -1,4 +1,4 @@
-/* Copyright 2007-2011,2014,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2011,2014,2015,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 16 aug 2015     **/
+/**                # Version 7.0  : from : 23 aug 2019     **/
+/**                                 to   : 23 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,13 +101,14 @@ const WgraphPartMlParam * const       paraptr)     /*+ Method parameters        
   *coarmultptr = NULL;                            /* Allocate coarmulttab along with coarse graph */
   if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, NULL, coarmultptr,
                     (paraptr->coarnbr * finegrafptr->partnbr), paraptr->coarval, GRAPHCOARSENNONE,
-                    NULL, NULL, 0, NULL) != 0)
+                    NULL, NULL, 0, finegrafptr->contptr) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   coargrafptr->parttax  = NULL;                   /* Do not allocate partition data yet */
   coargrafptr->compload = NULL;
   coargrafptr->partnbr  = finegrafptr->partnbr;
   coargrafptr->levlnum  = finegrafptr->levlnum + 1; /* Graph level is coarsening level */
+  coargrafptr->contptr  = finegrafptr->contptr;
 
   return (0);
 }

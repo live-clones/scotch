@@ -1,4 +1,4 @@
-/* Copyright 2010,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 26 feb 2018     **/
 /**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 25 nov 2021     **/
+/**                # Version 7.0  : from : 23 aug 2019     **/
+/**                                 to   : 23 aug 2019     **/
 /**                                                        **/
 /**   NOTES      : # This code originally derived from     **/
 /**                  the code of kgraph_map_rb_part.c,     **/
@@ -308,6 +310,7 @@ const Anum                        inddomnsiz)     /* Number of domains to map   
   actgrafdat.parttax   -= actgrafdat.s.baseval;
   actgrafdat.s.flagval |= VGRAPHFREEPART;         /* Free group leader */
   actgrafdat.levlnum    = 0;                      /* Initial level     */
+  actgrafdat.contptr    = dataptr->contptr;
 
   actgrafdat.dwgttab[0] = inddomnsiz / 2;         /* Compute relative weights of subdomains to compute */
   actgrafdat.dwgttab[1] = inddomnsiz - actgrafdat.dwgttab[0];
@@ -374,6 +377,7 @@ const WgraphPartRbParam * restrict const  paraptr)
   datadat.frontab = grafptr->frontab;             /* Take frontier array      */
   datadat.fronnbr = 0;                            /* No frontier vertices yet */
   datadat.straptr = paraptr->straptr;
+  datadat.contptr = grafptr->contptr;
 
   if (wgraphPartRb2 (&datadat, &grafptr->s, NULL, 0, NULL, 1, grafptr->s.vertnbr, 0, grafptr->partnbr) != 0) { /* TRICK: initial fake part is 1 */
     errorPrint ("wgraphPartRb: cound not perform recursion");

@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 23 nov 2021     **/
 /**                                 to   : 02 dec 2021     **/
+/**                # Version 7.0  : from : 23 aug 2019     **/
+/**                                 to   : 23 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,7 +69,8 @@ typedef struct Wgraph_ {
   Gnum *                    compload;             /*+ Array of part loads                     +*/
   Gnum *                    compsize;             /*+ Array of part number of vertives        +*/
   Anum *                    parttax;              /*+ Part array; can be allocated separately +*/
-  Gnum                      levlnum;
+  INT                       levlnum;              /*+ Coarsening level                        +*/
+  Context *                 contptr;              /*+ Execution context                       +*/
 } Wgraph;
 
 /*+ The save graph structure. +*/

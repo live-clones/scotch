@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.1  : from : 25 aug 2020     **/
 /**                                 to   : 26 aug 2020     **/
+/**                # Version 7.0  : from : 28 aug 2020     **/
+/**                                 to   : 28 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,6 +108,7 @@ const WgraphPartEsParam * const paraptr)          /*+ Method parameters +*/
     memFree    (npfltab - 1);
     return     (1);
   }
+  actgrafdat.contptr = grafptr->contptr;
 
   if (kgraphMapSt (&actgrafdat, paraptr->strat) != 0) { /* Map active subgraph */
     errorPrint ("wgraphPartEs: cannot partition active graph");

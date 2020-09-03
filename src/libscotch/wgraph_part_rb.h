@@ -1,4 +1,4 @@
-/* Copyright 2010,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 21 nov 2021     **/
 /**                                 to   : 23 nov 2021     **/
+/**                # Version 7.0  : from : 23 aug 2019     **/
+/**                                 to   : 23 aug 2019     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kgraph_map_rb_part.h for the vertex   **/
@@ -70,6 +72,7 @@ typedef struct WgraphPartRbData_ {
   Gnum *                    frontab;              /*+ Pointer to top-level frontier array +*/
   Gnum                      fronnbr;              /*+ Current number of frontier vertices +*/
   Strat *                   straptr;              /*+ Bipartitioning strategy used        +*/
+  Context *                 contptr;              /*+ Execution context                   +*/
 } WgraphPartRbData;
 
 /*
