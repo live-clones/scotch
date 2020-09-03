@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 26 feb 2018     **/
 /**                # Version 6.1  : from : 25 aug 2020     **/
-/**                                 to   : 25 aug 2020     **/
+/**                                 to   : 01 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,7 +72,6 @@
 #include "wgraph_part_es.h"
 #include "wgraph_part_fm.h"
 #include "wgraph_part_gg.h"
-#include "wgraph_part_gp.h"
 #include "wgraph_part_ml.h"
 #include "wgraph_part_rb.h"
 #include "wgraph_part_st.h"
@@ -102,11 +101,6 @@ static union {
 } wgraphpartdefaultgg = { { 10 } };
 
 static union {
-  WgraphPartGpParam         param;
-  StratNodeMethodData       padding;
-} wgraphpartdefaultgp = { { 5 } };
-
-static union {
   WgraphPartMlParam         param;
   StratNodeMethodData       padding;
 } wgraphpartdefaultml = { { 20, 0.8L, &stratdummy, &stratdummy } };
@@ -120,7 +114,6 @@ static StratMethodTab       wgraphpartstmethtab[] = { /* Graph overlap partition
                               { WGRAPHPARTSTMETHES, "e",  wgraphPartEs, &wgraphpartdefaultes },
                               { WGRAPHPARTSTMETHFM, "f",  wgraphPartFm, &wgraphpartdefaultfm },
                               { WGRAPHPARTSTMETHGG, "h",  wgraphPartGg, &wgraphpartdefaultgg },
-                              { WGRAPHPARTSTMETHGP, "g",  wgraphPartGp, &wgraphpartdefaultgp },
                               { WGRAPHPARTSTMETHML, "m",  wgraphPartMl, &wgraphpartdefaultml },
                               { WGRAPHPARTSTMETHRB, "r",  wgraphPartRb, &wgraphpartdefaultrb },
                               { WGRAPHPARTSTMETHZR, "z",  wgraphPartZr, NULL },
@@ -146,10 +139,6 @@ static StratParamTab        wgraphpartstparatab[] = { /* Method parameter list *
                               { WGRAPHPARTSTMETHGG,  STRATPARAMINT,    "pass",
                                 (byte *) &wgraphpartdefaultgg.param,
                                 (byte *) &wgraphpartdefaultgg.param.passnbr,
-                                NULL },
-                              { WGRAPHPARTSTMETHGP,  STRATPARAMINT,    "pass",
-                                (byte *) &wgraphpartdefaultgp.param,
-                                (byte *) &wgraphpartdefaultgp.param.passnbr,
                                 NULL },
                               { WGRAPHPARTSTMETHML,  STRATPARAMSTRAT,  "asc",
                                 (byte *) &wgraphpartdefaultml.param,
@@ -214,7 +203,6 @@ const Strat * restrict const strat)              /*+ Overlap partitioning strate
   }
   if ((sizeof (WgraphPartFmParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (WgraphPartGgParam) > sizeof (StratNodeMethodData)) ||
-      (sizeof (WgraphPartGpParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (WgraphPartMlParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (WgraphPartRbParam) > sizeof (StratNodeMethodData))) {
     errorPrint ("wgraphPartSt: invalid type specification");

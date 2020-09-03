@@ -53,7 +53,7 @@
 /**                # Version 6.0  : from : 12 sep 2008     **/
 /**                                 to   : 24 aug 2020     **/
 /**                # Version 6.1  : from : 24 aug 2020     **/
-/**                                 to   : 31 aug 2020     **/
+/**                                 to   : 01 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -1076,7 +1076,6 @@
 #define wgraphPartEs                SCOTCH_NAME_INTERN (wgraphPartEs)
 #define wgraphPartFm                SCOTCH_NAME_INTERN (wgraphPartFm)
 #define wgraphPartGg                SCOTCH_NAME_INTERN (wgraphPartGg)
-#define wgraphPartGp                SCOTCH_NAME_INTERN (wgraphPartGp)
 #define wgraphPartMl                SCOTCH_NAME_INTERN (wgraphPartMl)
 #define wgraphPartRb                SCOTCH_NAME_INTERN (wgraphPartRb)
 #define wgraphPartSt                SCOTCH_NAME_INTERN (wgraphPartSt)

@@ -8,13 +8,13 @@
 ## use, modify and/or redistribute the software under the terms of the
 ## CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ## URL: "http://www.cecill.info".
-## 
+##
 ## As a counterpart to the access to the source code and rights to copy,
 ## modify and redistribute granted by the license, users are provided
 ## only with a limited warranty and the software's author, the holder of
 ## the economic rights, and the successive licensors have only limited
 ## liability.
-## 
+##
 ## In this respect, the user's attention is drawn to the risks associated
 ## with loading, using, modifying and/or developing or reproducing the
 ## software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ## their requirements in conditions enabling the security of their
 ## systems and/or data to be ensured and, more generally, to use and
 ## operate it in the same conditions as regards security.
-## 
+##
 ## The fact that you are presently reading this means that you have had
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
@@ -449,7 +449,6 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			wgraph_part_es$(OBJ)  			\
 			wgraph_part_fm$(OBJ)  			\
 			wgraph_part_gg$(OBJ)          		\
-			wgraph_part_gp$(OBJ)	        	\
 			wgraph_part_ml$(OBJ)   			\
 			wgraph_part_rb$(OBJ)  			\
 			wgraph_part_st$(OBJ)  			\
@@ -1094,7 +1093,7 @@ dorder_tree_dist$(OBJ)		:	dorder_tree_dist.c			\
 fibo$(OBJ)			:	fibo.c					\
 					module.h				\
 					common.h				\
-					fibo.h                                  
+					fibo.h
 
 gain$(OBJ)			:	gain.c					\
 					module.h				\
@@ -2679,7 +2678,7 @@ parser_ll.c			:	parser_ll.l				\
 					parser_ly.h
 					($(LEX) parser_ll.l &&			\
 					 $(MV) lex.yy.c parser_ll.c) ||		\
-					$(CP) last_resort/parser_ll.c . 
+					$(CP) last_resort/parser_ll.c .
 
 parser_ll$(OBJ)			:	parser_ll.c				\
 					parser_ly.h
@@ -3030,13 +3029,6 @@ wgraph_part_gg$(OBJ)		:	wgraph_part_gg.c			\
 					wgraph.h				\
 					wgraph_part_gg.h
 
-wgraph_part_gp$(OBJ)		:	wgraph_part_gp.c			\
-					module.h				\
-					common.h				\
-					graph.h					\
-					wgraph.h				\
-					wgraph_part_gp.h
-
 wgraph_part_ml$(OBJ)		: 	wgraph_part_ml.c			\
 					module.h				\
 					common.h				\
@@ -3076,7 +3068,6 @@ wgraph_part_st$(OBJ)		:	wgraph_part_st.c			\
 					wgraph_part_es.h			\
 					wgraph_part_fm.h			\
 					wgraph_part_gg.h			\
-					wgraph_part_gp.h			\
 					wgraph_part_ml.h			\
 					wgraph_part_rb.h			\
 					wgraph_part_zr.h			\

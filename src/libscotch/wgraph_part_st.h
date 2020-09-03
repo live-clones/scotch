@@ -59,7 +59,6 @@ typedef enum WgraphPartStMethodType_ {
   WGRAPHPARTSTMETHES = 0,                         /*+ Edge separation        +*/
   WGRAPHPARTSTMETHFM,                             /*+ Fiduccia-Mattheyses    +*/
   WGRAPHPARTSTMETHGG,                             /*+ Greedy Graph Growing   +*/
-  WGRAPHPARTSTMETHGP,                             /*+ Gibbs-Poole-Stockmeyer +*/
   WGRAPHPARTSTMETHML,                             /*+ Multi-level separation +*/
   WGRAPHPARTSTMETHRB,                             /*+ Recursive bisection    +*/
   WGRAPHPARTSTMETHZR,                             /*+ Zero method            +*/
