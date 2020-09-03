@@ -51,6 +51,8 @@
 /**                                 to   : 16 jul 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
+/**                # Version 7.0  : from : 03 jun 2018     **/
+/**                                 to   : 30 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -195,8 +197,8 @@ const INT                   permnbr)              /*+ Number of entries in array
 /*************************************/
 
 static volatile int         intrandflag = 0;      /*+ Flag set if generator already initialized +*/
-static UINT32               intrandproc = 0;      /*+ Process number                            +*/
-static UINT32               intrandseed = 1;      /*+ Pseudo-random seed                        +*/
+static int                  intrandproc = 0;      /*+ Process number                            +*/
+static UINT64               intrandseed = 1;      /*+ Pseudo-random seed                        +*/
 
 /* This routine sets the process number that is
 ** used to generate a different seed across all
@@ -212,7 +214,7 @@ void
 intRandProc (
 int                         procnum)
 {
-  intrandproc = (UINT32) procnum;                 /* Set process number */
+  intrandproc = procnum;                          /* Set process number */
 }
 
 /* This routine initializes the seed used by Scotch
@@ -229,40 +231,39 @@ static
 void
 intRandSeed3 (
 IntRandState * restrict     randptr,
-UINT32                      randval)
+UINT                        randval)
 {
-  UINT32              randtmp;
-  UINT32              i;
+  UINT64              seedval;
 
-  UINT32 * restrict const randtab = randptr->randtab; /* Fast access */
+  UINT64 * restrict const randtab = randptr->randtab; /* Fast access */
 
-  randtmp    = (UINT32) randval;
-  randtab[0] = randtmp;                           /* Reset array contents */
-  for (i = 1; i < 623; i ++) {
-    randtmp = (0x6c078965 * randtmp) ^ ((randtmp >> 30) + i);
-    randtab[i] = randtmp;
-  }
-  randptr->randnum = 0;                           /* Reset array index */
+  seedval = (UINT64) (randval | 1);               /* Never have a zero state */
+
+  randtab[0] = seedval ^ (seedval << 15);         /* In case of 32-bit INTs */
+  randtab[1] = seedval ^ (seedval << 24);
 }
 #endif /* COMMON_RANDOM_SYSTEM */
 
 static
 void
 intRandSeed2 (
-UINT32                      seedval)
+INT                         seedval)
 {
+#ifdef COMMON_RANDOM_SYSTEM
   UINT32              randtmp;
 
-  randtmp = seedval * (intrandproc + 1);          /* Account for process index */
+  randtmp = (((UINT32) seedval) | 1) * (((UINT32) intrandproc) + 1); /* Account for process index */
 
-#ifdef COMMON_RANDOM_SYSTEM
 #ifdef COMMON_RANDOM_RAND
   srand ((unsigned int) randtmp);
 #else /* COMMON_RANDOM_RAND */
   srandom ((unsigned int) randtmp);
 #endif /* COMMON_RANDOM_RAND */
 #else /* COMMON_RANDOM_SYSTEM */
-  intRandSeed3 (&intrandstat, randtmp);           /* Initialize state vector from random seed */
+  INT                 randtmp;
+
+  randtmp = (((UINT64) seedval) | 1) * (((UINT64) intrandproc) + 1); /* Account for process index */
+  intRandSeed3 (&intrandstat, randtmp);           /* Initialize state vector from random seed     */
 #endif /* COMMON_RANDOM_SYSTEM */
 }
 
@@ -271,7 +272,7 @@ intRandSeed (
 INT                         seedval)
 {
   intrandflag = 1;                                /* Generator has been initialized */
-  intrandseed = (UINT32) seedval;                 /* Save new seed                  */
+  intrandseed = seedval;                          /* Save new seed                  */
 
   intRandSeed2 (intrandseed);                     /* Initialize pseudo-random seed */
 }
@@ -294,7 +295,7 @@ intRandInit (void)
     intrandflag = 1;                              /* Generator has been initialized */
 
 #if ! ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED))
-    intrandseed = (UINT32) time (NULL);           /* Set random seed if needed */
+    intrandseed = (INT) time (NULL);              /* Set random seed if needed */
 #endif /* ((defined COMMON_DEBUG) || (defined COMMON_RANDOM_FIXED_SEED)) */
     intRandSeed2 (intrandseed);                   /* Initialize state vector from seed */
   }
@@ -332,37 +333,22 @@ IntRandState * restrict const randptr,            /*+ Random state to load +*/
 FILE * restrict const         stream)             /*+ Stream to read from  +*/
 {
   INT                 versval;
-  INT                 randnum;
-  int                 i;
 
   if (intLoad (stream, &versval) != 1) {          /* Read version number */
     errorPrint ("intRandLoad2: bad input (1)");
     return     (2);
   }
-  if (versval != 0) {                             /* If version not zero */
+  if (versval != 1) {                             /* If version not one */
     errorPrint ("intRandLoad2: invalid version number");
     return     (2);
   }
 
-  for (i = 0; i < 624; i ++) {
-    INT                 randval;
-
-    if (intLoad (stream, &randval) != 1) {        /* Read state vector */
-      errorPrint ("intRandLoad2: bad input (2)");
-      return     (2);
-    }
-    randptr->randtab[i] = (UINT32) randval;
-  }
-
-  if (intLoad (stream, &randnum) != 1) {          /* Read state index */
-    errorPrint ("intRandLoad2: bad input (3)");
+  if (fscanf (stream, "%" PRIu64 "%" PRIu64,
+              &randptr->randtab[0],
+              &randptr->randtab[1]) != 2) {
+    errorPrint ("intRandLoad2: bad input (2)");
     return     (2);
   }
-  if ((randnum < 0) || (randnum >= 624)) {
-    errorPrint ("intRandLoad2: invalid array index");
-    return     (2);
-  }
-  randptr->randnum = randnum;
 
   return (0);
 }
@@ -395,22 +381,10 @@ intRandSave2 (
 IntRandState * restrict const randptr,            /*+ Random state to load +*/
 FILE * restrict const         stream)             /*+ Stream to read from  +*/
 {
-  int                 i;
-
-  if (fprintf (stream, "0\n") == EOF) {
-    errorPrint ("intRandSave2: bad output (1)");
-    return     (2);
-  }
-
-  for (i = 0; i < 624; i ++) {
-    if (fprintf (stream, UINTSTRING "\n", (UINT) randptr->randtab[i]) == EOF) {
-      errorPrint ("intRandLoad2: bad output (2)");
-      return     (2);
-    }
-  }
-
-  if (fprintf (stream, INTSTRING "\n", (INT) randptr->randnum) == EOF) {
-    errorPrint ("intRandLoad2: bad output (3)");
+  if (fprintf (stream, "1\n%" PRIu64 "\t%" PRIu64 "\n",
+               randptr->randtab[0],
+               randptr->randtab[1]) < 0) {
+    errorPrint ("intRandSave2: bad output");
     return     (2);
   }
 
@@ -431,8 +405,7 @@ FILE * restrict const         stream)             /*+ Stream to read from  +*/
 }
 
 /* This routine computes a new pseudo-random
-** 32bit value from the state that is passed
-** to it.
+** INT value from the state that is passed to it.
 ** For speed and reproducibility reasons,
 ** this routine is not thread-safe. Providing
 ** a thread-safe routine would mean determinism
@@ -447,14 +420,13 @@ FILE * restrict const         stream)             /*+ Stream to read from  +*/
 
 #ifndef COMMON_RANDOM_SYSTEM
 static
-UINT32
+UINT
 intRandVal2 (
 IntRandState * restrict     randptr)
 {
-  int                 randnum;
-  UINT32              randval;
+  UINT64              x, y;                       /* State variables */
 
-  UINT32 * restrict const randtab = randptr->randtab; /* Fast access */
+  UINT64 * restrict const randtab = randptr->randtab; /* Fast access */
 
 #ifdef COMMON_DEBUG
   if (intrandflag == 0) {
@@ -463,30 +435,14 @@ IntRandState * restrict     randptr)
   }
 #endif /* COMMON_DEBUG */
 
-  randnum = randptr->randnum;
-  if (randnum == 0) {
-    int                 i;
+  x = randtab[0];
+  y = randtab[1];
+  randtab[0] = y;
+  x ^= x << 23;
+  x  = x ^ y ^ (x >> 17) ^ (y >> 26);
+  randtab[1] = x;
 
-    for (i = 0; i < 624; i ++) {
-      UINT32              randtmp;
-
-      randtmp = (randtab[i] & 0x80000000) + (randtab[(i + 1) % 624] & 0x7FFFFFFF);
-      randtmp = randtab[(i + 397) % 624] ^ (randtmp >> 1);
-      if ((randtmp & 1) != 0)
-        randtmp ^= 0x9908B0DF;
-
-      randtab[i] = randtmp;
-    }
-  }
-
-  randval  = randtab[randnum];
-  randval ^= (randval >> 11);
-  randval ^= (randval >> 7) & 0x9D2C5680;
-  randval ^= (randval >> 15) & 0xEFC60000;
-  randval ^= (randval >> 18);
-  randptr->randnum = (randnum + 1) % 624;
-
-  return (randval);
+  return ((UINT) (x + y));
 }
 #endif /* COMMON_RANDOM_SYSTEM */
 
