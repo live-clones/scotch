@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -39,7 +39,9 @@
 /**                the libesmumps routines.                **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 19 jan 2020     **/
-/**                                 to     19 jan 2020     **/
+/**                                 to   : 19 jan 2020     **/
+/**                # Version 6.1  : from : 22 feb 2020     **/
+/**                                 to   : 22 feb 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,6 +77,7 @@ char *              argv[])
   SCOTCH_Num              vertnbr;
   SCOTCH_Num              vertnum;
   SCOTCH_Num *            verttab;
+  SCOTCH_Num *            velotab;
   SCOTCH_Num              edgenbr;
   SCOTCH_Num *            edgetab;
   SCOTCH_Num *            elentab;
@@ -107,7 +110,7 @@ char *              argv[])
 
   fclose (fileptr);
 
-  SCOTCH_graphData (&grafdat, NULL, &vertnbr, &verttab, NULL, NULL, NULL, &edgenbr, &edgetab, NULL);
+  SCOTCH_graphData (&grafdat, NULL, &vertnbr, &verttab, NULL, &velotab, NULL, &edgenbr, &edgetab, NULL);
 
   if (((elentab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) ||
       ((lasttab = malloc (vertnbr * sizeof (SCOTCH_Num))) == NULL) ||
@@ -118,7 +121,7 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  memcpy (petab, verttab, vertnbr * sizeof (SCOTCH_Num));
+  memcpy (petab, verttab, vertnbr * sizeof (SCOTCH_Num)); /* Prepare graph topology arrays */
   for (vertnum = 0; vertnum < vertnbr; vertnum ++)
     lentab[vertnum] = verttab[vertnum + 1] - verttab[vertnum];
 
@@ -126,6 +129,21 @@ char *              argv[])
     SCOTCH_errorPrint ("main: cannot run esmumps");
     exit (EXIT_FAILURE);
   }
+
+#ifdef ESMUMPS_HAS_ESMUMPSV
+  if (velotab != NULL) {
+    memcpy (petab, verttab, vertnbr * sizeof (SCOTCH_Num)); /* Prepare graph topology arrays */
+    for (vertnum = 0; vertnum < vertnbr; vertnum ++)
+      lentab[vertnum] = verttab[vertnum + 1] - verttab[vertnum];
+
+    memcpy (nvtab, velotab, vertnbr * sizeof (SCOTCH_Num)); /* Prepare node multiplicity array */
+
+    if (esmumpsv (vertnbr, 0, petab, edgenbr + 1, lentab, edgetab, nvtab, elentab, lasttab) != 0) {
+      SCOTCH_errorPrint ("main: cannot run esmumpsv");
+      exit (EXIT_FAILURE);
+    }
+  }
+#endif /* ESMUMPS_HAS_ESMUMPSV */
 
   free (petab);
   free (nvtab);
