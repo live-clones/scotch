@@ -56,6 +56,8 @@
 /**                                 to   : 21 aug 2020     **/
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
+/**                # Version 7.0  : from : 03 jun 2018     **/
+/**                                 to   : 03 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -170,8 +172,10 @@
 
 #if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T))
 #define UINT32                      uint32_t
+#define UINT64                      uint64_t
 #else /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T)) */
 #define UINT32                      u_int32_t
+#define UINT64                      u_int64_t
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T)) */
 
 #ifndef INT                                       /* If type not externally overriden */
@@ -252,12 +256,11 @@
 */
 
 /* The pseudo-random state structure. It is
-   based on a Mersenne twister generator, also
-   referred to as MT19937. */
+   based on the xorshift128+ algorithm by Vigna,
+   both for 32- and 64-bit integers.             */
 
 typedef struct IntRandState_ {
-  UINT32                    randtab[624];         /* State vector */
-  int                       randnum;              /* Index value  */
+  UINT64                    randtab[2];           /* State vector */
 } IntRandState;
 
 /*
