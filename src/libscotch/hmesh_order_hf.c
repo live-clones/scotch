@@ -48,7 +48,7 @@
 /**                # Version 6.0  : from : 30 apr 2018     **/
 /**                                 to   : 30 apr 2018     **/
 /**                # Version 6.1  : from : 29 oct 2019     **/
-/**                                 to   : 12 jan 2020     **/
+/**                                 to   : 18 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,6 +106,8 @@ const HmeshOrderHfParam * restrict const  paraptr)
   Gnum * restrict     nexttab;                    /* Array of index of next principal variable  */
   Gnum * restrict     frsttab;
   Gnum * restrict     headtab;                    /* Head array : nbbuck = 2 * n                */
+  Gnum * restrict     cwgttax;                    /* Column weight array                        */
+  Gnum                cwgtsiz;
   Gnum                ncmpa;
   int                 o;
 
@@ -119,6 +121,7 @@ const HmeshOrderHfParam * restrict const  paraptr)
   iwlen  = (Gnum) ((double) meshptr->m.edgenbr * HMESHORDERHFCOMPRAT) + 32;
   if (iwlen < n)                                  /* TRICK: make sure to be able to re-use array */
     iwlen = n;
+  cwgtsiz = (meshptr->m.vnlotax != NULL) ? n : 0;
 
   if (memAllocGroup ((void **) (void *)
                      &petab,   (size_t) (n * sizeof (Gnum)),
@@ -130,6 +133,7 @@ const HmeshOrderHfParam * restrict const  paraptr)
                      &frsttab, (size_t) (n * sizeof (Gnum)),
                      &secntab, (size_t) (n * sizeof (Gnum)),
                      &nexttab, (size_t) (n * sizeof (Gnum)),
+                     &cwgttax, (size_t) (cwgtsiz * sizeof (Gnum)), /* Not based yet */
                      &headtab, (size_t) ((nbbuck + 2) * sizeof (Gnum)),
                      &iwtab,   (size_t) (iwlen * sizeof (Gnum)), NULL) == NULL) {
     errorPrint  ("hmeshOrderHf: out of memory");
@@ -147,11 +151,20 @@ const HmeshOrderHfParam * restrict const  paraptr)
     return     (1);
   }
 
+  if (meshptr->m.vnlotax != NULL) {
+    cwgttax -= meshptr->m.baseval;                /* Pre-base array for index computations */
+    memCpy (cwgttax + meshptr->m.vnodbas, meshptr->m.vnlotax + meshptr->m.vnodbas, meshptr->m.vnodnbr * sizeof (Gnum));
+    memSet (cwgttax + meshptr->m.velmbas, 0,                                       meshptr->m.velmnbr * sizeof (Gnum));
+  }
+  else
+    cwgttax = NULL;
+
   o = hallOrderHxBuild (meshptr->m.baseval, n, meshptr->vnohnbr,
                         (meshptr->m.vnumtax == NULL) ? NULL : meshptr->m.vnumtax + (meshptr->m.vnodbas - meshptr->m.baseval), /* Point to node part of vnumtab array */
                         ordeptr, cblkptr,
                         nvtab   - meshptr->m.baseval,
                         lentab  - meshptr->m.baseval,
+                        cwgttax,
                         petab   - meshptr->m.baseval,
                         frsttab - meshptr->m.baseval,
                         nexttab - meshptr->m.baseval,

@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 30 apr 2018     **/
 /**                                 to   : 30 apr 2018     **/
 /**                # Version 6.1  : from : 11 nov 2019     **/
-/**                                 to   : 12 jan 2020     **/
+/**                                 to   : 11 feb 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,9 +104,11 @@ const HgraphOrderHdParam * restrict const paraptr)
   Gnum * restrict     elentab;
   Gnum * restrict     lasttab;
   Gnum * restrict     leaftab;
-  Gnum * restrict     secntab;                    /* Array of index to first secondary variable */
-  Gnum * restrict     nexttab;                    /* Array of index of next principal variable  */
+  Gnum * restrict     secntab;                    /* Array of index to first secondary variable  */
+  Gnum * restrict     nexttab;                    /* Array of index of next principal variable   */
   Gnum * restrict     frsttab;
+  Gnum * restrict     cwgttax;                    /* Column weight array                         */
+  Gnum                cwgtsiz;
   Gnum                ncmpa;
   int                 o;
 
@@ -118,18 +120,20 @@ const HgraphOrderHdParam * restrict const paraptr)
   iwlen = (Gnum) ((double) grafptr->s.edgenbr * HGRAPHORDERHDCOMPRAT) + 32;
   if (iwlen < n)                                  /* Prepare to re-use array */
     iwlen = n;
+  cwgtsiz = (grafptr->s.velotax != NULL) ? n : 0;
 
   if (memAllocGroup ((void **) (void *)
-                     &petab,   (size_t) (n     * sizeof (Gnum)),
-                     &iwtab,   (size_t) (iwlen * sizeof (Gnum)),
-                     &lentab,  (size_t) (n     * sizeof (Gnum)),
-                     &nvartab, (size_t) (n     * sizeof (Gnum)),
-                     &elentab, (size_t) (n     * sizeof (Gnum)),
-                     &lasttab, (size_t) (n     * sizeof (Gnum)),
-                     &leaftab, (size_t) (n     * sizeof (Gnum)),
-                     &frsttab, (size_t) (n     * sizeof (Gnum)),
-                     &secntab, (size_t) (norig * sizeof (Gnum)),
-                     &nexttab, (size_t) (n     * sizeof (Gnum)), NULL) == NULL) {
+                     &petab,   (size_t) (n           * sizeof (Gnum)),
+                     &iwtab,   (size_t) (iwlen       * sizeof (Gnum)),
+                     &lentab,  (size_t) (n           * sizeof (Gnum)),
+                     &nvartab, (size_t) (n           * sizeof (Gnum)),
+                     &elentab, (size_t) (n           * sizeof (Gnum)),
+                     &lasttab, (size_t) (n           * sizeof (Gnum)),
+                     &leaftab, (size_t) (n           * sizeof (Gnum)),
+                     &frsttab, (size_t) (n           * sizeof (Gnum)),
+                     &secntab, (size_t) ((norig + 1) * sizeof (Gnum)),
+                     &nexttab, (size_t) (n           * sizeof (Gnum)),
+                     &cwgttax, (size_t) (cwgtsiz     * sizeof (Gnum)), NULL) == NULL) { /* Not based yet */
     errorPrint ("hgraphOrderHd: out of memory");
     return     (1);
   }
@@ -145,10 +149,18 @@ const HgraphOrderHdParam * restrict const paraptr)
     return     (1);
   }
 
+  if (grafptr->s.velotax != NULL) {
+    memCpy (cwgttax, grafptr->s.velotax + grafptr->s.baseval, n * sizeof (Gnum));
+    cwgttax -= grafptr->s.baseval;
+  }
+  else
+    cwgttax = NULL;
+
   o = hallOrderHxBuild (grafptr->s.baseval, n, grafptr->vnohnbr,
                         grafptr->s.vnumtax, ordeptr, cblkptr,
                         nvartab - grafptr->s.baseval,
                         lentab - grafptr->s.baseval,
+                        cwgttax,
                         petab   - grafptr->s.baseval,
                         frsttab - grafptr->s.baseval,
                         nexttab - grafptr->s.baseval,

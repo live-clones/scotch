@@ -48,7 +48,7 @@
 /**                # Version 6.0  : from : 30 apr 2018     **/
 /**                                 to   : 30 apr 2018     **/
 /**                # Version 6.1  : from : 11 nov 2019     **/
-/**                                 to   : 26 jan 2020     **/
+/**                                 to   : 11 feb 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,6 +104,8 @@ const HmeshOrderHdParam * restrict const  paraptr)
   Gnum * restrict     secntab;                    /* Array of index to first secondary variable */
   Gnum * restrict     nexttab;                    /* Array of index of next principal variable  */
   Gnum * restrict     frsttab;
+  Gnum * restrict     cwgttax;                    /* Column weight array                        */
+  Gnum                cwgtsiz;
   Gnum                ncmpa;
   int                 o;
 
@@ -116,20 +118,22 @@ const HmeshOrderHdParam * restrict const  paraptr)
   iwlen = (Gnum) ((double) meshptr->m.edgenbr * HMESHORDERHDCOMPRAT) + 32;
   if (iwlen < n)                                  /* Prepare to re-use array */
     iwlen = n;
+  cwgtsiz = (meshptr->m.vnlotax != NULL) ? n : 0;
 
   if (memAllocGroup ((void **) (void *)
-                     &petab,   (size_t) (n     * sizeof (Gnum)),
-                     &iwtab,   (size_t) (iwlen * sizeof (Gnum)),
-                     &lentab,  (size_t) (n     * sizeof (Gnum)),
-                     &nvartab, (size_t) (n     * sizeof (Gnum)),
-                     &elentab, (size_t) (n     * sizeof (Gnum)),
-                     &lasttab, (size_t) (n     * sizeof (Gnum)),
-                     &leaftab, (size_t) (n     * sizeof (Gnum)),
-                     &frsttab, (size_t) (n     * sizeof (Gnum)),
-                     &secntab, (size_t) (n     * sizeof (Gnum)),
-                     &nexttab, (size_t) (n     * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint  ("hmeshOrderHd: out of memory");
-    return      (1);
+                     &petab,   (size_t) (n           * sizeof (Gnum)),
+                     &iwtab,   (size_t) (iwlen       * sizeof (Gnum)),
+                     &lentab,  (size_t) (n           * sizeof (Gnum)),
+                     &nvartab, (size_t) (n           * sizeof (Gnum)),
+                     &elentab, (size_t) (n           * sizeof (Gnum)),
+                     &lasttab, (size_t) (n           * sizeof (Gnum)),
+                     &leaftab, (size_t) (n           * sizeof (Gnum)),
+                     &frsttab, (size_t) (n           * sizeof (Gnum)),
+                     &secntab, (size_t) ((norig + 1) * sizeof (Gnum)),
+                     &nexttab, (size_t) (n           * sizeof (Gnum)),
+                     &cwgttax, (size_t) (cwgtsiz     * sizeof (Gnum)), NULL) == NULL) { /* Not based yet */
+    errorPrint ("hmeshOrderHd: out of memory");
+    return     (1);
   }
 
   hmeshOrderHxFill (meshptr, petab, lentab, iwtab, nvartab, elentab, &pfree);
@@ -144,11 +148,20 @@ const HmeshOrderHdParam * restrict const  paraptr)
     return     (1);
   }
 
+  if (meshptr->m.vnlotax != NULL) {
+    cwgttax -= meshptr->m.baseval;                /* Pre-base array for index computations */
+    memCpy (cwgttax + meshptr->m.vnodbas, meshptr->m.vnlotax + meshptr->m.vnodbas, meshptr->m.vnodnbr * sizeof (Gnum));
+    memSet (cwgttax + meshptr->m.velmbas, 0,                                       meshptr->m.velmnbr * sizeof (Gnum));
+  }
+  else
+    cwgttax = NULL;
+
   o = hallOrderHxBuild (meshptr->m.baseval, n, meshptr->vnohnbr,
                         (meshptr->m.vnumtax == NULL) ? NULL : meshptr->m.vnumtax + (meshptr->m.vnodbas - meshptr->m.baseval), /* Point to node part of vnumtab array */
                         ordeptr, cblkptr,
                         nvartab - meshptr->m.baseval,
                         lentab  - meshptr->m.baseval,
+                        cwgttax,
                         petab   - meshptr->m.baseval,
                         frsttab - meshptr->m.baseval,
                         nexttab - meshptr->m.baseval,
