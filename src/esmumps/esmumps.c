@@ -8,13 +8,13 @@
 ** use, modify and/or redistribute the software under the terms of the
 ** CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
 ** URL: "http://www.cecill.info".
-** 
+**
 ** As a counterpart to the access to the source code and rights to copy,
 ** modify and redistribute granted by the license, users are provided
 ** only with a limited warranty and the software's author, the holder of
 ** the economic rights, and the successive licensors have only limited
 ** liability.
-** 
+**
 ** In this respect, the user's attention is drawn to the risks associated
 ** with loading, using, modifying and/or developing or reproducing the
 ** software by the user in light of its specific status of free software,
@@ -25,7 +25,7 @@
 ** their requirements in conditions enabling the security of their
 ** systems and/or data to be ensured and, more generally, to use and
 ** operate it in the same conditions as regards security.
-** 
+**
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
@@ -40,15 +40,17 @@
 /**                libSCOTCH + Emilio libfax libraries.    **/
 /**                                                        **/
 /**   DATES      : # Version 0.0  : from : 16 may 2001     **/
-/**                                 to     04 jun 2001     **/
+/**                                 to   : 04 jun 2001     **/
 /**                # Version 0.1  : from : 13 feb 2002     **/
-/**                                 to     13 feb 2002     **/
+/**                                 to   : 13 feb 2002     **/
 /**                # Version 1.0  : from : 06 dec 2004     **/
-/**                                 to     06 dec 2004     **/
+/**                                 to   : 06 dec 2004     **/
 /**                # Version 5.1  : from : 22 jan 2009     **/
-/**                                 to     22 jan 2009     **/
+/**                                 to   : 22 jan 2009     **/
 /**                # Version 6.0  : from : 22 jan 2020     **/
-/**                                 to     22 jan 2020     **/
+/**                                 to   : 22 jan 2020     **/
+/**                # Version 6.1  : from : 28 aug 2020     **/
+/**                                 to   : 28 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -118,7 +120,6 @@ INT * restrict const        lasttab)              /* Permutations computed for d
   Graph               grafdat;                    /* Graph                 */
   Order               ordedat;                    /* Graph ordering        */
   SymbolMatrix        symbdat;                    /* Block factored matrix */
-  Dof                 deofdat;                    /* Matrix DOF structure  */
   INT                 vertnum;
   INT                 cblknum;
   INT                 colnum;
@@ -134,9 +135,6 @@ INT * restrict const        lasttab)              /* Permutations computed for d
   graphInit        (&grafdat);
   graphBuildGraph2 (&grafdat, baseval, n, pfree - 1, petab, vendtab, NULL, NULL, iwtab, NULL);
 
-  dofInit     (&deofdat);
-  dofConstant (&deofdat, 1, n, 1);                /* One DOF per node, Fortran-based indexing */
-
   orderInit  (&ordedat);
   orderGraph (&ordedat, &grafdat);                /* Compute ordering with Scotch */
 
@@ -144,9 +142,26 @@ INT * restrict const        lasttab)              /* Permutations computed for d
   memCpy (elentab, ordedat.permtab, n * sizeof (INT)); /* Copy permutations                     */
   memCpy (lasttab, ordedat.peritab, n * sizeof (INT));
 #endif /* ESMUMPS_DEBUG */
- 
+
   symbolInit     (&symbdat);
   symbolFaxGraph (&symbdat, &grafdat, &ordedat);  /* Compute block symbolic factorizaion */
+
+#ifdef ESMUMPS_DEBUG_OUTPUT
+  {
+    Dof                 deofdat;                  /* Matrix DOF structure */
+    double              fnnzval;
+    double              fopcval;
+
+    dofInit    (&deofdat);
+    dofGraph   (&deofdat, &grafdat, 1, ordedat.peritab); /* Base on graph weights or constant load of 1 */
+    symbolCost (&symbdat, &deofdat, SYMBOLCOSTLDLT, &fnnzval, &fopcval); /* Compute factorization cost  */
+
+    fprintf (stderr, "ESMUMPS CblkNbr=" INTSTRING ", BlokNbr=" INTSTRING ", NNZ=%lg, OPC=%lg\n",
+             symbdat.cblknbr, symbdat.bloknbr, fnnzval, fopcval);
+
+    dofExit (&deofdat);
+  }
+#endif /* ESMUMPS_DEBUG_OUTPUT */
 
   for (cblknum = 0; cblknum < symbdat.cblknbr; cblknum ++) { /* For all column blocks */
     INT                 degnbr;                   /* True degree of column block      */
@@ -175,7 +190,6 @@ INT * restrict const        lasttab)              /* Permutations computed for d
 
   symbolExit (&symbdat);
   orderExit  (&ordedat);
-  dofExit    (&deofdat);
   graphExit  (&grafdat);
 
   memFree (vendtab);
