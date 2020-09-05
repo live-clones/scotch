@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2020 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 08 feb 2008     **/
 /**                # Version 6.0  : from : 22 jan 2020     **/
 /**                                 to   : 22 jan 2020     **/
+/**                # Version 6.1  : from : 05 sep 2020     **/
+/**                                 to   : 05 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,7 +60,8 @@
 
 #include "module.h"
 #include "common.h"
-#include "esmumps.h"
+#include "scotch.h"
+#include "library.h"
 
 /**************************************/
 /*                                    */
@@ -82,18 +85,18 @@
 
 int
 esmumps_strat1 (
-const INT                   procnbr,
-const INT                   leafsiz,
+const SCOTCH_Num            procnbr,
+const SCOTCH_Num            leafsiz,
 const int                   leorval,
-const INT                   cminval,
-const INT                   cmaxval,
+const SCOTCH_Num            cminval,
+const SCOTCH_Num            cmaxval,
 const double                fratval,
 const int                   verbval,
 FILE * const                stream,
 char * const                straptr)
 {
-  INT                 levlval;                    /* Nested dissection level */
-  INT                 procmax;
+  SCOTCH_Num          levlval;                    /* Nested dissection level */
+  SCOTCH_Num          procmax;
   char                hamxval;                    /* Type of halo ordering routine */
 
   for (levlval = 1, procmax = 1; procmax < procnbr; procmax <<= 1, levlval ++) ; /* Compute log2 of procnbr, + 1 */

@@ -42,8 +42,8 @@
 /**                                 to   : 22 jan 2009     **/
 /**                # Version 6.0  : from : 21 may 2018     **/
 /**                                 to   : 21 may 2018     **/
-/**                # Version 6.0  : from : 21 may 2018     **/
-/**                                 to   : 21 may 2018     **/
+/**                # Version 6.1  : from : 05 sep 2020     **/
+/**                                 to   : 05 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,9 +122,12 @@
 
 #ifndef ESMUMPS_NAME_PREFIX_INTERN
 #define ESMUMPS_NAME_PREFIX_INTERN  _ESMUMPS
-#define ESMUMPS_NAME_PREFIX_PUBLICFL esmumpsf
-#define ESMUMPS_NAME_PREFIX_PUBLICFU ESMUMPSF
 #endif /* ESMUMPS_NAME_PREFIX_INTERN */
+
+#ifndef ESMUMPS_NAME_PREFIX_PUBLICFL
+#define ESMUMPS_NAME_PREFIX_PUBLICFL
+#define ESMUMPS_NAME_PREFIX_PUBLICFU
+#endif /* ESMUMPS_NAME_PREFIX_PUBLICFL */
 
 #ifndef ESMUMPS_NAME_SUFFIX
 #define ESMUMPS_NAME_SUFFIX
@@ -132,9 +135,7 @@
 #ifndef ESMUMPS_NAME_SUFFIXFL
 #define ESMUMPS_NAME_SUFFIXFL       ESMUMPS_NAME_SUFFIX
 #define ESMUMPS_NAME_SUFFIXFU       ESMUMPS_NAME_SUFFIX
-#endif /* SCOTCH_NAME_SUFFIXFL */
-
-#define ESMUMPS_VOID
+#endif /* ESMUMPS_NAME_SUFFIXFL */
 
 #define ESMUMPS_NAME_GLUE2(n,s)     n##s
 #define ESMUMPS_NAME_GLUE3(p,n,s)   p##n##s
@@ -152,6 +153,8 @@
 #define dofInit                     ESMUMPS_NAME_INTERN (dofInit)
 #define dofLoad                     ESMUMPS_NAME_INTERN (dofLoad)
 #define dofSave                     ESMUMPS_NAME_INTERN (dofSave)
+
+#define esmumps2                    ESMUMPS_NAME_INTERN (esmumps2)
 
 #define graphBuild                  ESMUMPS_NAME_INTERN (graphBuild)
 #define graphBuildGraph             ESMUMPS_NAME_INTERN (graphBuildGraph)

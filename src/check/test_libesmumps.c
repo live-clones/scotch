@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 19 jan 2020     **/
 /**                                 to   : 19 jan 2020     **/
 /**                # Version 6.1  : from : 22 feb 2020     **/
-/**                                 to   : 22 feb 2020     **/
+/**                                 to   : 05 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,7 +58,6 @@
 #include <string.h>
 
 #include "scotch.h"
-#define INT                         SCOTCH_Num
 #include "esmumps.h"
 
 /*********************/

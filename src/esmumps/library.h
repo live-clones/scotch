@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -38,21 +38,28 @@
 /**   FUNCTION   : These lines are the data declarations   **/
 /**                for the symbolic factorization routine. **/
 /**                                                        **/
-/**   DATES      : # Version 0.0  : from : 22 jul 1998     **/
-/**                                 to   : 24 sep 1998     **/
-/**                # Version 0.1  : from : 04 apr 1999     **/
-/**                                 to   : 01 may 1999     **/
-/**                # Version 6.0  : from : 22 may 2018     **/
-/**                                 to   : 22 may 2018     **/
-/**                # Version 6.1  : from : 22 feb 2020     **/
+/**   DATES      : # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 05 sep 2020     **/
+/**                                                        **/
+/**   NOTES      : # This code derives from that of the    **/
+/**                  internal "esmumps.h" header file.     **/
 /**                                                        **/
 /************************************************************/
 
-#define ESMUMPS_H
+#ifndef LIB_ESMUMPS_H
+#define LIB_ESMUMPS_H
+
+#ifndef ESMUMPS_HAS_ESMUMPSV
+#define ESMUMPS_HAS_ESMUMPSV
+#endif /* ESMUMPS_HAS_ESMUMPSV */
 
 /*
 **  The function prototypes.
 */
 
-int                         esmumps2            (const INT, const INT, INT * const, INT * const, INT * const, INT * const, INT * const, INT * const, INT * const);
+int                         esmumps             (const SCOTCH_Num n, const SCOTCH_Num iwlen, SCOTCH_Num * const pe, const SCOTCH_Num pfree, SCOTCH_Num * const len, SCOTCH_Num * const iw, SCOTCH_Num * const nv, SCOTCH_Num * const elen, SCOTCH_Num * const last);
+int                         esmumpsv            (const SCOTCH_Num n, const SCOTCH_Num iwlen, SCOTCH_Num * const pe, const SCOTCH_Num pfree, SCOTCH_Num * const len, SCOTCH_Num * const iw, SCOTCH_Num * const nv, SCOTCH_Num * const elen, SCOTCH_Num * const last);
+
+int                         esmumps_strat1      (const SCOTCH_Num procnbr, const SCOTCH_Num leafsiz, const int leorval, const SCOTCH_Num cminval, const SCOTCH_Num cmaxval, const double fratval, const int verbval, FILE * const stream, char * const straptr);
+
+#endif /* LIB_ESMUMPS_H */
