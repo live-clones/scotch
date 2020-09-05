@@ -55,11 +55,13 @@
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
 /**                                 to   : 20 jan 2020     **/
+/**                # Version 6.1  : from : 05 sep 2020     **/
+/**                                 to   : 05 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
-#ifndef SCOTCH_H
-#define SCOTCH_H
+#ifndef LIB_SCOTCH_H
+#define LIB_SCOTCH_H
 
 /*
 **  The type and structure definitions.
@@ -76,17 +78,17 @@ typedef DUMMYINT SCOTCH_Num;
 
 /*+ Version flags. +*/
 
-#if ((! defined SCOTCH_H_UNIQUE) && (! defined SCOTCH_RENAME_ALL))
+#if ((! defined LIB_SCOTCH_H_UNIQUE) && (! defined SCOTCH_RENAME_ALL))
 #define SCOTCH_VERSION DUMMYVERSION
 #define SCOTCH_RELEASE DUMMYRELEASE
 #define SCOTCH_PATCHLEVEL DUMMYPATCHLEVEL
-#else /* ((! defined SCOTCH_H_UNIQUE) && (! defined SCOTCH_RENAME_ALL)) */
+#else /* ((! defined LIB_SCOTCH_H_UNIQUE) && (! defined SCOTCH_RENAME_ALL)) */
 #if ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL))
 #ifndef SCOTCH_WARNING_RENAME_UNSAFE
 #define SCOTCH_WARNING_RENAME_UNSAFE
 #endif /* SCOTCH_WARNING_RENAME_UNSAFE */
 #endif /* ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL)) */
-#endif /* SCOTCH_H_UNIQUE */
+#endif /* LIB_SCOTCH_H_UNIQUE */
 
 /*+ Coarsening flags +*/
 
@@ -120,9 +122,9 @@ objects, computed at compile-time by program
 "dummysizes", are given as double values for
 proper padding                               +*/
 
-#ifndef SCOTCH_H_UNIQUE
+#ifndef LIB_SCOTCH_H_UNIQUE
 typedef unsigned char       SCOTCH_GraphPart2;
-#endif /* SCOTCH_H_UNIQUE */
+#endif /* LIB_SCOTCH_H_UNIQUE */
 
 typedef struct {
   double                    dummy[DUMMYSIZEARCH];
@@ -337,5 +339,5 @@ void                        SCOTCH_version      (int * const, int * const, int *
 }
 #endif /* __cplusplus */
 
-#define SCOTCH_H_UNIQUE                           /* For symbols that need only be defined once */
-#endif /* SCOTCH_H */
+#define LIB_SCOTCH_H_UNIQUE                       /* For symbols that need only be defined once */
+#endif /* LIB_SCOTCH_H */
