@@ -9,7 +9,7 @@
 **  the libScotchMeTiS library.                         **
 **                                                      **
 *********************************************************/
-/* Copyright 2007,2010,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,6 +57,8 @@
 /**                                 to   : 30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 17 jun 2019     **/
+/**                # Version 6.1  : from : 09 feb 2021     **/
+/**                                 to   : 09 feb 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -113,6 +115,10 @@ typedef DUMMYINT SCOTCH_Num;
 **  The function prototypes.
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 int                         SCOTCH_METIS_V3_EdgeND (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         SCOTCH_METIS_V3_NodeND (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         SCOTCH_METIS_V3_NodeWND (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
@@ -143,3 +149,7 @@ int                         METISNAMEU (METIS_NodeND) (const SCOTCH_Num * const,
 int                         METISNAMEU (METIS_PartGraphKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         METISNAMEU (METIS_PartGraphRecursive) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 #endif /* (SCOTCH_METIS_VERSION == 5) */
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
