@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2010,2012,2014,2018,2019 Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2010,2012,2014,2018,2019,2021 Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to   : 15 aug 2010     **/
 /**                # Version 6.0  : from : 01 dec 2012     **/
 /**                                 to   : 26 oct 2019     **/
+/**                # Version 6.1  : from : 09 feb 2021     **/
+/**                                 to   : 09 feb 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -185,7 +187,7 @@ char *                      argv[])
         C_fileTab[C_fileNum ++].nameptr = argv[i];
       else {
         fprintf (stderr, "dummysizes: ERROR: main: too many file names given");
-        exit    (1);
+        exit    (EXIT_FAILURE);
       }
     }
     else {                                        /* If found an option name */
@@ -193,7 +195,7 @@ char *                      argv[])
         case 'H' :                                /* Give the usage message */
         case 'h' :
           printf ("Usage is:\ndummysizes [<input pattern header file> [<output header file>]]\n");
-          exit       (0);
+          exit   (EXIT_SUCCESS);
         case 'S' :
         case 's' :
           suffptr = &argv[i][2];
@@ -205,7 +207,7 @@ char *                      argv[])
           return  (0);
         default :
           fprintf (stderr, "dummysizes: ERROR: main: unprocessed option (\"%s\")", argv[i]);
-          exit    (1);
+          exit    (EXIT_FAILURE);
       }
     }
   }
@@ -215,7 +217,7 @@ char *                      argv[])
         (C_fileTab[i].nameptr[1] != '\0')) {
       if ((C_fileTab[i].fileptr = fopen (C_fileTab[i].nameptr, ((C_fileTab[i].flagval & FILEMODE) == FILEMODER) ? "r" : "w")) == NULL) { /* Open the file */
           fprintf (stderr, "dummysizes: ERROR: main: cannot open file (%d)", i);
-          exit    (1);
+          exit    (EXIT_FAILURE);
       }
     }
   }
@@ -296,7 +298,7 @@ char *                      argv[])
 #ifdef SCOTCH_NAME_SUFFIX
     if (regcomp (&regedat, " SCOTCH_[a-z][0-9a-zA-Z_]*", 0) != 0) {
       fprintf (stderr, "dummysizes: ERROR: cannot compile regular expression\n");
-      exit    (1);
+      exit    (EXIT_FAILURE);
     }
 #endif /* SCOTCH_NAME_SUFFIX */
   }
@@ -308,7 +310,7 @@ char *                      argv[])
     if (((charnbr = strlen (chartab)) >= (CHARMAX - 1)) && /* If line read is at least as long as maximum size     */
         (chartab[CHARMAX - 1] != '\n')) {         /* And last character is not a newline, that is, some is missing */
       fprintf (stderr, "dummysizes: ERROR: line too long\n");
-      exit    (1);
+      exit    (EXIT_FAILURE);
     }
 
     for (subsnum = 0; subsnum < subsnbr; subsnum ++) { /* Perform substitutions */
@@ -355,5 +357,5 @@ char *                      argv[])
   }
 #endif /* SCOTCH_DEBUG_MAIN1 */
 
-  exit (0);
+  exit (EXIT_SUCCESS);
 }
