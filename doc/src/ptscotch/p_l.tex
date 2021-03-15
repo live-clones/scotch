@@ -2132,6 +2132,27 @@ preferred.
 
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_dgraphSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_dgraphSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdgraphsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_dgraphSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Dgraph} structure. This information is useful to
+export the interface of the {\sc libPTScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsection{Distributed graph I/O routines}
 
 \subsubsection{{\tt SCOTCH\_dgraphLoad}}
@@ -3492,6 +3513,27 @@ needed.
 has been successfully allocated, and {\tt NULL} else.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_dmapSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_dmapSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdmapsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_dmapSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Dmapping} structure. This information is useful to
+export the interface of the {\sc libPTScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_dorderAlloc}}
 
 \begin{itemize}
@@ -3512,6 +3554,27 @@ needed.
 
 {\tt SCOTCH\_dorderAlloc} returns the pointer to the memory area if it
 has been successfully allocated, and {\tt NULL} else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_dorderSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_dorderSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdordersizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_dorderSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Dordering} structure. This information is useful to
+export the interface of the {\sc libPTScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
 \end{itemize}
 
 \subsection{Error handling routines}
