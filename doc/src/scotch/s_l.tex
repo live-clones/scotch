@@ -1649,6 +1649,30 @@ separation process whenever some condition is true.
 \subsection{Target architecture handling routines}
 \label{sec-lib-arch-handling}
 
+\subsubsection{{\tt SCOTCH\_archAlloc}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+SCOTCH\_Arch * SCOTCH\_archAlloc ( & void)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archAlloc} function allocates a memory area of a
+size sufficient to store a {\tt SCOTCH\_\lbt Arch} structure. It is
+the user's responsibility to free this memory when it is no longer
+needed, using the {\tt SCOTCH\_\lbt mem\lbt Free} routine. The
+allocated space must be initialized before use, by means of the
+{\tt SCOTCH\_\lbt arch\lbt Init} routine.
+
+\progret
+
+{\tt SCOTCH\_archAlloc} returns the pointer to the memory area if it
+has been successfully allocated, and {\tt NULL} else.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_archExit}}
 
 \begin{itemize}
