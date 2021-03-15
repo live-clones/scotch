@@ -208,7 +208,9 @@ In order to alleviate this problem, the \libscotch\ proposes a set of
 routines to dynamically allocate storage space for the opaque API
 \scotch\ structures. Because these routines return pointers, these
 {\tt SCOTCH\_\lbt *Alloc} routines, as well as the {\tt SCOTCH\_\lbt
-free} routine, are only available in the C interface.
+free} routine, are only available in the C interface. Alternately, the
+{\tt SCOTCH\_\lbt *Sizeof} routines may be used to obtain dynamically
+the size of these opaque structures.
 
 \subsubsection{Machine word size issues}
 \label{sec-lib-inttypesize}
@@ -3466,6 +3468,27 @@ graph is wanted, function {\tt SCOTCH\_graph\lbo Data} should be
 preferred.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_graphSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_graphSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgraphsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_graphSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Graph} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_graphStat}}
 
 \begin{itemize}
@@ -5532,6 +5555,27 @@ mesh is wanted, function {\tt SCOTCH\_mesh\lbo Data} should be
 preferred.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_meshSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_meshSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfmeshsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_meshSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Mesh} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_meshStat}}
 
 \begin{itemize}
@@ -6062,6 +6106,27 @@ with the logical unit of the output file.
 
 {\tt SCOTCH\_stratSave} returns $0$ if the strategy string has been
 successfully written to {\tt stream}, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_stratSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_stratSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfstratsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_stratSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Strat} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
 \end{itemize}
 
 \subsection{Strategy creation routines}
@@ -6620,6 +6685,27 @@ structures.
 successfully initialized, and $1$ else.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_geomSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_geomSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgeomsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_geomSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Geom} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_graphGeomLoadChac}}
 
 \begin{itemize}
@@ -6986,6 +7072,27 @@ needed, using the {\tt SCOTCH\_\lbt mem\lbt Free} routine.
 has been successfully allocated, and {\tt NULL} else.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_mapSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_mapSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfmapsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_mapSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Mapping} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_orderAlloc}}
 
 \begin{itemize}
@@ -7006,6 +7113,27 @@ needed, using the {\tt SCOTCH\_\lbt mem\lbt Free} routine.
 
 {\tt SCOTCH\_orderAlloc} returns the pointer to the memory area if it
 has been successfully allocated, and {\tt NULL} else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_orderSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_orderSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfordersizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_orderSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Ordering} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
 \end{itemize}
 
 \subsection{Error handling routines}
@@ -7152,6 +7280,11 @@ considered as properly released by memory accounting routines
 {\tt SCOTCH\_\lbt mem\lbt Cur} and {\tt SCOTCH\_\lbt mem\lbt Max},
 and segmentation errors would happen when the
 {\tt COMMON\_\lbt MEMORY\_\lbt CHECK} compile flag is set.
+
+On the opposite, if the user has allocated memory by himself according
+to the size information provided by the {\tt SCOTCH\_\lbt *\lbt
+Sizeof} routines, it is his responsibility to free this memory using
+the corresponding memory freeing routine of his environment.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_memMax}}
