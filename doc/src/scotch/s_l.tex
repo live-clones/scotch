@@ -6508,59 +6508,6 @@ allocated space must be initialized before use, by means of the
 has been successfully allocated, and {\tt NULL} else.
 \end{itemize}
 
-\subsubsection{{\tt SCOTCH\_geomInit}}
-\label{sec-lib-func-geominit}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_geomInit ( & SCOTCH\_Geom * & geomptr)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfgeominit ( & doubleprecision (*) & geomdat, \\
-                  & integer             & ierr)
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_geomInit} function initializes a {\tt SCOTCH\_\lbt
-Geom} structure so as to make it suitable for future operations. It
-should be the first function to be called upon a {\tt SCOTCH\_\lbt
-Geom} structure. When the geometrical data is no longer of use, call
-function {\tt SCOTCH\_\lbt geom\lbt Exit} to free its internal
-structures.
-
-\progret
-
-{\tt SCOTCH\_geomInit} returns $0$ if the geometrical structure has been
-successfully initialized, and $1$ else.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_geomExit}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_geomExit ( & SCOTCH\_Geom * & geomptr)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfgeomexit ( & doubleprecision (*) & geomdat)
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_geomExit} function frees the contents of a
-{\tt SCOTCH\_\lbt Geom} structure previously initialized by
-{\tt SCOTCH\_\lbt geomInit}. All subsequent calls to
-{\tt SCOTCH\_\lbt *Geom*} routines other than {\tt SCOTCH\_\lbt
-geomInit}, using this structure as parameter, may yield
-unpredictable results.
-\end{itemize}
-
 \subsubsection{{\tt SCOTCH\_geomData}}
 \label{sec-lib-func-geomdata}
 
@@ -6620,6 +6567,59 @@ Section~\ref{sec-lib-inttypesize} for more information on this
 issue.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_geomExit}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+void SCOTCH\_geomExit ( & SCOTCH\_Geom * & geomptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgeomexit ( & doubleprecision (*) & geomdat)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_geomExit} function frees the contents of a
+{\tt SCOTCH\_\lbt Geom} structure previously initialized by
+{\tt SCOTCH\_\lbt geomInit}. All subsequent calls to
+{\tt SCOTCH\_\lbt *Geom*} routines other than {\tt SCOTCH\_\lbt
+geomInit}, using this structure as parameter, may yield
+unpredictable results.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_geomInit}}
+\label{sec-lib-func-geominit}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_geomInit ( & SCOTCH\_Geom * & geomptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgeominit ( & doubleprecision (*) & geomdat, \\
+                  & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_geomInit} function initializes a {\tt SCOTCH\_\lbt
+Geom} structure so as to make it suitable for future operations. It
+should be the first function to be called upon a {\tt SCOTCH\_\lbt
+Geom} structure. When the geometrical data is no longer of use, call
+function {\tt SCOTCH\_\lbt geom\lbt Exit} to free its internal
+structures.
+
+\progret
+
+{\tt SCOTCH\_geomInit} returns $0$ if the geometrical structure has been
+successfully initialized, and $1$ else.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_graphGeomLoadChac}}
 
 \begin{itemize}
@@ -6659,46 +6659,6 @@ associated with the logical unit of the graph file.
 
 {\tt SCOTCH\_graphGeomLoadChac} returns $0$ if the graph structure has
 been successfully allocated and filled with the data read, and $1$ else.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_graphGeomSaveChac}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphGeomSaveChac ( & const SCOTCH\_Graph * & grafptr, \\
-                                & const SCOTCH\_Geom *  & geomptr, \\
-                                & FILE *                & grafstream, \\
-                                & FILE *                & geomstream, \\
-                                & const char *          & string)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfgraphgeomsavechac ( & doubleprecision (*) & grafdat,    \\
-                           & doubleprecision (*) & geomdat,    \\
-                           & integer             & graffildes, \\
-                           & integer             & geomfildes, \\
-                           & character (*)       & string)
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_graphGeomSaveChac} routine saves the contents
-of the {\tt SCOTCH\_\lbt Graph} structure pointed to by {\tt grafptr}
-to stream {\tt graf\lbt stream}, in the \chaco\ graph
-format~\cite{hele93c}. Since this graph format does
-not handle geometry data, the {\tt geomptr} and {\tt geom\lbt stream}
-fields are not used, as well as the {\tt string} field.
-
-Fortran users must use the {\tt PXFFILENO} or {\tt FNUM} functions to
-obtain the number of the Unix file descriptor {\tt graf\lbt fildes}
-associated with the logical unit of the graph file.
-
-\progret
-
-{\tt SCOTCH\_graphGeomSaveChac} returns $0$ if the graph structure
-has been successfully written to {\tt graf\lbt stream}, and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_graphGeomLoadHabo}}
@@ -6786,6 +6746,46 @@ graph and geometry files.
 {\tt SCOTCH\_graphGeomLoadScot} returns $0$ if the graph topology and
 geometry have been successfully allocated and filled with the data
 read, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_graphGeomSaveChac}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_graphGeomSaveChac ( & const SCOTCH\_Graph * & grafptr, \\
+                                & const SCOTCH\_Geom *  & geomptr, \\
+                                & FILE *                & grafstream, \\
+                                & FILE *                & geomstream, \\
+                                & const char *          & string)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgraphgeomsavechac ( & doubleprecision (*) & grafdat,    \\
+                           & doubleprecision (*) & geomdat,    \\
+                           & integer             & graffildes, \\
+                           & integer             & geomfildes, \\
+                           & character (*)       & string)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_graphGeomSaveChac} routine saves the contents
+of the {\tt SCOTCH\_\lbt Graph} structure pointed to by {\tt grafptr}
+to stream {\tt graf\lbt stream}, in the \chaco\ graph
+format~\cite{hele93c}. Since this graph format does
+not handle geometry data, the {\tt geomptr} and {\tt geom\lbt stream}
+fields are not used, as well as the {\tt string} field.
+
+Fortran users must use the {\tt PXFFILENO} or {\tt FNUM} functions to
+obtain the number of the Unix file descriptor {\tt graf\lbt fildes}
+associated with the logical unit of the graph file.
+
+\progret
+
+{\tt SCOTCH\_graphGeomSaveChac} returns $0$ if the graph structure
+has been successfully written to {\tt graf\lbt stream}, and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_graphGeomSaveScot}}
