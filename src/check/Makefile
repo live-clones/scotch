@@ -39,7 +39,7 @@ SCOTCHTGTDIR		= ../../tgt
 
 LIBESMUMPS		= -lesmumps -lscotch -lscotcherr
 LIBPTSCOTCH		= -lptscotch -lscotch -lptscotcherr
-LIBSCOTCH		= -lscotchmetis -lscotch -lscotcherr
+LIBSCOTCH		= -lscotch -lscotcherr
 
 DEPESMUMPS		= $(SCOTCHLIBDIR)/libesmumps$(LIB)
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -64,11 +64,20 @@ include ../Makefile.inc
 %$(OBJ)	:	%.c
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(SCOTCHINCDIR) -c $(<) -o $(@)
 
+%_v3$(EXE) :	%.c
+				$(CC) $(CFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv3 $(SCOTCHLIBS) $(LDFLAGS)
+
+%_v5$(EXE) :	%.c
+				$(CC) $(CFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv5 $(SCOTCHLIBS) $(LDFLAGS)
+
 %$(EXE)	:	%.c
 				$(CC) $(CFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
 
-%$(EXE)	:	%.f90
-				$(FC) $(FFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
+%_v3$(EXE):	%.f90
+				$(FC) $(FFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv3 $(SCOTCHLIBS) $(LDFLAGS)
+
+%_v5$(EXE):	%.f90
+				$(FC) $(FFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv5 $(SCOTCHLIBS) $(LDFLAGS)
 
 ##
 ##  Project rules.
@@ -101,9 +110,12 @@ realclean			:	clean
 					test_common_thread		\
 					test_fibo			\
 					test_libesmumps			\
-					test_libmetis			\
-					test_libmetis_dual		\
-					test_libmetis_dual_f		\
+					test_libmetis_v3		\
+					test_libmetis_v5		\
+					test_libmetis_dual_v3		\
+					test_libmetis_dual_v5		\
+					test_libmetis_dual_f_v3		\
+					test_libmetis_dual_f_v5		\
 					test_scotch_arch		\
 					test_scotch_arch_deco		\
 					test_scotch_context		\
@@ -149,9 +161,12 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_scotch_graph_order		\
 			check_scotch_graph_part_ovl		\
 			check_scotch_mesh_graph			\
-			check_libmetis				\
-			check_libmetis_dual			\
-			check_libmetis_dual_f			\
+			check_libmetis_v3			\
+			check_libmetis_v5			\
+			check_libmetis_dual_v3			\
+			check_libmetis_dual_v5			\
+			check_libmetis_dual_f_v3		\
+			check_libmetis_dual_f_v5		\
 			check_prog_amk				\
 			check_prog_amk_grf			\
 			check_prog_acpl				\
@@ -244,33 +259,57 @@ test_libesmumps			:	test_libesmumps.c		\
 
 ##
 
-check_libmetis			:	test_libmetis
-					$(EXECS) ./test_libmetis data/bump.grf
-					$(EXECS) ./test_libmetis data/bump_b1.grf
-					$(EXECS) ./test_libmetis data/bump_imbal_32.grf
+check_libmetis_v3		:	test_libmetis_v3
+					$(EXECS) ./test_libmetis_v3 data/bump.grf
+					$(EXECS) ./test_libmetis_v3 data/bump_b1.grf
+					$(EXECS) ./test_libmetis_v3 data/bump_imbal_32.grf
 
-test_libmetis			:	test_libmetis.c			\
+test_libmetis_v3		:	test_libmetis.c			\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
-					$(SCOTCHLIBDIR)/libscotchmetis$(LIB)
+					$(SCOTCHLIBDIR)/libscotchmetisv3$(LIB)
+
+check_libmetis_v5		:	test_libmetis_v5
+					$(EXECS) ./test_libmetis_v5 data/bump.grf
+					$(EXECS) ./test_libmetis_v5 data/bump_b1.grf
+					$(EXECS) ./test_libmetis_v5 data/bump_imbal_32.grf
+
+test_libmetis_v5		:	test_libmetis.c			\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
+					$(SCOTCHLIBDIR)/libscotchmetisv5$(LIB)
 
 ##
 
-check_libmetis_dual		:	test_libmetis_dual
-					$(EXECS) ./test_libmetis_dual
-					$(EXECS) ./test_libmetis_dual 1
+check_libmetis_dual_v3		:	test_libmetis_dual_v3
+					$(EXECS) ./test_libmetis_dual_v3
+					$(EXECS) ./test_libmetis_dual_v3 1
 
-test_libmetis_dual		:	test_libmetis_dual.c		\
+test_libmetis_dual_v3		:	test_libmetis_dual.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
-					$(SCOTCHLIBDIR)/libscotchmetis$(LIB)
+					$(SCOTCHLIBDIR)/libscotchmetisv3$(LIB)
+
+check_libmetis_dual_v5		:	test_libmetis_dual_v5
+					$(EXECS) ./test_libmetis_dual_v5
+					$(EXECS) ./test_libmetis_dual_v5 1
+
+test_libmetis_dual_v5		:	test_libmetis_dual.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
+					$(SCOTCHLIBDIR)/libscotchmetisv5$(LIB)
 
 ##
 
-test_libmetis_dual_f		:	test_libmetis_dual_f.f90	\
-					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
-					$(SCOTCHLIBDIR)/libscotchmetis$(LIB)
+check_libmetis_dual_f_v3	:	test_libmetis_dual_f_v3
+					$(EXECS) ./test_libmetis_dual_f_v3
 
-check_libmetis_dual_f		:	test_libmetis_dual_f
-					$(EXECS) ./test_libmetis_dual_f
+test_libmetis_dual_f_v3		:	test_libmetis_dual_f.f90	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
+					$(SCOTCHLIBDIR)/libscotchmetisv3$(LIB)
+
+check_libmetis_dual_f_v5	:	test_libmetis_dual_f_v5
+					$(EXECS) ./test_libmetis_dual_f_v5
+
+test_libmetis_dual_f_v5		:	test_libmetis_dual_f.f90	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
+					$(SCOTCHLIBDIR)/libscotchmetisv5$(LIB)
 
 ##
 
