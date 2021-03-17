@@ -34,13 +34,15 @@ bindir		= ../../bin
 includedir	= ../../include
 libdir		= ../../lib
 
+V		= v$(SCOTCH_METIS_VERSION)
+
 ##
 ##  General inference rules.
 ##
 
 include ../Makefile.inc
 
-%$(OBJ)	:	%.c
+%_$(V)$(OBJ):	%.c
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(includedir) -I../libscotch -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
@@ -55,24 +57,37 @@ include ../Makefile.inc
 scotch				:
 					$(MAKE)						\
 					CC="$(CCS)"					\
+					SCOTCH_METIS_VERSION=3				\
+					metis.h						\
+					libscotchmetisv3$(LIB)
+					$(MAKE)						\
+					CC="$(CCS)"					\
+					SCOTCH_METIS_VERSION=5				\
 					metis.h						\
 					metisf.h					\
-					libscotchmetis$(LIB)
+					libscotchmetisv5$(LIB)
 
 ptscotch			:
 					$(MAKE)						\
 					CC="$(CCP)"					\
 					CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH"		\
+					SCOTCH_METIS_VERSION=3				\
 					parmetis.h					\
-					libptscotchparmetis$(LIB)
+					libptscotchparmetisv3$(LIB)
+					$(MAKE)						\
+					CC="$(CCP)"					\
+					CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH"		\
+					SCOTCH_METIS_VERSION=5				\
+					parmetis.h					\
+					libptscotchparmetisv5$(LIB)
 
 install				:	scotch
 					-$(CP) metis.h metisf.h $(includedir)
-					-$(CP) libscotchmetis$(LIB) $(libdir)
+					-$(CP) libscotchmetisv3$(LIB) libscotchmetisv5$(LIB) $(libdir)
 
 ptinstall			:	ptscotch
 					-$(CP) parmetis.h $(includedir)
-					-$(CP) libptscotchparmetis$(LIB) $(libdir)
+					-$(CP) libptscotchparmetisv3$(LIB) libptscotchparmetisv5$(LIB) $(libdir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB) metis.h metisf.h parmetis.h
@@ -91,45 +106,45 @@ metisf.h			:	../libscotch/dummysizes$(EXE)		\
 					library_metis_f.h
 					../libscotch/dummysizes$(EXE) library_metis_f.h metisf.h
 
-metis_graph_dual$(OBJ)		:	metis_graph_dual.c			\
+metis_graph_dual_$(V)$(OBJ)	:	metis_graph_dual.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
 					metis.h					\
 					metis_graph_dual.h
 
-metis_graph_dual_f$(OBJ)	:	metis_graph_dual_f.c			\
+metis_graph_dual_f_$(V)$(OBJ)	:	metis_graph_dual_f.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
 					metis.h
 
-metis_graph_order$(OBJ)		:	metis_graph_order.c			\
+metis_graph_order_$(V)$(OBJ)	:	metis_graph_order.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
 					metis.h
 
-metis_graph_order_f$(OBJ)	:	metis_graph_order_f.c			\
+metis_graph_order_f_$(V)$(OBJ)	:	metis_graph_order_f.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
 					metis.h
 
-metis_graph_part$(OBJ)		:	metis_graph_part.c			\
+metis_graph_part_$(V)$(OBJ)	:	metis_graph_part.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
 					metis.h					\
 					metis_graph_part.h
 
-metis_graph_part_f$(OBJ)	:	metis_graph_part_f.c			\
+metis_graph_part_f_$(V)$(OBJ)	:	metis_graph_part_f.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
 					metis.h
 
-metis_graph_part_dual$(OBJ)	:	metis_graph_part_dual.c			\
+metis_graph_part_dual_$(V)$(OBJ):	metis_graph_part_dual.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
@@ -137,19 +152,19 @@ metis_graph_part_dual$(OBJ)	:	metis_graph_part_dual.c			\
 					metis_graph_dual.h			\
 					metis_graph_part.h
 
-metis_graph_part_dual_f$(OBJ)	:	metis_graph_part_dual_f.c		\
+metis_graph_part_dual_f_$(V)$(OBJ):	metis_graph_part_dual_f.c		\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
 					metis.h
 
-metis_options$(OBJ)		:	metis_options.c				\
+metis_options_$(V)$(OBJ)	:	metis_options.c				\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
 					metis.h
 
-metis_options_f$(OBJ)		:	metis_options_f.c			\
+metis_options_f_$(V)$(OBJ)	:	metis_options_f.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
@@ -159,46 +174,46 @@ parmetis.h			:	../libscotch/dummysizes$(EXE)		\
 					library_parmetis.h
 					../libscotch/dummysizes$(EXE) library_parmetis.h parmetis.h
 
-parmetis_dgraph_order$(OBJ)	:	parmetis_dgraph_order.c			\
+parmetis_dgraph_order_$(V)$(OBJ):	parmetis_dgraph_order.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
 					parmetis.h
 
-parmetis_dgraph_order_f$(OBJ)	:	parmetis_dgraph_order_f.c		\
+parmetis_dgraph_order_f_$(V)$(OBJ):	parmetis_dgraph_order_f.c		\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
 					parmetis.h
 
-parmetis_dgraph_part$(OBJ)	:	parmetis_dgraph_part.c			\
+parmetis_dgraph_part_$(V)$(OBJ)	:	parmetis_dgraph_part.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
 					parmetis.h
 
-parmetis_dgraph_part_f$(OBJ)	:	parmetis_dgraph_part_f.c		\
+parmetis_dgraph_part_f_$(V)$(OBJ):	parmetis_dgraph_part_f.c		\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/ptscotch.h		\
 					parmetis.h
 
-libptscotchparmetis$(LIB)	:	parmetis_dgraph_order$(OBJ)		\
-					parmetis_dgraph_order_f$(OBJ)		\
-					parmetis_dgraph_part$(OBJ)		\
-					parmetis_dgraph_part_f$(OBJ)
+libptscotchparmetis$(V)$(LIB)	:	parmetis_dgraph_order_$(V)$(OBJ)	\
+					parmetis_dgraph_order_f_$(V)$(OBJ)	\
+					parmetis_dgraph_part_$(V)$(OBJ)		\
+					parmetis_dgraph_part_f_$(V)$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(^)
 					-$(RANLIB) $(@)
 
-libscotchmetis$(LIB)		:	metis_graph_dual$(OBJ)			\
-					metis_graph_dual_f$(OBJ)		\
-					metis_graph_order$(OBJ)			\
-					metis_graph_order_f$(OBJ)		\
-					metis_graph_part$(OBJ)			\
-					metis_graph_part_f$(OBJ)		\
-					metis_graph_part_dual$(OBJ)		\
-					metis_graph_part_dual_f$(OBJ)		\
-					metis_options$(OBJ)			\
-					metis_options_f$(OBJ)
+libscotchmetis$(V)$(LIB)	:	metis_graph_dual_$(V)$(OBJ)		\
+					metis_graph_dual_f_$(V)$(OBJ)		\
+					metis_graph_order_$(V)$(OBJ)		\
+					metis_graph_order_f_$(V)$(OBJ)		\
+					metis_graph_part_$(V)$(OBJ)		\
+					metis_graph_part_f_$(V)$(OBJ)		\
+					metis_graph_part_dual_$(V)$(OBJ)	\
+					metis_graph_part_dual_f_$(V)$(OBJ)	\
+					metis_options_$(V)$(OBJ)		\
+					metis_options_f_$(V)$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(^)
 					-$(RANLIB) $(@)
