@@ -51,6 +51,8 @@
 /**                                 to   : 12 nov 2014     **/
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 02 apr 2021     **/
+/**                # Version 7.0  : from : 02 apr 2021     **/
+/**                                 to   : 02 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,8 +74,9 @@
 /*+ Process flags. +*/
 
 #define C_FLAGGEOOUT                0x0001        /* Output the geometry graph                            */
-#define C_FLAGTORUS                 0x0002        /* Build a torus rather than a mesh                     */
-#define C_FLAGELEM                  0x0004        /* Build a 8-neighbor grid rather than a 4-neighbor one */
+#define C_FLAGGEOINVY               0x0002        /* Invert y coordinate in geometry                      */
+#define C_FLAGTORUS                 0x0004        /* Build a torus rather than a mesh                     */
+#define C_FLAGELEM                  0x0008        /* Build a 8-neighbor grid rather than a 4-neighbor one */
 
 #define C_FLAGDEFAULT               0x0000        /* Default flags */
 
