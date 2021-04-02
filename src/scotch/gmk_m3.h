@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 11 feb 2002     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
 /**                                 to   : 12 nov 2014     **/
+/**                # Version 7.0  : from : 02 apr 2021     **/
+/**                                 to   : 02 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +66,7 @@
 /*+ Process flags. +*/
 
 #define C_FLAGGEOOUT                0x0001        /* Output the geometry graph        */
-#define C_FLAGTORUS                 0x0002        /* Build a torus rather than a mesh */
+#define C_FLAGGEOINVY               0x0002        /* Invert y coordinate in geometry  */
+#define C_FLAGTORUS                 0x0004        /* Build a torus rather than a mesh */
 
 #define C_FLAGDEFAULT               0x0000        /* Default flags */
