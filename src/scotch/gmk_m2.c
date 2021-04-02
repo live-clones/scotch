@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,12 +54,21 @@
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
+/**                # Version 6.1  : from : 02 apr 2021     **/
+/**                                 to   : 02 apr 2021     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
 /**                  t(0,0) = 0, t(1,0) = 1,               **/
 /**                  t(dX - 1, 0) = dX - 1, t(0,1) = dX,   **/
 /**                  and t(x,y) = (y * dX) + x.            **/
+/**                                                        **/
+/**                # The bit mask array represents the     **/
+/**                  possible neighbors of a vertex, in    **/
+/**                  the following order:                  **/
+/**                         1     2     4                  **/
+/**                         8   (16)   32                  **/
+/**                        64   128   256                  **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,7 +99,7 @@ static const char *         C_usageList[] = {
   "  -e        : Build a 8-neighbor grid rather than a 4-neighbor one",
   "  -g<file>  : Output the geometry to <file>",
   "  -h        : Display this help",
-  "  -t        : Build a torus rather than a mesh",
+  "  -t        : Build a torus rather than a grid",
   "  -V        : Print program version and copyright",
   NULL };
 
@@ -106,16 +115,19 @@ main (
 int                         argc,
 char *                      argv[])
 {
-  int                 flagval;                    /* Process flags      */
-  SCOTCH_Num          baseval;                    /* Base value         */
-  SCOTCH_Num          d[2] = { 1, 1 };            /* Mesh dimensions    */
-  SCOTCH_Num          c[2];                       /* Vertex coordinates */
+  int                 flagval;                    /* Process flags          */
+  SCOTCH_Num          baseval;                    /* Base value             */
+  SCOTCH_Num          edgenbr;                    /* Number of edges (arcs) */
+  SCOTCH_Num          d[2] = { 1, 1 };            /* Mesh dimensions        */
+  SCOTCH_Num          c[2];                       /* Vertex coordinates     */
+  int                 cbitmsk;                    /* Coordinate flag mask   */
   int                 i;
 
   errorProg ("gmk_m2");
 
   flagval = C_FLAGDEFAULT;                        /* Set default flags */
   baseval = 0;
+  cbitmsk = 2 + 8 + 32 + 128;                     /* 4-point mask */
 
   if ((argc >= 2) && (argv[1][0] == '?')) {       /* If need for help */
     usagePrint (stdout, C_usageList);
@@ -148,6 +160,7 @@ char *                      argv[])
         case 'E' :                                /* Build a finite-element grid */
         case 'e' :
           flagval |= C_FLAGELEM;
+          cbitmsk  = 1 + 2 + 4 + 8 + 32 + 64 + 128 + 256; /* 8-point mask */
           break;
         case 'G' :                                /* Output the geometry */
         case 'g' :
@@ -176,64 +189,61 @@ char *                      argv[])
 
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
-  if ((flagval & C_FLAGELEM) != 0)                /* Build a 8-neighbor grid */
-    errorPrint ("main: elements not supported");
-
-  if (flagval & C_FLAGTORUS) {                    /* Build a torus */
+  if ((flagval & C_FLAGTORUS) != 0) {             /* Build a torus           */
+    edgenbr = ((flagval & C_FLAGELEM) != 0)       /* Compute number of edges */
+              ? (8 * (d[0] * d[1]) - ((d[0] < 3) ? (6 * d[1]) : 0) - ((d[1] < 3) ? (6 * d[0]) : 0))
+              : (4 * (d[0] * d[1]) - ((d[0] < 3) ? (2 * d[1]) : 0) - ((d[1] < 3) ? (2 * d[0]) : 0));
+ 
     fprintf (C_filepntrsrcout, "0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t000\n",
-             (SCOTCH_Num) (d[0] * d[1]),          /* Print number of vertices              */
-             (SCOTCH_Num) ((4 * d[0] * d[1])             - /* Print number of edges (arcs) */
-                           ((d[0] < 3) ? (2 * d[1]) : 0) -
-                           ((d[1] < 3) ? (2 * d[0]) : 0)),
+             (SCOTCH_Num) (d[0] * d[1]),          /* Print number of vertices */
+             (SCOTCH_Num) edgenbr,
              (SCOTCH_Num) baseval);
 
     for (c[1] = 0; c[1] < d[1]; c[1] ++) {        /* Output neighbor list */
       for (c[0] = 0; c[0] < d[0]; c[0] ++) {
-        fprintf (C_filepntrsrcout, SCOTCH_NUMSTRING,
-                 (SCOTCH_Num) (((d[0] > 2) ? 3 : d[0]) + /* Output number of neighbors */
-                               ((d[1] > 2) ? 3 : d[1]) - 2));
-        if (d[1] > 2)
-          fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING, /* Output the neighbors */
-                   (SCOTCH_Num) (((c[1] + d[1] - 1) % d[1]) * d[0] + c[0] + baseval));
-        if (d[0] > 2)
-          fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
-                   (SCOTCH_Num) ((c[1] * d[0] + (c[0] + d[0] - 1) % d[0]) + baseval));
-        if (d[0] > 1)
-          fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
-                   (SCOTCH_Num) (c[1] * d[0] + ((c[0] + 1) % d[0]) + baseval));
-        if (d[1] > 1)
-          fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
-                   (SCOTCH_Num) (((c[1] + 1) % d[1]) * d[0] + c[0] + baseval));
-        fprintf (C_filepntrsrcout, "\n");
+        int                 cbitval;
+
+        cbitval = cbitmsk;
+	if (d[0] <= 2) {                          /* Remove ascending arcs if duplicates */
+          cbitval &= ~(4 + 32 + 256);
+          if (d[0] <= 1)                          /* Remove descending arcs if no width */
+            cbitval &= ~(1 + 8 + 64);
+        }
+        if (d[1] <= 2) {
+          cbitval &= ~(64 + 128 + 256);
+          if (d[1] <= 1)
+            cbitval &= ~(1 + 2 + 4);
+        }
+
+        C_edgeOutput (d, c, baseval, cbitval, C_filepntrsrcout);
       }
     }
   }
-  else {                                          /* Build a mesh */
+  else {                                          /* Build a grid            */
+    edgenbr = ((flagval & C_FLAGELEM) != 0)       /* Compute number of edges */
+              ? (8 * (d[0] * d[1]) - 6 * (d[0] + d[1]) + 4)
+              : (4 * (d[0] * d[1]) - 2 * (d[0] + d[1]));
+
     fprintf (C_filepntrsrcout, "0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t000\n",
-             (SCOTCH_Num) (d[0] * d[1]),
-             (SCOTCH_Num) ((d[0] * d[1] * 2 - (d[0] + d[1])) * 2),
+             (SCOTCH_Num) (d[0] * d[1]),          /* Print number of vertices */
+             (SCOTCH_Num) edgenbr,
              (SCOTCH_Num) baseval);
 
     for (c[1] = 0; c[1] < d[1]; c[1] ++) {        /* Output neighbor list */
       for (c[0] = 0; c[0] < d[0]; c[0] ++) {
-        fprintf (C_filepntrsrcout, "%d",
-                 ((c[0] == 0)          ? 0 : 1) + /* Output number of neighbors */
-                 ((c[0] == (d[0] - 1)) ? 0 : 1) +
-                 ((c[1] == 0)          ? 0 : 1) +
-                 ((c[1] == (d[1] - 1)) ? 0 : 1));
-        if (c[1] != 0)                            /* Output the neighbors */
-          fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
-                   (SCOTCH_Num) ((c[1] - 1) * d[0] + c[0] + baseval));
-        if (c[0] != 0)
-          fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
-                   (SCOTCH_Num) (c[1] * d[0] + (c[0] - 1) + baseval));
-        if (c[0] != (d[0] - 1))
-          fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
-                   (SCOTCH_Num) (c[1] * d[0] + (c[0] + 1) + baseval));
-        if (c[1] != (d[1] - 1))
-          fprintf (C_filepntrsrcout, "\t" SCOTCH_NUMSTRING,
-                   (SCOTCH_Num) ((c[1] + 1) * d[0] + c[0] + baseval));
-        fprintf (C_filepntrsrcout, "\n");
+        int                 cbitval;
+
+        cbitval = cbitmsk;
+        if (c[0] <= 0)
+          cbitval &= ~(1 + 8 + 64);
+        if (c[0] >= (d[0] - 1))
+          cbitval &= ~(4 + 32 + 256);
+        if (c[1] <= 0)
+          cbitval &= ~(1 + 2 + 4);
+        if (c[1] >= (d[1] - 1))
+          cbitval &= ~(64 + 128 + 256);
+
+        C_edgeOutput (d, c, baseval, cbitval, C_filepntrsrcout);
       }
     }
   }
@@ -254,4 +264,39 @@ char *                      argv[])
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
   return (EXIT_SUCCESS);
+}
+
+/* This routine writes the neighbors of a 2D grid vertex.
+** It returns:
+** - void  : in all cases.
+*/
+
+void
+C_edgeOutput (
+const SCOTCH_Num * const    d,
+const SCOTCH_Num * const    c,
+const SCOTCH_Num            baseval,
+const int                   cbitval,
+FILE * const                fileptr)
+{
+  SCOTCH_Num          n[2];                       /* Neighbor loop indices */
+  int                 degrval;
+  int                 cbitnum;
+
+  for (cbitnum = 256, degrval = 0; cbitnum != 0; cbitnum >>= 1) { /* Count effective number of neighbors */
+    if ((cbitval & cbitnum) != 0)
+      degrval ++;
+  }
+
+  fprintf (fileptr, "%d", degrval);               /* Write number of neighbors */
+
+  for (n[1] = c[1] - 1, cbitnum = 1; n[1] <= c[1] + 1; n[1] ++) { /* Output the effective neighbors */
+    for (n[0] = c[0] - 1; n[0] <= c[0] + 1; n[0] ++, cbitnum <<= 1) {
+      if ((cbitval & cbitnum) != 0)
+        fprintf (fileptr, "\t" SCOTCH_NUMSTRING,
+                 (SCOTCH_Num) (((n[1] + d[1]) % d[1]) * d[0] + ((n[0] + d[0]) % d[0]) + baseval));
+    }
+  }
+
+  fprintf (fileptr, "\n");
 }
