@@ -1,4 +1,4 @@
-/* Copyright 2007-2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2011,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 27 jun 2008     **/
 /**                                 to   : 04 jan 2011     **/
+/**                # Version 6.1  : from : 02 apr 2021     **/
+/**                                 to   : 02 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -297,7 +299,7 @@ MPI_Comm                        fldproccomm)      /* Pre-computed communicator *
       fldvertidxtab[i] = vertsndbas;
       fldedgeidxtab[i] = orggrafptr->s.vertloctax[vertsndbas];
       fldedgecnttab[i] = edgelocsiz;
-      if (MPI_Isend (&edgelocsiz, 1, GNUM_MPI, fldcommdattab[i].procnum,
+      if (MPI_Isend (&fldedgecnttab[i], 1, GNUM_MPI, fldcommdattab[i].procnum,
                      TAGFOLD + TAGVLBLLOCTAB, orggrafptr->s.proccomm, &requtab[requnbr ++]) != MPI_SUCCESS) {
         errorPrint ("hdgraphFold2: communication error (2)");
         cheklocval = 1;
