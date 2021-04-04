@@ -2402,6 +2402,84 @@ of dimensions is defined at compile-time.
 successfully built, and $1$ else.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_archVcmplt}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archVmplt ( & SCOTCH\_Arch * & archptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchvcmplt ( & doubleprecision (*) & archdat, \\
+                    & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archVcmplt} routine fills the {\tt SCOTCH\_\lbt Arch}
+structure pointed to by {\tt archptr} with the description of a
+``variable-sized'' complete graph architecture, which can be used as
+input to {\tt SCOTCH\_\lbt graph\lbt Map} to perform graph clustering
+(see Section~\ref{sec-algo-variable}).
+
+Every domain of a variable-size architecture can always be
+bipartitioned into two subdomains. Consequently, when used in the
+context of a recursive bipartitioning algorithm, the algorithm will
+perform recursively until there is only a single source graph vertex
+in some target domain, or some bipartitioning method assigns all its
+source graph vertices to one of the subdomains.
+
+\progret
+
+{\tt SCOTCH\_archVcmplt} returns $0$ if the variable-sized complete
+graph target architecture has been successfully built, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archVhcub}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archVhcub ( & SCOTCH\_Arch * & archptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchvhcub ( & doubleprecision (*) & archdat, \\
+                   & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archVhcub} routine fills the {\tt SCOTCH\_\lbt Arch}
+structure pointed to by {\tt archptr} with the description of a
+``variable-sized'' hypercube architecture, which can be used as
+input to {\tt SCOTCH\_\lbt graph\lbt Map} to perform graph clustering
+(see Section~\ref{sec-algo-variable}).
+
+Every domain of a variable-size architecture can always be
+bipartitioned into two subdomains. Consequently, when used in the
+context of a recursive bipartitioning algorithm, the algorithm will
+perform recursively until there is only a single source graph vertex
+in some target domain, or some bipartitioning method assigns all its
+source graph vertices to one of the subdomains.
+
+The difference of the variable-sized hypercube architecture with
+respect to the variable-sized complete graph architecture is that the
+cost of previously cut edges increases with the dimension of the
+hypercube. Hence, when some vertices whose edges have been cut
+previously, are placed in some part, their cut neighbors will tend to
+be put in a same part as well, on the other branch of the recursive
+bipartitioning tree, therefore increasing cluster locality.
+
+\progret
+
+{\tt SCOTCH\_archVhcub} returns $0$ if the variable-sized hypercube
+target architecture has been successfully built, and $1$ else.
+\end{itemize}
+
 \subsection{Target domain handling routines}
 \label{sec-lib-arch-dom-handling}
 
