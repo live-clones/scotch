@@ -2931,7 +2931,7 @@ When {\tt SCOTCH\_\lbt COARSEN\lbt NO\lbt MERGE} is set, isolated
 vertices are never merged with other vertices. This preserves the
 topology of the graph, at the expense of a higher coarsening ratio.
 
-The {\tt multloctab} array should be of a size big enough to store
+The {\tt coarmulttab} array should be of a size big enough to store
 multinode data for the resulting coarsened graph. Hence, the size of
 the array must be at least twice the maximum expected number of local
 coarse vertices, according to the prescribed coarsening ratio
@@ -3001,7 +3001,7 @@ routine. Indeed, calling the
 amounts to calling the {\tt SCOTCH\_\lbt graph\lbt Coarsen} routine,
 yet additionally publicizing the {\tt fine\lbt mate\lbt tab} array.
 
-The {\tt multloctab} array should be of a size big enough to store
+The {\tt coarmulttab} array should be of a size big enough to store
 multinode data for the resulting coarsened graph, that is, twice the
 value of {\tt coar\lbt vert\lbt nbr}. Upon successful completion,
 this array will contain pairs of consecutive {\tt SCOTCH\_\lbt Num}
