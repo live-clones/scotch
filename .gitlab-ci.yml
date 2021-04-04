@@ -161,6 +161,7 @@ scotch_test_64:
 
 scotch_sonar:
   stage: sonar
+  allow_failure: true
   artifacts:
     paths:
       - analyzer_reports
