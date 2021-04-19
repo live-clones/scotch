@@ -1,4 +1,4 @@
-/* Copyright 2009-2011,2013-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2011,2013-2016,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 jan 2009     **/
 /**                                 to   : 28 apr 2019     **/
+/**                # Version 6.1  : from : 19 apr 2021     **/
+/**                                 to   : 19 apr 2021     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -104,19 +106,19 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   Gnum                      bandvfixnbr;
   Gnum                      bandvertlvlnum;       /* Index of first band vertex belonging to last level                                     */
   Gnum                      bandvertancadj;       /* Flag set when anchor(s) represent inexistent vertices                                  */
-  Gnum * restrict         vnumotbdtax;            /* Original to band graph vertex numbers (~0 if not in band graph, -2 for fixed vertices) */
-  Gnum * restrict         bandanlotab;            /* Temporary array to store loads to anchors                                              */
+  Gnum * restrict           vnumotbdtax;          /* Original to band graph vertex numbers (~0 if not in band graph, -2 for fixed vertices) */
+  Gnum * restrict           bandanlotab;          /* Temporary array to store loads to anchors                                              */
   Gnum                      bandedlonbr;          /* Size of local band edge load array                                                     */
   Gnum                      bandedlosum;
   Gnum * restrict           bandcompload;
-  Gnum * restrict         compload;               /* Load of parts in original graph                                                        */
-  Gnum                    fronnum;
-  Anum                    domnnbr;
-  Anum                    domnnum;
-  Gnum                    veloval;
-  Gnum                    vertnum;
-  Gnum                    vfixnum;
-  Gnum                    vfixflag;
+  Gnum * restrict           compload;             /* Load of parts in original graph                                                        */
+  Gnum                      fronnum;
+  Anum                      domnnbr;
+  Anum                      domnnum;
+  Gnum                      veloval;
+  Gnum                      vertnum;
+  Gnum                      vfixnum;
+  Gnum                      vfixflag;
   KgraphBandHash * restrict termhashtab;
   Anum                      termhashmsk;
 
@@ -192,9 +194,9 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     }
   }
 
-  bandedgenbr += 2 * (bandvertnbr + grafptr->s.baseval - bandvertlvlnum) + /* Add edges to and from anchors */
-                 grafptr->s.degrmax * grafptr->vfixnbr; /* A band graph vertex that is the neighbour of a fixed vertex will get an extra edge, even if the fixed vertex is not in the band graph */
-  bandvertnbr += domnnbr;                         /* Add anchor vertices */
+  bandedgenbr += 2 * (bandvertnbr + grafptr->s.baseval - bandvertlvlnum) + /* Add edges to and from anchors, plus a band graph vertex that is the neighbour */
+                 grafptr->s.degrmax * grafptr->vfixnbr; /* of a fixed vertex will get an extra edge, even if the fixed vertex is not in the band graph      */
+  bandvertnbr += domnnbr;                         /* Then add anchor vertices to the initial number of vertices of the band graph                           */
   bandedlonbr  = ((edlotax != NULL) || (pfixtax != NULL)) ? bandedgenbr : 0;
 
   graphInit (&bandgrafptr->s);
@@ -262,6 +264,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     bandgrafptr->r.m.parttax  = bandparotax;
     bandgrafptr->r.m.flagval |= MAPPINGFREEPART;
   }
+  bandvnumtax -= bandgrafptr->s.baseval;
 
   if ((bandgrafptr->s.edgetax = memAlloc ((bandedgenbr + bandedlonbr) * sizeof (Gnum))) == NULL) {
     errorPrint ("kgraphBand: out of memory (6)");
@@ -269,14 +272,11 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     memFree    (bandvnumtax);
     return     (1);
   }
-  bandvnumtax            -= bandgrafptr->s.baseval;
-  bandedlotax             = NULL;
-  bandedgetax             =
-  bandgrafptr->s.edgetax -= bandgrafptr->s.baseval;
-  if ((edlotax != NULL) || (pfixtax != NULL)) {
-    bandgrafptr->s.edlotax =
-    bandedlotax            = bandedgetax + bandedgenbr;
-  }
+
+  bandedgetax = bandgrafptr->s.edgetax - bandgrafptr->s.baseval;
+  bandedlotax = ((edlotax != NULL) || (pfixtax != NULL)) ? (bandedgetax + bandedgenbr) : NULL;
+  bandgrafptr->s.edgetax = bandedgetax;
+  bandgrafptr->s.edlotax = bandedlotax;
 
   if (((bandgrafptr->frontab = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) || /* Allocation and initialization of imbalance arrays */
       (memAllocGroup ((void **) (void *)
@@ -654,7 +654,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 #ifdef SCOTCH_DEBUG_KGRAPH2
     for (domnnum = 0; domnnum < domnnbr; domnnum ++) {
       if (bandedgetab[domnnum] != bandverttax[bandvertnnd + 1 + domnnum]) {
-        errorPrint ("kgraphBand: internal error (6)");
+        errorPrint ("kgraphBand: internal error (5)");
         return     (1);
       }
     }
@@ -672,7 +672,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (graphCheck (&bandgrafptr->s) != 0) {
-    errorPrint ("kgraphBand: internal error (7)");
+    errorPrint ("kgraphBand: internal error (6)");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
@@ -686,7 +686,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (kgraphCheck (bandgrafptr) != 0) {
-    errorPrint ("kgraphBand: internal error (8)");
+    errorPrint ("kgraphBand: internal error (7)");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
