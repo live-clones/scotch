@@ -377,6 +377,7 @@ void * const                paraptr)              /* Function parameters */
 ** - void  : in all cases.
 */
 
+#ifdef COMMON_PTHREAD_REDUCE_CANONICAL
 void
 threadReduce (
 const ThreadDescriptor * const  thrdptr,
@@ -426,6 +427,45 @@ const int                       rootnum)          /* Root of reduction          
 
   threadContextBarrier (contptr);
 }
+#else /* COMMON_PTHREAD_REDUCE_CANONICAL */
+void
+threadReduce (
+const ThreadDescriptor * const  thrdptr,
+void * const                    dataptr,          /* Local data object             */
+const size_t                    datasiz,          /* Size of per-thread data block */
+ThreadReduceFunc const          redfptr,          /* Pointer to reduction routine  */
+const int                       rootnum)          /* Root of reduction             */
+{
+  ThreadContext * const     contptr = thrdptr->contptr; /* Fast accesses */
+  const int                 thrdnbr = contptr->thrdnbr;
+  const int                 thrdnum = thrdptr->thrdnum;
+
+#ifdef COMMON_DEBUG
+  if ((rootnum < 0) || (rootnum >= thrdnbr)) {
+    errorPrint ("threadReduce: invalid root number (1)");
+    return;
+  }
+#endif /* COMMON_DEBUG */
+
+  if (thrdnbr <= 1)                               /* If thread system not started, nothing to do */
+    return;
+
+  threadContextBarrier (contptr);
+
+  if (thrdnum == rootnum) {                       /* If we are the root */
+    int                 thrdtmp;
+
+    for (thrdtmp = 1; thrdtmp < thrdnbr; thrdtmp ++) {
+      int                 thrdesk;                /* Skewed rank of end thread */
+
+      thrdesk = (rootnum + thrdtmp) % thrdnbr - rootnum;
+      redfptr (dataptr, (void *) ((byte *) dataptr + thrdesk * datasiz)); /* Call reduction routine */
+    }
+  }
+
+  threadContextBarrier (contptr);
+}
+#endif /* COMMON_PTHREAD_REDUCE_CANONICAL */
 
 /* This routine performs a synchronous
 ** scan operation on the given block of
