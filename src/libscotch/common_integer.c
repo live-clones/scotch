@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014-2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 13 sep 2019     **/
+/**                                 to   : 25 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -393,9 +393,8 @@ FILE * restrict const           stream)           /*+ Stream to read from  +*/
 ** - x  : pseudo-random value.
 */
 
-static
 UINT
-intRandVal2 (
+intRandVal3 (
 IntRandState * restrict     statptr)
 {
   UINT64              x, y;                       /* State variables */
@@ -432,7 +431,14 @@ UINT                        randmax)
   }
 #endif /* COMMON_DEBUG */
 
-  return (((UINT) intRandVal2 (&contptr->statdat)) % randmax);
+  return (((UINT) intRandVal3 (&contptr->statdat)) % randmax);
+}
+
+UINT
+intRandVal2 (
+IntRandContext * const      contptr)              /*+ Random context to load +*/
+{
+  return (intRandVal3 (&contptr->statdat));
 }
 
 /*********************/

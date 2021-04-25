@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 22 nov 2019     **/
+/**                                 to   : 25 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -397,6 +397,7 @@ void                        intRandReset        (IntRandContext * const);
 int                         intRandSave         (IntRandContext * const, FILE * const);
 void                        intRandSeed         (IntRandContext * const, INT);
 UINT                        intRandVal          (IntRandContext * const, UINT);
+UINT                        intRandVal2         (IntRandContext * const);
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
 void                        intSort2asc2        (void * const, const INT);
