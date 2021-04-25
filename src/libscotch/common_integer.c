@@ -217,7 +217,7 @@ int                         procnum)
   randptr->procval = procnum;                     /* Set process number */
 }
 
-/* These routines initialize and/or resets the seed
+/* These routines initialize and/or reset the seed
 ** used by the given pseudo-random generator.
 ** It returns:
 ** - VOID  : in all cases.
