@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 25 sep 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 12 sep 2019     **/
+/**                                 to   : 25 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -331,6 +331,7 @@
 #define intRandReset                SCOTCH_NAME_INTERN (intRandReset)
 #define intRandSeed                 SCOTCH_NAME_INTERN (intRandSeed)
 #define intRandVal                  SCOTCH_NAME_INTERN (intRandVal)
+#define intRandVal2                 SCOTCH_NAME_INTERN (intRandVal2)
 #define intSort1asc1                SCOTCH_NAME_INTERN (intSort1asc1)
 #define intSort2asc1                SCOTCH_NAME_INTERN (intSort2asc1)
 #define intSort2asc2                SCOTCH_NAME_INTERN (intSort2asc2)
