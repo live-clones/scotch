@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 25 apr 2021     **/
+/**                                 to   : 26 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -332,6 +332,18 @@ typedef struct Context_ {
   IntRandContext *          randptr;              /*+ Random context    +*/
 } Context;
 
+/*+ The context splitting user function. +*/
+
+typedef void (* ContextSplitFunc) (Context * const, const int, void * const);
+
+/*+ The data structure for passing arguments to the context splitting threaded routine. +*/
+
+typedef struct ContextSplit_ {
+  Context                   conttab[2];           /*+ Context data for sub-context                     +*/
+  ContextSplitFunc          funcptr;              /*+ Pointer to user function to be called by leaders +*/
+  void *                    paraptr;              /*+ Parameter data                                   +*/
+} ContextSplit;
+
 /*
 **  Handling of files.
 */
@@ -431,6 +443,7 @@ int                         contextCommit       (Context * const);
 int                         contextRandomClone  (Context * const);
 int                         contextThreadInit2  (Context * const, const int, const int * const);
 int                         contextThreadInit   (Context * const);
+int                         contextThreadLaunchSplit (Context * const, ContextSplitFunc const, void * const);
 
 /*
 **  Macro definitions.
