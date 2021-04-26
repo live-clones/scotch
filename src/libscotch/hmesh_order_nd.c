@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 15 may 2018     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 28 aug 2020     **/
+/**                                 to   : 26 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -150,10 +150,16 @@ const HmeshOrderNdParam * const   paraptr)
   cblkptr->cblktab[2].cblknbr = 0;
   cblkptr->cblktab[2].cblktab = NULL;
 
-  if (nspmeshdat.fronnbr != 0) {                  /* If separator not empty         */
-    cblkptr->cblknbr  = 3;                        /* It is a three-cell tree node   */
+  if (nspmeshdat.fronnbr != 0) {                  /* If separator not empty       */
+    cblkptr->cblknbr = 3;                         /* It is a three-cell tree node */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_lock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
     ordeptr->cblknbr += 2;                        /* Two more column blocks created */
     ordeptr->treenbr += 3;                        /* Three more tree nodes created  */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_unlock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
 
     cblkptr->cblktab[2].typeval = ORDERCBLKOTHR;
     cblkptr->cblktab[2].vnodnbr = nspmeshdat.fronnbr;
@@ -177,10 +183,16 @@ const HmeshOrderNdParam * const   paraptr)
                       cblkptr->cblktab + 2, paraptr->ordstratsep);
     hmeshExit (&indmeshdat);
   }
-  else {                                          /* Separator is empty             */
-    cblkptr->cblknbr = 2;                         /* It is a two-cell tree node     */
-    ordeptr->cblknbr ++;                          /* One more column block created  */
-    ordeptr->treenbr += 2;                        /* Two more tree nodes created    */
+  else {                                          /* Separator is empty         */
+    cblkptr->cblknbr = 2;                         /* It is a two-cell tree node */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_lock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
+    ordeptr->cblknbr ++;                          /* One more column block created */
+    ordeptr->treenbr += 2;                        /* Two more tree nodes created   */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_unlock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
     o = 0;                                        /* No separator ordering computed */
   }
   if (o == 0) {

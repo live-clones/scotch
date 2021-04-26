@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2014,2015,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2014,2015,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 04 aug 2014     **/
 /**                                 to   : 27 jan 2020     **/
 /**                # Version 7.0  : from : 05 may 2019     **/
-/**                                 to   : 05 may 2019     **/
+/**                                 to   : 26 apr 2021     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -463,8 +463,14 @@ loop_failed: ;
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_lock (&fineordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
   fineordeptr->treenbr += coarordedat.treenbr - 1; /* Adjust number of tree nodes    */
   fineordeptr->cblknbr += coarordedat.cblknbr - 1; /* Adjust number of column blocks */
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_unlock (&fineordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
 
   coarvpostax = coargrafdat.s.verttax;            /* Re-cycle verttab (not velotab as may be merged with coarvsiztab) */
   coarperitax = coarperitab - coargrafdat.s.baseval;

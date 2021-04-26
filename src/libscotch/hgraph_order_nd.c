@@ -53,7 +53,7 @@
 /**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
 /**                # Version 7.0  : from : 05 may 2019     **/
-/**                                 to   : 05 may 2019     **/
+/**                                 to   : 26 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -194,10 +194,16 @@ const HgraphOrderNdParam * restrict const paraptr)
   cblkptr->cblktab[1].cblknbr = 0;
   cblkptr->cblktab[1].cblktab = NULL;
 
-  if (vsplisttab[2].vnumnbr != 0) {               /* If separator not empty         */
-    cblkptr->cblknbr  = 3;                        /* It is a three-cell tree node   */
+  if (vsplisttab[2].vnumnbr != 0) {               /* If separator not empty       */
+    cblkptr->cblknbr = 3;                         /* It is a three-cell tree node */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_lock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
     ordeptr->cblknbr += 2;                        /* Two more column blocks created */
     ordeptr->treenbr += 3;                        /* Three more tree nodes created  */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_unlock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
 
     cblkptr->cblktab[2].typeval = ORDERCBLKOTHR;
     cblkptr->cblktab[2].vnodnbr = vsplisttab[2].vnumnbr;
@@ -222,10 +228,16 @@ const HgraphOrderNdParam * restrict const paraptr)
                        cblkptr->cblktab + 2, paraptr->ordstratsep);
     hgraphExit (&indgrafdat);
   }
-  else {                                          /* Separator is empty             */
-    cblkptr->cblknbr = 2;                         /* It is a two-cell tree node     */
-    ordeptr->cblknbr ++;                          /* One more column block created  */
-    ordeptr->treenbr += 2;                        /* Two more tree nodes created    */
+  else {                                          /* Separator is empty         */
+    cblkptr->cblknbr = 2;                         /* It is a two-cell tree node */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_lock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
+    ordeptr->cblknbr ++;                          /* One more column block created */
+    ordeptr->treenbr += 2;                        /* Two more tree nodes created   */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_unlock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
     o = 0;                                        /* No separator ordering computed */
   }
   if (o == 0) {
