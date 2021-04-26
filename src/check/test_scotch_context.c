@@ -1,4 +1,4 @@
-/* Copyright 2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                feature of the library Context object.  **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 31 dec 2019     **/
+/**                                 to   : 26 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -108,6 +108,27 @@ const Graph * restrict const      grafptr)
   printf ("(%d/%d) : " GNUMSTRING "\n", thrdnum, thrdnbr, grafptr->vertnbr);
 }
 
+/* Split work routine. */
+
+void
+scotchSplit (
+Context * const             contptr,              /* Sub-context                  */
+const int                   spltnum,              /* Rank of sub-context (0 or 1) */
+Graph * restrict const      grafptr)
+{
+  const int                 thrdnbr = contextThreadNbr (contptr);
+
+  printf ("Sub-context %d (%d) : " GNUMSTRING ", " GNUMSTRING "\n", spltnum, thrdnbr, grafptr->vertnbr, contextIntRandVal (contptr, grafptr->vertnbr));
+
+  printf ("Launching multi-threaded work in sub-context\n");
+
+  contextThreadLaunch (contptr,
+                       (ThreadFunc) scotchGraphDoUsefulStuff,
+                       grafptr);
+}
+
+/* Context-dependent main task routine. */
+
 int
 SCOTCH_graphDoUsefulStuff (
 const SCOTCH_Graph * restrict const libgrafptr)
@@ -119,9 +140,19 @@ const SCOTCH_Graph * restrict const libgrafptr)
     return     (1);
   }
 
+  printf ("Launching multi-threaded work in provided context\n");
+
   contextThreadLaunch (CONTEXTGETDATA (libgrafptr), /* Fake libScotch routine uses worker threads to perform some task in parallel */
                        (ThreadFunc) scotchGraphDoUsefulStuff,
                        (void *) CONTEXTGETOBJECT (libgrafptr));
+
+  printf ("Splitting provided context\n");
+
+  contextThreadLaunchSplit (CONTEXTGETDATA (libgrafptr),
+                            (ContextSplitFunc) scotchSplit,
+                            (void *) CONTEXTGETOBJECT (libgrafptr));
+
+  printf ("Back to provided context\n");
 
   CONTEXTEXIT (libgrafptr);
 
