@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 26 dec 2004     **/
 /**                # Version 5.0  : from : 25 jul 2007     **/
 /**                                 to   : 25 jul 2007     **/
+/**                # Version 7.0  : from : 26 apr 2021     **/
+/**                                 to   : 26 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,6 +97,9 @@ Gnum * restrict const       peritab)
       return     (1);
     }
   }
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_init (&ordeptr->mutedat, NULL);   /* Initialize local mutex */
+#endif /* SCOTCH_PTHREAD */
 
 #ifdef SCOTCH_DEBUG_ORDER2
   memSet (ordeptr->peritab, ~0, vnodnbr * sizeof (Gnum));
@@ -119,6 +124,10 @@ Order * restrict const      ordeptr)
 
   if ((ordeptr->peritab != NULL) && ((ordeptr->flagval & ORDERFREEPERI) != 0)) /* If peritab is group leader */
     memFree (ordeptr->peritab);                   /* Free group leader */
+
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_destroy (&ordeptr->mutedat);      /* Destroy local mutex */
+#endif /* SCOTCH_PTHREAD */
 
 #ifdef SCOTCH_DEBUG_ORDER2
   memSet (ordeptr, ~0, sizeof (Order));
@@ -263,7 +272,7 @@ Gnum                              cbfanum)        /* Current number of ancestor 
       cbfanum = cblanum;                          /* Separator becomes most recent ancestor of parts */
       cblknum = 1;                                /* Only scan the two parts, not the separator      */
     }
-     
+
     for ( ; cblknum >= 0; cblknum --) {
       orderTree2 (treetax, cblaptr, &cblkptr->cblktab[cblknum], cbfanum);
 #ifdef SCOTCH_DEBUG_ORDER2

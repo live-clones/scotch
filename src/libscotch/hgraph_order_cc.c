@@ -1,4 +1,4 @@
-/* Copyright 2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 apr 2018     **/
 /**                                 to   : 06 jun 2018     **/
+/**                # Version 7.0  : from : 26 apr 2021     **/
+/**                                 to   : 26 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -160,10 +162,16 @@ const HgraphOrderCcParam * restrict const paraptr)
     memFree    (queutab);
     return     (1);
   }
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_lock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
   ordeptr->treenbr += rootnbr;                    /* These more number of tree nodes    */
   ordeptr->cblknbr += rootnbr - 1;                /* These more number of column blocks */
-  cblkptr->cblknbr  = rootnbr;
-  cblkptr->typeval  = ORDERCBLKDICO;              /* Disconnected components node  */
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_unlock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
+  cblkptr->cblknbr = rootnbr;
+  cblkptr->typeval = ORDERCBLKDICO;               /* Disconnected components node  */
   for (rootnum = 0; rootnum < rootnbr; rootnum ++) { /* Initialize tree node array */
     cblkptr->cblktab[rootnum].typeval = ORDERCBLKOTHR;
     cblkptr->cblktab[rootnum].vnodnbr = roottab[rootnum + 1] - roottab[rootnum];

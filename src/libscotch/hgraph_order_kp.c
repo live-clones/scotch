@@ -1,4 +1,4 @@
-/* Copyright 2012,2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2016,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 17 oct 2012     **/
 /**                # Version 6.0  : from : 23 aug 2014     **/
 /**                                 to   : 15 aug 2016     **/
+/**                # Version 7.0  : from : 26 apr 2021     **/
+/**                                 to   : 26 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -155,9 +157,15 @@ const HgraphOrderKpParam * restrict const paraptr)
     }
   }
 
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_lock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
   ordeptr->treenbr += cblknbr;                    /* These more number of tree nodes    */
   ordeptr->cblknbr += cblknbr - 1;                /* These more number of column blocks */
-  cblkptr->cblknbr  = cblknbr;
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_unlock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
+  cblkptr->cblknbr = cblknbr;
 
   peritab = ordeptr->peritab;
   if (grafptr->s.vnumtax == NULL) {               /* If graph is original graph */
