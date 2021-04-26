@@ -53,7 +53,7 @@
 /**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
 /**                # Version 7.0  : from : 05 may 2019     **/
-/**                                 to   : 26 apr 2021     **/
+/**                                 to   : 30 may 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,6 +73,48 @@
 #include "hgraph_order_st.h"
 #include "vgraph.h"
 #include "vgraph_separate_st.h"
+
+/***************************/
+/*                         */
+/* Multi-threaded routine. */
+/*                         */
+/***************************/
+
+static
+void
+hgraphOrderNd2 (
+Context * restrict const          contptr,        /*+ (Sub-)context                          +*/
+const int                         spltnum,        /*+ Rank of sub-context in initial context +*/
+const HgraphOrderNdSplit * const  spltptr)
+{
+  Hgraph              orggrafdat;
+  Hgraph              indgrafdat;
+  int                 o;
+
+  orggrafdat = *spltptr->grafptr;                 /* Assign new context to work graph */
+  orggrafdat.contptr = contptr;
+
+  o = 0;
+  if ((hgraphInduceList (&orggrafdat, spltptr->splttab[spltnum].vnumnbr, spltptr->splttab[spltnum].vnumtab,
+                         spltptr->splttab[spltnum].vhalmax, &indgrafdat)) != 0) {
+    errorPrint ("hgraphOrderNd2: cannot build induced subgraph");
+    o = 1;
+  }
+  if (o == 0) {
+    o = hgraphOrderNd (&indgrafdat, spltptr->ordeptr, spltptr->splttab[spltnum].ordenum, spltptr->splttab[spltnum].cblkptr, spltptr->paraptr);
+
+    hgraphExit (&indgrafdat);
+  }
+  if (o != 0) {                                   /* Report any error */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_lock (&spltptr->ordeptr->mutedat); /* Use ordering lock to avoid race condition */
+#endif /* SCOTCH_PTHREAD */
+    *spltptr->revaptr = 1;
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_unlock (&spltptr->ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
+  }
+}
 
 /*****************************/
 /*                           */
@@ -94,7 +136,6 @@ const Gnum                                ordenum,
 OrderCblk * restrict const                cblkptr,
 const HgraphOrderNdParam * restrict const paraptr)
 {
-  Hgraph                    indgrafdat;           /* Halo graph data                    */
   Gnum *                    vspvnumptr[3];        /* Pointers to vertex lists to fill   */
   VertList                  vsplisttab[3];        /* Array of separated part lists      */
   Vgraph                    vspgrafdat;           /* Vertex separation graph data       */
@@ -194,7 +235,9 @@ const HgraphOrderNdParam * restrict const paraptr)
   cblkptr->cblktab[1].cblknbr = 0;
   cblkptr->cblktab[1].cblktab = NULL;
 
-  if (vsplisttab[2].vnumnbr != 0) {               /* If separator not empty       */
+  if (vsplisttab[2].vnumnbr != 0) {               /* If separator not empty */
+    Hgraph              indgrafdat;
+
     cblkptr->cblknbr = 3;                         /* It is a three-cell tree node */
 #ifdef SCOTCH_PTHREAD
     pthread_mutex_lock (&ordeptr->mutedat);
@@ -241,22 +284,31 @@ const HgraphOrderNdParam * restrict const paraptr)
     o = 0;                                        /* No separator ordering computed */
   }
   if (o == 0) {
-    if ((hgraphInduceList (grafptr, vsplisttab[0].vnumnbr, vsplisttab[0].vnumtab, vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat)) != 0) {
-      errorPrint ("hgraphOrderNd: cannot build induced subgraph (2)");
-      vgraphExit (&vspgrafdat);
-      return (1);
+    HgraphOrderNdSplit  spltdat;                  /* Parameters for context splitting */
+
+    spltdat.splttab[0].vnumnbr = vsplisttab[0].vnumnbr;
+    spltdat.splttab[0].vnumtab = vsplisttab[0].vnumtab;
+    spltdat.splttab[0].vhalmax = vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr;
+    spltdat.splttab[0].ordenum = ordenum;
+    spltdat.splttab[0].cblkptr = cblkptr->cblktab;
+    spltdat.splttab[1].vnumnbr = vsplisttab[1].vnumnbr;
+    spltdat.splttab[1].vnumtab = vsplisttab[1].vnumtab;
+    spltdat.splttab[1].vhalmax = vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr;
+    spltdat.splttab[1].ordenum = ordenum + vsplisttab[0].vnumnbr;
+    spltdat.splttab[1].cblkptr = cblkptr->cblktab + 1;
+    spltdat.grafptr = grafptr;
+    spltdat.ordeptr = ordeptr;
+    spltdat.paraptr = paraptr;
+    spltdat.revaptr = &o;
+
+#ifndef HGRAPHORDERNDNOTHREAD
+    if (contextThreadLaunchSplit (grafptr->contptr, (ContextSplitFunc) hgraphOrderNd2, &spltdat) != 0) /* If counld not split context to run concurrently */
+#endif /* HGRAPHORDERNDNOTHREAD */
+    {
+      hgraphOrderNd2 (grafptr->contptr, 0, &spltdat); /* Run tasks in sequence */
+      if (o == 0)
+        hgraphOrderNd2 (grafptr->contptr, 1, &spltdat);
     }
-    o = hgraphOrderNd (&indgrafdat, ordeptr, ordenum, cblkptr->cblktab, paraptr);
-    hgraphExit (&indgrafdat);
-  }
-  if (o == 0) {
-    if ((hgraphInduceList (grafptr, vsplisttab[1].vnumnbr, vsplisttab[1].vnumtab, vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat)) != 0) {
-      errorPrint ("hgraphOrderNd: cannot build induced subgraph (3)");
-      vgraphExit (&vspgrafdat);
-      return (1);
-    }
-    o = hgraphOrderNd (&indgrafdat, ordeptr, ordenum + vsplisttab[0].vnumnbr, cblkptr->cblktab + 1, paraptr);
-    hgraphExit (&indgrafdat);
   }
 
   vgraphExit (&vspgrafdat);
