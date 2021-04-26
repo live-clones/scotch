@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 25 apr 2021     **/
+/**                                 to   : 01 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -314,6 +314,7 @@
 #define contextRandomClone          SCOTCH_NAME_INTERN (contextRandomClone)
 #define contextThreadInit           SCOTCH_NAME_INTERN (contextThreadInit)
 #define contextThreadInit2          SCOTCH_NAME_INTERN (contextThreadInit2)
+#define contextThreadLaunchSplit    SCOTCH_NAME_INTERN (contextThreadLaunchSplit)
 
 #define envGetInt                   SCOTCH_NAME_INTERN (envGetInt)
 
