@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 04 jul 2012     **/
 /**                                 to   : 27 apr 2015     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 23 apr 2021     **/
+/**                                 to   : 30 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -480,6 +480,7 @@ const int                       rootnum)          /* Root of reduction          
 ** - void  : in all cases.
 */
 
+#ifdef COMMON_PTHREAD_SCAN_CANONICAL
 void
 threadScan (
 const ThreadDescriptor * const  thrdptr,          /* Pointer to thread header      */
@@ -524,6 +525,35 @@ ThreadScanFunc const            scafptr)          /* Scan function              
 
   threadContextBarrier (contptr);
 }
+#else /* COMMON_PTHREAD_SCAN_CANONICAL */
+void
+threadScan (
+const ThreadDescriptor * const  thrdptr,          /* Pointer to thread header      */
+void * const                    dataptr,          /* Local data object             */
+const size_t                    datasiz,          /* Size of per-thread data block */
+ThreadScanFunc const            scafptr)          /* Scan function                 */
+{
+  byte *              cellptr;                    /* Pointer to local data block */
+  int                 thrdtmp;
+
+  ThreadContext * const     contptr = thrdptr->contptr; /* Fast accesses */
+  const int                 thrdnbr = contptr->thrdnbr;
+  const int                 thrdnum = thrdptr->thrdnum;
+
+  if (thrdnbr <= 1)                               /* If thread system not started, nothing to do */
+    return;
+
+  threadContextBarrier (contptr);
+
+  if (thrdnum == 0) {
+    for (thrdtmp = thrdnbr - 1, cellptr = (byte *) dataptr;
+         thrdtmp > 0; thrdtmp --, cellptr += datasiz)
+      scafptr ((void *) (cellptr + datasiz), (void *) cellptr, 0, 0);
+  }
+
+  threadContextBarrier (contptr);
+}
+#endif /* COMMON_PTHREAD_SCAN_CANONICAL */
 
 /* This routine, to be called only by the master
 ** thread of an outside threading environment,
