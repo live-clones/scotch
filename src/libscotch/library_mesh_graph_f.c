@@ -78,3 +78,18 @@ int * const                 revaptr), \
 {
   *revaptr = SCOTCH_meshGraph (meshptr, grafptr);
 }
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                      \
+MESHGRAPHDUAL, meshgraphdual, (       \
+const SCOTCH_Mesh * const   meshptr,  \
+SCOTCH_Graph * const        grafptr,  \
+const SCOTCH_Num * const    ncomptr,  \
+int * const                 revaptr), \
+(meshptr, grafptr, ncomptr, revaptr))
+{
+  *revaptr = SCOTCH_meshGraphDual (meshptr, grafptr, *ncomptr);
+}

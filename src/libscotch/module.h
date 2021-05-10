@@ -1242,6 +1242,7 @@
 #define SCOTCH_meshGeomLoadScot     SCOTCH_NAME_PUBLIC (SCOTCH_meshGeomLoadScot)
 #define SCOTCH_meshGeomSaveScot     SCOTCH_NAME_PUBLIC (SCOTCH_meshGeomSaveScot)
 #define SCOTCH_meshGraph            SCOTCH_NAME_PUBLIC (SCOTCH_meshGraph)
+#define SCOTCH_meshGraphDual        SCOTCH_NAME_PUBLIC (SCOTCH_meshGraphDual)
 #define SCOTCH_meshInit             SCOTCH_NAME_PUBLIC (SCOTCH_meshInit)
 #define SCOTCH_meshLoad             SCOTCH_NAME_PUBLIC (SCOTCH_meshLoad)
 #define SCOTCH_meshOrder            SCOTCH_NAME_PUBLIC (SCOTCH_meshOrder)
