@@ -70,7 +70,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 13 sep 2019     **/
+/**                                 to   : 27 jul 2021     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -119,7 +119,8 @@ static
 int
 kgraphMapRbMapPoolInit (
 KgraphMapRbMapPoolData * restrict const poolptr,
-const KgraphMapRbData * restrict const  dataptr)
+const KgraphMapRbData * restrict const  dataptr,
+Context * const                         contptr)
 {
   int                 flagval;
 
@@ -168,7 +169,7 @@ const KgraphMapRbData * restrict const  dataptr)
   }
 
   poolptr->flagval = flagval;
-  poolptr->contptr = dataptr->contptr;
+  poolptr->contptr = contptr;
 
   return (0);
 }
@@ -863,7 +864,8 @@ kgraphMapRbMap (
 const KgraphMapRbData * restrict const  dataptr,  /*+ Global mapping data                  +*/
 const Graph * restrict const            grafptr,  /*+ Graph to map, without fixed vertices +*/
 const Anum                              vflonbr,  /*+ Number of fixed vertex load slots    +*/
-KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load slots     +*/
+KgraphMapRbVflo * restrict const        vflotab,  /*+ Array of fixed vertex load slots     +*/
+Context * const                         contptr)  /*+ Execution context                    +*/
 {
   KgraphMapRbMapPoolData  pooldat;                /* Data for handling jobs and job pools */
   ArchDom                 domnsubtab[2];          /* Subdomains of current job domain     */
@@ -894,7 +896,7 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
   mappptr->domnmax = 1;                           /* Force resizing of job arrays, for debugging */
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
-  if (kgraphMapRbMapPoolInit (&pooldat, dataptr) != 0) /* Initialize pool data; done first for kgraphMapRbMapPoolExit() to succeed afterwards */
+  if (kgraphMapRbMapPoolInit (&pooldat, dataptr, contptr) != 0) /* Initialize pool data; done first for kgraphMapRbMapPoolExit() to succeed afterwards */
     return (1);
 
   if ((((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) == 0) && (archDomSize (mappptr->archptr, &mappptr->domnorg) <= 1)) || /* If single-vertex domain   */
@@ -935,7 +937,7 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
 
       kgraphMapRbVfloSplit (mappptr->archptr, domnsubtab, /* Split fixed vertex load slots, if any */
                             joborgdat.vflonbr, joborgdat.vflotab, vflonbrtab, vflowgttab);
-      if (kgraphMapRbBgraph (dataptr, &actgrafdat, &joborgdat.grafdat, pooldat.mappptr, domnsubtab, vflowgttab) != 0) { /* Create bipartition graph */
+      if (kgraphMapRbBgraph (dataptr, &actgrafdat, &joborgdat.grafdat, pooldat.mappptr, domnsubtab, vflowgttab, contptr) != 0) { /* Create bipartition graph */
         errorPrint ("kgraphMapRbMap: cannot create bipartition graph");
         kgraphMapRbMapPoolExit (&pooldat);        /* Copied graph will be freed as not yet removed */
         return (1);
