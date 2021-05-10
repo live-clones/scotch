@@ -1,4 +1,4 @@
-## Copyright 2007-2010,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2007-2010,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -86,6 +86,19 @@ metis.h				:	../libscotch/dummysizes$(EXE)		\
 					library_metis.h
 					../libscotch/dummysizes$(EXE) library_metis.h metis.h
 
+metis_graph_dual$(OBJ)		:	metis_graph_dual.c			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h					\
+					metis_graph_dual.h
+
+metis_graph_dual_f$(OBJ)	:	metis_graph_dual_f.c			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h
+
 metis_graph_order$(OBJ)		:	metis_graph_order.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
@@ -146,7 +159,9 @@ libptscotchparmetis$(LIB)	:	parmetis_dgraph_order$(OBJ)		\
 					$(AR) $(ARFLAGS) $(@) $(^)
 					-$(RANLIB) $(@)
 
-libscotchmetis$(LIB)		:	metis_graph_order$(OBJ)			\
+libscotchmetis$(LIB)		:	metis_graph_dual$(OBJ)			\
+					metis_graph_dual_f$(OBJ)		\
+					metis_graph_order$(OBJ)			\
 					metis_graph_order_f$(OBJ)		\
 					metis_graph_part$(OBJ)			\
 					metis_graph_part_f$(OBJ)

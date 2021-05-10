@@ -150,6 +150,9 @@ int                         METISNAMEU (METIS_PartGraphKway) (const SCOTCH_Num *
 int                         METISNAMEU (METIS_PartGraphRecursive) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 #endif /* (SCOTCH_METIS_VERSION == 5) */
 
+int                         METISNAMEU (METIS_MeshToDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num ** const, SCOTCH_Num ** const);
+int                         METISNAMEU (METIS_PartMeshDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, double * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
