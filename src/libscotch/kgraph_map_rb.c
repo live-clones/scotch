@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -69,7 +69,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 jun 2019     **/
 /**                # Version 7.0  : from : 23 aug 2019     **/
-/**                                 to   : 23 aug 2019     **/
+/**                                 to   : 27 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -131,7 +131,6 @@ const KgraphMapRbParam * restrict const paraptr)
 
   datadat.grafptr = &grafptr->s;
   datadat.mappptr = &grafptr->m;
-  datadat.contptr = grafptr->contptr;
 
   datadat.r.mappptr   = (grafptr->r.m.parttax != NULL) ? &grafptr->r.m : NULL;
   datadat.r.vmlotax   = grafptr->r.vmlotax;
@@ -157,7 +156,7 @@ const KgraphMapRbParam * restrict const paraptr)
     indgrafptr = &indgrafdat;
   }
 
-  o = ((archPart (grafptr->m.archptr) != 0) ? kgraphMapRbPart : kgraphMapRbMap) (&datadat, indgrafptr, vflonbr, vflotab); /* Compute recursive bipartitioning */
+  o = ((archPart (grafptr->m.archptr) != 0) ? kgraphMapRbPart : kgraphMapRbMap) (&datadat, indgrafptr, vflonbr, vflotab, grafptr->contptr); /* Compute recursive bipartitioning */
 
   if (grafptr->pfixtax != NULL) {                 /* If fixed vertices   */
     memFree (vflotab);                            /* Not used any longer */
@@ -564,7 +563,8 @@ Bgraph * restrict const                 actgrafptr, /*+ Graph to build          
 const Graph * restrict const            srcgrafptr, /*+ Source graph                  +*/
 const Mapping * restrict const          srcmappptr, /*+ Current mapping               +*/
 const ArchDom * restrict const          domnsubtab, /*+ Array of the two subdomains   +*/
-const Gnum * restrict const             vflowgttab) /*+ Array of vertex weight biases +*/
+const Gnum * restrict const             vflowgttab, /*+ Array of vertex weight biases +*/
+Context * const                         contptr)  /*+ Execution context               +*/
 {
   Gnum                  actvertnum;               /* Number of current active vertex   */
   Gnum                  commloadextn0;            /* External communication load       */
@@ -591,7 +591,7 @@ const Gnum * restrict const             vflowgttab) /*+ Array of vertex weight b
     errorPrint ("kgraphMapRbBgraph: cannot create bipartition graph");
     return     (1);
   }
-  actgrafptr->contptr = dataptr->contptr;
+  actgrafptr->contptr = contptr;
 
   flagval = KGRAPHMAPRBVEEXNONE;                  /* Assume no processing */
   if ((! archPart (archptr)) && (actvnumtax != NULL))
