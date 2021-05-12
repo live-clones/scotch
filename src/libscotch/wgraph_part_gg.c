@@ -61,12 +61,6 @@
 #include "wgraph.h"
 #include "wgraph_part_gg.h"
 
-/*
-**  The static variables.
-*/
-
-static const Gnum           wgraphpartggloadone = 1;
-
 /*****************************/
 /*                           */
 /* This is the main routine. */
