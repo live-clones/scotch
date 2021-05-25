@@ -72,7 +72,7 @@ SCOTCH_Num * const          xadj,                           \
 SCOTCH_Num * const          adjncy,                         \
 SCOTCH_Num * const          vwgt,                           \
 SCOTCH_Num * const          adjwgt,                         \
-const SCOTCH_Num * const    wgtflag,		            \
+const SCOTCH_Num * const    wgtflag,                        \
 const SCOTCH_Num * const    numflag,                        \
 const SCOTCH_Num * const    ncon,                           \
 const SCOTCH_Num * const    nparts,                         \
@@ -100,7 +100,7 @@ SCOTCH_Num * const          xadj,                                   \
 SCOTCH_Num * const          adjncy,                                 \
 SCOTCH_Num * const          vwgt,                                   \
 SCOTCH_Num * const          adjwgt,                                 \
-const SCOTCH_Num * const    wgtflag,		                    \
+const SCOTCH_Num * const    wgtflag,                                \
 const SCOTCH_Num * const    numflag,                                \
 const SCOTCH_Num * const    ndims,                                  \
 const float * const         xyz,                                    \
@@ -116,7 +116,7 @@ int * const                 revaptr),                               \
 (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ndims, xyz, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr, revaptr))
 {
   *revaptr = SCOTCH_ParMETIS_V3_PartGeomKway (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag,
-					      ndims, xyz, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr);
+                                              ndims, xyz, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr);
 }
 
 /*******************/
@@ -135,7 +135,7 @@ SCOTCH_Num * const          xadj,                                       \
 SCOTCH_Num * const          adjncy,                                     \
 SCOTCH_Num * const          vwgt,                                       \
 SCOTCH_Num * const          adjwgt,                                     \
-const SCOTCH_Num * const    wgtflag,		                        \
+const SCOTCH_Num * const    wgtflag,                                    \
 const SCOTCH_Num * const    numflag,                                    \
 const SCOTCH_Num * const    ncon,                                       \
 const SCOTCH_Num * const    nparts,                                     \
@@ -161,7 +161,7 @@ SCOTCH_Num * const          xadj,                                               
 SCOTCH_Num * const          adjncy,                                             \
 SCOTCH_Num * const          vwgt,                                               \
 SCOTCH_Num * const          adjwgt,                                             \
-const SCOTCH_Num * const    wgtflag,		                                \
+const SCOTCH_Num * const    wgtflag,                                            \
 const SCOTCH_Num * const    numflag,                                            \
 const SCOTCH_Num * const    ndims,                                              \
 const float * const         xyz,                                                \
