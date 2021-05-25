@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 04 dec 2012     **/
 /**                                 to   : 24 jul 2019     **/
 /**                # Version 6.1  : from : 15 mar 2021     **/
-/**                                 to   : 15 mar 2021     **/
+/**                                 to   : 25 may 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -234,11 +234,9 @@ const SCOTCH_Num * const    edlotab)              /* Edge load array            
     errorPrint (STRINGIFY (SCOTCH_graphBuild) ": internal error");
     return     (1);
   }
+  if ((baseval < 0) || (baseval > 1))
+    errorPrintW (STRINGIFY (SCOTCH_graphBuild) ": non-standard base parameter");
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
-  if ((baseval < 0) || (baseval > 1)) {
-    errorPrint (STRINGIFY (SCOTCH_graphBuild) ": invalid base parameter");
-    return     (1);
-  }
 
   srcgrafptr = (Graph *) grafptr;                 /* Use structure as source graph */
   srcgrafptr->flagval = GRAPHNONE;
