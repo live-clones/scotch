@@ -1,4 +1,4 @@
-## Copyright 2011,2012,2014-2016,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2011,2012,2014-2016,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -65,7 +65,10 @@ include ../Makefile.inc
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(SCOTCHINCDIR) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
+				$(CC) $(CFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
+
+%$(EXE)	:	%.f90
+				$(FC) $(FFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
 
 ##
 ##  Project rules.
@@ -97,8 +100,6 @@ realclean			:	clean
 					test_common_random		\
 					test_common_thread		\
 					test_fibo			\
-					test_libesmumps			\
-					test_libmetis			\
 					test_scotch_arch		\
 					test_scotch_arch_deco		\
 					test_scotch_graph_coarsen	\
@@ -119,7 +120,11 @@ realclean			:	clean
 					test_scotch_dgraph_redist	\
 					test_scotch_mesh_graph		\
 					test_strat_par			\
-					test_strat_seq
+					test_strat_seq			\
+					test_libesmumps			\
+					test_libmetis			\
+					test_libmetis_dual		\
+					test_libmetis_dual_f
 
 ##
 ##  Test cases dependencies.
@@ -143,6 +148,8 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_scotch_graph_part_ovl		\
 			check_scotch_mesh_graph			\
 			check_libmetis				\
+			check_libmetis_dual			\
+			check_libmetis_dual_f			\
 			check_prog_amk				\
 			check_prog_amk_grf			\
 			check_prog_acpl				\
@@ -243,6 +250,25 @@ check_libmetis			:	test_libmetis
 test_libmetis			:	test_libmetis.c			\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
 					$(SCOTCHLIBDIR)/libscotchmetis$(LIB)
+
+##
+
+check_libmetis_dual		:	test_libmetis_dual
+					$(EXECS) ./test_libmetis_dual
+					$(EXECS) ./test_libmetis_dual 1
+
+test_libmetis_dual		:	test_libmetis_dual.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
+					$(SCOTCHLIBDIR)/libscotchmetis$(LIB)
+
+##
+
+test_libmetis_dual_f		:	test_libmetis_dual_f.f90	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
+					$(SCOTCHLIBDIR)/libscotchmetis$(LIB)
+
+check_libmetis_dual_f		:	test_libmetis_dual_f
+					$(EXECS) ./test_libmetis_dual_f
 
 ##
 
@@ -486,7 +512,9 @@ check_prog_gmk_msh		:	check_prog_mmk
 					$(EXECS) $(SCOTCHBINDIR)/gmk_msh "data/small_55.msh" $(TMPDIR)/small_55_d2.grf -d2
 					$(PROGDIFF) "data/small_55_d2.grf" $(TMPDIR)/small_55_d2.grf
 					$(EXECS) $(SCOTCHBINDIR)/gmk_msh "data/small_55.msh" $(TMPDIR)/small_55_d3.grf -d3
-					$(PROGDIFF) "data/small_55_d3.grf" $(TMPDIR)/small_55_d3.grf
+					$(PROGDIFF) "data/small_55_d2.grf" $(TMPDIR)/small_55_d3.grf
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh "data/cube_8.msh" $(TMPDIR)/cube_8_d3.grf -d3
+					$(PROGDIFF) "data/cube_8_d3.grf" $(TMPDIR)/cube_8_d3.grf
 
 check_prog_mmk                  :
 					$(EXECS) $(SCOTCHBINDIR)/mmk_m2 5 1 $(TMPDIR)/m2_5_1.msh
