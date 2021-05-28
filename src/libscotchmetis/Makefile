@@ -56,6 +56,7 @@ scotch				:
 					$(MAKE)						\
 					CC="$(CCS)"					\
 					metis.h						\
+					metisf.h					\
 					libscotchmetis$(LIB)
 
 ptscotch			:
@@ -66,7 +67,7 @@ ptscotch			:
 					libptscotchparmetis$(LIB)
 
 install				:	scotch
-					-$(CP) metis.h $(includedir)
+					-$(CP) metis.h metisf.h $(includedir)
 					-$(CP) libscotchmetis$(LIB) $(libdir)
 
 ptinstall			:	ptscotch
@@ -74,7 +75,7 @@ ptinstall			:	ptscotch
 					-$(CP) libptscotchparmetis$(LIB) $(libdir)
 
 clean				:
-					-$(RM) *~ *$(OBJ) lib*$(LIB) metis.h parmetis.h
+					-$(RM) *~ *$(OBJ) lib*$(LIB) metis.h metisf.h parmetis.h
 
 realclean			:	clean
 
@@ -85,6 +86,10 @@ realclean			:	clean
 metis.h				:	../libscotch/dummysizes$(EXE)		\
 					library_metis.h
 					../libscotch/dummysizes$(EXE) library_metis.h metis.h
+
+metisf.h			:	../libscotch/dummysizes$(EXE)		\
+					library_metis_f.h
+					../libscotch/dummysizes$(EXE) library_metis_f.h metisf.h
 
 metis_graph_dual$(OBJ)		:	metis_graph_dual.c			\
 					../libscotch/module.h			\

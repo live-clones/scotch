@@ -34,6 +34,7 @@ src/libscotch/ptscotchf.h
 src/libscotch/y.output
 src/libscotchmetis/*[.][ao]
 src/libscotchmetis/metis.h
+src/libscotchmetis/metisf.h
 src/libscotchmetis/parmetis.h
 src/scotch/*
 !src/scotch/*[.][ch]
