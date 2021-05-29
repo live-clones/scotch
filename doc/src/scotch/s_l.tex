@@ -217,7 +217,7 @@ the size of these opaque structures.
 
 Graph indices are represented in \scotch\ as integer values of type
 {\tt SCOTCH\_\lbt Num}. By default, this type equates to the {\tt int}
-C type, that is, an integer type of size equal to the one of 
+C type, that is, an integer type of size equal to the one of
 the machine word. However, it can represent any other integer
 type. Indeed, the size of the {\tt SCOTCH\_\lbt Num} integer type can
 be coerced to 32 or 64 bits by using the ``{\tt -DINTSIZE32}'' or
@@ -341,7 +341,7 @@ array'' case, such that $\mathtt{verttab}$ is sorted in ascending
 order, $\mathtt{verttab}\mbox{\tt [}\lbt\mathtt{baseval}\mbox{\tt ]} =
 \mathtt{baseval}$ and $\mathtt{verttab}\lbt\mbox{\tt
 [}\mathtt{baseval} + \mathtt{vertnbr}\mbox{\tt ]} =
-(\mathtt{baseval} + \mathtt{edgenbr})$. 
+(\mathtt{baseval} + \mathtt{edgenbr})$.
 \iteme[{\tt velotab}]
 Optional array, of size {\tt vertnbr}, holding the integer load
 associated with every vertex.
@@ -546,7 +546,7 @@ is located at $\mathtt{geomtab}\mbox{\tt [}(i - \mathtt{baseval}) *
 $\mathtt{dimnnbr} \geq 2$, and its $z$ coordinate is located at
 $\mathtt{geomtab}\mbox{\tt [}(i - \mathtt{baseval}) * \mathtt{dimnnbr}
 + \mathtt{baseval} + 2\mbox{\tt ]}$ if $\mathtt{dimnnbr} =
-3$. Whenever the geometry is associated with a mesh, 
+3$. Whenever the geometry is associated with a mesh,
 only node vertices are considered, so the $x$ coordinate of some mesh
 node vertex $i$, with $\mathtt{vnodbas} \leq i$, is located
 at $\mathtt{geomtab}\mbox{\tt [}(i - \mathtt{vnodbas}) *
@@ -3366,7 +3366,7 @@ scotchfgraphinducelist ( & doubleprecision (*)   & orggrafdat, \\
 
 \progdes
 
-The {\tt SCOTCH\_graphInduceList} routine computes an induced graph 
+The {\tt SCOTCH\_graphInduceList} routine computes an induced graph
 \texttt{indgrafdat} from the original graph \texttt{orggrafdat}. The
 vertices that are kept in the induced graph are the \texttt{vnumnbr}
 vertices whose based indices in the original graph are provided in the
@@ -3403,7 +3403,7 @@ scotchfgraphinducepart ( & doubleprecision (*)    & orggrafdat, \\
 
 \progdes
 
-The {\tt SCOTCH\_graphInducePart} routine computes an induced graph 
+The {\tt SCOTCH\_graphInducePart} routine computes an induced graph
 \texttt{indgrafdat} from the original graph \texttt{orggrafdat}. The
 vertices that are kept in the induced graph are the \texttt{vnumnbr}
 vertices whose part number in the \texttt{parttab} array are equal to
@@ -4734,7 +4734,7 @@ with the logical unit of the mapping file.
 
 \progret
 
-{\tt SCOTCH\_graphTabSave} returns $0$ if the part array 
+{\tt SCOTCH\_graphTabSave} returns $0$ if the part array
 has been successfully saved to  \texttt{stream}, and $1$ else.
 \end{itemize}
 
@@ -5515,6 +5515,43 @@ structure, but must not be used after the mesh structure is freed.
 
 {\tt SCOTCH\_meshGraph} returns $0$ if the graph structure has been
 successfully allocated and filled, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_meshGraphDual}}
+\label{sec-lib-func-meshgraphdual}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_meshGraphDual ( & const SCOTCH\_Mesh * & meshptr, \\
+                            & SCOTCH\_Graph *      & grafptr, \\
+                            & const SCOTCH\_Num    & ncomval)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfmeshgraphdual ( & doubleprecision (*) & meshdat, \\
+                       & doubleprecision (*) & grafdat, \\
+                       & integer             & ncomval, \\
+                       & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_meshGraphDual} routine builds a dual graph (i.e., an
+element graph) from a mesh. It creates, in the {\tt SCOTCH\_\lbt
+  Graph} structure pointed to by {\tt grafptr}, a graph having as many
+vertices as there are elements in the {\tt SCOTCH\_\lbt Mesh}
+structure pointed to by {\tt meshptr}, and such that there exists an
+edge between any two graph vertices if there are at least
+{\tt ncomval} shared nodes between the two corresponding elements in the
+source mesh, or if an element shares all of its nodes, minus one, with
+another element.
+
+\progret
+
+{\tt SCOTCH\_meshGraphDual} returns $0$ if the graph structure has
+been successfully allocated and filled, and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_meshInit}}
@@ -7602,6 +7639,54 @@ METIS\_\lbo NodeND} and {\tt METIS\_\lbo NodeWND} call the same
 proved to be efficient in most cases.
 \end{itemize}
 
+\subsubsection{{\tt METIS\_MeshToDual}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int METIS\_MeshToDual ( & const SCOTCH\_Num * const & ne,      \\
+                        & const SCOTCH\_Num * const & nn,      \\
+                        & const SCOTCH\_Num * const & eptr,    \\
+                        & const SCOTCH\_Num * const & eind,    \\
+                        & const SCOTCH\_Num * const & ncommon, \\
+                        & const SCOTCH\_Num * const & numflag, \\
+                        & SCOTCH\_Num ** const      & xadj,    \\
+                        & SCOTCH\_Num ** const      & adjncy)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+metis\_meshtodual ( & integer*{\it num}      & ne,      \\
+                    & integer*{\it num}      & nn,      \\
+                    & integer*{\it num} (*)  & eptr,    \\
+                    & integer*{\it num} (*)  & eind,    \\
+                    & integer*{\it num}      & ncommon, \\
+                    & integer*{\it num}      & numflag, \\
+                    & integer*{\it num} (**) & xadj,    \\
+                    & integer*{\it num} (**) & adjncy)
+\end{tabular}}
+
+\progdes
+
+Given the \texttt{eptr} and \texttt{eind} arrays describing the
+element-to-node adjacency of a mesh with \texttt{*ne} elements and
+\texttt{*nn} nodes, the \texttt{METIS\_MeshToDual} function computes
+the dual graph, {\it i.e. } the graph of elements, of this mesh. The
+vertices of the dual graph represent the elements of the mesh, and
+there exists an edge between any two graph vertices if and only if
+there are at least \texttt{ncommon} shared nodes between the two
+corresponding elements in the mesh. The \texttt{numflag} parameter
+corresponds to the base value of the numbering: $0$ for C, and $1$ for
+Fortran.
+
+On return, the \texttt{xadj} and \texttt{adjncy} arrays are allocated,
+by way of the \texttt{malloc()} routine, and contain the adjacency
+list of the dual graph. It is the user's responsibility to free these
+arrays, using the \texttt{free()} routine, whenever these arrays are
+no longer necessary. If the function fails, \texttt{xadj} is set to
+\texttt{NULL}.
+\end{itemize}
+
 \subsubsection{{\tt METIS\_NodeND}}
 
 \begin{itemize}
@@ -7871,4 +7956,89 @@ METIS\_\lbo Part\lbo Graph\lbo Recursive} and {\tt METIS\_\lbo
 Part\lbo Graph\lbo VKway} call the same \scotch\ routine, which uses
 the \scotch\ default mapping strategy proved to be efficient in most
 cases.
+\end{itemize}
+
+\subsubsection{{\tt METIS\_PartMeshDual}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int METIS\_PartMeshDual ( & const SCOTCH\_Num * const & ne,      \\
+                          & const SCOTCH\_Num * const & nn,      \\
+                          & const SCOTCH\_Num * const & eptr,    \\
+                          & const SCOTCH\_Num * const & eind,    \\
+                          & const SCOTCH\_Num * const & vwgt,    \\
+                          & const SCOTCH\_Num * const & vsize,   \\
+                          & const SCOTCH\_Num * const & ncommon, \\
+                          & const SCOTCH\_Num * const & nparts,  \\
+                          & const double * const      & tpwgts,  \\
+                          & const SCOTCH\_Num * const & options, \\
+                          & SCOTCH\_Num * const       & objval,  \\
+                          & SCOTCH\_Num * const       & epart,   \\
+                          & SCOTCH\_Num * const       & npart)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+metis\_metistodual ( & integer*{\it num}     & ne,      \\
+                     & integer*{\it num}     & nn,      \\
+                     & integer*{\it num} (*) & eptr,    \\
+                     & integer*{\it num} (*) & eind,    \\
+                     & integer*{\it num} (*) & vwgt,    \\
+                     & integer*{\it num} (*) & vsize,   \\
+                     & integer*{\it num}     & ncommon, \\
+                     & integer*{\it num}     & nparts,  \\
+                     & doubleprecision* (*)  & tpwgts,  \\
+                     & integer*{\it num} (*) & options, \\
+                     & integer*{\it num}     & objval,  \\
+                     & integer*{\it num} (*) & epart,   \\
+                     & integer*{\it num} (*) & npart)
+\end{tabular}}
+
+\progdes
+
+Given the \texttt{eptr} and \texttt{eind} arrays describing the
+element-to-node adjacency of a mesh with \texttt{*ne} elements and
+\texttt{*nn} nodes, the \texttt{METIS\_PartMeshDual} function computes a
+partitioning into \texttt{nparts} of the dual graph of this mesh. The
+vertices of the dual graph represent the elements of the mesh, and
+there exists an edge between any two graph vertices if and only if
+there are at least \texttt{ncommon} shared nodes between the two
+corresponding elements in the mesh.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+
+On return, the \texttt{epart} and \texttt{npart} arrays contain the
+element and node partitions, respectively.
+If the function fails, \texttt{*objval} is set to a negative value
+that corresponds to the relevant \texttt{METIS\_\lbt ERROR\_*} code.
+\end{itemize}
+
+\subsubsection{{\tt METIS\_SetDefaultOptions}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int METIS\_SetDefaultOptions ( & SCOTCH\_Num * const & options)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+metis\_setdefaultoptions ( & integer*{\it num} (*) & options)
+\end{tabular}}
+
+\progdes
+
+This function partially fills the \texttt{options} array with the
+values that are relevant to the operations of the
+\metis\ compatibility library. Other values are set to~$0$.
+
+The supported options to date are \texttt{METIS\_\lbt OPTION\_\lbt
+  NUMBERING} (which allows one to set the \texttt{baseval} value of
+\libscotch\ routines) and \texttt{METIS\_\lbt OPTION\_\lbt OBJTYPE}
+(only for computing the partition cost, as \scotch\ does not try
+directly to minimize communication volume).
+
 \end{itemize}
