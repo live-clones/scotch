@@ -481,6 +481,12 @@ check_prog_gmk_msh		:	check_prog_mmk
 					$(EXECS) $(SCOTCHBINDIR)/gtst $(TMPDIR)/m2_5_4_3.grf
 					$(EXECS) $(SCOTCHBINDIR)/gmk_msh data/ship001.msh $(TMPDIR)/ship001.grf
 					$(EXECS) $(SCOTCHBINDIR)/gtst $(TMPDIR)/ship001.grf
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh "data/small_55.msh" $(TMPDIR)/small_55_d1.grf -d1
+					$(PROGDIFF) "data/small_55_d1.grf" $(TMPDIR)/small_55_d1.grf
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh "data/small_55.msh" $(TMPDIR)/small_55_d2.grf -d2
+					$(PROGDIFF) "data/small_55_d2.grf" $(TMPDIR)/small_55_d2.grf
+					$(EXECS) $(SCOTCHBINDIR)/gmk_msh "data/small_55.msh" $(TMPDIR)/small_55_d3.grf -d3
+					$(PROGDIFF) "data/small_55_d3.grf" $(TMPDIR)/small_55_d3.grf
 
 check_prog_mmk                  :
 					$(EXECS) $(SCOTCHBINDIR)/mmk_m2 5 1 $(TMPDIR)/m2_5_1.msh
