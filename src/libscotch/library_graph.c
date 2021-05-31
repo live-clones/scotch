@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 04 dec 2012     **/
 /**                                 to   : 24 jul 2019     **/
 /**                # Version 6.1  : from : 15 mar 2021     **/
-/**                                 to   : 25 may 2021     **/
+/**                                 to   : 31 may 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -173,14 +173,18 @@ const SCOTCH_Num            flagval)
 {
   GraphFlag           srcgrafflag;                /* Graph flags */
 
-  if ((baseval < -1) || (baseval > 1)) {
-    errorPrint (STRINGIFY (SCOTCH_graphLoad) ": invalid base parameter");
-    return     (1);
-  }
   if ((flagval < 0) || (flagval > 3)) {
     errorPrint (STRINGIFY (SCOTCH_graphLoad) ": invalid flag parameter");
-    return     (1);
+    return (1);
   }
+  if (baseval < -1) {
+    errorPrint (STRINGIFY (SCOTCH_graphLoad) ": invalid base parameter");
+    return (1);
+  }
+#ifdef SCOTCH_DEBUG_GRAPH1
+  if (baseval > 1)
+    errorPrintW (STRINGIFY (SCOTCH_graphLoad) ": unusual base parameter");
+#endif /* SCOTCH_DEBUG_GRAPH1 */
 
   srcgrafflag = (((flagval & 1) != 0) ? GRAPHIONOLOADVERT : 0) +
                 (((flagval & 2) != 0) ? GRAPHIONOLOADEDGE : 0);
