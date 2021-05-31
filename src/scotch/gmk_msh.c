@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : gmk_msh.c                               **/
 /**                                                        **/
 /**   AUTHORS    : Francois PELLEGRINI                     **/
+/**                Marc FUENTES (v6.1)                     **/
 /**                                                        **/
 /**   FUNCTION   : Part of a mesh-to-graph converter.      **/
 /**                This module contains the main function. **/
@@ -46,6 +47,8 @@
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
+/**                # Version 6.1  : from : 17 feb 2021     **/
+/**                                 to   : 28 feb 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,15 +67,16 @@
 **  The static and global variables.
 */
 
-static int                  C_fileNum    = 0;     /* Number of file in arg list  */
-static File                 C_fileTab[2] = {      /* File array                  */
+static int                  C_fileNum    = 0;     /* Number of file in arg list */
+static File                 C_fileTab[2] = {      /* File array                 */
                               { FILEMODER },
                               { FILEMODEW } };
 
 static const char *         C_usageList[] = {
   "gmk_msh [<input mesh file> [<output graph file>]] <options>",
-  "  -h  : Display this help",
-  "  -V  : Print program version and copyright",
+  "  -d<noconbr>  : Build a dual graph instead of a primal graph, based on a minimum number of common neighbors (default: 1)",
+  "  -h           : Display this help",
+  "  -V           : Print program version and copyright",
   NULL };
 
 /*****************************/
@@ -88,6 +92,7 @@ char *                      argv[])
 {
   SCOTCH_Mesh         meshdat;
   SCOTCH_Graph        grafdat;
+  int                 noconbr;                    /* Flag greater than zero if dual graph wanted */
   int                 i;
 
   errorProg ("gmk_msh");
@@ -99,6 +104,7 @@ char *                      argv[])
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
 
+  noconbr = 0;                                    /* No dual graph by default                         */
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
       if (C_fileNum < C_FILEARGNBR)               /* File name has been given                         */
@@ -106,8 +112,15 @@ char *                      argv[])
       else
         errorPrint ("main: too many file names given");
     }
-    else {                                       /* If found an option name */
+    else {                                        /* If found an option name */
       switch (argv[i][1]) {
+        case 'd' :                                /* Compute dual graph */
+        case 'D' :
+          if (argv[i][2] == '\0')                 /* If no argument, set value to 1 */
+            noconbr = 1;
+          else if ((noconbr = atoi (argv[i] + 2)) < 1) /* Get number of common points */
+            errorPrint ("main: invalid number of common points '%s'", argv[i] + 2);
+          break;
         case 'H' :                               /* Give help */
         case 'h' :
           usagePrint (stdout, C_usageList);
@@ -130,7 +143,12 @@ char *                      argv[])
 
   SCOTCH_meshLoad  (&meshdat, C_filepntrmshinp, -1);
   SCOTCH_meshCheck (&meshdat);
-  SCOTCH_meshGraph (&meshdat, &grafdat);
+
+  if (noconbr > 0)
+    SCOTCH_meshGraphDual (&meshdat, &grafdat, noconbr);
+  else
+    SCOTCH_meshGraph (&meshdat, &grafdat);
+
 #ifdef SCOTCH_DEBUG_ALL
   if (SCOTCH_graphCheck (&grafdat) != 0)
     errorPrint ("main: bad graph structure");
