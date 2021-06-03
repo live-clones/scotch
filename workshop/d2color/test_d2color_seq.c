@@ -39,7 +39,7 @@
 /**                coloring algorithms.                    **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 01 jun 2021     **/
-/**                                 to   : 02 jun 2021     **/
+/**                                 to   : 03 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,6 +50,19 @@
 #include "module.h"
 #include "common.h"
 #include "graph.h"
+
+/*
+**  The type and structure definitions.
+*/
+
+/*+ The work queue. +*/
+
+typedef struct Queue_ {
+  Gnum *                    queutab;              /*+ Pointer to queue +*/
+  Gnum                      queusiz;              /*+ Size of queue    +*/
+  Gnum                      qhedidx;              /*+ Queue head index +*/
+  Gnum                      qtalidx;              /*+ Queue tail index +*/
+} Queue;
 
 /*
 **  The function prototypes.
@@ -102,7 +115,7 @@ Gnum * restrict const       colotab)
   Gnum * restrict     randtax;
   Gnum * restrict     vmaxtax;
   Gnum * restrict     colotax;
-  Gnum * restrict     queutab;
+  Queue               queudat;
   Gnum                colonbr;
   Gnum                vrmnnbr;
   Gnum                vertnum;
@@ -119,15 +132,18 @@ Gnum * restrict const       colotab)
     return (0);
 
   if (memAllocGroup ((void **) (void *)
-                     &randtax, (size_t) (vertnbr * sizeof (Gnum)),
-                     &queutab, (size_t) (vertnbr * sizeof (Gnum)),
-                     &vmaxtax, (size_t) (vertnbr * sizeof (Gnum)), NULL) == NULL) {
+                     &queudat.queutab, (size_t) (vertnbr * sizeof (Gnum)),
+                     &randtax,         (size_t) (vertnbr * sizeof (Gnum)),
+                     &vmaxtax,         (size_t) (vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("graphD2color: out of memory");
     return (-1);
   }
   colotax  = colotab - baseval;
   randtax -= baseval;
   vmaxtax -= baseval;
+  queudat.queusiz = vertnbr;                      /* Initialize work queue */
+  queudat.qhedidx =                               /* Work queue is empty   */
+  queudat.qtalidx = 0;
 
   intRandProc (&randdat, 1);                      /* Use a fixed random seed for the sake of reproducibility */
   intRandSeed (&randdat, 1);
@@ -138,17 +154,27 @@ Gnum * restrict const       colotab)
   for (vertnum = baseval; vertnum < vertnnd; vertnum ++)
     randtax[vertnum] = intRandVal2 (&randdat) & (((Gunum) -1) >> 1); /* Always get positive numbers */
 
-  for (vertnum = baseval; vertnum < vertnnd; vertnum ++)
+  for (vertnum = baseval; vertnum < vertnnd; vertnum ++) {
     vmaxtax[vertnum] = graphD2color2 (grafptr, randtax, vertnum);
 
+    if (vmaxtax[vertnum] == vertnum) {            /* If vertex is locally dominant     */
+      queudat.queutab[queudat.qtalidx] = vertnum; /* Enqueue it for further processing */
+      queudat.qtalidx ++;                         /* No overflow possible yet          */
+    }
+  }
+
   for (vrmnnbr = vertnbr, colonbr = 0; ; ) {      /* Outer loop on colors */
+    Gnum                qtalidx;                  /* Saved tail index     */
     Gnum                veconbr;
-    Gnum                queunbr;
 
     veconbr = 0;
-    queunbr = 0;
-    for (vertnum = baseval; vertnum < vertnnd; vertnum ++) {
+    qtalidx = queudat.qtalidx;                    /* Keep current tail index                */
+    while (queudat.qhedidx != qtalidx) {          /* As long as there are enqueued vertices */
+      Gnum                vertnum;
       Gnum                edgenum;
+
+      vertnum = queudat.queutab[queudat.qhedidx]; /* Dequeue vertex to consider */
+      queudat.qhedidx = (queudat.qhedidx + 1) % queudat.queusiz;
 
       if (randtax[vertnum] < 0)                   /* If vertex already colored, skip it */
         continue;
@@ -168,7 +194,8 @@ Gnum * restrict const       colotab)
       colotax[vertnum] = colonbr;                 /* Set vertex color                           */
       randtax[vertnum] = -1;                      /* Do no longer consider vertex for dominance */
       veconbr ++;
-      queutab[queunbr ++] = vertnum;              /* Enqueue vertex for dominance recomputation */
+      queudat.queutab[queudat.qtalidx] = vertnum; /* Enqueue it for further processing */
+      queudat.qtalidx = (queudat.qtalidx + 1) % queudat.queusiz;
     }
     printf ("Color " GNUMSTRING " : " GNUMSTRING "\n", colonbr, veconbr);
 
@@ -177,11 +204,13 @@ Gnum * restrict const       colotab)
     if (vrmnnbr <= 0)                             /* Exit outer loop if nothing more to do */
       break;
 
-    while (queunbr > 0) {                         /* Recompute dominance of colored vertices and their neighbors */
+    qtalidx = queudat.qtalidx;                    /* Keep current tail index                */
+    while (queudat.qhedidx != qtalidx) {          /* As long as there are enqueued vertices */
       Gnum                vertnum;
       Gnum                edgenum;
 
-      vertnum = queutab[-- queunbr];
+      vertnum = queudat.queutab[queudat.qhedidx]; /* Dequeue vertex whose neighbors are to recompute */
+      queudat.qhedidx = (queudat.qhedidx + 1) % queudat.queusiz;
       vmaxtax[vertnum] = graphD2color2 (grafptr, randtax, vertnum);
 
       for (edgenum = verttax[vertnum]; edgenum < vendtax[vertnum]; edgenum ++) {
@@ -189,6 +218,8 @@ Gnum * restrict const       colotab)
 
         vertend = edgetax[edgenum];
         vmaxtax[vertend] = graphD2color2 (grafptr, randtax, vertend);
+        queudat.queutab[queudat.qtalidx] = vmaxtax[vertend]; /* Enqueue it as vertex of interest */
+        queudat.qtalidx = (queudat.qtalidx + 1) % queudat.queusiz;
       }
     }
   }
@@ -196,7 +227,7 @@ Gnum * restrict const       colotab)
   clockStop (&timedat);
   printf    ("Time: %g\n", (double) clockVal (&timedat));
 
-  memFree (randtax + grafptr->baseval);           /* Free group leader */
+  memFree (queudat.queutab);                      /* Free group leader */
 
   return (colonbr);
 }
