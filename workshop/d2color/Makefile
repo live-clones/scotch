@@ -50,10 +50,11 @@ required			:
 all				:	required		\
 					test_d2color_seq$(EXE)	\
 					test_d2color_shm$(EXE)	\
-					test_d2match_seq$(EXE)
+					test_d2match_seq$(EXE)	\
+					test_d2match_shm$(EXE)
 
 clean				:
-					-$(RM) test_d2color*$(OBJ) test_d2color_seq$(EXE) test_d2color_shm$(EXE) test_d2match_seq$(EXE)
+					-$(RM) test_d2color*$(OBJ) test_d2color_seq$(EXE) test_d2color_shm$(EXE) test_d2match_seq$(EXE) test_d2match_shm$(EXE)
 
 test_d2color_seq$(EXE)		:	test_d2color_seq.c
 					$(CC) $(CFLAGS) -Wall -g $(<) $(hamfobj) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lscotch -lscotcherr -lm -pthread -o $(@)
@@ -62,4 +63,7 @@ test_d2color_shm$(EXE)		:	test_d2color_shm.c
 					$(CC) $(CFLAGS) -Wall -g $(<) $(hamfobj) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lscotch -lscotcherr -lm -pthread -o $(@)
 
 test_d2match_seq$(EXE)		:	test_d2match_seq.c
+					$(CC) $(CFLAGS) -Wall -g $(<) $(hamfobj) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lscotch -lscotcherr -lm -pthread -o $(@)
+
+test_d2match_shm$(EXE)		:	test_d2match_shm.c
 					$(CC) $(CFLAGS) -Wall -g $(<) $(hamfobj) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lscotch -lscotcherr -lm -pthread -o $(@)
