@@ -49,13 +49,17 @@ required			:
 
 all				:	required		\
 					test_d2color_seq$(EXE)	\
-					test_d2color_shm$(EXE)
+					test_d2color_shm$(EXE)	\
+					test_d2match_seq$(EXE)
 
 clean				:
-					-$(RM) test_d2color*$(OBJ) test_d2color_seq$(EXE) test_d2color_shm$(EXE)
+					-$(RM) test_d2color*$(OBJ) test_d2color_seq$(EXE) test_d2color_shm$(EXE) test_d2match_seq$(EXE)
 
 test_d2color_seq$(EXE)		:	test_d2color_seq.c
 					$(CC) $(CFLAGS) -Wall -g $(<) $(hamfobj) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lscotch -lscotcherr -lm -pthread -o $(@)
 
 test_d2color_shm$(EXE)		:	test_d2color_shm.c
+					$(CC) $(CFLAGS) -Wall -g $(<) $(hamfobj) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lscotch -lscotcherr -lm -pthread -o $(@)
+
+test_d2match_seq$(EXE)		:	test_d2match_seq.c
 					$(CC) $(CFLAGS) -Wall -g $(<) $(hamfobj) -I$(includedir) -I$(rootdir)/src/libscotch -L$(libdir) -lscotch -lscotcherr -lm -pthread -o $(@)
