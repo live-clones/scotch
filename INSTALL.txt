@@ -569,7 +569,7 @@ To do so, type:
 
 or:
 
-%prompt% make ptlibscotch
+%prompt% make libptscotch
 
 The most common problem you may encounter when trying to compile
 PT-Scotch on a new platform relates to the "dummysizes" and
@@ -621,7 +621,7 @@ will install the Scotch/PT-Scotch files in a subtree of directory
 "/home/myself/usr/".
 
 
-4) Checking 
+4) Checking
 ===========
 
 A set of test programs is available in the "src/check" directory. They
