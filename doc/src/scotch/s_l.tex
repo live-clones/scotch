@@ -1737,7 +1737,7 @@ int SCOTCH\_archLoad ( & SCOTCH\_Arch * & archptr, \\
 
 {\tt\begin{tabular}{l@{}ll}
 scotchfarchload ( & doubleprecision (*) & archdat, \\
-                  & integer             & fildes, \\
+                  & integer             & fildes,  \\
                   & integer             & ierr)
 \end{tabular}}
 
@@ -1868,7 +1868,9 @@ int SCOTCH\_archBuild0 ( & SCOTCH\_Arch *        & archptr, \\
                          & const SCOTCH\_Num     & listnbr, \\
                          & const SCOTCH\_Num *   & listtab, \\
                          & const SCOTCH\_Strat * & straptr) \\
-~\\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
 int SCOTCH\_archBuild ( & SCOTCH\_Arch *        & archptr, \\
                         & const SCOTCH\_Graph * & grafptr, \\
                         & const SCOTCH\_Num     & listnbr, \\
@@ -1882,8 +1884,10 @@ scotchfarchbuild0 ( & doubleprecision (*)   & archdat, \\
                     & integer*{\it num}     & listnbr, \\
                     & integer*{\it num} (*) & listtab, \\
                     & doubleprecision (*)   & stradat, \\
-                    & integer               & ierr) \\
-~\\
+                    & integer               & ierr)    \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
 scotchfarchbuild ( & doubleprecision (*)   & archdat, \\
                    & doubleprecision (*)   & grafdat, \\
                    & integer*{\it num}     & listnbr, \\
@@ -2023,9 +2027,9 @@ architecture has been successfully built, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_archCmpltw ( & SCOTCH\_Arch *            & archptr, \\
-                         & const SCOTCH\_Num         & vertnbr, \\
-                         & const SCOTCH\_Num * const & velotab)
+int SCOTCH\_archCmpltw ( & SCOTCH\_Arch *    & archptr, \\
+                         & const SCOTCH\_Num & vertnbr, \\
+                         & const SCOTCH\_Num & velotab)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -2893,12 +2897,12 @@ $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphCoarsen ( & SCOTCH\_Graph * const & finegrafptr, \\
+int SCOTCH\_graphCoarsen ( & const SCOTCH\_Graph * & finegrafptr, \\
                            & const SCOTCH\_Num     & coarvertnbr, \\
                            & const double          & coarrat,     \\
                            & const SCOTCH\_Num     & flagval,     \\
-                           & SCOTCH\_Graph * const & coargrafptr, \\
-                           & SCOTCH\_Num * const   & coarmulttab) \\
+                           & SCOTCH\_Graph *       & coargrafptr, \\
+                           & SCOTCH\_Num *         & coarmulttab) \\
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -2959,11 +2963,11 @@ $2$ on error.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphCoarsenBuild ( & SCOTCH\_Graph * const & finegrafptr, \\
-                                & const SCOTCH\_Num     & coarvertnbr, \\
-                                & SCOTCH\_Num * const   & finematetab, \\
-                                & SCOTCH\_Graph * const & coargrafptr, \\
-                                & SCOTCH\_Num * const   & coarmulttab) \\
+int SCOTCH\_graphCoarsenBuild ( & SCOTCH\_Graph *   & finegrafptr, \\
+                                & const SCOTCH\_Num & coarvertnbr, \\
+                                & SCOTCH\_Num *     & finematetab, \\
+                                & SCOTCH\_Graph *   & coargrafptr, \\
+                                & SCOTCH\_Num *     & coarmulttab) \\
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -3025,11 +3029,11 @@ structure has been successfully created, and $1$ on error.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphCoarsenMatch ( & SCOTCH\_Graph * const & finegrafptr, \\
-                                & SCOTCH\_Num * const   & coarvertptr, \\
-                                & const double          & coarrat,     \\
-                                & const SCOTCH\_Num     & flagval,     \\
-                                & SCOTCH\_Num * const   & finematetab) \\
+int SCOTCH\_graphCoarsenMatch ( & SCOTCH\_Graph *   & finegrafptr, \\
+                                & SCOTCH\_Num *     & coarvertptr, \\
+                                & const double      & coarrat,     \\
+                                & const SCOTCH\_Num & flagval,     \\
+                                & SCOTCH\_Num *     & finematetab) \\
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -3346,15 +3350,15 @@ structure remains ready for subsequent calls to any routine of the
 
 {\tt\begin{tabular}{l@{}ll}
 int SCOTCH\_graphInduceList ( & const SCOTCH\_Graph * & orggrafptr, \\
-                              & SCOTCH\_Num           & vnumnbr, \\
-                              & SCOTCH\_Num *         & vnumtab, \\
+                              & SCOTCH\_Num           & vnumnbr,    \\
+                              & SCOTCH\_Num *         & vnumtab,    \\
                               & SCOTCH\_Graph *       & indgrafptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphinducelist ( & doubleprecision (*)   & orggrafdat, \\
-                         & integer*{\it num}     & vnumnbr, \\
-                         & integer{\it num} (*)  & vnumtab, \\
+                         & integer*{\it num}     & vnumnbr,    \\
+                         & integer{\it num} (*)  & vnumtab,    \\
                          & doubleprecision (*)   & indgrafdat, \\
                          & integer               & ierr)
 
@@ -3381,17 +3385,17 @@ been successfully computed, and $1$ else.
 
 {\tt\begin{tabular}{l@{}ll}
 int SCOTCH\_graphInducePart ( & const SCOTCH\_Graph * & orggrafptr, \\
-                              & SCOTCH\_Num           & vnumnbr, \\
-                              & SCOTCH\_GraphPart2 *  & parttab, \\
-                              & SCOTCH\_GraphPart2    & partval, \\
+                              & SCOTCH\_Num           & vnumnbr,    \\
+                              & SCOTCH\_GraphPart2 *  & parttab,    \\
+                              & SCOTCH\_GraphPart2    & partval,    \\
                               & SCOTCH\_Graph *       & indgrafptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphinducepart ( & doubleprecision (*)    & orggrafdat, \\
-                         & integer*{\it num}      & vnumnbr, \\
-                         & character{\it num} (*) & parttab, \\
-                         & character{\it num}     & partval, \\
+                         & integer*{\it num}      & vnumnbr,    \\
+                         & character{\it num} (*) & parttab,    \\
+                         & character{\it num}     & partval,    \\
                          & doubleprecision (*)    & indgrafdat, \\
                          & integer                & ierr)
 
@@ -3597,7 +3601,7 @@ without access to the ``{\tt scotch.h}'' include file.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_graphStat ( & const SCOTCH\_Graph * & grafptr, \\
+void SCOTCH\_graphStat ( & const SCOTCH\_Graph * & grafptr,    \\
                          & SCOTCH\_Num *         & velominptr, \\
                          & SCOTCH\_Num *         & velomaxptr, \\
                          & SCOTCH\_Num *         & velosumptr, \\
@@ -4415,7 +4419,7 @@ int SCOTCH\_graphMapLoad ( & const SCOTCH\_Graph * & grafptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphmapload ( & doubleprecision (*) & grafdat, \\
                       & doubleprecision (*) & mappdat, \\
-                      & integer             & fildes, \\
+                      & integer             & fildes,  \\
                       & integer             & ierr)
 \end{tabular}}
 
@@ -4655,7 +4659,7 @@ int SCOTCH\_graphTabLoad ( & const SCOTCH\_Graph * & grafptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphtabload ( & doubleprecision (*)   & grafdat, \\
                       & integer*{\it num} (*) & parttab, \\
-                      & integer               & fildes, \\
+                      & integer               & fildes,  \\
                       & integer               & ierr)
 \end{tabular}}
 
@@ -4704,7 +4708,7 @@ int SCOTCH\_graphTabSave ( & const SCOTCH\_Graph * & grafptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphtabsave ( & doubleprecision (*)   & grafdat, \\
                       & integer*{\it num} (*) & parttab, \\
-                      & integer               & fildes, \\
+                      & integer               & fildes,  \\
                       & integer               & ierr)
 \end{tabular}}
 
@@ -5093,7 +5097,7 @@ int SCOTCH\_graphOrderSave ( & const SCOTCH\_Graph *    & grafptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphordersave ( & doubleprecision (*) & grafdat, \\
                         & doubleprecision (*) & ordedat, \\
-                        & integer             & fildes, \\
+                        & integer             & fildes,  \\
                         & integer             & ierr)
 \end{tabular}}
 
@@ -5229,7 +5233,7 @@ has been successfully allocated, and {\tt NULL} else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_meshBuild ( & SCOTCH\_Mesh *       & meshptr, \\
+int SCOTCH\_meshBuild ( & SCOTCH\_Mesh *      & meshptr, \\
                         & const SCOTCH\_Num   & velmbas, \\
                         & const SCOTCH\_Num   & vnodbas, \\
                         & const SCOTCH\_Num   & velmnbr, \\
@@ -5684,7 +5688,7 @@ without access to the ``{\tt scotch.h}'' include file.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_meshStat ( & const SCOTCH\_Mesh * & meshptr, \\
+void SCOTCH\_meshStat ( & const SCOTCH\_Mesh * & meshptr,    \\
                         & SCOTCH\_Num *        & vnlominptr, \\
                         & SCOTCH\_Num *        & vnlomaxptr, \\
                         & SCOTCH\_Num *        & vnlosumptr, \\
@@ -6026,7 +6030,7 @@ int SCOTCH\_meshOrderSaveMap ( & const SCOTCH\_Mesh *     & meshptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfmeshordersavemap ( & doubleprecision (*) & meshdat, \\
                           & doubleprecision (*) & ordedat, \\
-                          & integer             & fildes, \\
+                          & integer             & fildes,  \\
                           & integer             & ierr)
 \end{tabular}}
 
@@ -6186,7 +6190,7 @@ int SCOTCH\_stratSave ( & const SCOTCH\_Strat * & straptr, \\
 
 {\tt\begin{tabular}{l@{}ll}
 scotchfstratsave ( & doubleprecision (*) & stradat, \\
-                   & integer             & fildes, \\
+                   & integer             & fildes,  \\
                    & integer             & ierr)
 \end{tabular}}
 
@@ -6814,8 +6818,8 @@ without access to the ``{\tt scotch.h}'' include file.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphGeomLoadChac ( & SCOTCH\_Graph * & grafptr, \\
-                                & SCOTCH\_Geom *  & geomptr, \\
+int SCOTCH\_graphGeomLoadChac ( & SCOTCH\_Graph * & grafptr,    \\
+                                & SCOTCH\_Geom *  & geomptr,    \\
                                 & FILE *          & grafstream, \\
                                 & FILE *          & geomstream, \\
                                 & const char *    & string)
@@ -6855,8 +6859,8 @@ been successfully allocated and filled with the data read, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphGeomLoadHabo ( & SCOTCH\_Graph * & grafptr, \\
-                                & SCOTCH\_Geom *  & geomptr, \\
+int SCOTCH\_graphGeomLoadHabo ( & SCOTCH\_Graph * & grafptr,    \\
+                                & SCOTCH\_Geom *  & geomptr,    \\
                                 & FILE *          & grafstream, \\
                                 & FILE *          & geomstream, \\
                                 & const char *    & string)
@@ -6899,16 +6903,16 @@ been successfully allocated and filled with the data read, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphGeomLoadScot ( & SCOTCH\_Graph * & grafptr, \\
-                                & SCOTCH\_Geom *  & geomptr, \\
+int SCOTCH\_graphGeomLoadScot ( & SCOTCH\_Graph * & grafptr,    \\
+                                & SCOTCH\_Geom *  & geomptr,    \\
                                 & FILE *          & grafstream, \\
                                 & FILE *          & geomstream, \\
                                 & const char *    & string)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-scotchfgraphgeomloadscot ( & doubleprecision (*) & grafdat, \\
-                           & doubleprecision (*) & geomdat, \\
+scotchfgraphgeomloadscot ( & doubleprecision (*) & grafdat,    \\
+                           & doubleprecision (*) & geomdat,    \\
                            & integer             & graffildes, \\
                            & integer             & geomfildes, \\
                            & character (*)       & string)
@@ -6942,8 +6946,8 @@ read, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphGeomSaveChac ( & const SCOTCH\_Graph * & grafptr, \\
-                                & const SCOTCH\_Geom *  & geomptr, \\
+int SCOTCH\_graphGeomSaveChac ( & const SCOTCH\_Graph * & grafptr,    \\
+                                & const SCOTCH\_Geom *  & geomptr,    \\
                                 & FILE *                & grafstream, \\
                                 & FILE *                & geomstream, \\
                                 & const char *          & string)
@@ -7270,7 +7274,7 @@ the {\tt -lscotch} argument.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_errorPrint ( & const char * const & errstr, ...)
+void SCOTCH\_errorPrint ( & const char * & errstr, ...)
 \end{tabular}}
 
 \progdes
@@ -7285,7 +7289,7 @@ variable-length argument error string to some stream.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_errorPrintW ( & const char * const & errstr, ...)
+void SCOTCH\_errorPrintW ( & const char * & errstr, ...)
 \end{tabular}}
 
 \progdes
@@ -7513,9 +7517,9 @@ process-dependent seed will be used, respectively.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_version ( & int * const & versptr, \\
-                      & int * const & relaptr, \\
-                      & int * const & patcptr)
+int SCOTCH\_version ( & int * & versptr, \\
+                      & int * & relaptr, \\
+                      & int * & patcptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -7558,22 +7562,22 @@ Section~\ref{sec-examples} for an example.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_EdgeND ( & const SCOTCH\_Num * const & n, \\
-                     & const SCOTCH\_Num * const & xadj, \\
-                     & const SCOTCH\_Num * const & adjncy, \\
-                     & const SCOTCH\_Num * const & numflag, \\
-                     & const SCOTCH\_Num * const & options, \\
-                     & SCOTCH\_Num * const       & perm, \\
-                     & SCOTCH\_Num * const       & iperm)
+void METIS\_EdgeND ( & const SCOTCH\_Num * & n,       \\
+                     & const SCOTCH\_Num * & xadj,    \\
+                     & const SCOTCH\_Num * & adjncy,  \\
+                     & const SCOTCH\_Num * & numflag, \\
+                     & const SCOTCH\_Num * & options, \\
+                     & SCOTCH\_Num *       & perm,    \\
+                     & SCOTCH\_Num *       & iperm)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_edgend ( & integer*{\it num}     & n, \\
-                & integer*{\it num} (*) & xadj, \\
-                & integer*{\it num} (*) & adjncy, \\
+metis\_edgend ( & integer*{\it num}     & n,       \\
+                & integer*{\it num} (*) & xadj,    \\
+                & integer*{\it num} (*) & adjncy,  \\
                 & integer*{\it num}     & numflag, \\
                 & integer*{\it num} (*) & options, \\
-                & integer*{\it num} (*) & perm, \\
+                & integer*{\it num} (*) & perm,    \\
                 & integer*{\it num} (*) & iperm)
 \end{tabular}}
 
@@ -7600,22 +7604,22 @@ proved to be efficient in most cases.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_NodeND ( & const SCOTCH\_Num * const & n, \\
-                     & const SCOTCH\_Num * const & xadj, \\
-                     & const SCOTCH\_Num * const & adjncy, \\
-                     & const SCOTCH\_Num * const & numflag, \\
-                     & const SCOTCH\_Num * const & options, \\
-                     & SCOTCH\_Num * const       & perm, \\
-                     & SCOTCH\_Num * const       & iperm)
+void METIS\_NodeND ( & const SCOTCH\_Num * & n,       \\
+                     & const SCOTCH\_Num * & xadj,    \\
+                     & const SCOTCH\_Num * & adjncy,  \\
+                     & const SCOTCH\_Num * & numflag, \\
+                     & const SCOTCH\_Num * & options, \\
+                     & SCOTCH\_Num *       & perm,    \\
+                     & SCOTCH\_Num *       & iperm)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_nodend ( & integer*{\it num}     & n, \\
-                & integer*{\it num} (*) & xadj, \\
-                & integer*{\it num} (*) & adjncy, \\
+metis\_nodend ( & integer*{\it num}     & n,       \\
+                & integer*{\it num} (*) & xadj,    \\
+                & integer*{\it num} (*) & adjncy,  \\
                 & integer*{\it num}     & numflag, \\
                 & integer*{\it num} (*) & options, \\
-                & integer*{\it num} (*) & perm, \\
+                & integer*{\it num} (*) & perm,    \\
                 & integer*{\it num} (*) & iperm)
 \end{tabular}}
 
@@ -7642,24 +7646,24 @@ proved to be efficient in most cases.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_NodeWND ( & const SCOTCH\_Num * const & n, \\
-                      & const SCOTCH\_Num * const & xadj, \\
-                      & const SCOTCH\_Num * const & adjncy, \\
-                      & const SCOTCH\_Num * const & vwgt, \\
-                      & const SCOTCH\_Num * const & numflag, \\
-                      & const SCOTCH\_Num * const & options, \\
-                      & SCOTCH\_Num * const       & perm, \\
-                      & SCOTCH\_Num * const       & iperm)
+void METIS\_NodeWND ( & const SCOTCH\_Num * & n,       \\
+                      & const SCOTCH\_Num * & xadj,    \\
+                      & const SCOTCH\_Num * & adjncy,  \\
+                      & const SCOTCH\_Num * & vwgt,    \\
+                      & const SCOTCH\_Num * & numflag, \\
+                      & const SCOTCH\_Num * & options, \\
+                      & SCOTCH\_Num *       & perm,    \\
+                      & SCOTCH\_Num *       & iperm)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_nodwend ( & integer*{\it num}     & n, \\
-                 & integer*{\it num} (*) & xadj, \\
-                 & integer*{\it num} (*) & adjncy, \\
-                 & integer*{\it num} (*) & vwgt, \\
+metis\_nodwend ( & integer*{\it num}     & n,       \\
+                 & integer*{\it num} (*) & xadj,    \\
+                 & integer*{\it num} (*) & adjncy,  \\
+                 & integer*{\it num} (*) & vwgt,    \\
                  & integer*{\it num}     & numflag, \\
                  & integer*{\it num} (*) & options, \\
-                 & integer*{\it num} (*) & perm, \\
+                 & integer*{\it num} (*) & perm,    \\
                  & integer*{\it num} (*) & iperm)
 \end{tabular}}
 
@@ -7686,28 +7690,28 @@ proved to be efficient in most cases.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_PartGraphKway ( & const SCOTCH\_Num * const & n, \\
-                            & const SCOTCH\_Num * const & xadj, \\
-                            & const SCOTCH\_Num * const & adjncy, \\
-                            & const SCOTCH\_Num * const & vwgt, \\
-                            & const SCOTCH\_Num * const & adjwgt, \\
-                            & const SCOTCH\_Num * const & wgtflag, \\
-                            & const SCOTCH\_Num * const & numflag, \\
-                            & const SCOTCH\_Num * const & nparts, \\
-                            & const SCOTCH\_Num * const & options, \\
-                            & SCOTCH\_Num * const       & edgecut, \\
-                            & SCOTCH\_Num * const       & part)
+void METIS\_PartGraphKway ( & const SCOTCH\_Num * & n,       \\
+                            & const SCOTCH\_Num * & xadj,    \\
+                            & const SCOTCH\_Num * & adjncy,  \\
+                            & const SCOTCH\_Num * & vwgt,    \\
+                            & const SCOTCH\_Num * & adjwgt,  \\
+                            & const SCOTCH\_Num * & wgtflag, \\
+                            & const SCOTCH\_Num * & numflag, \\
+                            & const SCOTCH\_Num * & nparts,  \\
+                            & const SCOTCH\_Num * & options, \\
+                            & SCOTCH\_Num *       & edgecut, \\
+                            & SCOTCH\_Num *       & part)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_partgraphkway ( & integer*{\it num}     & n, \\
-                       & integer*{\it num} (*) & xadj, \\
-                       & integer*{\it num} (*) & adjncy, \\
-                       & integer*{\it num} (*) & vwgt, \\
-                       & integer*{\it num} (*) & adjwgt, \\
+metis\_partgraphkway ( & integer*{\it num}     & n,       \\
+                       & integer*{\it num} (*) & xadj,    \\
+                       & integer*{\it num} (*) & adjncy,  \\
+                       & integer*{\it num} (*) & vwgt,    \\
+                       & integer*{\it num} (*) & adjwgt,  \\
                        & integer*{\it num}     & wgtflag, \\
                        & integer*{\it num}     & numflag, \\
-                       & integer*{\it num}     & nparts, \\
+                       & integer*{\it num}     & nparts,  \\
                        & integer*{\it num} (*) & options, \\
                        & integer*{\it num}     & edgecut, \\
                        & integer*{\it num} (*) & part)
@@ -7736,28 +7740,28 @@ cases.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_PartGraphRecursive ( & const SCOTCH\_Num * const & n, \\
-                                 & const SCOTCH\_Num * const & xadj, \\
-                                 & const SCOTCH\_Num * const & adjncy, \\
-                                 & const SCOTCH\_Num * const & vwgt, \\
-                                 & const SCOTCH\_Num * const & adjwgt, \\
-                                 & const SCOTCH\_Num * const & wgtflag, \\
-                                 & const SCOTCH\_Num * const & numflag, \\
-                                 & const SCOTCH\_Num * const & nparts, \\
-                                 & const SCOTCH\_Num * const & options, \\
-                                 & SCOTCH\_Num * const       & edgecut, \\
-                                 & SCOTCH\_Num * const       & part)
+void METIS\_PartGraphRecursive ( & const SCOTCH\_Num * & n,       \\
+                                 & const SCOTCH\_Num * & xadj,    \\
+                                 & const SCOTCH\_Num * & adjncy,  \\
+                                 & const SCOTCH\_Num * & vwgt,    \\
+                                 & const SCOTCH\_Num * & adjwgt,  \\
+                                 & const SCOTCH\_Num * & wgtflag, \\
+                                 & const SCOTCH\_Num * & numflag, \\
+                                 & const SCOTCH\_Num * & nparts,  \\
+                                 & const SCOTCH\_Num * & options, \\
+                                 & SCOTCH\_Num *       & edgecut, \\
+                                 & SCOTCH\_Num *       & part)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_partgraphrecursive ( & integer*{\it num}     & n, \\
-                            & integer*{\it num} (*) & xadj, \\
-                            & integer*{\it num} (*) & adjncy, \\
-                            & integer*{\it num} (*) & vwgt, \\
-                            & integer*{\it num} (*) & adjwgt, \\
+metis\_partgraphrecursive ( & integer*{\it num}     & n,       \\
+                            & integer*{\it num} (*) & xadj,    \\
+                            & integer*{\it num} (*) & adjncy,  \\
+                            & integer*{\it num} (*) & vwgt,    \\
+                            & integer*{\it num} (*) & adjwgt,  \\
                             & integer*{\it num}     & wgtflag, \\
                             & integer*{\it num}     & numflag, \\
-                            & integer*{\it num}     & nparts, \\
+                            & integer*{\it num}     & nparts,  \\
                             & integer*{\it num} (*) & options, \\
                             & integer*{\it num}     & edgecut, \\
                             & integer*{\it num} (*) & part)
@@ -7787,30 +7791,30 @@ cases.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_PartGraphVKway ( & const SCOTCH\_Num * const & n, \\
-                             & const SCOTCH\_Num * const & xadj, \\
-                             & const SCOTCH\_Num * const & adjncy, \\
-                             & const SCOTCH\_Num * const & vwgt, \\
-                             & const SCOTCH\_Num * const & vsize, \\
-                             & const SCOTCH\_Num * const & wgtflag, \\
-                             & const SCOTCH\_Num * const & numflag, \\
-                             & const SCOTCH\_Num * const & nparts, \\
-                             & const SCOTCH\_Num * const & options, \\
-                             & SCOTCH\_Num * const       & volume, \\
-                             & SCOTCH\_Num * const       & part)
+void METIS\_PartGraphVKway ( & const SCOTCH\_Num * & n,       \\
+                             & const SCOTCH\_Num * & xadj,    \\
+                             & const SCOTCH\_Num * & adjncy,  \\
+                             & const SCOTCH\_Num * & vwgt,    \\
+                             & const SCOTCH\_Num * & vsize,   \\
+                             & const SCOTCH\_Num * & wgtflag, \\
+                             & const SCOTCH\_Num * & numflag, \\
+                             & const SCOTCH\_Num * & nparts,  \\
+                             & const SCOTCH\_Num * & options, \\
+                             & SCOTCH\_Num *       & volume,  \\
+                             & SCOTCH\_Num *       & part)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_partgraphvkway ( & integer*{\it num}     & n, \\
-                        & integer*{\it num} (*) & xadj, \\
-                        & integer*{\it num} (*) & adjncy, \\
-                        & integer*{\it num} (*) & vwgt, \\
-                        & integer*{\it num} (*) & vsize, \\
+metis\_partgraphvkway ( & integer*{\it num}     & n,       \\
+                        & integer*{\it num} (*) & xadj,    \\
+                        & integer*{\it num} (*) & adjncy,  \\
+                        & integer*{\it num} (*) & vwgt,    \\
+                        & integer*{\it num} (*) & vsize,   \\
                         & integer*{\it num}     & wgtflag, \\
                         & integer*{\it num}     & numflag, \\
-                        & integer*{\it num}     & nparts, \\
+                        & integer*{\it num}     & nparts,  \\
                         & integer*{\it num} (*) & options, \\
-                        & integer*{\it num}     & volume, \\
+                        & integer*{\it num}     & volume,  \\
                         & integer*{\it num} (*) & part)
 \end{tabular}}
 
