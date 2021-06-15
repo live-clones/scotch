@@ -102,7 +102,8 @@ metis_graph_part$(OBJ)		:	metis_graph_part.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
-					metis.h
+					metis.h					\
+					metis_graph_part.h
 
 metis_graph_part_f$(OBJ)	:	metis_graph_part_f.c			\
 					../libscotch/module.h			\
