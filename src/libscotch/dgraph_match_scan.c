@@ -93,7 +93,7 @@ DgraphMatchData * restrict const  mateptr)
         continue;
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if (mategsttax[vertlocnum] < -1) {          /* Vertex must not be requesting yet */
-        errorPrint ("dgraphMatchSc: internal error (1)");
+        errorPrint (STRINGIFY (DGRAPHMATCHSCANNAME) ": internal error (1)");
         return;
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -148,7 +148,7 @@ DgraphMatchData * restrict const  mateptr)
         for (edgelocnum = vertloctax[vertlocnum]; ; edgelocnum ++) { /* Loop again on edges */
 #ifdef SCOTCH_DEBUG_DGRAPH2
           if (edgelocnum >= edgelocnnd) {
-            errorPrint ("dgraphMatchSc: internal error (2)");
+            errorPrint (STRINGIFY (DGRAPHMATCHSCANNAME) ": internal error (2)");
             return;
           }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -209,7 +209,7 @@ DgraphMatchData * restrict const  mateptr)
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if (mategsttax[vertlocnum] < -1) {          /* Vertex must not be requesting yet */
-        errorPrint ("dgraphMatchSc: internal error (3)");
+        errorPrint (STRINGIFY (DGRAPHMATCHSCANNAME) ": internal error (3)");
         return;
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -250,7 +250,7 @@ DgraphMatchData * restrict const  mateptr)
         for (edgelocnum = vertloctax[vertlocnum]; ; edgelocnum ++) { /* Loop again on edges */
 #ifdef SCOTCH_DEBUG_DGRAPH2
           if (edgelocnum >= edgelocnnd) {
-            errorPrint ("dgraphMatchSc: internal error (4)");
+            errorPrint (STRINGIFY (DGRAPHMATCHSCANNAME) ": internal error (4)");
             return;
           }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
