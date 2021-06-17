@@ -1,4 +1,4 @@
-/* Copyright 2008,2012,2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2012,2013,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**    DATES     : # Version 6.0  : from : 04 dec 2008     **/
 /**                                 to   : 10 oct 2013     **/
+/**                # Version 6.1  : from : 17 jun 2021     **/
+/**                                 to   : 17 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -113,6 +115,12 @@ DgraphMatchData * restrict const  mateptr)
 
         mategsttax[vertlocnum] = (vertlocnnt + vertlocadj); /* At worst we will stop at vertlocnum */
         mategsttax[vertlocnnt] = (vertlocnum + vertlocadj);
+#ifdef SCOTCH_DEBUG_DGRAPH2
+        if (multlocnbr >= mateptr->c.multlocsiz) {
+          errorPrint (STRINGIFY (DGRAPHMATCHSCANNAME) ": undersized multinode array (1)");
+          return;
+        }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
         multloctab[multlocnbr].vertglbnum[0] = (vertlocnum + vertlocadj);
         multloctab[multlocnbr].vertglbnum[1] = (vertlocnnt + vertlocadj);
         multlocnbr ++;                            /* One more coarse vertex created (two more local mates) */
@@ -131,7 +139,13 @@ DgraphMatchData * restrict const  mateptr)
           edgeendnbr ++;
       }
       if (edgeendnbr <= 0) {                      /* If vertex has no possible neighbor */
-        mategsttax[vertlocnum] =                  /* Create single multinode            */
+#ifdef SCOTCH_DEBUG_DGRAPH2
+        if (multlocnbr >= mateptr->c.multlocsiz) {
+          errorPrint (STRINGIFY (DGRAPHMATCHSCANNAME) ": undersized multinode array (2)");
+          return;
+        }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+        mategsttax[vertlocnum] =                  /* Create single multinode */
         multloctab[multlocnbr].vertglbnum[0] =
         multloctab[multlocnbr].vertglbnum[1] = vertlocnum + vertlocadj;
         multlocnbr ++;                            /* One more coarse vertex created  */
@@ -166,6 +180,12 @@ DgraphMatchData * restrict const  mateptr)
         else {                                    /* Perform local matching */
           mategsttax[vertlocnum] = (vertgstend + vertlocadj);
           mategsttax[vertgstend] = (vertlocnum + vertlocadj);
+#ifdef SCOTCH_DEBUG_DGRAPH2
+          if (multlocnbr >= mateptr->c.multlocsiz) {
+            errorPrint (STRINGIFY (DGRAPHMATCHSCANNAME) ": undersized multinode array (3)");
+            return;
+          }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
           multloctab[multlocnbr].vertglbnum[0] = (vertlocnum + vertlocadj);
           multloctab[multlocnbr].vertglbnum[1] = (vertgstend + vertlocadj);
           multlocnbr ++;                          /* One more coarse vertex created (two more local mates) */
@@ -233,6 +253,12 @@ DgraphMatchData * restrict const  mateptr)
           edgeendnbr ++;
       }
       if (edgeendnbr <= 0) {                      /* If vertex has no possible neighbor */
+#ifdef SCOTCH_DEBUG_DGRAPH2
+        if (multlocnbr >= mateptr->c.multlocsiz) {
+          errorPrint (STRINGIFY (DGRAPHMATCHSCANNAME) ": undersized multinode array (4)");
+          return;
+        }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
         mategsttax[vertlocnum] =                  /* Create single multinode            */
         multloctab[multlocnbr].vertglbnum[0] =
         multloctab[multlocnbr].vertglbnum[1] = vertlocnum + vertlocadj;
@@ -266,6 +292,12 @@ DgraphMatchData * restrict const  mateptr)
         else {                                    /* Perform local matching */
           mategsttax[vertlocnum] = (vertgstend + vertlocadj);
           mategsttax[vertgstend] = (vertlocnum + vertlocadj);
+#ifdef SCOTCH_DEBUG_DGRAPH2
+          if (multlocnbr >= mateptr->c.multlocsiz) {
+            errorPrint (STRINGIFY (DGRAPHMATCHSCANNAME) ": undersized multinode array (5)");
+            return;
+          }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
           multloctab[multlocnbr].vertglbnum[0] = (vertlocnum + vertlocadj);
           multloctab[multlocnbr].vertglbnum[1] = (vertgstend + vertlocadj);
           multlocnbr ++;                          /* One more coarse vertex created (two more local mates) */

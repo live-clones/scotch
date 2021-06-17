@@ -1,4 +1,4 @@
-/* Copyright 2007-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 6.1  : from : 17 jun 2021     **/
+/**                                 to   : 17 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -115,13 +117,34 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
   coargrafptr->procvrttab = coargrafptr->procdsptab; /* Coarse graph has no holes */
 
   if (coarptr->multloctab == NULL) {              /* If no multinode array provided */
-    if ((coarptr->multloctab = memAlloc (vertlocnbr * sizeof (DgraphCoarsenMulti))) == NULL) {
+    Gnum                multlocsiz;               /* Size of local multinode array  */
+
+    switch (coarptr->flagval & DGRAPHCOARSENFOLDDUP) {
+      case 0 :                                    /* No folding */
+        multlocsiz = vertlocnbr;
+        break;
+      case DGRAPHCOARSENFOLD :                    /* Simple folding; maximum coarsening ratio is 1         */
+        multlocsiz = ((finegrafptr->vertglbnbr * 2) / procglbnbr) + 1; /* Maximum ratio for FOLD is 2 -> 1 */
+        break;
+      case DGRAPHCOARSENFOLDDUP :                 /* Folding with duplication; maximum coarsening ratio is 1                        */
+        multlocsiz = ((finegrafptr->vertglbnbr * 2) / (procglbnbr - (procglbnbr % 2))) + 1; /* Maximum ratio for FOLD-DUP is 3 -> 1 */
+        break;
+    }
+#ifdef SCOTCH_DEBUG_DGRAPH2
+    coarptr->multlocsiz = multlocsiz;
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+
+    if ((coarptr->multloctab = memAlloc (multlocsiz * sizeof (DgraphCoarsenMulti))) == NULL) {
       errorPrint        ("dgraphCoarsenInit: out of memory (2)");
       dgraphCoarsenExit (coarptr);
       return (1);
     }
     coarptr->multloctmp = coarptr->multloctab;    /* Array will have to be freed on error */
   }
+#ifdef SCOTCH_DEBUG_DGRAPH2
+  else
+    coarptr->multlocsiz = finegrafptr->vertglbnbr; /* Impossible to know */
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   if (memAllocGroup ((void **) (void *)           /* Data used up to edge exchange phase at coarse graph build time */
                      &coarptr->nrcvidxtab, (size_t) (procngbnbr * sizeof (int)),
