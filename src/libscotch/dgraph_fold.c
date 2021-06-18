@@ -1,4 +1,4 @@
-/* Copyright 2007-2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2011,2014,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 04 jan 2011     **/
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 28 sep 2014     **/
+/**                # Version 6.1  : from : 18 jun 2021     **/
+/**                                 to   : 19 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,10 +81,10 @@
 int
 dgraphFold (
 const Dgraph * restrict const orggrafptr,
-const int                     partval,            /* 0 for first half, 1 for second half */
+const int                     partval,            /*+ 0 for first half, 1 for second half                                        +*/
 Dgraph * restrict const       fldgrafptr,
-const void * restrict const   orgdataptr,         /* Un-based array of data which must be folded, e.g. coarmulttab */
-void ** restrict const        flddataptr,         /* Un-based array of data which must be folded, e.g. coarmulttab */
+const void * restrict const   orgdataptr,         /*+ Un-based array of data which must be folded, e.g. coarmulttab              +*/
+void ** const                 flddataptr,         /*+ Un-based array of data which must be folded, e.g. coarmulttab [norestrict] +*/
 MPI_Datatype                  datatype)
 {
   int               fldprocnbr;
@@ -113,35 +115,37 @@ MPI_Datatype                  datatype)
 int
 dgraphFold2 (
 const Dgraph * restrict const orggrafptr,
-const int                     partval,            /* 0 for first half, 1 for second half */
-Dgraph * restrict const       fldgrafptr,
+const int                     partval,            /*+ 0 for first half, 1 for second half                          +*/
+Dgraph * const                fldgrafptr,         /*+ Folded graph structure to fill [norestrict:async]            +*/
 MPI_Comm                      fldproccomm,
-const void * restrict const   orgdataptr,         /* Un-based array of data which must be kept, e.g. coarmulttab */
-void ** restrict const        flddataptr,         /* Un-based array of data which must be kept, e.g. coarmulttab */
+const void * restrict const   orgdataptr,         /*+ Un-based array of data which must be kept, e.g. coarmulttab  +*/
+void ** const                 flddataptr,         /*+ Un-based array of data which must be kept, e.g. coarmulttab  +*/
 MPI_Datatype                  datatype)
 {
-  int                           fldcommtypval;    /* Type of communication for this process                 */
-  DgraphFoldCommData * restrict fldcommdattab;    /* Array of two communication data                        */
-  Gnum * restrict               fldcommvrttab;    /* Starting global send indices of communications         */
-  Gnum * restrict               fldvertidxtab;    /* Start indices of vertex arrays                         */
-  Gnum * restrict               fldedgeidxtab;    /* Start indices of edge arrays                           */
-  Gnum * restrict               fldedgecnttab;    /* Number of edges exchanged during each communication    */
-  Gnum * restrict               fldedgecnptab;    /* Temporary save for fldedgecnttab for MPI standard      */
-  Gnum                          fldvertlocnbr;    /* Number of vertices in local folded part                */
-  Gnum                          fldedgelocsiz;    /* (Upper bound of) number of edges in folded graph       */
-  Gnum                          fldedlolocsiz;    /* (Upper bound of) number of edge loads in folded graph  */
+  int                           fldcommtypval;    /* Type of communication for this process                           */
+  DgraphFoldCommData * restrict fldcommdattab;    /* Array of two communication data                                  */
+  Gnum *                        fldcommvrttab;    /* Starting global send indices of communications [norestrict]      */
+  Gnum *                        fldvertidxtab;    /* Start indices of vertex arrays [norestrict]                      */
+  Gnum *                        fldedgeidxtab;    /* Start indices of edge arrays [norestrict]                        */
+  Gnum *                        fldedgecnttab;    /* Number of edges exchanged during each communication [norestrict] */
+  Gnum *                        fldedgecnptab;    /* Temporary save for fldedgecnttab for MPI standard [norestrict]   */
+  Gnum                          fldvertlocnbr;    /* Number of vertices in local folded part                          */
+  Gnum                          fldedgelocsiz;    /* (Upper bound of) number of edges in folded graph                 */
+  Gnum                          fldedlolocsiz;    /* (Upper bound of) number of edge loads in folded graph            */
   int                           fldprocglbnbr;
-  int                           fldproclocnum;    /* Index of local process in folded communicator          */
+  int                           fldproclocnum;    /* Index of local process in folded communicator                    */
   int                           fldvertadjnbr;
-  Gnum * restrict               fldvertadjtab;    /* Array of global start indices for adjustment slots     */
-  Gnum * restrict               fldvertdlttab;    /* Array of index adjustments for original global indices */
+  Gnum * restrict               fldvertadjtab;    /* Array of global start indices for adjustment slots               */
+  Gnum * restrict               fldvertdlttab;    /* Array of index adjustments for original global indices           */
   int                           cheklocval;
   int                           chekglbval;
   int                           commmax;
   int                           commnbr;
   int                           requnbr;
   MPI_Request * restrict        requtab;
-  int                           infosiz;          /* Size of one information                                */
+  int                           infosiz;          /* Size of one information                                          */
+
+  const Gnum                    orgprocvrtbas = orggrafptr->procvrttab[orggrafptr->proclocnum];
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (orggrafptr->vendloctax != (orggrafptr->vertloctax + 1)) {
@@ -215,8 +219,8 @@ MPI_Datatype                  datatype)
         fldedgelocsiz += orggrafptr->edgelocnbr;  /* Add local edges and vertices */
         fldvertlocnbr += orggrafptr->vertlocnbr;
       }
-      else {                                      /* Process is a sender receiver */
-        fldvertlocnbr = fldcommvrttab[0] - orggrafptr->procvrttab[orggrafptr->proclocnum]; /* Communications will remove vertices   */
+      else {                                      /* Process is a sender receiver                */
+        fldvertlocnbr = fldcommvrttab[0] - orgprocvrtbas; /* Communications will remove vertices */
         fldedgelocsiz = orggrafptr->vertloctax[fldvertlocnbr + orggrafptr->baseval] - orggrafptr->baseval; /* Exact number of edges */
 
         fldgrafptr->edgelocnbr =
@@ -302,7 +306,7 @@ MPI_Datatype                  datatype)
     Gnum              vertsndnbr;
     int               i;
 
-    vertsndnbr = ((fldcommtypval & DGRAPHFOLDCOMMRECV) != 0) ? (fldcommvrttab[0] - orggrafptr->procvrttab[orggrafptr->proclocnum]) : 0; /* If process is also a receiver, start sending after kept vertices */
+    vertsndnbr = ((fldcommtypval & DGRAPHFOLDCOMMRECV) != 0) ? (fldcommvrttab[0] - orgprocvrtbas) : 0; /* If process is also a receiver, start sending after kept vertices */
 
     for (i = 0, vertsndbas = orggrafptr->baseval; /* For all send communications to perform */
          (i < commmax) && (fldcommdattab[i].procnum != -1) && (cheklocval == 0); i ++) {
@@ -376,6 +380,7 @@ MPI_Datatype                  datatype)
     Gnum                orgvertlocmax;
     Gnum                fldvertlocadj;
     Gnum                fldvelolocsum;
+    Gnum * restrict     fldedgeloctax;
     Gnum                fldedgelocnum;
     Gnum                fldedgelocnnd;
     int                 fldprocnum;
@@ -384,12 +389,12 @@ MPI_Datatype                  datatype)
     int                 i;
 
     const Gnum * restrict const orgedgeloctax = orggrafptr->edgeloctax;
-    Gnum * restrict const       fldedgeloctax = fldgrafptr->edgeloctax;
 
-    fldgrafptr->procvrttab = fldgrafptr->procdsptab; /* Graph does not have holes                               */
-    fldgrafptr->procdsptab[0] = orggrafptr->baseval; /* Build private data of folded graph and array            */
-    for (fldprocnum = 0; fldprocnum < fldprocglbnbr; fldprocnum ++) /* New subdomain indices start from baseval */
+    fldgrafptr->procvrttab = fldgrafptr->procdsptab; /* Graph does not have holes                                 */
+    fldgrafptr->procdsptab[0] = orggrafptr->baseval; /* Build private data of folded graph and array              */
+    for (fldprocnum = 0; fldprocnum < fldprocglbnbr; fldprocnum ++) { /* New subdomain indices start from baseval */
       fldgrafptr->procdsptab[fldprocnum + 1] = fldgrafptr->procdsptab[fldprocnum] + fldgrafptr->proccnttab[fldprocnum];
+    }
 
     if ((fldcommtypval & DGRAPHFOLDCOMMSEND) == 0) { /* If process is a normal receiver */
       Gnum                fldedgelocbas;
@@ -517,7 +522,7 @@ MPI_Datatype                  datatype)
       int               procngbmed;
 
       procngbmed = (procngbmax + procngbmin) / 2;
-      if (fldvertadjtab[procngbmed] <= orggrafptr->procvrttab[orggrafptr->proclocnum])
+      if (fldvertadjtab[procngbmed] <= orgprocvrtbas)
         procngbmin = procngbmed;
       else
         procngbmax = procngbmed;
@@ -525,6 +530,7 @@ MPI_Datatype                  datatype)
     orgvertlocmin = fldvertadjtab[procngbmin];
     orgvertlocmax = fldvertadjtab[procngbmax];
     fldvertlocadj = fldvertdlttab[procngbmin];
+    fldedgeloctax = fldgrafptr->edgeloctax;
     for (fldedgelocnum = orggrafptr->baseval; fldedgelocnum < fldedgelocnnd; fldedgelocnum ++) {
       Gnum              orgvertlocend;
 
@@ -567,7 +573,7 @@ MPI_Datatype                  datatype)
       Gnum              fldvertlocnum;
       Gnum              fldvertlocadj;
 
-      for (fldvertlocnum = orggrafptr->baseval, fldvertlocadj = orggrafptr->procvrttab[orggrafptr->proclocnum];
+      for (fldvertlocnum = orggrafptr->baseval, fldvertlocadj = orgprocvrtbas;
            fldvertlocnum < orgvertlocnnd; fldvertlocnum ++)
         fldgrafptr->vnumloctax[fldvertlocnum] = fldvertlocadj ++;
     }
@@ -613,10 +619,9 @@ MPI_Datatype                  datatype)
         Gnum              orgvertlocmin;
         Gnum              orgvertlocmax;
         Gnum              fldvertlocadj;
+        Gnum * restrict   fldedgeloctax;
         int               procngbnum;
         int               procngbmax;
-
-        Gnum * restrict const fldedgeloctax = fldgrafptr->edgeloctax;
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
         int               fldedgercvnbr;
@@ -641,6 +646,7 @@ MPI_Datatype                  datatype)
         orgvertlocmin = fldvertadjtab[procngbnum];
         orgvertlocmax = fldvertadjtab[procngbmax];
         fldvertlocadj = fldvertdlttab[procngbnum];
+        fldedgeloctax = fldgrafptr->edgeloctax;
         for (fldedgelocnum = fldedgeidxtab[j], fldedgelocnnd = fldedgelocnum + fldedgecnttab[j];
              fldedgelocnum < fldedgelocnnd; fldedgelocnum ++) { /* Reorder end vertices */
           Gnum              orgvertlocend;
