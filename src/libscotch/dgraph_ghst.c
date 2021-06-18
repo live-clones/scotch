@@ -246,7 +246,7 @@ const int                   flagval)              /* Replacement flag */
           if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 2, 1, grafptr->proccomm) != 0)
             errorPrint ("dgraphGhst: communication error (3)");
           memFree (procsidtab);                   /* Free group leader */
-          return (1);
+          return  (1);
         }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
       }
