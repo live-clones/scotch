@@ -1,4 +1,4 @@
-Cette copie de la distribution logicielle Scotch 6.0 est distribuée
+Cette copie de la distribution logicielle Scotch est distribuée
 selon les termes de la licence de logiciel libre CeCILL-C.
 
 Une copie du texte de cette licence se trouve dans le sous-répertoire
