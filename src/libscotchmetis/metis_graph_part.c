@@ -46,8 +46,8 @@
 /**                                 to   : 30 jun 2010     **/
 /**                # Version 6.0  : from : 23 dec 2011     **/
 /**                                 to   : 19 aug 2019     **/
-/**                # Version 6.1  : from : 15 jun 2021     **/
-/**                                 to   : 15 jun 2021     **/
+/**                # Version 6.1  : from : 20 jun 2021     **/
+/**                                 to   : 20 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -488,14 +488,16 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          objval,
 SCOTCH_Num * const          part)
 {
-  const SCOTCH_Num          numflag = 0;
+  SCOTCH_Num          baseval;
+
+  baseval = ((options != NULL) && (options != xadj)) ? options[METIS_OPTION_NUMBERING] : 0;
 
   return ((vsize == NULL)
           ? _SCOTCH_METIS_PartGraph (nvtxs, xadj, adjncy, vwgt, adjwgt,
-                                     &numflag, nparts, tpwgts, options, objval, part,
+                                     &baseval, nparts, tpwgts, options, objval, part,
                                      SCOTCH_STRATDEFAULT, ubvec)
           : _SCOTCH_METIS_PartGraph_Volume (nvtxs, xadj, adjncy, vwgt, vsize,
-                                            &numflag, nparts, tpwgts, options, objval, part,
+                                            &baseval, nparts, tpwgts, options, objval, part,
                                             SCOTCH_STRATDEFAULT, ubvec));
 }
 
@@ -519,14 +521,16 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          objval,
 SCOTCH_Num * const          part)
 {
-  const SCOTCH_Num          numflag = 0;
+  SCOTCH_Num          baseval;
+
+  baseval = ((options != NULL) && (options != xadj)) ? options[METIS_OPTION_NUMBERING] : 0;
 
   return ((vsize == NULL)
           ? _SCOTCH_METIS_PartGraph (nvtxs, xadj, adjncy, vwgt, adjwgt,
-                                     &numflag, nparts, tpwgts, options, objval, part,
+                                     &baseval, nparts, tpwgts, options, objval, part,
                                      SCOTCH_STRATRECURSIVE, ubvec)
           : _SCOTCH_METIS_PartGraph_Volume (nvtxs, xadj, adjncy, vwgt, vsize,
-                                            &numflag, nparts, tpwgts, options, objval, part,
+                                            &baseval, nparts, tpwgts, options, objval, part,
                                             SCOTCH_STRATRECURSIVE, ubvec));
 }
 
