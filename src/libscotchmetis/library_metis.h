@@ -59,7 +59,7 @@
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 17 jun 2019     **/
 /**                # Version 6.1  : from : 09 feb 2021     **/
-/**                                 to   : 15 jun 2021     **/
+/**                                 to   : 20 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -195,6 +195,8 @@ int                         METISNAMEU (METIS_PartGraphRecursive) (const SCOTCH_
 
 int                         METISNAMEU (METIS_MeshToDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num ** const, SCOTCH_Num ** const);
 int                         METISNAMEU (METIS_PartMeshDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+
+int                         METISNAMEU (METIS_SetDefaultOptions) (SCOTCH_Num * const);
 
 #ifdef __cplusplus
 }

@@ -143,6 +143,18 @@ metis_graph_part_dual_f$(OBJ)	:	metis_graph_part_dual_f.c		\
 					$(includedir)/scotch.h			\
 					metis.h
 
+metis_options$(OBJ)		:	metis_options.c				\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h
+
+metis_options_f$(OBJ)		:	metis_options_f.c			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h
+
 parmetis.h			:	../libscotch/dummysizes$(EXE)		\
 					library_parmetis.h
 					../libscotch/dummysizes$(EXE) library_parmetis.h parmetis.h
@@ -185,6 +197,8 @@ libscotchmetis$(LIB)		:	metis_graph_dual$(OBJ)			\
 					metis_graph_part$(OBJ)			\
 					metis_graph_part_f$(OBJ)		\
 					metis_graph_part_dual$(OBJ)		\
-					metis_graph_part_dual_f$(OBJ)
+					metis_graph_part_dual_f$(OBJ)		\
+					metis_options$(OBJ)			\
+					metis_options_f$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(^)
 					-$(RANLIB) $(@)
