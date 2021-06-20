@@ -7585,8 +7585,12 @@ metis\_edgend ( & integer*{\it num}     & n,       \\
 
 The {\tt METIS\_EdgeND} function performs a nested dissection ordering
 of the graph passed as arrays {\tt xadj} and {\tt adjncy}, using
-the default \scotch\ ordering strategy. The {\tt options} array is not
-used. The {\tt perm} and {\tt iperm} arrays have the opposite meaning
+the default \scotch\ ordering strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt perm} and {\tt iperm} arrays have the opposite meaning
 as in \scotch: the \metis\ {\tt perm} array holds what is called
 ``inverse permutation'' in \scotch, while {\tt iperm} holds what is
 called ``direct permutation'' in \scotch.
@@ -7627,8 +7631,12 @@ metis\_nodend ( & integer*{\it num}     & n,       \\
 
 The {\tt METIS\_NodeND} function performs a nested dissection ordering
 of the graph passed as arrays {\tt xadj} and {\tt adjncy}, using
-the default \scotch\ ordering strategy. The {\tt options} array is not
-used. The {\tt perm} and {\tt iperm} arrays have the opposite meaning
+the default \scotch\ ordering strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt perm} and {\tt iperm} arrays have the opposite meaning
 as in \scotch: the \metis\ {\tt perm} array holds what is called
 ``inverse permutation'' in \scotch, while {\tt iperm} holds what is
 called ``direct permutation'' in \scotch.
@@ -7671,11 +7679,15 @@ metis\_nodwend ( & integer*{\it num}     & n,       \\
 
 The {\tt METIS\_NodeWND} function performs a nested dissection
 ordering of the graph passed as arrays {\tt xadj}, {\tt adjncy}
-and {\tt vwgt}, using the default \scotch\ ordering strategy. The {\tt
-options} array is not used. The {\tt perm} and {\tt iperm} arrays have
-the opposite meaning as in \scotch: the \metis\ {\tt perm} array
-holds what is called ``inverse permutation'' in \scotch, while {\tt
-iperm} holds what is called ``direct permutation'' in \scotch.
+and {\tt vwgt}, using the default \scotch\ ordering strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt perm} and {\tt iperm} arrays have the opposite meaning as in
+\scotch: the \metis\ {\tt perm} array holds what is called ``inverse
+permutation'' in \scotch, while {\tt iperm} holds what is called
+``direct permutation'' in \scotch.
 
 While \scotch\ has also both node and edge separation capabilities,
 all of the three \metis\ stubs {\tt METIS\_\lbo EdgeND}, {\tt
@@ -7722,9 +7734,13 @@ metis\_partgraphkway ( & integer*{\it num}     & n,       \\
 The {\tt METIS\_PartGraphKway} function performs a mapping onto the
 complete graph of the graph represented by arrays {\tt xadj}, {\tt
 adjncy}, {\tt vwgt} and {\tt adjwgt}, using the default
-\scotch\ mapping strategy. The {\tt options} array is not used. The
-{\tt part} array has the same meaning as the {\tt parttab} array of
-\scotch.
+\scotch\ mapping strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt part} array has the same meaning as the {\tt parttab} array
+of \scotch.
 
 All of the three \metis\ stubs
 {\tt METIS\_\lbo Part\lbo Graph\lbo Kway}, {\tt
@@ -7772,10 +7788,15 @@ metis\_partgraphrecursive ( & integer*{\it num}     & n,       \\
 The {\tt METIS\_PartGraphRecursive} function performs a mapping onto
 the complete graph of the graph represented by arrays {\tt xadj}, {\tt
 adjncy}, {\tt vwgt} and {\tt adjwgt}, using the default \scotch\
-mapping strategy. The {\tt options} array is not used. The {\tt part}
-array has the same meaning as the {\tt parttab} array of \scotch. To
-date, the computation of the {\tt edgecut} field requires extra
-processing, which increases running time to a small extent.
+mapping strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt part} array has the same meaning as the {\tt parttab} array
+of \scotch. To date, the computation of the {\tt edgecut} field
+requires extra processing, which increases running time to a small
+extent.
 
 All of the three \metis\ stubs
 {\tt METIS\_\lbo Part\lbo Graph\lbo Kway}, {\tt
@@ -7823,9 +7844,13 @@ metis\_partgraphvkway ( & integer*{\it num}     & n,       \\
 The {\tt METIS\_PartGraphVKway} function performs a mapping onto the
 complete graph of the graph represented by arrays {\tt xadj}, {\tt
 adjncy}, {\tt vwgt} and {\tt vsize}, using the default
-\scotch\ mapping strategy. The {\tt options} array is not used. The
-{\tt part} array has the same meaning as the {\tt parttab} array of
-\scotch.
+\scotch\ mapping strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt part} array has the same meaning as the {\tt parttab} array
+of \scotch.
 
 Since \scotch\ does not have methods for explicitely reducing the
 communication volume according to the metric of {\tt METIS\_\lbo
