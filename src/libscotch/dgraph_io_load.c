@@ -40,11 +40,11 @@
 /**                for the input/output routines for       **/
 /**                distributed graphs.                     **/
 /**                                                        **/
-/**                # Version  5.0 : from : 28 apr 2007     **/
+/**                # Version 5.0  : from : 28 apr 2007     **/
 /**                                 to   : 24 mar 2008     **/
-/**                # Version  5.1 : from : 23 jun 2008     **/
+/**                # Version 5.1  : from : 23 jun 2008     **/
 /**                                 to   : 27 jan 2009     **/
-/**                # Version  6.0 : from : 25 aug 2012     **/
+/**                # Version 6.0  : from : 25 aug 2012     **/
 /**                                 to   : 18 nov 2012     **/
 /**                                                        **/
 /************************************************************/
