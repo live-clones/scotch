@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 01 dec 2012     **/
 /**                                 to   : 26 oct 2019     **/
 /**                # Version 6.1  : from : 09 feb 2021     **/
-/**                                 to   : 09 feb 2021     **/
+/**                                 to   : 22 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -132,6 +132,18 @@ int                         subsval)
 
   subsptr = malloc (16 * sizeof (char));
   sprintf (subsptr, "%d", (int) ((subsval + sizeof (double) - 1) / sizeof (double)));
+
+  return (subsptr);
+}
+
+char *
+subsSizeByte (
+int                         subsval)
+{
+  char *              subsptr;
+
+  subsptr = malloc (16 * sizeof (char));
+  sprintf (subsptr, "%d", (int) subsval);
 
   return (subsptr);
 }
@@ -239,6 +251,8 @@ char *                      argv[])
   subsFill ("DUMMYVERSION", EXPAND (SCOTCH_VERSION_NUM));
   subsFill ("DUMMYRELEASE", EXPAND (SCOTCH_RELEASE_NUM));
   subsFill ("DUMMYPATCHLEVEL", EXPAND (SCOTCH_PATCHLEVEL_NUM));
+  subsFill ("DUMMYSIZEBYTEIDX", subsSizeByte (sizeof (IDX)));
+  subsFill ("DUMMYSIZEBYTENUM", subsSizeByte (sizeof (INT)));
   subsFill ("DUMMYSIZEARCHDOM", subsSize (sizeof (ArchDom)));
   subsFill ("DUMMYSIZEARCH", subsSize (sizeof (Arch)));
   subsFill ("DUMMYSIZEGEOM", subsSize (sizeof (Geom)));
