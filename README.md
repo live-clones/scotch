@@ -79,10 +79,12 @@ https://gitlab.inria.fr/scotch/scotch/blob/master/CONTRIBUTING.md
 The following people contribute(d) to the development of Scotch:
 * Cédric CHEVALIER
 * Sébastien FOURESTIER
+* Marc FUENTES
 * Jun-Ho HER
-* Cédric LACHAT
 * Amaury JACQUES
+* Cédric LACHAT
 * François PELLEGRINI (PI)
+* Florent PRUVOST
 * Luca SCARANO
 
 ### Citing Scotch
