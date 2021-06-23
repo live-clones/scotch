@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 08 jan 2019     **/
 /**                                 to   : 08 jan 2019     **/
+/**                # Version 6.1  : from : 24 jun 2021     **/
+/**                                 to   : 24 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,13 +86,13 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  if ((fileptr = fopen (argv[1], "w")) == NULL) {
-    SCOTCH_errorPrint ("main: cannot open file");
+  if (testGraphBuild (&grafdat) != 0) {           /* Build source graph */
+    SCOTCH_errorPrint ("main: cannot build graph");
     exit (EXIT_FAILURE);
   }
 
-  if (testGraphBuild (&grafdat) != 0) {           /* Build source graph */
-    SCOTCH_errorPrint ("main: cannot build graph");
+  if ((fileptr = fopen (argv[1], "w")) == NULL) {
+    SCOTCH_errorPrint ("main: cannot open file");
     exit (EXIT_FAILURE);
   }
 
@@ -98,6 +100,8 @@ char *              argv[])
     SCOTCH_errorPrint ("main: cannot save graph");
     exit (EXIT_FAILURE);
   }
+
+  fclose (fileptr);
 
   SCOTCH_graphExit (&grafdat);
 
