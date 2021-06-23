@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2015 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2015,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,6 +58,8 @@
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 30 aug 2012     **/
 /**                                 to   : 28 dec 2015     **/
+/**                # Version 6.1  : from : 19 jun 2021     **/
+/**                                 to   : 19 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -209,7 +211,7 @@ int                         dgraphGhst2         (Dgraph * const, const int);
 int                         dgraphBand          (Dgraph * restrict const, const Gnum, Gnum * restrict const, const GraphPart * restrict const, const Gnum, const Gnum, Gnum, Dgraph * restrict const, Gnum * restrict * const, GraphPart * restrict * const, Gnum * const, Gnum * const, Gnum * const);
 
 int                         dgraphFold          (const Dgraph * restrict const, const int, Dgraph * restrict const, const void * restrict const, void ** restrict const, MPI_Datatype);
-int                         dgraphFold2         (const Dgraph * restrict const, const int, Dgraph * restrict const, MPI_Comm, const void * restrict const, void ** restrict const, MPI_Datatype);
+int                         dgraphFold2         (const Dgraph * restrict const, const int, Dgraph * const, MPI_Comm, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFoldDup       (const Dgraph * restrict const, Dgraph * restrict const, void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphInduce2       (Dgraph * restrict const, Gnum (*) (Dgraph * restrict const, Dgraph * restrict const, const void * restrict const, Gnum * restrict const), const void * const, const Gnum, Gnum *, Dgraph * restrict const);
 

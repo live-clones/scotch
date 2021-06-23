@@ -1,4 +1,4 @@
-/* Copyright 2017,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2017,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 17 jan 2017     **/
 /**                                 to   : 22 feb 2018     **/
+/**                # Version 6.1  : from : 31 mar 2021     **/
+/**                                 to   : 31 mar 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -107,6 +109,9 @@ const Graph * const         grafptr)
   const Gnum * restrict const velotax = grafptr->velotax;
   const Gnum * restrict const edgetax = grafptr->edgetax;
   const Gnum * restrict const edlotax = grafptr->edlotax;
+
+  if (grafptr->vertnbr <= 0)                      /* Diameter of empty graphs is zero */
+    return (0);
 
   if ((vexxtax = (GraphDiamVertex *) memAlloc (grafptr->vertnbr * sizeof (GraphDiamVertex))) == NULL) {
     errorPrint ("graphWdiam: out of memory");

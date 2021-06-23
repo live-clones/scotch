@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2012,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 26 may 2009     **/
 /**                # Version 6.0  : from : 18 sep 2012     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 6.1  : from : 17 jun 2021     **/
+/**                                 to   : 17 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -128,6 +130,9 @@ typedef struct DgraphCoarsenData_ {
   DgraphCoarsenMulti *      multloctmp;           /*+ Pointer to multloctab structure to free (if any)             +*/
   DgraphCoarsenMulti *      multloctab;           /*+ Structure which contains the result of the matching          +*/
   Gnum                      multlocnbr;           /*+ Index of next multinode to be created                        +*/
+#ifdef SCOTCH_DEBUG_DGRAPH2
+  Gnum                      multlocsiz;           /*+ Size of allocated multinode array                            +*/
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
   Gnum                      vertrcvnbr;           /*+ Number of fine vertices to be received                       +*/
   Gnum                      edgercvnbr;           /*+ Number of fine edges to be received                          +*/
   Gnum                      edgekptnbr;           /*+ Upper bound on number of edges kept from finer graph         +*/

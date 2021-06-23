@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,6 +58,8 @@
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 16 oct 2010     **/
 /**                                 to   : 17 apr 2019     **/
+/**                # Version 6.1  : from : 04 apr 2021     **/
+/**                                 to   : 04 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -197,11 +199,20 @@ char *                      argv[])
 
   fileBlockOpen (C_fileTab, C_FILENBR);           /* Open all files */
 
-  SCOTCH_graphInit (&grafdat.grafdat);            /* Create graph structure         */
-  SCOTCH_graphLoad (&grafdat.grafdat, C_filepntrsrcinp, 0, 3); /* Read source graph */
+  SCOTCH_graphInit (&grafdat.grafdat);            /* Create graph structure          */
+  SCOTCH_graphLoad (&grafdat.grafdat, C_filepntrsrcinp, -1, 3); /* Read source graph */
   SCOTCH_graphData (&grafdat.grafdat, &grafdat.baseval,
                     &grafdat.vertnbr, &grafdat.verttab, &grafdat.vendtab, NULL, &grafdat.vlbltab,
                     &grafdat.edgenbr, &grafdat.edgetab, NULL);
+  if (grafdat.baseval != 0) {                     /* Un-base graph contents while keeping old base value to match with other files */
+    SCOTCH_Num          vertnum;
+    SCOTCH_Num          edgenum;
+
+    for (vertnum = 0; vertnum <= grafdat.vertnbr; vertnum ++)
+      grafdat.verttab[vertnum] -= grafdat.baseval;
+    for (edgenum = 0; edgenum <= grafdat.edgenbr; edgenum ++)
+      grafdat.edgetab[edgenum] -= grafdat.baseval;
+  }
 
   C_geoInit (&geo, &grafdat);                     /* Create geometry structure */
   if (C_geoFlag & C_GEOFLAGUSE)                   /* If geometry is wanted     */

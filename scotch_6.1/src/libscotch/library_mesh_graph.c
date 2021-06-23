@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,12 +34,15 @@
 /**   NAME       : library_mesh_graph.c                    **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Marc FUENTES (v6.1)                     **/
 /**                                                        **/
 /**   FUNCTION   : This module is the API for the Scotch   **/
 /**                mesh-to-graph converter.                **/
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 21 jan 2004     **/
 /**                                 to   : 21 jan 2004     **/
+/**                # Version 6.1  : from : 28 feb 2021     **/
+/**                                 to   : 28 feb 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,4 +78,21 @@ const SCOTCH_Mesh * restrict const  meshptr,
 SCOTCH_Graph * restrict const       grafptr)
 {
   return (meshGraph ((Mesh *) meshptr, (Graph *) grafptr));
+}
+
+/*+ This routine builds an opaque dual graph structure
+*** from an opaque mesh structure. The dual graph adjacency
+*** is defined such that two elements are adjacent, if
+*** both shared at least ncommon points
+*** - 0   : if building has succeeded.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_meshGraphDual (
+const SCOTCH_Mesh * restrict const  meshptr,
+SCOTCH_Graph * restrict const       grafptr,
+const SCOTCH_Num                    ncommon)
+{
+  return (meshGraphDual ((Mesh *) meshptr, (Graph *) grafptr, ncommon));
 }

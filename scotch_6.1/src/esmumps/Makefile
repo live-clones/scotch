@@ -60,12 +60,14 @@ scotch				:	clean
 
 ptscotch			:	scotch
 
-install				:	scotch
-					-$(CP) esmumps.h $(includedir)
+install				:	scotch					\
+					library.h
+					-$(CP) library.h $(includedir)/esmumps.h
 					-$(CP) libesmumps$(LIB) $(libdir)
 
-ptinstall			:	scotch
-					-$(CP) esmumps.h $(includedir)
+ptinstall			:	scotch					\
+					library.h
+					-$(CP) library.h $(includedir)/esmumps.h
 					-$(CP) libesmumps$(LIB) $(libdir)/libptesmumps$(LIB)
 
 clean				:
@@ -77,18 +79,19 @@ realclean			:	clean
 ##  Library dependencies.
 ##
 
-LIBESMUMPSDEPS =			graph_graph$(OBJ)			\
+LIBESMUMPSDEPS =			dof$(OBJ)				\
+					esmumps$(OBJ)				\
+					graph_graph$(OBJ)			\
+					library_esmumps$(OBJ)			\
+					library_esmumps_f$(OBJ)			\
+					library_esmumps_strats$(OBJ)		\
 					order$(OBJ)				\
 					order_check$(OBJ)			\
 					order_scotch_graph$(OBJ)		\
-					dof$(OBJ)				\
 					symbol$(OBJ)				\
 					symbol_check$(OBJ)			\
 					symbol_cost$(OBJ)			\
-					symbol_fax_graph$(OBJ)			\
-					esmumps$(OBJ)				\
-					esmumps_f$(OBJ)				\
-					esmumps_strats$(OBJ)
+					symbol_fax_graph$(OBJ)
 
 ##
 ##  Todo list.
@@ -96,11 +99,48 @@ LIBESMUMPSDEPS =			graph_graph$(OBJ)			\
 
 module.h			:	$(srclibscotchdir)/module.h
 
+dof$(OBJ)			:	dof.c					\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					$(includedir)/scotch.h			\
+					graph.h					\
+					dof.h
+
+esmumps$(OBJ)			:	esmumps.c				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					$(includedir)/scotch.h			\
+					graph.h					\
+					dof.h					\
+					symbol.h				\
+					order.h					\
+					fax.h					\
+					esmumps.h
+
 graph_graph$(OBJ)		:	graph_graph.c				\
 					module.h				\
 					$(srclibscotchdir)/common.h		\
 					$(includedir)/scotch.h			\
 					graph.h					\
+
+library_esmumps$(OBJ)		:	library_esmumps.c			\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					$(srclibscotchdir)/scotch.h		\
+					esmumps.h				\
+					library.h
+
+library_esmumps_f$(OBJ)		:	library_esmumps_f.c			\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					$(includedir)/scotch.h			\
+					library.h
+
+library_esmumps_strats$(OBJ)	:	library_esmumps_strats.c		\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					$(includedir)/scotch.h			\
+					library.h
 
 order$(OBJ)			:	order.c					\
 					module.h				\
@@ -120,13 +160,6 @@ order_scotch_graph$(OBJ)	:	order_scotch_graph.c			\
 					$(includedir)/scotch.h			\
 					graph.h					\
 					order.h
-
-dof$(OBJ)			:	dof.c					\
-					module.h				\
-					$(srclibscotchdir)/common.h		\
-					$(includedir)/scotch.h			\
-					graph.h					\
-					dof.h
 
 symbol$(OBJ)			:	symbol.c				\
 					module.h				\
@@ -161,27 +194,6 @@ symbol_fax_graph$(OBJ)		:	symbol_fax_graph.c			\
 					symbol.h				\
 					order.h					\
 					fax.h
-
-esmumps$(OBJ)			:	esmumps.c				\
-					module.h				\
-					$(srclibscotchdir)/common.h		\
-					$(includedir)/scotch.h			\
-					graph.h					\
-					symbol.h				\
-					order.h					\
-					fax.h					\
-					esmumps.h
-
-
-esmumps_f$(OBJ)			:	esmumps_f.c				\
-					module.h				\
-					$(srclibscotchdir)/common.h		\
-					esmumps.h
-
-esmumps_strats$(OBJ)		:	esmumps_strats.c			\
-					module.h				\
-					$(srclibscotchdir)/common.h		\
-					esmumps.h
 
 libesmumps$(LIB)		:	$(LIBESMUMPSDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)

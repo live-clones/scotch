@@ -1,4 +1,4 @@
-/* Copyright 2007-2013,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2013,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 30 jul 2020     **/
-/**                                 to   : 26 aug 2020     **/
+/**                                 to   : 04 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -456,7 +456,7 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_WGRAPH3
     grafptr->fronload = frlosum;
     grafptr->fronnbr  = fronnbr;
-    if (wgraphPartFmCheck (grafptr, &hashdat, cplosum) != 0) {
+    if (wgraphPartFmCheck (grafptr, &hashdat, &savedat, cplosum) != 0) {
       errorPrint ("wgraphPartFm: internal error (2)");
       goto abort;
     }
@@ -842,7 +842,7 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_WGRAPH3
       grafptr->fronload = frlosum;
       grafptr->fronnbr  = fronnbr;
-      if (wgraphPartFmCheck (grafptr, &hashdat, cplosum) != 0) {
+      if (wgraphPartFmCheck (grafptr, &hashdat, &savedat, cplosum) != 0) {
         errorPrint ("wgraphPartFm: internal error (7)");
         goto abort;
       }
@@ -882,7 +882,6 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
       Gnum                  hashnum;
       Gnum                  linknum;
       Anum                  partnum;
-
 
       savedat.savenbr --;
       switch (savedat.savetab[savedat.savenbr].typeval) {
@@ -1000,10 +999,12 @@ int
 wgraphPartFmCheck (
 const Wgraph * restrict const               grafptr,
 const WgraphPartFmHashData * restrict const hashptr,
+const WgraphPartFmSaveData * restrict const saveptr,
 const Gnum                                  cplosum)
 {
   Gnum                      vertnum;
   Gnum                      partnum;
+  Gnum                      savenum;
   Gnum                      fronnbr;
   Gnum                      frlosum;
   Gnum                      cplotmp;
@@ -1107,6 +1108,36 @@ const Gnum                                  cplosum)
   if (cplotmp != cplosum) {
     errorPrint ("wgraphPartFmCheck: invalid part load sum");
     goto abort;
+  }
+
+  if ((saveptr->savenbr < 0) || (saveptr->savenbr > saveptr->savesiz)) {
+    errorPrint ("wgraphPartFmCheck: invalid save array contents");
+    goto abort;
+  }
+  for (savenum = 0; savenum < saveptr->savenbr; savenum ++) {
+    WgraphPartFmVertex *  vexxptr;
+    Gnum                  vertnum;
+    Gnum                  hashnum;
+
+    switch (saveptr->savetab[savenum].typeval) {
+      case WGRAPHPARTFMSAVEMOVE :
+        vertnum = saveptr->savetab[savenum].u.movedat.vertnum;
+        for (hashnum = (vertnum * WGRAPHPARTFMHASHPRIME) & hashptr->hashmsk, vexxptr = hashptr->hashtab + hashnum; /* Search for vertex in hash table */
+             vexxptr->vertnum != vertnum; hashnum = (hashnum + 1) & hashptr->hashmsk, vexxptr = hashptr->hashtab + hashnum) {
+          if (vexxptr->vertnum == ~0) {
+            errorPrint ("wgraphPartFmCheck: inconsistency in hash/save structure");
+            goto abort;
+          }
+        }
+        break;
+      case WGRAPHPARTFMSAVELOAD :
+        partnum = saveptr->savetab[savenum].u.loaddat.partnum;
+        if ((partnum < -1) || (partnum >= grafptr->partnbr)) {
+          errorPrint ("wgraphPartFmCheck: invalid part value");
+          goto abort;
+        }
+        break;
+    }
   }
 
   o = 0;                                          /* Everything went all right */
@@ -1253,7 +1284,7 @@ WgraphPartFmSaveData * const  sdatptr)
   savesiz  = sdatptr->savesiz;                    /* Increase array size by 25% */
   savesiz += (savesiz >> 2) + 4;
 
-  if ((savetab = (WgraphPartFmSave *) memRealloc (sdatptr->savetab, savesiz * sizeof (WgraphPartFmLink))) == NULL) {
+  if ((savetab = (WgraphPartFmSave *) memRealloc (sdatptr->savetab, savesiz * sizeof (WgraphPartFmSave))) == NULL) {
     errorPrint ("wgraphPartFmSaveResize: out of memory");
     return (1);
   }

@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2014,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 29 oct 2014     **/
 /**                                 to   : 29 oct 2014     **/
+/**                # Version 6.1  : from : 05 apr 2021     **/
+/**                                 to   : 05 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -253,22 +255,22 @@ FILE * restrict const           stream)
         termloctab[fraglocnum] = archDomNum (&dmapptr->archdat, &fragptr->domntab[fragptr->parttab[fraglocnum]]);
       }
 
-#if ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100))
-      MPI_Address (termloctab, &typedsptab[0]);
-      MPI_Address (fragptr->vnumtab, &typedsptab[1]);
-#else /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#if ((defined MPI_VERSION) && (MPI_VERSION >= 3))
       MPI_Get_address (termloctab, &typedsptab[0]);
       MPI_Get_address (fragptr->vnumtab, &typedsptab[1]);
-#endif /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#else /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
+      MPI_Address (termloctab, &typedsptab[0]);
+      MPI_Address (fragptr->vnumtab, &typedsptab[1]);
+#endif /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
       typedsptab[1] -= typedsptab[0];
       typedsptab[0] = 0;
       typecnttab[0] =
       typecnttab[1] = (int) fragptr->vertnbr;
-#if ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100))
-      MPI_Type_hindexed (2, typecnttab, typedsptab, GNUM_MPI, &typedat);
-#else /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#if ((defined MPI_VERSION) && (MPI_VERSION >= 3))
       MPI_Type_create_hindexed (2, typecnttab, typedsptab, GNUM_MPI, &typedat);
-#endif /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#else /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
+      MPI_Type_hindexed (2, typecnttab, typedsptab, GNUM_MPI, &typedat);
+#endif /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
       MPI_Type_commit   (&typedat);
 
       if (MPI_Send (termloctab, 1, typedat, protnum, 0, grafptr->proccomm) != MPI_SUCCESS) {

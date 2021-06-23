@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2011,2014,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to   : 22 feb 2011     **/
 /**                # Version 6.0  : from : 29 oct 2014     **/
 /**                                 to   : 29 oct 2014     **/
+/**                # Version 6.1  : from : 05 apr 2021     **/
+/**                                 to   : 05 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -195,9 +197,9 @@ int ** const                  senddspptr,         /* Pointers to communication d
 int ** const                  recvdspptr,
 MPI_Request ** const          requptr)            /* Pointer to local request array for point-to-point */
 {
-#if ! ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100))
+#if ((defined MPI_VERSION) && (MPI_VERSION >= 3))
   MPI_Aint              attrglbtmp;               /* Lower bound of attribute datatype (not used)            */
-#endif /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#endif /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
   MPI_Aint              attrglbsiz;               /* Extent of attribute datatype                            */
   int                   procngbsiz;               /* Size of request array for point-to-point communications */
   int                   procngbnum;
@@ -211,11 +213,11 @@ MPI_Request ** const          requptr)            /* Pointer to local request ar
 
   procngbsiz = ((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? grafptr->procngbnbr : 0;
 
-#if ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100))
-  MPI_Type_extent (attrglbtype, &attrglbsiz);     /* Get type extent */
-#else /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#if ((defined MPI_VERSION) && (MPI_VERSION >= 3))
   MPI_Type_get_extent (attrglbtype, &attrglbtmp, &attrglbsiz); /* Get type extent */
-#endif /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#else /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
+  MPI_Type_extent (attrglbtype, &attrglbsiz);     /* Get type extent */
+#endif /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
   if (memAllocGroup ((void **) (void *)
                      attrsndptr, (size_t) (grafptr->procsndnbr * attrglbsiz),
                      senddspptr, (size_t) (grafptr->procglbnbr * MAX (sizeof (int), sizeof (byte *))), /* TRICK: use senddsptab (int *) as attrdsptab (byte **) */
@@ -260,9 +262,9 @@ const MPI_Datatype            attrglbtype)        /* Attribute datatype       */
 
   o = 0;                                          /* Assume success                               */
   if ((grafptr->flagval & DGRAPHCOMMPTOP) != 0) { /* If point-to-point exchange                   */
-#if ! ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100))
+#if ((defined MPI_VERSION) && (MPI_VERSION >= 3))
     MPI_Aint              attrglbtmp;             /* Lower bound of attribute datatype (not used) */
-#endif /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#endif /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
     MPI_Aint              attrglbsiz;             /* Extent of attribute datatype                 */
     const int * restrict  procrcvtab;
     const int * restrict  procsndtab;
@@ -276,11 +278,11 @@ const MPI_Datatype            attrglbtype)        /* Attribute datatype       */
     procngbtab = grafptr->procngbtab;
     procngbnbr = grafptr->procngbnbr;
     procrcvtab = grafptr->procrcvtab;
-#if ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100))
-    MPI_Type_extent (attrglbtype, &attrglbsiz);   /* Get type extent */
-#else /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#if ((defined MPI_VERSION) && (MPI_VERSION >= 3))
     MPI_Type_get_extent (attrglbtype, &attrglbtmp, &attrglbsiz); /* Get type extent */
-#endif /* ((defined COMMON_MPI_VERSION) && (COMMON_MPI_VERSION <= 100)) */
+#else /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
+    MPI_Type_extent (attrglbtype, &attrglbsiz);   /* Get type extent */
+#endif /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
     for (procngbnum = procngbnbr - 1, requnbr = 0; procngbnum >= 0; procngbnum --, requnbr ++) { /* Post receives first */
       int                 procglbnum;
 

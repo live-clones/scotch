@@ -1,4 +1,4 @@
-## Copyright 2007-2010,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2007-2010,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -56,6 +56,7 @@ scotch				:
 					$(MAKE)						\
 					CC="$(CCS)"					\
 					metis.h						\
+					metisf.h					\
 					libscotchmetis$(LIB)
 
 ptscotch			:
@@ -66,7 +67,7 @@ ptscotch			:
 					libptscotchparmetis$(LIB)
 
 install				:	scotch
-					-$(CP) metis.h $(includedir)
+					-$(CP) metis.h metisf.h $(includedir)
 					-$(CP) libscotchmetis$(LIB) $(libdir)
 
 ptinstall			:	ptscotch
@@ -74,7 +75,7 @@ ptinstall			:	ptscotch
 					-$(CP) libptscotchparmetis$(LIB) $(libdir)
 
 clean				:
-					-$(RM) *~ *$(OBJ) lib*$(LIB) metis.h parmetis.h
+					-$(RM) *~ *$(OBJ) lib*$(LIB) metis.h metisf.h parmetis.h
 
 realclean			:	clean
 
@@ -85,6 +86,23 @@ realclean			:	clean
 metis.h				:	../libscotch/dummysizes$(EXE)		\
 					library_metis.h
 					../libscotch/dummysizes$(EXE) library_metis.h metis.h
+
+metisf.h			:	../libscotch/dummysizes$(EXE)		\
+					library_metis_f.h
+					../libscotch/dummysizes$(EXE) library_metis_f.h metisf.h
+
+metis_graph_dual$(OBJ)		:	metis_graph_dual.c			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h					\
+					metis_graph_dual.h
+
+metis_graph_dual_f$(OBJ)	:	metis_graph_dual_f.c			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h
 
 metis_graph_order$(OBJ)		:	metis_graph_order.c			\
 					../libscotch/module.h			\
@@ -102,9 +120,36 @@ metis_graph_part$(OBJ)		:	metis_graph_part.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
-					metis.h
+					metis.h					\
+					metis_graph_part.h
 
 metis_graph_part_f$(OBJ)	:	metis_graph_part_f.c			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h
+
+metis_graph_part_dual$(OBJ)	:	metis_graph_part_dual.c			\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h					\
+					metis_graph_dual.h			\
+					metis_graph_part.h
+
+metis_graph_part_dual_f$(OBJ)	:	metis_graph_part_dual_f.c		\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h
+
+metis_options$(OBJ)		:	metis_options.c				\
+					../libscotch/module.h			\
+					../libscotch/common.h			\
+					$(includedir)/scotch.h			\
+					metis.h
+
+metis_options_f$(OBJ)		:	metis_options_f.c			\
 					../libscotch/module.h			\
 					../libscotch/common.h			\
 					$(includedir)/scotch.h			\
@@ -145,9 +190,15 @@ libptscotchparmetis$(LIB)	:	parmetis_dgraph_order$(OBJ)		\
 					$(AR) $(ARFLAGS) $(@) $(^)
 					-$(RANLIB) $(@)
 
-libscotchmetis$(LIB)		:	metis_graph_order$(OBJ)			\
+libscotchmetis$(LIB)		:	metis_graph_dual$(OBJ)			\
+					metis_graph_dual_f$(OBJ)		\
+					metis_graph_order$(OBJ)			\
 					metis_graph_order_f$(OBJ)		\
 					metis_graph_part$(OBJ)			\
-					metis_graph_part_f$(OBJ)
+					metis_graph_part_f$(OBJ)		\
+					metis_graph_part_dual$(OBJ)		\
+					metis_graph_part_dual_f$(OBJ)		\
+					metis_options$(OBJ)			\
+					metis_options_f$(OBJ)
 					$(AR) $(ARFLAGS) $(@) $(^)
 					-$(RANLIB) $(@)

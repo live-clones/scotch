@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007,2008,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -104,22 +104,22 @@ extern unsigned int         parsermethtokentab[]; /* Pre-definition for stupid c
   Strat *                   STRAT;                /* Strategy tree     */
 }
 
-%token               METHODNAME
-%token               PARAMNAME
-%token               VALCASE       VALDOUBLE     VALINT        VALSTRING
+%token <STRING>      METHODNAME
+%token <STRING>      PARAMNAME
+%token <CASEVAL>     VALCASE
+%token <DOUBLE>      VALDOUBLE
+%token <INTEGER>     VALINT
+%token <STRING>      VALSTRING
 %token               VALSTRAT      VALPARAM      VALTEST
 
 %type <TEST>         TEST          TESTOR        TESTAND       TESTNOT
 %type <TEST>         TESTREL       TESTEXPR1     TESTEXPR2     TESTEXPR3
 %type <TEST>         TESTEXPR4     TESTVAL       TESTVAR
 %type <TESTOP>       TESTRELOP     TESTEXPR1OP   TESTEXPR2OP   TESTEXPR3OP
-%type <CASEVAL>      VALCASE
-%type <DOUBLE>       VALDOUBLE     VALSDOUBLE
-%type <INTEGER>      VALINT        VALSINT
-%type <STRING>       VALSTRING
+%type <DOUBLE>       VALSDOUBLE
+%type <INTEGER>      VALSINT
 %type <STRAT>        STRATCONCAT   STRATTEST     STRATTESTELSE STRATEMPTY
 %type <STRAT>        STRATGROUP    STRATMETHOD   STRATSELECT
-%type <STRING>       METHODNAME    PARAMNAME
 
 %start STRAT
 

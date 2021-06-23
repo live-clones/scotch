@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to   : 06 oct 1998     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
 /**                                 to   : 12 nov 2014     **/
+/**                # Version 6.1  : from : 02 apr 2021     **/
+/**                                 to   : 02 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,3 +76,9 @@
 #define C_FLAGELEM                  0x0004        /* Build a 8-neighbor grid rather than a 4-neighbor one */
 
 #define C_FLAGDEFAULT               0x0000        /* Default flags */
+
+/*
+**  The function prototypes.
+*/
+
+void                        C_edgeOutput        (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num, const int, FILE * const);

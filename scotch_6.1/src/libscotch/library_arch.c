@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009-2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009-2016,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                                 to   : 13 feb 2011     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 05 jun 2018     **/
+/**                # Version 6.1  : from : 15 mar 2021     **/
+/**                                 to   : 15 mar 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,9 +89,35 @@
 
 /*+ This routine reserves a memory area
 *** of a size sufficient to store a
-*** target architecture.
+*** SCOTCH_ArchDom structure.
 *** It returns:
-*** - !NULL  : if the initialization succeeded.
+*** - !NULL  : if the allocation succeeded.
+*** - NULL   : on error.
++*/
+
+SCOTCH_ArchDom *
+SCOTCH_archDomAlloc ()
+{
+  return ((SCOTCH_ArchDom *) memAlloc (sizeof (SCOTCH_ArchDom)));
+}
+
+/*+ This routine returns the size, in bytes,
+*** of a SCOTCH_ArchDom structure.
+*** It returns:
+*** - > 0  : in all cases.
++*/
+
+int
+SCOTCH_archDomSizeof ()
+{
+  return (sizeof (SCOTCH_ArchDom));
+}
+
+/*+ This routine reserves a memory area
+*** of a size sufficient to store a
+*** SCOTCH_Arch structure.
+*** It returns:
+*** - !NULL  : if the allocation succeeded.
 *** - NULL   : on error.
 +*/
 
@@ -97,6 +125,18 @@ SCOTCH_Arch *
 SCOTCH_archAlloc ()
 {
   return ((SCOTCH_Arch *) memAlloc (sizeof (SCOTCH_Arch)));
+}
+
+/*+ This routine returns the size, in bytes,
+*** of a SCOTCH_Arch structure.
+*** It returns:
+*** - > 0  : in all cases.
++*/
+
+int
+SCOTCH_archSizeof ()
+{
+  return (sizeof (SCOTCH_Arch));
 }
 
 /*+ This routine initializes the opaque

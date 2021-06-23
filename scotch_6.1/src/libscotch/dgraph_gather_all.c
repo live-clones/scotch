@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2012,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 6.0  : from : 27 nov 2012     **/
 /**                                 to   : 27 nov 2012     **/
+/**                # Version 6.1  : from : 18 jun 2021     **/
+/**                                 to   : 18 jun 2021     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -107,18 +109,18 @@ const Gnum                    edlosum,            /* -1 means recompute */
 const int                     protnum)            /* -1 means allgather */
 {
   Gnum                baseval;
-  Gnum * restrict     verttax;                    /* Target vertex array for root, dummy for non-roots        */
-  Gnum * restrict     velotax;                    /* Target vertex load array for root, dummy for non-roots   */
-  Gnum * restrict     vnumtax;                    /* Target vertex index array for root, dummy for non-roots  */
-  Gnum * restrict     vlbltax;                    /* Target vertex label array for root, dummy for non-roots  */
-  Gnum * restrict     edgetax;                    /* Target edge array for root, dummy for non-roots          */
-  Gnum * restrict     edlotax;                    /* Target edge load array for root, dummy for non-roots     */
-  Gnum                vertlocnbr;                 /* Size of temporary distributed vertex array               */
-  Gnum * restrict     vertloctax;                 /* Temporary vertex array if graph is not compact           */
-  Gnum                edgelocnbr;                 /* Size of temporary distributed edge array                 */
-  Gnum * restrict     edgeloctab;                 /* Temporary edge array if distributed graph is not compact */
-  Gnum * restrict     recvcnttab;                 /* Count array for gather operations                        */
-  Gnum * restrict     recvdsptab;                 /* Displacement array for gather operations                 */
+  Gnum * restrict     verttax;                    /* Target vertex array for root, dummy for non-roots                  */
+  Gnum * restrict     velotax;                    /* Target vertex load array for root, dummy for non-roots             */
+  Gnum * restrict     vnumtax;                    /* Target vertex index array for root, dummy for non-roots            */
+  Gnum * restrict     vlbltax;                    /* Target vertex label array for root, dummy for non-roots            */
+  Gnum * restrict     edgetax;                    /* Target edge array for root, dummy for non-roots                    */
+  Gnum * restrict     edlotax;                    /* Target edge load array for root, dummy for non-roots               */
+  Gnum                vertlocnbr;                 /* Size of temporary distributed vertex array                         */
+  Gnum *              vertloctax;                 /* Temporary vertex array if graph is not compact [norestrict]        */
+  Gnum                edgelocnbr;                 /* Size of temporary distributed edge array                           */
+  Gnum *              edgeloctab;                 /* Temporary edge array if distributed graph not compact [norestrict] */
+  Gnum *              recvcnttab;                 /* Count array for gather operations [norestrict]                     */
+  Gnum *              recvdsptab;                 /* Displacement array for gather operations [norestrict]              */
   int                 cheklocval;
   int                 chekglbval;
 

@@ -50,8 +50,18 @@
 !*                                 to   : 12 feb 2011     **
 !*                # Version 6.0  : from : 22 oct 2011     **
 !*                                 to   : 16 apr 2019     **
+!*                # Version 6.1  : from : 22 jun 2021     **
+!*                                 to   : 22 jun 2021     **
 !*                                                        **
 !***********************************************************
+
+!* Size definitions for the SCOTCH integer
+!* and index types.
+
+        INTEGER SCOTCH_IDXSIZE
+        INTEGER SCOTCH_NUMSIZE
+        PARAMETER (SCOTCH_IDXSIZE = DUMMYSIZEBYTEIDX)
+        PARAMETER (SCOTCH_NUMSIZE = DUMMYSIZEBYTENUM)
 
 !* Flag definitions for the coarsening
 !* routines.

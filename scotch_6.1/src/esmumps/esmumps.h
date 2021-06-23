@@ -45,21 +45,14 @@
 /**                # Version 6.0  : from : 22 may 2018     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 6.1  : from : 22 feb 2020     **/
-/**                                 to   : 22 feb 2020     **/
+/**                                 to   : 05 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
 #define ESMUMPS_H
 
-#ifndef ESMUMPS_HAS_ESMUMPSV
-#define ESMUMPS_HAS_ESMUMPSV
-#endif /* ESMUMPS_HAS_ESMUMPSV */
-
 /*
 **  The function prototypes.
 */
 
-int                         esmumps             (const INT n, const INT iwlen, INT * const pe, const INT pfree, INT * const len, INT * const iw, INT * const nv, INT * const elen, INT * const last);
-int                         esmumpsv            (const INT n, const INT iwlen, INT * const pe, const INT pfree, INT * const len, INT * const iw, INT * const nv, INT * const elen, INT * const last);
-
-int                         esmumps_strat1      (const INT procnbr, const INT leafsiz, const int leorval, const INT cminval, const INT cmaxval, const double fratval, const int verbval, FILE * const stream, char * const straptr);
+int                         esmumps2            (const INT, const INT, INT * const, INT * const, INT * const, INT * const, INT * const, INT * const, INT * const);

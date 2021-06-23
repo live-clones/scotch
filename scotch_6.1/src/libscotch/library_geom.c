@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 17 nov 2010     **/
 /**                # Version 6.0  : from : 25 apr 2018     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 6.1  : from : 15 mar 2021     **/
+/**                                 to   : 15 mar 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,9 +73,9 @@
 
 /*+ This routine reserves a memory area
 *** of a size sufficient to store a
-*** geometry structure.
+*** SCOTCH_Geom structure.
 *** It returns:
-*** - !NULL  : if the initialization succeeded.
+*** - !NULL  : if the allocation succeeded.
 *** - NULL   : on error.
 +*/
 
@@ -81,6 +83,18 @@ SCOTCH_Geom *
 SCOTCH_geomAlloc ()
 {
   return ((SCOTCH_Geom *) memAlloc (sizeof (SCOTCH_Geom)));
+}
+
+/*+ This routine returns the size, in bytes,
+*** of a SCOTCH_Geom structure.
+*** It returns:
+*** - > 0  : in all cases.
++*/
+
+int
+SCOTCH_geomSizeof ()
+{
+  return (sizeof (SCOTCH_Geom));
 }
 
 /*+ This routine initializes the opaque

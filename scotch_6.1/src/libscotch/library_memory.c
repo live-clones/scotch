@@ -76,7 +76,7 @@ void * const                dataptr)
 /*+ This routine returns the size, in bytes,
 *** of a SCOTCH_Num.
 *** It returns:
-*** - void  : in all cases.
+*** - > 0  : in all cases.
 +*/
 
 int

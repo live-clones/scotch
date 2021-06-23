@@ -50,7 +50,7 @@
 /**                # Version 6.0  : from : 22 jan 2020     **/
 /**                                 to   : 22 jan 2020     **/
 /**                # Version 6.1  : from : 28 aug 2020     **/
-/**                                 to   : 28 aug 2020     **/
+/**                                 to   : 05 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,22 +103,24 @@
 **   i=last(k) <==> column i est le k-th pivot
 */
 
-static
-void
+int
 esmumps2 (
-Graph * const               grafptr,              /*+ Pointer to graph to order                +*/
 const INT                   n,
+const INT                   pfree,                /*+ Number of arcs, plus 1                   +*/
 INT * restrict const        petab,
 INT * restrict const        lentab,
 INT * restrict const        iwtab,
+INT * restrict const        velotab,              /*+ NULL or nvtab                            +*/
 INT * restrict const        nvtab,
 INT * restrict const        elentab,              /*+ Permutations computed for debugging only +*/
 INT * restrict const        lasttab)              /*+ Permutations computed for debugging only +*/
 {
   INT                         baseval;            /* Base value                          */
+  Graph                       grafdat;            /* Graph                               */
   Order                       ordedat;            /* Graph ordering                      */
   SymbolMatrix                symbdat;            /* Block factored matrix               */
-  INT *                       velotab;
+  INT                         vertnum;
+  INT * restrict              vendtab;            /* Vertex end array                    */
   const INT * restrict        velotax;            /* Based access to inverse permutation */
   const INT * restrict        peritax;            /* Based access to inverse permutation */
   const SymbolCblk * restrict cblktax;            /* Based access to column block array  */
@@ -127,8 +129,18 @@ INT * restrict const        lasttab)              /*+ Permutations computed for 
   INT * restrict              petax;
   INT                         cblknum;
 
+  if ((vendtab = memAlloc (n * sizeof (INT))) == NULL) {
+    errorPrint ("esmumps2: out of memory");
+    return (1);
+  }
+  for (vertnum = 0; vertnum < n; vertnum ++)
+    vendtab[vertnum] = petab[vertnum] + lentab[vertnum];
+
+  graphInit        (&grafdat);
+  graphBuildGraph2 (&grafdat, 1, n, pfree - 1, petab, vendtab, velotab, NULL, iwtab, NULL); /* Assume Fortran-based indexing */
+
   orderInit  (&ordedat);
-  orderGraph (&ordedat, grafptr);                 /* Compute ordering with Scotch */
+  orderGraph (&ordedat, &grafdat);                /* Compute ordering with Scotch */
 
 #ifdef ESMUMPS_DEBUG                              /* Permutations are output for debugging only */
   memCpy (elentab, ordedat.permtab, n * sizeof (INT)); /* Copy permutations                     */
@@ -136,7 +148,7 @@ INT * restrict const        lasttab)              /*+ Permutations computed for 
 #endif /* ESMUMPS_DEBUG */
 
   symbolInit     (&symbdat);
-  symbolFaxGraph (&symbdat, grafptr, &ordedat);   /* Compute block symbolic factorizaion */
+  symbolFaxGraph (&symbdat, &grafdat, &ordedat);  /* Compute block symbolic factorizaion */
 
 #ifdef ESMUMPS_DEBUG_OUTPUT
   {
@@ -145,8 +157,8 @@ INT * restrict const        lasttab)              /*+ Permutations computed for 
     double              fopcval;
 
     dofInit    (&deofdat);
-    dofGraph   (&deofdat, grafptr, 1, ordedat.peritab); /* Base on graph weights or constant load of 1 */
-    symbolCost (&symbdat, &deofdat, SYMBOLCOSTLDLT, &fnnzval, &fopcval); /* Compute factorization cost */
+    dofGraph   (&deofdat, &grafdat, 1, ordedat.peritab); /* Base on graph weights or constant load of 1 */
+    symbolCost (&symbdat, &deofdat, SYMBOLCOSTLDLT, &fnnzval, &fopcval); /* Compute factorization cost  */
 
     fprintf (stderr, "ESMUMPS CblkNbr=" INTSTRING ", BlokNbr=" INTSTRING ", NNZ=%lg, OPC=%lg\n",
              symbdat.cblknbr, symbdat.bloknbr, fnnzval, fopcval);
@@ -161,7 +173,6 @@ INT * restrict const        lasttab)              /*+ Permutations computed for 
   bloktax = symbdat.bloktab - baseval;
   nvtax   = nvtab - baseval;
   petax   = petab - baseval;
-  graphData (grafptr, NULL, NULL, NULL, NULL, &velotab, NULL, NULL, NULL, NULL); /* Get vertex load array (based) */
   velotax = (velotab != NULL) ? velotab - baseval : velotab;
 
   for (cblknum = baseval; cblknum < (symbdat.cblknbr + baseval); cblknum ++) { /* For all column blocks */
@@ -198,70 +209,8 @@ INT * restrict const        lasttab)              /*+ Permutations computed for 
 
   symbolExit (&symbdat);
   orderExit  (&ordedat);
-}
-
-int
-esmumps (
-const INT                   n,
-const INT                   iwlen,                /*+ Not used, just here for consistency      +*/
-INT * restrict const        petab,
-const INT                   pfree,                /*+ Not used, just here for consistency      +*/
-INT * restrict const        lentab,
-INT * restrict const        iwtab,
-INT * restrict const        nvtab,
-INT * restrict const        elentab,              /*+ Permutations computed for debugging only +*/
-INT * restrict const        lasttab)              /*+ Permutations computed for debugging only +*/
-{
-  INT * restrict      vendtab;                    /* Vertex end array */
-  Graph               grafdat;                    /* Graph            */
-  INT                 vertnum;
-
-  if ((vendtab = memAlloc (n * sizeof (INT))) == NULL) {
-    errorPrint ("esmumps: out of memory");
-    return     (1);
-  }
-  for (vertnum = 0; vertnum < n; vertnum ++)
-    vendtab[vertnum] = petab[vertnum] + lentab[vertnum];
-
-  graphInit        (&grafdat);
-  graphBuildGraph2 (&grafdat, 1, n, pfree - 1, petab, vendtab, NULL, NULL, iwtab, NULL); /* Assume Fortran-based indexing */
-
-  esmumps2 (&grafdat, n, petab, lentab, iwtab, nvtab, elentab, lasttab);
-
-  memFree (vendtab);
-
-  return (0);
-}
-
-int
-esmumpsv (
-const INT                   n,
-const INT                   iwlen,                /*+ Not used, just here for consistency      +*/
-INT * restrict const        petab,
-const INT                   pfree,                /*+ Not used, just here for consistency      +*/
-INT * restrict const        lentab,
-INT * restrict const        iwtab,
-INT * restrict const        nvtab,
-INT * restrict const        elentab,              /*+ Permutations computed for debugging only +*/
-INT * restrict const        lasttab)              /*+ Permutations computed for debugging only +*/
-{
-  INT * restrict      vendtab;                    /* Vertex end array */
-  Graph               grafdat;                    /* Graph to order   */
-  INT                 vertnum;
-
-  if ((vendtab = memAlloc (n * sizeof (INT))) == NULL) {
-    errorPrint ("esmumps: out of memory");
-    return     (1);
-  }
-  for (vertnum = 0; vertnum < n; vertnum ++)
-    vendtab[vertnum] = petab[vertnum] + lentab[vertnum];
-
-  graphInit        (&grafdat);
-  graphBuildGraph2 (&grafdat, 1, n, pfree - 1, petab, vendtab, nvtab, NULL, iwtab, NULL); /* Assume Fortran-based indexing */
-
-  esmumps2 (&grafdat, n, petab, lentab, iwtab, nvtab, elentab, lasttab);
-
-  memFree (vendtab);
+  graphExit  (&grafdat);
+  memFree    (vendtab);
 
   return (0);
 }

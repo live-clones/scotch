@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2013,2015,2016,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2013,2015,2016,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -65,6 +65,8 @@
 /**                                 to   : 25 jun 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 24 aug 2020     **/
+/**                # Version 6.1  : from : 05 apr 2021     **/
+/**                                 to   : 05 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -166,8 +168,8 @@ Arch * restrict const       archptr)
 
   o = 0;                                          /* Assume everything will be all right */
   if ((archptr->class           != NULL) &&
-      (archptr->class->archFree != NULL))         /* If there is a specific freeing routine                */
-    o = archptr->class->archFree (&archptr->data); /* Call it                                              */
+      (archptr->class->archFree != NULL))         /* If there is a specific freeing routine */
+    o = archptr->class->archFree (&archptr->data); /* Call it                               */
 
 #ifdef SCOTCH_DEBUG_GRAPH2
   memSet (archptr, ~0, sizeof (Arch));            /* Purge graph fields */
@@ -494,10 +496,19 @@ archDomMpiType (
 const Arch * const          archptr,
 MPI_Datatype * const        typeptr)
 {
-  int                 bloktab[2];
   MPI_Aint            disptab[2];
-  MPI_Datatype        typetab[2];
   int                 o;
+#if ((defined MPI_VERSION) && (MPI_VERSION >= 3))
+  MPI_Datatype        typedat;
+
+  disptab[0] = 0;                                 /* Displacement of real datatype is base of array */
+  disptab[1] = sizeof (ArchDom);                  /* Displacement of upper bound is size of ArchDom */
+  o = ((int (*) (const void * const, const void * const)) archptr->class->domMpiType) ((const void * const) &archptr->data, &typedat);
+  if (o == 0)
+    o = MPI_Type_create_resized (typedat, disptab[0], disptab[1] - disptab[0], typeptr);
+#else /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
+  int                 bloktab[2];
+  MPI_Datatype        typetab[2];
 
   bloktab[0] =                                    /* Build structured type to set up upper bound of domain datatype */
   bloktab[1] = 1;
@@ -507,6 +518,7 @@ MPI_Datatype * const        typeptr)
   o = ((int (*) (const void * const, const void * const)) archptr->class->domMpiType) ((const void * const) &archptr->data, &typetab[0]);
   if (o == 0)
     o = (MPI_Type_struct (2, bloktab, disptab, typetab, typeptr) != MPI_SUCCESS);
+#endif /* ((defined MPI_VERSION) && (MPI_VERSION >= 3)) */
   if (o == 0)
     o = (MPI_Type_commit (typeptr) != MPI_SUCCESS); /* Created MPI types have to be committed */
 

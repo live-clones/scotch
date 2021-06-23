@@ -72,12 +72,12 @@ graphClone (
 const Graph * restrict const    orggrafptr,
 Graph * restrict const          clngrafptr)
 {
-  Gnum *                datatab;
-  Gnum                  baseval;
-  Gnum                  vertnbr;
-  Gnum                  vertnnd;
-  Gnum                  datasiz;
-  Gnum                  edgesiz;
+  Gnum *              datatab;
+  Gnum                baseval;
+  Gnum                vertnbr;
+  Gnum                vertnnd;
+  Gnum                datasiz;
+  Gnum                edgesiz;
 
   baseval = orggrafptr->baseval;
   vertnbr = orggrafptr->vertnbr;

@@ -43,6 +43,8 @@
 /**                                 to   : 21 jan 2004     **/
 /**                # Version 6.0  : from : 20 apr 2018     **/
 /**                                 to   : 28 apr 2018     **/
+/**                # Version 6.1  : from : 19 may 2021     **/
+/**                                 to   : 19 may 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,4 +77,19 @@ int * const                 revaptr), \
 (meshptr, grafptr, revaptr))
 {
   *revaptr = SCOTCH_meshGraph (meshptr, grafptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                      \
+MESHGRAPHDUAL, meshgraphdual, (       \
+const SCOTCH_Mesh * const   meshptr,  \
+SCOTCH_Graph * const        grafptr,  \
+const SCOTCH_Num * const    ncomptr,  \
+int * const                 revaptr), \
+(meshptr, grafptr, ncomptr, revaptr))
+{
+  *revaptr = SCOTCH_meshGraphDual (meshptr, grafptr, *ncomptr);
 }

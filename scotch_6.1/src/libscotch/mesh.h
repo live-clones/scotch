@@ -134,6 +134,7 @@ int                         meshLoad            (Mesh * restrict const, FILE * r
 int                         meshSave            (const Mesh * restrict const, FILE * restrict const);
 Gnum                        meshBase            (Mesh * const, const Gnum);
 int                         meshGraph           (const Mesh * restrict const, Graph * restrict const);
+int                         meshGraphDual       (const Mesh * restrict const, Graph * restrict const, const Gnum );
 int                         meshInduceList      (const Mesh *, Mesh *, const VertList *);
 int                         meshInducePart      (const Mesh *, Mesh *, const Gnum, const GraphPart *, const GraphPart);
 int                         meshInduceSepa      (const Mesh * restrict const, const GraphPart * restrict const, const Gnum, const Gnum * restrict const, Mesh * restrict const);

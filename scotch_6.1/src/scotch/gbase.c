@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010-2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
+/**                # Version 6.1  : from : 31 may 2021     **/
+/**                                 to   : 31 may 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -107,8 +109,12 @@ char *                      argv[])
       if (C_paraNum < 1) {                        /* If number of parameters not reached              */
         C_paraNum ++;                             /* One more parameter                               */
         baseval = atoi (argv[i]);                 /* Get the base value                               */
-        if ((baseval < 0) || (baseval > 1))
+        if (baseval < 0)
           errorPrint ("main: invalid base value '%s'", argv[i]);
+#ifdef SCOTCH_DEBUG_ALL
+        if (baseval > 1)
+          errorPrintW ("main: unusual base parameter");
+#endif /* SCOTCH_DEBUG_ALL */
         continue;                                 /* Process the other parameters */
       }
       if (C_fileNum < C_FILEARGNBR)               /* A file name has been given */

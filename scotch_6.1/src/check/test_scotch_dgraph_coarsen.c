@@ -1,4 +1,4 @@
-/* Copyright 2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 22 may 2018     **/
+/**                # Version 6.1  : from : 16 jun 2021     **/
+/**                                 to   : 17 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -167,26 +169,26 @@ char *              argv[])
 
     switch (i) {
       case 0 :
+        foldval = SCOTCH_COARSENNONE;
+        foldstr = "Plain coarsening";
         multlocsiz = vertlocnbr;
-        foldval    = SCOTCH_COARSENNONE;
-        foldstr    = "Plain coarsening";
         break;
       case 1 :
-        multlocsiz = (SCOTCH_Num) (((double) vertglbnbr * coarrat) / (double) (procglbnbr / 2)) + 1;
-        foldval    = SCOTCH_COARSENFOLD;
-        foldstr    = "Folding";
+        foldval = SCOTCH_COARSENFOLD;
+        foldstr = "Folding";
+        multlocsiz = (((SCOTCH_Num) ((double) (vertglbnbr * 2) * coarrat)) / procglbnbr) + 1; /* Max ratio FOLD is 2 -> 1 */
         break;
       case 2 :
-        multlocsiz = (SCOTCH_Num) (((double) vertglbnbr * coarrat) / (double) (procglbnbr / 2)) + 1;
-        foldval    = SCOTCH_COARSENFOLDDUP;
-        foldstr    = "Folding with duplication";
+        foldval = SCOTCH_COARSENFOLDDUP;
+        foldstr = "Folding with duplication";
+        multlocsiz = (((SCOTCH_Num) ((double) (vertglbnbr * 2) * coarrat)) / (procglbnbr - (procglbnbr % 2))) + 1; /* Max ratio FOLD-DUP is 3 -> 1 */
         break;
     }
 
     if (proclocnum == 0)
       printf ("%s\n", foldstr);
 
-    if ((multloctab = malloc (multlocsiz * 2 * sizeof (SCOTCH_Num))) == NULL) {
+    if ((multloctab = malloc (vertglbnbr * 2 * sizeof (SCOTCH_Num))) == NULL) { /* Allocate maximum size for security */
       SCOTCH_errorPrint ("main: cannot allocate multinode array");
       exit (EXIT_FAILURE);
     }
@@ -217,7 +219,8 @@ char *              argv[])
       }
 
       if (procnum == proclocnum)
-        printf ("%d: %s (%ld / %ld / %ld)\n", procnum, coarstr, (long) multlocsiz, (long) coarvertlocnbr, (long) vertlocnbr);
+        printf ("%d: %s (%ld / %ld / %ld / %f)\n", procnum, coarstr, (long) multlocsiz, (long) coarvertlocnbr, (long) vertlocnbr,
+                (double) coarvertglbnbr / (double) vertglbnbr);
 
       MPI_Barrier (proccomm);
     }

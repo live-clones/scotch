@@ -1,4 +1,4 @@
-/* Copyright 2007,2009,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2009,2010,2012,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 17 nov 2010     **/
 /**                # Version 6.0  : from : 27 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 6.1  : from : 15 mar 2021     **/
+/**                                 to   : 15 mar 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -69,9 +71,9 @@
 
 /*+ This routine reserves a memory area
 *** of a size sufficient to store a
-*** distributed graph structure.
+*** SCOTCH_Dgraph structure.
 *** It returns:
-*** - !NULL  : if the initialization succeeded.
+*** - !NULL  : if the allocation succeeded.
 *** - NULL   : on error.
 +*/
 
@@ -79,6 +81,18 @@ SCOTCH_Dgraph *
 SCOTCH_dgraphAlloc ()
 {
   return ((SCOTCH_Dgraph *) memAlloc (sizeof (SCOTCH_Dgraph)));
+}
+
+/*+ This routine returns the size, in bytes,
+*** of a SCOTCH_Dgraph structure.
+*** It returns:
+*** - > 0  : in all cases.
++*/
+
+int
+SCOTCH_dgraphSizeof ()
+{
+  return (sizeof (SCOTCH_Dgraph));
 }
 
 /*+ This routine initializes the opaque
