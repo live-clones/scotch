@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2012,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,6 +56,8 @@
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 21 may 2018     **/
+/**                # Version 6.1  : from : 04 apr 2021     **/
+/**                                 to   : 04 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -258,11 +260,11 @@ FILE * const                stream)               /* Output stream              
 {
   void             (* outcolor) (const SCOTCH_Num, double[]); /* Color routine   */
   O_InvMeshPath *     pattab;                     /* Array of path building data */
-  int *               idxtab;                     /* Array of indexes            */
-  int                 idxnbr;                     /* Number of indexes           */
+  SCOTCH_Num *        idxtab;                     /* Array of indexes            */
+  SCOTCH_Num          idxnbr;                     /* Number of indexes           */
   time_t              pictime;                    /* Creation time               */
   double              color[3];                   /* Vertex color                */
-  int                 i, j, k;
+  SCOTCH_Num          i, j, k;
 
   if (geomptr->verttab == NULL) {
     errorPrint ("outDrawInvMesh: geometry not provided");
@@ -273,8 +275,8 @@ FILE * const                stream)               /* Output stream              
 
   outcolor = (O_outParam.InvMesh.color == 'c') ? outColorColor : outColorBlw; /* Select color output routine */
 
-  if (((idxtab = (int *)           memAlloc ((grafptr->edgenbr / 2) * 3 * sizeof (int))) == NULL) ||
-      ((pattab = (O_InvMeshPath *) memAlloc (grafptr->vertnbr * sizeof (O_InvMeshPath))) == NULL)) {
+  if (((idxtab = (SCOTCH_Num *)    memAlloc ((grafptr->edgenbr / 2) * 3 * sizeof (SCOTCH_Num)))    == NULL) ||
+      ((pattab = (O_InvMeshPath *) memAlloc (grafptr->vertnbr *           sizeof (O_InvMeshPath))) == NULL)) {
     errorPrint ("outDrawInvMesh: out of memory");
     if (idxtab != NULL)
       memFree (idxtab);
@@ -360,7 +362,7 @@ FILE * const                stream)               /* Output stream              
   for (i = 0; i < idxnbr - 1; i ++) {
     if ((i % 8) == 0)
       fprintf (stream, "\n");
-    fprintf (stream, "\t%d,", idxtab[i]);         /* ~0 is "1" */
+    fprintf (stream, "\t" SCOTCH_NUMSTRING ",", idxtab[i]); /* ~0 is "1" */
   }
   if (((idxnbr - 1) % 8) == 0)
     fprintf (stream, "\n");
@@ -508,8 +510,8 @@ const C_Geometry * const    geomptr,              /* Graph geometry, sorted by v
 const C_Mapping * const     mapptr,               /* Result mapping, sorted by vertex label  */
 FILE * const                stream)               /* Output stream                           */
 {
-  int                 idxnbr;                     /* Number of indexes                               */
-  int *               idxtab;                     /* Array of indexes                                */
+  SCOTCH_Num          idxnbr;                     /* Number of indexes                               */
+  SCOTCH_Num *        idxtab;                     /* Array of indexes                                */
   O_PosMeshPath *     pattab;                     /* Array of path building data                     */
   O_PosMeshVertex *   pictab;                     /* Array of 2D coordinates, sorted by vertex index */
   O_Point             picmin;                     /* Picture minimum and maximum coordinates         */
@@ -519,18 +521,18 @@ FILE * const                stream)               /* Output stream              
   double              picsrad;                    /* Square of circle radius */
   time_t              pictime;                    /* Creation time           */
   double              color[3];                   /* Color values            */
-  int                 i, j, k;
+  SCOTCH_Num          i, j, k;
 
   if (geomptr->verttab == NULL) {
     errorPrint ("outDrawPosMesh: geometry not provided");
-    return      (1);
+    return     (1);
   }
 
   time (&pictime);                                /* Get current time */
 
-  if (((pictab = (O_PosMeshVertex *) memAlloc (grafptr->vertnbr * sizeof (O_PosMeshVertex))) == NULL) ||
-      ((idxtab = (int *)             memAlloc ((grafptr->edgenbr / 2) * 3 * sizeof (int)))   == NULL) ||
-      ((pattab = (O_PosMeshPath *)   memAlloc (grafptr->vertnbr * sizeof (O_PosMeshPath)))   == NULL)) {
+  if (((pictab = (O_PosMeshVertex *) memAlloc (grafptr->vertnbr *           sizeof (O_PosMeshVertex))) == NULL) ||
+      ((idxtab = (SCOTCH_Num *)      memAlloc ((grafptr->edgenbr / 2) * 3 * sizeof (SCOTCH_Num)))      == NULL) ||
+      ((pattab = (O_PosMeshPath *)   memAlloc (grafptr->vertnbr *           sizeof (O_PosMeshPath)))   == NULL)) {
     errorPrint ("outDrawPosMesh: out of memory");
     if (pictab != NULL) {
       if (idxtab != NULL)
@@ -719,7 +721,9 @@ FILE * const                stream)               /* Output stream              
 
   fprintf (stream, "/A  { 0 360 arc fill } bind def\n"); /* Macro definitions */
   if (O_outParam.PosMesh.color == 'c') {          /* If color output          */
-    for (i = 0; i < O_POSMESHCOLNBR; i ++) {      /* Build color indexes      */
+    int                 i;
+
+    for (i = 0; i < O_POSMESHCOLNBR; i ++) {      /* Build color indices */
       outColorColor (i, color);
       fprintf (stream, "/C%c { %g %g %g setrgbcolor } bind def\n",
                ('a' + i), color[0], color[1], color[2]);

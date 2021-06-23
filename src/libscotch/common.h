@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                                 to   : 23 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 aug 2020     **/
+/**                # Version 6.1  : from : 02 apr 2021     **/
+/**                                 to   : 02 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -176,7 +178,7 @@
 #ifdef INTSIZE32
 #define INT                         int32_t
 #define UINT                        UINT32
-#define COMM_INT                    MPI_INTEGER4
+#define COMM_INT                    MPI_INT32_T
 #ifdef PRId32
 #define INTSTRING                   "%" PRId32
 #define UINTSTRING                  "%" PRIu32
@@ -192,7 +194,7 @@
 #else /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T)) */
 #define UINT                        u_int64_t
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T)) */
-#define COMM_INT                    MPI_LONG_LONG
+#define COMM_INT                    MPI_INT64_T
 #ifdef PRId64
 #define INTSTRING                   "%" PRId64
 #define UINTSTRING                  "%" PRIu64

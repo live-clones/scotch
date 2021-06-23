@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,18 +31,19 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : esmumps_f.c                             **/
+/**   NAME       : library_esmumps.c                       **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module contains Fortran MUMPS      **/
-/**                stubs for the ordering routines of the  **/
+/**   FUNCTION   : This module contains a MUMPS interface  **/
+/**                for the ordering routines of the        **/
 /**                libSCOTCH + Emilio libfax libraries.    **/
 /**                                                        **/
-/**   DATES      : # Version 0.0  : from : 16 may 2001     **/
-/**                                 to   : 17 may 2001     **/
-/**                # Version 6.0  : from : 22 jan 2020     **/
-/**                                 to   : 22 jan 2020     **/
+/**   DATES      : # Version 6.1  : from : 05 sep 2020     **/
+/**                                 to   : 05 sep 2020     **/
+/**                                                        **/
+/**   NOTES      : # This code derives from that of the    **/
+/**                  original "esmumps.c" file.            **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,30 +51,52 @@
 **  The defines and includes.
 */
 
+#define ESMUMPS
+
 #include "module.h"
 #include "common.h"
+#include "scotch.h"
 #include "esmumps.h"
+#include "library.h"
 
 /**************************************/
 /*                                    */
-/* These routines are the Fortran API */
-/* for the MUMPS ordering routine.    */
+/* This routine acts as an interface  */
+/* between ordering software such as  */
+/* MUMPS and Scotch+Emilio.           */
 /*                                    */
 /**************************************/
 
-ESMUMPS_FORTRAN (                               \
-ESMUMPS_VOID, ESMUMPS_VOID, (                   \
-const INT * const           n,                  \
-const INT * const           iwlen,              \
-INT * const                 petab,              \
-const INT * const           pfree,              \
-INT * const                 lentab,             \
-INT * const                 iwtab,              \
-INT * const                 nvtab,              \
-INT * const                 elentab,            \
-INT * const                 lasttab,            \
-INT * const                 ncmpa),             \
-(n, iwlen, petab, pfree, lentab, iwtab, nvtab, elentab, lasttab, ncmpa))
+int
+esmumps (
+const SCOTCH_Num            n,
+const SCOTCH_Num            iwlen,                /*+ Not used, just here for consistency      +*/
+SCOTCH_Num * restrict const petab,
+const SCOTCH_Num            pfree,
+SCOTCH_Num * restrict const lentab,
+SCOTCH_Num * restrict const iwtab,
+SCOTCH_Num * restrict const nvtab,
+SCOTCH_Num * restrict const elentab,              /*+ Permutations computed for debugging only +*/
+SCOTCH_Num * restrict const lasttab)              /*+ Permutations computed for debugging only +*/
 {
-  *ncmpa = esmumps (*n, *iwlen, petab, *pfree, lentab, iwtab, nvtab, elentab, lasttab);
+  return (esmumps2 (n, pfree, petab, lentab, iwtab, NULL, nvtab, elentab, lasttab));
+}
+
+/*
+**
+*/
+
+int
+esmumpsv (
+const SCOTCH_Num            n,
+const SCOTCH_Num            iwlen,                /*+ Not used, just here for consistency      +*/
+SCOTCH_Num * restrict const petab,
+const SCOTCH_Num            pfree,
+SCOTCH_Num * restrict const lentab,
+SCOTCH_Num * restrict const iwtab,
+SCOTCH_Num * restrict const nvtab,
+SCOTCH_Num * restrict const elentab,              /*+ Permutations computed for debugging only +*/
+SCOTCH_Num * restrict const lasttab)              /*+ Permutations computed for debugging only +*/
+{
+  return (esmumps2 (n, pfree, petab, lentab, iwtab, nvtab, nvtab, elentab, lasttab));
 }

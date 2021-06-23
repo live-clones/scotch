@@ -208,14 +208,16 @@ In order to alleviate this problem, the \libscotch\ proposes a set of
 routines to dynamically allocate storage space for the opaque API
 \scotch\ structures. Because these routines return pointers, these
 {\tt SCOTCH\_\lbt *Alloc} routines, as well as the {\tt SCOTCH\_\lbt
-free} routine, are only available in the C interface.
+free} routine, are only available in the C interface. Alternately, the
+{\tt SCOTCH\_\lbt *Sizeof} routines may be used to obtain dynamically
+the size of these opaque structures.
 
 \subsubsection{Machine word size issues}
 \label{sec-lib-inttypesize}
 
 Graph indices are represented in \scotch\ as integer values of type
 {\tt SCOTCH\_\lbt Num}. By default, this type equates to the {\tt int}
-C type, that is, an integer type of size equal to the one of 
+C type, that is, an integer type of size equal to the one of
 the machine word. However, it can represent any other integer
 type. Indeed, the size of the {\tt SCOTCH\_\lbt Num} integer type can
 be coerced to 32 or 64 bits by using the ``{\tt -DINTSIZE32}'' or
@@ -339,7 +341,7 @@ array'' case, such that $\mathtt{verttab}$ is sorted in ascending
 order, $\mathtt{verttab}\mbox{\tt [}\lbt\mathtt{baseval}\mbox{\tt ]} =
 \mathtt{baseval}$ and $\mathtt{verttab}\lbt\mbox{\tt
 [}\mathtt{baseval} + \mathtt{vertnbr}\mbox{\tt ]} =
-(\mathtt{baseval} + \mathtt{edgenbr})$. 
+(\mathtt{baseval} + \mathtt{edgenbr})$.
 \iteme[{\tt velotab}]
 Optional array, of size {\tt vertnbr}, holding the integer load
 associated with every vertex.
@@ -544,7 +546,7 @@ is located at $\mathtt{geomtab}\mbox{\tt [}(i - \mathtt{baseval}) *
 $\mathtt{dimnnbr} \geq 2$, and its $z$ coordinate is located at
 $\mathtt{geomtab}\mbox{\tt [}(i - \mathtt{baseval}) * \mathtt{dimnnbr}
 + \mathtt{baseval} + 2\mbox{\tt ]}$ if $\mathtt{dimnnbr} =
-3$. Whenever the geometry is associated with a mesh, 
+3$. Whenever the geometry is associated with a mesh,
 only node vertices are considered, so the $x$ coordinate of some mesh
 node vertex $i$, with $\mathtt{vnodbas} \leq i$, is located
 at $\mathtt{geomtab}\mbox{\tt [}(i - \mathtt{vnodbas}) *
@@ -1647,6 +1649,30 @@ separation process whenever some condition is true.
 \subsection{Target architecture handling routines}
 \label{sec-lib-arch-handling}
 
+\subsubsection{{\tt SCOTCH\_archAlloc}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+SCOTCH\_Arch * SCOTCH\_archAlloc ( & void)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archAlloc} function allocates a memory area of a
+size sufficient to store a {\tt SCOTCH\_\lbt Arch} structure. It is
+the user's responsibility to free this memory when it is no longer
+needed, using the {\tt SCOTCH\_\lbt mem\lbt Free} routine. The
+allocated space must be initialized before use, by means of the
+{\tt SCOTCH\_\lbt arch\lbt Init} routine.
+
+\progret
+
+{\tt SCOTCH\_archAlloc} returns the pointer to the memory area if it
+has been successfully allocated, and {\tt NULL} else.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_archExit}}
 
 \begin{itemize}
@@ -1711,7 +1737,7 @@ int SCOTCH\_archLoad ( & SCOTCH\_Arch * & archptr, \\
 
 {\tt\begin{tabular}{l@{}ll}
 scotchfarchload ( & doubleprecision (*) & archdat, \\
-                  & integer             & fildes, \\
+                  & integer             & fildes,  \\
                   & integer             & ierr)
 \end{tabular}}
 
@@ -1842,7 +1868,9 @@ int SCOTCH\_archBuild0 ( & SCOTCH\_Arch *        & archptr, \\
                          & const SCOTCH\_Num     & listnbr, \\
                          & const SCOTCH\_Num *   & listtab, \\
                          & const SCOTCH\_Strat * & straptr) \\
-~\\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
 int SCOTCH\_archBuild ( & SCOTCH\_Arch *        & archptr, \\
                         & const SCOTCH\_Graph * & grafptr, \\
                         & const SCOTCH\_Num     & listnbr, \\
@@ -1856,8 +1884,10 @@ scotchfarchbuild0 ( & doubleprecision (*)   & archdat, \\
                     & integer*{\it num}     & listnbr, \\
                     & integer*{\it num} (*) & listtab, \\
                     & doubleprecision (*)   & stradat, \\
-                    & integer               & ierr) \\
-~\\
+                    & integer               & ierr)    \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
 scotchfarchbuild ( & doubleprecision (*)   & archdat, \\
                    & doubleprecision (*)   & grafdat, \\
                    & integer*{\it num}     & listnbr, \\
@@ -1997,9 +2027,9 @@ architecture has been successfully built, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_archCmpltw ( & SCOTCH\_Arch *            & archptr, \\
-                         & const SCOTCH\_Num         & vertnbr, \\
-                         & const SCOTCH\_Num * const & velotab)
+int SCOTCH\_archCmpltw ( & SCOTCH\_Arch *    & archptr, \\
+                         & const SCOTCH\_Num & vertnbr, \\
+                         & const SCOTCH\_Num & velotab)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -2374,6 +2404,84 @@ of dimensions is defined at compile-time.
 \texttt{SCOTCH\_archTorusX} returns $0$ if the
 \texttt{dimnnbr}-dimension mesh target architecture has been
 successfully built, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archVcmplt}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archVmplt ( & SCOTCH\_Arch * & archptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchvcmplt ( & doubleprecision (*) & archdat, \\
+                    & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archVcmplt} routine fills the {\tt SCOTCH\_\lbt Arch}
+structure pointed to by {\tt archptr} with the description of a
+``variable-sized'' complete graph architecture, which can be used as
+input to {\tt SCOTCH\_\lbt graph\lbt Map} to perform graph clustering
+(see Section~\ref{sec-algo-variable}).
+
+Every domain of a variable-size architecture can always be
+bipartitioned into two subdomains. Consequently, when used in the
+context of a recursive bipartitioning algorithm, the algorithm will
+perform recursively until there is only a single source graph vertex
+in some target domain, or some bipartitioning method assigns all its
+source graph vertices to one of the subdomains.
+
+\progret
+
+{\tt SCOTCH\_archVcmplt} returns $0$ if the variable-sized complete
+graph target architecture has been successfully built, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archVhcub}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archVhcub ( & SCOTCH\_Arch * & archptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchvhcub ( & doubleprecision (*) & archdat, \\
+                   & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archVhcub} routine fills the {\tt SCOTCH\_\lbt Arch}
+structure pointed to by {\tt archptr} with the description of a
+``variable-sized'' hypercube architecture, which can be used as
+input to {\tt SCOTCH\_\lbt graph\lbt Map} to perform graph clustering
+(see Section~\ref{sec-algo-variable}).
+
+Every domain of a variable-size architecture can always be
+bipartitioned into two subdomains. Consequently, when used in the
+context of a recursive bipartitioning algorithm, the algorithm will
+perform recursively until there is only a single source graph vertex
+in some target domain, or some bipartitioning method assigns all its
+source graph vertices to one of the subdomains.
+
+The difference of the variable-sized hypercube architecture with
+respect to the variable-sized complete graph architecture is that the
+cost of previously cut edges increases with the dimension of the
+hypercube. Hence, when some vertices whose edges have been cut
+previously, are placed in some part, their cut neighbors will tend to
+be put in a same part as well, on the other branch of the recursive
+bipartitioning tree, therefore increasing cluster locality.
+
+\progret
+
+{\tt SCOTCH\_archVhcub} returns $0$ if the variable-sized hypercube
+target architecture has been successfully built, and $1$ else.
 \end{itemize}
 
 \subsection{Target domain handling routines}
@@ -2789,12 +2897,12 @@ $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphCoarsen ( & SCOTCH\_Graph * const & finegrafptr, \\
+int SCOTCH\_graphCoarsen ( & const SCOTCH\_Graph * & finegrafptr, \\
                            & const SCOTCH\_Num     & coarvertnbr, \\
                            & const double          & coarrat,     \\
                            & const SCOTCH\_Num     & flagval,     \\
-                           & SCOTCH\_Graph * const & coargrafptr, \\
-                           & SCOTCH\_Num * const   & coarmulttab) \\
+                           & SCOTCH\_Graph *       & coargrafptr, \\
+                           & SCOTCH\_Num *         & coarmulttab) \\
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -2827,7 +2935,7 @@ When {\tt SCOTCH\_\lbt COARSEN\lbt NO\lbt MERGE} is set, isolated
 vertices are never merged with other vertices. This preserves the
 topology of the graph, at the expense of a higher coarsening ratio.
 
-The {\tt multloctab} array should be of a size big enough to store
+The {\tt coarmulttab} array should be of a size big enough to store
 multinode data for the resulting coarsened graph. Hence, the size of
 the array must be at least twice the maximum expected number of local
 coarse vertices, according to the prescribed coarsening ratio
@@ -2855,11 +2963,11 @@ $2$ on error.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphCoarsenBuild ( & SCOTCH\_Graph * const & finegrafptr, \\
-                                & const SCOTCH\_Num     & coarvertnbr, \\
-                                & SCOTCH\_Num * const   & finematetab, \\
-                                & SCOTCH\_Graph * const & coargrafptr, \\
-                                & SCOTCH\_Num * const   & coarmulttab) \\
+int SCOTCH\_graphCoarsenBuild ( & SCOTCH\_Graph *   & finegrafptr, \\
+                                & const SCOTCH\_Num & coarvertnbr, \\
+                                & SCOTCH\_Num *     & finematetab, \\
+                                & SCOTCH\_Graph *   & coargrafptr, \\
+                                & SCOTCH\_Num *     & coarmulttab) \\
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -2897,7 +3005,7 @@ routine. Indeed, calling the
 amounts to calling the {\tt SCOTCH\_\lbt graph\lbt Coarsen} routine,
 yet additionally publicizing the {\tt fine\lbt mate\lbt tab} array.
 
-The {\tt multloctab} array should be of a size big enough to store
+The {\tt coarmulttab} array should be of a size big enough to store
 multinode data for the resulting coarsened graph, that is, twice the
 value of {\tt coar\lbt vert\lbt nbr}. Upon successful completion,
 this array will contain pairs of consecutive {\tt SCOTCH\_\lbt Num}
@@ -2921,11 +3029,11 @@ structure has been successfully created, and $1$ on error.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphCoarsenMatch ( & SCOTCH\_Graph * const & finegrafptr, \\
-                                & SCOTCH\_Num * const   & coarvertptr, \\
-                                & const double          & coarrat,     \\
-                                & const SCOTCH\_Num     & flagval,     \\
-                                & SCOTCH\_Num * const   & finematetab) \\
+int SCOTCH\_graphCoarsenMatch ( & SCOTCH\_Graph *   & finegrafptr, \\
+                                & SCOTCH\_Num *     & coarvertptr, \\
+                                & const double      & coarrat,     \\
+                                & const SCOTCH\_Num & flagval,     \\
+                                & SCOTCH\_Num *     & finematetab) \\
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -3242,15 +3350,15 @@ structure remains ready for subsequent calls to any routine of the
 
 {\tt\begin{tabular}{l@{}ll}
 int SCOTCH\_graphInduceList ( & const SCOTCH\_Graph * & orggrafptr, \\
-                              & SCOTCH\_Num           & vnumnbr, \\
-                              & SCOTCH\_Num *         & vnumtab, \\
+                              & SCOTCH\_Num           & vnumnbr,    \\
+                              & SCOTCH\_Num *         & vnumtab,    \\
                               & SCOTCH\_Graph *       & indgrafptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphinducelist ( & doubleprecision (*)   & orggrafdat, \\
-                         & integer*{\it num}     & vnumnbr, \\
-                         & integer{\it num} (*)  & vnumtab, \\
+                         & integer*{\it num}     & vnumnbr,    \\
+                         & integer{\it num} (*)  & vnumtab,    \\
                          & doubleprecision (*)   & indgrafdat, \\
                          & integer               & ierr)
 
@@ -3258,7 +3366,7 @@ scotchfgraphinducelist ( & doubleprecision (*)   & orggrafdat, \\
 
 \progdes
 
-The {\tt SCOTCH\_graphInduceList} routine computes an induced graph 
+The {\tt SCOTCH\_graphInduceList} routine computes an induced graph
 \texttt{indgrafdat} from the original graph \texttt{orggrafdat}. The
 vertices that are kept in the induced graph are the \texttt{vnumnbr}
 vertices whose based indices in the original graph are provided in the
@@ -3277,17 +3385,17 @@ been successfully computed, and $1$ else.
 
 {\tt\begin{tabular}{l@{}ll}
 int SCOTCH\_graphInducePart ( & const SCOTCH\_Graph * & orggrafptr, \\
-                              & SCOTCH\_Num           & vnumnbr, \\
-                              & SCOTCH\_GraphPart2 *  & parttab, \\
-                              & SCOTCH\_GraphPart2    & partval, \\
+                              & SCOTCH\_Num           & vnumnbr,    \\
+                              & SCOTCH\_GraphPart2 *  & parttab,    \\
+                              & SCOTCH\_GraphPart2    & partval,    \\
                               & SCOTCH\_Graph *       & indgrafptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphinducepart ( & doubleprecision (*)    & orggrafdat, \\
-                         & integer*{\it num}      & vnumnbr, \\
-                         & character{\it num} (*) & parttab, \\
-                         & character{\it num}     & partval, \\
+                         & integer*{\it num}      & vnumnbr,    \\
+                         & character{\it num} (*) & parttab,    \\
+                         & character{\it num}     & partval,    \\
                          & doubleprecision (*)    & indgrafdat, \\
                          & integer                & ierr)
 
@@ -3295,7 +3403,7 @@ scotchfgraphinducepart ( & doubleprecision (*)    & orggrafdat, \\
 
 \progdes
 
-The {\tt SCOTCH\_graphInducePart} routine computes an induced graph 
+The {\tt SCOTCH\_graphInducePart} routine computes an induced graph
 \texttt{indgrafdat} from the original graph \texttt{orggrafdat}. The
 vertices that are kept in the induced graph are the \texttt{vnumnbr}
 vertices whose part number in the \texttt{parttab} array are equal to
@@ -3466,13 +3574,34 @@ graph is wanted, function {\tt SCOTCH\_graph\lbo Data} should be
 preferred.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_graphSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_graphSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgraphsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_graphSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Graph} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_graphStat}}
 
 \begin{itemize}
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_graphStat ( & const SCOTCH\_Graph * & grafptr, \\
+void SCOTCH\_graphStat ( & const SCOTCH\_Graph * & grafptr,    \\
                          & SCOTCH\_Num *         & velominptr, \\
                          & SCOTCH\_Num *         & velomaxptr, \\
                          & SCOTCH\_Num *         & velosumptr, \\
@@ -4290,7 +4419,7 @@ int SCOTCH\_graphMapLoad ( & const SCOTCH\_Graph * & grafptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphmapload ( & doubleprecision (*) & grafdat, \\
                       & doubleprecision (*) & mappdat, \\
-                      & integer             & fildes, \\
+                      & integer             & fildes,  \\
                       & integer             & ierr)
 \end{tabular}}
 
@@ -4530,7 +4659,7 @@ int SCOTCH\_graphTabLoad ( & const SCOTCH\_Graph * & grafptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphtabload ( & doubleprecision (*)   & grafdat, \\
                       & integer*{\it num} (*) & parttab, \\
-                      & integer               & fildes, \\
+                      & integer               & fildes,  \\
                       & integer               & ierr)
 \end{tabular}}
 
@@ -4579,7 +4708,7 @@ int SCOTCH\_graphTabSave ( & const SCOTCH\_Graph * & grafptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphtabsave ( & doubleprecision (*)   & grafdat, \\
                       & integer*{\it num} (*) & parttab, \\
-                      & integer               & fildes, \\
+                      & integer               & fildes,  \\
                       & integer               & ierr)
 \end{tabular}}
 
@@ -4605,7 +4734,7 @@ with the logical unit of the mapping file.
 
 \progret
 
-{\tt SCOTCH\_graphTabSave} returns $0$ if the part array 
+{\tt SCOTCH\_graphTabSave} returns $0$ if the part array
 has been successfully saved to  \texttt{stream}, and $1$ else.
 \end{itemize}
 
@@ -4778,12 +4907,12 @@ int SCOTCH\_graphOrderComputeList ( & const SCOTCH\_Graph * & grafptr, \\
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-scotchfgraphordercompute ( & doubleprecision (*)   & grafdat, \\
-                           & doubleprecision (*)   & ordedat, \\
-                           & integer*{\it num}     & listnbr, \\
-                           & integer*{\it num} (*) & listtab, \\
-                           & doubleprecision (*)   & stradat, \\
-                           & integer               & ierr)
+scotchfgraphordercomputelist ( & doubleprecision (*)   & grafdat, \\
+                               & doubleprecision (*)   & ordedat, \\
+                               & integer*{\it num}     & listnbr, \\
+                               & integer*{\it num} (*) & listtab, \\
+                               & doubleprecision (*)   & stradat, \\
+                               & integer               & ierr)
 \end{tabular}}
 
 \progdes
@@ -4968,7 +5097,7 @@ int SCOTCH\_graphOrderSave ( & const SCOTCH\_Graph *    & grafptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfgraphordersave ( & doubleprecision (*) & grafdat, \\
                         & doubleprecision (*) & ordedat, \\
-                        & integer             & fildes, \\
+                        & integer             & fildes,  \\
                         & integer             & ierr)
 \end{tabular}}
 
@@ -5104,7 +5233,7 @@ has been successfully allocated, and {\tt NULL} else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_meshBuild ( & SCOTCH\_Mesh *       & meshptr, \\
+int SCOTCH\_meshBuild ( & SCOTCH\_Mesh *      & meshptr, \\
                         & const SCOTCH\_Num   & velmbas, \\
                         & const SCOTCH\_Num   & vnodbas, \\
                         & const SCOTCH\_Num   & velmnbr, \\
@@ -5388,6 +5517,43 @@ structure, but must not be used after the mesh structure is freed.
 successfully allocated and filled, and $1$ else.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_meshGraphDual}}
+\label{sec-lib-func-meshgraphdual}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_meshGraphDual ( & const SCOTCH\_Mesh * & meshptr, \\
+                            & SCOTCH\_Graph *      & grafptr, \\
+                            & const SCOTCH\_Num    & ncomval)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfmeshgraphdual ( & doubleprecision (*) & meshdat, \\
+                       & doubleprecision (*) & grafdat, \\
+                       & integer             & ncomval, \\
+                       & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_meshGraphDual} routine builds a dual graph (i.e., an
+element graph) from a mesh. It creates, in the {\tt SCOTCH\_\lbt
+  Graph} structure pointed to by {\tt grafptr}, a graph having as many
+vertices as there are elements in the {\tt SCOTCH\_\lbt Mesh}
+structure pointed to by {\tt meshptr}, and such that there exists an
+edge between any two graph vertices if there are at least
+{\tt ncomval} shared nodes between the two corresponding elements in the
+source mesh, or if an element shares all of its nodes, minus one, with
+another element.
+
+\progret
+
+{\tt SCOTCH\_meshGraphDual} returns $0$ if the graph structure has
+been successfully allocated and filled, and $1$ else.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_meshInit}}
 \label{sec-lib-func-meshinit}
 
@@ -5532,13 +5698,34 @@ mesh is wanted, function {\tt SCOTCH\_mesh\lbo Data} should be
 preferred.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_meshSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_meshSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfmeshsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_meshSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Mesh} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_meshStat}}
 
 \begin{itemize}
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_meshStat ( & const SCOTCH\_Mesh * & meshptr, \\
+void SCOTCH\_meshStat ( & const SCOTCH\_Mesh * & meshptr,    \\
                         & SCOTCH\_Num *        & vnlominptr, \\
                         & SCOTCH\_Num *        & vnlomaxptr, \\
                         & SCOTCH\_Num *        & vnlosumptr, \\
@@ -5880,7 +6067,7 @@ int SCOTCH\_meshOrderSaveMap ( & const SCOTCH\_Mesh *     & meshptr, \\
 {\tt\begin{tabular}{l@{}ll}
 scotchfmeshordersavemap ( & doubleprecision (*) & meshdat, \\
                           & doubleprecision (*) & ordedat, \\
-                          & integer             & fildes, \\
+                          & integer             & fildes,  \\
                           & integer             & ierr)
 \end{tabular}}
 
@@ -5982,7 +6169,7 @@ has been successfully allocated, and {\tt NULL} else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_stratExit ( & SCOTCH\_Strat * & archptr)
+void SCOTCH\_stratExit ( & SCOTCH\_Strat * & straptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -6040,7 +6227,7 @@ int SCOTCH\_stratSave ( & const SCOTCH\_Strat * & straptr, \\
 
 {\tt\begin{tabular}{l@{}ll}
 scotchfstratsave ( & doubleprecision (*) & stradat, \\
-                   & integer             & fildes, \\
+                   & integer             & fildes,  \\
                    & integer             & ierr)
 \end{tabular}}
 
@@ -6062,6 +6249,27 @@ with the logical unit of the output file.
 
 {\tt SCOTCH\_stratSave} returns $0$ if the strategy string has been
 successfully written to {\tt stream}, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_stratSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_stratSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfstratsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_stratSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Strat} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
 \end{itemize}
 
 \subsection{Strategy creation routines}
@@ -6508,59 +6716,6 @@ allocated space must be initialized before use, by means of the
 has been successfully allocated, and {\tt NULL} else.
 \end{itemize}
 
-\subsubsection{{\tt SCOTCH\_geomInit}}
-\label{sec-lib-func-geominit}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_geomInit ( & SCOTCH\_Geom * & geomptr)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfgeominit ( & doubleprecision (*) & geomdat, \\
-                  & integer             & ierr)
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_geomInit} function initializes a {\tt SCOTCH\_\lbt
-Geom} structure so as to make it suitable for future operations. It
-should be the first function to be called upon a {\tt SCOTCH\_\lbt
-Geom} structure. When the geometrical data is no longer of use, call
-function {\tt SCOTCH\_\lbt geom\lbt Exit} to free its internal
-structures.
-
-\progret
-
-{\tt SCOTCH\_geomInit} returns $0$ if the geometrical structure has been
-successfully initialized, and $1$ else.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_geomExit}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_geomExit ( & SCOTCH\_Geom * & geomptr)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfgeomexit ( & doubleprecision (*) & geomdat)
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_geomExit} function frees the contents of a
-{\tt SCOTCH\_\lbt Geom} structure previously initialized by
-{\tt SCOTCH\_\lbt geomInit}. All subsequent calls to
-{\tt SCOTCH\_\lbt *Geom*} routines other than {\tt SCOTCH\_\lbt
-geomInit}, using this structure as parameter, may yield
-unpredictable results.
-\end{itemize}
-
 \subsubsection{{\tt SCOTCH\_geomData}}
 \label{sec-lib-func-geomdata}
 
@@ -6620,14 +6775,88 @@ Section~\ref{sec-lib-inttypesize} for more information on this
 issue.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_geomExit}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+void SCOTCH\_geomExit ( & SCOTCH\_Geom * & geomptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgeomexit ( & doubleprecision (*) & geomdat)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_geomExit} function frees the contents of a
+{\tt SCOTCH\_\lbt Geom} structure previously initialized by
+{\tt SCOTCH\_\lbt geomInit}. All subsequent calls to
+{\tt SCOTCH\_\lbt *Geom*} routines other than {\tt SCOTCH\_\lbt
+geomInit}, using this structure as parameter, may yield
+unpredictable results.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_geomInit}}
+\label{sec-lib-func-geominit}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_geomInit ( & SCOTCH\_Geom * & geomptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgeominit ( & doubleprecision (*) & geomdat, \\
+                  & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_geomInit} function initializes a {\tt SCOTCH\_\lbt
+Geom} structure so as to make it suitable for future operations. It
+should be the first function to be called upon a {\tt SCOTCH\_\lbt
+Geom} structure. When the geometrical data is no longer of use, call
+function {\tt SCOTCH\_\lbt geom\lbt Exit} to free its internal
+structures.
+
+\progret
+
+{\tt SCOTCH\_geomInit} returns $0$ if the geometrical structure has been
+successfully initialized, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_geomSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_geomSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgeomsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_geomSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Geom} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_graphGeomLoadChac}}
 
 \begin{itemize}
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphGeomLoadChac ( & SCOTCH\_Graph * & grafptr, \\
-                                & SCOTCH\_Geom *  & geomptr, \\
+int SCOTCH\_graphGeomLoadChac ( & SCOTCH\_Graph * & grafptr,    \\
+                                & SCOTCH\_Geom *  & geomptr,    \\
                                 & FILE *          & grafstream, \\
                                 & FILE *          & geomstream, \\
                                 & const char *    & string)
@@ -6661,54 +6890,14 @@ associated with the logical unit of the graph file.
 been successfully allocated and filled with the data read, and $1$ else.
 \end{itemize}
 
-\subsubsection{{\tt SCOTCH\_graphGeomSaveChac}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphGeomSaveChac ( & const SCOTCH\_Graph * & grafptr, \\
-                                & const SCOTCH\_Geom *  & geomptr, \\
-                                & FILE *                & grafstream, \\
-                                & FILE *                & geomstream, \\
-                                & const char *          & string)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfgraphgeomsavechac ( & doubleprecision (*) & grafdat,    \\
-                           & doubleprecision (*) & geomdat,    \\
-                           & integer             & graffildes, \\
-                           & integer             & geomfildes, \\
-                           & character (*)       & string)
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_graphGeomSaveChac} routine saves the contents
-of the {\tt SCOTCH\_\lbt Graph} structure pointed to by {\tt grafptr}
-to stream {\tt graf\lbt stream}, in the \chaco\ graph
-format~\cite{hele93c}. Since this graph format does
-not handle geometry data, the {\tt geomptr} and {\tt geom\lbt stream}
-fields are not used, as well as the {\tt string} field.
-
-Fortran users must use the {\tt PXFFILENO} or {\tt FNUM} functions to
-obtain the number of the Unix file descriptor {\tt graf\lbt fildes}
-associated with the logical unit of the graph file.
-
-\progret
-
-{\tt SCOTCH\_graphGeomSaveChac} returns $0$ if the graph structure
-has been successfully written to {\tt graf\lbt stream}, and $1$ else.
-\end{itemize}
-
 \subsubsection{{\tt SCOTCH\_graphGeomLoadHabo}}
 
 \begin{itemize}
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphGeomLoadHabo ( & SCOTCH\_Graph * & grafptr, \\
-                                & SCOTCH\_Geom *  & geomptr, \\
+int SCOTCH\_graphGeomLoadHabo ( & SCOTCH\_Graph * & grafptr,    \\
+                                & SCOTCH\_Geom *  & geomptr,    \\
                                 & FILE *          & grafstream, \\
                                 & FILE *          & geomstream, \\
                                 & const char *    & string)
@@ -6751,16 +6940,16 @@ been successfully allocated and filled with the data read, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_graphGeomLoadScot ( & SCOTCH\_Graph * & grafptr, \\
-                                & SCOTCH\_Geom *  & geomptr, \\
+int SCOTCH\_graphGeomLoadScot ( & SCOTCH\_Graph * & grafptr,    \\
+                                & SCOTCH\_Geom *  & geomptr,    \\
                                 & FILE *          & grafstream, \\
                                 & FILE *          & geomstream, \\
                                 & const char *    & string)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-scotchfgraphgeomloadscot ( & doubleprecision (*) & grafdat, \\
-                           & doubleprecision (*) & geomdat, \\
+scotchfgraphgeomloadscot ( & doubleprecision (*) & grafdat,    \\
+                           & doubleprecision (*) & geomdat,    \\
                            & integer             & graffildes, \\
                            & integer             & geomfildes, \\
                            & character (*)       & string)
@@ -6786,6 +6975,46 @@ graph and geometry files.
 {\tt SCOTCH\_graphGeomLoadScot} returns $0$ if the graph topology and
 geometry have been successfully allocated and filled with the data
 read, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_graphGeomSaveChac}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_graphGeomSaveChac ( & const SCOTCH\_Graph * & grafptr,    \\
+                                & const SCOTCH\_Geom *  & geomptr,    \\
+                                & FILE *                & grafstream, \\
+                                & FILE *                & geomstream, \\
+                                & const char *          & string)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfgraphgeomsavechac ( & doubleprecision (*) & grafdat,    \\
+                           & doubleprecision (*) & geomdat,    \\
+                           & integer             & graffildes, \\
+                           & integer             & geomfildes, \\
+                           & character (*)       & string)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_graphGeomSaveChac} routine saves the contents
+of the {\tt SCOTCH\_\lbt Graph} structure pointed to by {\tt grafptr}
+to stream {\tt graf\lbt stream}, in the \chaco\ graph
+format~\cite{hele93c}. Since this graph format does
+not handle geometry data, the {\tt geomptr} and {\tt geom\lbt stream}
+fields are not used, as well as the {\tt string} field.
+
+Fortran users must use the {\tt PXFFILENO} or {\tt FNUM} functions to
+obtain the number of the Unix file descriptor {\tt graf\lbt fildes}
+associated with the logical unit of the graph file.
+
+\progret
+
+{\tt SCOTCH\_graphGeomSaveChac} returns $0$ if the graph structure
+has been successfully written to {\tt graf\lbt stream}, and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_graphGeomSaveScot}}
@@ -6986,6 +7215,27 @@ needed, using the {\tt SCOTCH\_\lbt mem\lbt Free} routine.
 has been successfully allocated, and {\tt NULL} else.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_mapSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_mapSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfmapsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_mapSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Mapping} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_orderAlloc}}
 
 \begin{itemize}
@@ -7006,6 +7256,27 @@ needed, using the {\tt SCOTCH\_\lbt mem\lbt Free} routine.
 
 {\tt SCOTCH\_orderAlloc} returns the pointer to the memory area if it
 has been successfully allocated, and {\tt NULL} else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_orderSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_orderSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfordersizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_orderSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Ordering} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
 \end{itemize}
 
 \subsection{Error handling routines}
@@ -7040,7 +7311,7 @@ the {\tt -lscotch} argument.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_errorPrint ( & const char * const & errstr, ...)
+void SCOTCH\_errorPrint ( & const char * & errstr, ...)
 \end{tabular}}
 
 \progdes
@@ -7055,7 +7326,7 @@ variable-length argument error string to some stream.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_errorPrintW ( & const char * const & errstr, ...)
+void SCOTCH\_errorPrintW ( & const char * & errstr, ...)
 \end{tabular}}
 
 \progdes
@@ -7152,6 +7423,11 @@ considered as properly released by memory accounting routines
 {\tt SCOTCH\_\lbt mem\lbt Cur} and {\tt SCOTCH\_\lbt mem\lbt Max},
 and segmentation errors would happen when the
 {\tt COMMON\_\lbt MEMORY\_\lbt CHECK} compile flag is set.
+
+On the opposite, if the user has allocated memory by himself according
+to the size information provided by the {\tt SCOTCH\_\lbt *\lbt
+Sizeof} routines, it is his responsibility to free this memory using
+the corresponding memory freeing routine of his environment.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_memMax}}
@@ -7278,9 +7554,9 @@ process-dependent seed will be used, respectively.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_version ( & int * const & versptr, \\
-                      & int * const & relaptr, \\
-                      & int * const & patcptr)
+int SCOTCH\_version ( & int * & versptr, \\
+                      & int * & relaptr, \\
+                      & int * & patcptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -7323,22 +7599,22 @@ Section~\ref{sec-examples} for an example.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_EdgeND ( & const SCOTCH\_Num * const & n, \\
-                     & const SCOTCH\_Num * const & xadj, \\
-                     & const SCOTCH\_Num * const & adjncy, \\
-                     & const SCOTCH\_Num * const & numflag, \\
-                     & const SCOTCH\_Num * const & options, \\
-                     & SCOTCH\_Num * const       & perm, \\
-                     & SCOTCH\_Num * const       & iperm)
+void METIS\_EdgeND ( & const SCOTCH\_Num * & n,       \\
+                     & const SCOTCH\_Num * & xadj,    \\
+                     & const SCOTCH\_Num * & adjncy,  \\
+                     & const SCOTCH\_Num * & numflag, \\
+                     & const SCOTCH\_Num * & options, \\
+                     & SCOTCH\_Num *       & perm,    \\
+                     & SCOTCH\_Num *       & iperm)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_edgend ( & integer*{\it num}     & n, \\
-                & integer*{\it num} (*) & xadj, \\
-                & integer*{\it num} (*) & adjncy, \\
+metis\_edgend ( & integer*{\it num}     & n,       \\
+                & integer*{\it num} (*) & xadj,    \\
+                & integer*{\it num} (*) & adjncy,  \\
                 & integer*{\it num}     & numflag, \\
                 & integer*{\it num} (*) & options, \\
-                & integer*{\it num} (*) & perm, \\
+                & integer*{\it num} (*) & perm,    \\
                 & integer*{\it num} (*) & iperm)
 \end{tabular}}
 
@@ -7346,8 +7622,12 @@ metis\_edgend ( & integer*{\it num}     & n, \\
 
 The {\tt METIS\_EdgeND} function performs a nested dissection ordering
 of the graph passed as arrays {\tt xadj} and {\tt adjncy}, using
-the default \scotch\ ordering strategy. The {\tt options} array is not
-used. The {\tt perm} and {\tt iperm} arrays have the opposite meaning
+the default \scotch\ ordering strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt perm} and {\tt iperm} arrays have the opposite meaning
 as in \scotch: the \metis\ {\tt perm} array holds what is called
 ``inverse permutation'' in \scotch, while {\tt iperm} holds what is
 called ``direct permutation'' in \scotch.
@@ -7359,28 +7639,76 @@ METIS\_\lbo NodeND} and {\tt METIS\_\lbo NodeWND} call the same
 proved to be efficient in most cases.
 \end{itemize}
 
+\subsubsection{{\tt METIS\_MeshToDual}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int METIS\_MeshToDual ( & const SCOTCH\_Num * const & ne,      \\
+                        & const SCOTCH\_Num * const & nn,      \\
+                        & const SCOTCH\_Num * const & eptr,    \\
+                        & const SCOTCH\_Num * const & eind,    \\
+                        & const SCOTCH\_Num * const & ncommon, \\
+                        & const SCOTCH\_Num * const & numflag, \\
+                        & SCOTCH\_Num ** const      & xadj,    \\
+                        & SCOTCH\_Num ** const      & adjncy)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+metis\_meshtodual ( & integer*{\it num}      & ne,      \\
+                    & integer*{\it num}      & nn,      \\
+                    & integer*{\it num} (*)  & eptr,    \\
+                    & integer*{\it num} (*)  & eind,    \\
+                    & integer*{\it num}      & ncommon, \\
+                    & integer*{\it num}      & numflag, \\
+                    & integer*{\it num} (**) & xadj,    \\
+                    & integer*{\it num} (**) & adjncy)
+\end{tabular}}
+
+\progdes
+
+Given the \texttt{eptr} and \texttt{eind} arrays describing the
+element-to-node adjacency of a mesh with \texttt{*ne} elements and
+\texttt{*nn} nodes, the \texttt{METIS\_MeshToDual} function computes
+the dual graph, {\it i.e. } the graph of elements, of this mesh. The
+vertices of the dual graph represent the elements of the mesh, and
+there exists an edge between any two graph vertices if and only if
+there are at least \texttt{ncommon} shared nodes between the two
+corresponding elements in the mesh. The \texttt{numflag} parameter
+corresponds to the base value of the numbering: $0$ for C, and $1$ for
+Fortran.
+
+On return, the \texttt{xadj} and \texttt{adjncy} arrays are allocated,
+by way of the \texttt{malloc()} routine, and contain the adjacency
+list of the dual graph. It is the user's responsibility to free these
+arrays, using the \texttt{free()} routine, whenever these arrays are
+no longer necessary. If the function fails, \texttt{xadj} is set to
+\texttt{NULL}.
+\end{itemize}
+
 \subsubsection{{\tt METIS\_NodeND}}
 
 \begin{itemize}
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_NodeND ( & const SCOTCH\_Num * const & n, \\
-                     & const SCOTCH\_Num * const & xadj, \\
-                     & const SCOTCH\_Num * const & adjncy, \\
-                     & const SCOTCH\_Num * const & numflag, \\
-                     & const SCOTCH\_Num * const & options, \\
-                     & SCOTCH\_Num * const       & perm, \\
-                     & SCOTCH\_Num * const       & iperm)
+void METIS\_NodeND ( & const SCOTCH\_Num * & n,       \\
+                     & const SCOTCH\_Num * & xadj,    \\
+                     & const SCOTCH\_Num * & adjncy,  \\
+                     & const SCOTCH\_Num * & numflag, \\
+                     & const SCOTCH\_Num * & options, \\
+                     & SCOTCH\_Num *       & perm,    \\
+                     & SCOTCH\_Num *       & iperm)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_nodend ( & integer*{\it num}     & n, \\
-                & integer*{\it num} (*) & xadj, \\
-                & integer*{\it num} (*) & adjncy, \\
+metis\_nodend ( & integer*{\it num}     & n,       \\
+                & integer*{\it num} (*) & xadj,    \\
+                & integer*{\it num} (*) & adjncy,  \\
                 & integer*{\it num}     & numflag, \\
                 & integer*{\it num} (*) & options, \\
-                & integer*{\it num} (*) & perm, \\
+                & integer*{\it num} (*) & perm,    \\
                 & integer*{\it num} (*) & iperm)
 \end{tabular}}
 
@@ -7388,8 +7716,12 @@ metis\_nodend ( & integer*{\it num}     & n, \\
 
 The {\tt METIS\_NodeND} function performs a nested dissection ordering
 of the graph passed as arrays {\tt xadj} and {\tt adjncy}, using
-the default \scotch\ ordering strategy. The {\tt options} array is not
-used. The {\tt perm} and {\tt iperm} arrays have the opposite meaning
+the default \scotch\ ordering strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt perm} and {\tt iperm} arrays have the opposite meaning
 as in \scotch: the \metis\ {\tt perm} array holds what is called
 ``inverse permutation'' in \scotch, while {\tt iperm} holds what is
 called ``direct permutation'' in \scotch.
@@ -7407,24 +7739,24 @@ proved to be efficient in most cases.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_NodeWND ( & const SCOTCH\_Num * const & n, \\
-                      & const SCOTCH\_Num * const & xadj, \\
-                      & const SCOTCH\_Num * const & adjncy, \\
-                      & const SCOTCH\_Num * const & vwgt, \\
-                      & const SCOTCH\_Num * const & numflag, \\
-                      & const SCOTCH\_Num * const & options, \\
-                      & SCOTCH\_Num * const       & perm, \\
-                      & SCOTCH\_Num * const       & iperm)
+void METIS\_NodeWND ( & const SCOTCH\_Num * & n,       \\
+                      & const SCOTCH\_Num * & xadj,    \\
+                      & const SCOTCH\_Num * & adjncy,  \\
+                      & const SCOTCH\_Num * & vwgt,    \\
+                      & const SCOTCH\_Num * & numflag, \\
+                      & const SCOTCH\_Num * & options, \\
+                      & SCOTCH\_Num *       & perm,    \\
+                      & SCOTCH\_Num *       & iperm)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_nodwend ( & integer*{\it num}     & n, \\
-                 & integer*{\it num} (*) & xadj, \\
-                 & integer*{\it num} (*) & adjncy, \\
-                 & integer*{\it num} (*) & vwgt, \\
+metis\_nodwend ( & integer*{\it num}     & n,       \\
+                 & integer*{\it num} (*) & xadj,    \\
+                 & integer*{\it num} (*) & adjncy,  \\
+                 & integer*{\it num} (*) & vwgt,    \\
                  & integer*{\it num}     & numflag, \\
                  & integer*{\it num} (*) & options, \\
-                 & integer*{\it num} (*) & perm, \\
+                 & integer*{\it num} (*) & perm,    \\
                  & integer*{\it num} (*) & iperm)
 \end{tabular}}
 
@@ -7432,11 +7764,15 @@ metis\_nodwend ( & integer*{\it num}     & n, \\
 
 The {\tt METIS\_NodeWND} function performs a nested dissection
 ordering of the graph passed as arrays {\tt xadj}, {\tt adjncy}
-and {\tt vwgt}, using the default \scotch\ ordering strategy. The {\tt
-options} array is not used. The {\tt perm} and {\tt iperm} arrays have
-the opposite meaning as in \scotch: the \metis\ {\tt perm} array
-holds what is called ``inverse permutation'' in \scotch, while {\tt
-iperm} holds what is called ``direct permutation'' in \scotch.
+and {\tt vwgt}, using the default \scotch\ ordering strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt perm} and {\tt iperm} arrays have the opposite meaning as in
+\scotch: the \metis\ {\tt perm} array holds what is called ``inverse
+permutation'' in \scotch, while {\tt iperm} holds what is called
+``direct permutation'' in \scotch.
 
 While \scotch\ has also both node and edge separation capabilities,
 all of the three \metis\ stubs {\tt METIS\_\lbo EdgeND}, {\tt
@@ -7451,28 +7787,28 @@ proved to be efficient in most cases.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_PartGraphKway ( & const SCOTCH\_Num * const & n, \\
-                            & const SCOTCH\_Num * const & xadj, \\
-                            & const SCOTCH\_Num * const & adjncy, \\
-                            & const SCOTCH\_Num * const & vwgt, \\
-                            & const SCOTCH\_Num * const & adjwgt, \\
-                            & const SCOTCH\_Num * const & wgtflag, \\
-                            & const SCOTCH\_Num * const & numflag, \\
-                            & const SCOTCH\_Num * const & nparts, \\
-                            & const SCOTCH\_Num * const & options, \\
-                            & SCOTCH\_Num * const       & edgecut, \\
-                            & SCOTCH\_Num * const       & part)
+void METIS\_PartGraphKway ( & const SCOTCH\_Num * & n,       \\
+                            & const SCOTCH\_Num * & xadj,    \\
+                            & const SCOTCH\_Num * & adjncy,  \\
+                            & const SCOTCH\_Num * & vwgt,    \\
+                            & const SCOTCH\_Num * & adjwgt,  \\
+                            & const SCOTCH\_Num * & wgtflag, \\
+                            & const SCOTCH\_Num * & numflag, \\
+                            & const SCOTCH\_Num * & nparts,  \\
+                            & const SCOTCH\_Num * & options, \\
+                            & SCOTCH\_Num *       & edgecut, \\
+                            & SCOTCH\_Num *       & part)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_partgraphkway ( & integer*{\it num}     & n, \\
-                       & integer*{\it num} (*) & xadj, \\
-                       & integer*{\it num} (*) & adjncy, \\
-                       & integer*{\it num} (*) & vwgt, \\
-                       & integer*{\it num} (*) & adjwgt, \\
+metis\_partgraphkway ( & integer*{\it num}     & n,       \\
+                       & integer*{\it num} (*) & xadj,    \\
+                       & integer*{\it num} (*) & adjncy,  \\
+                       & integer*{\it num} (*) & vwgt,    \\
+                       & integer*{\it num} (*) & adjwgt,  \\
                        & integer*{\it num}     & wgtflag, \\
                        & integer*{\it num}     & numflag, \\
-                       & integer*{\it num}     & nparts, \\
+                       & integer*{\it num}     & nparts,  \\
                        & integer*{\it num} (*) & options, \\
                        & integer*{\it num}     & edgecut, \\
                        & integer*{\it num} (*) & part)
@@ -7483,9 +7819,13 @@ metis\_partgraphkway ( & integer*{\it num}     & n, \\
 The {\tt METIS\_PartGraphKway} function performs a mapping onto the
 complete graph of the graph represented by arrays {\tt xadj}, {\tt
 adjncy}, {\tt vwgt} and {\tt adjwgt}, using the default
-\scotch\ mapping strategy. The {\tt options} array is not used. The
-{\tt part} array has the same meaning as the {\tt parttab} array of
-\scotch.
+\scotch\ mapping strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt part} array has the same meaning as the {\tt parttab} array
+of \scotch.
 
 All of the three \metis\ stubs
 {\tt METIS\_\lbo Part\lbo Graph\lbo Kway}, {\tt
@@ -7501,28 +7841,28 @@ cases.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_PartGraphRecursive ( & const SCOTCH\_Num * const & n, \\
-                                 & const SCOTCH\_Num * const & xadj, \\
-                                 & const SCOTCH\_Num * const & adjncy, \\
-                                 & const SCOTCH\_Num * const & vwgt, \\
-                                 & const SCOTCH\_Num * const & adjwgt, \\
-                                 & const SCOTCH\_Num * const & wgtflag, \\
-                                 & const SCOTCH\_Num * const & numflag, \\
-                                 & const SCOTCH\_Num * const & nparts, \\
-                                 & const SCOTCH\_Num * const & options, \\
-                                 & SCOTCH\_Num * const       & edgecut, \\
-                                 & SCOTCH\_Num * const       & part)
+void METIS\_PartGraphRecursive ( & const SCOTCH\_Num * & n,       \\
+                                 & const SCOTCH\_Num * & xadj,    \\
+                                 & const SCOTCH\_Num * & adjncy,  \\
+                                 & const SCOTCH\_Num * & vwgt,    \\
+                                 & const SCOTCH\_Num * & adjwgt,  \\
+                                 & const SCOTCH\_Num * & wgtflag, \\
+                                 & const SCOTCH\_Num * & numflag, \\
+                                 & const SCOTCH\_Num * & nparts,  \\
+                                 & const SCOTCH\_Num * & options, \\
+                                 & SCOTCH\_Num *       & edgecut, \\
+                                 & SCOTCH\_Num *       & part)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_partgraphrecursive ( & integer*{\it num}     & n, \\
-                            & integer*{\it num} (*) & xadj, \\
-                            & integer*{\it num} (*) & adjncy, \\
-                            & integer*{\it num} (*) & vwgt, \\
-                            & integer*{\it num} (*) & adjwgt, \\
+metis\_partgraphrecursive ( & integer*{\it num}     & n,       \\
+                            & integer*{\it num} (*) & xadj,    \\
+                            & integer*{\it num} (*) & adjncy,  \\
+                            & integer*{\it num} (*) & vwgt,    \\
+                            & integer*{\it num} (*) & adjwgt,  \\
                             & integer*{\it num}     & wgtflag, \\
                             & integer*{\it num}     & numflag, \\
-                            & integer*{\it num}     & nparts, \\
+                            & integer*{\it num}     & nparts,  \\
                             & integer*{\it num} (*) & options, \\
                             & integer*{\it num}     & edgecut, \\
                             & integer*{\it num} (*) & part)
@@ -7533,10 +7873,15 @@ metis\_partgraphrecursive ( & integer*{\it num}     & n, \\
 The {\tt METIS\_PartGraphRecursive} function performs a mapping onto
 the complete graph of the graph represented by arrays {\tt xadj}, {\tt
 adjncy}, {\tt vwgt} and {\tt adjwgt}, using the default \scotch\
-mapping strategy. The {\tt options} array is not used. The {\tt part}
-array has the same meaning as the {\tt parttab} array of \scotch. To
-date, the computation of the {\tt edgecut} field requires extra
-processing, which increases running time to a small extent.
+mapping strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt part} array has the same meaning as the {\tt parttab} array
+of \scotch. To date, the computation of the {\tt edgecut} field
+requires extra processing, which increases running time to a small
+extent.
 
 All of the three \metis\ stubs
 {\tt METIS\_\lbo Part\lbo Graph\lbo Kway}, {\tt
@@ -7552,30 +7897,30 @@ cases.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void METIS\_PartGraphVKway ( & const SCOTCH\_Num * const & n, \\
-                             & const SCOTCH\_Num * const & xadj, \\
-                             & const SCOTCH\_Num * const & adjncy, \\
-                             & const SCOTCH\_Num * const & vwgt, \\
-                             & const SCOTCH\_Num * const & vsize, \\
-                             & const SCOTCH\_Num * const & wgtflag, \\
-                             & const SCOTCH\_Num * const & numflag, \\
-                             & const SCOTCH\_Num * const & nparts, \\
-                             & const SCOTCH\_Num * const & options, \\
-                             & SCOTCH\_Num * const       & volume, \\
-                             & SCOTCH\_Num * const       & part)
+void METIS\_PartGraphVKway ( & const SCOTCH\_Num * & n,       \\
+                             & const SCOTCH\_Num * & xadj,    \\
+                             & const SCOTCH\_Num * & adjncy,  \\
+                             & const SCOTCH\_Num * & vwgt,    \\
+                             & const SCOTCH\_Num * & vsize,   \\
+                             & const SCOTCH\_Num * & wgtflag, \\
+                             & const SCOTCH\_Num * & numflag, \\
+                             & const SCOTCH\_Num * & nparts,  \\
+                             & const SCOTCH\_Num * & options, \\
+                             & SCOTCH\_Num *       & volume,  \\
+                             & SCOTCH\_Num *       & part)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
-metis\_partgraphvkway ( & integer*{\it num}     & n, \\
-                        & integer*{\it num} (*) & xadj, \\
-                        & integer*{\it num} (*) & adjncy, \\
-                        & integer*{\it num} (*) & vwgt, \\
-                        & integer*{\it num} (*) & vsize, \\
+metis\_partgraphvkway ( & integer*{\it num}     & n,       \\
+                        & integer*{\it num} (*) & xadj,    \\
+                        & integer*{\it num} (*) & adjncy,  \\
+                        & integer*{\it num} (*) & vwgt,    \\
+                        & integer*{\it num} (*) & vsize,   \\
                         & integer*{\it num}     & wgtflag, \\
                         & integer*{\it num}     & numflag, \\
-                        & integer*{\it num}     & nparts, \\
+                        & integer*{\it num}     & nparts,  \\
                         & integer*{\it num} (*) & options, \\
-                        & integer*{\it num}     & volume, \\
+                        & integer*{\it num}     & volume,  \\
                         & integer*{\it num} (*) & part)
 \end{tabular}}
 
@@ -7584,9 +7929,13 @@ metis\_partgraphvkway ( & integer*{\it num}     & n, \\
 The {\tt METIS\_PartGraphVKway} function performs a mapping onto the
 complete graph of the graph represented by arrays {\tt xadj}, {\tt
 adjncy}, {\tt vwgt} and {\tt vsize}, using the default
-\scotch\ mapping strategy. The {\tt options} array is not used. The
-{\tt part} array has the same meaning as the {\tt parttab} array of
-\scotch.
+\scotch\ mapping strategy.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+The {\tt part} array has the same meaning as the {\tt parttab} array
+of \scotch.
 
 Since \scotch\ does not have methods for explicitely reducing the
 communication volume according to the metric of {\tt METIS\_\lbo
@@ -7607,4 +7956,89 @@ METIS\_\lbo Part\lbo Graph\lbo Recursive} and {\tt METIS\_\lbo
 Part\lbo Graph\lbo VKway} call the same \scotch\ routine, which uses
 the \scotch\ default mapping strategy proved to be efficient in most
 cases.
+\end{itemize}
+
+\subsubsection{{\tt METIS\_PartMeshDual}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int METIS\_PartMeshDual ( & const SCOTCH\_Num * const & ne,      \\
+                          & const SCOTCH\_Num * const & nn,      \\
+                          & const SCOTCH\_Num * const & eptr,    \\
+                          & const SCOTCH\_Num * const & eind,    \\
+                          & const SCOTCH\_Num * const & vwgt,    \\
+                          & const SCOTCH\_Num * const & vsize,   \\
+                          & const SCOTCH\_Num * const & ncommon, \\
+                          & const SCOTCH\_Num * const & nparts,  \\
+                          & const double * const      & tpwgts,  \\
+                          & const SCOTCH\_Num * const & options, \\
+                          & SCOTCH\_Num * const       & objval,  \\
+                          & SCOTCH\_Num * const       & epart,   \\
+                          & SCOTCH\_Num * const       & npart)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+metis\_metistodual ( & integer*{\it num}     & ne,      \\
+                     & integer*{\it num}     & nn,      \\
+                     & integer*{\it num} (*) & eptr,    \\
+                     & integer*{\it num} (*) & eind,    \\
+                     & integer*{\it num} (*) & vwgt,    \\
+                     & integer*{\it num} (*) & vsize,   \\
+                     & integer*{\it num}     & ncommon, \\
+                     & integer*{\it num}     & nparts,  \\
+                     & doubleprecision* (*)  & tpwgts,  \\
+                     & integer*{\it num} (*) & options, \\
+                     & integer*{\it num}     & objval,  \\
+                     & integer*{\it num} (*) & epart,   \\
+                     & integer*{\it num} (*) & npart)
+\end{tabular}}
+
+\progdes
+
+Given the \texttt{eptr} and \texttt{eind} arrays describing the
+element-to-node adjacency of a mesh with \texttt{*ne} elements and
+\texttt{*nn} nodes, the \texttt{METIS\_PartMeshDual} function computes a
+partitioning into \texttt{nparts} of the dual graph of this mesh. The
+vertices of the dual graph represent the elements of the mesh, and
+there exists an edge between any two graph vertices if and only if
+there are at least \texttt{ncommon} shared nodes between the two
+corresponding elements in the mesh.
+
+Conforming to the \metis\ API, the base value of the numbering
+can be defined by setting \texttt{options[METIS\_\lbt OPTION\_\lbt
+NUMBERING]}. It is the only option supported by \scotch.
+
+On return, the \texttt{epart} and \texttt{npart} arrays contain the
+element and node partitions, respectively.
+If the function fails, \texttt{*objval} is set to a negative value
+that corresponds to the relevant \texttt{METIS\_\lbt ERROR\_*} code.
+\end{itemize}
+
+\subsubsection{{\tt METIS\_SetDefaultOptions}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int METIS\_SetDefaultOptions ( & SCOTCH\_Num * const & options)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+metis\_setdefaultoptions ( & integer*{\it num} (*) & options)
+\end{tabular}}
+
+\progdes
+
+This function partially fills the \texttt{options} array with the
+values that are relevant to the operations of the
+\metis\ compatibility library. Other values are set to~$0$.
+
+The supported options to date are \texttt{METIS\_\lbt OPTION\_\lbt
+  NUMBERING} (which allows one to set the \texttt{baseval} value of
+\libscotch\ routines) and \texttt{METIS\_\lbt OPTION\_\lbt OBJTYPE}
+(only for computing the partition cost, as \scotch\ does not try
+directly to minimize communication volume).
+
 \end{itemize}

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,6 +55,8 @@
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 12 sep 2008     **/
 /**                                 to   : 29 apr 2018     **/
+/**                # Version 6.1  : from : 15 mar 2021     **/
+/**                                 to   : 15 mar 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,6 +121,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 SCOTCH_Dgraph *             SCOTCH_dgraphAlloc  (void);
+int                         SCOTCH_dgraphSizeof (void);
 int                         SCOTCH_dgraphInit   (SCOTCH_Dgraph * const, MPI_Comm);
 void                        SCOTCH_dgraphExit   (SCOTCH_Dgraph * const);
 void                        SCOTCH_dgraphFree   (SCOTCH_Dgraph * const);
@@ -166,8 +169,10 @@ int                         SCOTCH_dgraphOrderComputeList (SCOTCH_Dgraph * const
 int                         SCOTCH_dgraphOrderGather (const SCOTCH_Dgraph * const, const SCOTCH_Dordering * const, SCOTCH_Ordering * const);
 
 SCOTCH_Dmapping *           SCOTCH_dmapAlloc    (void);
+int                         SCOTCH_dmapSizeof   (void);
 
 SCOTCH_Dordering *          SCOTCH_dorderAlloc  (void);
+int                         SCOTCH_dorderSizeof (void);
 
 int                         SCOTCH_stratDgraphMap (SCOTCH_Strat * const, const char * const);
 int                         SCOTCH_stratDgraphMapBuild (SCOTCH_Strat * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const double);

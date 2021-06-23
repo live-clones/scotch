@@ -9,7 +9,7 @@
 **  the libScotchMeTiS library.                         **
 **                                                      **
 *********************************************************/
-/* Copyright 2007,2010,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,7 @@
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Amaury JACQUES (v6.0)                   **/
+/**                Marc FUENTES (v6.1)                     **/
 /**                                                        **/
 /**   FUNCTION   : Compatibility declaration file for the  **/
 /**                MeTiS interface routines provided by    **/
@@ -57,6 +58,8 @@
 /**                                 to   : 30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 17 jun 2019     **/
+/**                # Version 6.1  : from : 09 feb 2021     **/
+/**                                 to   : 20 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,6 +94,48 @@ typedef SCOTCH_Num          idx_t;
 typedef double              real_t;
 #endif /* SCOTCH_METIS_DATATYPES */
 
+#ifndef SCOTCH_METIS_OPTIONS
+#define SCOTCH_METIS_OPTIONS
+#define METIS_NOPTIONS              40
+
+typedef enum {
+  METIS_OPTION_PTYPE,
+  METIS_OPTION_OBJTYPE,
+  METIS_OPTION_CTYPE,
+  METIS_OPTION_IPTYPE,
+  METIS_OPTION_RTYPE,
+  METIS_OPTION_DBGLVL,
+  METIS_OPTION_NITER,
+  METIS_OPTION_NCUTS,
+  METIS_OPTION_SEED,
+  METIS_OPTION_NO2HOP,
+  METIS_OPTION_MINCONN,
+  METIS_OPTION_CONTIG,
+  METIS_OPTION_COMPRESS,
+  METIS_OPTION_CCORDER,
+  METIS_OPTION_PFACTOR,
+  METIS_OPTION_NSEPS,
+  METIS_OPTION_UFACTOR,
+  METIS_OPTION_NUMBERING,
+  METIS_OPTION_HELP,
+  METIS_OPTION_TPWGTS,
+  METIS_OPTION_NCOMMON,
+  METIS_OPTION_NOOUTPUT,
+  METIS_OPTION_BALANCE,
+  METIS_OPTION_GTYPE,
+  METIS_OPTION_UBVEC
+} moptions_et;
+#endif /* SCOTCH_METIS_OPTIONS */
+
+#ifndef SCOTCH_METIS_OBJTYPE
+#define SCOTCH_METIS_OBJTYPE
+typedef enum {
+  METIS_OBJTYPE_CUT,
+  METIS_OBJTYPE_VOL,
+  METIS_OBJTYPE_NODE
+} mobjtype_et;
+#endif /* SCOTCH_METIS_OBJTYPE */
+
 #ifndef SCOTCH_METIS_RETURN
 #define SCOTCH_METIS_RETURN
 typedef enum {
@@ -112,6 +157,10 @@ typedef DUMMYINT SCOTCH_Num;
 /*
 **  The function prototypes.
 */
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 int                         SCOTCH_METIS_V3_EdgeND (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         SCOTCH_METIS_V3_NodeND (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
@@ -143,3 +192,12 @@ int                         METISNAMEU (METIS_NodeND) (const SCOTCH_Num * const,
 int                         METISNAMEU (METIS_PartGraphKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         METISNAMEU (METIS_PartGraphRecursive) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 #endif /* (SCOTCH_METIS_VERSION == 5) */
+
+int                         METISNAMEU (METIS_MeshToDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num ** const, SCOTCH_Num ** const);
+int                         METISNAMEU (METIS_PartMeshDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+
+int                         METISNAMEU (METIS_SetDefaultOptions) (SCOTCH_Num * const);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */

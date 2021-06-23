@@ -1,4 +1,4 @@
-/* Copyright 2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2010,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 5.1  : from : 17 nov 2010     **/
 /**                                 to   : 17 nov 2010     **/
+/**                # Version 6.1  : from : 15 mar 2021     **/
+/**                                 to   : 15 mar 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,7 +67,7 @@
 *** of a size sufficient to store a
 *** distributed ordering structure.
 *** It returns:
-*** - !NULL  : if the initialization succeeded.
+*** - !NULL  : if the allocation succeeded.
 *** - NULL   : on error.
 +*/
 
@@ -73,4 +75,16 @@ SCOTCH_Strat *
 SCOTCH_stratAlloc ()
 {
   return ((SCOTCH_Strat *) memAlloc (sizeof (SCOTCH_Strat)));
+}
+
+/*+ This routine returns the size, in bytes,
+*** of a SCOTCH_Strat structure.
+*** It returns:
+*** - > 0  : in all cases.
++*/
+
+int
+SCOTCH_stratSizeof ()
+{
+  return (sizeof (SCOTCH_Strat));
 }

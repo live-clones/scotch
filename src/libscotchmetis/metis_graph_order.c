@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2012,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 30 jun 2010     **/
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 18 may 2019     **/
+/**                # Version 6.1  : from : 20 jun 2021     **/
+/**                                 to   : 20 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -176,9 +178,11 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          perm,
 SCOTCH_Num * const          iperm)
 {
-  const SCOTCH_Num    numflag = 0;
+  SCOTCH_Num          baseval;
 
-  return (_SCOTCH_METIS_Node (nvtxs, xadj, adjncy, vwgt, &numflag, options, perm, iperm));
+  baseval = ((options != NULL) && (options != xadj)) ? options[METIS_OPTION_NUMBERING] : 0;
+
+  return (_SCOTCH_METIS_Node (nvtxs, xadj, adjncy, vwgt, &baseval, options, perm, iperm));
 }
 
 /*******************/

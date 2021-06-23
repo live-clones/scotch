@@ -299,8 +299,8 @@ const WgraphPartMlParam * const paraptr)
 
 /* This routine performs the muti-level separation.
 ** It returns:
-** - 0 : if separator could be computed.
-** - 1 : on error.
+** - 0  : if separator could be computed.
+** - 1  : on error.
 */
 
 int
