@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,6 +67,8 @@
 /**                                 to   : 04 feb 2009     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 jun 2019     **/
+/**                # Version 6.1  : from : 28 jun 2021     **/
+/**                                 to   : 28 jun 2021     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -964,14 +966,10 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
         if ((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) != 0) { /* If architecture is variable-sized       */
           pooldat.domntab[0][jobsubnum[0]] = joborgdat.domnorg; /* Propagate domain in next pool         */
           kgraphMapRbMapPoolRemv (&pooldat, &joborgdat); /* Remove job from pool as long as graph exists */
-          bgraphExit (&actgrafdat);               /* Free bipartitioning data as well as current graph   */
-          continue;                               /* Process next job in current pool                    */
         }
-        if (archDomSize (mappptr->archptr, &domnsubtab[partval]) <= 1) { /* If domain is terminal        */
+        else if (archDomSize (mappptr->archptr, &domnsubtab[partval]) <= 1) { /* If domain is terminal   */
           pooldat.domntab[0][jobsubnum[0]] = domnsubtab[partval]; /* Refine domain in next pool          */
           kgraphMapRbMapPoolRemv (&pooldat, &joborgdat); /* Remove job from pool as long as graph exists */
-          bgraphExit (&actgrafdat);               /* Free bipartitioning data as well as current graph   */
-          continue;                               /* Process next job in current pool                    */
         }
         else {                                    /* Re-use job slot and graph for further bipartitioning */
           pooldat.domntab[0][jobsubnum[0]] =      /* Update domain in next pool                           */
@@ -980,9 +978,9 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
           joborgptr->vflotab = joborgdat.vflotab + (partval * vflonbrtab[0]); /* Point to proper sub-array           */
           kgraphMapRbMapPoolUpdt1 (&pooldat, &joborgdat, actgrafdat.parttax, joborgptr, partval); /* Add job to pool */
           actgrafdat.s.flagval &= ~GRAPHFREETABS; /* Since graph will be re-used, never free its internal arrays     */
-          bgraphExit (&actgrafdat);               /* Free bipartitioning data                                        */
-          continue;                               /* Process next job in current pool                                */
         }
+        bgraphExit (&actgrafdat);                 /* Free bipartitioning data as well as current graph */
+        continue;                                 /* Process next job in current pool                  */
       }
 
       if ((pooldat.mappptr->domnnbr == pooldat.mappptr->domnmax) && /* If all job slots busy and if cannot resize */
