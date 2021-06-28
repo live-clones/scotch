@@ -146,7 +146,7 @@ const KgraphMapRbData * restrict const  dataptr)
 
   if ((poolptr->jobtab = (KgraphMapRbMapJob *) memAlloc (mappptr->domnmax * sizeof (KgraphMapRbMapJob))) == NULL) {
     errorPrint ("kgraphMapRbMapPoolInit: out of memory (2)");
-    return     (1);
+    return (1);
   }
   poolptr->jobtab[0].poolflag = 0;                /* In case kgraphMapRbPoolExit() is called just afterwards on single-domain mapping */
 
@@ -161,7 +161,7 @@ const KgraphMapRbData * restrict const  dataptr)
     if ((poolptr->domntab[1] = (ArchDom *) memAlloc (mappptr->domnmax * sizeof (ArchDom))) == NULL) {
       errorPrint ("kgraphMapRbMapPoolInit: out of memory (3)");
       memFree    (poolptr->jobtab);
-      return     (1);
+      return (1);
     }
   }
 
@@ -254,7 +254,7 @@ KgraphMapRbMapPoolData * restrict const poolptr)
 
   if ((jobtab = (KgraphMapRbMapJob *) memRealloc (poolptr->jobtab, domnmax * sizeof (KgraphMapRbMapJob))) == NULL) {
     errorPrint ("kgraphMapRbMapPoolResize: out of memory (1)");
-    return     (1);
+    return (1);
   }
   if (jobtab != poolptr->jobtab) {                /* If job array moved                */
     KgraphMapRbMapJob *       joboldtab;          /* Pointer to start of old job array */
@@ -287,7 +287,7 @@ KgraphMapRbMapPoolData * restrict const poolptr)
   i = (poolptr->domntab[1] == poolptr->mappptr->domntab) ? 1 : 0; /* Find which domain array is that of the mapping */
   if (mapResize (poolptr->mappptr, domnmax) != 0) {
     errorPrint ("kgraphMapRbMapPoolResize: out of memory (2)");
-    return     (1);
+    return (1);
   }
   if (poolptr->domntab[1] != poolptr->domntab[0]) { /* If two domain arrays present */
     ArchDom *           domntab;
@@ -909,7 +909,9 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
   pooldat.jobtab[0].grafdat.flagval &= ~GRAPHFREETABS; /* Do not free its arrays on exit     */
   pooldat.jobtab[0].vflonbr = vflonbr;            /* Record initial list of fixed load slots */
   pooldat.jobtab[0].vflotab = vflotab;
-  kgraphMapRbMapPoolFrst (&pooldat, &pooldat.jobtab[0]); /* Add initial job */
+  pooldat.jobtab[0].vflotab = vflotab;
+  pooldat.jobtab[0].levlnum = 0;                  /* Initial recursion level is 0 */
+  kgraphMapRbMapPoolFrst (&pooldat, &pooldat.jobtab[0]); /* Add initial job       */
 
   comploadmin = (1.0 - dataptr->paraptr->kbalval) * dataptr->comploadrat; /* Ratio can have been tilted when working on subgraph */
   comploadmax = (1.0 + dataptr->paraptr->kbalval) * dataptr->comploadrat;
@@ -920,6 +922,7 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
     while ((joborgptr = kgraphMapRbMapPoolGet (&pooldat)) != NULL) { /* For all jobs in pool */
       Gnum                vflonbrtab[2];
       Gnum                vflowgttab[2];
+      Gnum                levlnum;
       int                 partval;
 
       jobsubnum[0] = joborgptr - pooldat.jobtab;  /* Get current (and first son) job slot number before possible move of pointers */
@@ -958,7 +961,7 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
         errorPrint             ("kgraphMapRbMap: cannot bipartition job");
         bgraphExit             (&actgrafdat);
         kgraphMapRbMapPoolExit (&pooldat);
-        return                 (1);
+        return (1);
       }
 
       if ((partval = 1, actgrafdat.compsize0 == 0) || /* If no bipartition found */
@@ -975,7 +978,8 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
           pooldat.domntab[0][jobsubnum[0]] =      /* Update domain in next pool                           */
           joborgptr->domnorg = domnsubtab[partval]; /* New job takes same graph and non-empty subdomain   */
           joborgptr->vflonbr = vflonbrtab[partval];
-          joborgptr->vflotab = joborgdat.vflotab + (partval * vflonbrtab[0]); /* Point to proper sub-array           */
+          joborgptr->vflotab = joborgdat.vflotab + (partval * vflonbrtab[0]); /* Point to proper sub-array */
+          joborgptr->levlnum ++;
           kgraphMapRbMapPoolUpdt1 (&pooldat, &joborgdat, actgrafdat.parttax, joborgptr, partval); /* Add job to pool */
           actgrafdat.s.flagval &= ~GRAPHFREETABS; /* Since graph will be re-used, never free its internal arrays     */
         }
@@ -984,10 +988,10 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
       }
 
       if ((pooldat.mappptr->domnnbr == pooldat.mappptr->domnmax) && /* If all job slots busy and if cannot resize */
-          (kgraphMapRbMapPoolResize (&pooldat) != 0)) {
+          (kgraphMapRbMapPoolResize (&pooldat) != 0)) { /* From this point, joborgptr may no longer be valid      */
         errorPrint             ("kgraphMapRbMap: cannot resize structures");
         kgraphMapRbMapPoolExit (&pooldat);
-        return                 (1);
+        return (1);
       }
 
       jobsubnum[1] = pooldat.mappptr->domnnbr ++; /* Get slot number of new subdomain */
@@ -1004,6 +1008,7 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
       else
         kgraphMapRbMapPartBoth (&pooldat, &actgrafdat, jobsubnum);
 
+      levlnum = joborgdat.levlnum + 1;
       for (i = 1; i >= 0; i --) {                 /* For both subdomains */
         KgraphMapRbMapJob * jobsubptr;
 
@@ -1025,12 +1030,13 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
           errorPrint             ("kgraphMapRbMap: cannot create induced subgraph");
           bgraphExit             (&actgrafdat);
           kgraphMapRbMapPoolExit (&pooldat);
-          return                 (1);
+          return (1);
         }
         jobsubptr->poolflag = 1;                  /* So that graph is freed in case of error on other part */
         jobsubptr->domnorg  = domnsubtab[i];
         jobsubptr->vflonbr  = vflonbrtab[i];
         jobsubptr->vflotab  = joborgdat.vflotab + (i * vflonbrtab[0]); /* Point to proper sub-array */
+        jobsubptr->levlnum  = levlnum;            /* Set new level */
       }
 
       if ((jobsubsiz[0] | jobsubsiz[1]) == 0)     /* If both subjobs do not need further processing */
