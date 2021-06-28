@@ -1,4 +1,4 @@
-/* Copyright 2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2011,2014,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 16 sep 2014     **/
+/**                # Version 6.1  : from : 28 jun 2021     **/
+/**                                 to   : 28 jun 2021     **/
 /**                                                        **/
 /**   NOTES      : # This is a rewrite of kgraphMapRb()    **/
 /**                  for complete-graph target topologies. **/
@@ -181,7 +183,8 @@ const GraphPart                         indpartval, /*+ Part of graph to conside
 const Gnum                              indvertnbr, /*+ Number of vertices in part or in graph   +*/
 const Anum                              domnnum,  /*+ Index of domain onto which to map the part +*/
 const Anum                              vflonbr,  /*+ Number of fixed vertex load slots          +*/
-KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load slots           +*/
+KgraphMapRbVflo * restrict const        vflotab,  /*+ Array of fixed vertex load slots           +*/
+const Gnum                              levlnum)  /*+ Current recursion level                    +*/
 {
   Graph               indgrafdat;
   const Graph *       indgrafptr;
@@ -230,6 +233,7 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
     errorPrint ("kgraphMapRbPart2: cannot create bipartition graph");
     return     (1);
   }
+  actgrafdat.levlnum = levlnum;
 
   if (! avarval) {                                /* If not variable-sized, impose constraints on bipartition */
     double              comploadavg;
@@ -292,7 +296,7 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
         continue;
 
       if ((o = kgraphMapRbPart2 (dataptr, indgrafptr, actgrafdat.parttax, (GraphPart) i, vertnbrtab[i],
-                                 domnidxtab[i], vflonbrtab[i], vflotab + (i * vflonbrtab[0]))) != 0)
+                                 domnidxtab[i], vflonbrtab[i], vflotab + (i * vflonbrtab[0]), levlnum + 1)) != 0)
         return (1);                               /* If problem in recursion, stop */
     }
   }
@@ -335,5 +339,5 @@ KgraphMapRbVflo * restrict const        vflotab)  /*+ Array of fixed vertex load
 
   mappptr->domntab[0] = mappptr->domnorg;         /* Initialize mapping */
   mappptr->domnnbr    = 1;
-  return (kgraphMapRbPart2 (dataptr, grafptr, NULL, 0, grafptr->vertnbr, 0, vflonbr, vflotab));
+  return (kgraphMapRbPart2 (dataptr, grafptr, NULL, 0, grafptr->vertnbr, 0, vflonbr, vflotab, 0));
 }
