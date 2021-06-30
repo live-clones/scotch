@@ -43,7 +43,7 @@
 /**   DATES      : # Version 6.0  : from : 05 jan 2009     **/
 /**                                 to   : 28 apr 2019     **/
 /**                # Version 6.1  : from : 19 apr 2021     **/
-/**                                 to   : 19 apr 2021     **/
+/**                                 to   : 30 jun 2021     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -120,7 +120,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   Gnum                      vfixnum;
   Gnum                      vfixflag;
   KgraphBandHash * restrict termhashtab;
-  Anum                      termhashmsk;
+  Anum                      termhashmsk = 0;      /* Set initial value to prevent gcc from yelling */
 
   const Gnum * restrict const verttax = grafptr->s.verttax;
   const Gnum * restrict const vendtax = grafptr->s.vendtax;
@@ -137,7 +137,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
                  &vnumotbdtax, &bandvertlvlnum, &bandvertnbr, &bandedgenbr,
                  pfixtax, &bandvfixnbr) != 0) {   /* Get vertices to keep in band graph */
     errorPrint ("kgraphBand: cannot number graph vertices");
-    return     (1);
+    return (1);
   }
 
   if (bandvertlvlptr != NULL)
@@ -160,8 +160,8 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
                        &termhashtab, (size_t) (termhashsiz * sizeof (KgraphBandHash)),
                        &bandanlotab, (size_t) (domnnbr     * sizeof (Gnum)),
                        &bandeeextab, (size_t) (domnnbr     * sizeof (Gnum)), NULL) == NULL) {
-      errorPrint   ("kgraphBand: out of memory (1)");
-      return       (1);
+      errorPrint ("kgraphBand: out of memory (1)");
+      return (1);
     }
     memSet (termhashtab, ~0, termhashsiz * sizeof (KgraphBandHash));
     memSet (bandanlotab,  0, domnnbr     * sizeof (Gnum)); /* Assume there are no extra loads to anchors */
@@ -186,7 +186,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
           if (termhashtab[termhashnum].termnum == termnum) { /* If hash slot found */
             errorPrint ("kgraphBand: duplicate terminal domain in domain array");
             memFree    (termhashtab);
-            return     (1);
+            return (1);
           }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
         }
@@ -222,85 +222,76 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   bandgrafptr->kbalval     = grafptr->kbalval;
   bandgrafptr->levlnum     = grafptr->levlnum;
 
-  if (memAllocGroup ((void **) (void *)           /* Allocate graph data */
-                     &bandgrafptr->s.verttax, (size_t) ((bandvertnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
-                     &bandgrafptr->s.velotax, (size_t) (bandvertnbr       * sizeof (Gnum)), NULL) == NULL) {
+  if ((memAllocGroup ((void **) (void *)          /* Allocate graph data */
+                      &bandgrafptr->s.verttax, (size_t) ((bandvertnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
+                      &bandgrafptr->s.velotax, (size_t) ( bandvertnbr      * sizeof (Gnum)), NULL) == NULL) ||
+      ((bandgrafptr->s.edgetax = memAlloc ((bandedgenbr + bandedlonbr) * sizeof (Gnum))) == NULL)) {
     errorPrint ("kgraphBand: out of memory (2)");
-    return     (1);
+    kgraphExit (bandgrafptr);
+    return (1);
   }
   bandgrafptr->s.verttax -= bandgrafptr->s.baseval;
   bandgrafptr->s.velotax -= bandgrafptr->s.baseval;
+  bandgrafptr->s.edgetax -= bandgrafptr->s.baseval;
+  bandgrafptr->s.edlotax  = ((edlotax != NULL) || (pfixtax != NULL)) ? (bandgrafptr->s.edgetax + bandedgenbr) : NULL;
 
-  if ((bandvnumtax = memAlloc ((bandvertnbr) * sizeof (Gnum))) == NULL) { /* Allocate alone since it is an output */
+  if ((bandvnumtax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) { /* Allocate alone since it is an output */
     errorPrint ("kgraphBand: out of memory (3)");
     kgraphExit (bandgrafptr);
-    return     (1);
-  }
-  bandvmlotax = NULL;
-  if (vmlotax != NULL) {
-    if ((bandvmlotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
-      errorPrint ("kgraphBand: out of memory (4)");
-      kgraphExit (bandgrafptr);
-      memFree    (bandvnumtax);
-      return     (1);
-    }
-    memSet (bandvnumtax + bandvertnbr - domnnbr, ~0, domnnbr * sizeof (Gnum)); /* Prevent Valgrind from yelling when centralizing band graphs */
-    bandvmlotax -= bandgrafptr->s.baseval;
-    bandgrafptr->r.vmlotax  = bandvmlotax;
-    bandgrafptr->s.flagval |= KGRAPHFREEVMLO;
-  }
-  bandparotax = NULL;
-  if (parotax != NULL) {
-    if ((bandparotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
-      errorPrint ("kgraphBand: out of memory (5)");
-      if (bandvmlotax != NULL)
-        memFree (bandvmlotax + bandgrafptr->s.baseval);
-      kgraphExit (bandgrafptr);
-      memFree    (bandvnumtax);
-      return     (1);
-    }
-    memSet (bandparotax + bandvertnbr - bandgrafptr->r.m.domnnbr, ~0, bandgrafptr->r.m.domnnbr * sizeof (Gnum)); /* Prevent Valgrind from yelling when centralizing band graphs */
-    bandparotax -= bandgrafptr->s.baseval;
-    bandgrafptr->r.m.parttax  = bandparotax;
-    bandgrafptr->r.m.flagval |= MAPPINGFREEPART;
+    return (1);
   }
   bandvnumtax -= bandgrafptr->s.baseval;
 
-  if ((bandgrafptr->s.edgetax = memAlloc ((bandedgenbr + bandedlonbr) * sizeof (Gnum))) == NULL) {
-    errorPrint ("kgraphBand: out of memory (6)");
-    kgraphExit (bandgrafptr);
-    memFree    (bandvnumtax);
-    return     (1);
+  if (vmlotax != NULL) {
+    if ((bandgrafptr->r.vmlotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
+      errorPrint ("kgraphBand: out of memory (4)");
+      kgraphExit (bandgrafptr);
+      memFree    (bandvnumtax + bandgrafptr->s.baseval);
+      return (1);
+    }
+    bandgrafptr->r.vmlotax -= bandgrafptr->s.baseval;
+    bandgrafptr->s.flagval |= KGRAPHFREEVMLO;
   }
+  bandvmlotax = (Gnum *) bandgrafptr->r.vmlotax;  /* Cast not to violate the "const" qualifier */
 
-  bandedgetax = bandgrafptr->s.edgetax - bandgrafptr->s.baseval;
-  bandedlotax = ((edlotax != NULL) || (pfixtax != NULL)) ? (bandedgetax + bandedgenbr) : NULL;
-  bandgrafptr->s.edgetax = bandedgetax;
-  bandgrafptr->s.edlotax = bandedlotax;
+  bandparotax = NULL;
+  if (parotax != NULL) {
+    if ((bandgrafptr->r.m.parttax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
+      errorPrint ("kgraphBand: out of memory (5)");
+      kgraphExit (bandgrafptr);
+      memFree    (bandvnumtax + bandgrafptr->s.baseval);
+      return (1);
+    }
+    memSet (bandgrafptr->r.m.parttax + bandvertnbr - bandgrafptr->r.m.domnnbr, ~0, bandgrafptr->r.m.domnnbr * sizeof (Gnum));
+    bandgrafptr->r.m.parttax -= bandgrafptr->s.baseval;
+    bandgrafptr->r.m.flagval |= MAPPINGFREEPART;
+    bandparotax = bandgrafptr->r.m.parttax;
+  }
 
   if (((bandgrafptr->frontab = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) || /* Allocation and initialization of imbalance arrays */
       (memAllocGroup ((void **) (void *)
                       &bandgrafptr->comploadavg, (size_t) ((domnnbr + 2) * sizeof (Gnum)), /* TRICK: always keep two slots for collective communication */
                       &bandgrafptr->comploaddlt, (size_t) ((domnnbr + 2) * sizeof (Gnum)), NULL) == NULL)) {
-    errorPrint ("kgraphBand: out of memory (7)");
-    if (bandgrafptr->frontab != NULL)
-      memFree (bandgrafptr->frontab);
+    errorPrint ("kgraphBand: out of memory (6)");
+    kgraphExit (bandgrafptr);                     /* TRICK: will free frontab */
+    memFree    (bandvnumtax + bandgrafptr->s.baseval);
     return (1);
   }
   bandfrontab = bandgrafptr->frontab;
 
-  if ((bandparttax = memAlloc (bandvertnbr * sizeof (Anum))) == NULL) {
-    errorPrint ("kgraphBand: out of memory (8)");
-    return     (1);
+  if (((bandgrafptr->m.parttax = memAlloc (bandvertnbr * sizeof (Anum))) == NULL) ||
+      ((bandgrafptr->m.domntab = memAlloc (domnnbr     * sizeof (ArchDom))) == NULL)) {
+    errorPrint ("kgraphBand: out of memory (7)");
+    if (bandgrafptr->m.parttax != NULL)
+      memFree (bandgrafptr->m.parttax);
+    kgraphExit (bandgrafptr);
+    memFree    (bandvnumtax + bandgrafptr->s.baseval);
+    return (1);
   }
-  bandgrafptr->m.parttax =
-  bandparttax           -= bandgrafptr->s.baseval;
+  bandgrafptr->m.flagval |= MAPPINGFREEDOMN | MAPPINGFREEPART;
+  bandgrafptr->m.parttax -= bandgrafptr->s.baseval;
+  bandparttax = bandgrafptr->m.parttax;
 
-  if ((bandgrafptr->m.domntab = memAlloc (domnnbr * sizeof (ArchDom))) == NULL) {
-    errorPrint ("kgraphBand: out of memory (9)");
-    return     (1);
-  }
-  bandgrafptr->m.flagval |= MAPPINGFREEDOMN;
 #ifdef SCOTCH_DEBUG_KGRAPH2
   memSet (bandvnumtax + bandgrafptr->s.baseval, ~0, (bandvertnbr * sizeof (Gnum)));
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
@@ -320,6 +311,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     }
   }
   bandgrafptr->fronnbr = grafptr->fronnbr - vfixnum; /* Remove fixed vertices from frontier */
+
   for (bandvertnnd = bandvertnbr + bandgrafptr->s.baseval - domnnbr; /* Pick selected band vertices from rest of frontier array without anchors */
        bandvertnum < bandvertnnd + bandvfixnbr - vfixnum; fronnum ++) {
     Gnum              vertnum;
@@ -335,13 +327,14 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (vfixnum != bandvfixnbr) {
     errorPrint ("kgraphBand: internal error (1)"); /* All fixed vertices indices must be at the beginning of frontab */
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
-  memSet (bandvnumtax + bandvertnnd, ~0, domnnbr * sizeof (Gnum)); /* Prevent Valgrind from yelling when centralizing band graphs */
 
   bandverttax  = bandgrafptr->s.verttax;
   bandvelotax  = bandgrafptr->s.velotax;
+  bandedgetax  = bandgrafptr->s.edgetax;
+  bandedlotax  = bandgrafptr->s.edlotax;
   banddegrmax  = 0;
   bandcompload = bandgrafptr->comploaddlt;        /* TRICK: use delta array to compute load sums */
   memSet (bandcompload, 0, domnnbr * sizeof (Gnum));
@@ -367,7 +360,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 #ifdef SCOTCH_DEBUG_KGRAPH2
     if ((partval < 0) || (partval >= domnnbr)) {
       errorPrint ("kgraphBand: internal error (2)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
     bandparttax[bandvertnum] = partval;
@@ -388,7 +381,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 #ifdef SCOTCH_DEBUG_KGRAPH2
       if (vnumotbdtax[vertend] == -1) {           /* All ends should belong to the band graph too */
         errorPrint ("kgraphBand: internal error (3)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
       if (bandedlotax != NULL) {                  /* If graph has edge weights (always true when fixed vertices present) */
@@ -411,7 +404,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
               errorPrint ("kgraphBand: missing terminal domain in domain array (1)");
               memFree    (termhashtab);
               kgraphExit (bandgrafptr);
-              return     (1);
+              return (1);
             }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
           }
@@ -425,7 +418,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
       else
         bandedgetax[bandedgenum ++] = vnumotbdtax[vertend];
     }
-   
+
     if (vfixflag == 1) {                          /* If vertex has at least one neighbours that is fixed */
       Gnum                    edloval;
 
@@ -467,7 +460,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 #ifdef SCOTCH_DEBUG_KGRAPH2
     if ((partval < 0) || (partval >= domnnbr)) {
       errorPrint ("kgraphBand: internal error (4)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
     bandparttax[bandvertnum] = partval;
@@ -503,7 +496,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
               errorPrint ("kgraphBand: missing terminal domain in domain array (2)");
               memFree    (termhashtab);
               kgraphExit (bandgrafptr);
-              return     (1);
+              return (1);
             }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
           }
@@ -575,7 +568,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 
   if (bandvertancadj == 1)                        /* Anchors have to be adjusted                       */
     for (domnnum = 0; domnnum < domnnbr; domnnum ++) /* Increase weight of all anchors to keep balance */
-      bandvelotax[bandvertnnd + domnnum] ++;  
+      bandvelotax[bandvertnnd + domnnum] ++;
 
   bandverttax[bandvertnum] = bandedgenum;         /* Fill last element without anchors */
   if (pfixtax != NULL)
@@ -655,11 +648,11 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     for (domnnum = 0; domnnum < domnnbr; domnnum ++) {
       if (bandedgetab[domnnum] != bandverttax[bandvertnnd + 1 + domnnum]) {
         errorPrint ("kgraphBand: internal error (5)");
-        return     (1);
+        return (1);
       }
     }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
-  } 
+  }
   bandedgenbr = bandgrafptr->s.verttax[bandvertnnd + domnnbr] - bandgrafptr->s.baseval; /* Set real number of edges */
 
   bandgrafptr->s.vendtax = bandgrafptr->s.verttax + 1; /* Band graph is compact */
@@ -673,7 +666,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (graphCheck (&bandgrafptr->s) != 0) {
     errorPrint ("kgraphBand: internal error (6)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
@@ -687,7 +680,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (kgraphCheck (bandgrafptr) != 0) {
     errorPrint ("kgraphBand: internal error (7)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
