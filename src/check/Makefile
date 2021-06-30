@@ -282,7 +282,7 @@ test_scotch_arch		:	test_scotch_arch.c		\
 
 check_scotch_arch_deco		:	test_scotch_arch_deco
 					$(EXECS) ./test_scotch_arch_deco data/m4x4.grf "$(TMPDIR)/arch2.tgt"
-#					$(EXECS) ./test_scotch_arch_deco data/m4x4_b1.grf "$(TMPDIR)/arch2.tgt"
+#					$(EXECS) ./test_scotch_arch_deco data/m4x4_b100000.grf "$(TMPDIR)/arch2.tgt"
 
 test_scotch_arch_deco		:	test_scotch_arch_deco.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -308,9 +308,8 @@ test_scotch_graph_color		:	test_scotch_graph_color.c	\
 ##
 
 check_scotch_graph_diam		:	test_scotch_graph_diam
-					$(EXECS) ./test_scotch_graph_diam data/bump.grf
 					$(EXECS) ./test_scotch_graph_diam data/bump_b100000.grf
-					$(EXECS) ./test_scotch_graph_diam data/m16x16_b1.grf
+					$(EXECS) ./test_scotch_graph_diam data/m16x16_b100000.grf
 					$(EXECS) ./test_scotch_graph_diam data/p2-p2.grf
 
 test_scotch_graph_diam		:	test_scotch_graph_diam.c	\
@@ -343,9 +342,9 @@ test_scotch_graph_induce	:	test_scotch_graph_induce.c	\
 
 check_scotch_graph_map		:	test_scotch_graph_map
 					$(EXECS) ./test_scotch_graph_map data/m4x4.grf
-					$(EXECS) ./test_scotch_graph_map data/m4x4_b1.grf
+					$(EXECS) ./test_scotch_graph_map data/m4x4_b100000.grf
 					$(EXECS) ./test_scotch_graph_map data/m16x16.grf
-					$(EXECS) ./test_scotch_graph_map data/m16x16_b1.grf
+					$(EXECS) ./test_scotch_graph_map data/m16x16_b100000.grf
 
 test_scotch_graph_map		:	test_scotch_graph_map.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -372,7 +371,7 @@ test_scotch_graph_order		:	test_scotch_graph_order.c	\
 
 check_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl
 					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16.grf /dev/null
-					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16_b1.grf /dev/null
+					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16_b100000.grf /dev/null
 
 test_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -623,9 +622,9 @@ check_prog_dgscat-dggath	:
 					$(EXECP3) $(SCOTCHBINDIR)/dgscat -r1 -c data/m16x16.grf "$(TMP)1_%r.grf"
 					$(EXECP3) $(SCOTCHBINDIR)/dggath -r1 -c "$(TMP)1_%r.grf" "$(TMP)1.grf"
 					$(PROGDIFF) data/m16x16.grf "$(TMP)1.grf"
-					$(EXECP3) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b1.grf "$(TMP)2_%r.grf"
+					$(EXECP3) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b100000.grf "$(TMP)2_%r.grf"
 					$(EXECP3) $(SCOTCHBINDIR)/dggath -c "$(TMP)2_%r.grf" "$(TMP)2.grf"
-					$(PROGDIFF) data/m16x16_b1.grf "$(TMP)2.grf"
+					$(PROGDIFF) data/m16x16_b100000.grf "$(TMP)2.grf"
 
 check_prog_dgtst		:
 					$(EXECP4) $(SCOTCHBINDIR)/dgtst data/small_%r.grf
