@@ -1,4 +1,4 @@
-/* Copyright 2010,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 05 jan 2010     **/
 /**                                 to   : 21 may 2018     **/
+/**                # Version 6.1  : from : 30 jun 2021     **/
+/**                                 to   : 30 jun 2021     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -128,12 +130,12 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
 
   if (kgraphBand (orggrafptr, paraptr->distmax, &bndgrafdat, &bndvertlvlnum, &bandvnumtax) != 0) {
     errorPrint ("kgraphMapBd: cannot create band graph");
-    return     (1);
+    return (1);
   }
 
   if ((vertnbrtab = memAlloc (domnnbr * sizeof(Gnum))) == NULL) {
     errorPrint ("kgraphMapBd: out of memory (1)");
-    return     (1);
+    return (1);
   }
   memSet (vertnbrtab, 0, domnnbr * sizeof(Gnum));
   for (vertnum = orggrafptr->s.baseval; vertnum < orggrafptr->s.vertnnd; vertnum ++)
@@ -152,8 +154,7 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
   memFree (vertnbrtab);
 
   if (domnnum != domnnbr) {                       /* If graph is too small to have any usable anchors, apply org strategy */
-    memFree (bandvnumtax + bndgrafdat.s.baseval);
-    memFree (bndgrafdat.m.parttax + bndgrafdat.s.baseval);
+    memFree    (bandvnumtax + bndgrafdat.s.baseval);
     kgraphExit (&bndgrafdat);
     return     (kgraphMapSt (orggrafptr, paraptr->stratorg));
   }
@@ -161,12 +162,12 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
   if (kgraphMapSt (&bndgrafdat, paraptr->stratbnd) != 0) { /* Partition band graph */
     errorPrint  ("kgraphMapBd: cannot partition band graph");
     kgraphExit  (&bndgrafdat);
-    return      (1);
+    return (1);
   }
   if (bndgrafdat.m.domnnbr != orggrafptr->m.domnnbr) {
     errorPrint  ("kgraphMapBd: change in band graph number of parts not supported");
     kgraphExit  (&bndgrafdat);
-    return      (1);
+    return (1);
   }
 
   memCpy (orggrafptr->comploaddlt, bndgrafdat.comploaddlt, domnnbr * sizeof (Gnum)); /* Propagate back imbalance information */
@@ -241,7 +242,7 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
 
   if ((orgflagtab = memAlloc (kgraphMapBdFlagSize (orggrafptr->s.vertnnd) * sizeof (int))) == NULL) {
     errorPrint ("kgraphMapBd: out of memory (2)");
-    return     (1);
+    return (1);
   }
 
   memSet (orgflagtab, 0, kgraphMapBdFlagSize (orggrafptr->s.vertnnd) * sizeof (int)); /* Set vertices as not already considered */
@@ -296,9 +297,9 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
       if ((orggrafptr->pfixtax[vertnum] == -1) || /* If it is not a fixed vertex            */
           (kgraphMapBdFlagVal (orgflagtab, vertnum) != 0)) /* Or has already been processed */
         continue;                                 /* Skip it                                */
- 
+
       partval = orggrafptr->m.parttax[vertnum];
- 
+
       for (edgenum = orggrafptr->s.verttax[vertnum]; edgenum < orggrafptr->s.vendtax[vertnum]; edgenum ++) {
         if (orggrafptr->m.parttax[orggrafptr->s.edgetax[edgenum]] != partval) { /* If first vertex belongs to frontier */
           orggrafptr->frontab[orgfronnum] = vertnum;
@@ -313,17 +314,16 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
 
   memFree (orgflagtab);
   memFree (bandvnumtax + bndgrafdat.s.baseval);
-  memFree (bndgrafdat.m.parttax + bndgrafdat.s.baseval);
+
+  kgraphExit (&bndgrafdat);
 
   kgraphCost (orggrafptr);
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (kgraphCheck (orggrafptr) != 0) {
     errorPrint ("kgraphMapBd: internal error");
-    kgraphExit (&bndgrafdat);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
-  kgraphExit (&bndgrafdat);
 
   return (0);
 }
