@@ -13,9 +13,9 @@ CFLAGS		= -O3 -qstrict -qlanglvl=extc99 -s -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXE
 CLIBFLAGS	=
 LDFLAGS		= -lpthread -lm
 CP		= cp
-LEX		= flex -Pscotchyy -olex.yy.c
+FLEX		= flex
 LN		= ln
 MKDIR		= mkdir -p
 MV		= mv
 RANLIB		= ranlib
-YACC		= bison -pscotchyy -y -b y
+BISON		= bison

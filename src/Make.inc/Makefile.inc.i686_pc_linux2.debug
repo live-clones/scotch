@@ -13,9 +13,9 @@ CFLAGS		= -g -O0 -fPIC -Drestrict=__restrict -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_
 CLIBFLAGS	=
 LDFLAGS		= -g -lz -lm -pthread
 CP		= cp
-LEX		= flex -Pscotchyy -olex.yy.c
+FLEX		= flex
 LN		= ln
 MKDIR		= mkdir -p
 MV		= mv
 RANLIB		= ranlib
-YACC		= bison -pscotchyy -y -b y
+BISON		= bison
