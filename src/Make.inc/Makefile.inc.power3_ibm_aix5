@@ -13,9 +13,9 @@ CFLAGS		= -ma -q64 -qarch=auto -O3 -qstrict -qtune=pwr3 -qlanglvl=extc99 -s -DCO
 CLIBFLAGS	=
 LDFLAGS		= -bmaxdata:0x80000000 -lpthread -lm
 CP		= cp
-LEX		= lex
+FLEX		= flex
 LN		= ln
 MKDIR		= mkdir -p
 MV		= mv
 RANLIB		= ranlib
-YACC		= yacc
+BISON		= bison

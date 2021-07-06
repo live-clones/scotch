@@ -2712,8 +2712,7 @@ parser_ll.c			:	parser_ll.l				\
 					parser.h				\
 					parser_ll.h				\
 					parser_ly.h
-					$(LEX) parser_ll.l &&			\
-					$(MV) lex.yy.c parser_ll.c
+					$(FLEX) "-Pscotchyy$(SCOTCH_NAME_SUFFIX)" "-oparser_ll.c" parser_ll.l
 
 parser_ll$(OBJ)			:	parser_ll.c				\
 					parser_ly.h
@@ -2725,9 +2724,7 @@ parser_yy.c			:	parser_yy.y				\
 					common.h				\
 					parser.h				\
 					parser_yy.h
-					$(YACC) -d -v parser_yy.y &&		\
-					$(MV) y.tab.c parser_yy.c &&		\
-					$(MV) y.tab.h parser_ly.h
+					$(BISON) "-pscotchyy$(SCOTCH_NAME_SUFFIX)" --defines="parser_ly.h" --output="parser_yy.c" parser_yy.y
 
 parser_yy$(OBJ)			:	parser_yy.c
 

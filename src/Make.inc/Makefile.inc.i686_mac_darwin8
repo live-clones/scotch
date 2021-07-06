@@ -13,9 +13,9 @@ CFLAGS		= -O3 -fPIC -Drestrict=__restrict -DCOMMON_PTHREAD -DCOMMON_RANDOM_FIXED
 CLIBFLAGS	=
 LDFLAGS		= -lm
 CP		= cp
-LEX		= flex -Pscotchyy -olex.yy.c
+FLEX		= flex
 LN		= ln
 MKDIR		= mkdir -p
 MV		= mv
 RANLIB		= ranlib
-YACC		= bison -pscotchyy -y -b y
+BISON		= bison

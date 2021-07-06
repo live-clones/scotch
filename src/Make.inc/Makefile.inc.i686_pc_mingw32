@@ -60,9 +60,9 @@ LDFLAGS	+= -L$(ZLIB_ROOTDIR)/lib -lzdll
 
 CFLAGS		= $(CFLAGS_CPL) $(CFLAGS_INC) $(CFLAGS_DEF)
 CP		= cp
-LEX		= flex -Pscotchyy -olex.yy.c
+FLEX		= flex
 LN		= cp
 MKDIR		= mkdir -p
 MV		= mv
 RANLIB		= ranlib
-YACC		= bison -pscotchyy -y -b y
+BISON		= bison
