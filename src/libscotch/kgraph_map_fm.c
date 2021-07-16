@@ -292,7 +292,6 @@ Gnum * const                                chektab)
   Gnum                  vexxidx;
   Gnum                  edxxidx;
   Gnum                  commloadtmp;
-  Anum                  domnnum;
 
   Anum * restrict const       parttax = grafptr->m.parttax;
   const Gnum * restrict const verttax = grafptr->s.verttax;
