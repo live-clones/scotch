@@ -569,6 +569,7 @@ check_prog_gout			:	check_prog_gord		\
 check_prog_gpart		:
 					$(EXECS) $(SCOTCHBINDIR)/gpart 9 data/bump.grf $(TMPDIR)/bump_k9.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gpart 9 data/bump_b100000.grf $(TMPDIR)/bump_k9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gpart 5 data/bump_b100000.grf $(TMPDIR)/bump_k5.map -vmt '-Mr{bal=0.05,sep=m{vert=120,low=h{pass=10}f{bal=0.05,move=120},asc=b{bnd=f{bal=0.05,move=120},org=f{bal=0.05,move=120}}}}|m{vert=1000,low=r{bal=0.05,sep=m{vert=120,low=h{pass=10}f{bal=0.05,move=120},asc=b{bnd=f{bal=0.05,move=120},org=f{bal=0.05,move=120}}}},asc=b{bnd=f{bal=0.05,move=120},org=f{bal=0.05,move=120}}}'
 
 check_prog_gpart_clustering	:
 					$(EXECS) $(SCOTCHBINDIR)/gpart -q 1 data/bump.grf $(TMPDIR)/bump_part_cls_9.map -vmt
