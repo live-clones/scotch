@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010-2012,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 6.1  : from : 18 jul 2021     **/
+/**                                 to   : 18 jul 2021     **/
 /**                                                        **/
 /**   NOTES      : # The comploadavg and comploaddlt       **/
 /**                  should always be allocated together,  **/
@@ -120,25 +122,24 @@ typedef struct Kgraph_ {
   Gnum *                    comploadavg;          /*+ Array of target average loads                     +*/
   Gnum *                    comploaddlt;          /*+ Array of target imbalances                        +*/
   double                    comploadrat;          /*+ Ideal load balance per weight unit                +*/
-  double                    kbalval;              /*+ Last k-way imbalance ratio                        +*/
   Gnum                      commload;             /*+ Communication load                                +*/
+  double                    kbalval;              /*+ Last k-way imbalance ratio                        +*/
   INT                       levlnum;              /*+ Graph coarsening level                            +*/
 } Kgraph;
 
 /*+ The save graph structure. +*/
 
 typedef struct KgraphStore_ {
-  Gnum                      partnbr;              /*+ Number of parts                  +*/
-  int                       mflaval;              /*+ Mapping properties               +*/
   Anum *                    parttab;              /*+ Mapping array [vertnbr]          +*/
   ArchDom *                 domntab;              /*+ Array of domains [termmax]       +*/
+  Gnum                      domnmax;              /*+ Maximum number of parts to save  +*/
   Anum                      domnnbr;              /*+ Current number of domains        +*/
   Gnum                      fronnbr;              /*+ Number of frontier vertices      +*/
   Gnum *                    frontab;              /*+ Array of frontier vertex numbers +*/
   Gnum *                    comploadavg;          /*+ Array of target average loads    +*/
   Gnum *                    comploaddlt;          /*+ Array of target imbalances       +*/
-  double                    kbalval;              /*+ Last k-way imbalance ratio       +*/
   Gnum                      commload;             /*+ Communication load               +*/
+  double                    kbalval;              /*+ Last k-way imbalance ratio       +*/
 } KgraphStore;
 
 /*
