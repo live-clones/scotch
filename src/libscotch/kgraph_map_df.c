@@ -44,7 +44,7 @@
 /**   DATES      : # Version 6.0  : from : 05 jan 2010     **/
 /**                                 to   : 04 nov 2012     **/
 /**                # Version 7.0  : from : 03 aug 2018     **/
-/**                                 to   : 21 apr 2021     **/
+/**                                 to   : 11 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -146,9 +146,10 @@ KgraphMapDfData * restrict const  loopptr)
   float * restrict const              vanctab = loopptr->vanctab;
   float * restrict const              valotab = loopptr->valotab; /* Fraction of load to leak */
   Gnum * restrict const               velstax = loopptr->velstax;
+  const Arch * restrict const         archptr = grafptr->m.archptr;
   const Anum                          domnnbr = grafptr->m.domnnbr;
-  const Gnum                          crloval = grafptr->r.crloval;
   Anum * restrict const               parttax = grafptr->m.parttax;
+  const Gnum                          crloval = grafptr->r.crloval;
   const Anum * restrict const         parotax = grafptr->r.m.parttax;
   const Gnum * restrict const         verttax = grafptr->s.verttax;
   const Gnum * restrict const         vendtax = grafptr->s.vendtax;
@@ -293,7 +294,7 @@ KgraphMapDfData * restrict const  loopptr)
   }
 
 #ifndef KGRAPHDIFFMAPPNONE
-  if (! archPart (grafptr->m.archptr))
+  if (! archPart (archptr))
     mappflag = 1;
 #endif /* KGRAPHDIFFMAPPNONE */
 
@@ -363,7 +364,7 @@ KgraphMapDfData * restrict const  loopptr)
           }
         }
         sorttab[partnbr].partval = partval;       /* Create new slot */
-        sorttab[partnbr].distval = ((mappflag == 1) && (partcur != partval)) ? archDomDist (&grafptr->a, &grafptr->m.domntab[partcur], &grafptr->m.domntab[partval]) : 1;
+        sorttab[partnbr].distval = ((mappflag == 1) && (partcur != partval)) ? archDomDist (archptr, &grafptr->m.domntab[partcur], &grafptr->m.domntab[partval]) : 1;
         sorttab[partnbr].diffval = diffval;
         sorttab[partnbr].edlosum = edloval;
         partnbr ++;
@@ -562,8 +563,9 @@ Kgraph * restrict const        grafptr,           /*+ Active graph      +*/
 const KgraphMapDfParam * const paraptr)           /*+ Method parameters +*/
 {
   KgraphMapDfData     loopdat;
-  Gnum                vertnbr;
-  Gnum                domnnbr;
+
+  const Gnum                domnnbr = grafptr->m.domnnbr;
+  const Gnum                vertnbr = grafptr->s.vertnbr;
 
 #ifdef SCOTCH_DEBUG_KGRAPH1
   if ((grafptr->s.flagval & KGRAPHHASANCHORS) == 0) { /* Method valid only if graph has anchors */
@@ -572,8 +574,6 @@ const KgraphMapDfParam * const paraptr)           /*+ Method parameters +*/
   }
 #endif /* SCOTCH_DEBUG_KGRAPH1 */
 
-  domnnbr = grafptr->m.domnnbr;
-  vertnbr = grafptr->s.vertnbr;
   if (memAllocGroup ((void **) (void *)
                      &loopdat.vanctab, (size_t) (domnnbr * sizeof (float)),
                      &loopdat.valotab, (size_t) (domnnbr * sizeof (Gnum)),
