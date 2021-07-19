@@ -65,6 +65,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 06 jun 2018     **/
+/**                # Version 7.0  : from : 19 jul 2021     **/
+/**                                 to   : 19 jul 2021     **/
 /**                                                        **/
 /**   NOTES      : # While Anum and Gnum are different     **/
 /**                  types, because architectures are      **/
@@ -112,6 +114,9 @@ typedef struct Mapping_ {
   Anum                      domnnbr;              /*+ Current number of domains  +*/
   Anum                      domnmax;              /*+ Maximum number of domains  +*/
   ArchDom                   domnorg;              /*+ Initial (sub)domain        +*/
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_t           mutedat;              /*+ Local mutex for updates    +*/
+#endif /* SCOTCH_PTHREAD */
 } Mapping;
 
 /*+ The target architecture sort structure, used
