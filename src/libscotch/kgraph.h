@@ -56,7 +56,7 @@
 /**                # Version 6.1  : from : 18 jul 2021     **/
 /**                                 to   : 18 jul 2021     **/
 /**                # Version 7.0  : from : 03 aug 2018     **/
-/**                                 to   : 03 aug 2018     **/
+/**                                 to   : 13 jul 2021     **/
 /**                                                        **/
 /**   NOTES      : # The comploadavg and comploaddlt       **/
 /**                  should always be allocated together,  **/
@@ -109,7 +109,6 @@
 
 typedef struct Kgraph_ {
   Graph                     s;                    /*+ Current graph                                     +*/
-  Arch                      a;                    /*+ Current architecture                              +*/
   Mapping                   m;                    /*+ Current mapping of graph vertices                 +*/
   struct {                                        /*+ Remapping structure                               +*/
     Mapping                 m;                    /*+ Old mapping                                       +*/
@@ -149,7 +148,7 @@ typedef struct KgraphStore_ {
 **  The function prototypes.
 */
 
-int                         kgraphInit          (Kgraph * restrict const, const Graph * restrict const, const Arch * restrict const, const ArchDom * restrict const, const Gnum, const Anum * restrict const, const Anum * restrict const, const Gnum, const Gnum, const Gnum * restrict const);
+int                         kgraphInit          (Kgraph * const, const Graph * const, Arch * restrict const, const ArchDom * restrict, const Gnum, const Anum * restrict const, const Gnum, const Gnum, const Gnum * restrict const);
 void                        kgraphExit          (Kgraph * const);
 void                        kgraphFrst          (Kgraph * const);
 int                         kgraphCheck         (const Kgraph * const);

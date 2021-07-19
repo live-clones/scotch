@@ -3128,7 +3128,8 @@ wgraph_part_es$(OBJ)		:	wgraph_part_es.c			\
 					kgraph.h				\
 					kgraph_map_st.h				\
 					wgraph.h				\
-					wgraph_part_es.h
+					wgraph_part_es.h			\
+					scotch.h
 
 wgraph_part_fm$(OBJ)		:	wgraph_part_fm.c			\
 					module.h				\

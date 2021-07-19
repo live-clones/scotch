@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 12 sep 2019     **/
+/**                                 to   : 14 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -160,8 +160,6 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
   const Strat *       mapstraptr;                 /* Pointer to mapping strategy          */
   CONTEXTDECL        (actgrafptr);
   Anum *              pfixtax;
-  Gnum                baseval;
-  Anum *              parotax;                    /* Old partition array                  */
   Gnum                crloval;                    /* Coefficient load for regular edges   */
   Gnum                cmloval;                    /* Coefficient load for migration edges */
   const Gnum *        vmlotax;                    /* Vertex migration cost array          */
@@ -174,12 +172,38 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
     return (o);
   }
 
-  const Graph * restrict const  grafptr = (Graph *) CONTEXTGETOBJECT (actgrafptr);
-  LibMapping * restrict const   lmapptr = (LibMapping *) mappptr;
+  const Graph * restrict const      grafptr = (Graph *) CONTEXTGETOBJECT (actgrafptr);
+  LibMapping * restrict const       lmapptr = (LibMapping *) mappptr;
+  const LibMapping * restrict const lmaoptr = (LibMapping *) mapoptr;
+  const Gnum                        baseval = grafptr->baseval;
+
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (grafptr != lmapptr->grafptr) {
     errorPrint ("graphMapCompute2: output mapping does not correspond to input graph");
     goto abort;
+  }
+  if (lmaoptr != NULL) {
+    Gnum                vertnbr;
+    Gnum                vertnum;
+
+    if (grafptr != lmaoptr->grafptr) {
+      errorPrint ("graphMapCompute2: old mapping does not correspond to input graph");
+      goto abort;
+    }
+    if (lmapptr->archptr != lmaoptr->archptr) {
+      errorPrint ("graphMapCompute2: output and old mappings do not correspond to same architecture");
+      goto abort;
+    }
+
+    for (vertnum = 0, vertnbr = lmaoptr->grafptr->vertnbr; vertnum < vertnbr; vertnum ++) {
+      ArchDom                     domndat;
+
+      if ((lmaoptr->parttab[vertnum] >= 0) &&
+          (archDomTerm (lmapptr->archptr, &domndat, lmaoptr->parttab[vertnum]) != 0)) {
+        errorPrint ("graphMapCompute2: invalid old partition");
+        goto abort;
+      }
+    }
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 #ifdef SCOTCH_DEBUG_LIBRARY2
@@ -204,9 +228,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-  baseval = lmapptr->grafptr->baseval;
-
-  if (vfixnbr != 0) {                             /* We have fixed vertices */
+  if (vfixnbr > 0) {                              /* We have fixed vertices */
 #ifdef SCOTCH_DEBUG_LIBRARY1
     ArchDom             domndat;
     Gnum                vertnbr;
@@ -224,40 +246,20 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
       }
     }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
+    if (vfixnbr >= grafptr->vertnbr) {            /* If all fixed vertices, do nothing */
+      o = 0;
+      goto abort;
+    }
+
     pfixtax = lmapptr->parttab - baseval;
   }
   else
     pfixtax = NULL;
 
-  if (mapoptr != NULL) {                          /* We are doing a repartitioning */
-    const LibMapping * restrict lmaoptr;
+  if (lmaoptr != NULL) {                          /* We are doing a repartitioning */
     Gnum                        numeval;
     Gnum                        denoval;
-#ifdef SCOTCH_DEBUG_LIBRARY1
-    ArchDom                     domndat;
-    Gnum                        vertnbr;
-    Gnum                        vertnum;
-#endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-    lmaoptr = (LibMapping *) mapoptr;
-#ifdef SCOTCH_DEBUG_LIBRARY1
-    if (lmapptr->grafptr != lmaoptr->grafptr) {
-      errorPrint ("graphMapCompute2: output and old mappings must correspond to same graph");
-      goto abort;
-    }
-    if (lmapptr->archptr != lmaoptr->archptr) {
-      errorPrint ("graphMapCompute2: output and old mappings must correspond to same architecture");
-      goto abort;
-    }
-    for (vertnum = 0, vertnbr = lmapptr->grafptr->vertnbr; vertnum < vertnbr; vertnum ++) {
-      if ((lmaoptr->parttab[vertnum] >= 0) &&
-          (archDomTerm (lmapptr->archptr, &domndat, lmaoptr->parttab[vertnum]) != 0)) {
-        errorPrint ("graphMapCompute2: invalid old partition");
-        goto abort;
-      }
-    }
-#endif /* SCOTCH_DEBUG_LIBRARY1 */
-    parotax = lmaoptr->parttab - baseval;
     vmlotax = (vmlotab != NULL) ? vmlotab - baseval : NULL;
     numeval = (INT) ((emraval * 100.0) + 0.5);
     denoval = intGcd (numeval, 100);
@@ -265,21 +267,27 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
     crloval = 100     / denoval;
   }
   else {
-    parotax = NULL;
     vmlotax = NULL;
     cmloval =
     crloval = 1;
   }
 
-  if (kgraphInit (&mapgrafdat, grafptr, lmapptr->archptr, NULL, vfixnbr, pfixtax, parotax, crloval, cmloval, vmlotax) != 0)
+  if (kgraphInit (&mapgrafdat, grafptr, lmapptr->archptr, NULL, vfixnbr, pfixtax, crloval, cmloval, vmlotax) != 0)
     goto abort;
+
+  if (lmaoptr != NULL) {                          /* If we are doing a repartitioning, fill old mapping structure */
+    if ((mapAlloc (&mapgrafdat.r.m)                             != 0) ||
+        (mapBuild (&mapgrafdat.r.m, lmaoptr->parttab - baseval) != 0)) {
+      errorPrint ("kgraphInit: cannot initialize remapping");
+      kgraphExit (&mapgrafdat);
+      goto abort;
+    }
+  }
+
   mapgrafdat.contptr = CONTEXTGETDATA (actgrafptr);
 
-  o = 0;
-  if (mapgrafdat.vfixnbr < mapgrafdat.s.vertnbr) { /* Perform mapping if not all fixed vertices */
-    o = kgraphMapSt (&mapgrafdat, mapstraptr);
-    mapTerm (&mapgrafdat.m, lmapptr->parttab - baseval); /* Propagate mapping result to part array */
-  }
+  o = kgraphMapSt (&mapgrafdat, mapstraptr);
+  mapTerm (&mapgrafdat.m, lmapptr->parttab - baseval); /* Propagate mapping result to part array */
 
   kgraphExit (&mapgrafdat);
 

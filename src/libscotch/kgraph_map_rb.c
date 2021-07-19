@@ -122,6 +122,11 @@ const KgraphMapRbParam * restrict const paraptr)
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
   int                         o;
 
+  if (mapAlloc (&grafptr->m) != 0) {
+    errorPrint ("kgraphMapRb: cannot allocate mapping arrays");
+    return (1);
+  }
+
   grafptr->kbalval = paraptr->kbalval;            /* Store last k-way imbalance ratio */
 
   datadat.grafptr = &grafptr->s;

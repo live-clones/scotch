@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 28 aug 2019     **/
+/**                                 to   : 27 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,9 +106,9 @@ const KdgraphMapRbPartData * restrict const dataptr)
   DmappingFrag * restrict   fragptr;
 
   cgrfptr = &grafptr->data.cgrfdat;
-  if (kgraphInit (&kgrfdat, cgrfptr, &mappptr->archdat, &grafptr->domnorg, 0, NULL, NULL, 1, 1, NULL) != 0) {
+  if (kgraphInit (&kgrfdat, cgrfptr, &mappptr->archdat, &grafptr->domnorg, 0, NULL, 1, 1, NULL) != 0) {
     errorPrint ("kdgraphMapRbPartSequ: cannot initialize centralized graph");
-    return     (1);
+    return (1);
   }
   kgrfdat.s.flagval   = (kgrfdat.s.flagval & ~GRAPHBITSUSED) | cgrfptr->flagval; /* Free sequential graph along with mapping data */
   kgrfdat.s.vnumtax   = NULL;                     /* Remove index array if any                                                    */
@@ -117,7 +117,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
 
   if (kgraphMapSt (&kgrfdat, dataptr->paraptr->stratseq) != 0) { /* Compute sequential mapping */
     kgraphExit (&kgrfdat);
-    return     (1);
+    return (1);
   }
 
   if (((fragptr = memAlloc (sizeof (DmappingFrag))) == NULL) ||
@@ -126,7 +126,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
     if (fragptr != NULL)
       memFree (fragptr);
     kgraphExit (&kgrfdat);
-    return     (1);
+    return (1);
   }
 
   fragptr->vertnbr = cgrfptr->vertnbr;
@@ -301,7 +301,7 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
     fldproccol = MPI_UNDEFINED;                   /* Do not create any sub-communicator for it             */
   if (MPI_Comm_split (actgrafptr->s.proccomm, fldproccol, fldprocnum, &fldthrdtab[fldpartval].fldproccomm) != MPI_SUCCESS) { /* Assign folded communicator to proper part */
     errorPrint  ("kdgraphMapRbPartFold: communication error");
-    return      (1);
+    return (1);
   }
   fldthrdtab[fldpartval].fldprocnum      = fldprocnum; /* This will be our rank afterwards  */
   fldthrdtab[fldpartval ^ 1].fldprocnum  = -1;    /* Other part will not be in communicator */
@@ -364,12 +364,12 @@ const KdgraphMapRbPartData * restrict const dataptr)
       return (kdgraphMapRbAddOne (&grafptr->data.dgrfdat, mappptr, &grafptr->domnorg)); /* Update mapping and return */
     case 2 :                                      /* On error */
       errorPrint ("kdgraphMapRbPart2: cannot bipartition domain");
-      return     (1);
+      return (1);
   }
 
   if (dgraphGhst (&grafptr->data.dgrfdat) != 0) { /* Compute ghost edge array if not already present, to have vertgstnbr (and procsidtab) */
     errorPrint ("kdgraphMapRbPart2: cannot compute ghost edge array");
-    return     (1);
+    return (1);
   }
 
   o = bdgraphInit (&actgrafdat, &grafptr->data.dgrfdat, NULL, &mappptr->archdat, domnsubtab); /* Create active graph */
@@ -386,7 +386,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
 
   if ((o != 0) || (bdgraphBipartSt (&actgrafdat, dataptr->paraptr->stratsep) != 0)) { /* Bipartition edge-separation graph   */
     bdgraphExit (&actgrafdat);
-    return      (1);
+    return (1);
   }
 
   o = kdgraphMapRbPartFold (&actgrafdat, mappptr, domnsubtab, &indgrafdat);
@@ -426,7 +426,7 @@ const KdgraphMapRbParam * restrict const  paraptr)
   if (grafptr->s.procglbnbr <= 1) {               /* If single process, switch immediately to sequential mode */
     if (dgraphGather (&grafptr->s, &grafdat.data.cgrfdat) != 0) {
       errorPrint ("kdgraphMapRbPart: cannot centralize graph");
-      return     (1);
+      return (1);
     }
     return (kdgraphMapRbPartSequ (&grafdat, mappptr->mappptr, &datadat));
   }
