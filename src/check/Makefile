@@ -100,6 +100,10 @@ realclean			:	clean
 					test_common_random		\
 					test_common_thread		\
 					test_fibo			\
+					test_libesmumps			\
+					test_libmetis			\
+					test_libmetis_dual		\
+					test_libmetis_dual_f		\
 					test_scotch_arch		\
 					test_scotch_arch_deco		\
 					test_scotch_graph_coarsen	\
@@ -120,11 +124,7 @@ realclean			:	clean
 					test_scotch_dgraph_redist	\
 					test_scotch_mesh_graph		\
 					test_strat_par			\
-					test_strat_seq			\
-					test_libesmumps			\
-					test_libmetis			\
-					test_libmetis_dual		\
-					test_libmetis_dual_f
+					test_strat_seq
 
 ##
 ##  Test cases dependencies.
