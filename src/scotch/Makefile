@@ -329,7 +329,8 @@ gotst$(EXE)			:	gotst.c					\
 gout$(EXE)			:	gout_c.c				\
 					gout_o.c				\
 					$(includedir)/scotch.h			\
-					$(libdir)/libscotch$(LIB)
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)
 					$(CC) $(CFLAGS) -I../libscotch -I$(includedir) gout_c.c gout_o.c -o $(@) -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
 
 gpart$(EXE)			:	gmap.c					\
