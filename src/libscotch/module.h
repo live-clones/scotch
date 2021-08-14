@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 25 sep 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 25 apr 2021     **/
+/**                                 to   : 03 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,16 +72,6 @@
 #else /* SCOTCH_CODENAME */
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL)
 #endif /* SCOTCH_CODENAME */
-
-/*
-** Handling of determinism.
-*/
-
-#ifdef SCOTCH_DETERMINISTIC
-#ifndef COMMON_RANDOM_FIXED_SEED
-#define COMMON_RANDOM_FIXED_SEED
-#endif /* COMMON_RANDOM_FIXED_SEED */
-#endif /* SCOTCH_DETERMINISTIC     */
 
 /*
 ** Handling of parallelism.
