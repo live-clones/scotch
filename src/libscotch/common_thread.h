@@ -1,4 +1,4 @@
-/* Copyright 2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 05 jun 2018     **/
-/**                                 to   : 31 dec 2019     **/
+/**                                 to   : 14 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,5 +93,7 @@ static void                 threadWaitBarrier   (ThreadContext * const);
 static void *               threadWait          (ThreadDescriptor * const);
 
 static int                  threadCreate        (ThreadDescriptor * const, const int, const int);
+static int                  threadProcessCoreNbr (void);
+static int                  threadProcessCoreNum (int);
 #endif /* COMMON_PTHREAD */
 #endif /* COMMON_THREAD */

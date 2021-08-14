@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 04 jul 2012     **/
 /**                                 to   : 27 apr 2015     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 30 apr 2021     **/
+/**                                 to   : 14 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -109,12 +109,12 @@ const int * const           coretab)
   pthread_cond_init  (&contptr->conddat, NULL);
   contptr->statval = THREADCONTEXTSTATUSRDY;
 
-  corenbr = threadSystemCoreNbr ();
+  corenbr = threadProcessCoreNbr ();
 
   for (thrdnum = 1; thrdnum < thrdnbr; thrdnum ++) { /* Launch threads from 1 to (thrdnbr - 1) */
     desctab[thrdnum].contptr = contptr;
     desctab[thrdnum].thrdnum = thrdnum;
-    corenum = ((coretab != NULL) ? coretab[thrdnum] : thrdnum) % corenbr;
+    corenum = (coretab != NULL) ? (coretab[thrdnum]  % corenbr) : threadProcessCoreNum (thrdnum);
 
     if (threadCreate (&desctab[thrdnum], thrdnum, corenum) != 0) {
       errorPrint ("threadContextInit: cannot create thread (%d)", thrdnum);
@@ -125,7 +125,7 @@ const int * const           coretab)
   }
   desctab[0].contptr = contptr;
   desctab[0].thrdnum = 0;
-  corenum = (coretab != NULL) ? (coretab[0] % corenbr) : 0;
+  corenum = (coretab != NULL) ? (coretab[0] % corenbr) : threadProcessCoreNum (0);
   threadCreate (&desctab[0], 0, corenum);         /* Set affinity of local thread after the slaves, so that masks are ok */
 
   threadContextBarrier (contptr);                 /* Ensure all slave threads have started before cleaning-up resources */
@@ -771,3 +771,62 @@ const int                   corenum)
 }
 
 #endif /* COMMON_PTHREAD */
+
+/* This routine returns the number of available threads
+** to run the process: either the number of threads assigned
+** to the process by the environment (e.g., an MPI launcher)
+** or the system number of threads.
+** It returns:
+** - >0  : number of threads, in all cases.
+*/
+
+static
+int
+threadProcessCoreNbr ()
+{
+  int                 corenbr;
+#ifdef COMMON_PTHREAD_AFFINITY_LINUX
+  cpu_set_t           cpusdat;
+
+  pthread_getaffinity_np (pthread_self (), sizeof (cpu_set_t), &cpusdat);
+  corenbr = CPU_COUNT (&cpusdat);
+#else /* COMMON_PTHREAD_AFFINITY_LINUX */
+  corenbr = threadSystemCoreNbr ();
+#endif /* COMMON_PTHREAD_AFFINITY_LINUX */
+
+  return (corenbr);
+}
+
+/* This routine returns the number of the core to be
+** associated with the given thread number.
+** It returns:
+** - x  : number of the core associated with the thread.
+*/
+
+static
+int
+threadProcessCoreNum (
+int                         thrdnum)
+{
+  int                 corenum;
+#ifdef COMMON_PTHREAD_AFFINITY_LINUX
+  int                 corenbr;
+  cpu_set_t           cpusdat;
+
+  pthread_getaffinity_np (pthread_self (), sizeof (cpu_set_t), &cpusdat);
+  corenbr  = CPU_COUNT (&cpusdat);
+  thrdnum %= corenbr;                             /* Round-robin on thread allocation */
+
+  for (corenum = 0; thrdnum >= 0; corenum ++) {   /* For all potential cores       */
+    if (CPU_ISSET (corenum, &cpusdat)) {          /* If core is available          */
+      if (thrdnum <= 0)                           /* And it is the one we want     */
+	break;                                    /* We have found our core number */
+      thrdnum --;                                 /* One less available core       */
+    }
+  }
+#else /* COMMON_PTHREAD_AFFINITY_LINUX */
+  corenum = thrdnum;
+#endif /* COMMON_PTHREAD_AFFINITY_LINUX */
+
+  return (corenum);
+}
