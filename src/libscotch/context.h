@@ -1,4 +1,4 @@
-/* Copyright 2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 04 aug 2018     **/
-/**                                 to   : 18 sep 2019     **/
+/**                                 to   : 08 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,6 +53,20 @@
 /*+ Container option flags. +*/
 
 #define CONTEXTCONTAINERTYPE        0x4000        /*+ Object is a container +*/
+
+/*+ The container integer option values. +*/
+
+typedef enum {
+  CONTEXTOPTIONNUMDETERMINISTIC,
+  CONTEXTOPTIONNUMRANDOMFIXEDSEED,
+  CONTEXTOPTIONNUMNBR
+} ContextOptionNum;
+
+/*+ The container double option values. +*/
+
+typedef enum {
+  CONTEXTOPTIONDBLNBR
+} ContextOptionDbl;
 
 /*
 **  The type and structure definitions.
@@ -71,6 +85,12 @@ typedef struct ContextContainer_ {
   Context *                 contptr;              /*+ Context attached to the object                       +*/
   void *                    dataptr;              /*+ Object to which the context is attached              +*/
 } ContextContainer;
+
+/*
+**  The function prototypes.
+*/
+
+int                         contextOptionsInit  (Context * const);
 
 /*
 **  The macro definitions.
@@ -93,8 +113,9 @@ typedef struct ContextContainer_ {
       0)                                        \
    : (c##_contptr = (void *) &c##_contdat,      \
       c##_cdatptr = (void *) (c),               \
-      contextInit   (&c##_contdat),             \
-      contextCommit (&c##_contdat)))
+      contextInit        (&c##_contdat),        \
+      contextOptionsInit (&c##_contdat),        \
+      contextCommit      (&c##_contdat)))
 
 #define CONTEXTGETDATA(c)           c##_contptr
 #define CONTEXTGETOBJECT(c)         c##_cdatptr

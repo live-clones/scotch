@@ -280,6 +280,8 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			common_stub$(OBJ)			\
 			common_thread$(OBJ)			\
 			common_thread_system$(OBJ)		\
+			common_values$(OBJ)			\
+			context$(OBJ)				\
 			fibo$(OBJ)				\
 			gain$(OBJ)				\
 			geom$(OBJ)				\
@@ -478,7 +480,8 @@ common_context$(OBJ)		:	common_context.c			\
 					module.h				\
 					common.h				\
 					common_thread.h				\
-					common_thread_system.h
+					common_thread_system.h			\
+					common_values.h
 					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file$(OBJ)		:	common_file.c				\
@@ -534,6 +537,12 @@ common_thread_system$(OBJ)	:	common_thread_system.c			\
 					module.h				\
 					common.h				\
 					common_thread_system.h
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+
+common_values$(OBJ)		:	common_values.c				\
+					module.h				\
+					common.h				\
+					common_values.h
 					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 arch$(OBJ)			:	arch.c					\

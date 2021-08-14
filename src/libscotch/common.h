@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 31 aug 2021     **/
+/**                                 to   : 07 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -322,6 +322,15 @@ typedef void (* ThreadReduceFunc) (void * const, void * const, const void * cons
 typedef void (* ThreadScanFunc) (void * const, void * const, const int, const int, const void * const);
 
 /*
+**  Handling of values.
+*/
+
+/*+ The abstract context values datatype. +*/
+
+struct ValuesContext_;
+typedef struct ValuesContext_ ValuesContext;
+
+/*
 **  Handling of execution contexts.
 */
 
@@ -330,6 +339,7 @@ typedef void (* ThreadScanFunc) (void * const, void * const, const int, const in
 typedef struct Context_ {
   ThreadContext *           thrdptr;              /*+ Threading context +*/
   IntRandContext *          randptr;              /*+ Random context    +*/
+  ValuesContext *           valuptr;              /*+ Values context    +*/
 } Context;
 
 /*+ The context splitting user function. +*/
@@ -444,6 +454,11 @@ int                         contextRandomClone  (Context * const);
 int                         contextThreadInit2  (Context * const, const int, const int * const);
 int                         contextThreadInit   (Context * const);
 int                         contextThreadLaunchSplit (Context * const, ContextSplitFunc const, void * const);
+int                         contextValuesInit   (Context * const, void * const, const size_t, const int, const size_t, const int, const size_t);
+int                         contextValuesGetDbl (Context * const, const int, double * const);
+int                         contextValuesGetInt (Context * const, const int, INT * const);
+int                         contextValuesSetDbl (Context * const, const int, const double);
+int                         contextValuesSetInt (Context * const, const int, const INT);
 
 /*
 **  Macro definitions.

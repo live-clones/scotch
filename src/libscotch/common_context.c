@@ -1,4 +1,4 @@
-/* Copyright 2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                context management routines.            **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 01 jul 2021     **/
+/**                                 to   : 22 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,6 +55,13 @@
 #include "common.h"
 #include "common_thread.h"
 #include "common_thread_system.h"
+#include "common_values.h"
+
+/*
+**  The static and global variables.
+*/
+
+static ValuesContext        valudat = { NULL, NULL, 0, 0, 0, 0, 0 };
 
 /***********************************/
 /*                                 */
@@ -71,8 +78,9 @@ void
 contextInit (
 Context * const             contptr)
 {
-  contptr->thrdptr = NULL;                        /* Thread context not initialized yet     */
-  contptr->randptr = &intranddat;                 /* Use global random generator by default */
+  contptr->thrdptr = NULL;                        /* Thread context not initialized yet       */
+  contptr->randptr = &intranddat;                 /* Use global random generator by default   */
+  contptr->valuptr = NULL;                        /* Allow user library to provide its values */
 
   intRandInit (&intranddat);                      /* Make sure random context is initialized before cloning */
 }
@@ -92,10 +100,16 @@ Context * const             contptr)
   }
   if (contptr->randptr != &intranddat)            /* If not global random generator */
     memFree (contptr->randptr);
+  if (contptr->valuptr != &valudat) {             /* If not global values array           */
+    if (contptr->valuptr->dataptr != contptr->valuptr->dainptr) /* If modified data array */
+      memFree (contptr->valuptr->dataptr);
+    memFree (contptr->valuptr);
+  }
 
 #ifdef SCOTCH_DEBUG_CONTEXT1
   contptr->thrdptr = NULL;
   contptr->randptr = NULL;
+  contptr->valuptr = NULL;
 #endif /* SCOTCH_DEBUG_CONTEXT1 */
 }
 
@@ -115,6 +129,9 @@ Context * const             contptr)
   o = 0;
   if (contptr->thrdptr == NULL)                   /* If thread context not already initialized */
     o = contextThreadInit (contptr);
+
+  if (contptr->valuptr == NULL)                   /* If no values provided by user library */
+    contptr->valuptr = &valudat;                  /* Set default data to avoid any crash   */
 
   return (o);
 }
@@ -274,8 +291,10 @@ void * const                paraptr)              /* Function parameters */
 
   spltdat.conttab[0].thrdptr = &thrdtab[0];
   spltdat.conttab[0].randptr = contptr->randptr;  /* Re-use pseudo-random generator of initial context in sub-context 0 */
+  spltdat.conttab[0].valuptr = contptr->valuptr;
   spltdat.conttab[1].thrdptr = &thrdtab[1];
   spltdat.conttab[1].randptr = &randdat;          /* Set independent pseudo-random generator for sub-context 1 */
+  spltdat.conttab[1].valuptr = contptr->valuptr;
   spltdat.funcptr = funcptr;
   spltdat.paraptr = paraptr;
 

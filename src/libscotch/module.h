@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 01 jul 2021     **/
+/**                                 to   : 07 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,16 +72,6 @@
 #else /* SCOTCH_CODENAME */
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL)
 #endif /* SCOTCH_CODENAME */
-
-/*
-** Handling of determinism.
-*/
-
-#ifdef SCOTCH_DETERMINISTIC
-#ifndef COMMON_RANDOM_FIXED_SEED
-#define COMMON_RANDOM_FIXED_SEED
-#endif /* COMMON_RANDOM_FIXED_SEED */
-#endif /* SCOTCH_DETERMINISTIC     */
 
 /*
 ** Handling of parallelism.
@@ -315,6 +305,12 @@
 #define contextThreadInit           SCOTCH_NAME_INTERN (contextThreadInit)
 #define contextThreadInit2          SCOTCH_NAME_INTERN (contextThreadInit2)
 #define contextThreadLaunchSplit    SCOTCH_NAME_INTERN (contextThreadLaunchSplit)
+
+#define contextValuesGetDbl         SCOTCH_NAME_INTERN (contextValuesGetDbl)
+#define contextValuesGetInt         SCOTCH_NAME_INTERN (contextValuesGetInt)
+#define contextValuesInit           SCOTCH_NAME_INTERN (contextValuesInit)
+#define contextValuesSetDbl         SCOTCH_NAME_INTERN (contextValuesSetDbl)
+#define contextValuesSetInt         SCOTCH_NAME_INTERN (contextValuesSetInt)
 
 #define envGetInt                   SCOTCH_NAME_INTERN (envGetInt)
 
@@ -713,6 +709,8 @@
 #define commGatherv                 SCOTCH_NAME_INTERN (commGatherv)
 #define commScatterv                SCOTCH_NAME_INTERN (commScatterv)
 #endif /* ((defined INTSIZE64) || (defined COMM)) */
+
+#define contextOptionsInit          SCOTCH_NAME_INTERN (contextOptionsInit)
 
 #define dgraphAllreduceMaxSum2      SCOTCH_NAME_INTERN (dgraphAllreduceMaxSum2)
 #define dgraphBuild                 SCOTCH_NAME_INTERN (dgraphBuild)
