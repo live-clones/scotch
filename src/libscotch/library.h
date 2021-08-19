@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 01 apr 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 20 sep 2019     **/
+/**                                 to   : 22 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,7 +92,15 @@ typedef DUMMYINT SCOTCH_Num;
 #endif /* ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL)) */
 #endif /* LIB_SCOTCH_H_UNIQUE */
 
-/*+ Coarsening flags +*/
+/*+ Option numbers. +*/
+
+#ifndef SCOTCH_OPTIONNUMNBR
+#define SCOTCH_OPTIONNUMDETERMINISTIC 0
+#define SCOTCH_OPTIONNUMRANDOMFIXEDSEED 1
+#define SCOTCH_OPTIONNUMNBR         2
+#endif /* SCOTCH_OPTIONNUMNBR */
+
+/*+ Coarsening flags. +*/
 
 #ifndef SCOTCH_COARSENNONE
 #define SCOTCH_COARSENNONE          0x0000
@@ -101,7 +109,7 @@ typedef DUMMYINT SCOTCH_Num;
 #define SCOTCH_COARSENNOMERGE       0x4000
 #endif /* SCOTCH_COARSENNONE */
 
-/*+ Strategy string parametrization values +*/
+/*+ Strategy string parametrization values. +*/
 
 #ifndef SCOTCH_STRATDEFAULT
 #define SCOTCH_STRATDEFAULT         0x00000
@@ -122,7 +130,7 @@ typedef DUMMYINT SCOTCH_Num;
 /*+ Opaque objects. The dummy sizes of these
 objects, computed at compile-time by program
 "dummysizes", are given as double values for
-proper padding                               +*/
+proper padding.                              +*/
 
 #ifndef LIB_SCOTCH_H_UNIQUE
 typedef unsigned char       SCOTCH_GraphPart2;
@@ -212,6 +220,8 @@ int                         SCOTCH_archDomBipart (SCOTCH_Arch * const, const SCO
 SCOTCH_Context *            SCOTCH_contextAlloc (void);
 int                         SCOTCH_contextInit  (SCOTCH_Context * const);
 void                        SCOTCH_contextExit  (SCOTCH_Context * const);
+int                         SCOTCH_contextOptionGetNum (SCOTCH_Context * const, const int, SCOTCH_Num * const);
+int                         SCOTCH_contextOptionSetNum (SCOTCH_Context * const, const int, const SCOTCH_Num);
 int                         SCOTCH_contextRandomClone (SCOTCH_Context * const);
 void                        SCOTCH_contextRandomReset (SCOTCH_Context * const);
 void                        SCOTCH_contextRandomSeed (SCOTCH_Context * const, const SCOTCH_Num);

@@ -1,4 +1,4 @@
-/* Copyright 2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 20 sep 2019     **/
+/**                                 to   : 22 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,12 +90,19 @@ int
 SCOTCH_contextInit (
 SCOTCH_Context * const      libcontptr)
 {
+  Context * const           contptr = (Context *) libcontptr;
+
   if (sizeof (SCOTCH_Context) < sizeof (Context)) {
     errorPrint (STRINGIFY (SCOTCH_contextInit) ": internal error");
-    return     (1);
+    return (1);
   }
 
-  contextInit ((Context *) libcontptr);
+  contextInit (contptr);
+
+  if (contextOptionsInit (contptr)) {
+    errorPrint (STRINGIFY (SCOTCH_contextInit) ": cannot create option array");
+    return (1);
+  }
 
   return (0);
 }
@@ -241,4 +248,66 @@ const int                   thrdnbr,
 const int * const           coretab)
 {
   return (contextThreadInit2 ((Context *) libcontptr, thrdnbr, ((void *) coretab == (void *) &thrdnbr) ? NULL : coretab));
+}
+
+/*********************************/
+/*                               */
+/* These routines handle context */
+/* options.                      */
+/*                               */
+/*********************************/
+
+/*+ This routine gets an interger option value
+*** from the given context.
+*** It returns:
+*** - 0   : if the value was obtained.
+*** - !0  : invalid option number.
++*/
+
+int
+SCOTCH_contextOptionGetNum (
+SCOTCH_Context * const      libcontptr,
+const int                   optinum,
+SCOTCH_Num * const          optiptr)
+{
+  return (contextValuesGetInt ((Context *) libcontptr, optinum, optiptr));
+}
+
+/*+ This routine sets an interger option value
+*** in the given context.
+*** It returns:
+*** - 0   : if the value was set.
+*** - !0  : on error.
++*/
+
+int
+SCOTCH_contextOptionSetNum (
+SCOTCH_Context * const      libcontptr,
+const int                   optinum,
+const SCOTCH_Num            optival)
+{
+  SCOTCH_Num          optitmp;                    /* Working option value */
+  int                 o;
+
+  optitmp = optival;                              /* Set working value */
+  o = 0;                                          /* Assume no error   */
+
+  switch (optival) {
+    case CONTEXTOPTIONNUMFIXEDRANDOMSEED :
+      if (optitmp != 0)
+        optitmp = 1;                              /* Only two values available */
+      break;
+    case CONTEXTOPTIONNUMDETERMINISTIC :
+      if (optitmp != 0) {
+        optitmp = 1;                              /* Only two values available */
+
+        o = contextValuesSetInt ((Context *) libcontptr, CONTEXTOPTIONNUMFIXEDRANDOMSEED, 1); /* If deterministic behavior wanted, use fixed random seed */
+      }
+      break;
+    default :
+      errorPrint (STRINGIFY (SCOTCH_contextOptionSetNum) ": invalid option name");
+      return (1);
+  }
+
+  return (o || contextValuesSetInt ((Context *) libcontptr, optinum, optitmp));
 }
