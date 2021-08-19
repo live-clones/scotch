@@ -1,4 +1,4 @@
-/* Copyright 2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 22 aug 2020     **/
-/**                                 to   : 22 aug 2020     **/
+/**                                 to   : 21 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -165,4 +165,34 @@ int * const                 revaptr),     \
 (contptr, thrdptr, coreptr, revaptr))
 {
   *revaptr = SCOTCH_contextThreadSpawn (contptr, *thrdptr, ((void *) coreptr == (void *) contptr) ? NULL : coreptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                            \
+CONTEXTOPTIONGETNUM, contextoptiongetnum, ( \
+SCOTCH_Context * const      contptr,        \
+const int * const           optinumptr,     \
+SCOTCH_Num * const          optivalptr,     \
+int * const                 revaptr),       \
+(contptr, optinumptr, optivalptr, revaptr))
+{
+  *revaptr = SCOTCH_contextOptionGetNum (contptr, *optinumptr, optivalptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                            \
+CONTEXTOPTIONSETNUM, contextoptionsetnum, ( \
+SCOTCH_Context * const      contptr,        \
+const int * const           optinumptr,     \
+SCOTCH_Num * const          optivalptr,     \
+int * const                 revaptr),       \
+(contptr, optinumptr, optivalptr, revaptr))
+{
+  *revaptr = SCOTCH_contextOptionSetNum (contptr, *optinumptr, *optivalptr);
 }

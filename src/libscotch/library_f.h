@@ -1,4 +1,4 @@
-!* Copyright 2004,2007,2009,2010,2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+!* Copyright 2004,2007,2009,2010,2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 !*
 !* This file is part of the Scotch software package for static mapping,
 !* graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 !*                # Version 6.1  : from : 22 jun 2021     **
 !*                                 to   : 22 jun 2021     **
 !*                # Version 7.0  : from : 25 aug 2019     **
-!*                                 to   : 25 aug 2019     **
+!*                                 to   : 23 oct 2021     **
 !*                                                        **
 !***********************************************************
 
@@ -64,6 +64,15 @@
         INTEGER SCOTCH_NUMSIZE
         PARAMETER (SCOTCH_IDXSIZE = DUMMYSIZEBYTEIDX)
         PARAMETER (SCOTCH_NUMSIZE = DUMMYSIZEBYTENUM)
+
+!* Flag definitions for the context options
+
+        INTEGER SCOTCH_OPTIONNUMDETERMINISTIC
+        INTEGER SCOTCH_OPTIONNUMRANDOMFIXEDSEED
+        INTEGER SCOTCH_OPTIONNUMNBR
+        PARAMETER (SCOTCH_OPTIONNUMDETERMINISTIC   = 0)
+        PARAMETER (SCOTCH_OPTIONNUMRANDOMFIXEDSEED = 1)
+        PARAMETER (SCOTCH_OPTIONNUMNBR             = 2)
 
 !* Flag definitions for the coarsening
 !* routines.
