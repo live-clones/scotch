@@ -7552,19 +7552,20 @@ $[0;\mbox{textsc{randmax}}[$.
 \label{sec-lib-context}
 
 By default, \scotch\ uses a global pseudo-random number generator and
-takes advantage of as many threads as it can discover on the
-system. This behavior makes sense when only one call to the
-\libscotch\ is made at a time. However, cases may arise where the user
-wants to perform different tasks on the same graph or mesh at the same
-time, by calling concurrently \libscotch\ routines from different sets
-of threads. This is when \texttt{SCOTCH\_\lbt Context} objects are
-necessary.
+takes advantage of as many threads as it can discover on the system,
+using default, compile-time settings. This behavior makes sense when
+only one call to the \libscotch\ is made at a time. However, cases may
+arise where the user wants to perform different tasks on the same
+graph or mesh at the same time, by calling concurrently
+\libscotch\ routines from different sets of threads. This is when
+\texttt{SCOTCH\_\lbt Context} objects are necessary.
 
 A \texttt{SCOTCH\_\lbt Context} is a data structure that encapsulates
 an environment execution for the routines of the
 \libscotch\ library. Essentially, it contains the set of threads that
-will be used for performing computations, and a private, independent
-pseudo-random number generator.
+will be used for performing computations, a private, independent
+pseudo-random number generator, and a set of flags and option values
+defined at compile-time.
 
 In order to associate a context with a task to be performed, one has
 to bind the context to a \scotch\ object (that is, a graph, a mesh or
@@ -7644,6 +7645,96 @@ pseudo-random generator embedded in the context, and disposes of its
 threads. If the threads were created within the context, they are
 destroyed; if they were captured from an outside pool of threads (see
 \texttt{SCOTCH\_\lbt context\lbt Import1}), they are released.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextOptionGetNum}}
+\label{sec-lib-context-option-get-num}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextOptionGetNum ( & SCOTCH\_Context * & contptr, \\
+                                  & int               & optinum) \\
+                                  & SCOTCH\_Num *     & optivalptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextoptiongetnum ( & doubleprecision (*) & contdat, \\
+                             & integer             & optinum, \\
+                             & integer*{\it num}   & optival, \\
+                             & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextOptionGetNum} function retrieves, in
+the \texttt{SCOTCH\_\lbt Num} value \texttt{optival} pointed to by
+\texttt{optivalptr}, the current integer context value of index
+\texttt{optinum}. Integer option index values are of the form
+\texttt{SCOTCH\_\lbt OPTIONNUM*}, and range from
+\texttt{0} to (\texttt{SCOTCH\_\lbt OPTIONNUMNBR} - 1),
+inclusive. This allows users to capture in an array of
+\texttt{SCOTCH\_\lbt Num}s the values of relevant integer
+execution options, for the sake of reproducibility.
+
+\progret
+
+\texttt{SCOTCH\_contextOptionGetNum} returns $0$ if the value has been
+properly retrieved, and $1$ in case of an invalid \texttt{optinum}
+index.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextOptionSetNum}}
+\label{sec-lib-context-option-set-num}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextOptionSetNum ( & SCOTCH\_Context * & contptr, \\
+                                  & int               & optinum) \\
+                                  & SCOTCH\_Num       & optival)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextoptionsetnum ( & doubleprecision (*) & contdat, \\
+                             & integer             & optinum, \\
+                             & integer*{\it num}   & optival, \\
+                             & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextOptionSetNum} function sets the integer
+context value of index \texttt{optinum} with the value
+\texttt{optival}.
+
+Available integer option values are the following:
+\begin{itemize}
+\item \texttt{SCOTCH\_\lbt OPTIONNUMDETERMINISTIC}: a value of
+  \texttt{0} induces a non-deterministic behavior (\textit{i.e.},
+  different runs may yield different results), while a value of
+  \texttt{1} induces a deterministic behavior across multiple runs,
+  for any number of threads (yet, for the same number of MPI
+  processes, as data distribution varies across numbers of MPI
+  processes). The initial value of this option at run time is defined
+  by the compilation option \texttt{SCOTCH\_\lbt DETERMINISTIC} (see
+  the \scotch\ installation instructions). A deterministic behavior
+  implies the use of a fixed random seed (see below).
+\item \texttt{SCOTCH\_\lbt OPTIONNUMFIXEDSEED}: a value of
+  \texttt{0} induces that a distinct random seed be selected for each
+  launch of a program using the \libscotch\ library, while a value of
+  \texttt{1} induces that the same, fixed random seed be used at each
+  launch. The initial value of this option at run time is defined by
+  the compilation option \texttt{COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt
+  SEED} (see the \scotch\ installation instructions).
+\end{itemize}
+
+\progret
+
+\texttt{SCOTCH\_contextOptionSetNum} returns $0$ if the value has
+been properly set, and $1$ on error.
 \end{itemize}
 
 \subsubsection{\texttt{SCOTCH\_contextRandomClone}}
