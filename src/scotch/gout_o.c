@@ -268,7 +268,7 @@ FILE * const                stream)               /* Output stream              
 
   if (geomptr->verttab == NULL) {
     errorPrint ("outDrawInvMesh: geometry not provided");
-    return      (1);
+    return (1);
   }
 
   time (&pictime);                                /* Get current time */
@@ -320,7 +320,7 @@ FILE * const                stream)               /* Output stream              
   fprintf (stream, "#Inventor V2.0 ascii\n");     /* Write header */
   fprintf (stream, "#Title: %s %s %s\n",
            C_filenamesrcinp, C_filenamegeoinp, C_filenamemapinp);
-  fprintf (stream, "#Creator: out (F. Pellegrini, LaBRI, Bordeaux)\n");
+  fprintf (stream, "#Creator: Scotch/gout\n");
   fprintf (stream, "#CreationDate: %s", ctime (&pictime));
 
   if (idxnbr == 0)                                /* If nothing to write */
@@ -415,18 +415,18 @@ FILE * const                stream)               /* Output stream              
 
   if ((nonztab = memAlloc ((grafptr->vertnbr + 1) * sizeof (SCOTCH_Num))) == NULL) {
     errorPrint ("outDrawPosMatr: out of memory");
-    return      (1);
+    return (1);
   }
 
   time (&picttime);                               /* Get current time */
-  pictsize  = (double) (grafptr->vertnbr + 1);    /* Get matrix size  */
-  pictdisp  = MIN (O_PSPICTWIDTH, O_PSPICTHEIGHT);
+  pictsize = (double) (grafptr->vertnbr + 1);     /* Get matrix size  */
+  pictdisp = MIN (O_PSPICTWIDTH, O_PSPICTHEIGHT);
 
   if (O_outParam.PosMatr.type == 'e') {           /* EPSF-type output */
     fprintf (stream, "%%!PS-Adobe-2.0 EPSF-2.0\n");
     fprintf (stream, "%%%%Title: %s %s %s\n",
              C_filenamesrcinp, C_filenamegeoinp, C_filenamemapinp);
-    fprintf (stream, "%%%%Creator: out (F. Pellegrini, LaBRI, Bordeaux)\n");
+    fprintf (stream, "%%%%Creator: Scotch/gout\n");
     fprintf (stream, "%%%%CreationDate: %s", ctime (&picttime));
     fprintf (stream, "%%%%BoundingBox: 0 0 %d %d\n",
              (int) (pictdisp * O_PSDPI), (int) (pictdisp * O_PSDPI));
@@ -437,7 +437,7 @@ FILE * const                stream)               /* Output stream              
     fprintf (stream, "%%!PS-Adobe-2.0\n");
     fprintf (stream, "%%%%Title: %s %s %s\n",
              C_filenamesrcinp, C_filenamegeoinp, C_filenamemapinp);
-    fprintf (stream, "%%%%Creator: out (F. Pellegrini, LaBRI, Bordeaux)\n");
+    fprintf (stream, "%%%%Creator: Scotch/gout\n");
     fprintf (stream, "%%%%CreationDate: %s", ctime (&picttime));
   }
 
@@ -525,7 +525,7 @@ FILE * const                stream)               /* Output stream              
 
   if (geomptr->verttab == NULL) {
     errorPrint ("outDrawPosMesh: geometry not provided");
-    return     (1);
+    return (1);
   }
 
   time (&pictime);                                /* Get current time */
@@ -703,7 +703,7 @@ FILE * const                stream)               /* Output stream              
     fprintf (stream, "%%!PS-Adobe-2.0 EPSF-2.0\n");
     fprintf (stream, "%%%%Title: %s %s %s\n",
              C_filenamesrcinp, C_filenamegeoinp, C_filenamemapinp);
-    fprintf (stream, "%%%%Creator: out (F. Pellegrini, LaBRI, Bordeaux)\n");
+    fprintf (stream, "%%%%Creator: Scotch/gout\n");
     fprintf (stream, "%%%%CreationDate: %s", ctime (&pictime));
     fprintf (stream, "%%%%BoundingBox: 0 0 %d %d\n",
              (int) ((picdelt.x * O_PSDPI) / O_POSMESHPICTRESOL),
@@ -715,7 +715,7 @@ FILE * const                stream)               /* Output stream              
     fprintf (stream, "%%!PS-Adobe-2.0\n");
     fprintf (stream, "%%%%Title: %s %s %s\n",
              C_filenamesrcinp, C_filenamegeoinp, C_filenamemapinp);
-    fprintf (stream, "%%%%Creator: out (F. Pellegrini, LaBRI, Bordeaux)\n");
+    fprintf (stream, "%%%%Creator: Scotch/gout\n");
     fprintf (stream, "%%%%CreationDate: %s", ctime (&pictime));
   }
 
@@ -816,8 +816,8 @@ FILE * const                stream)               /* Output stream              
   char                c;
 
   if (geomptr->verttab == NULL) {
-    errorPrint ("outDrawInvMesh: geometry not provided");
-    return      (1);
+    errorPrint ("outDrawTulMesh: geometry not provided");
+    return (1);
   }
 
   time (&pictime);                                /* Get current time */
@@ -826,7 +826,7 @@ FILE * const                stream)               /* Output stream              
   pictimestr[63] = '\0';
   pictimestr[strlen (pictimestr) - 1] = '\0';
 
-  fprintf (stream, "(tlp \"2.0\"\n(author \"out (F. Pellegrini, LaBRI, Bordeaux)\")\n(date \"%s\")\n(comment \"%s %s %s\")\n", /* Write header */
+  fprintf (stream, "(tlp \"2.0\"\n(author \"Scotch/gout\")\n(date \"%s\")\n(comment \"%s %s %s\")\n", /* Write header */
            pictimestr,
            C_filenamesrcinp, C_filenamegeoinp, C_filenamemapinp);
 
