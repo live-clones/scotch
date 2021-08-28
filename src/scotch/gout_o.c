@@ -86,13 +86,15 @@ static O_OutParam           O_outParam = {        /* Parameter structure        
                                 's',
                                 { { 0.0, 0.0 } },
                                 { { 1.0, 1.0 } } },
-                              { 'c', 'v', 'a' } }; /* Tulip graph defaults */
+                              { 'c', 'v', 'a' },  /* Tulip graph defaults */
+                              { 'v' } };          /* VTK mesh defaults    */
 
 static C_ParseCode          O_outList[] = {       /* Output code list */
                               { O_OUTTYPEINVMESH, "i"  },
                               { O_OUTTYPEPOSMATR, "m"  },
                               { O_OUTTYPEPOSMESH, "p"  },
                               { O_OUTTYPETULMESH, "t"  },
+                              { O_OUTTYPEVTKMESH, "v"  },
                               { O_OUTTYPENBR,     NULL } };
 
 static C_ParseArg           O_outArg[] = {        /* Output type argument list */
@@ -122,6 +124,8 @@ static C_ParseArg           O_outArg[] = {        /* Output type argument list *
                               { "v",  O_OUTTYPETULMESH, NULL,  &O_outParam.TulMesh.edge  },
                               { "a",  O_OUTTYPETULMESH, NULL,  &O_outParam.TulMesh.disk  },
                               { "d",  O_OUTTYPETULMESH, NULL,  &O_outParam.TulMesh.disk  },
+                              { "r",  O_OUTTYPEVTKMESH, NULL,  &O_outParam.VtkMesh.edge  },
+                              { "v",  O_OUTTYPEVTKMESH, NULL,  &O_outParam.VtkMesh.edge  },
                               { NULL, O_OUTTYPENBR,     "",    NULL                      } };
 
 static double               outcolorcoltab[16][3] = { /* Color list */
@@ -240,6 +244,9 @@ FILE * const                stream)               /* Output stream   */
     case O_OUTTYPETULMESH :                       /* Mesh Tulip output type */
       outDrawTulMesh (grafptr, geomptr, mapptr, stream);
       break;
+    case O_OUTTYPEVTKMESH :                       /* Mesh Tulip output type */
+      outDrawVtkMesh (grafptr, geomptr, mapptr, stream);
+      break;
     default :
       errorPrint ("outDraw: invalid output method '%d'", O_outParam.type);
   }
@@ -275,11 +282,10 @@ FILE * const                stream)               /* Output stream              
 
   outcolor = (O_outParam.InvMesh.color == 'c') ? outColorColor : outColorBlw; /* Select color output routine */
 
-  if (((idxtab = (SCOTCH_Num *)    memAlloc ((grafptr->edgenbr / 2) * 3 * sizeof (SCOTCH_Num)))    == NULL) ||
-      ((pattab = (O_InvMeshPath *) memAlloc (grafptr->vertnbr *           sizeof (O_InvMeshPath))) == NULL)) {
+  if (memAllocGroup ((void **) (void *)
+                     &idxtab, (size_t) ((grafptr->edgenbr / 2) * 3 * sizeof (SCOTCH_Num)),
+                     &pattab, (size_t) (grafptr->vertnbr           * sizeof (O_InvMeshPath)), NULL) == NULL) {
     errorPrint ("outDrawInvMesh: out of memory");
-    if (idxtab != NULL)
-      memFree (idxtab);
     return (1);
   }
   idxnbr = 0;                                     /* No indexes yet */
@@ -384,8 +390,7 @@ FILE * const                stream)               /* Output stream              
   }
 #endif
 
-  memFree (pattab);                               /* Free path array  */
-  memFree (idxtab);                               /* Free index array */
+  memFree (idxtab);                               /* Free group leader */
 
   return (0);
 }
@@ -937,6 +942,144 @@ FILE * const                stream)               /* Output stream              
     fprintf (stream, ")\n");
 
   fprintf (stream, ")\n");
+
+  return (0);
+}
+
+/*****************************************/
+/*                                       */
+/* This is the VTK output routine, based */
+/* on the OpenInventor routine.          */
+/*                                       */
+/*****************************************/
+
+int
+outDrawVtkMesh (
+const C_Graph * const       grafptr,              /* Graph structure, sorted by vertex index */
+const C_Geometry * const    geomptr,              /* Graph geometry, sorted by vertex label  */
+const C_Mapping * const     mapptr,               /* Result mapping, sorted by vertex label  */
+FILE * const                stream)               /* Output stream                           */
+{
+  O_VtkMeshPath *     pathtab;                    /* Array of path building data */
+  SCOTCH_Num          pathnbr;                    /* Number of paths created     */
+  SCOTCH_Num          pathnum;
+  SCOTCH_Num *        indxtab;                    /* Array of indexes            */
+  SCOTCH_Num          indxnbr;                    /* Number of indexes           */
+  SCOTCH_Num          indxnum;
+  SCOTCH_Num          vertnum;
+  SCOTCH_Num          edgenum;
+  time_t              timedat;                    /* Creation time               */
+
+  if (geomptr->verttab == NULL) {
+    errorPrint ("outDrawVtkMesh: geometry not provided");
+    return      (1);
+  }
+
+  time (&timedat);                                /* Get current time */
+
+  if (memAllocGroup ((void **) (void *)
+                     &indxtab, (size_t) ((grafptr->edgenbr / 2) * 3 * sizeof (SCOTCH_Num)),
+                     &pathtab, (size_t) (grafptr->vertnbr           * sizeof (O_VtkMeshPath)), NULL) == NULL) {
+    errorPrint ("outDrawVtkMesh: out of memory");
+    return (1);
+  }
+
+  for (vertnum = edgenum = 0; vertnum < grafptr->vertnbr; vertnum ++) { /* Compute number of output paths For all vertices */
+    pathtab[vertnum].nbr = 0;
+    pathtab[vertnum].idx = grafptr->verttab[vertnum];
+
+    for ( ; edgenum < grafptr->vendtab[vertnum]; edgenum ++) {
+      SCOTCH_Num          vertend;
+
+      vertend = grafptr->edgetab[edgenum];
+      if ((vertend > vertnum) &&                  /* If it can be an output edge */
+          ((O_outParam.VtkMesh.edge != 'r') ||    /* And this edge can be drawn  */
+           (mapptr->labltab[vertnum] == mapptr->labltab[vertend])))
+        pathtab[vertnum].nbr ++;                  /* One more path to higher vertices */
+    }
+  }
+
+  indxnbr = 0;                                    /* No indexes yet  */
+  pathnbr = 0;                                    /* No paths either */
+
+  for (vertnum = 0; vertnum < grafptr->vertnbr; ) { /* For all vertices                    */
+    SCOTCH_Num          indxtmp;                  /* Index where to place number of points */
+    SCOTCH_Num          verttmp;
+
+    if (pathtab[vertnum].nbr == 0) {              /* If no output path for this vertex */
+      vertnum ++;                                 /* Skip to next vertex               */
+      continue;
+    }
+
+    indxtmp = indxnbr ++;                         /* Save space for number of points */
+    verttmp = vertnum;                            /* Begin with this vertex          */
+    indxtab[indxnbr ++] = verttmp;                /* Add it to the current segment   */
+    do {
+      SCOTCH_Num          edgenum;
+      SCOTCH_Num          vertend;
+
+      for (edgenum = pathtab[verttmp].idx; edgenum < grafptr->vendtab[verttmp]; edgenum ++) { /* Search for first output */
+        vertend = grafptr->edgetab[edgenum];
+        if ((vertend > verttmp) &&                /* If it can be an output edge */
+            ((O_outParam.VtkMesh.edge != 'r') ||  /* And this edge can be drawn  */
+             (mapptr->labltab[verttmp] == mapptr->labltab[vertend])))
+          break;
+      }
+      pathtab[verttmp].nbr --;                    /* One less output path remaining */
+      pathtab[verttmp].idx = edgenum + 1;         /* Search from the next position  */
+      verttmp = vertend;                          /* Get the path end vertex number */
+      indxtab[indxnbr ++] = verttmp;              /* Add it to the current segment  */
+    } while (pathtab[verttmp].nbr > 0);           /* As long as there is a path     */
+    indxtab[indxtmp] = indxnbr - indxtmp - 1;     /* Set size of created path       */
+    pathnbr ++;                                   /* One more path created          */
+  }
+
+  fprintf (stream, "# vtk DataFile Version 2.0\n"); /* Write header */
+  fprintf (stream, "%s %s %s | Created by Scotch/gout | %sASCII\n",
+           C_filenamesrcinp, C_filenamegeoinp, C_filenamemapinp,
+           ctime (&timedat));
+
+  if (indxnbr == 0)                               /* If nothing to write */
+    return (0);
+
+  fprintf (stream, "\nDATASET UNSTRUCTURED_GRID\n");
+
+  fprintf (stream, "\nPOINTS " SCOTCH_NUMSTRING " float\n",
+           grafptr->vertnbr);
+  for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++)
+    fprintf (stream, "%g\t%g\t%g\n",
+             geomptr->verttab[vertnum].x,
+             geomptr->verttab[vertnum].y,
+             geomptr->verttab[vertnum].z);
+
+  fprintf (stream, "\nCELLS " SCOTCH_NUMSTRING " " SCOTCH_NUMSTRING "\n",
+           pathnbr, indxnbr);
+  for (indxnum = 0; indxnum < indxnbr; ) {
+    SCOTCH_Num          pontnbr;                  /* Number of points in current segment */    
+    SCOTCH_Num          indxtmp;
+
+    pontnbr = indxtab[indxnum];
+    for (indxtmp = indxnum + pontnbr; indxnum < indxtmp; )
+      fprintf (stream, SCOTCH_NUMSTRING "\t", indxtab[indxnum ++]);
+    fprintf (stream, SCOTCH_NUMSTRING "\n", indxtab[indxnum ++]);
+  }
+
+  fprintf (stream, "\nCELL_TYPES " SCOTCH_NUMSTRING "\n", /* All cells ate poly-line paths */
+           pathnbr);
+  for (pathnum = 0; pathnum < pathnbr; pathnum ++)
+    fprintf (stream, "4\n");
+
+  fprintf (stream, "\nPOINT_DATA " SCOTCH_NUMSTRING "\nSCALARS mapValues int\nLOOKUP_TABLE default\n",
+           grafptr->vertnbr);
+  for (vertnum = 0; vertnum < grafptr->vertnbr; vertnum ++) {
+    SCOTCH_Num          mappval;
+
+    mappval = mapptr->labltab[vertnum];
+    fprintf (stream, SCOTCH_NUMSTRING "\n",
+             (mappval == -1) ? 0 : (mappval + 1)); /* Unmapped vertices are of VTK color 0 (white) */
+  }
+
+  memFree (indxtab);                              /* Free group leader */
 
   return (0);
 }

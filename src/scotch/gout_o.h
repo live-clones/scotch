@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to   : 25 may 2007     **/
 /**                # Version 5.1  : from : 25 oct 2007     **/
 /**                                 to   : 26 oct 2007     **/
+/**                # Version 6.1  : from : 28 aug 2021     **/
+/**                                 to   : 28 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,6 +101,7 @@ typedef enum O_OutType_ {
   O_OUTTYPEPOSMATR,                               /*+ Matrix PostScript (2D)      +*/
   O_OUTTYPEPOSMESH,                               /*+ Mesh PostScript (2D)        +*/
   O_OUTTYPETULMESH,                               /*+ Mesh Tulip (3D)             +*/
+  O_OUTTYPEVTKMESH,                               /*+ Mesh legacy VTK (3D)        +*/
   O_OUTTYPENBR                                    /*+ Number of output types      +*/
 } O_OutType;
 
@@ -127,6 +130,9 @@ typedef struct O_OutParam_ {
     char                    edge;                 /*+ 'r' : remove; 'v' : view +*/
     char                    disk;                 /*+ 'd' : draw; 'a' : avoid  +*/
   } TulMesh;
+  struct {                                        /*+ VTK mesh structure       +*/
+    char                    edge;                 /*+ 'r' : remove; 'v' : view +*/
+  } VtkMesh;
 } O_OutParam;
 
 /*+ The Inventor path array element. +*/
@@ -152,6 +158,13 @@ typedef struct O_PosMeshVertex_ {
   int                       col;                  /*+ Disk color index +*/
 } O_PosMeshVertex;
 
+/*+ The VTK path array element. +*/
+
+typedef struct O_VtkMeshPath_ {
+  SCOTCH_Num                nbr;                  /*+ Number of output paths     +*/
+  SCOTCH_Num                idx;                  /*+ Index from which to search +*/
+} O_VtkMeshPath;
+
 /*
 **  The function prototypes.
 */
@@ -165,3 +178,4 @@ int                         outDrawInvMesh      (const C_Graph * const, const C_
 int                         outDrawPosMatr      (const C_Graph * const, const C_Geometry * const, const C_Mapping * const, FILE * const);
 int                         outDrawPosMesh      (const C_Graph * const, const C_Geometry * const, const C_Mapping * const, FILE * const);
 int                         outDrawTulMesh      (const C_Graph * const, const C_Geometry * const, const C_Mapping * const, FILE * const);
+int                         outDrawVtkMesh      (const C_Graph * const, const C_Geometry * const, const C_Mapping * const, FILE * const);
