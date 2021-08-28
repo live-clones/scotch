@@ -57,7 +57,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 21 may 2018     **/
 /**                # Version 6.1  : from : 04 apr 2021     **/
-/**                                 to   : 04 apr 2021     **/
+/**                                 to   : 28 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -687,7 +687,7 @@ FILE * const                stream)               /* Output stream              
       for (k = pattab[j].idx; k < grafptr->vendtab[j]; k ++) { /* Search for first output    */
         if ((grafptr->edgetab[k] > j) &&          /* If it can be an output edge             */
             ((pictab[j].vis | pictab[grafptr->edgetab[k]].vis) != 0) && /* And it is visible */
-            ((O_outParam.InvMesh.edge != 'r') ||  /* And it can be drawn                     */
+            ((O_outParam.PosMesh.edge != 'r') ||  /* And it can be drawn                     */
              (mapptr->labltab[j] == mapptr->labltab[grafptr->edgetab[k]])))
           break;
       }
