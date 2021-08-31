@@ -60,6 +60,8 @@
 /**                                 to   : 17 apr 2019     **/
 /**                # Version 6.1  : from : 04 apr 2021     **/
 /**                                 to   : 28 aug 2021     **/
+/**                # Version 7.0  : from : 31 aug 2021     **/
+/**                                 to   : 31 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -131,7 +133,7 @@ static const char *         C_usageList[] = {     /* Usage */
   "                          v        : view cut edges",
   "  -V                  : Print program version and copyright",
   "",
-  "Default option set is : -Oi{c,v}",
+  "Default option set is : -Ov{v}",
   NULL };
 
 /*****************************/

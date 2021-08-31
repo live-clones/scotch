@@ -58,6 +58,8 @@
 /**                                 to   : 21 may 2018     **/
 /**                # Version 6.1  : from : 04 apr 2021     **/
 /**                                 to   : 28 aug 2021     **/
+/**                # Version 7.0  : from : 31 aug 2021     **/
+/**                                 to   : 31 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,7 +80,7 @@
 */
 
 static O_OutParam           O_outParam = {        /* Parameter structure        */
-                              O_OUTTYPEINVMESH,   /* Default output type        */
+                              O_OUTTYPEVTKMESH,   /* Default output type        */
                               { 'c', 'v' },       /* OpenInventor mesh defaults */
                               { 'f' },            /* PostScript matrix defaults */
                               { 'f', 'g',         /* PostScript mesh defaults   */
@@ -86,8 +88,8 @@ static O_OutParam           O_outParam = {        /* Parameter structure        
                                 's',
                                 { { 0.0, 0.0 } },
                                 { { 1.0, 1.0 } } },
-                              { 'c', 'v', 'a' },  /* Tulip graph defaults */
-                              { 'v' } };          /* VTK mesh defaults    */
+                              { 'c', 'v', 'a' },  /* Tulip graph defaults       */
+                              { 'v' } };          /* VTK mesh defaults          */
 
 static C_ParseCode          O_outList[] = {       /* Output code list */
                               { O_OUTTYPEINVMESH, "i"  },
