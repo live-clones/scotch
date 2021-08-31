@@ -59,7 +59,7 @@
 /**                # Version 6.0  : from : 09 mar 2011     **/
 /**                                 to   : 29 apr 2019     **/
 /**                # Version 7.0  : from : 28 jul 2018     **/
-/**                                 to   : 25 jun 2021     **/
+/**                                 to   : 31 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -118,7 +118,8 @@ static
 void
 graphCoarsenReduce (
 GraphCoarsenThread * restrict const tlocptr,      /* Pointer to local thread block  */
-GraphCoarsenThread * restrict const tremptr)      /* Pointer to remote thread block */
+GraphCoarsenThread * restrict const tremptr,      /* Pointer to remote thread block */
+const void * const                  globptr)      /* Unused                         */
 {
   tlocptr->coaredgebas += tremptr->coaredgebas;   /* Sum number of local edges     */
   tlocptr->coaredloadj += tremptr->coaredloadj;   /* Sum edge load sum adjustments */
@@ -137,7 +138,8 @@ graphCoarsenScan (
 Gnum * restrict const       tlocptr,              /* Pointer to local area   */
 Gnum * restrict const       tremptr,              /* Pointer to lremote area */
 const int                   srcpval,              /* Source phase value      */
-const int                   dstpval)              /* Destination phase value */
+const int                   dstpval,              /* Destination phase value */
+const void * const          globptr)              /* Unused                  */
 {
   tlocptr[dstpval] = tlocptr[srcpval] + ((tremptr == NULL) ? 0 : tremptr[srcpval]);
 }
@@ -289,7 +291,7 @@ GraphCoarsenData * restrict const coarptr)
     }
 
     thrdptr->scantab[0] = coarvertnum;
-    threadScan (descptr, (void * const) &thrdptr->scantab[0], sizeof (GraphCoarsenThread), (ThreadScanFunc) graphCoarsenScan); /* Compute start indices for multinodes; barrier for coarptr->coarmulttab */
+    threadScan (descptr, (void * const) &thrdptr->scantab[0], sizeof (GraphCoarsenThread), (ThreadScanFunc) graphCoarsenScan, NULL); /* Compute start indices for multinodes; barrier for coarptr->coarmulttab */
 
     if (coarptr->retuval != 0)                    /* After scan barrier, in case memory allocation failed */
       return;
@@ -412,7 +414,7 @@ GraphCoarsenData * restrict const coarptr)
       memSet (thrdptr->coarhashtab, ~0, coarhashnbr * sizeof (GraphCoarsenHash)); /* Re-initialize (local) hash table */
     }
     thrdptr->scantab[0] = thrdptr->coaredgebas;
-    threadScan (descptr, &thrdptr->scantab[0], sizeof (GraphCoarsenThread), (ThreadScanFunc) graphCoarsenScan); /* Compute scan on coarse edge indices */
+    threadScan (descptr, &thrdptr->scantab[0], sizeof (GraphCoarsenThread), (ThreadScanFunc) graphCoarsenScan, NULL); /* Compute scan on coarse edge indices */
 #ifdef SCOTCH_DEBUG_GRAPH2
     if (thrdptr->scantab[0] > finegrafptr->edgenbr) {
       errorPrint ("graphCoarsen3: internal error (3)");
@@ -447,7 +449,7 @@ GraphCoarsenData * restrict const coarptr)
 
 #ifndef GRAPHCOARSENNOTHREAD
   if (thrdnbr > 1)
-    threadReduce (descptr, thrdptr, sizeof (GraphCoarsenThread), (ThreadReduceFunc) graphCoarsenReduce, 0); /* Sum edloadj and get maximum of degrmax */
+    threadReduce (descptr, thrdptr, sizeof (GraphCoarsenThread), (ThreadReduceFunc) graphCoarsenReduce, 0, NULL); /* Sum edloadj and get maximum of degrmax */
 
   if (thrdnum == 0)
 #endif /* GRAPHCOARSENNOTHREAD */
