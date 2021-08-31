@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 04 jul 2012     **/
 /**                                 to   : 27 apr 2015     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 14 aug 2021     **/
+/**                                 to   : 31 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -384,7 +384,8 @@ const ThreadDescriptor * const  thrdptr,
 void * const                    dataptr,          /* Local data object             */
 const size_t                    datasiz,          /* Size of per-thread data block */
 ThreadReduceFunc const          redfptr,          /* Pointer to reduction routine  */
-const int                       rootnum)          /* Root of reduction             */
+const int                       rootnum,          /* Root of reduction             */
+const void * const              globptr)          /* Global data for reduction     */
 {
   int                 thrdnsk;                    /* Rank of thread in skewed reduction tree */
   int                 thrdmsk;
@@ -418,7 +419,7 @@ const int                       rootnum)          /* Root of reduction          
 
         thrdend = (thrdesk + rootnum) % thrdnbr;
         thrddlt = thrdend - thrdnum;
-        redfptr (dataptr, (void *) ((byte *) dataptr + thrddlt * datasiz)); /* Call reduction routine */
+        redfptr (dataptr, (void *) ((byte *) dataptr + thrddlt * datasiz), globptr); /* Call reduction routine */
       }
       else                                        /* We are on the sending side       */
         thrdnsk += thrdnbr;                       /* Make sure we will no longer work */
@@ -434,7 +435,8 @@ const ThreadDescriptor * const  thrdptr,
 void * const                    dataptr,          /* Local data object             */
 const size_t                    datasiz,          /* Size of per-thread data block */
 ThreadReduceFunc const          redfptr,          /* Pointer to reduction routine  */
-const int                       rootnum)          /* Root of reduction             */
+const int                       rootnum,          /* Root of reduction             */
+const void * const              globptr)          /* Global data for reduction     */
 {
   ThreadContext * const     contptr = thrdptr->contptr; /* Fast accesses */
   const int                 thrdnbr = contptr->thrdnbr;
@@ -459,7 +461,7 @@ const int                       rootnum)          /* Root of reduction          
       int                 thrdesk;                /* Skewed rank of end thread */
 
       thrdesk = (rootnum + thrdtmp) % thrdnbr - rootnum;
-      redfptr (dataptr, (void *) ((byte *) dataptr + thrdesk * datasiz)); /* Call reduction routine */
+      redfptr (dataptr, (void *) ((byte *) dataptr + thrdesk * datasiz), globptr); /* Call reduction routine */
     }
   }
 
@@ -486,7 +488,8 @@ threadScan (
 const ThreadDescriptor * const  thrdptr,          /* Pointer to thread header      */
 void * const                    dataptr,          /* Local data object             */
 const size_t                    datasiz,          /* Size of per-thread data block */
-ThreadScanFunc const            scafptr)          /* Scan function                 */
+ThreadScanFunc const            scafptr,          /* Scan function                 */
+const void * const              globptr)          /* Global data for reduction     */
 {
   void *              cellptr;                    /* Pointer to local data block */
   int                 thrdmsk;                    /* Thread number skew mask     */
@@ -509,19 +512,19 @@ ThreadScanFunc const            scafptr)          /* Scan function              
 
       thrdend = thrdnum - thrdmsk;                /* Get rank of end thread */
       if (thrdend >= 0) {                         /* If end slot exists     */
-        scafptr (cellptr, (void *) ((byte *) cellptr - thrdmsk * datasiz), phasnum, phasnum ^ 1);
+        scafptr (cellptr, (void *) ((byte *) cellptr - thrdmsk * datasiz), phasnum, phasnum ^ 1, globptr);
         phasnum ^= 1;                             /* Next destination will be the opposite */
       }
-      else {                                      /* End slot does not exist                  */
-        scafptr (cellptr, NULL, phasnum, phasnum ^ 1); /* Copy value for next steps to use it */
-        phasnum = 0;                              /* No need to move it afterwards            */
-        cellptr = NULL;                           /* Do not consider this thread again        */
+      else {                                      /* End slot does not exist                           */
+        scafptr (cellptr, NULL, phasnum, phasnum ^ 1, globptr); /* Copy value for next steps to use it */
+        phasnum = 0;                              /* No need to move it afterwards                     */
+        cellptr = NULL;                           /* Do not consider this thread again                 */
       }
     }
   }
 
   if (phasnum != 0)                               /* If accumulated local value of last round not in place */
-    scafptr (cellptr, NULL, phasnum, 0);          /* Move value in place before returning                  */
+    scafptr (cellptr, NULL, phasnum, 0, globptr); /* Move value in place before returning                  */
 
   threadContextBarrier (contptr);
 }
@@ -531,7 +534,8 @@ threadScan (
 const ThreadDescriptor * const  thrdptr,          /* Pointer to thread header      */
 void * const                    dataptr,          /* Local data object             */
 const size_t                    datasiz,          /* Size of per-thread data block */
-ThreadScanFunc const            scafptr)          /* Scan function                 */
+ThreadScanFunc const            scafptr,          /* Scan function                 */
+const void * const              globptr)          /* Global data for reduction     */
 {
   byte *              cellptr;                    /* Pointer to local data block */
   int                 thrdtmp;
@@ -548,7 +552,7 @@ ThreadScanFunc const            scafptr)          /* Scan function              
   if (thrdnum == 0) {
     for (thrdtmp = thrdnbr - 1, cellptr = (byte *) dataptr;
          thrdtmp > 0; thrdtmp --, cellptr += datasiz)
-      scafptr ((void *) (cellptr + datasiz), (void *) cellptr, 0, 0);
+      scafptr ((void *) (cellptr + datasiz), (void *) cellptr, 0, 0, globptr);
   }
 
   threadContextBarrier (contptr);
@@ -682,7 +686,8 @@ const ThreadDescriptor * const  thrdptr,
 void * const                    dataptr,          /* Local data object             */
 const size_t                    datasiz,          /* Size of per-thread data block */
 ThreadReduceFunc const          redfptr,          /* Pointer to reduction routine  */
-const int                       rootnum)          /* Root of reduction             */
+const int                       rootnum,          /* Root of reduction             */
+const void * const              globptr)          /* Global data for reduction     */
 {
 #ifdef COMMON_DEBUG
   if (rootnum != 0)
@@ -699,7 +704,8 @@ threadScan (
 const ThreadDescriptor * const  thrdptr,          /* Pointer to thread header      */
 void * const                    dataptr,          /* Local data object             */
 const size_t                    datasiz,          /* Size of per-thread data block */
-ThreadScanFunc const            scafptr)          /* Scan function                 */
+ThreadScanFunc const            scafptr,          /* Scan function                 */
+const void * const              globptr)          /* Global data for reduction     */
 {
 }
 

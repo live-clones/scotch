@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 04 nov 2012     **/
 /**                                 to   : 10 jul 2018     **/
 /**                # Version 7.0  : from : 21 aug 2019     **/
-/**                                 to   : 30 apr 2021     **/
+/**                                 to   : 31 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,8 +99,12 @@ static
 void
 testReduce (
 TestData * restrict const   vlocptr,              /* Pointer to local value  */
-TestData * restrict const   vremptr)              /* Pointer to remote value */
+TestData * restrict const   vremptr,              /* Pointer to remote value */
+void *                      dataptr)              /* Pointer to shared data  */
 {
+  if (dataptr != &C_erroval)
+    errorPrint ("testReduce: invalid data pointer");
+
   vlocptr->reduval += vremptr->reduval;
 }
 
@@ -110,8 +114,12 @@ testScan (
 TestData * restrict const   vlocptr,              /* Pointer to local value  */
 TestData * restrict const   vremptr,              /* Pointer to remote value */
 const int                   srcpval,              /* Source phase value      */
-const int                   dstpval)              /* Destination phase value */
+const int                   dstpval,              /* Destination phase value */
+void *                      dataptr)              /* Pointer to shared data  */
 {
+  if (dataptr != &C_erroval)
+    errorPrint ("testScan: invalid data pointer");
+
   vlocptr->scanval[dstpval] = vlocptr->scanval[srcpval] + ((vremptr == NULL) ? 0 : vremptr->scanval[srcpval]);
 }
 
@@ -133,7 +141,7 @@ volatile TestGroup * restrict     grouptr)
     printf ("Performing reduction\n");
 
   dataptr->reduval = thrdnum + 1;
-  threadReduce (descptr, (void *) dataptr, sizeof (TestData), (ThreadReduceFunc) testReduce, 0);
+  threadReduce (descptr, (void *) dataptr, sizeof (TestData), (ThreadReduceFunc) testReduce, 0, &C_erroval);
 
   if ((thrdnum == 0) &&                           /* Test reduction result on thread 0 */
       (dataptr->reduval != grouptr->redusum)) {
@@ -147,7 +155,7 @@ volatile TestGroup * restrict     grouptr)
     printf ("Performing scan\n");
 
   dataptr->scanval[0] = 1 + thrdnum;
-  threadScan (descptr, (void *) dataptr, sizeof (TestData), (ThreadScanFunc) testScan);
+  threadScan (descptr, (void *) dataptr, sizeof (TestData), (ThreadScanFunc) testScan, &C_erroval);
 
   if (dataptr->scanval[0] != COMPVAL (thrdnum + 1)) {
     SCOTCH_errorPrint ("%d: invalid scan operator\n", thrdnum);

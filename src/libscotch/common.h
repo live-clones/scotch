@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 26 apr 2021     **/
+/**                                 to   : 31 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -318,8 +318,8 @@ typedef struct ThreadDescriptor_ {
 /** The thread service routines auxiliary function types. **/
 
 typedef void (* ThreadFunc) (ThreadDescriptor * const, void * const);
-typedef void (* ThreadReduceFunc) (void * const, void * const);
-typedef void (* ThreadScanFunc) (void * const, void * const, const int, const int);
+typedef void (* ThreadReduceFunc) (void * const, void * const, const void * const);
+typedef void (* ThreadScanFunc) (void * const, void * const, const int, const int, const void * const);
 
 /*
 **  Handling of execution contexts.
@@ -434,8 +434,8 @@ void                        threadContextImport1 (ThreadContext * const, const i
 void                        threadContextImport2 (ThreadContext * const, const int);
 int                         threadContextNbr    (ThreadContext * const);
 void                        threadLaunch        (ThreadContext * const, ThreadFunc const, void * const);
-void                        threadReduce        (const ThreadDescriptor * const, void * const, const size_t, ThreadReduceFunc const, const int);
-void                        threadScan          (const ThreadDescriptor * const, void * const, const size_t, ThreadScanFunc const);
+void                        threadReduce        (const ThreadDescriptor * const, void * const, const size_t, ThreadReduceFunc const, const int, const void * const);
+void                        threadScan          (const ThreadDescriptor * const, void * const, const size_t, ThreadScanFunc const, const void * const);
 
 void                        contextInit         (Context * const);
 void                        contextExit         (Context * const);

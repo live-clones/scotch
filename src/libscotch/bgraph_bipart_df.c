@@ -53,7 +53,7 @@
 /**                # Version 6.0  : from : 07 nov 2011     **/
 /**                                 to   : 08 aug 2013     **/
 /**                # Version 7.0  : from : 08 jun 2018     **/
-/**                                 to   : 22 apr 2021     **/
+/**                                 to   : 31 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,7 +81,8 @@ static
 void
 bgraphBipartDfReduceVanc (
 BgraphBipartDfThread * restrict const blocptr,    /* Pointer to local block  */
-BgraphBipartDfThread * restrict const bremptr)    /* Pointer to remote block */
+BgraphBipartDfThread * restrict const bremptr,    /* Pointer to remote block */
+const void * const                    globptr)    /* Unused                  */
 {
   blocptr->vanctab[0] += bremptr->vanctab[0];     /* Accumulate external gains */
   blocptr->vanctab[1] += bremptr->vanctab[1];
@@ -91,7 +92,8 @@ static
 void
 bgraphBipartDfReduceVeex (
 BgraphBipartDfThread * restrict const blocptr,    /* Pointer to local block  */
-BgraphBipartDfThread * restrict const bremptr)    /* Pointer to remote block */
+BgraphBipartDfThread * restrict const bremptr,    /* Pointer to remote block */
+const void * const                    globptr)    /* Unused                  */
 {
   blocptr->veexsum  += bremptr->veexsum;          /* Accumulate external gains */
   blocptr->veexsum1 += bremptr->veexsum1;
@@ -103,7 +105,8 @@ bgraphBipartDfScan (
 BgraphBipartDfThread * restrict const blocptr,    /* Pointer to local block  */
 BgraphBipartDfThread * restrict const bremptr,    /* Pointer to remote block */
 const int                             srcpval,    /* Source phase value      */
-const int                             dstpval)    /* Destination phase value */
+const int                             dstpval,    /* Destination phase value */
+const void * const                    globptr)    /* Unused                  */
 {
   if (bremptr != NULL) {
     blocptr->fronnnd[dstpval]      = blocptr->fronnnd[srcpval]      + bremptr->fronnnd[srcpval]; /* Compute positions of frontier sub-arrays */
@@ -256,7 +259,7 @@ BgraphBipartDfData * restrict const loopptr)
     loopptr->thrdtab[thrdnum].veexsum  = veexsum;
     loopptr->thrdtab[thrdnum].veexsum1 = veexsum1;
 #ifndef BGRAPHBIPARTDFNOTHREAD
-    threadReduce (descptr, &loopptr->thrdtab[thrdnum], sizeof (BgraphBipartDfThread), (ThreadReduceFunc) bgraphBipartDfReduceVeex, thrdlst);
+    threadReduce (descptr, &loopptr->thrdtab[thrdnum], sizeof (BgraphBipartDfThread), (ThreadReduceFunc) bgraphBipartDfReduceVeex, thrdlst, NULL);
 #endif /* BGRAPHBIPARTDFNOTHREAD */
     veexsum  = loopptr->thrdtab[thrdnum].veexsum; /* Will be useful for thread (thrdlst) only */
     veexsum1 = loopptr->thrdtab[thrdnum].veexsum1;
@@ -367,7 +370,7 @@ skip :
         loopptr->thrdtab[thrdnum].vanctab[1] = vancval1;
         if (veextax != NULL) {
 #ifndef BGRAPHBIPARTDFNOTHREAD
-          threadReduce (descptr, &loopptr->thrdtab[thrdnum], sizeof (BgraphBipartDfThread), (ThreadReduceFunc) bgraphBipartDfReduceVanc, thrdlst);
+          threadReduce (descptr, &loopptr->thrdtab[thrdnum], sizeof (BgraphBipartDfThread), (ThreadReduceFunc) bgraphBipartDfReduceVanc, thrdlst, NULL);
 #endif /* BGRAPHBIPARTDFNOTHREAD */
         }
       }
@@ -445,7 +448,7 @@ skip :
   loopptr->thrdtab[thrdnum].commgainextn[0] = commgainextn;
 
 #ifndef BGRAPHBIPARTDFNOTHREAD
-  threadScan (descptr, (void *) &loopptr->thrdtab[thrdnum], sizeof (BgraphBipartDfThread), (ThreadScanFunc) bgraphBipartDfScan);
+  threadScan (descptr, (void *) &loopptr->thrdtab[thrdnum], sizeof (BgraphBipartDfThread), (ThreadScanFunc) bgraphBipartDfScan, NULL);
 #endif /* BGRAPHBIPARTDFNOTHREAD */
 
   if (thrdnum != 0)                               /* If thread is not first one, gather frontier sub-array */
