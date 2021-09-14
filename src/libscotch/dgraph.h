@@ -206,6 +206,7 @@ int                         dgraphBuild4        (Dgraph * const);
 int                         dgraphBuildHcub     (Dgraph * const, const Gnum, const Gnum, const Gnum);
 int                         dgraphBuildGrid3D   (Dgraph * const, const Gnum, const Gnum, const Gnum, const Gnum, const Gnum, const int);
 int                         dgraphCheck         (const Dgraph * const);
+int                         dgraphCompact2      (const Dgraph * const, Gnum * restrict * const, Gnum * restrict * const, Gnum * restrict * const);
 int                         dgraphView          (const Dgraph * const, FILE * const);
 int                         dgraphGhst2         (Dgraph * const, const int);
 int                         dgraphBand          (Dgraph * restrict const, const Gnum, Gnum * restrict const, const GraphPart * restrict const, const Gnum, const Gnum, Gnum, Dgraph * restrict const, Gnum * restrict * const, GraphPart * restrict * const, Gnum * const, Gnum * const, Gnum * const);
