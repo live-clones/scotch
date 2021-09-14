@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2020 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -140,6 +140,7 @@ LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
 			dgraph_build_hcub$(OBJ)			\
 			dgraph_check$(OBJ)			\
 			dgraph_coarsen$(OBJ)			\
+			dgraph_compact$(OBJ)			\
 			dgraph_fold$(OBJ)			\
 			dgraph_fold_comm$(OBJ)			\
 			dgraph_fold_dup$(OBJ)			\
@@ -940,6 +941,11 @@ dgraph_coarsen$(OBJ)		:	dgraph_coarsen.c			\
 					dgraph_allreduce.h			\
 					dgraph_coarsen.h			\
 					dgraph_match.h
+
+dgraph_compact$(OBJ)		:	dgraph_compact.c			\
+					module.h				\
+					common.h				\
+					dgraph.h
 
 dgraph_fold$(OBJ)		:	dgraph_fold.c				\
 					module.h				\
