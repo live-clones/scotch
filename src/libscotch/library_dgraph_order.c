@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 14 aug 2010     **/
 /**                # Version 6.0  : from : 08 jan 2012     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 6.1  : from : 24 sep 2021     **/
+/**                                 to   : 24 sep 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -189,6 +191,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   }
 
   srcgrafdat.s            = *srcgrafptr;          /* Copy non-halo graph data       */
+  srcgrafdat.s.flagval   &= ~DGRAPHFREEALL;       /* Do not free anything from it   */
   srcgrafdat.s.edloloctax = NULL;                 /* Never mind about edge loads    */
   srcgrafdat.s.vlblloctax = NULL;                 /* Do not propagate vertex labels */
   srcgrafdat.vhallocnbr   = 0;                    /* No halo on graph               */
@@ -210,12 +213,8 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     return     (1);
   }
   hdgraphOrderSt (&srcgrafdat, srccblkptr, ordstratptr);
+  hdgraphExit    (&srcgrafdat);                   /* Free ghost arrays if allocated internally */
   dorderDispose  (srccblkptr);
-
-  srcgrafptr->flagval   |= srcgrafdat.s.flagval & (DGRAPHFREEEDGEGST | DGRAPHHASEDGEGST);
-  srcgrafptr->edgegsttax = srcgrafdat.s.edgegsttax; /* Get edge ghost array from working graph if it gained one */
-
-  *srcgrafptr = srcgrafdat.s;                     /* Get back Dgraph structure, possibly updated (additional ghost data arrays) */
 
   return (0);
 }
