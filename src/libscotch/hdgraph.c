@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**    DATES     : # Version 5.0  : from : 21 apr 2006     **/
 /**                                 to   : 21 apr 2006     **/
+/**                # Version 6.1  : from : 24 sep 2021     **/
+/**                                 to   : 24 sep 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,9 +81,10 @@ Hdgraph * restrict const    grafptr)
       ((grafptr->s.flagval & HDGRAPHFREEVHND) != 0))
     memFree (grafptr->vhndloctax);
 
-  dgraphExit (&grafptr->s);                       /* Free distributed graph data (flagval may be corrupted afterwards) */
+  dgraphExit (&grafptr->s);                       /* Free distributed graph data */
 
 #ifdef SCOTCH_DEBUG_HDGRAPH1
-  memSet (grafptr, 0, sizeof (Hdgraph));
+  memSet (grafptr, ~0, sizeof (Hdgraph));
 #endif /* SCOTCH_DEBUG_HDGRAPH1 */
+  grafptr->s.flagval = DGRAPHNONE;                /* A subsequent hdgraphExit() will have no effect */
 }
