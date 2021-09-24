@@ -54,6 +54,8 @@
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 6.0  : from : 12 sep 2012     **/
 /**                                 to   : 12 sep 2012     **/
+/**                # Version 6.1  : from : 24 sep 2021     **/
+/**                                 to   : 24 sep 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -193,12 +195,16 @@ void
 dgraphExit (
 Dgraph * restrict const     grafptr)
 {
-  if ((grafptr->flagval & DGRAPHFREECOMM) != 0)   /* If communicator has to be freed */
+  DgraphFlag          flagval;
+
+  flagval = grafptr->flagval;
+  if ((flagval & DGRAPHFREECOMM) != 0)            /* If communicator has to be freed */
     MPI_Comm_free (&grafptr->proccomm);           /* Free it                         */
 
   dgraphFree2 (grafptr);
 
 #ifdef SCOTCH_DEBUG_DGRAPH1
-  memSet (grafptr, 0, sizeof (Dgraph));
+  memSet (grafptr, ~0, sizeof (Dgraph));
 #endif /* SCOTCH_DEBUG_DGRAPH1 */
+  grafptr->flagval = flagval & ~DGRAPHBITSUSED;   /* A subsequent dgraphExit() will have no effect */
 }
