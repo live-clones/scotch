@@ -338,7 +338,7 @@ size_t                      newsiz)
 #endif /* COMMON_PTHREAD_MEMORY */
 
 #ifdef COMMON_MEMORY_CHECK
-    memCheckDelist (tmpptr);
+  memCheckDelist (tmpptr);
 #endif /* COMMON_MEMORY_CHECK */
 
   if ((newptr = realloc (tmpptr, newsiz + COMMON_MEMORY_OVHD)) != NULL) {
