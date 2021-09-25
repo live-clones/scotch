@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 08 jan 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 6.1  : from : 24 sep 2021     **/
-/**                                 to   : 24 sep 2021     **/
+/**                                 to   : 25 sep 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,7 +92,7 @@ SCOTCH_Dordering * const    ordeptr)              /*+ Ordering structure to init
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Dordering) < sizeof (Dorder)) {
     errorPrint (STRINGIFY (SCOTCH_graphDorderInit) ": internal error");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
@@ -171,13 +171,14 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   Gnum                srclistnbr;                 /* Number of items in list      */
   Gnum * restrict     srclisttab;                 /* Subgraph vertex list         */
   const Strat *       ordstratptr;                /* Pointer to ordering strategy */
+  int                 o;
 
   srcgrafptr = (Dgraph *) grafptr;
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphCheck (srcgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": invalid input graph");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -187,7 +188,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tabl != &hdgraphorderststratab) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": not a distributed ordering strategy");
-    return     (1);
+    return (1);
   }
 
   srcgrafdat.s            = *srcgrafptr;          /* Copy non-halo graph data       */
@@ -210,13 +211,13 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   dorderFree (srcordeptr);                        /* Clean all existing ordering data */
   if ((srccblkptr = dorderFrst (srcordeptr)) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create root column block");
-    return     (1);
+    return (1);
   }
-  hdgraphOrderSt (&srcgrafdat, srccblkptr, ordstratptr);
-  hdgraphExit    (&srcgrafdat);                   /* Free ghost arrays if allocated internally */
-  dorderDispose  (srccblkptr);
+  o = hdgraphOrderSt (&srcgrafdat, srccblkptr, ordstratptr);
+  hdgraphExit   (&srcgrafdat);                    /* Free ghost arrays if allocated internally */
+  dorderDispose (srccblkptr);
 
-  return (0);
+  return (o);
 }
 
 /*+ This routine parses the given
@@ -236,7 +237,7 @@ const char * const          string)
 
   if ((*((Strat **) stratptr) = stratInit (&hdgraphorderststratab, string)) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_stratDgraphOrder) ": error in ordering strategy");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -314,7 +315,7 @@ const double                balrat)               /*+ Desired imbalance ratio   
 
   if (SCOTCH_stratDgraphOrder (stratptr, bufftab) != 0) {
     errorPrint (STRINGIFY (SCOTCH_stratDgraphOrderBuild) ": error in parallel ordering strategy");
-    return     (1);
+    return (1);
   }
 
   return (0);
