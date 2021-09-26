@@ -61,13 +61,11 @@
 /**                # Version 6.1  : from : 19 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
 /**                # Version 7.0  : from : 03 may 2019     **/
-/**                                 to   : 03 may 2019     **/
+/**                                 to   : 26 sep 2021     **/
 /**                                                        **/
 /************************************************************/
 
 #define DGRAPH_H
-
-#define PTSCOTCH_FOLD_DUP                         /* Activate folding on coarsening */
 
 #ifndef SCOTCH_COMM_PTOP_RAT
 #define SCOTCH_COMM_PTOP_RAT        0.25          /* Percentage under which point-to-point is allowed */
@@ -214,7 +212,7 @@ int                         dgraphBand          (Dgraph * restrict const, const 
 
 int                         dgraphFold          (const Dgraph * restrict const, const int, Dgraph * restrict const, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFold2         (const Dgraph * restrict const, const int, Dgraph * const, MPI_Comm, const void * restrict const, void ** restrict const, MPI_Datatype);
-int                         dgraphFoldDup       (const Dgraph * restrict const, Dgraph * restrict const, void * restrict const, void ** restrict const, MPI_Datatype);
+int                         dgraphFoldDup       (const Dgraph * restrict const, Dgraph * restrict const, void * restrict const, void ** restrict const, MPI_Datatype, Context * restrict const);
 int                         dgraphInduce2       (Dgraph * restrict const, Gnum (*) (Dgraph * restrict const, Dgraph * restrict const, const void * restrict const, Gnum * restrict const), const void * const, const Gnum, Gnum *, Dgraph * restrict const);
 
 int                         dgraphInduceList    (Dgraph * const, const Gnum, const Gnum * const, Dgraph * const);

@@ -51,7 +51,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 27 dec 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 14 jan 2020     **/
+/**                                 to   : 26 sep 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -1052,8 +1052,7 @@ Context * restrict const              contptr)    /*+ Execution context         
   matedat.c.multloctmp = NULL;                    /* So that it will not be freed    */
   dgraphCoarsenExit (&matedat.c);                 /* Free all other temporary arrays */
 
-  o = 0;                                          /* Assume everything is now all right */
-#ifdef PTSCOTCH_FOLD_DUP
+  o = 0;                                          /* Assume everything is now all right   */
   if (((flagval & DGRAPHCOARSENFOLDDUP) != 0) &&  /* If some form of folding is requested */
       (coargrafptr->procglbnbr >= 2)) {           /* And if there is need to it           */
     Dgraph                coargrafdat;            /* Coarse graph data before folding     */
@@ -1072,7 +1071,7 @@ Context * restrict const              contptr)    /*+ Execution context         
     else {                                        /* Do a duplicant-folding */
       int               loopval;
 
-      o = dgraphFoldDup (&coargrafdat, coargrafptr, (void *) matedat.c.multloctab, (void **) (void *) &coarmultptr, coarmultype);
+      o = dgraphFoldDup (&coargrafdat, coargrafptr, (void *) matedat.c.multloctab, (void **) (void *) &coarmultptr, coarmultype, contptr);
       loopval = contextIntRandVal (contptr, finegrafptr->proclocnum + contextIntRandVal (contptr, finegrafptr->proclocnum * 2 + 1) + 1);
       while (loopval --)                          /* Desynchronize pseudo-random generator across processes */
         contextIntRandVal (contptr, 2);
@@ -1083,8 +1082,7 @@ Context * restrict const              contptr)    /*+ Execution context         
       memFree (matedat.c.multloctab);
     *multlocptr = coarmultptr;                    /* Return folded multinode array or NULL */
   }
-  else                                            /* No folding at all */
-#endif /* PTSCOTCH_FOLD_DUP */
+  else                                            /* No folding at all                                                   */
     *multlocptr = matedat.c.multloctab;           /* Return un-based pointer (maybe the same as initially user-provided) */
 
   return (o);
