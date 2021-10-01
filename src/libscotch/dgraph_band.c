@@ -221,7 +221,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     bandgrafptr->procdsptab[0] = -1;
     if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, GNUM_MPI, /* Send received data to dummy array */
                        bandvnumgsttax + bandgrafptr->baseval, 1, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
-      errorPrint ("dgraphBand: communication error (2)");
+      errorPrint ("dgraphBand: communication error (1)");
       return (1);
     }
     if (bandfronloctab != NULL)
@@ -234,7 +234,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
     bandgrafptr->procdsptab[0] = bandvertlocnbr;
     if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, GNUM_MPI,
                        &bandgrafptr->procdsptab[1], 1, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
-      errorPrint ("dgraphBand: communication error (3)");
+      errorPrint ("dgraphBand: communication error (2)");
       return (1);
     }
   }
