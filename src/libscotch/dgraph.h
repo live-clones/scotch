@@ -61,7 +61,7 @@
 /**                # Version 6.1  : from : 19 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
 /**                # Version 7.0  : from : 03 may 2019     **/
-/**                                 to   : 26 sep 2021     **/
+/**                                 to   : 01 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -209,7 +209,7 @@ int                         dgraphCheck         (const Dgraph * const);
 int                         dgraphCompact2      (const Dgraph * const, Gnum * restrict * const, Gnum * restrict * const, Gnum * restrict * const);
 int                         dgraphView          (const Dgraph * const, FILE * const);
 int                         dgraphGhst2         (Dgraph * const, const int);
-int                         dgraphBand          (Dgraph * restrict const, const Gnum, Gnum * restrict const, const GraphPart * restrict const, const Gnum, const Gnum, Gnum, Dgraph * restrict const, Gnum * restrict * const, GraphPart * restrict * const, Gnum * const, Gnum * const, Gnum * const);
+int                         dgraphBand          (Dgraph * restrict const, const Gnum, Gnum * restrict const, const GraphPart * restrict const, const Gnum, const Gnum, Gnum, Dgraph * restrict const, Gnum * restrict * const, GraphPart * restrict * const, Gnum * const, Gnum * const, Gnum * const, Context * restrict const);
 
 int                         dgraphFold          (const Dgraph * restrict const, const int, Dgraph * restrict const, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFold2         (const Dgraph * restrict const, const int, Dgraph * const, MPI_Comm, const void * restrict const, void ** restrict const, MPI_Datatype);

@@ -1,4 +1,4 @@
-/* Copyright 2007-2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,9 +42,12 @@
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 03 apr 2012     **/
 /**                                 to   : 22 may 2018     **/
+/**                # Version 7.0  : from : 08 oct 2021     **/
+/**                                 to   : 08 oct 2021     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
-/**                  vdgraph_separate_bd.c in version 5.0. **/
+/**                  vdgraph_separate_bd.c in version      **/
+/**                  5.0.                                  **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,6 +59,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 
 /**********************************/
@@ -114,7 +118,8 @@ Gnum * restrict * const             bandfronlocptr, /*+ Pointer to bandfronlocta
 GraphPart * restrict * const        bandpartgstptr, /*+ Pointer to bandpartgsttax                            +*/
 Gnum * const                        bandvertlvlptr, /*+ Pointer to based start index of last level           +*/
 Gnum * const                        bandver1locptr, /*+ Pointer to number of band vertices in part 1         +*/
-Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set if anchor vertices overloaded +*/
+Gnum * const                        bandvertlocancptr, /*+ Pointer to flag set if anchor vertices overloaded +*/
+Context *                           contptr)      /*+ Execution context                                      +*/
 {
   Gnum                    bandvertlocnnd;         /* End of local band vertex array, (without anchor vertices) */
   Gnum                    bandvertlocnbr;         /* Number of local band vertices (including anchor vertices) */
@@ -159,7 +164,7 @@ Gnum * const                        bandvertlocancptr) /*+ Pointer to flag set i
   }
 
   if ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphBand2Ptop : dgraphBand2Coll)
-      (grafptr, fronlocnbr, fronloctab, distmax, bandvnumgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocnbr) != 0) {
+      (grafptr, fronlocnbr, fronloctab, distmax, bandvnumgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocnbr, contptr) != 0) {
     if (bandvnumgsttax != NULL)
       memFree (bandvnumgsttax + grafptr->baseval);
     return (1);

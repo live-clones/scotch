@@ -1,4 +1,4 @@
-/* Copyright 2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
 /**                                 to   : 26 sep 2012     **/
+/**                # Version 7.0  : from : 01 oct 2021     **/
+/**                                 to   : 01 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,5 +60,5 @@
 ** The function prototypes.
 */
 
-int                         DGRAPHBANDGROWNAMECOLL (Dgraph * restrict const, const Gnum, Gnum * restrict const, const Gnum, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const);
-int                         DGRAPHBANDGROWNAMEPTOP (Dgraph * restrict const, const Gnum, Gnum * restrict const, const Gnum, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const);
+int                         DGRAPHBANDGROWNAMECOLL (Dgraph * restrict const, const Gnum, Gnum * restrict const, const Gnum, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Context * contptr);
+int                         DGRAPHBANDGROWNAMEPTOP (Dgraph * restrict const, const Gnum, Gnum * restrict const, const Gnum, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Context * contptr);

@@ -918,6 +918,7 @@ dgraph_band$(OBJ)		:	dgraph_band.c				\
 					dgraph_band_grow.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h
 
 dgraph_build$(OBJ)		:	dgraph_build.c				\
