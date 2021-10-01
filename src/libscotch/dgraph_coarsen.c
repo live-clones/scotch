@@ -51,7 +51,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 27 dec 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 26 sep 2021     **/
+/**                                 to   : 01 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -359,12 +359,13 @@ DgraphCoarsenData * restrict const  coarptr)
     int                 statsiz;
     int                 o;
 
-#ifdef SCOTCH_DETERMINISTIC
-    procngbnum = vrcvreqnbr - 1;
+#ifdef SCOTCH_DEBUG_DGRAPH2
+    procngbnum = vrcvreqnbr - 1;                  /* Receive messages in order */
     o = MPI_Wait (&coarptr->nrcvreqtab[procngbnum], &statdat);
-#else /* SCOTCH_DETERMINISTIC */
+#else /* SCOTCH_DEBUG_DGRAPH2 */
     o = MPI_Waitany (procngbnbr, coarptr->nrcvreqtab, &procngbnum, &statdat);
-#endif /* SCOTCH_DETERMINISTIC */
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+
     if ((o != MPI_SUCCESS) ||
         (MPI_Get_count (&statdat, GNUM_MPI, &statsiz) != MPI_SUCCESS)) {
       errorPrint ("dgraphCoarsenBuildPtop: communication error (3)");
@@ -537,11 +538,13 @@ DgraphCoarsenData * restrict const  coarptr)
       vertglbnum1 = edgeloctax[edgelocnum];
       vertgstnum1 = edgegsttax[edgelocnum];
 
-      procngbnum = procgsttax[vertgstnum1];       /* Find neighbor owner process       */
+      procngbnum = procgsttax[vertgstnum1];       /* Find neighbor owner process */
+#ifdef SCOTCH_DEBUG_DGRAPH2
       if (procngbnum < 0) {                       /* If neighbor had not been computed */
         errorPrint ("dgraphCoarsenBuild: internal error (4)");
         return (1);
       }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
 
       coarsndidx = nsndidxtab[procngbnum] ++;     /* Get position of message in send array */
 #ifdef SCOTCH_DEBUG_DGRAPH2

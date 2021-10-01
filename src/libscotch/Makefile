@@ -947,6 +947,7 @@ dgraph_check$(OBJ)		:	dgraph_check.c				\
 dgraph_coarsen$(OBJ)		:	dgraph_coarsen.c			\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					dgraph_allreduce.h			\
 					dgraph_coarsen.h			\
