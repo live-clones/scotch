@@ -452,7 +452,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
   }
 
   grafdat = *grafptr;                             /* Clone imput graph                             */
-  grafdat.s.flagval &= ~HDGRAPHFREETABS;          /* Avoid freeing their data in nested dissection */
+  grafdat.s.flagval &= ~HDGRAPHFREEALL;           /* Avoid freeing their data in nested dissection */
   grafdat.levlnum    = 0;                         /* Nested dissection level 0                     */
 
   return (hdgraphOrderNd2 (&grafdat, cblkptr, paraptr));
