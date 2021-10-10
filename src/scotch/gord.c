@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,6 +55,8 @@
 /**                                 to   : 24 sep 2019     **/
 /**                # Version 6.1  : from : 30 oct 2019     **/
 /**                                 to   : 30 oct 2019     **/
+/**                # Version 7.0  : from : 23 oct 2021     **/
+/**                                 to   : 23 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,6 +85,12 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 
 static const char *         C_usageList[] = {
   "gord [<input source file> [<output ordering file> [<output log file>]]] <options>",
+  "  -C<opt>    : Choose execution context options according to one or several of <opt>:",
+  "                 d  : deterministic behavior (even across multiple threads; implies 'f')",
+  "                 f  : fixed random seed",
+  "                 r  : variable random seed",
+  "                 u  : undeterministic behavior (may be faster with several threads)",
+  "                 Default behavior depends on compilation flags",
   "  -c<opt>    : Choose default ordering strategy according to one or several of <opt>:",
   "                 b  : enforce load balance as much as possible",
   "                 q  : privilege quality over speed (default)",
@@ -111,15 +119,17 @@ main (
 int                         argc,
 char *                      argv[])
 {
-  SCOTCH_Num          vertnbr;                    /* Number of vertices */
-  SCOTCH_Graph        grafdat;                    /* Source graph       */
-  SCOTCH_Ordering     ordedat;                    /* Graph ordering     */
-  SCOTCH_Num *        permtab;                    /* Permutation array  */
-  SCOTCH_Strat        stradat;                    /* Ordering strategy  */
+  SCOTCH_Context      contdat;                    /* Execution context     */
+  SCOTCH_Graph        cogrdat;                    /* Context graph binding */
+  SCOTCH_Num          vertnbr;                    /* Number of vertices    */
+  SCOTCH_Graph        grafdat;                    /* Source graph          */
+  SCOTCH_Ordering     ordedat;                    /* Graph ordering        */
+  SCOTCH_Num *        permtab;                    /* Permutation array     */
+  SCOTCH_Strat        stradat;                    /* Ordering strategy     */
   SCOTCH_Num          straval;
   char *              straptr;
   int                 flagval;
-  Clock               runtime[2];                 /* Timing variables   */
+  Clock               runtime[2];                 /* Timing variables      */
   int                 i, j;
 
   errorProg ("gord");
@@ -132,7 +142,8 @@ char *                      argv[])
   flagval = C_FLAGNONE;                           /* Default behavior  */
   straval = 0;                                    /* No strategy flags */
   straptr = NULL;
-  SCOTCH_stratInit (&stradat);
+  SCOTCH_contextInit (&contdat);                  /* Set default context */
+  SCOTCH_stratInit   (&stradat);
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
 
@@ -146,6 +157,9 @@ char *                      argv[])
     else {                                        /* If found an option name */
       switch (argv[i][1]) {
         case 'C' :
+          if (SCOTCH_contextOptionParse (&contdat, &argv[i][2]) != 0)
+            errorPrint ("main: invalid context option string");
+          break;
         case 'c' :                                /* Strategy selection parameters */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
@@ -236,6 +250,8 @@ char *                      argv[])
     SCOTCH_stratGraphOrderBuild (&stradat, straval, 0, 0.2);
   }
 
+  SCOTCH_contextBindGraph (&contdat, &grafdat, &cogrdat);
+
   clockStop  (&runtime[0]);                       /* Get input time */
   clockInit  (&runtime[1]);
   clockStart (&runtime[1]);
@@ -244,7 +260,7 @@ char *                      argv[])
     errorPrint ("main: out of memory");
 
   SCOTCH_graphOrderInit    (&grafdat, &ordedat, permtab, NULL, NULL, NULL, NULL); /* Create ordering */
-  SCOTCH_graphOrderCompute (&grafdat, &ordedat, &stradat); /* Perform ordering */
+  SCOTCH_graphOrderCompute (&cogrdat, &ordedat, &stradat); /* Perform ordering */
 
   clockStop (&runtime[1]);                        /* Get ordering time */
 
@@ -277,9 +293,11 @@ char *                      argv[])
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
+  SCOTCH_graphExit      (&cogrdat);               /* Destroy context binding first */
   SCOTCH_graphOrderExit (&grafdat, &ordedat);
   SCOTCH_stratExit      (&stradat);
   SCOTCH_graphExit      (&grafdat);
+  SCOTCH_contextExit    (&contdat);
   memFree               (permtab);
 
   return (EXIT_SUCCESS);
