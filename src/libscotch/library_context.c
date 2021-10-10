@@ -54,6 +54,7 @@
 #include "common.h"
 #include "common_thread.h"
 #include "context.h"
+#include "library_context.h"
 #include "scotch.h"
 
 /****************************************/
@@ -293,7 +294,7 @@ const SCOTCH_Num            optival)
   o = 0;                                          /* Assume no error   */
 
   switch (optival) {
-    case CONTEXTOPTIONNUMFIXEDRANDOMSEED :
+    case CONTEXTOPTIONNUMRANDOMFIXEDSEED :
       if (optitmp != 0)
         optitmp = 1;                              /* Only two values available */
       break;
@@ -301,7 +302,7 @@ const SCOTCH_Num            optival)
       if (optitmp != 0) {
         optitmp = 1;                              /* Only two values available */
 
-        o = contextValuesSetInt ((Context *) libcontptr, CONTEXTOPTIONNUMFIXEDRANDOMSEED, 1); /* If deterministic behavior wanted, use fixed random seed */
+        o = contextValuesSetInt ((Context *) libcontptr, CONTEXTOPTIONNUMRANDOMFIXEDSEED, 1); /* If deterministic behavior wanted, use fixed random seed */
       }
       break;
     default :
@@ -310,4 +311,60 @@ const SCOTCH_Num            optival)
   }
 
   return (o || contextValuesSetInt ((Context *) libcontptr, optinum, optitmp));
+}
+
+/*+ This routine parses a context option
+*** string and sets the option values of
+*** the given context accordingly.
+*** It returns:
+*** - 0   : if the string was properly parsed.
+*** - !0  : on error.
++*/
+
+static ContextOptionArg     contextOptionTab[] = {
+  { 'd',  CONTEXTOPTIONNUMDETERMINISTIC,   1 },
+  { 'u',  CONTEXTOPTIONNUMDETERMINISTIC,   0 },
+  { 'f',  CONTEXTOPTIONNUMRANDOMFIXEDSEED, 1 },
+  { 'r',  CONTEXTOPTIONNUMRANDOMFIXEDSEED, 0 },
+  { '\0', -1, -1 } };
+
+int
+SCOTCH_contextOptionParse (
+SCOTCH_Context * const      libcontptr,
+const char *                parastr)
+{
+  const char *        paraptr;
+
+  for (paraptr = parastr; *paraptr != '\0'; ) {
+    char                        paraval;
+    ContextOptionArg * restrict argsptr;
+
+    while (isspace (paraval = *paraptr))          /* Advance to next selector */
+      paraptr ++;
+    if (! isalpha (paraval)) {
+      errorPrint (STRINGIFY (SCOTCH_contextOptionParse) ": invalid syntax before \"%s\"", paraptr);
+      return (1);
+    }
+
+    for (argsptr = contextOptionTab; argsptr->nameval != '\0'; argsptr ++) {
+      if (argsptr->nameval == paraval)            /* If parameter name found */
+	break;
+    }
+    if (argsptr->nameval == '\0') {               /* If parameter name not found */
+      errorPrint (STRINGIFY (SCOTCH_contextOptionParse) ": invalid parameter name before \"%s\"", paraptr);
+      return (1);
+    }
+
+    SCOTCH_contextOptionSetNum (libcontptr, argsptr->vtypidx, argsptr->vtypval); /* Set options value */
+
+    paraptr ++;                                   /* Skip parameter name      */
+    while (isspace (paraval = *paraptr))          /* Advance to next selector */
+      paraptr ++;
+    if (paraval == '\0')                          /* If string completed, exit loop */
+      break;
+    if (paraval == ',')                           /* Skip comma separator */
+      paraptr ++;
+  }
+
+  return (0);
 }

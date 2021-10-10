@@ -1965,6 +1965,7 @@ library_context$(OBJ)		:	library_context.c			\
 					common.h				\
 					common_thread.h				\
 					context.h				\
+					library_context.h			\
 					scotch.h
 
 library_context_f$(OBJ)		:	library_context_f.c			\

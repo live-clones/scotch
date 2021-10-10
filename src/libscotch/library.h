@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 01 apr 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 22 aug 2021     **/
+/**                                 to   : 10 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -222,6 +222,7 @@ int                         SCOTCH_contextInit  (SCOTCH_Context * const);
 void                        SCOTCH_contextExit  (SCOTCH_Context * const);
 int                         SCOTCH_contextOptionGetNum (SCOTCH_Context * const, const int, SCOTCH_Num * const);
 int                         SCOTCH_contextOptionSetNum (SCOTCH_Context * const, const int, const SCOTCH_Num);
+int                         SCOTCH_contextOptionParse (SCOTCH_Context * const, const char *);
 int                         SCOTCH_contextRandomClone (SCOTCH_Context * const);
 void                        SCOTCH_contextRandomReset (SCOTCH_Context * const);
 void                        SCOTCH_contextRandomSeed (SCOTCH_Context * const, const SCOTCH_Num);
