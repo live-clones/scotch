@@ -1046,6 +1046,7 @@ dgraph_match_sync_coll$(OBJ)	:	dgraph_match_sync_coll.c		\
 dgraph_match_sync_ptop$(OBJ)	:	dgraph_match_sync_ptop.c		\
 					module.h				\
 					common.h				\
+					context.h				\
 					dgraph.h				\
 					dgraph_coarsen.h                        \
 					dgraph_match.h
