@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 05 oct 2012     **/
 /**                                 to   : 30 aug 2020     **/
 /**                # Version 7.0  : from : 28 jul 2018     **/
-/**                                 to   : 19 apr 2021     **/
+/**                                 to   : 22 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +54,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "arch.h"
 #include "graph.h"
 #include "graph_coarsen.h"
@@ -66,10 +67,14 @@
 /* Array of matching routines */
 
 static void              (* graphmatchfunctab[]) (GraphCoarsenData * restrict const, GraphCoarsenThread * restrict const) = {
-                              GRAPHMATCHFUNCBLOCK (Seq)
+                              GRAPHMATCHFUNCBLOCK (Seq),
 #ifndef GRAPHMATCHNOTHREAD
-                              ,
                               GRAPHMATCHFUNCBLOCK (Thr)
+#else /* GRAPHMATCHNOTHREAD */
+                              NULL,               /* Raise error if functions are called */
+                              NULL,
+                              NULL,
+                              NULL
 #endif /* GRAPHMATCHNOTHREAD */
                             };
 
@@ -193,18 +198,21 @@ GraphCoarsenData * restrict coarptr,
 const int                   thrdnbr)
 {
   int                 fumaval;                    /* Matching routine index in function array */
+  Gnum                deteval;                    /* Flag set if deterministic behavior       */
 
   const Graph * restrict const  finegrafptr = coarptr->finegrafptr;
+
+  contextValuesGetInt (coarptr->contptr, CONTEXTOPTIONNUMDETERMINISTIC, &deteval);
 
   fumaval = (finegrafptr->edlotax != NULL) ? 1 : 0;
   if ((coarptr->finevfixnbr > 0) || (coarptr->fineparotax != NULL))
     fumaval |= 2;
 
 #ifndef GRAPHMATCHNOTHREAD
-  if (thrdnbr > 1) {
+  if ((deteval == 0) && (thrdnbr > 1)) {          /* If non-deterministic behavior accepted and several threads available */
     if ((coarptr->finelocktax = memAlloc (finegrafptr->vertnbr * sizeof (int))) == NULL) {
       errorPrint ("graphMatchInit: out of memory");
-      return     (1);
+      return (1);
     }
     coarptr->finelocktax -= finegrafptr->baseval;
 
@@ -213,7 +221,7 @@ const int                   thrdnbr)
   else
 #endif /* GRAPHMATCHNOTHREAD */
   {
-    coarptr->finelocktax = NULL;
+    coarptr->finelocktax = NULL;                  /* A NULL finelocktax means sequential (deterministic) process wanted */
   }
 
   coarptr->fumaval = fumaval;
@@ -268,64 +276,62 @@ GraphCoarsenData * const          coarptr)        /* [norestrict] because of ret
   Gnum                finevertnum;
 #endif /* SCOTCH_DEBUG_GRAPH2 */
 
-#ifndef GRAPHMATCHNOTHREAD
-  const int                   thrdnbr = threadNbr (descptr);
-#endif /* GRAPHMATCHNOTHREAD */
 #ifdef SCOTCH_PTHREAD
+  const int                   thrdnbr = threadNbr (descptr);
   const int                   thrdnum = threadNum (descptr);
   GraphCoarsenThread * const  thrdptr = &coarptr->thrdtab[thrdnum];
 #else /* SCOTCH_PTHREAD */
   GraphCoarsenThread * const  thrdptr = &coarptr->thrdtab[0];
 #endif /* SCOTCH_PTHREAD */
 
-#ifdef GRAPHMATCHNOTHREAD
+  if (coarptr->finelocktax == NULL) {             /* If sequential, deterministic processing wanted */
 #ifdef SCOTCH_PTHREAD
-  if (thrdnum != 0) {                             /* Only thread 0 will perform the work    */
-    threadBarrier (descptr);                      /* End-of-routine synchronization barrier */
-    return;
-  }
+    if (thrdnum != 0) {                           /* Only thread 0 will perform the work    */
+      threadBarrier (descptr);                    /* End-of-routine synchronization barrier */
+      return;
+    }
 #endif /* SCOTCH_PTHREAD */
 
-  finevertbas = coarptr->finegrafptr->baseval;    /* Work on all graph fine vertices */
-  finevertnnd = coarptr->finegrafptr->vertnnd;
-#else /* GRAPHMATCHNOTHREAD */
-  finevertbas = thrdptr->finevertbas;             /* Work on slice of fine graph */
-  finevertnnd = thrdptr->finevertnnd;
-#endif /* GRAPHMATCHNOTHREAD */
+    finevertbas = coarptr->finegrafptr->baseval;  /* Work on all graph fine vertices */
+    finevertnnd = coarptr->finegrafptr->vertnnd;
+  }
+  else {
+    finevertbas = thrdptr->finevertbas;           /* Work on slice of fine graph */
+    finevertnnd = thrdptr->finevertnnd;
+  }
   finevertsiz = finevertnnd - finevertbas;
 
   thrdptr->finequeudlt = 2;                       /* For sort queue */
   if ((thrdptr->finequeutab = memAlloc (finevertsiz * thrdptr->finequeudlt * sizeof (Gnum))) == NULL) { /* Allocate (local or global) processing queue */
     errorPrint ("graphMatch: out of memory");
     coarptr->retuval = 2;
-#ifdef GRAPHMATCHNOTHREAD
+    if (coarptr->finelocktax == NULL) {           /* If only thread 0 is working */
 #ifdef SCOTCH_PTHREAD
-    threadBarrier (descptr);                      /* End-of-routine synchronization barrier */
+      threadBarrier (descptr);                    /* End-of-routine synchronization barrier */
 #endif /* SCOTCH_PTHREAD */
-    return;                                       /* Thread 0 returns */
-#endif /* GRAPHMATCHNOTHREAD */
+      return;                                     /* Thread 0 returns */
+    }
   }
 
   memSet (coarptr->finematetax + finevertbas, ~0, finevertsiz * sizeof (Gnum)); /* Initialize (local part of) mate array */
-#ifndef GRAPHMATCHNOTHREAD
-  if (thrdnbr > 1)                                /* If needed, initialize local part of lock array for concurrent acces */
-    memSet (coarptr->finelocktax + finevertbas, 0, finevertsiz * sizeof (int));
+  if (coarptr->finelocktax != NULL) {
+    memSet (coarptr->finelocktax + finevertbas, 0, finevertsiz * sizeof (int)); /* Initialize local part of lock array for concurrent acces */
 
-  threadBarrier (descptr);                        /* Synchronization for mating arrays and retuval */
+    threadBarrier (descptr);                      /* Synchronization for mating arrays and retuval */
 
-  if (coarptr->retuval != 0) {
-    if (thrdptr->finequeutab != NULL)             /* If someone else's allocation failed */
-      memFree (thrdptr->finequeutab);             /* Free our own queue                  */
-    return;
+    if (coarptr->retuval != 0) {
+      if (thrdptr->finequeutab != NULL)           /* If someone else's allocation failed */
+        memFree (thrdptr->finequeutab);           /* Free our own queue                  */
+      return;
+    }
   }
-#endif /* GRAPHMATCHNOTHREAD */
 
   graphMatchQueueSort (coarptr, thrdptr, finevertbas, finevertnnd);
 
   thrdptr->coarvertnbr = 0;                       /* No coarse vertices created yet */
 
-#ifndef GRAPHMATCHNOTHREAD
-  if (thrdnbr > 1) {
+#ifdef SCOTCH_PTHREAD
+  if (coarptr->finelocktax != NULL) {
     graphmatchfunctab[coarptr->fumaval] (coarptr, thrdptr); /* Call parallel matching routine */
 
     threadBarrier (descptr);                      /* Barrier before pseudo-reduction */
@@ -347,7 +353,7 @@ GraphCoarsenData * const          coarptr)        /* [norestrict] because of ret
     threadBarrier (descptr);                      /* coarptr->coarvertnbr must be known to all */
   }
   else
-#endif /* GRAPHMATCHNOTHREAD */
+#endif /* SCOTCH_PTHREAD */
   {
     graphmatchfunctab[coarptr->fumaval & ~4] (coarptr, thrdptr); /* Call sequential matching routine                            */
     coarptr->coarvertnbr = thrdptr->coarvertnbr;  /* Global number of coarse vertices is that computed by (sequential) thread 0 */
@@ -364,9 +370,8 @@ GraphCoarsenData * const          coarptr)        /* [norestrict] because of ret
   }
 #endif /* SCOTCH_DEBUG_GRAPH2 */
 
-#ifdef GRAPHMATCHNOTHREAD
 #ifdef SCOTCH_PTHREAD
-  threadBarrier (descptr);                        /* End-of-routine synchronization barrier for thread 0 */
+  if (coarptr->finelocktax == NULL)               /* If only thread 0 is working                         */
+    threadBarrier (descptr);                      /* End-of-routine synchronization barrier for thread 0 */
 #endif /* SCOTCH_PTHREAD */
-#endif /* GRAPHMATCHNOTHREAD */
 }
