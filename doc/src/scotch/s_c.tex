@@ -22,6 +22,14 @@ objects. These objects define user-configurable execution contexts, in
 which \libscotch\ library routines can be executed independently from
 others; see Section~\ref{sec-lib-context},
 page~\pageref{sec-lib-context} for further information.
+
+Execution contexts also comprise option values, which dynamically
+determine the behavior of the \scotch\ routines. In previous versions,
+such behavior was controlled at compile-time by flags
+\texttt{COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt SEED} and
+\texttt{SCOTCH\_\lbt DETERMINISTIC}. It is now possible to define
+these flags dynamically, using the relevant option setting routine
+(see Section~\ref{sec-lib-context-option-set-num}).
 \\
 
 A new, faster, pseudo-random number generator has been implemented.
