@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2014,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 17 apr 2019     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 03 sep 2020     **/
+/**                                 to   : 24 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,6 +83,12 @@ static const char *         C_usageList[] = {     /* Usage */
   "dgmap [<input source file> [<input target file> [<output mapping file> [<output log file>]]]] <options>",
   "dgpart [<nparts/pwght>] [<input source file> [<output mapping file> [<output log file>]]] <options>",
   "  -b<val>    : Load imbalance tolerance (default: 0.05)",
+  "  -C<opt>    : Choose execution context options according to one or several of <opt>:",
+  "                 d  : deterministic behavior (even across multiple threads; implies 'f')",
+  "                 f  : fixed random seed",
+  "                 r  : variable random seed",
+  "                 u  : undeterministic behavior (may be faster with several threads)",
+  "                 Default behavior depends on compilation flags",
   "  -c<opt>    : Choose default mapping strategy according to one or several of <opt>:",
   "                 b  : enforce load balance as much as possible",
   "                 q  : privilege quality over speed (default)",
@@ -118,6 +124,8 @@ main (
 int                         argc,
 char *                      argv[])
 {
+  SCOTCH_Context      contdat;                    /* Execution context         */
+  SCOTCH_Dgraph       cogrdat;                    /* Context graph binding     */
   SCOTCH_Dgraph       grafdat;                    /* Source graph              */
   SCOTCH_Num          grafflag;                   /* Source graph properties   */
   SCOTCH_Arch         archdat;                    /* Target architecture       */
@@ -178,7 +186,8 @@ char *                      argv[])
   SCOTCH_randomProc (proclocnum);                 /* Record process number to initialize pseudo-random seed */
 
   grafflag = 0;                                   /* Use vertex and edge weights */
-  SCOTCH_stratInit (&stradat);
+  SCOTCH_contextInit (&contdat);                  /* Set default context          */
+  SCOTCH_stratInit   (&stradat);
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
 
@@ -209,6 +218,9 @@ char *                      argv[])
           }
           break;
         case 'C' :
+          if (SCOTCH_contextOptionParse (&contdat, &argv[i][2]) != 0)
+            errorPrint ("main: invalid context option string");
+          break;
         case 'c' :                                /* Strategy selection parameters */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
@@ -385,6 +397,8 @@ char *                      argv[])
   else
     SCOTCH_stratDgraphMapBuild (&stradat, straval, (SCOTCH_Num) procglbnbr, (SCOTCH_Num) C_partNbr, kbalval);
 
+  SCOTCH_contextBindDgraph (&contdat, &grafdat, &cogrdat);
+
   clockStop (&runtime[0]);                        /* Get input time */
   clockInit (&runtime[1]);
 
@@ -398,7 +412,7 @@ char *                      argv[])
   SCOTCH_dgraphGhst (&grafdat);                   /* Compute it once for good */
 
   SCOTCH_dgraphMapInit    (&grafdat, &mappdat, &archdat, NULL);
-  SCOTCH_dgraphMapCompute (&grafdat, &mappdat, &stradat); /* Perform mapping */
+  SCOTCH_dgraphMapCompute (&cogrdat, &mappdat, &stradat); /* Perform mapping */
 
   clockStop (&runtime[1]);                        /* Get computation time */
 
@@ -470,9 +484,11 @@ char *                      argv[])
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
   SCOTCH_dgraphMapExit (&grafdat, &mappdat);
+  SCOTCH_dgraphExit    (&cogrdat);                /* Destroy context binding first */
   SCOTCH_dgraphExit    (&grafdat);
   SCOTCH_stratExit     (&stradat);
   SCOTCH_archExit      (&archdat);
+  SCOTCH_contextExit   (&contdat);
 
   MPI_Finalize ();
 
