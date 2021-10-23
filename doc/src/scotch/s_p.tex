@@ -498,6 +498,26 @@ Set the maximum load imbalance ratio to \textit{rat}, which should
 be a value comprised between $0$ and $1$. This option can be used in
 conjunction with option \texttt{-c}, but is incompatible with option
 \texttt{-m}.
+\iteme[\texttt{-C}{\it flags}]
+Tune execution context options according to the given flags. Some of
+these flags are antagonistic, while others can be combined. Default
+values depend on compilation flags \texttt{COMMON\_\lbt RANDOM\_\lbt
+FIXED\_\lbt SEED} and \texttt{SCOTCH\_\lbt DETERMINISTIC}.
+\begin{itemize}
+\iteme[\texttt{d}]
+Enforce a deterministic behavior across multiple runs, even in a
+multi-threaded context. Determinism may slow down execution for some
+multi-threaded algorithms, as determinism requires more
+synchronization across threads. Implies '\texttt{f}'.
+\iteme[\texttt{f}]
+Use a fixed random seed. Suffices to enforce determinism in a
+single-threaded context.
+\iteme[\texttt{r}]
+Use a variable random seed for each run. Opposite of '\texttt{f}'.
+\iteme[\texttt{u}]
+Allow for undeterministic behavior across multiple runs. May result in
+faster execution in a multi-threaded context. Opposite of '\texttt{d}'.
+\end{itemize}
 \iteme[\texttt{-c}{\it flags}]
 Tune the default mapping strategy according to the given preference
 flags. Some of these flags are antagonistic, while others can be
@@ -769,6 +789,26 @@ Since the program is devoted to experimental studies, it has many
 optional parameters, used to test various execution modes. Values
 set by default will give best results in most cases.
 \begin{itemize}
+\iteme[\texttt{-C}{\it flags}]
+Tune execution context options according to the given flags. Some of
+these flags are antagonistic, while others can be combined. Default
+values depend on compilation flags \texttt{COMMON\_\lbt RANDOM\_\lbt
+FIXED\_\lbt SEED} and \texttt{SCOTCH\_\lbt DETERMINISTIC}.
+\begin{itemize}
+\iteme[\texttt{d}]
+Enforce a deterministic behavior across multiple runs, even in a
+multi-threaded context. Determinism may slow down execution for some
+multi-threaded algorithms, as determinism requires more
+synchronization across threads. Implies '\texttt{f}'.
+\iteme[\texttt{f}]
+Use a fixed random seed. Suffices to enforce determinism in a
+single-threaded context.
+\iteme[\texttt{r}]
+Use a variable random seed for each run. Opposite of '\texttt{f}'.
+\iteme[\texttt{u}]
+Allow for undeterministic behavior across multiple runs. May result in
+faster execution in a multi-threaded context. Opposite of '\texttt{d}'.
+\end{itemize}
 \iteme[\texttt{-c}{\it flags}]
 Tune the default ordering strategy according to the given preference
 flags. Some of these flags are antagonistic, while others can be
