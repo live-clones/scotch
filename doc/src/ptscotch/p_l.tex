@@ -45,26 +45,99 @@ of \ptscotch\ without having to modify their code. The services
 provided by this library are described in
 Section~\ref{sec-lib-parmetis}.
 
-\subsection{Running at proper thread level}
+\subsection{Using multi-threading}
 \label{sec-lib-thread}
+
+\scotch\ and \ptscotch\ comprise several multi-threaded algorithms,
+which can significally reduce overall computation time. Also, thread
+management in \scotch\ is now dynamic, and is controlled by
+\texttt{SCOTCH\_\lbt Context} objects. These objects define
+user-configurable execution contexts, in which \libptscotch\ library
+routines can be executed independently from others.
+
+\subsubsection{Compiling at proper thread level}
+
+Two levels of multi-threading are available: multi-threading with a
+single thread handling MPI communications, and multi-threading with
+several threads being able to perform MPI communication
+simultaneously. This behavior is controlled at compile-time by flags
+``\texttt{-DSCOTCH\_\lbt PTHREAD}'' and ``\texttt{-DSCOTCH\_\lbt
+PTHREAD\_\lbt MPI}''. The selection of the proper compilation flags
+depends on the capabilities of the platform MPI
+implementation. Alternately, the compilation flag
+``\texttt{-DSCOTCH\_\lbt MPI\_\lbt ASYNC\_\lbt COLL}'' can be
+used to replace threaded synchronous communication primitives by
+non-threaded asynchronous communication primitives.
+
+\subsubsection{Running at proper thread level}
 
 Since \ptscotch\ is based on the MPI API, all processes must call some
 flavor of \texttt{MPI\_\lbt Init} before using any routine of the
 library that performs communication. The thread support level of MPI
 has to be set in accordance to the level required by the library.
 
-If \ptscotch\ has been compiled without the \texttt{-DSCOTCH\_\lbt
-PTHREAD} flag, a call to the simple \texttt{MPI\_\lbt Init} routine
+If \ptscotch\ has been compiled without the ``\texttt{-DSCOTCH\_\lbt
+PTHREAD}'' flag, a call to the simple \texttt{MPI\_\lbt Init} routine
 will suffice, because no concurrent MPI calls will be performed by
 library routines. Else, the extended \texttt{MPI\_\lbt Init\_\lbt
-thread} initialization routine has to be used, to request the
-\texttt{MPI\_\lbt THREAD\_\lbt MULTIPLE} level, and the provided
-thread support level value returned by the routine must be checked
-carefully. If your MPI implementation does not provide the
-\texttt{MPI\_\lbt THREAD\_\lbt MULTIPLE} level, you will have to
-recompile \ptscotch\ without the \texttt{-DSCOTCH\_\lbt PTHREAD}
-flag. Else, library calls may cause random bugs in the communication
-subsystem, resulting in program crashes.
+thread} initialization routine has to be used, to request either
+levels \texttt{MPI\_\lbt THREAD\_\lbt MULTIPLE} or only
+\texttt{MPI\_\lbt THREAD\_\lbt FUNNELED}, depending whether the
+``\texttt{-DSCOTCH\_\lbt PTHREAD\_\lbt MPI}'' flag has been set or
+not. The provided thread support level value returned by the routine
+must be checked carefully. If your MPI implementation does not provide
+the \texttt{MPI\_\lbt THREAD\_\lbt MULTIPLE} level, you will have to
+recompile \ptscotch\ without the ``\texttt{-DSCOTCH\_\lbt
+PTHREAD\_\lbt MPI}'' flag. Else, library calls may cause random bugs
+in the communication subsystem, resulting in program crashes.
+
+Thread binding is essential to achieve good performance of
+multi-threaded programs. In \scotch, the only thread binding mechanism
+implemented to date relies on the Linux binding API. Please make sure
+to compile with flag ``\texttt{-DCOMMON\_\lbt PTHREAD\_\lbt
+AFFINITY\_\lbt LINUX}'' set whenever possible, to benefit from these
+features.
+
+\subsubsection{Launching with threads}
+
+Running a multi-threaded version of PT-Scotch on top of MPI requires
+great care, not to degrade performance. The key issue is to make sure
+that, at run time, MPI processes that run on the same computer are
+bound to disjoint subsets of cores.
+
+Indeed, when several MPI processes run on the same computer without
+implementing exclusive binding, every \texttt{SCOTCH\_\lbt Context}
+object associated with an MPI process will consider it can use all
+of the computer cores. Consequently, as many threads will be created
+and bound to each of the cores as there are MPI processes on the
+computer, resulting in extremely poor performance.
+
+On many-core platforms, it is up to the user to decide how many MPI
+processes, and how many threads per MPI process, are to be used. This
+is usually controlled by options of the \texttt{mpirun} command. For
+instance, in the \textsc{OpenMPI} environment, one may use options
+such as ``\texttt{--map-by socket}'', ``\texttt{--bind-to socket}'',
+``\texttt{--bind-to core}'', etc. The result of the bindings can be
+displayed using the ``\texttt{--report-bindings}'' option. For
+instance, in this environment, one can use commands such as:
+
+\noi
+{\tt
+{\bf\%} \verb+mpirun -np 2 --map-by socket --bind-to socket <program>+\\
+{\bf\%} \verb+mpirun -np 4 --map-by socket:PE=7 --bind-to core <program>+\\
+{\bf\%} \verb+mpirun -np 8 --map-by socket:PE=3 --bind-to core <program>+\\
+}
+\noi
+to achieve the desired MPI process and thread layout.
+
+When \scotch\ is compiled with flag ``\texttt{-DCOMMON\_\lbt
+PTHREAD\_\lbt AFFINITY\_\lbt LINUX}'' set, each of the
+\texttt{SCOTCH\_\lbt Context} objects that are attached to an MPI
+process running a \libptscotch\ function will create its servant
+threads only on the cores that are bound to the main thread of this
+MPI process. Hence, strict core binding exclusion will be enforced
+across MPI processes and threads, so that each core will host at most
+only one thread.
 
 \subsection{Calling the routines of {\sc libScotch}}
 
