@@ -182,6 +182,7 @@ LIBPTSCOTCHDEPS =	bdgraph$(OBJ)				\
 			kdgraph_map_rb_part$(OBJ)		\
 			kdgraph_map_st$(OBJ)			\
 			library_context_dgraph$(OBJ)		\
+			library_context_dgraph_f$(OBJ)		\
 			library_dgraph$(OBJ)			\
 			library_dgraph_f$(OBJ)			\
 			library_dgraph_band$(OBJ)		\
@@ -353,8 +354,11 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_arch_dom_f$(OBJ)		\
 			library_common_f$(OBJ)			\
 			library_context$(OBJ)			\
+			library_context_f$(OBJ)			\
 			library_context_graph$(OBJ)		\
+			library_context_graph_f$(OBJ)		\
 			library_context_mesh$(OBJ)		\
+			library_context_mesh_f$(OBJ)		\
 			library_geom$(OBJ)			\
 			library_geom_f$(OBJ)			\
 			library_graph$(OBJ)			\
@@ -1944,11 +1948,21 @@ library_context$(OBJ)		:	library_context.c			\
 					context.h				\
 					scotch.h
 
+library_context_f$(OBJ)		:	library_context_f.c			\
+					module.h				\
+					common.h				\
+					scotch.h
+
 library_context_dgraph$(OBJ)	:	library_context_dgraph.c		\
 					module.h				\
 					common.h				\
 					context.h				\
 					dgraph.h				\
+					ptscotch.h
+
+library_context_dgraph_f$(OBJ)	:	library_context_dgraph_f.c		\
+					module.h				\
+					common.h				\
 					ptscotch.h
 
 library_context_graph$(OBJ)	:	library_context_graph.c			\
@@ -1958,12 +1972,22 @@ library_context_graph$(OBJ)	:	library_context_graph.c			\
 					graph.h					\
 					scotch.h
 
+library_context_graph_f$(OBJ)	:	library_context_graph_f.c		\
+					module.h				\
+					common.h				\
+					scotch.h
+
 library_context_mesh$(OBJ)	:	library_context_mesh.c			\
 					module.h				\
 					common.h				\
 					context.h				\
 					graph.h					\
 					mesh.h					\
+					scotch.h
+
+library_context_mesh_f$(OBJ)	:	library_context_mesh_f.c		\
+					module.h				\
+					common.h				\
 					scotch.h
 
 library_dgraph$(OBJ)		:	library_dgraph.c			\
