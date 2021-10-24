@@ -11,6 +11,35 @@
 \section{Updates}
 \label{sec-changes}
 
+\subsection{Changes from version 6.0}
+
+Thread management in \scotch\ is now dynamic. This allows the user to
+control dynamically the number of threads that are used by the
+threaded algorithms of the \libptscotch\ and \libscotch\ libraries
+and, consequently, by the \ptscotch\ standalone programs that call
+them. Users can control concurrency in the \libptscotch\ by using
+\texttt{SCOTCH\_\lbt Context} objects. These objects define
+user-configurable execution contexts, in which \libptscotch\ library
+routines can be executed independently from others.
+
+Execution contexts also comprise option values, which dynamically
+determine the behavior of the \scotch\ routines. In previous versions,
+such behavior was controlled at compile-time by flags
+\texttt{COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt SEED} and
+\texttt{SCOTCH\_\lbt DETERMINISTIC}. It is now possible to define
+these flags dynamically, using the relevant option setting routine.
+Please refer to the \scotch\ user's manual for a comprehensive
+description of \texttt{SCOTCH\_\lbt Context} features.
+
+Thanks to this new model, \ptscotch\ can use multi-threaded
+algorithms when several threads are available per MPI node. Two
+levels of multi-threading are available: multi-threading with a single
+thread handling MPI communications, and multi-threading with several
+threads being able to perform MPI communication simultaneously. This
+behavior is controlled at compile-time by flags \texttt{SCOTCH\_\lbt
+PTHREAD} and \texttt{SCOTCH\_\lbt PTHREAD\_\lbt MPI}.
+Please refer to section \ref{sec-lib-thread} for more information.
+  
 \subsection{Changes from version 5.0}
 
 \ptscotch\ now provides routines to compute in
