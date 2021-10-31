@@ -448,7 +448,6 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			wgraph_check$(OBJ)			\
 			wgraph_part_es$(OBJ)  			\
 			wgraph_part_fm$(OBJ)  			\
-			wgraph_part_gg$(OBJ)          		\
 			wgraph_part_ml$(OBJ)   			\
 			wgraph_part_rb$(OBJ)  			\
 			wgraph_part_st$(OBJ)  			\
@@ -3026,13 +3025,6 @@ wgraph_part_fm$(OBJ)		:	wgraph_part_fm.c			\
 					wgraph_part_rb.h			\
 					wgraph_part_fm.h
 
-wgraph_part_gg$(OBJ)		:	wgraph_part_gg.c			\
-					module.h				\
-					common.h				\
-					graph.h					\
-					wgraph.h				\
-					wgraph_part_gg.h
-
 wgraph_part_ml$(OBJ)		: 	wgraph_part_ml.c			\
 					module.h				\
 					common.h				\
@@ -3056,11 +3048,13 @@ wgraph_part_rb$(OBJ)		:	wgraph_part_rb.c			\
 					wgraph_part_rb.h
 
 wgraph_part_st$(OBJ)		:	wgraph_part_st.c			\
-					gain.h					\
 					module.h				\
 					common.h				\
+					gain.h					\
 					parser.h				\
 					graph.h					\
+					arch.h					\
+					mapping.h				\
 					graph_coarsen.h				\
 					kgraph.h				\
 					kgraph_map_st.h				\
@@ -3069,7 +3063,6 @@ wgraph_part_st$(OBJ)		:	wgraph_part_st.c			\
 					wgraph.h				\
 					wgraph_part_es.h			\
 					wgraph_part_fm.h			\
-					wgraph_part_gg.h			\
 					wgraph_part_ml.h			\
 					wgraph_part_rb.h			\
 					wgraph_part_zr.h			\
