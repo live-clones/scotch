@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 25 aug 2020     **/
-/**                                 to   : 25 aug 2020     **/
+/**                                 to   : 02 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,7 +58,6 @@
 typedef enum WgraphPartStMethodType_ {
   WGRAPHPARTSTMETHES = 0,                         /*+ Edge separation        +*/
   WGRAPHPARTSTMETHFM,                             /*+ Fiduccia-Mattheyses    +*/
-  WGRAPHPARTSTMETHGG,                             /*+ Greedy Graph Growing   +*/
   WGRAPHPARTSTMETHML,                             /*+ Multi-level separation +*/
   WGRAPHPARTSTMETHRB,                             /*+ Recursive bisection    +*/
   WGRAPHPARTSTMETHZR,                             /*+ Zero method            +*/
