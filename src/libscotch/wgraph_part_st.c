@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 26 feb 2018     **/
 /**                # Version 6.1  : from : 25 aug 2020     **/
-/**                                 to   : 24 nov 2021     **/
+/**                                 to   : 26 nov 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,9 +81,7 @@
 **  The static and global variables.
 */
 
-#if 0 /* Not used */
 static Wgraph               wgraphdummy;          /* Dummy overlap graph for offset computations */
-#endif
 
 static union {
   WgraphPartEsParam         param;
@@ -163,7 +161,19 @@ static StratParamTab        wgraphpartstparatab[] = { /* Method parameter list *
                               { WGRAPHPARTSTMETHNBR, STRATPARAMINT,    NULL,
                                 NULL, NULL, NULL } };
 
-static StratParamTab        wgraphpartstcondtab[] = { /* Overlap graph condition parameter table*/
+static StratParamTab        wgraphpartstcondtab[] = { /* Overlap graph condition parameter table */
+                              { STRATNODECOND,       STRATPARAMINT,    "edge",
+                                (byte *) &wgraphdummy,
+                                (byte *) &wgraphdummy.s.edgenbr,
+                                NULL },
+                              { STRATNODECOND,       STRATPARAMINT,    "part",
+                                (byte *) &wgraphdummy,
+                                (byte *) &wgraphdummy.partnbr,
+                                NULL },
+                              { STRATNODECOND,       STRATPARAMINT,    "vert",
+                                (byte *) &wgraphdummy,
+                                (byte *) &wgraphdummy.s.vertnbr,
+                                NULL },
                               { STRATNODENBR,        STRATPARAMINT,    NULL,
                                 NULL, NULL, NULL } };
 
