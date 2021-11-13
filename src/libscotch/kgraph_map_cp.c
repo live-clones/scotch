@@ -81,18 +81,18 @@ Kgraph * restrict const     grafptr)              /*+ Graph +*/
 
   if (grafptr->r.m.parttax == NULL) {             /* If we do not have an old partition */
     errorPrint ("kgraphMapCp: inconsistent old mapping data");
-    return     (1);
+    return (1);
   }
 
   if (mapCopy (&grafptr->m, &grafptr->r.m) != 0) {
     errorPrint ("kgraphMapCp: cannot copy old mapping");
-    return     (1);
+    return (1);
   }
 
   if (pfixtax != NULL) {                          /* If we have fixed vertices */
     if (mapMerge (&grafptr->m, pfixtax) != 0) {
       errorPrint ("kgraphMapCp: cannot merge with fixed vertices");
-      return     (1);
+      return (1);
     }
   }
 
@@ -102,11 +102,9 @@ Kgraph * restrict const     grafptr)              /*+ Graph +*/
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (kgraphCheck (grafptr) != 0) {
     errorPrint ("kgraphMapCp: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
   return (0);
 }
-
-

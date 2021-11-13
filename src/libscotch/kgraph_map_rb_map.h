@@ -64,6 +64,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 6.1  : from : 28 jun 2021     **/
+/**                                 to   : 28 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,6 +104,7 @@ typedef struct KgraphMapRbMapJob_ {
   Graph                     grafdat;              /*+ Job graph data (may be clone of another) +*/
   Anum                      vflonbr;              /*+ Number of fixed vertex load slots        +*/
   KgraphMapRbVflo *         vflotab;              /*+ Partial array of fixed vertex load slots +*/
+  Gnum                      levlnum;              /*+ Level of this job                        +*/
 } KgraphMapRbMapJob;
 
 /*+ This structure defines the working data,

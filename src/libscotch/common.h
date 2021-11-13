@@ -55,7 +55,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 aug 2020     **/
 /**                # Version 6.1  : from : 02 apr 2021     **/
-/**                                 to   : 02 apr 2021     **/
+/**                                 to   : 24 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -137,15 +137,15 @@
 **  Working definitions.
 */
 
-#ifdef COMMON_MEMORY_TRACE
+#if ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK))
 #define memAlloc(size)              memAllocRecord ((size) | 8)
 #define memRealloc(ptr,size)        memReallocRecord ((ptr), ((size) | 8))
 #define memFree(ptr)                memFreeRecord ((void *) (ptr))
-#else /* COMMON_MEMORY_TRACE */
+#else /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 #define memAlloc(size)              malloc ((size) | 8) /* For platforms which return NULL for malloc(0) */
 #define memRealloc(ptr,size)        realloc ((ptr),((size) | 8))
 #define memFree(ptr)                free ((char *) (ptr))
-#endif /* COMMON_MEMORY_TRACE */
+#endif /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 
 #define memSet(ptr,val,siz)         memset ((void *) (ptr), (val), (siz))
 #define memCpy(dst,src,siz)         memcpy ((void *) (dst), (void *) (src), (siz))
@@ -381,13 +381,13 @@ typedef struct File_ {
 void *                      memAllocGroup       (void **, ...);
 void *                      memReallocGroup     (void *, ...);
 void *                      memOffset           (void *, ...);
-#ifdef COMMON_MEMORY_TRACE
+#if ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK))
 void *                      memAllocRecord      (size_t);
 void *                      memReallocRecord    (void * const, size_t);
 void                        memFreeRecord       (void * const);
 IDX                         memCur              (); /* What is internally an intptr_t has to be turned into an interface type */
 IDX                         memMax              ();
-#endif /* COMMON_MEMORY_TRACE */
+#endif /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 
 void                        usagePrint          (FILE * const, const char (* []));
 

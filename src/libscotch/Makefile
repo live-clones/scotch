@@ -995,16 +995,14 @@ dgraph_match_sync_coll$(OBJ)	:	dgraph_match_sync_coll.c		\
 					common.h				\
 					dgraph.h				\
 					dgraph_coarsen.h                        \
-					dgraph_match.h				\
-					graph.h
+					dgraph_match.h
 
 dgraph_match_sync_ptop$(OBJ)	:	dgraph_match_sync_ptop.c		\
 					module.h				\
 					common.h				\
 					dgraph.h				\
 					dgraph_coarsen.h                        \
-					dgraph_match.h				\
-					graph.h
+					dgraph_match.h
 
 dgraph_redist$(OBJ)		:	dgraph_redist.c				\
 					module.h				\

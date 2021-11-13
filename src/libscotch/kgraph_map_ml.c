@@ -260,7 +260,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array
 
   if (coargrafptr == NULL) {                      /* If no coarse graph provided        */
     if (mapAlloc (&finegrafptr->m) != 0) {        /* Allocate partition array if needed */
-      errorPrint ("kdgraphMapMlUncoarsen: cannot allocate mapping (1)");
+      errorPrint ("kgraphMapMlUncoarsen: cannot allocate mapping (1)");
       return     (1);
     }
     kgraphFrst (finegrafptr);                     /* Assign all vertices to first subdomain */
@@ -270,7 +270,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (((finegrafptr->m.flagval & MAPPINGFREEDOMN) != 0) && /* Fine graph should not have a private domain array because of coarsening */
       (finegrafptr->m.domntab != NULL)) {
-    errorPrint ("kdgraphMapMlUncoarsen: internal error");
+    errorPrint ("kgraphMapMlUncoarsen: internal error (1)");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
@@ -281,7 +281,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array
   finegrafptr->m.flagval  |= MAPPINGFREEDOMN;
   coargrafptr->m.domntab   = NULL;                /* No need to free coarse graph domain array as it has been transferred */
   if (mapAlloc (&finegrafptr->m) != 0) {          /* Allocate partition array if needed                                   */
-    errorPrint ("kdgraphMapMlUncoarsen: cannot allocate mapping (2)");
+    errorPrint ("kgraphMapMlUncoarsen: cannot allocate mapping (2)");
     return     (1);
   }
 
@@ -352,7 +352,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array
 
 #ifdef SCOTCH_DEBUG_KGRAPH2
       if (coarfrontab[coarfronnum] == ~0) {
-        errorPrint ("kgraphMapMlUncoarsen: internal error");
+        errorPrint ("kgraphMapMlUncoarsen: internal error (2)");
         return     (1);
       }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */

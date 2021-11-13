@@ -870,11 +870,11 @@ a subgraph of the bidimensional mesh $\MD(4,4)$ onto the complete graph
 $\KP(2)$ can be displayed on the whole $\MD(4,4)$ graph,
 and Figure~\ref{fig-out-ps}\@.c shows how the display of the same mapping
 can be restricted to a subgraph of the original graph.
-% gmk_m2 4 4 s_f_out1.src -gs_f_out.xyz
-% map s_f_out2.src ../tgt/k2.tgt s_f_out2.map
-% out s_f_out2.src s_f_out.xyz -m - s_f_out1.ps '-Op{e,g,l}'
-% out s_f_out1.src s_f_out.xyz s_f_out2.map s_f_out2.ps '-Op{e,g,l}'
-% out s_f_out3.src s_f_out.xyz s_f_out2.map s_f_out3.ps '-Op{e,g,l}'
+% gmk_m2 4 4 s_f_out1.grf -gs_f_out.xyz
+% map s_f_out2.grf ../tgt/k2.tgt s_f_out2.map
+% out s_f_out2.grf s_f_out.xyz -m - s_f_out1.ps '-Op{e,g,l}'
+% out s_f_out1.grf s_f_out.xyz s_f_out2.map s_f_out2.ps '-Op{e,g,l}'
+% out s_f_out3.grf s_f_out.xyz s_f_out2.map s_f_out3.ps '-Op{e,g,l}'
 \begin{figure}[hbt]
 \hfill
 \parbox[t]{4.5cm}{
@@ -915,7 +915,7 @@ If this option is set, the geometry file is not read. However, if an
 {\it output\_\lbt visualization\_\lbt file} name is given in the
 command line, dummy {\it input\_\lbt geometry\_\lbt file\/} and {\it
 input\_\lbt mapping\_\lbt file\/} names must be specified so that the
-file argument count is correct.  In this case, use the ``\texttt{-}''
+file argument count is correct. In this case, use the ``\texttt{-}''
 parameter to take standard input as a dummy geometry input stream.  In
 practice, the \texttt{-om} and \texttt{-gn} options always imply the
 \texttt{-mn} option.
@@ -1004,9 +1004,25 @@ Minimum Y relative clipping position (in [0.0;1.0]).
 \iteme[\texttt{Y=}{\it val}]
 Maximum Y relative clipping position (in [0.0;1.0]).
 \end{itemize}
+\iteme[\texttt{v}]
+Output the graph in VTK legacy ASCII format, suitable for display by
+the \texttt{paraview} program~\cite{paraview}. The graph partition is
+represented as an integer scalar dataset called \texttt{mapValues}.
+Unmapped vertices are assigned to part index~\texttt{0}, while higher
+part indices represent regular parts (hence, part number $i$ of some
+mapping becomes part index $i+1$ in the VTK dataset).
+The optional parameters are given below.
+\begin{itemize}
+\iteme[\texttt{r}]
+Remove cut edges. Edges the ends of which are mapped onto different
+processors are not displayed. Opposite of \texttt{v}.
+\iteme[\texttt{v}]
+View cut edges. All graph edges are displayed.
+Opposite of \texttt{r}.
+\end{itemize}
+\end{itemize}
 \iteme[\texttt{-V}]
 Print the program version and copyright.
-\end{itemize}
 \end{itemize}
 
 Default option set is ``\texttt{-Oi\{v\}}''.

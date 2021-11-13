@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2015,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 27 jun 2010     **/
 /**                # Version 6.0  : from : 11 jun 2012     **/
 /**                                 to   : 15 may 2018     **/
+/**                # Version 6.1  : from : 24 jun 2021     **/
+/**                                 to   : 24 jun 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -336,7 +338,7 @@ size_t                      newsiz)
 #endif /* COMMON_PTHREAD_MEMORY */
 
 #ifdef COMMON_MEMORY_CHECK
-    memCheckDelist (tmpptr);
+  memCheckDelist (tmpptr);
 #endif /* COMMON_MEMORY_CHECK */
 
   if ((newptr = realloc (tmpptr, newsiz + COMMON_MEMORY_OVHD)) != NULL) {
@@ -381,7 +383,8 @@ void *                      oldptr)
 #endif /* COMMON_PTHREAD_MEMORY */
 
 #ifdef COMMON_MEMORY_CHECK
-    memCheckDelist (tmpptr);
+  memCheckBlock  (tmpptr);                        /* Check the block first */
+  memCheckDelist (tmpptr);                        /* Then check all blocks */
 #endif /* COMMON_MEMORY_CHECK */
 
   free (tmpptr);

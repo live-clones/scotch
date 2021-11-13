@@ -100,6 +100,10 @@ realclean			:	clean
 					test_common_random		\
 					test_common_thread		\
 					test_fibo			\
+					test_libesmumps			\
+					test_libmetis			\
+					test_libmetis_dual		\
+					test_libmetis_dual_f		\
 					test_scotch_arch		\
 					test_scotch_arch_deco		\
 					test_scotch_graph_coarsen	\
@@ -120,11 +124,7 @@ realclean			:	clean
 					test_scotch_dgraph_redist	\
 					test_scotch_mesh_graph		\
 					test_strat_par			\
-					test_strat_seq			\
-					test_libesmumps			\
-					test_libmetis			\
-					test_libmetis_dual		\
-					test_libmetis_dual_f
+					test_strat_seq
 
 ##
 ##  Test cases dependencies.
@@ -282,7 +282,7 @@ test_scotch_arch		:	test_scotch_arch.c		\
 
 check_scotch_arch_deco		:	test_scotch_arch_deco
 					$(EXECS) ./test_scotch_arch_deco data/m4x4.grf "$(TMPDIR)/arch2.tgt"
-#					$(EXECS) ./test_scotch_arch_deco data/m4x4_b1.grf "$(TMPDIR)/arch2.tgt"
+#					$(EXECS) ./test_scotch_arch_deco data/m4x4_b100000.grf "$(TMPDIR)/arch2.tgt"
 
 test_scotch_arch_deco		:	test_scotch_arch_deco.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -308,9 +308,8 @@ test_scotch_graph_color		:	test_scotch_graph_color.c	\
 ##
 
 check_scotch_graph_diam		:	test_scotch_graph_diam
-					$(EXECS) ./test_scotch_graph_diam data/bump.grf
 					$(EXECS) ./test_scotch_graph_diam data/bump_b100000.grf
-					$(EXECS) ./test_scotch_graph_diam data/m16x16_b1.grf
+					$(EXECS) ./test_scotch_graph_diam data/m16x16_b100000.grf
 					$(EXECS) ./test_scotch_graph_diam data/p2-p2.grf
 
 test_scotch_graph_diam		:	test_scotch_graph_diam.c	\
@@ -343,9 +342,9 @@ test_scotch_graph_induce	:	test_scotch_graph_induce.c	\
 
 check_scotch_graph_map		:	test_scotch_graph_map
 					$(EXECS) ./test_scotch_graph_map data/m4x4.grf
-					$(EXECS) ./test_scotch_graph_map data/m4x4_b1.grf
+					$(EXECS) ./test_scotch_graph_map data/m4x4_b100000.grf
 					$(EXECS) ./test_scotch_graph_map data/m16x16.grf
-					$(EXECS) ./test_scotch_graph_map data/m16x16_b1.grf
+					$(EXECS) ./test_scotch_graph_map data/m16x16_b100000.grf
 
 test_scotch_graph_map		:	test_scotch_graph_map.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -372,7 +371,7 @@ test_scotch_graph_order		:	test_scotch_graph_order.c	\
 
 check_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl
 					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16.grf /dev/null
-					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16_b1.grf /dev/null
+					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16_b100000.grf /dev/null
 
 test_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
@@ -570,6 +569,7 @@ check_prog_gout			:	check_prog_gord		\
 check_prog_gpart		:
 					$(EXECS) $(SCOTCHBINDIR)/gpart 9 data/bump.grf $(TMPDIR)/bump_k9.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gpart 9 data/bump_b100000.grf $(TMPDIR)/bump_k9.map -vmt
+					$(EXECS) $(SCOTCHBINDIR)/gpart 5 data/bump_b100000.grf $(TMPDIR)/bump_k5.map -vmt '-Mr{bal=0.05,sep=m{vert=120,low=h{pass=10}f{bal=0.05,move=120},asc=b{bnd=f{bal=0.05,move=120},org=f{bal=0.05,move=120}}}}|m{vert=1000,low=r{bal=0.05,sep=m{vert=120,low=h{pass=10}f{bal=0.05,move=120},asc=b{bnd=f{bal=0.05,move=120},org=f{bal=0.05,move=120}}}},asc=b{bnd=f{bal=0.05,move=120},org=f{bal=0.05,move=120}}}'
 
 check_prog_gpart_clustering	:
 					$(EXECS) $(SCOTCHBINDIR)/gpart -q 1 data/bump.grf $(TMPDIR)/bump_part_cls_9.map -vmt
@@ -583,7 +583,7 @@ check_prog_gpart_overlap	:
 					$(EXECS) $(SCOTCHBINDIR)/gpart -o 9 data/bump_b100000.grf $(TMPDIR)/bump_b100000_part_ovl_9.map -vmt
 					$(EXECS) $(SCOTCHBINDIR)/gmtst -o data/bump_b100000.grf $(SCOTCHTGTDIR)/k9.tgt $(TMPDIR)/bump_b100000_part_ovl_9.map
 					$(EXECS) $(SCOTCHBINDIR)/gpart -o 32 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_ovl_32.map -vmt
-					$(EXECS) $(SCOTCHBINDIR)/gmtst data/bump_imbal_32.grf $(SCOTCHTGTDIR)/k32.tgt $(TMPDIR)/bump_imbal_32_part_ovl_32.map
+					$(EXECS) $(SCOTCHBINDIR)/gmtst -o data/bump_imbal_32.grf $(SCOTCHTGTDIR)/k32.tgt $(TMPDIR)/bump_imbal_32_part_ovl_32.map
 					$(EXECS) $(SCOTCHBINDIR)/gpart -o 6 data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32_part_ovl_32_6.map '-me{strat=m{asc=b{width=3,bnd=d{pass=40,dif=1,rem=0}f{move=80,pass=-1,bal=0.01},org=f{move=80,pass=-1,bal=0.01}},low=r{job=t,bal=0.01,map=t,poli=S,sep=(m{asc=b{bnd=f{move=120,pass=-1,bal=0.01,type=b},org=f{move=120,pass=-1,bal=0.01,type=b},width=3},low=h{pass=10}f{move=120,pass=-1,bal=0.01,type=b},vert=120,rat=0.8}|m{asc=b{bnd=f{move=120,pass=-1,bal=0.01,type=b},org=f{move=120,pass=-1,bal=0.01,type=b},width=3},low=h{pass=10}f{move=120,pass=-1,bal=0.01,type=b},vert=120,rat=0.8})},vert=10000,rat=0.8,type=h}}f' -vmt
 
 check_prog_gpart_remap		:
@@ -623,9 +623,9 @@ check_prog_dgscat-dggath	:
 					$(EXECP3) $(SCOTCHBINDIR)/dgscat -r1 -c data/m16x16.grf "$(TMP)1_%r.grf"
 					$(EXECP3) $(SCOTCHBINDIR)/dggath -r1 -c "$(TMP)1_%r.grf" "$(TMP)1.grf"
 					$(PROGDIFF) data/m16x16.grf "$(TMP)1.grf"
-					$(EXECP3) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b1.grf "$(TMP)2_%r.grf"
+					$(EXECP3) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b100000.grf "$(TMP)2_%r.grf"
 					$(EXECP3) $(SCOTCHBINDIR)/dggath -c "$(TMP)2_%r.grf" "$(TMP)2.grf"
-					$(PROGDIFF) data/m16x16_b1.grf "$(TMP)2.grf"
+					$(PROGDIFF) data/m16x16_b100000.grf "$(TMP)2.grf"
 
 check_prog_dgtst		:
 					$(EXECP4) $(SCOTCHBINDIR)/dgtst data/small_%r.grf

@@ -59,7 +59,7 @@
 /**                # Version 6.0  : from : 16 oct 2010     **/
 /**                                 to   : 17 apr 2019     **/
 /**                # Version 6.1  : from : 04 apr 2021     **/
-/**                                 to   : 04 apr 2021     **/
+/**                                 to   : 28 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -124,6 +124,9 @@ static const char *         C_usageList[] = {     /* Usage */
   "                          c        : color output",
   "                          a        : avoid displaying disks",
   "                          d        : display disks",
+  "                          r        : remove cut edges",
+  "                          v        : view cut edges",
+  "  -Ov[{<arguments>}]  : VTK mesh file :",
   "                          r        : remove cut edges",
   "                          v        : view cut edges",
   "  -V                  : Print program version and copyright",

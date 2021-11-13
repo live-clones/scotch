@@ -49,7 +49,7 @@
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 6.1  : from : 17 jun 2021     **/
-/**                                 to   : 17 jun 2021     **/
+/**                                 to   : 24 sep 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,12 +119,12 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
   if (coarptr->multloctab == NULL) {              /* If no multinode array provided */
     Gnum                multlocsiz;               /* Size of local multinode array  */
 
-    switch (coarptr->flagval & DGRAPHCOARSENFOLDDUP) {
+    switch ((procglbnbr <= 1) ? 0 : (coarptr->flagval & DGRAPHCOARSENFOLDDUP)) { /* If only a single process, allocate full array */
       case 0 :                                    /* No folding */
         multlocsiz = vertlocnbr;
         break;
-      case DGRAPHCOARSENFOLD :                    /* Simple folding; maximum coarsening ratio is 1         */
-        multlocsiz = ((finegrafptr->vertglbnbr * 2) / procglbnbr) + 1; /* Maximum ratio for FOLD is 2 -> 1 */
+     case DGRAPHCOARSENFOLD :                    /* Simple folding; maximum coarsening ratio is 1         */
+       multlocsiz = ((finegrafptr->vertglbnbr * 2) / procglbnbr) + 1; /* Maximum ratio for FOLD is 2 -> 1 */
         break;
       case DGRAPHCOARSENFOLDDUP :                 /* Folding with duplication; maximum coarsening ratio is 1                        */
         multlocsiz = ((finegrafptr->vertglbnbr * 2) / (procglbnbr - (procglbnbr % 2))) + 1; /* Maximum ratio for FOLD-DUP is 3 -> 1 */
@@ -860,7 +860,7 @@ DgraphCoarsenData * restrict const  coarptr)
             break;                                /* Give up hashing */
           }
           if (coarhashtab[h].vertendnum == coarvertglbend) { /* If coarse edge already exists */
-            coargrafptr->edloloctax[coarhashtab[h].edgelocnum] += edlolocval;
+            coaredloloctax[coarhashtab[h].edgelocnum] += edlolocval;
             break;                                /* Give up hashing */
           }
         }

@@ -3158,7 +3158,7 @@ the data that are passed to it. This routine is the equivalent of the
 as input. It is used to initialize a centralized ordering structure on
 which a distributed ordering will be centralized by means of the
 {\tt SCOTCH\_\lbt dgraph\lbt Order\lbt Gather} routine. Only the
-process on which distributed ordering data is to be centralized has
+process onto which distributed ordering data is to be centralized has
 to handle a centralized ordering structure.
 
 {\tt permtab} is the ordering permutation array, of size ${\tt
@@ -3212,6 +3212,13 @@ scotchfdgraphordergather ( & doubleprecision (*) & grafdat, \\
 The {\tt SCOTCH\_dgraph\lbt Order\lbt Gather} routine gathers the
 distributed ordering data borne by {\tt dordptr} to the
 centralized ordering structure pointed to by {\tt cordptr}.
+
+Only the process onto which distributed ordering data is to be
+centralized has to provide a centralized ordering structure,
+initialized by way of the {\tt SCOTCH\_dgraph\lbt Corder\lbt Init}
+routine. Other processes have to pass a \texttt{NULL} pointer for the
+\texttt{cordptr} parameter, or provide the \texttt{dorddat} structure
+as the \texttt{corddat} parameter in Fortran.
 
 \progret
 

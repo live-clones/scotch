@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 6.1  : from : 16 jun 2021     **/
-/**                                 to   : 17 jun 2021     **/
+/**                                 to   : 24 sep 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -176,12 +176,12 @@ char *              argv[])
       case 1 :
         foldval = SCOTCH_COARSENFOLD;
         foldstr = "Folding";
-        multlocsiz = (((SCOTCH_Num) ((double) (vertglbnbr * 2) * coarrat)) / procglbnbr) + 1; /* Max ratio FOLD is 2 -> 1 */
+        multlocsiz = (procglbnbr == 1) ? vertlocnbr : (((SCOTCH_Num) ((double) (vertglbnbr * 2) * coarrat)) / procglbnbr) + 1; /* Max ratio FOLD is 2 -> 1 */
         break;
       case 2 :
         foldval = SCOTCH_COARSENFOLDDUP;
         foldstr = "Folding with duplication";
-        multlocsiz = (((SCOTCH_Num) ((double) (vertglbnbr * 2) * coarrat)) / (procglbnbr - (procglbnbr % 2))) + 1; /* Max ratio FOLD-DUP is 3 -> 1 */
+	multlocsiz = (procglbnbr == 1) ? vertlocnbr : (((SCOTCH_Num) ((double) (vertglbnbr * 2) * coarrat)) / (procglbnbr - (procglbnbr % 2))) + 1; /* Max ratio FOLD-DUP is 3 -> 1 */
         break;
     }
 

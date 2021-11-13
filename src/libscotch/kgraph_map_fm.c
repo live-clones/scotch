@@ -66,13 +66,6 @@
 #include "kgraph_map_fm.h"
 #include "kgraph_map_st.h"
 
-/*
-**  The static variables.
-*/
-
-static const Gnum           kgraphloadone  = 1;
-static const Gnum           kgraphnotfixed = -1;
-
 /*********************************/
 /*                               */
 /* Gain table handling routines. */
@@ -299,7 +292,6 @@ Gnum * const                                chektab)
   Gnum                  vexxidx;
   Gnum                  edxxidx;
   Gnum                  commloadtmp;
-  Anum                  domnnum;
 
   Anum * restrict const       parttax = grafptr->m.parttax;
   const Gnum * restrict const verttax = grafptr->s.verttax;

@@ -15,6 +15,7 @@
 
 The k-way refinement routine of the module that computes graph
 partitions with overlap has been completely rewritten.
+\\
 
 The halo minimum degree and halo minimum fill algorithms now take into
 account, for computing vertex degrees, the vertex weights attached to
@@ -23,6 +24,9 @@ freedom associated with a vertex during subsequent matrix
 computations. They can result from a graph compression process, such
 as the one implemented in \scotch\ (see
 page~\pageref{sec-lib-meth-compress}).
+\\
+
+The program \texttt{gout} can now output VTK files.
 
 \subsection{Changes in version 6.0 from version 5.1}
 
@@ -37,7 +41,7 @@ further information.
 Also, in order to allow decomposition-defined architectures to
 scale-up to the sizes of modern machines, a new version of the
 \texttt{deco} architecture, called \texttt{deco~2}, has been
-designed. This target architecture can be created using the 
+designed. This target architecture can be created using the
 \texttt{SCOTCH\_\lbt arch\lbt Build2} routine; see
 Section~\ref{sec-lib-arch-build-two},
 page~\pageref{sec-lib-arch-build-two} for further information.
@@ -63,15 +67,18 @@ create default strategies with the \texttt{SCOTCH\_\lbt STRATRECURSIVE}
 flag set, in addition to other flags; see
 Section~\ref{sec-lib-format-strat-default},
 page~\pageref{sec-lib-format-strat-default} for further information.
+\\
 
 Graph repartitioning and static re-mapping features are now available;
 see Sections~\ref{sec-lib-func-graphmapfixed}
 to~\ref{sec-lib-func-graphremapfixed}, starting from
 page~\pageref{sec-lib-func-graphmapfixed}.
+\\
 
 The clustering capabilities of \scotch\ can be used more easily from
 the command line and library calls~; see Section~\ref{sec-prog-gmap}
 and Section~\ref{sec-lib-func-stratgraphclusterbuild}.
+\\
 
 A new set of routines has been created in order to compute
 vertex-separated, k-way partitions, that balance the loads of the
@@ -112,6 +119,7 @@ A new integer index type has been created in the Fortran interface, to
 address array indices larger than the maximum value which can be
 stored in a regular integer. Please refer to
 Section~\ref{sec-install-inttypesize} for more information.
+\\
 
 A new set of routines has been designed, to ease the use of the
 \libscotch\ as a dynamic library. The \texttt{SCOTCH\_\lbt version}

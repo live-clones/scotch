@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 01 may 2019     **/
 /**                # Version 6.1  : from : 19 jun 2021     **/
-/**                                 to   : 19 jun 2021     **/
+/**                                 to   : 07 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,7 +59,7 @@
 /*+ Graph option flags. +*/
 
 #define HDGRAPHFREEVHND             0x0400        /* Free vnhdtab array */
-#define HDGRAPHFREETABS             (DGRAPHFREETABS | HDGRAPHFREEVHND)
+#define HDGRAPHFREEALL              (DGRAPHFREEALL | HDGRAPHFREEVHND)
 
 /*
 **  The type and structure definitions.

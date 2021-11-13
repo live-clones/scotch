@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009-2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009-2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,6 +52,8 @@
 /**                                 to   : 29 mar 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 04 aug 2018     **/
+/**                # Version 6.1  : from : 18 jul 2021     **/
+/**                                 to   : 18 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -263,8 +265,6 @@ const Strat * restrict const  strat)              /*+ Mapping strategy +*/
   StratTest           val;                        /* Result of condition evaluation              */
   KgraphStore         savetab[2];                 /* Results of the two strategies               */
   Gnum                comploaddltasu[2];          /* Absolute sum of computation load delta      */
-  ArchDom             domnfrst;                   /* Largest domain in the architecture          */
-  Anum                partnbr;                    /* Number of processors in the target topology */
   Anum                partnum;
   int                 o;
   int                 o2;
@@ -272,18 +272,18 @@ const Strat * restrict const  strat)              /*+ Mapping strategy +*/
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (sizeof (Gnum) != sizeof (INT)) {
     errorPrint ("kgraphMapSt: invalid type specification for parser variables");
-    return     (1);
+    return (1);
   }
   if ((sizeof (KgraphMapRbParam) > sizeof (StratNodeMethodData))) {
     errorPrint ("kgraphMapSt: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 #ifdef SCOTCH_DEBUG_KGRAPH1
   if ((strat->tabl != &kgraphmapststratab) &&
       (strat       != &stratdummy)) {
     errorPrint ("kgraphMapSt: invalid parameter (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH1 */
 
@@ -316,41 +316,48 @@ const Strat * restrict const  strat)              /*+ Mapping strategy +*/
     case STRATNODEEMPTY :
       break;
     case STRATNODESELECT :
-      archDomFrst (&grafptr->a, &domnfrst);       /* Get architecture domain   */
-      partnbr = archDomSize (&grafptr->a, &domnfrst); /* Get architecture size */
-
-      if (((kgraphStoreInit (grafptr, &savetab[0])) != 0) || /* Allocate save areas */
-          ((kgraphStoreInit (grafptr, &savetab[1])) != 0)) {
-        errorPrint ("kgraphMapSt: out of memory");
-        kgraphStoreExit (&savetab[0]);
-        return          (1);
+      if (kgraphStoreInit (grafptr, &savetab[1]) != 0) { /* Allocate second save area for current graph state */
+        errorPrint ("kgraphMapSt: out of memory (1)");
+        return (1);
       }
+      kgraphStoreSave (grafptr, &savetab[1]);     /* Save initial partition           */
+      o = kgraphMapSt (grafptr, strat->data.select.strat[0]); /* Apply first strategy */
 
-      kgraphStoreSave  (grafptr, &savetab[1]);    /* Save initial partition             */
-      o = kgraphMapSt  (grafptr, strat->data.select.strat[0]); /* Apply first strategy  */
-      kgraphStoreSave  (grafptr, &savetab[0]);    /* Save its result                    */
+      if (kgraphStoreInit (grafptr, &savetab[0]) != 0) { /* Allocate first save area for after first strategy */
+        errorPrint      ("kgraphMapSt: out of memory (2)");
+        kgraphStoreExit (&savetab[1]);
+        return (1);
+      }
+      kgraphStoreSave  (grafptr, &savetab[0]);    /* Save result of first strategy      */
       kgraphStoreUpdt  (grafptr, &savetab[1]);    /* Restore initial partition          */
       o2 = kgraphMapSt (grafptr, strat->data.select.strat[1]); /* Apply second strategy */
 
       if ((o == 0) || (o2 == 0)) {                /* If at least one method has computed a partition */
-        Gnum                comploadadlt;
         int                 b0;
         int                 b1;
 
-        comploaddltasu[0] =
-        comploaddltasu[1] = 0;
         b0 = o;                                   /* Assume that balance is invalid if partitioning has failed */
-        b1 = o2;
-        for (partnum = 0; partnum < partnbr; partnum ++) {
+        comploaddltasu[0] = 0;
+        for (partnum = 0; partnum < savetab[0].domnnbr; partnum ++) {
+          Gnum                comploadadlt;
+
           comploadadlt = abs (savetab[0].comploaddlt[partnum]);
           if (comploadadlt > ((Gnum) ((double) savetab[0].comploadavg[partnum] * savetab[0].kbalval)))
             b0 |= 1;
           comploaddltasu[0] += comploadadlt;
+        }
+
+        b1 = o2;
+        comploaddltasu[1] = 0;
+        for (partnum = 0; partnum < grafptr->m.domnnbr; partnum ++) {
+          Gnum                comploadadlt;
+
           comploadadlt = abs (grafptr->comploaddlt[partnum]);
           if (comploadadlt > ((Gnum) ((double) grafptr->comploadavg[partnum] * grafptr->kbalval)))
             b1 |= 1;
           comploaddltasu[1] += comploadadlt;
         }
+
         do {                                      /* Do we want to restore partition 0? */
           if (b0 > b1)
             break;
@@ -387,7 +394,7 @@ const Strat * restrict const  strat)              /*+ Mapping strategy +*/
 #ifdef SCOTCH_DEBUG_KGRAPH1
     default :
       errorPrint ("kgraphMapSt: invalid parameter (2)");
-      return     (1);
+      return (1);
 #endif /* SCOTCH_DEBUG_KGRAPH1 */
   }
   return (o);
