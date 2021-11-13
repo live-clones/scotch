@@ -47,7 +47,7 @@
 /**                                 to   : 09 nov 2008     **/
 /**                # Version 6.0  : from : 31 may 2018     **/
 /**                                 to   : 31 may 2018     **/
-/**                # Version 6.1  : from : 21 nov 2021     **/
+/**                # Version 6.1  : from : 02 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
 /**                                                        **/
 /************************************************************/
@@ -375,13 +375,15 @@ const VgraphSeparateBdParam * const paraptr)      /*+ Method parameters +*/
        fronnum < orggrafptr->fronnbr; fronnum ++, bndvertnum ++)
     bndgrafdat.frontab[fronnum] = bndvertnum;
 
+  bndgrafdat.fronnbr     = orggrafptr->fronnbr;
+  bndgrafdat.compsize[0] = bndvertnbr - bndcompsize1 - orggrafptr->fronnbr + 1; /* "+ 1" for anchor vertices */
+  bndgrafdat.compsize[1] = bndcompsize1 + 1;
   bndgrafdat.compload[0] = orggrafptr->compload[0];
   bndgrafdat.compload[1] = orggrafptr->compload[1];
   bndgrafdat.compload[2] = orggrafptr->compload[2];
   bndgrafdat.comploaddlt = orggrafptr->comploaddlt;
-  bndgrafdat.compsize[0] = bndvertnbr - bndcompsize1 - orggrafptr->fronnbr + 1; /* "+ 1" for anchor vertices */
-  bndgrafdat.compsize[1] = bndcompsize1 + 1;
-  bndgrafdat.fronnbr     = orggrafptr->fronnbr;
+  bndgrafdat.dwgttab[0]  = orggrafptr->dwgttab[0]; /* Preserve respective weights */
+  bndgrafdat.dwgttab[1]  = orggrafptr->dwgttab[1];
   bndgrafdat.levlnum     = orggrafptr->levlnum;
 
 #ifdef SCOTCH_DEBUG_VGRAPH2

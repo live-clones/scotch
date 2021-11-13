@@ -275,7 +275,6 @@ const Anum                        inddomnsiz)     /* Number of domains to map   
 {
   Vgraph              actgrafdat;
   Anum                tmpdomnnum;
-  Anum                tmpdomnsiz;
   int                 o;
 
   if (indpartval == 0) {                          /* If in small branch of the recursion; TRICK: never at first call      */
@@ -310,6 +309,8 @@ const Anum                        inddomnsiz)     /* Number of domains to map   
   actgrafdat.s.flagval |= VGRAPHFREEPART;         /* Free group leader */
   actgrafdat.levlnum    = 0;                      /* Initial level     */
 
+  actgrafdat.dwgttab[0] = inddomnsiz / 2;         /* Compute relative weights of subdomains to compute */
+  actgrafdat.dwgttab[1] = inddomnsiz - actgrafdat.dwgttab[0];
   vgraphZero (&actgrafdat);
   if (vgraphSeparateSt (&actgrafdat, dataptr->straptr) != 0) { /* Perform bipartitioning */
     errorPrint ("wgraphPartRb2: cannot bipartition graph");
@@ -324,25 +325,24 @@ const Anum                        inddomnsiz)     /* Number of domains to map   
     return (0);
   }
 
-  tmpdomnsiz = inddomnsiz / 2;                    /* Compute median values */
-  tmpdomnnum = inddomnnum + tmpdomnsiz;
+  tmpdomnnum = inddomnnum + actgrafdat.dwgttab[0]; /* Compute median values */
 
-  if (actgrafdat.compsize[0] <= 0) {              /* If subpart is empty, run on other part (without considering separator vertices)                   */
-    o = wgraphPartRb2 (dataptr, &actgrafdat.s, NULL, 0, NULL, 1, actgrafdat.s.vertnbr, tmpdomnnum, inddomnsiz - tmpdomnsiz); /* TRICK: use fake part 1 */
+  if (actgrafdat.compsize[0] <= 0) {              /* If subpart is empty, run on other part (without considering separator vertices)                 */
+    o = wgraphPartRb2 (dataptr, &actgrafdat.s, NULL, 0, NULL, 1, actgrafdat.s.vertnbr, tmpdomnnum, actgrafdat.dwgttab[1]); /* TRICK: use fake part 1 */
     vgraphExit        (&actgrafdat);
     return (o);
   }
   if (actgrafdat.compsize[1] <= 0) {              /* If subpart is empty, run on other part */
-    o = wgraphPartRb2 (dataptr, &actgrafdat.s, NULL, 0, NULL, 1, actgrafdat.s.vertnbr, inddomnnum, tmpdomnsiz);
+    o = wgraphPartRb2 (dataptr, &actgrafdat.s, NULL, 0, NULL, 1, actgrafdat.s.vertnbr, inddomnnum, actgrafdat.dwgttab[0]);
     vgraphExit        (&actgrafdat);
     return (o);
   }
 
   o = wgraphPartRb2 (dataptr, &actgrafdat.s, actgrafdat.frontab, actgrafdat.fronnbr, actgrafdat.parttax, 0,
-                     actgrafdat.compsize[0], inddomnnum, tmpdomnsiz);
+                     actgrafdat.compsize[0], inddomnnum, actgrafdat.dwgttab[0]);
   if (o == 0)
     o = wgraphPartRb2 (dataptr, &actgrafdat.s, actgrafdat.frontab, actgrafdat.fronnbr, actgrafdat.parttax, 1,
-                       actgrafdat.compsize[1], tmpdomnnum, inddomnsiz - tmpdomnsiz);
+                       actgrafdat.compsize[1], tmpdomnnum, actgrafdat.dwgttab[1]);
 
   vgraphExit (&actgrafdat);
 

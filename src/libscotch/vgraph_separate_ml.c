@@ -49,7 +49,7 @@
 /**                                 to   : 11 nov 2009     **/
 /**                # Version 6.0  : from : 09 mar 2011     **/
 /**                                 to   : 16 aug 2015     **/
-/**                # Version 6.1  : from : 21 nov 2021     **/
+/**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
 /**                                                        **/
 /************************************************************/
@@ -101,9 +101,11 @@ const VgraphSeparateMlParam * const   paraptr)    /*+ Method parameters         
                     NULL, NULL, 0, NULL) != 0)
     return (1);                                   /* Return if coarsening failed */
 
-  coargrafptr->parttax = NULL;                    /* Do not allocate partition data yet      */
-  coargrafptr->frontab = finegrafptr->frontab;    /* Re-use frontier array for coarser graph */
-  coargrafptr->levlnum = finegrafptr->levlnum + 1; /* Graph level is coarsening level        */
+  coargrafptr->parttax    = NULL;                 /* Do not allocate partition data yet      */
+  coargrafptr->frontab    = finegrafptr->frontab; /* Re-use frontier array for coarser graph */
+  coargrafptr->dwgttab[0] = finegrafptr->dwgttab[0]; /* Preserve respective weights          */
+  coargrafptr->dwgttab[1] = finegrafptr->dwgttab[1];
+  coargrafptr->levlnum    = finegrafptr->levlnum + 1; /* Graph level is coarsening level */
 
   return (0);
 }

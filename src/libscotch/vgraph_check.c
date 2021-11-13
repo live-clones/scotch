@@ -166,20 +166,20 @@ const Vgraph * const        grafptr)
     }
   }
 
+  if ((grafptr->compsize[0] != compsize[0]) ||
+      (grafptr->compsize[1] != compsize[1]) ||
+      (grafptr->fronnbr     != compsize[2])) {
+    errorPrint ("vgraphCheck: invalid part sizes");
+    return (1);
+  }
   if ((grafptr->compload[0] != compload[0]) ||
       (grafptr->compload[1] != compload[1]) ||
       (grafptr->compload[2] != compload[2])) {
     errorPrint ("vgraphCheck: invalid part loads");
     return (1);
   }
-  if (grafptr->comploaddlt != (grafptr->compload[0] - grafptr->compload[1])) {
+  if (grafptr->comploaddlt != (grafptr->compload[0] * grafptr->dwgttab[1] - grafptr->compload[1] * grafptr->dwgttab[0])) {
     errorPrint ("vgraphCheck: invalid balance");
-    return (1);
-  }
-  if ((grafptr->compsize[0] != compsize[0]) ||
-      (grafptr->compsize[1] != compsize[1]) ||
-      (grafptr->fronnbr     != compsize[2])) {
-    errorPrint ("vgraphCheck: invalid part sizes");
     return (1);
   }
 
