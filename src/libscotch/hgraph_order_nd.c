@@ -50,7 +50,7 @@
 /**                                 to   : 24 oct 2010     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
 /**                                 to   : 23 may 2018     **/
-/**                # Version 6.1  : from : 21 nov 2021     **/
+/**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
 /**                                                        **/
 /************************************************************/
@@ -112,6 +112,8 @@ const HgraphOrderNdParam * restrict const paraptr)
   memSet (vspgrafdat.parttax, 0, vspgrafdat.s.vertnbr * sizeof (GraphPart)); /* Set all vertices to part 0 */
   vspgrafdat.parttax    -= vspgrafdat.s.baseval;
   vspgrafdat.s.flagval  |= VGRAPHFREEFRON | VGRAPHFREEPART;
+  vspgrafdat.dwgttab[0]  =                        /* Parts should have about the same weights */
+  vspgrafdat.dwgttab[1]  = 1;
   vspgrafdat.compload[0] = vspgrafdat.s.velosum;
   vspgrafdat.compload[1] = 0;
   vspgrafdat.compload[2] = 0;

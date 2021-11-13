@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2013,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 09 nov 2008     **/
+/**                # Version 6.1  : from : 01 nov 2021     **/
+/**                                 to   : 01 nov 2021     **/
 /**                                                        **/
 /**   NOTES      : # This algorithm comes from:            **/
 /**                  "Computing the Block Triangular form  **/
@@ -486,7 +488,7 @@ const VgraphSeparateEsParam * const paraptr)      /*+ Method parameters +*/
   actgrafdat.veextax   = NULL;                    /* No external gains                           */
   actgrafdat.parttax   = grafptr->parttax;        /* Inherit arrays from vertex separation graph */
   actgrafdat.frontab   = grafptr->frontab;
-  bgraphInit2 (&actgrafdat, 1, 1, 1, 0, 0);       /* Complete initialization and set all vertices to part 0 */
+  bgraphInit2 (&actgrafdat, 1, grafptr->dwgttab[0], grafptr->dwgttab[1], 0, 0); /* Complete initialization and set all vertices to part 0 */
 
   if (bgraphBipartSt (&actgrafdat, paraptr->strat) != 0) { /* Bipartition active subgraph */
     errorPrint ("vgraphSeparateEs: cannot bipartition active graph");

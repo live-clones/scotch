@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2014,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to   : 01 jun 2010     **/
 /**                # Version 6.0  : from : 31 mar 2014     **/
 /**                                 to   : 01 apr 2014     **/
+/**                # Version 6.1  : from : 27 nov 2021     **/
+/**                                 to   : 01 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,6 +63,8 @@
 */
 
 #define VGRAPH_SEPARATE_FM
+
+#define SCOTCH_DEBUG_VGRAPH3
 
 #include "module.h"
 #include "common.h"
@@ -93,6 +97,7 @@ static
 GainLink *
 vgraphSeparateFmTablGet (
 GainTabl * const            tablptr,              /* Gain table        */
+const Gnum *                dwgttab,              /* Domain weights    */
 const Gnum                  deltcur,              /* Current imbalance */
 const Gnum                  deltmax,              /* Maximum imbalance */
 const int                   partval)              /* Current preferred */
@@ -124,7 +129,7 @@ const int                   partval)              /* Current preferred */
     if (gaincur == vexxptr->veloval)              /* If vertex is isolated separator vertex */
       return ((GainLink *) linkptr);              /* Select it immediatly                   */
 
-    if (abs (deltcur + (1 - 2 * vertpart) * (gaincur - 2 * vexxptr->veloval)) <= deltmax)  { /* If vertex enforces balance */
+    if (abs (deltcur + (1 - 2 * vertpart) * (gaincur * dwgttab[vertpart] - vexxptr->veloval * (dwgttab[0] + dwgttab[1]))) <= deltmax)  { /* If vertex enforces balance; TRICK: -veloval */
       if ((gaincur < gainbest) ||                 /* And if it gives better gain */
           ((gaincur == gainbest) &&               /* Or is in preferred part     */
            (partval == vertpart))) {
@@ -179,10 +184,12 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
   const Gnum * restrict const velotax = grafptr->s.velotax;
   const Gnum * restrict const edgetax = grafptr->s.edgetax;
   GraphPart * restrict const  parttax = grafptr->parttax;
+  const Gnum                  dwg0val = grafptr->dwgttab[0]; /* Part weights */
+  const Gnum                  dwg1val = grafptr->dwgttab[1];
 
   comploaddltmat = (paraptr->deltrat > 0.0L)
                    ? MAX ((Gnum) ((grafptr->compload[0] + grafptr->compload[1]) * paraptr->deltrat),
-                          ((2 * grafptr->s.velosum) / grafptr->s.vertnbr))
+                          ((2 * grafptr->s.velosum) / grafptr->s.vertnbr)) * MIN (dwg0val, dwg1val) /* Always measure wrt. smallest domain weight */
                    : 0;
 
   if (grafptr->fronnbr == 0) {                    /* If no frontier defined     */
@@ -364,7 +371,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
     movenbr  =                                    /* No uneffective moves yet                  */
     savenbr  = 0;                                 /* No recorded moves yet                     */
     while ((movenbr < paraptr->movenbr) &&        /* As long as we can find effective vertices */
-           ((vexxptr = (VgraphSeparateFmVertex *) vgraphSeparateFmTablGet (tablptr, comploaddlt, comploaddltmax, (passnbr & 1))) != NULL)) {
+           ((vexxptr = (VgraphSeparateFmVertex *) vgraphSeparateFmTablGet (tablptr, grafptr->dwgttab, comploaddlt, comploaddltmax, (passnbr & 1))) != NULL)) {
       Gnum                comploadabsdlt;
       int                 partval;                /* Part of current vertex */
       Gnum                vertnum;
@@ -391,7 +398,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 
       vertnum      = vexxptr->vertnum;            /* Get vertex number */
       compload2   += vexxptr->compgain[partval];
-      comploaddlt -= (2 * partval - 1) * (vexxptr->compgain[partval] - 2 * vexxptr->veloval); /* TRICK: -veloval */
+      comploaddlt += (1 - 2 * partval) * (vexxptr->compgain[partval] * grafptr->dwgttab[partval] - vexxptr->veloval * (dwg0val + dwg1val)); /* TRICK: -veloval */
 
       if (vexxptr->mswpnum != mswpnum) {          /* If vertex data not yet recorded */
         vexxptr->mswpnum = mswpnum;
@@ -663,8 +670,8 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
         grafptr->frontab[fronnum ++] = vertnum;   /* Add vertex to frontier   */
     }
   }
-  grafptr->compload[0] = ((grafptr->s.velosum - compload2) + comploaddlt) / 2;
-  grafptr->compload[1] = ((grafptr->s.velosum - compload2) - comploaddlt) / 2;
+  grafptr->compload[0] = (comploaddlt + (grafptr->s.velosum - compload2) * dwg0val) / (dwg0val + dwg1val);
+  grafptr->compload[1] = grafptr->s.velosum - compload2 - grafptr->compload[0];
   grafptr->compload[2] = compload2;
   grafptr->comploaddlt = comploaddlt;
   grafptr->compsize[1] = grafptr->compsize[1] + compsize1add - compsize1sub;
@@ -918,7 +925,7 @@ const Gnum                                    comploaddlt)
     errorPrint ("vgraphSeparateFmCheck: invalid frontier load");
     return (1);
   }
-  if (comploaddlt != (comploadtmp[0] - comploadtmp[1])) {
+  if (comploaddlt != (comploadtmp[0] * grafptr->dwgttab[1] - comploadtmp[1] * grafptr->dwgttab[0])) {
     errorPrint ("vgraphSeparateFmCheck: invalid separator balance");
     return (1);
   }

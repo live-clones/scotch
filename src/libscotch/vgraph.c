@@ -101,11 +101,11 @@ Vgraph * const              grafptr)
 {
   memSet (grafptr->parttax + grafptr->s.baseval, 0, grafptr->s.vertnbr * sizeof (GraphPart)); /* Set all vertices to part 0 */
 
-  grafptr->compload[0] = grafptr->s.velosum;      /* No frontier vertices */
+  grafptr->fronnbr     = 0;                       /* No frontier vertices */
+  grafptr->compsize[0] = grafptr->s.vertnbr;
+  grafptr->compsize[1] = 0;
+  grafptr->compload[0] = grafptr->s.velosum;
   grafptr->compload[1] =
   grafptr->compload[2] = 0;
-  grafptr->comploaddlt = grafptr->s.velosum;
-  grafptr->compsize[0] = grafptr->s.vertnbr;
-  grafptr->compsize[1] =
-  grafptr->fronnbr     = 0;
+  grafptr->comploaddlt = grafptr->s.velosum * grafptr->dwgttab[1];
 }

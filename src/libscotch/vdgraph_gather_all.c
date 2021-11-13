@@ -139,6 +139,8 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
   cgrfptr->s.flagval |= VGRAPHFREEPART;           /* Free group leader on output */
   cgrfptr->parttax   -= cgrfptr->s.baseval;
+  cgrfptr->dwgttab[0] =                           /* Parts should be evenly partitioned */
+  cgrfptr->dwgttab[1] = 1;
   cgrfptr->levlnum    = dgrfptr->levlnum;         /* Set level of separation graph as level of halo graph */
 
   if (dgrfptr->partgsttax == NULL) {              /* If distributed graph does not have a part array yet */

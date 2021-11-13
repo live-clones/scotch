@@ -48,7 +48,7 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 30 apr 2018     **/
 /**                                 to   : 30 apr 2018     **/
-/**                # Version 6.1  : from : 21 nov 2021     **/
+/**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
 /**                                                        **/
 /************************************************************/
@@ -72,11 +72,12 @@
 typedef struct Vgraph_ {
   Graph                     s;                    /*+ Source graph                                       +*/
   GraphPart *               parttax;              /*+ Based part array: 0,1: part; 2: separator          +*/
+  Gnum *                    frontab;              /*+ Array of frontier vertex numbers                   +*/
+  Gnum                      fronnbr;              /*+ Number of frontier vertices                        +*/
+  Gnum                      compsize[2];          /*+ Number of vertices in parts (separator is fronnbr) +*/
   Gnum                      compload[3];          /*+ Size of both parts and separator                   +*/
   Gnum                      comploaddlt;          /*+ Load difference between both parts                 +*/
-  Gnum                      compsize[2];          /*+ Number of vertices in parts (separator is fronnbr) +*/
-  Gnum                      fronnbr;              /*+ Number of frontier vertices; TRICK: compsize[2]    +*/
-  Gnum *                    frontab;              /*+ Array of frontier vertex numbers                   +*/
+  Gnum                      dwgttab[2];           /*+ Weights of the two subdomains                      +*/
   Gnum                      levlnum;              /*+ Nested dissection or coarsening level              +*/
 } Vgraph;
 
