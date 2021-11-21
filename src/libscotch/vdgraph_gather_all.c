@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 6.1  : from : 26 nov 2021     **/
+/**                                 to   : 26 nov 2021     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -102,47 +104,46 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
     cheklocval = 1;
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (1)");
-    return     (1);
+    return (1);
   }
   if (chekglbval != 0) {
     errorPrint ("vdgraphGatherAll: centralized graphs should be provided on every process");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
 
   if (dgraphGatherAll (&dgrfptr->s, &cgrfptr->s) != 0) {
     errorPrint ("vdgraphGatherAll: cannot build centralized graph");
-    return     (1);
+    return (1);
   }
 
-  cgrfptr->parttax = NULL;                        /* In case of error */
-  cgrfptr->frontab = NULL;
-  if (((cgrfptr->parttax = (GraphPart *) memAlloc (cgrfptr->s.vertnbr * sizeof (GraphPart))) == NULL) ||
-      ((cgrfptr->parttax -= cgrfptr->s.baseval,
-        cgrfptr->frontab = (Gnum *) memAlloc (cgrfptr->s.vertnbr * sizeof (Gnum))) == NULL)) {
+  if (memAllocGroup ((void **) (void *)
+                     &cgrfptr->parttax, (size_t) (cgrfptr->s.vertnbr * sizeof (GraphPart)),
+                     &cgrfptr->frontab, (size_t) (cgrfptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("vdgraphGatherAll: out of memory (1)");
 #ifndef SCOTCH_DEBUG_VDGRAPH1
     vgraphExit (cgrfptr);
-    return     (1);
+    return (1);
   }
 #else /* SCOTCH_DEBUG_VDGRAPH1 */
     cheklocval = 1;
   }
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (2)");
-    return     (1);
+    return (1);
   }
   if (chekglbval != 0) {
     vgraphExit (cgrfptr);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
-
-  cgrfptr->levlnum = dgrfptr->levlnum;            /* Set level of separation graph as level of halo graph */
+  cgrfptr->s.flagval |= VGRAPHFREEPART;           /* Free group leader on output */
+  cgrfptr->parttax   -= cgrfptr->s.baseval;
+  cgrfptr->levlnum    = dgrfptr->levlnum;         /* Set level of separation graph as level of halo graph */
 
   if (dgrfptr->partgsttax == NULL) {              /* If distributed graph does not have a part array yet */
     vgraphZero (cgrfptr);
-    return     (0);
+    return (0);
   }
 
   if (memAllocGroup ((void **) (void *)           /* Allocate tempory arrays to gather separator vertices */
@@ -151,34 +152,34 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
     errorPrint ("vdgraphGatherAll: out of memory (2)");
 #ifndef SCOTCH_DEBUG_VDGRAPH1
     vgraphExit (cgrfptr);
-    return     (1);
+    return (1);
   }
 #else /* SCOTCH_DEBUG_VDGRAPH1 */
     cheklocval = 1;
   }
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (3)");
-    return     (1);
+    return (1);
   }
   if (chekglbval != 0) {
     if (froncnttab != NULL)
       memFree (froncnttab);
     vgraphExit (cgrfptr);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
 
   if (commAllgatherv (dgrfptr->partgsttax + dgrfptr->s.baseval, dgrfptr->s.vertlocnbr, GRAPHPART_MPI, /* Get parttax of distributed graph */
                       cgrfptr->parttax, dgrfptr->s.proccnttab, dgrfptr->s.procdsptab, GRAPHPART_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (4)");
-    return     (1);
+    return (1);
   }
 
   fronlocnbr = (int) dgrfptr->complocsize[2];
   if (MPI_Allgather (&fronlocnbr, 1, MPI_INT,     /* Compute how separator vertices are distributed */
                      froncnttab, 1, MPI_INT, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (5)");
-    return     (1);
+    return (1);
   }
   frondsptab[0] = 0;                              /* Offset 0 for first process                                                    */
   for (procnum = 1; procnum < dgrfptr->s.procglbnbr; procnum ++) /* Adjust index sub-arrays for all processes except the first one */
@@ -187,7 +188,7 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
   if (MPI_Allgatherv (dgrfptr->fronloctab, fronlocnbr, GNUM_MPI, /* Gather separator vertices */
                       cgrfptr->frontab, froncnttab, frondsptab, GNUM_MPI, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphGatherAll: communication error (6)");
-    return     (1);
+    return (1);
   }
 
   for (procnum = 1; procnum < dgrfptr->s.procglbnbr; procnum ++) { /* Adjust index sub-arrays for all processes except the first one */
@@ -217,7 +218,7 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
   if (vgraphCheck (cgrfptr) != 0) {
     errorPrint ("vdgraphGatherAll: internal error");
     vgraphExit (cgrfptr);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
 

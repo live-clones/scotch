@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2012,2014,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2012,2014,2016,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 /**                                 to   : 24 oct 2010     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
 /**                                 to   : 23 may 2018     **/
+/**                # Version 6.1  : from : 21 nov 2021     **/
+/**                                 to   : 21 nov 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,18 +100,18 @@ const HgraphOrderNdParam * restrict const paraptr)
   int                       o;
 
   hgraphUnhalo (grafptr, &vspgrafdat.s);          /* Keep only non-halo vertices for separation */
-
   if ((vspgrafdat.frontab = (Gnum *) memAlloc (vspgrafdat.s.vertnbr * sizeof (Gnum))) == NULL) {
     errorPrint ("hgraphOrderNd: out of memory (1)");
-    return     (1);
+    return (1);
   }
   if ((vspgrafdat.parttax = (GraphPart *) memAlloc (vspgrafdat.s.vertnbr * sizeof (GraphPart))) == NULL) {
     errorPrint ("hgraphOrderNd: out of memory (2)");
     memFree    (vspgrafdat.frontab);
-    return     (1);
+    return (1);
   }
   memSet (vspgrafdat.parttax, 0, vspgrafdat.s.vertnbr * sizeof (GraphPart)); /* Set all vertices to part 0 */
   vspgrafdat.parttax    -= vspgrafdat.s.baseval;
+  vspgrafdat.s.flagval  |= VGRAPHFREEFRON | VGRAPHFREEPART;
   vspgrafdat.compload[0] = vspgrafdat.s.velosum;
   vspgrafdat.compload[1] = 0;
   vspgrafdat.compload[2] = 0;
@@ -121,7 +123,7 @@ const HgraphOrderNdParam * restrict const paraptr)
 
   if (vgraphSeparateSt (&vspgrafdat, paraptr->sepstrat) != 0) { /* Separate vertex-separation graph */
     vgraphExit (&vspgrafdat);
-    return     (1);
+    return (1);
   }
 
   if ((vspgrafdat.compsize[0] == 0) ||            /* If could not separate more */
@@ -153,7 +155,7 @@ const HgraphOrderNdParam * restrict const paraptr)
         if (vspgrafdat.parttax[vspgrafdat.s.edgetax[vspedgenum]] == vsppartnum) { /* If an edge crosses the separator */
           errorPrint ("hgraphOrderNd: internal error (1)");
           vgraphExit (&vspgrafdat);
-          return     (1);
+          return (1);
         }
       }
     }
@@ -165,20 +167,18 @@ const HgraphOrderNdParam * restrict const paraptr)
       (vspvnumptr[2] != vsplisttab[2].vnumtab + vsplisttab[2].vnumnbr)) {
     errorPrint ("hgraphOrderNd: internal error (2)");
     vgraphExit (&vspgrafdat);
-    return      (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_HGRAPH2 */
 
-  memFree (vspgrafdat.parttax + vspgrafdat.s.baseval); /* Free useless space */
-#ifdef SCOTCH_DEBUG_HGRAPH2
-  vspgrafdat.parttax = NULL;                      /* Will cause bug if re-read */
-#endif /* SCOTCH_DEBUG_HGRAPH2 */
+  memFree (vspgrafdat.parttax + vspgrafdat.s.baseval); /* Free useless space    */
+  vspgrafdat.parttax = NULL;                      /* Prevent subsequent freeing */
 
   cblkptr->typeval = ORDERCBLKNEDI;               /* Node becomes a nested dissection node */
   if ((cblkptr->cblktab = (OrderCblk *) memAlloc (3 * sizeof (OrderCblk))) == NULL) {
-    errorPrint ("hgraphOrderNd: out of memory (2)");
-    memFree    (vspgrafdat.frontab);              /* Free remaining space */
-    return     (1);
+    errorPrint ("hgraphOrderNd: out of memory (3)");
+    vgraphExit (&vspgrafdat);
+    return (1);
   }
   cblkptr->cblktab[0].typeval = ORDERCBLKOTHR;    /* Build column blocks */
   cblkptr->cblktab[0].vnodnbr = vsplisttab[0].vnumnbr;
@@ -201,8 +201,8 @@ const HgraphOrderNdParam * restrict const paraptr)
 
     if (graphInduceList (&grafptr->s, vsplisttab[2].vnumnbr, vsplisttab[2].vnumtab, &indgrafdat.s) != 0) { /* Perform non-halo induction for separator, as it will get highest numbers */
       errorPrint ("hgraphOrderNd: cannot build induced subgraph (1)");
-      memFree    (vspgrafdat.frontab);            /* Free remaining space */
-      return     (1);
+      vgraphExit (&vspgrafdat);
+      return (1);
     }
     indgrafdat.vnohnbr = indgrafdat.s.vertnbr;    /* Fill halo graph structure of non-halo graph */
     indgrafdat.vnohnnd = indgrafdat.s.vertnnd;
@@ -225,8 +225,8 @@ const HgraphOrderNdParam * restrict const paraptr)
   if (o == 0) {
     if ((hgraphInduceList (grafptr, vsplisttab[0].vnumnbr, vsplisttab[0].vnumtab, vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat)) != 0) {
       errorPrint ("hgraphOrderNd: cannot build induced subgraph (2)");
-      memFree    (vspgrafdat.frontab);            /* Free remaining space */
-      return     (1);
+      vgraphExit (&vspgrafdat);
+      return (1);
     }
     o = hgraphOrderNd (&indgrafdat, ordeptr, ordenum, cblkptr->cblktab, paraptr);
     hgraphExit (&indgrafdat);
@@ -234,14 +234,14 @@ const HgraphOrderNdParam * restrict const paraptr)
   if (o == 0) {
     if ((hgraphInduceList (grafptr, vsplisttab[1].vnumnbr, vsplisttab[1].vnumtab, vsplisttab[2].vnumnbr + grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat)) != 0) {
       errorPrint ("hgraphOrderNd: cannot build induced subgraph (3)");
-      memFree    (vspgrafdat.frontab);            /* Free remaining space */
-      return     (1);
+      vgraphExit (&vspgrafdat);
+      return (1);
     }
     o = hgraphOrderNd (&indgrafdat, ordeptr, ordenum + vsplisttab[0].vnumnbr, cblkptr->cblktab + 1, paraptr);
     hgraphExit (&indgrafdat);
   }
 
-  memFree (vspgrafdat.frontab);                   /* Free remaining space */
+  vgraphExit (&vspgrafdat);
 
   return (o);
 }

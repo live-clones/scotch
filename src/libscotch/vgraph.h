@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,11 +48,21 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 30 apr 2018     **/
 /**                                 to   : 30 apr 2018     **/
+/**                # Version 6.1  : from : 21 nov 2021     **/
+/**                                 to   : 21 nov 2021     **/
 /**                                                        **/
 /************************************************************/
 
 #define VGRAPH_H
 
+/*
+**  The defines.
+*/
+
+/*+ Graph option flags. +*/
+
+#define VGRAPHFREEFRON              (GRAPHBITSNOTUSED) /* Free frontier array  */
+#define VGRAPHFREEPART              (GRAPHBITSNOTUSED << 1) /* Free part array */
 /*
 **  The type and structure definitions.
 */
