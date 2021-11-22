@@ -1,4 +1,4 @@
-/* Copyright 2007-2011,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2011,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 26 feb 2018     **/
 /**                # Version 6.1  : from : 25 aug 2020     **/
-/**                                 to   : 01 sep 2020     **/
+/**                                 to   : 24 nov 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -158,7 +158,7 @@ static StratParamTab        wgraphpartstparatab[] = { /* Method parameter list *
                                 NULL },
                               { WGRAPHPARTSTMETHRB,  STRATPARAMSTRAT,  "sep",
                                 (byte *) &wgraphpartdefaultrb.param,
-                                (byte *) &wgraphpartdefaultrb.param.stratptr,
+                                (byte *) &wgraphpartdefaultrb.param.straptr,
                                 (void *) &vgraphseparateststratab },
                               { WGRAPHPARTSTMETHNBR, STRATPARAMINT,    NULL,
                                 NULL, NULL, NULL } };

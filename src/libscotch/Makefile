@@ -3043,13 +3043,11 @@ wgraph_part_rb$(OBJ)		:	wgraph_part_rb.c			\
 					parser.h                                \
 					graph.h                                 \
 					arch.h                                  \
-					mapping.h                               \
 					vgraph.h                                \
 					vgraph_separate_st.h                    \
 					vgraph_separate_zr.h                    \
 					wgraph.h                                \
-					wgraph_part_rb.h			\
-					scotch.h
+					wgraph_part_rb.h
 
 wgraph_part_st$(OBJ)		:	wgraph_part_st.c			\
 					gain.h					\
