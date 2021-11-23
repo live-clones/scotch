@@ -127,7 +127,7 @@ Wgraph * const              grafptr)              /* Active graph */
 		     &parttab,           (size_t) (partsiz            * sizeof (Anum)),
 		     &grafptr->frontab,  (size_t) (grafptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("wgraphAlloc: out of memory (1)");
-    return     (1);
+    return (1);
   }
   if (grafptr->parttax == NULL)                   /* Part array does not need flag as will be group freed */
     grafptr->parttax = parttab - grafptr->s.baseval;
@@ -152,5 +152,5 @@ Wgraph * const              grafptr)
   grafptr->fronload    = 0;
   grafptr->fronnbr     = 0;
 
-  memSet (grafptr->parttax + grafptr->s.baseval, 0, grafptr->s.vertnbr * sizeof (Anum));  /* Set all vertices to part 0 */
+  memSet (grafptr->parttax + grafptr->s.baseval, 0, grafptr->s.vertnbr * sizeof (Anum)); /* Set all vertices to part 0 */
 }
