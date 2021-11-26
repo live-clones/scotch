@@ -46,7 +46,7 @@
 /**                # Version 6.1  : from : 21 nov 2021     **/
 /**                                 to   : 23 nov 2021     **/
 /**                # Version 7.0  : from : 23 aug 2019     **/
-/**                                 to   : 23 aug 2019     **/
+/**                                 to   : 26 nov 2021     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kgraph_map_rb_part.h for the vertex   **/
@@ -72,8 +72,28 @@ typedef struct WgraphPartRbData_ {
   Gnum *                    frontab;              /*+ Pointer to top-level frontier array +*/
   Gnum                      fronnbr;              /*+ Current number of frontier vertices +*/
   Strat *                   straptr;              /*+ Bipartitioning strategy used        +*/
-  Context *                 contptr;              /*+ Execution context                   +*/
+#ifdef SCOTCH_PTHREAD
+  pthread_mutex_t           mutedat;              /*+ Mutex for frontier updates          +*/
+#endif /* SCOTCH_PTHREAD */
 } WgraphPartRbData;
+
+/*+ This structure holds the splitting parameters. +*/
+
+typedef struct WgraphPartRbSplit2_ {
+  Gnum                      vertnbr;              /*+ Number of vertices in part   +*/
+  Anum                      domnnum;              /*+ Initial domain number to map +*/
+  Anum                      domnsiz;              /*+ Number of domains to map     +*/
+} WgraphPartRbSplit2;
+
+typedef struct WgraphPartRbSplit_ {
+  WgraphPartRbSplit2        splttab[2];           /*+ Array of induced subgraph data  +*/
+  WgraphPartRbData *        dataptr;              /*+ Pointer to global data          +*/
+  Graph *                   grafptr;              /*+ Graph to induce and bipartition +*/
+  Gnum *                    frontab;              /*+ Graph frontier array            +*/
+  Gnum                      fronnbr;              /*+ Number of frontier vertices     +*/
+  GraphPart *               parttax;              /*+ Graph part array                +*/
+  int *                     revaptr;              /*+ Pointer to return value         +*/
+} WgraphPartRbSplit;
 
 /*
 **  The function prototypes.
