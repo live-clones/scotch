@@ -227,8 +227,8 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
     vertnum = grafptr->frontab[fronnum];
 #ifdef SCOTCH_DEBUG_VGRAPH2
     if (parttax[vertnum] != 2) {
-      errorPrint   ("vgraphSeparateFm: vertex not in separator");
-      return       (1);
+      errorPrint ("vgraphSeparateFm: vertex not in separator");
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
 
@@ -292,7 +292,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH3
   if (vgraphSeparateFmCheck (grafptr, hashtab, hashmsk, compload2bst, comploaddltbst) != 0) {
     errorPrint ("vgraphSeparateFm: internal error (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VGRAPH3 */
 
@@ -335,7 +335,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH3
     if (vgraphSeparateFmCheck (grafptr, hashtab, hashmsk, compload2, comploaddlt) != 0) {
       errorPrint ("vgraphSeparateFm: internal error (2)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_VGRAPH3 */
 
@@ -349,7 +349,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH2
         if (vexxptr->gainlink0.next != VGRAPHSEPAFMSTATEUSED) {
           errorPrint ("vgraphSeparateFm: linked non-used vertex");
-          return     (1);
+          return (1);
         }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
         gainTablAdd (tablptr, &vexxptr->gainlink0, vexxptr->compgain[0]); /* Link it */
@@ -378,7 +378,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH2
       if (vexxptr->partval != 2) {
         errorPrint ("vgraphSeparateFm: linked non-separator vertex (1)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
       gainTablDel (tablptr, &vexxptr->gainlink0); /* Remove it from table */
@@ -420,7 +420,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH2
             if (parttax[vertend] != (1 - partval)) {
               errorPrint ("vgraphSeparateFm: undeclared separator vertex");
-              return     (1);
+              return (1);
             }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
 
@@ -432,7 +432,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH2
             if (hashnbr > hashmsk) {
               errorPrint ("vgraphSeparateFm: hash table overflow");
-              return     (1);
+              return (1);
             }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
           }
@@ -491,7 +491,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH2
                     if (parttax[vertent] != (1 - partval)) {
                       errorPrint ("vgraphSeparateFm: broken separator (1)");
-                      return     (1);
+                      return (1);
                     }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
                     compgainp += (velotax != NULL) ? velotax[vertent] : 1;
@@ -501,7 +501,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH2
                     if (vexxent->partval == partval) {
                       errorPrint ("vgraphSeparateFm: broken separator (2)");
-                      return     (1);
+                      return (1);
                     }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
                     if (vexxent->partval == 2) {  /* If vertex is in separator (or is vexxptr) */
@@ -552,7 +552,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH2
         if (vexxptr->partval != 2) {
           errorPrint ("vgraphSeparateFm: linked non-separator vertex (2)");
-          return     (1);
+          return (1);
         }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
 
@@ -573,14 +573,14 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH3
       if (vgraphSeparateFmCheck (grafptr, hashtab, hashmsk, compload2, comploaddlt) != 0) {
         errorPrint ("vgraphSeparateFm: internal error (3)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_VGRAPH3 */
 
       if (hashnbr >= hashmax) {
         if (vgraphSeparateFmResize (&hashtab, &hashmax, &hashmsk, &savetab, savenbr, tablptr, &lockdat) != 0) {
           errorPrint ("vgraphSeparateFm: out of memory (2)");
-          return     (1);
+          return (1);
         }
       }
 
@@ -674,7 +674,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_VGRAPH2
   if (vgraphCheck (grafptr) != 0) {
     errorPrint ("vgraphSeparateFm: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
 
@@ -763,7 +763,7 @@ GainLink * const                    lockptr)
 #ifdef SCOTCH_DEBUG_VGRAPH2
             if ((hashnew > hashnum) && (hashnew < hashend)) { /* If vertex is not moved either before its old position or after the end of the segment */
               errorPrint ("vgraphSeparateFmResize: internal error (1)");
-              return     (1);
+              return (1);
             }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
             hashtab[hashnew] = hashtab[hashnum];  /* Copy data to new slot         */
@@ -799,7 +799,7 @@ GainLink * const                    lockptr)
 #ifdef SCOTCH_DEBUG_VGRAPH2
       if (hashtab[hashnum].vertnum == ~0) {
         errorPrint ("vgraphSeparateFmResize: internal error (2)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
     }
@@ -848,12 +848,12 @@ const Gnum                                    comploaddlt)
 
     if (hashtab[hashnum].veloval != - ((velotax == NULL) ? 1 : velotax[vertnum])) {
       errorPrint ("vgraphSeparateFmCheck: invalid vertex load (1)");
-      return     (1);
+      return (1);
     }
     partval = hashtab[hashnum].partval;
     if ((partval < 0) || (partval > 2)) {
       errorPrint ("vgraphSeparateFmCheck: invalid part value");
-      return     (1);
+      return (1);
     }
 
     if (partval != parttax[vertnum]) {
@@ -864,7 +864,7 @@ const Gnum                                    comploaddlt)
     if (partval < 2) {                            /* If not separator vertex */
       if (hashtab[hashnum].gainlink0.next >= VGRAPHSEPAFMSTATELINK) {
         errorPrint ("vgraphSeparateFmCheck: linked non-separator vertex");
-        return     (1);
+        return (1);
       }
     }
     else {                                        /* Separator vertex */
@@ -873,7 +873,7 @@ const Gnum                                    comploaddlt)
 
       if (hashtab[hashnum].gainlink0.next == VGRAPHSEPAFMSTATEFREE) {
         errorPrint ("vgraphSeparateFmCheck: free separator vertex");
-        return     (1);
+        return (1);
       }
 
       compload[0] =
@@ -894,7 +894,7 @@ const Gnum                                    comploaddlt)
 
             if (veloend != - ((velotax == NULL) ? 1 : velotax[vertend])) {
               errorPrint ("vgraphSeparateFmCheck: invalid vertex load (2)");
-              return     (1);
+              return (1);
             }
             break;
           }
@@ -910,17 +910,17 @@ const Gnum                                    comploaddlt)
       if ((hashtab[hashnum].compgain[0] != (hashtab[hashnum].veloval - compload[1])) ||
           (hashtab[hashnum].compgain[1] != (hashtab[hashnum].veloval - compload[0]))) {
         errorPrint ("vgraphSeparateFmCheck: invalid vertex gains");
-        return     (1);
+        return (1);
       }
     }
   }
   if (compload2 != comploadtmp[2]) {
     errorPrint ("vgraphSeparateFmCheck: invalid frontier load");
-    return     (1);
+    return (1);
   }
   if (comploaddlt != (comploadtmp[0] - comploadtmp[1])) {
     errorPrint ("vgraphSeparateFmCheck: invalid separator balance");
-    return     (1);
+    return (1);
   }
 
   return (0);
