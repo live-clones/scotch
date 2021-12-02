@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 23 nov 2021     **/
-/**                                 to   : 23 nov 2021     **/
+/**                                 to   : 02 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,10 +57,6 @@
 */
 
 /*+ The graph structure. +*/
-
-#ifndef ARCH_H
-typedef INT Anum;                                 /*+ Generic integer +*/
-#endif /* ARCH_H */
 
 typedef struct Wgraph_ {
   Graph                     s;                    /*+ Source graph                            +*/

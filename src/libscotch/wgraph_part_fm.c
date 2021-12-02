@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 30 jul 2020     **/
-/**                                 to   : 01 dec 2021     **/
+/**                                 to   : 02 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +64,7 @@
 #include "gain.h"
 #include "parser.h"
 #include "graph.h"
+#include "arch.h"
 #include "vgraph.h"
 #include "vgraph_separate_st.h"
 #include "wgraph.h"

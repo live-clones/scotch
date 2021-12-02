@@ -1,4 +1,4 @@
-/* Copyright 2010,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 may 2010     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 6.1  : from : 02 dec 2021     **/
+/**                                 to   : 02 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +56,7 @@
 #include "common.h"
 #include "parser.h"
 #include "graph.h"
+#include "arch.h"
 #include "wgraph.h"
 #include "wgraph_part_st.h"
 #include "scotch.h"
