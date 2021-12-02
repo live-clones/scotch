@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 28 may 2010     **/
 /**                                 to   : 29 may 2010     **/
 /**                # Version 6.1  : from : 01 sep 2020     **/
-/**                                 to   : 23 nov 2021     **/
+/**                                 to   : 02 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,6 +59,7 @@
 #include "module.h"
 #include "common.h"
 #include "graph.h"
+#include "arch.h"
 #include "wgraph.h"
 
 /***********************************/
