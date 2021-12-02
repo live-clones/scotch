@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 30 jul 2020     **/
-/**                                 to   : 04 apr 2021     **/
+/**                                 to   : 01 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,10 +62,13 @@
 #include "module.h"
 #include "common.h"
 #include "gain.h"
+#include "parser.h"
 #include "graph.h"
+#include "vgraph.h"
+#include "vgraph_separate_st.h"
 #include "wgraph.h"
-#include "wgraph_part_gg.h"
 #include "wgraph_part_fm.h"
+#include "wgraph_part_rb.h"
 
 /*
 **  The static and global variables.
@@ -300,7 +303,6 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
   int                             passnbr;        /* Maximum number of passes to go                */
   int                             moveflag;       /* Flag set if useful moves made                 */
   Gnum                            partnum;
-  Gnum                            partnbr;
   Gnum                            frlosum;
   Gnum                            frlobst;
   Gnum                            fronnbr;
@@ -318,20 +320,48 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
   const Gnum * restrict const velotax = grafptr->s.velotax;
   const Gnum * restrict const edgetax = grafptr->s.edgetax;
   Gnum * restrict const       parttax = grafptr->parttax;
+  const Gnum                  partnbr = grafptr->partnbr; /* Work with current number of parts */
   Gnum * restrict const       comploadtab = grafptr->compload;
   Gnum * restrict const       compsizetab = grafptr->compsize;
 
   if (grafptr->fronnbr == 0) {                    /* If no frontier defined */
-    WgraphPartGgParam   paradat;
+    WgraphPartRbParam   paradat;
+    Gnum                partnum;
+    Gnum                cplosum;                  /* Sum of vertex loads in parts and boundaries */
+    Gnum                cplomin;                  /* Minimum acceptable part load                */
+    Gnum                cplomax;                  /* Maximum acceptable part load                */
+    int                 o;
 
-    paradat.passnbr = 5;                          /* Use a standard algorithm */
-    wgraphPartGg (grafptr, &paradat);
+    for (partnum = 0, cplosum = 0; partnum < partnbr; partnum ++) /* Compute part load sum */
+      cplosum += comploadtab[partnum];
+    cplomin = (Gnum) ((float) cplosum * (1.0F - paraptr->deltrat) / (float) partnbr); /* Adjust minimum part load */
+    cplomax = (Gnum) ((float) cplosum * (1.0F + paraptr->deltrat) / (float) partnbr); /* Adjust minimum part load */
+
+    for (partnum = 0, cplosum = 0; partnum < partnbr; partnum ++) { /* Test if all parts fall into boundary */
+      if ((comploadtab[partnum] < cplomin) ||
+          (comploadtab[partnum] > cplomax))
+	break;
+    }
+    if (partnum >= partnbr)                       /* If balanced achieved, no need to recompute */
+      return (0);
+
+    if ((paradat.straptr = stratInit (&vgraphseparateststratab, "m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=0.05},org=(|h{pass=10})f{bal=0.05}}}")) == NULL) {
+      errorPrint ("wgraphPartFm: cannot create fallback strategy");
+      return (1);
+    }
+
+    o = wgraphPartRb (grafptr, &paradat);
+
+    stratExit (paradat.straptr);
+
+    if (o != 0) {
+      errorPrint ("wgraphPartFm: cannot apply fallback strategy");
+      return (1);
+    }
 
     if (grafptr->fronnbr == 0)                    /* If new partition has no frontier */
       return (0);                                 /* This algorithm is still useless  */
   }
-
-  partnbr = grafptr->partnbr;                     /* Work with current number of parts */
 
 #ifdef SCOTCH_DEBUG_WGRAPH2
   hashdat.hashsiz = 16;

@@ -3016,8 +3016,14 @@ wgraph_part_es$(OBJ)		:	wgraph_part_es.c			\
 wgraph_part_fm$(OBJ)		:	wgraph_part_fm.c			\
 					module.h				\
 					common.h				\
+					gain.h					\
+					parser.h				\
 					graph.h					\
+					arch.h					\
+					vgraph.h				\
+					vgraph_separate_st.h			\
 					wgraph.h				\
+					wgraph_part_rb.h			\
 					wgraph_part_fm.h
 
 wgraph_part_gg$(OBJ)		:	wgraph_part_gg.c			\
