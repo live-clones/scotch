@@ -4,7 +4,7 @@ stages:
   - sonar
 
 # JOB_INT: [ 32 | 64 | 32-64 ]
-# JOB_THREAD: [ n | c | s | m ]
+# JOB_THREAD: [ n | c | k | s | m ]
 # JOB_DEBUG: [ n | a | f ]
 # JOB_RENAME: [ n | r ]
 
@@ -16,7 +16,7 @@ stages:
         JOB_DEBUG: [ n ]
         JOB_RENAME: [ n ]
       - JOB_INT: [ 32-64 ]
-        JOB_THREAD: [ n ]
+        JOB_THREAD: [ n, k ]
         JOB_DEBUG: [ a ]
         JOB_RENAME: [ n ]
       - JOB_INT: [ 32 ]
@@ -71,6 +71,8 @@ stages:
           export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DSCOTCH_MPI_ASYNC_COLL" ;;
         c )
           export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD" ;;
+        k )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DSCOTCH_PTHREAD -DCOMMON_PTHREAD_REDUCE_CANONICAL -DCOMMON_PTHREAD_SCAN_CANONICAL" ;;
         s )
           export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DSCOTCH_PTHREAD -DCOMMON_PTHREAD_AFFINITY_LINUX -DSCOTCH_PTHREAD_NUMBER=2" ;;
         m )
