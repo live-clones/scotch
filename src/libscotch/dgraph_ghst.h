@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /*                                 to   : 20 jun 1998     */
 /*                # Version 5.0  : from : 28 feb 2006     */
 /*                                 to   : 31 dec 2006     */
+/*                # Version 6.1  : from : 04 dec 2021     */
+/*                                 to   : 04 dec 2021     */
 /*                                                        */
 /**********************************************************/
 
@@ -58,7 +60,7 @@
 
 /* procsidtab-related values. */
 
-#define DGRAPHGHSTSIDMAX            ((int) ((unsigned int) (1 << (sizeof (int) * 8 - 1)) - 2U)) /* Maximum leap value for procsidtab entries */
+#define DGRAPHGHSTSIDMAX            ((int) (1U << (sizeof (unsigned int) * 8 - 1)) - 2U) /* Maximum leap value for procsidtab entries */
 
 /*
 ** The type and structure definitions.
