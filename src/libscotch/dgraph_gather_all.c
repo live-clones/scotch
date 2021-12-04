@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 27 nov 2012     **/
 /**                                 to   : 27 nov 2012     **/
 /**                # Version 6.1  : from : 18 jun 2021     **/
-/**                                 to   : 18 jun 2021     **/
+/**                                 to   : 04 dec 2021     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -110,6 +110,7 @@ const int                     protnum)            /* -1 means allgather */
 {
   Gnum                baseval;
   Gnum * restrict     verttax;                    /* Target vertex array for root, dummy for non-roots                  */
+  Gnum *              vendtax;                    /* Target end vertex array for root, dummy for non-roots              */
   Gnum * restrict     velotax;                    /* Target vertex load array for root, dummy for non-roots             */
   Gnum * restrict     vnumtax;                    /* Target vertex index array for root, dummy for non-roots            */
   Gnum * restrict     vlbltax;                    /* Target vertex label array for root, dummy for non-roots            */
@@ -132,18 +133,18 @@ const int                     protnum)            /* -1 means allgather */
     cheklocval = 1;
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_SUM, dgrfptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphGatherAll2: communication error (1)");
-    return     (1);
+    return (1);
   }
   if (protnum == -1) {                            /* If collective gathering wanted */
     if (chekglbval != dgrfptr->procglbnbr) {
       errorPrint ("dgraphGatherAll2: centralized graphs should be provided on every process");
-      return     (1);
+      return (1);
     }
   }
   else {                                          /* Single gathering wanted */
     if (chekglbval != 1) {
       errorPrint ("dgraphGatherAll2: should have only one root");
-      return     (1);
+      return (1);
     }
   }
 #endif /* SCOTCH_DEBUG_DGRAPH1 */
@@ -200,7 +201,7 @@ const int                     protnum)            /* -1 means allgather */
 #ifdef SCOTCH_DEBUG_DGRAPH1                       /* Communication cannot be merged with a useful one */
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, dgrfptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphGatherAll2: communication error (2)");
-    return     (1);
+    return (1);
   }
 #else /* SCOTCH_DEBUG_DGRAPH1 */
   chekglbval = cheklocval;
@@ -218,6 +219,7 @@ const int                     protnum)            /* -1 means allgather */
 
   if (cgrfptr != NULL) {
     verttax = cgrfptr->verttax - baseval;
+    vendtax = verttax + 1;
     velotax = (dgrfptr->veloloctax != NULL) ? (cgrfptr->velotax - baseval) : NULL;
     vnumtax = (dgrfptr->vnumloctax != NULL) ? (cgrfptr->vnumtax - baseval) : NULL;
     vlbltax = (dgrfptr->vlblloctax != NULL) ? (cgrfptr->vlbltax - baseval) : NULL;
@@ -229,7 +231,7 @@ const int                     protnum)            /* -1 means allgather */
     cgrfptr->vertnbr = dgrfptr->vertglbnbr;
     cgrfptr->vertnnd = dgrfptr->vertglbnbr + baseval;
     cgrfptr->verttax = verttax;
-    cgrfptr->vendtax = verttax + 1;               /* Compact edge array */
+    cgrfptr->vendtax = vendtax;                   /* Compact edge array */
     cgrfptr->velotax = velotax;
     cgrfptr->velosum = dgrfptr->veloglbsum;
     cgrfptr->vnumtax = vnumtax;
@@ -244,6 +246,7 @@ const int                     protnum)            /* -1 means allgather */
 #ifdef SCOTCH_DEBUG_DGRAPH2                       /* Prevent Valgrind from yelling */
   else {                                          /* Process is not root           */
     verttax =
+    vendtax =
     velotax =
     vlbltax =
     edgetax =
@@ -253,10 +256,10 @@ const int                     protnum)            /* -1 means allgather */
 
   if (dgrfptr->vendloctax == (dgrfptr->vertloctax + 1)) { /* If distributed graph is compact                                                */
     if (dgraphGatherAll3 (dgrfptr->vertloctax + baseval + 1, dgrfptr->vertlocnbr, /* Do not send first index, it is always equal to baseval */
-                          verttax + 1,            /* First index will always be equal to baseval too, and procdsptab holds based values     */
+                          vendtax,                /* First index will always be equal to baseval too, and procdsptab holds based values     */
                           dgrfptr->proccnttab, dgrfptr->procdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphGatherAll2: communication error (3)");
-      return     (1);
+      return (1);
     }
 
     if (cgrfptr != NULL) {
@@ -292,10 +295,10 @@ const int                     protnum)            /* -1 means allgather */
     }
 
     if (dgraphGatherAll3 (vertloctax + baseval, dgrfptr->vertlocnbr,
-                          verttax + 1,            /* First index will always be equal to baseval, and procdsptab holds based values */
+                          vendtax,                /* First index will always be equal to baseval, and procdsptab holds based values */
                           dgrfptr->proccnttab, dgrfptr->procdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphGatherAll2: communication error (4)");
-      return     (1);
+      return (1);
     }
 
     if (cgrfptr != NULL) {
@@ -311,7 +314,7 @@ const int                     protnum)            /* -1 means allgather */
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if (verttax[cgrfptr->vertnnd] != (cgrfptr->edgenbr + baseval)) {
         errorPrint ("dgraphGatherAll2: internal error (1)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
     }
@@ -322,7 +325,7 @@ const int                     protnum)            /* -1 means allgather */
                           velotax,                /* Based array since procdsptab holds based values */
                           dgrfptr->proccnttab, dgrfptr->procdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphGatherAll2: communication error (5)");
-      return     (1);
+      return (1);
     }
   }
   if (dgrfptr->vnumloctax != NULL) {
@@ -330,7 +333,7 @@ const int                     protnum)            /* -1 means allgather */
                           vnumtax,                /* Based array since procdsptab holds based values */
                           dgrfptr->proccnttab, dgrfptr->procdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphGatherAll2: communication error (6)");
-      return     (1);
+      return (1);
     }
   }
   if (dgrfptr->vlblloctax != NULL) {
@@ -338,7 +341,7 @@ const int                     protnum)            /* -1 means allgather */
                           vlbltax,                /* Based array since procdsptab holds based values */
                           dgrfptr->proccnttab, dgrfptr->procdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphGatherAll2: communication error (7)");
-      return     (1);
+      return (1);
     }
   }
 
@@ -356,7 +359,7 @@ const int                     protnum)            /* -1 means allgather */
 #ifdef SCOTCH_DEBUG_DGRAPH2
     if ((recvdsptab[dgrfptr->procglbnbr - 1] + recvcnttab[dgrfptr->procglbnbr - 1]) != (cgrfptr->edgenbr + baseval)) {
       errorPrint ("dgraphGatherAll2: internal error (2)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
   }
@@ -366,7 +369,7 @@ const int                     protnum)            /* -1 means allgather */
                           edgetax,                /* Based array as recvdsptab holds based values    */
                           recvcnttab, recvdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphGatherAll2: communication error (8)");
-      return     (1);
+      return (1);
     }
 
     if (dgrfptr->edloloctax != NULL) {
@@ -374,7 +377,7 @@ const int                     protnum)            /* -1 means allgather */
                             edlotax,              /* Based array as recvdsptab holds based values */
                             recvcnttab, recvdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
         errorPrint ("dgraphGatherAll2: communication error (9)");
-        return     (1);
+        return (1);
       }
     }
   }
@@ -383,7 +386,7 @@ const int                     protnum)            /* -1 means allgather */
                           edgetax,                /* Based array as recvdsptab holds based values */
                           recvcnttab, recvdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphGatherAll2: communication error (10)");
-      return     (1);
+      return (1);
     }
 
     if (dgrfptr->edloloctax != NULL) {
@@ -402,7 +405,7 @@ const int                     protnum)            /* -1 means allgather */
                             edlotax,              /* Based array as recvdsptab holds based values */
                             recvcnttab, recvdsptab, protnum, dgrfptr->proccomm) != MPI_SUCCESS) {
         errorPrint ("dgraphGatherAll2: communication error (11)");
-        return     (1);
+        return (1);
       }
     }
   }
@@ -477,7 +480,7 @@ const int                     protnum)            /* -1 means allgather */
   cheklocval = (cgrfptr != NULL) ? graphCheck (cgrfptr) : 0;
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, dgrfptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphGatherAll2: communication error (12)");
-    return     (1);
+    return (1);
   }
   if (chekglbval != 0) {
     errorPrint ("dgraphGatherAll2: inconsistent centralized graph data");
