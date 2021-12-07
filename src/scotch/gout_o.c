@@ -972,7 +972,7 @@ FILE * const                stream)               /* Output stream              
 
   if (geomptr->verttab == NULL) {
     errorPrint ("outDrawVtkMesh: geometry not provided");
-    return      (1);
+    return (1);
   }
 
   time (&timedat);                                /* Get current time */
