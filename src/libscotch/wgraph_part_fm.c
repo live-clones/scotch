@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 30 jul 2020     **/
-/**                                 to   : 02 dec 2021     **/
+/**                                 to   : 18 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -503,7 +503,7 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
       WgraphPartFmVertex *  vexxptr;
       WgraphPartFmVertex *  vexxend;
       WgraphPartFmVertex *  listptr;              /* List of vertices to process during a move   */
-      Gnum                  listnbr;
+      Gnum                  savenbr;              /* Number of save slots to fill                */
       Gnum                  hashnum;
       Anum                  partnum;
       Anum                  pminnum;
@@ -542,6 +542,7 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
       partnum = linkptr->partnum;                 /* Get vertex target part     */
       pminnum = linkptr->npmipartnum;             /* Get smallest impacted part */
       gainval = (velotax != NULL) ? - velotax[vertnum] : -1;
+      savenbr = 2;                                /* TRICK: account for move and load for vertex itself  */
       nplsidx = partnum;                          /* Initialize vertex part list: first cell is frontier */
       nplstab[partnum].nextidx = -1;
       nplstab[partnum].loadgainval = 0;           /* Vertex remains in its destination part */
@@ -568,6 +569,7 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
           nplstab[partend].sizegainval = -1;
           nplstab[partend].vechnum =              /* Initialize neighbor vertex indices for this part */
           nplstab[partend].vencnum = ~0;
+          savenbr ++;                             /* One more slot */
         }
         linktmp = linknum;
         linknum = linkdat.linktab[linknum].nextidx; /* Get next link        */
@@ -579,7 +581,6 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
       vexxptr->nlstptr = &wgraphpartfmvertexdummy; /* Flag vertex so not taken as frontier neighbor of neighbor */
 
       listptr = &wgraphpartfmvertexdummy;         /* Empty working list of end vertices                       */
-      listnbr = 1;                                /* TRICK: Already one item to account for vertex itself     */
       for (edgenum = verttax[vertnum]; edgenum < vendtax[vertnum]; edgenum ++) { /* For all neighbor vertices */
         Gnum                  vertend;
         WgraphPartFmVertex *  vexxend;
@@ -662,7 +663,7 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
                 (vexxent->nlstptr == NULL)) {     /* And not already in working list                                          */
               vexxent->nlstptr = listptr;         /* Add vertex to working list                                               */
               listptr = vexxent;
-              listnbr ++;
+              savenbr ++;
             }
           }
         }
@@ -670,12 +671,12 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
         if (vexxend->nlstptr == NULL) {           /* If neighbor vertex not already caught as neighbor of neighbor */
           vexxend->nlstptr = listptr;             /* Vertex is/will be in frontier                                 */
           listptr = vexxend;                      /* Link it for further processing                                */
-          listnbr ++;                             /* One more vertex in list                                       */
+          savenbr ++;                             /* One more vertex in list                                       */
         }
       }
       vexxptr->nlstptr = NULL;                    /* Unlock chosen vertex */
 
-      while (wgraphPartFmSaveClaim (&savedat, listnbr + (vendtax[vertnum] - verttax[vertnum]))) { /* TRICK: vertex is already accounted for in listnbr */
+      while (wgraphPartFmSaveClaim (&savedat, savenbr + (vendtax[vertnum] - verttax[vertnum]))) { /* TRICK: vertex is already accounted for in savenbr */
         if (wgraphPartFmSaveResize (&savedat) != 0) {
           errorPrint ("wgraphPartFm: cannot resize save array");
           goto abort;
@@ -818,6 +819,12 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
           }
         }
 
+#ifdef SCOTCH_DEBUG_WGRAPH2
+        if (savedat.savenbr >= savedat.savesiz) {
+          errorPrint ("wgraphPartFm: internal error (7)");
+          goto abort;
+        }
+#endif /* SCOTCH_DEBUG_WGRAPH2 */
         savedat.savetab[savedat.savenbr].typeval = WGRAPHPARTFMSAVEMOVE;
         savedat.savetab[savedat.savenbr].u.movedat.vertnum = vexxend->vertnum;
         savedat.savetab[savedat.savenbr].u.movedat.partnum = vexxend->partnum;
@@ -828,6 +835,12 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
       do {                                        /* For all (possibly) updated parts including part -1 */
         Anum                parttmp;
 
+#ifdef SCOTCH_DEBUG_WGRAPH2
+        if (savedat.savenbr >= savedat.savesiz) {
+          errorPrint ("wgraphPartFm: internal error (8)");
+          goto abort;
+        }
+#endif /* SCOTCH_DEBUG_WGRAPH2 */
         savedat.savetab[savedat.savenbr].typeval = WGRAPHPARTFMSAVELOAD; /* Record change in load */
         savedat.savetab[savedat.savenbr].u.loaddat.partnum = partend;
         if (partend >= 0) {
@@ -838,6 +851,8 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
           cplosum += nplstab[partend].loadgainval; /* Update sum of part loads */
         }
         else {
+          if (savedat.savenbr >= savedat.savesiz)
+            fprintf (stderr, "OUCH\n");
           savedat.savetab[savedat.savenbr].u.loaddat.loadval = frlosum;
           savedat.savetab[savedat.savenbr].u.loaddat.sizeval = fronnbr;
           frlosum += nplstab[partend].loadgainval;
@@ -874,7 +889,7 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
       grafptr->fronload = frlosum;
       grafptr->fronnbr  = fronnbr;
       if (wgraphPartFmCheck (grafptr, &hashdat, &savedat, cplosum) != 0) {
-        errorPrint ("wgraphPartFm: internal error (7)");
+        errorPrint ("wgraphPartFm: internal error (9)");
         goto abort;
       }
 #endif /* SCOTCH_DEBUG_WGRAPH3 */
@@ -922,7 +937,7 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
                vexxptr->vertnum != vertnum; hashnum = (hashnum + 1) & hashdat.hashmsk, vexxptr = hashdat.hashtab + hashnum) {
 #ifdef SCOTCH_DEBUG_WGRAPH2
             if (vexxptr->vertnum == ~0) {         /* If vertex not present */
-              errorPrint ("wgraphPartFm: internal error (8)");
+              errorPrint ("wgraphPartFm: internal error (10)");
               goto abort;
             }
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
@@ -989,7 +1004,7 @@ const WgraphPartFmParam * const paraptr)    /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_WGRAPH2
   if ((grafptr->fronnbr  != fronnbr) ||           /* Compare with loads written back */
       (grafptr->fronload != frlosum)) {
-    errorPrint ("wgraphPartFm: internal error (9)");
+    errorPrint ("wgraphPartFm: internal error (11)");
     goto abort;
   }
 
