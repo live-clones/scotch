@@ -68,7 +68,7 @@ stages:
       esac
     - case "${JOB_THREAD}" in
         n )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DSCOTCH_MPI_ASYNC_COLL" ;;
         c )
           export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD" ;;
         y )
