@@ -562,9 +562,11 @@ check_prog_gord_block		:	check_prog_gord
 
 check_prog_gout			:	check_prog_gord		\
 					check_prog_gpart
+					$(EXECS) $(SCOTCHBINDIR)/gout '-Oi{c,r}' data/bump.grf data/bump.xyz $(TMPDIR)/bump_k9.map $(TMPDIR)/bump_k9.iv
 					$(EXECS) $(SCOTCHBINDIR)/gout '-Om{e}' -gn data/bump.grf /dev/null $(TMPDIR)/bump.ord $(TMPDIR)/bump_ord.eps
 					$(EXECS) $(SCOTCHBINDIR)/gout '-Op{d,e,g,r,s}' data/bump.grf data/bump.xyz $(TMPDIR)/bump_k9.map $(TMPDIR)/bump_k9.eps
-					$(EXECS) $(SCOTCHBINDIR)/gout '-Oi{c,r}' data/bump.grf data/bump.xyz $(TMPDIR)/bump_k9.map $(TMPDIR)/bump_k9.iv
+					$(EXECS) $(SCOTCHBINDIR)/gout '-Ot{b,c,r}' -mn data/bump.grf data/bump.xyz /dev/null $(TMPDIR)/bump_k9.tlp
+					$(EXECS) $(SCOTCHBINDIR)/gout '-Ov{v}' data/bump.grf data/bump.xyz $(TMPDIR)/bump_k9.map $(TMPDIR)/bump_k9.vtk
 
 check_prog_gpart		:
 					$(EXECS) $(SCOTCHBINDIR)/gpart 9 data/bump.grf $(TMPDIR)/bump_k9.map -vmt
