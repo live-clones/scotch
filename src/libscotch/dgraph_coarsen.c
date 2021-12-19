@@ -123,8 +123,8 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
       case 0 :                                    /* No folding */
         multlocsiz = vertlocnbr;
         break;
-     case DGRAPHCOARSENFOLD :                    /* Simple folding; maximum coarsening ratio is 1         */
-       multlocsiz = ((finegrafptr->vertglbnbr * 2) / procglbnbr) + 1; /* Maximum ratio for FOLD is 2 -> 1 */
+      case DGRAPHCOARSENFOLD :                    /* Simple folding; maximum coarsening ratio is 1         */
+        multlocsiz = ((finegrafptr->vertglbnbr * 2) / procglbnbr) + 1; /* Maximum ratio for FOLD is 2 -> 1 */
         break;
       case DGRAPHCOARSENFOLDDUP :                 /* Folding with duplication; maximum coarsening ratio is 1                        */
         multlocsiz = ((finegrafptr->vertglbnbr * 2) / (procglbnbr - (procglbnbr % 2))) + 1; /* Maximum ratio for FOLD-DUP is 3 -> 1 */
