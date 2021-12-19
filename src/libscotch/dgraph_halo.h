@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 6.1  : from : 24 dec 2021     **/
 /**                                 to   : 24 dec 2021     **/
+/**                # Version 7.0  : from : 18 dec 2021     **/
+/**                                 to   : 18 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,28 +60,16 @@
 
 typedef struct DgraphHaloRequest_ {
   int                       flagval;
-#ifdef SCOTCH_PTHREAD
-  Dgraph *                  grafptr;              /* Pointer to graph data       */
-  void *                    attrgsttab;           /* Attribute array to share    */
-  MPI_Datatype              attrglbtype;          /* Attribute datatype          */
-  pthread_t                 thrdval;              /* Data of asynchronous thread */
-#else /* SCOTCH_PTHREAD */
 #ifdef SCOTCH_MPI_ASYNC_COLL
   byte *                    attrsndtab;           /* Group leader for memory freeing        */
   MPI_Request               requval;              /* MPI asynchronous communication request */
 #endif /* SCOTCH_MPI_ASYNC_COLL */
-#endif /* SCOTCH_PTHREAD */
 } DgraphHaloRequest;
 
 /*
 ** The function prototypes.
 */
 
-#ifdef DGRAPH_HALO
-#ifdef SCOTCH_PTHREAD_MPI
-static void *               dgraphHaloAsync2    (DgraphHaloRequest * restrict);
-#endif /* SCOTCH_PTHREAD_MPI */
-#endif /* DGRAPH_HALO */
 void                        dgraphHaloAsync     (Dgraph * restrict const, void * restrict const, const MPI_Datatype, DgraphHaloRequest * restrict);
 int                         dgraphHaloWait      (DgraphHaloRequest * restrict);
 
