@@ -32,13 +32,13 @@
 
 VERSION		= 6.1
 
-UMAN		= scotch_user$(VERSION)
+MMAN		= scotch_maint$(VERSION)
 
 FLAGS		= -sPAPERSIZE=a4
 
 DEPS		= $(wildcard *.tex) $(wildcard *.eps)
 
-MANS		= $(UMAN).ps.gz $(UMAN).pdf
+MANS		= $(MMAN).ps.gz $(MMAN).pdf
 
 CP		= cp -f
 RM		= rm -f
@@ -59,18 +59,18 @@ default				:	$(MANS)
 %.ps				:	%.dvi
 					dvips $(FLAGS) $(<)
 
-$(UMAN).pdf			:	s.dvi
+$(MMAN).pdf			:	m.dvi
 					dvipdf $(FLAGS) $(<) $(@)
 
-$(UMAN).ps.gz			:	s.ps
+$(MMAN).ps.gz			:	m.ps
 					gzip -9 -c < $(<) > $(@)
 
 install				:	$(MANS)
-					-$(CP) $(UMAN).ps.gz ../../
-					-$(CP) $(UMAN).pdf ../../
+					-$(CP) $(MMAN).ps.gz ../../
+					-$(CP) $(MMAN).pdf ../../
 
 clean				:
-					-$(RM) *~ s.aux s.blg s.log s.toc
+					-$(RM) *~ m.aux m.blg m.log m.toc
 
 realclean			:	clean
-					-$(RM) *~ s.bbl *dvi s.ps $(UMAN)*
+					-$(RM) *~ m.bbl *dvi m.ps $(MMAN)*
