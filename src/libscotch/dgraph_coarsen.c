@@ -467,41 +467,41 @@ DgraphCoarsenData * restrict const  coarptr)
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   MPI_Comm                                  proccomm    = coarptr->finegrafptr->proccomm;
-  Dgraph * restrict const                   grafptr     = coarptr->finegrafptr;
+  Dgraph * restrict const                   finegrafptr = coarptr->finegrafptr;
   Dgraph * restrict const                   coargrafptr = coarptr->coargrafptr;
   Gnum * restrict const                     coargsttax  = coarptr->coargsttax;
-  const int * restrict const                procngbtab  = grafptr->procngbtab;
+  const int * restrict const                procngbtab  = finegrafptr->procngbtab;
   const int * restrict const                procgsttax  = coarptr->procgsttax;
-  const Gnum * restrict const               vertloctax  = grafptr->vertloctax;
-  const Gnum * restrict const               vendloctax  = grafptr->vendloctax;
-  const Gnum * restrict const               veloloctax  = grafptr->veloloctax;
-  const Gnum * restrict const               edgeloctax  = grafptr->edgeloctax;
-  const Gnum * restrict const               edgegsttax  = grafptr->edgegsttax;
-  const Gnum * restrict const               edloloctax  = grafptr->edloloctax;
+  const Gnum * restrict const               vertloctax  = finegrafptr->vertloctax;
+  const Gnum * restrict const               vendloctax  = finegrafptr->vendloctax;
+  const Gnum * restrict const               veloloctax  = finegrafptr->veloloctax;
+  const Gnum * restrict const               edgeloctax  = finegrafptr->edgeloctax;
+  const Gnum * restrict const               edgegsttax  = finegrafptr->edgegsttax;
+  const Gnum * restrict const               edloloctax  = finegrafptr->edloloctax;
   const DgraphCoarsenMulti * restrict const multloctab  = coarptr->multloctab;
   DgraphCoarsenVert * const                 vrcvdattab  = coarptr->vrcvdattab; /* [norestrict:async] */
   DgraphCoarsenVert * restrict const        vsnddattab  = coarptr->vsnddattab;
   int * restrict const                      nsndidxtab  = coarptr->nsndidxtab;
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
-  memSet (coargsttax + grafptr->baseval, ~0, grafptr->vertgstnbr * sizeof (Gnum));
+  memSet (coargsttax + finegrafptr->baseval, ~0, finegrafptr->vertgstnbr * sizeof (Gnum));
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  procngbnbr = grafptr->procngbnbr;
+  procngbnbr = finegrafptr->procngbnbr;
 
   for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++) /* Reset indices for sending messages */
     nsndidxtab[procngbnum] = coarptr->vsnddsptab[procngbtab[procngbnum]];
 
-  vertlocadj = grafptr->procvrttab[grafptr->proclocnum] - grafptr->baseval;
-  multlocadj = coargrafptr->procdsptab[grafptr->proclocnum];
+  vertlocadj = finegrafptr->procvrttab[finegrafptr->proclocnum] - finegrafptr->baseval;
+  multlocadj = coargrafptr->procdsptab[finegrafptr->proclocnum];
   for (multlocnum = 0; multlocnum < coarptr->multlocnbr; multlocnum ++) {
     Gnum                vertlocnum0;
     Gnum                vertlocnum1;
 
     vertlocnum0 = multloctab[multlocnum].vertglbnum[0] - vertlocadj;
 #ifdef SCOTCH_DEBUG_DGRAPH2
-    if ((vertlocnum0 <  grafptr->baseval) ||
-        (vertlocnum0 >= grafptr->vertlocnnd)) {
+    if ((vertlocnum0 <  finegrafptr->baseval) ||
+        (vertlocnum0 >= finegrafptr->vertlocnnd)) {
       errorPrint ("dgraphCoarsenBuild: internal error (1)");
       return (1);
     }
@@ -512,8 +512,8 @@ DgraphCoarsenData * restrict const  coarptr)
     if (vertlocnum1 >= 0) {                       /* If second vertex is local */
       vertlocnum1 -= vertlocadj;
 #ifdef SCOTCH_DEBUG_DGRAPH2
-      if ((vertlocnum1 <  grafptr->baseval) ||
-          (vertlocnum1 >= grafptr->vertlocnnd)) {
+      if ((vertlocnum1 <  finegrafptr->baseval) ||
+          (vertlocnum1 >= finegrafptr->vertlocnnd)) {
         errorPrint ("dgraphCoarsenBuild: internal error (2)");
         return (1);
       }
@@ -529,8 +529,8 @@ DgraphCoarsenData * restrict const  coarptr)
 
       edgelocnum = -2 - vertlocnum1;
 #ifdef SCOTCH_DEBUG_DGRAPH2
-      if ((edgelocnum < grafptr->baseval) ||
-          (edgelocnum >= (grafptr->edgelocsiz + grafptr->baseval))) {
+      if ((edgelocnum < finegrafptr->baseval) ||
+          (edgelocnum >= (finegrafptr->edgelocsiz + finegrafptr->baseval))) {
         errorPrint ("dgraphCoarsenBuild: internal error (3)");
         return (1);
       }
@@ -563,7 +563,7 @@ DgraphCoarsenData * restrict const  coarptr)
     coarptr->multloctab = memRealloc (coarptr->multloctab, coarptr->multlocnbr * sizeof (DgraphCoarsenMulti)); /* In the mean time, resize multinode array */
   }
 
-  if ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphCoarsenBuildPtop : dgraphCoarsenBuildColl) (coarptr) != 0)
+  if ((((finegrafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphCoarsenBuildPtop : dgraphCoarsenBuildColl) (coarptr) != 0)
     return (1);
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
@@ -575,7 +575,7 @@ DgraphCoarsenData * restrict const  coarptr)
 
   ercvcnttab = coargrafptr->procrcvtab;           /* TRICK: re-use some private coarse graph arrays after vertex exchange phase */
   ercvdsptab = coargrafptr->procsndtab;
-  for (procnum = 0, ercvdspval = 0; procnum < grafptr->procglbnbr; procnum ++) { /* TRICK: dcntglbtab array no longer needed afterwards; can be freed */
+  for (procnum = 0, ercvdspval = 0; procnum < finegrafptr->procglbnbr; procnum ++) { /* TRICK: dcntglbtab array no longer needed afterwards; can be freed */
     ercvdsptab[procnum] = ercvdspval;
     ercvcnttab[procnum] = coarptr->dcntglbtab[procnum].vertsndnbr * ((veloloctax != NULL) ? 2 : 1) +
                           coarptr->dcntglbtab[procnum].edgesndnbr * ((edloloctax != NULL) ? 2 : 1);
@@ -586,7 +586,7 @@ DgraphCoarsenData * restrict const  coarptr)
   coarptr->nsndidxtab = NULL;                     /* This block won't be reclaimed */
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
-  for (vertlocnum = grafptr->baseval; vertlocnum < grafptr->vertlocnnd; vertlocnum ++) {
+  for (vertlocnum = finegrafptr->baseval; vertlocnum < finegrafptr->vertlocnnd; vertlocnum ++) {
     if (coargsttax[vertlocnum] < 0) {
       errorPrint ("dgraphCoarsenBuild: invalid matching");
       return (1);
@@ -594,7 +594,7 @@ DgraphCoarsenData * restrict const  coarptr)
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  if (dgraphHaloSync (grafptr, coargsttax + grafptr->baseval, GNUM_MPI) != 0) {
+  if (dgraphHaloSync (finegrafptr, coargsttax + finegrafptr->baseval, GNUM_MPI) != 0) {
     errorPrint ("dgraphCoarsenBuild: cannot propagate multinode indices");
     return (1);
   }
@@ -602,11 +602,11 @@ DgraphCoarsenData * restrict const  coarptr)
   edgelocsiz = coarptr->edgekptnbr + coarptr->edgercvnbr - coarptr->vertrcvnbr; /* TRICK: remote edge to local vertex will always collapse */
   ercvdatsiz = coarptr->vertrcvnbr + coarptr->edgercvnbr; /* Basic size: degrees plus edge data                                            */
   esnddatsiz = coarptr->vertsndnbr + coarptr->edgesndnbr;
-  if (grafptr->veloloctax != NULL) {              /* Add vertex loads if necessary */
+  if (finegrafptr->veloloctax != NULL) {          /* Add vertex loads if necessary */
     ercvdatsiz += coarptr->vertrcvnbr;
     esnddatsiz += coarptr->vertsndnbr;
   }
-  if (grafptr->edloloctax != NULL) {              /* Add edge loads if necessary */
+  if (finegrafptr->edloloctax != NULL) {          /* Add edge loads if necessary */
     ercvdatsiz += coarptr->edgercvnbr;
     esnddatsiz += coarptr->edgesndnbr;
   }
@@ -617,7 +617,7 @@ DgraphCoarsenData * restrict const  coarptr)
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  for (coarhashmsk = 31; coarhashmsk < grafptr->degrglbmax; coarhashmsk = coarhashmsk * 2 + 1) ;
+  for (coarhashmsk = 31; coarhashmsk < finegrafptr->degrglbmax; coarhashmsk = coarhashmsk * 2 + 1) ;
   coarhashmsk = coarhashmsk * 4 + 3;
   coarhashnbr = coarhashmsk + 1;
 
@@ -639,12 +639,12 @@ DgraphCoarsenData * restrict const  coarptr)
     cheklocval = 1;
   }
   else if ((coarptr->nsndidxtab = memAllocGroup ((void **) (void *) /* TRICK: allow data array to be released on error */
-                                                 &esndcnttab,  (size_t) (grafptr->procglbnbr * sizeof (int)),
-                                                 &esnddsptab,  (size_t) (grafptr->procglbnbr * sizeof (int)),
+                                                 &esndcnttab,  (size_t) (finegrafptr->procglbnbr * sizeof (int)),
+                                                 &esnddsptab,  (size_t) (finegrafptr->procglbnbr * sizeof (int)),
                                                  &esnddattab,  (size_t) (esnddatsiz * sizeof (Gnum)),
                                                  &ercvdattab,  (size_t) (ercvdatsiz * sizeof (Gnum)),
 #ifdef SCOTCH_DEBUG_DGRAPH2
-                                                 &ercvdbgtab,  (size_t) (grafptr->procglbnbr * sizeof (int)),
+                                                 &ercvdbgtab,  (size_t) (finegrafptr->procglbnbr * sizeof (int)),
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
                                                  &coarhashtab, (size_t) (coarhashnbr * sizeof (DgraphCoarsenHash)), NULL)) == NULL) {
     errorPrint ("dgraphCoarsenBuild: out of memory (4)");
@@ -665,7 +665,7 @@ DgraphCoarsenData * restrict const  coarptr)
 
   memSet (coarhashtab, ~0, coarhashnbr * sizeof (DgraphCoarsenHash));
 
-  coargrafptr->baseval     = grafptr->baseval;
+  coargrafptr->baseval     = finegrafptr->baseval;
   coargrafptr->vertlocnnd  = coargrafptr->baseval + coargrafptr->vertlocnbr;
   coargrafptr->vertloctax -= coargrafptr->baseval;
   coargrafptr->vendloctax  = coargrafptr->vertloctax + 1; /* Graph is compact */
@@ -718,7 +718,7 @@ DgraphCoarsenData * restrict const  coarptr)
     esndcnttab[procnum] = esnddspval - esnddsptab[procnum];
     procnum ++;
   }
-  while (procnum < grafptr->procglbnbr) {         /* Complete fill-in of empty slots */
+  while (procnum < finegrafptr->procglbnbr) {     /* Complete fill-in of empty slots */
     esnddsptab[procnum] = esnddspval;
     esndcnttab[procnum] = 0;
     procnum ++;
@@ -735,7 +735,7 @@ DgraphCoarsenData * restrict const  coarptr)
     errorPrint ("dgraphCoarsenBuild: communication error (3)");
     return (1);
   }
-  for (procnum = 0; procnum < grafptr->procglbnbr; procnum ++) {
+  for (procnum = 0; procnum < finegrafptr->procglbnbr; procnum ++) {
     if (ercvdbgtab[procnum] != ercvcnttab[procnum]) {
       errorPrint ("dgraphCoarsenBuild: internal error (9)");
       return (1);
@@ -751,7 +751,7 @@ DgraphCoarsenData * restrict const  coarptr)
   for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++)
     ercvdsptab[procngbnum] = ercvdsptab[procngbtab[procngbnum]];
 
-  multloctax = coarptr->multloctab - grafptr->baseval;
+  multloctax = coarptr->multloctab - finegrafptr->baseval;
 
   edlolocval = 1;
   coarvelolocsum = 0;
@@ -760,7 +760,7 @@ DgraphCoarsenData * restrict const  coarptr)
   coarveloloctax = coargrafptr->veloloctax;
   coaredgeloctax = coargrafptr->edgeloctax;
   coaredloloctax = coargrafptr->edloloctax;
-  for (coarvertlocnum = coaredgelocnum = grafptr->baseval, coarvertglbnum = multlocadj, coarvertlocnnd = coarvertlocnum + coargrafptr->vertlocnbr;
+  for (coarvertlocnum = coaredgelocnum = finegrafptr->baseval, coarvertglbnum = multlocadj, coarvertlocnnd = coarvertlocnum + coargrafptr->vertlocnbr;
        coarvertlocnum < coarvertlocnnd; coarvertlocnum ++, coarvertglbnum ++) {
     Gnum                coarvelolocval;
     Gnum                vertlocnum;
@@ -876,7 +876,7 @@ DgraphCoarsenData * restrict const  coarptr)
   }
   coarvertloctax[coarvertlocnum] = coaredgelocnum; /* Set end of compact edge array */
   coargrafptr->velolocsum = coarvelolocsum;
-  coargrafptr->veloglbsum = grafptr->veloglbsum;
+  coargrafptr->veloglbsum = finegrafptr->veloglbsum;
   coargrafptr->edgelocnbr =
   coargrafptr->edgelocsiz = coaredgelocnum - coargrafptr->baseval;
 
