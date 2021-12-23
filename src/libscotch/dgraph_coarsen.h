@@ -89,9 +89,9 @@ typedef struct DgraphCoarsenVert_ {
    the amount of data to be sent to each neighbor process. */
 
 typedef struct DgraphCoarsenCount_ {
-  Gnum                      vertsndnbr;
-  Gnum                      edgesndnbr;
-  Gnum                      vertlocnbr;
+  Gnum                      vertsndnbr;           /*+ Number of vertices to send to this neighbor +*/
+  Gnum                      edgesndnbr;           /*+ Number of edges to send to this neighbor    +*/
+  Gnum                      vertlocnbr;           /*+ Number of local vertices in this neighbor   +*/
 } DgraphCoarsenCount;
 
 /*+ A table made of such elements is used during
