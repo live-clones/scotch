@@ -51,7 +51,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 27 dec 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 01 oct 2021     **/
+/**                                 to   : 24 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -417,6 +417,146 @@ DgraphCoarsenData * restrict const  coarptr)
   return (0);
 }
 
+/******************************/
+/*                            */
+/* The coarse graph adjacency */
+/* building routine.          */
+/*                            */
+/******************************/
+
+/* This routine merges the adjacency of the two
+** fine vertices of a multinode into a coarse
+** vertex, using a hash table for merging. The
+** first multinode vertex is always local, while
+** the second one can be either local or remote.
+** It returns:
+** - >= 0  : new coaredgenum value.
+*/
+
+static
+Gnum
+dgraphCoarsenBuildAdj (
+const Dgraph * restrict const       finegrafptr,
+DgraphCoarsenMulti * restrict const multloctax,
+const Gnum                          coarvertlocnum,
+const Gnum                          coarvertglbnum,
+Gnum * restrict const               coarveloloctax,
+Gnum * restrict const               coaredgeloctax,
+Gnum                                coaredgelocnum,
+Gnum * restrict const               coaredloloctax,
+const Gnum                          vertlocadj,   /* Fine vertex local adjustment */
+const Gnum * restrict const         coargsttax,
+int * restrict const                ercvdsptab,
+const Gnum * restrict const         ercvdattab,
+const int * restrict const          procgsttax,
+DgraphCoarsenHash * restrict const  coarhashtab,
+const Gnum                          coarhashmsk)
+{
+  Gnum                coarvelolocval;
+  Gnum                vertlocnum;
+  int                 i;
+
+  const Gnum * restrict const       vertloctax = finegrafptr->vertloctax;
+  const Gnum * restrict const       vendloctax = finegrafptr->vendloctax;
+  const Gnum * restrict const       veloloctax = finegrafptr->veloloctax;
+  const Gnum * restrict const       edgeloctax = finegrafptr->edgeloctax;
+  const Gnum * restrict const       edgegsttax = finegrafptr->edgegsttax;
+  const Gnum * restrict const       edloloctax = finegrafptr->edloloctax;
+
+  i = 0;
+  coarvelolocval = 0;
+  vertlocnum = multloctax[coarvertlocnum].vertglbnum[0] - vertlocadj;
+  while (1) {                                     /* Pseudo-infinite loop on both vertices of the multinode */
+    Gnum                vertglbnum;
+    Gnum                edgelocnum;
+    Gnum                edgelocnnd;
+    Gnum                degrlocval;
+    int                 procngbnum;
+    int                 ercvidxnum;
+
+    coarvelolocval += (veloloctax != NULL) ? veloloctax[vertlocnum] : 1;
+    for (edgelocnum = vertloctax[vertlocnum], edgelocnnd = vendloctax[vertlocnum]; /* Loop on edges of first (and sometimes second) local mate */
+         edgelocnum < edgelocnnd; edgelocnum ++) {
+      Gnum                coarvertglbend;
+      Gnum                edlolocval;
+      Gnum                h;
+
+      coarvertglbend = coargsttax[edgegsttax[edgelocnum]];
+      if (coarvertglbend == coarvertglbnum)       /* If end of collapsed edge */
+        continue;
+
+      edlolocval = (edloloctax != NULL) ? edloloctax[edgelocnum] : 1;
+      for (h = (coarvertglbend * COARHASHPRIME) & coarhashmsk; ; h = (h + 1) & coarhashmsk) {
+        if (coarhashtab[h].vertorgnum != coarvertglbnum) { /* If old slot           */
+          coarhashtab[h].vertorgnum = coarvertglbnum; /* Mark it in reference array */
+          coarhashtab[h].vertendnum = coarvertglbend;
+          coarhashtab[h].edgelocnum = coaredgelocnum;
+          coaredgeloctax[coaredgelocnum] = coarvertglbend; /* One more edge created */
+          coaredloloctax[coaredgelocnum] = edlolocval;
+          coaredgelocnum ++;
+          break;                                  /* Give up hashing */
+        }
+        if (coarhashtab[h].vertendnum == coarvertglbend) { /* If coarse edge already exists */
+          coaredloloctax[coarhashtab[h].edgelocnum] += edlolocval;
+          break;                                  /* Give up hashing */
+        }
+      }
+    }
+
+    if (i ++ > 0)                                 /* If second local vertex has been processed, exit */
+      break;
+
+    vertglbnum = multloctax[coarvertlocnum].vertglbnum[1];
+
+    if (vertglbnum >= 0) {                        /* If second multinode vertex is local */
+      if ((vertglbnum - vertlocadj) == vertlocnum) /* If single multinode                */
+        break;
+      vertlocnum = (vertglbnum - vertlocadj);
+      continue;
+    }
+
+    edgelocnum = -2 - vertglbnum;                 /* Get edge number associated with remote second multinode vertex    */
+    multloctax[coarvertlocnum].vertglbnum[1] = edgeloctax[edgelocnum]; /* Set global number of second multinode vertex */
+    procngbnum = procgsttax[edgegsttax[edgelocnum]]; /* Get number of neighbor process to which owns end vertex        */
+    ercvidxnum = ercvdsptab[procngbnum];          /* Get start index of remote vertex adgacency list                   */
+    degrlocval = ercvdattab[ercvidxnum ++];       /* Read vertex degree                                                */
+    coarvelolocval += (veloloctax != NULL) ? ercvdattab[ercvidxnum ++] : 1; /* Read vertex load if any                 */
+
+    while (degrlocval -- > 0) {                   /* For all edges */
+      Gnum                coarvertglbend;
+      Gnum                edlolocval;
+      Gnum                h;
+
+      coarvertglbend = ercvdattab[ercvidxnum ++]; /* Get coarse end vertex number                 */
+      edlolocval = (edloloctax != NULL) ? ercvdattab[ercvidxnum ++] : 1; /* Read edge load if any */
+      if (coarvertglbend == coarvertglbnum)       /* If loop coarse edge, skip it                 */
+        continue;
+
+      for (h = (coarvertglbend * COARHASHPRIME) & coarhashmsk; ; h = (h + 1) & coarhashmsk) {
+        if (coarhashtab[h].vertorgnum != coarvertglbnum) { /* If old slot           */
+          coarhashtab[h].vertorgnum = coarvertglbnum; /* Mark it in reference array */
+          coarhashtab[h].vertendnum = coarvertglbend;
+          coarhashtab[h].edgelocnum = coaredgelocnum;
+          coaredgeloctax[coaredgelocnum] = coarvertglbend; /* One more edge created */
+          coaredloloctax[coaredgelocnum] = edlolocval;
+          coaredgelocnum ++;
+          break;                                  /* Give up hashing */
+        }
+        if (coarhashtab[h].vertendnum == coarvertglbend) { /* If coarse edge already exists */
+          coaredloloctax[coarhashtab[h].edgelocnum] += edlolocval;
+          break;                                  /* Give up hashing */
+        }
+      }
+    }
+
+    ercvdsptab[procngbnum] = ercvidxnum;          /* Write back updated receive index       */
+    break;                                        /* Exit loop after processing remote mate */
+  }
+  coarveloloctax[coarvertlocnum] = coarvelolocval;
+
+  return (coaredgelocnum);
+}
+
 /**********************************/
 /*                                */
 /* Coarse graph building routine. */
@@ -439,7 +579,6 @@ DgraphCoarsenData * restrict const  coarptr)
 {
   Gnum                          vertlocadj;       /* Adjustment value from fine local numbering to global numbering   */
   Gnum                          edgelocsiz;       /* Size of coarse edge array                                        */
-  Gnum                          edlolocval;
   Gnum * restrict               ercvdattab;
   Gnum * restrict               esnddattab;
   int * restrict                ercvcnttab;
@@ -765,7 +904,6 @@ DgraphCoarsenData * restrict const  coarptr)
 
   multloctax = coarptr->multloctab - finegrafptr->baseval;
 
-  edlolocval = 1;
   coarvelolocsum = 0;
   coardegrlocmax = 0;
   coarvertloctax = coargrafptr->vertloctax;
@@ -774,115 +912,20 @@ DgraphCoarsenData * restrict const  coarptr)
   coaredloloctax = coargrafptr->edloloctax;
   for (coarvertlocnum = coaredgelocnum = finegrafptr->baseval, coarvertglbnum = multlocadj, coarvertlocnnd = coarvertlocnum + coargrafptr->vertlocnbr;
        coarvertlocnum < coarvertlocnnd; coarvertlocnum ++, coarvertglbnum ++) {
-    Gnum                coarvelolocval;
-    Gnum                vertlocnum;
-    int                 i;
-
     coarvertloctax[coarvertlocnum] = coaredgelocnum;
 
-    i = 0;
-    coarvelolocval = 0;
-    vertlocnum = multloctax[coarvertlocnum].vertglbnum[0] - vertlocadj;
-    while (1) {                                   /* Pseudo-infinite loop on both vertices of the multinode */
-      Gnum                  vertglbnum;
-      Gnum                  edgelocnum;
-      Gnum                  edgelocnnd;
-      Gnum                  degrlocval;
-      int                   procngbnum;
-      int                   ercvidxnum;
-
-      coarvelolocval += (veloloctax != NULL) ? veloloctax[vertlocnum] : 1;
-      for (edgelocnum = vertloctax[vertlocnum], edgelocnnd = vendloctax[vertlocnum]; /* Loop on edges of first (and sometimes second) local mate */
-           edgelocnum < edgelocnnd; edgelocnum ++) {
-        Gnum                  coarvertglbend;
-        Gnum                  h;
-
-        coarvertglbend = coargsttax[edgegsttax[edgelocnum]];
-        if (coarvertglbend == coarvertglbnum)     /* If end of collapsed edge */
-          continue;
-
-        if (edloloctax != NULL)
-          edlolocval = edloloctax[edgelocnum];
-        for (h = (coarvertglbend * COARHASHPRIME) & coarhashmsk; ; h = (h + 1) & coarhashmsk) {
-          if (coarhashtab[h].vertorgnum != coarvertglbnum) { /* If old slot           */
-            coarhashtab[h].vertorgnum = coarvertglbnum; /* Mark it in reference array */
-            coarhashtab[h].vertendnum = coarvertglbend;
-            coarhashtab[h].edgelocnum = coaredgelocnum;
+    coaredgelocnum = dgraphCoarsenBuildAdj (finegrafptr, multloctax, coarvertlocnum, coarvertglbnum,
+                                            coarveloloctax, coaredgeloctax, coaredgelocnum, coaredloloctax,
+                                            vertlocadj, coargsttax, ercvdsptab, ercvdattab, procgsttax,
+                                            coarhashtab, coarhashmsk);
 #ifdef SCOTCH_DEBUG_DGRAPH2
-            if (coaredgelocnum >= (edgelocsiz + coargrafptr->baseval)) {
-              errorPrint ("dgraphCoarsenBuild: internal error (10)");
-              return (1);
-            }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-            coaredgeloctax[coaredgelocnum] = coarvertglbend; /* One more edge created */
-            coaredloloctax[coaredgelocnum] = edlolocval;
-            coaredgelocnum ++;
-            break;                                /* Give up hashing */
-          }
-          if (coarhashtab[h].vertendnum == coarvertglbend) { /* If coarse edge already exists */
-            coaredloloctax[coarhashtab[h].edgelocnum] += edlolocval;
-            break;                                /* Give up hashing */
-          }
-        }
-      }
-
-      if (i ++ > 0)                               /* If second local vertex has been processed, exit */
-        break;
-
-      vertglbnum = multloctax[coarvertlocnum].vertglbnum[1];
-
-      if (vertglbnum >= 0) {                      /* If second multinode vertex is local */
-        if ((vertglbnum - vertlocadj) == vertlocnum) /* If single multinode              */
-          break;
-        vertlocnum = (vertglbnum - vertlocadj);
-        continue;
-      }
-
-      edgelocnum = -2 - vertglbnum;               /* Get edge number associated with remote second multinode vertex      */
-      multloctax[coarvertlocnum].vertglbnum[1] = edgeloctax[edgelocnum]; /* Set global number of second multinode vertex */
-      procngbnum = procgsttax[edgegsttax[edgelocnum]]; /* Get number of neighbor process to which owns end vertex        */
-      ercvidxnum = ercvdsptab[procngbnum];        /* Get start index of remote vertex adgacency list                     */
-      degrlocval = ercvdattab[ercvidxnum ++];     /* Read vertex degree                                                  */
-      coarvelolocval += (veloloctax != NULL) ? ercvdattab[ercvidxnum ++] : 1; /* Read vertex load if any                 */
-
-      while (degrlocval -- > 0) {                 /* For all edges */
-        Gnum                  coarvertglbend;
-        Gnum                  h;
-
-        coarvertglbend = ercvdattab[ercvidxnum ++]; /* Get coarse end vertex number */
-        if (edloloctax != NULL)                   /* Read edge load if any          */
-          edlolocval = ercvdattab[ercvidxnum ++];
-        if (coarvertglbend == coarvertglbnum)     /* If loop coarse edge, skip it */
-          continue;
-
-        for (h = (coarvertglbend * COARHASHPRIME) & coarhashmsk; ; h = (h + 1) & coarhashmsk) {
-          if (coarhashtab[h].vertorgnum != coarvertglbnum) { /* If old slot           */
-            coarhashtab[h].vertorgnum = coarvertglbnum; /* Mark it in reference array */
-            coarhashtab[h].vertendnum = coarvertglbend;
-            coarhashtab[h].edgelocnum = coaredgelocnum;
-#ifdef SCOTCH_DEBUG_DGRAPH2
-            if (coaredgelocnum >= (edgelocsiz + coargrafptr->baseval)) {
-              errorPrint ("dgraphCoarsenBuild: internal error (11)");
-              return (1);
-            }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-            coaredgeloctax[coaredgelocnum] = coarvertglbend; /* One more edge created */
-            coaredloloctax[coaredgelocnum] = edlolocval;
-            coaredgelocnum ++;
-            break;                                /* Give up hashing */
-          }
-          if (coarhashtab[h].vertendnum == coarvertglbend) { /* If coarse edge already exists */
-            coaredloloctax[coarhashtab[h].edgelocnum] += edlolocval;
-            break;                                /* Give up hashing */
-          }
-        }
-      }
-
-      ercvdsptab[procngbnum] = ercvidxnum;        /* Write back updated receive index       */
-      break;                                      /* Exit loop after processing remote mate */
+    if (coaredgelocnum >= (edgelocsiz + coargrafptr->baseval)) {
+      errorPrint ("dgraphCoarsenBuild: internal error (10)");
+      return (1);
     }
-    coarvelolocsum += coarvelolocval;
-    coarveloloctax[coarvertlocnum] = coarvelolocval;
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+
+    coarvelolocsum += coarveloloctax[coarvertlocnum];
     if (coardegrlocmax < (coaredgelocnum - coarvertloctax[coarvertlocnum]))
       coardegrlocmax = (coaredgelocnum - coarvertloctax[coarvertlocnum]);
   }
