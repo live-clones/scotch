@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 17 jun 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 24 dec 2021     **/
+/**                                 to   : 29 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -105,6 +105,21 @@ typedef struct DgraphCoarsenHash_ {
 } DgraphCoarsenHash;
 
 
+/*+ The thread-specific data block, which
+    has two uses. Firstly, it helps define
+    the repartition across threads of the
+    adjacency lists received from the
+    different neighbors. Secondly, it
+    allows reduction of graph properties.  +*/
+
+typedef struct DgraphCoarsenThread_  {
+  Gnum                      edgelocsum;           /*+ Upper bound on sum of local (fine) edges for this thread and below  +*/
+  Gnum                      velolocsum;           /*+ Sum of vertex loads for each thread, for final reduce-sum operation +*/
+  Gnum                      edgelocnbr;           /*+ Number of edges for each thread, for final reduce-sum operation     +*/
+  Gnum                      degrlocmax;           /*+ Maximum degree for each thread, for final reduce-max operation      +*/
+  int                       retuval;              /*+ Return value                                                        +*/
+} DgraphCoarsenThread;
+
 /*+ This structure gathers all data necessary
     to the proper execution of the coarsening
     and matching routines.                    +*/
@@ -142,8 +157,12 @@ typedef struct DgraphCoarsenData_ {
   Gnum                      edgesndnbr;           /*+ Number of fine edges to be sent                              +*/
   Gnum *                    ercvdattab;           /*+ Pointer to adjacency exchange receive array                  +*/
   int *                     ercvdsptab;           /*+ Displacement data for adjacency exchange receive array       +*/
+#if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
+  int *                     ercvcnttab;           /*+ Count data for adjacency exchange receive array              +*/
+#endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
   Gnum                      degrlocmax;           /*+ Local maximum degree of coarse graph                         +*/
-  Gnum                      coarhashnbr;          /*+ Size of adjacency hash table                                 +*/
+  Gnum                      coarhashmsk;          /*+ Mask value of adjacency hash table (TRICK: size - 1)         +*/
+  DgraphCoarsenThread *     thrdtab;              /*+ Optional array for adjacency splitting across threads        +*/
   Context *                 contptr;              /*+ Execution context                                            +*/
 } DgraphCoarsenData;
 
