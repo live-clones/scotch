@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 17 jun 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 14 jan 2020     **/
+/**                                 to   : 24 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -140,6 +140,10 @@ typedef struct DgraphCoarsenData_ {
   Gnum                      edgekptnbr;           /*+ Upper bound on number of edges kept from finer graph         +*/
   Gnum                      vertsndnbr;           /*+ Number of fine vertices to be sent                           +*/
   Gnum                      edgesndnbr;           /*+ Number of fine edges to be sent                              +*/
+  Gnum *                    ercvdattab;           /*+ Pointer to adjacency exchange receive array                  +*/
+  int *                     ercvdsptab;           /*+ Displacement data for adjacency exchange receive array       +*/
+  Gnum                      degrlocmax;           /*+ Local maximum degree of coarse graph                         +*/
+  Gnum                      coarhashnbr;          /*+ Size of adjacency hash table                                 +*/
   Context *                 contptr;              /*+ Execution context                                            +*/
 } DgraphCoarsenData;
 

@@ -557,11 +557,94 @@ const Gnum                          coarhashmsk)
   return (coaredgelocnum);
 }
 
-/**********************************/
-/*                                */
-/* Coarse graph building routine. */
-/*                                */
-/**********************************/
+/***********************************/
+/*                                 */
+/* Coarse graph building routines. */
+/*                                 */
+/***********************************/
+
+/* This routine finalizes the creation of the
+** distributed coarse graph in a sequential way.
+** The distributed coarse graph is compact.
+** It returns:
+** - 0   : if coarse graph was created.
+** - !0  : on error.
+*/
+
+static
+int
+dgraphCoarsenBuildSeq (
+DgraphCoarsenData * restrict const  coarptr)
+{
+  DgraphCoarsenMulti * restrict multloctax;
+  Gnum                          multlocadj;
+  Gnum                          coarvertlocnum;
+  Gnum                          coarvertlocnnd;
+  Gnum                          coarvelolocsum;
+  Gnum                          coardegrlocmax;
+  Gnum * restrict               coarvertloctax;
+  Gnum * restrict               coarveloloctax;
+  Gnum                          coaredgelocnum;
+  Gnum * restrict               coaredgeloctax;
+  Gnum * restrict               coaredloloctax;
+  DgraphCoarsenHash * restrict  coarhashtab;      /* Table for merging vertex edges to same multinode */
+  Gnum                          coarhashmsk;      /* Mask for accessing hash table                    */
+
+  Dgraph * restrict const           finegrafptr = coarptr->finegrafptr;
+  Dgraph * restrict const           coargrafptr = coarptr->coargrafptr;
+  const Gnum * restrict const       coargsttax  = coarptr->coargsttax;
+  const Gnum                        vertlocadj  = finegrafptr->procvrttab[finegrafptr->proclocnum] - finegrafptr->baseval;
+  const int * restrict const        procgsttax  = coarptr->procgsttax;
+  const Gnum * restrict const       ercvdattab  = coarptr->ercvdattab;
+  int * restrict const              ercvdsptab  = coarptr->ercvdsptab; /* Use global displacement data */
+
+  coarhashmsk = coarptr->coarhashnbr;             /* Load hash table size: TRICK: power of two */
+  if ((coarhashtab = memAlloc (coarhashmsk * sizeof (DgraphCoarsenHash))) == NULL) {
+    errorPrint ("dgraphCoarsenBuildSeq: out of memory");
+    return (1);
+  }
+  memSet (coarhashtab, ~0, coarhashmsk * sizeof (DgraphCoarsenHash));
+  coarhashmsk --;                                 /* TRICK: turn power-of-two number into binary mask */
+
+  multloctax = coarptr->multloctab - finegrafptr->baseval;
+  multlocadj = coargrafptr->procdsptab[finegrafptr->proclocnum] - finegrafptr->baseval;
+
+  coarvelolocsum = 0;
+  coardegrlocmax = 0;
+  coarvertloctax = coargrafptr->vertloctax;
+  coarveloloctax = coargrafptr->veloloctax;
+  coaredgeloctax = coargrafptr->edgeloctax;
+  coaredloloctax = coargrafptr->edloloctax;
+  for (coarvertlocnum = coaredgelocnum = finegrafptr->baseval, coarvertlocnnd = coarvertlocnum + coargrafptr->vertlocnbr;
+       coarvertlocnum < coarvertlocnnd; coarvertlocnum ++) {
+    coarvertloctax[coarvertlocnum] = coaredgelocnum;
+
+    coaredgelocnum = dgraphCoarsenBuildAdj (finegrafptr, multloctax, coarvertlocnum, coarvertlocnum + multlocadj,
+                                            coarveloloctax, coaredgeloctax, coaredgelocnum, coaredloloctax,
+                                            vertlocadj, coargsttax, ercvdsptab, ercvdattab, procgsttax,
+                                            coarhashtab, coarhashmsk);
+#ifdef SCOTCH_DEBUG_DGRAPH2
+    if (coaredgelocnum > (coargrafptr->edgelocsiz + coargrafptr->baseval)) { /* Number of local edges can be reached, not exceeded */
+      errorPrint ("dgraphCoarsenBuild: internal error (10)");
+      return (1);
+    }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
+
+    coarvelolocsum += coarveloloctax[coarvertlocnum];
+    if (coardegrlocmax < (coaredgelocnum - coarvertloctax[coarvertlocnum]))
+      coardegrlocmax = (coaredgelocnum - coarvertloctax[coarvertlocnum]);
+  }
+  coarvertloctax[coarvertlocnum] = coaredgelocnum; /* Set end of compact edge array */
+
+  coarptr->degrlocmax = coardegrlocmax;
+  coargrafptr->velolocsum = coarvelolocsum;
+  coargrafptr->edgelocnbr =
+  coargrafptr->edgelocsiz = coaredgelocnum - coargrafptr->baseval; /* Compact edge array */
+
+  memFree (coarhashtab);
+
+  return (0);
+}
 
 /* This routine performs the coarsening of edges
 ** with respect to the coarmulttax array computed
@@ -577,7 +660,6 @@ int
 dgraphCoarsenBuild (
 DgraphCoarsenData * restrict const  coarptr)
 {
-  Gnum                          vertlocadj;       /* Adjustment value from fine local numbering to global numbering   */
   Gnum                          edgelocsiz;       /* Size of coarse edge array                                        */
   Gnum * restrict               ercvdattab;
   Gnum * restrict               esnddattab;
@@ -589,25 +671,11 @@ DgraphCoarsenData * restrict const  coarptr)
   int                           esnddspval;
   int                           ercvdatsiz;
   int                           esnddatsiz;
-  DgraphCoarsenMulti * restrict multloctax;
   Gnum                          multlocnum;
-  Gnum                          multlocadj;       /* Adjustment value from coarse local numbering to global numbering */
   int                           procngbnbr;
   int                           procngbnum;
   int                           procnum;
-  Gnum                          coarvertglbnum;
-  Gnum                          coarvertlocnum;
-  Gnum                          coarvertlocnnd;
-  Gnum * restrict               coarvertloctax;
-  Gnum * restrict               coarveloloctax;
-  Gnum                          coarvelolocsum;
-  Gnum                          coardegrlocmax;
-  Gnum                          coaredgelocnum;
-  Gnum * restrict               coaredgeloctax;
-  Gnum * restrict               coaredloloctax;
   Gnum                          coarhashnbr;      /* Size of hash table                                               */
-  Gnum                          coarhashmsk;      /* Mask for access hash table                                       */
-  DgraphCoarsenHash * restrict  coarhashtab;      /* Table for merging vertex edges to same multinode                 */
   Gnum                          reduloctab[4];
   Gnum                          reduglbtab[4];
   int                           cheklocval;
@@ -629,6 +697,8 @@ DgraphCoarsenData * restrict const  coarptr)
   const Gnum * restrict const               edgeloctax  = finegrafptr->edgeloctax;
   const Gnum * restrict const               edgegsttax  = finegrafptr->edgegsttax;
   const Gnum * restrict const               edloloctax  = finegrafptr->edloloctax;
+  const Gnum                                vertlocadj  = finegrafptr->procvrttab[finegrafptr->proclocnum] - finegrafptr->baseval;
+  const Gnum                                multlocadj  = coargrafptr->procdsptab[finegrafptr->proclocnum];
   const DgraphCoarsenMulti * restrict const multloctab  = coarptr->multloctab;
   DgraphCoarsenVert * const                 vrcvdattab  = coarptr->vrcvdattab; /* [norestrict:async] */
   DgraphCoarsenVert * restrict const        vsnddattab  = coarptr->vsnddattab;
@@ -643,8 +713,6 @@ DgraphCoarsenData * restrict const  coarptr)
   for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++) /* Reset indices for sending messages */
     nsndidxtab[procngbnum] = coarptr->vsnddsptab[procngbtab[procngbnum]];
 
-  vertlocadj = finegrafptr->procvrttab[finegrafptr->proclocnum] - finegrafptr->baseval;
-  multlocadj = coargrafptr->procdsptab[finegrafptr->proclocnum];
   for (multlocnum = 0; multlocnum < coarptr->multlocnbr; multlocnum ++) { /* Loop on local multinode data */
     Gnum                vertlocnum0;
     Gnum                vertlocnum1;
@@ -657,7 +725,7 @@ DgraphCoarsenData * restrict const  coarptr)
       return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
-    coargsttax[vertlocnum0] = multlocnum + multlocadj;
+    coargsttax[vertlocnum0] = multlocnum + multlocadj; /* Un-based number with base adjustment */
 
     vertlocnum1 = multloctab[multlocnum].vertglbnum[1];
     if (vertlocnum1 >= 0) {                       /* If second vertex is local */
@@ -768,10 +836,6 @@ DgraphCoarsenData * restrict const  coarptr)
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  for (coarhashmsk = 31; coarhashmsk < finegrafptr->degrglbmax; coarhashmsk = coarhashmsk * 2 + 1) ;
-  coarhashmsk = coarhashmsk * 4 + 3;
-  coarhashnbr = coarhashmsk + 1;
-
   cheklocval = 0;
   coargrafptr->flagval = DGRAPHFREETABS | DGRAPHFREEPRIV | DGRAPHVERTGROUP; /* Coarse graph is not yet based */
   coarptr->coarprvptr = NULL;                     /* Transfer ownership of private arrays to coarse graph    */
@@ -797,7 +861,7 @@ DgraphCoarsenData * restrict const  coarptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
                                                  &ercvdbgtab,  (size_t) (finegrafptr->procglbnbr * sizeof (int)),
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
-                                                 &coarhashtab, (size_t) (coarhashnbr * sizeof (DgraphCoarsenHash)), NULL)) == NULL) {
+                                                 NULL)) == NULL) {
     errorPrint ("dgraphCoarsenBuild: out of memory (4)");
     cheklocval = 1;
   }
@@ -814,8 +878,6 @@ DgraphCoarsenData * restrict const  coarptr)
     return (1);
   }
 
-  memSet (coarhashtab, ~0, coarhashnbr * sizeof (DgraphCoarsenHash));
-
   coargrafptr->baseval     = finegrafptr->baseval;
   coargrafptr->vertlocnnd  = coargrafptr->baseval + coargrafptr->vertlocnbr;
   coargrafptr->vertloctax -= coargrafptr->baseval;
@@ -823,6 +885,8 @@ DgraphCoarsenData * restrict const  coarptr)
   coargrafptr->veloloctax -= coargrafptr->baseval;
   coargrafptr->edgeloctax -= coargrafptr->baseval;
   coargrafptr->edloloctax -= coargrafptr->baseval;
+  coargrafptr->edgelocsiz  = edgelocsiz;          /* Temporary size of edge array */
+  coargrafptr->veloglbsum  = finegrafptr->veloglbsum;
 
   for (procngbnum = procnum = 0, esnddspval = 0; procngbnum < procngbnbr; procngbnum ++) { /* Fill-in adjacency arrays to be sent to neighboring processes */
     int                 procglbnum;
@@ -899,51 +963,28 @@ DgraphCoarsenData * restrict const  coarptr)
     return (1);
   }
 
-  for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++) /* Make receive array compact */
+  for (procngbnum = 0; procngbnum < procngbnbr; procngbnum ++) /* Make receive array store only neighbor-related data */
     ercvdsptab[procngbnum] = ercvdsptab[procngbtab[procngbnum]];
+  coarptr->ercvdattab = ercvdattab;
+  coarptr->ercvdsptab = ercvdsptab;
 
-  multloctax = coarptr->multloctab - finegrafptr->baseval;
+  for (coarhashnbr = 32; coarhashnbr < finegrafptr->degrglbmax; coarhashnbr = coarhashnbr * 2) ; /* Compute size of adjacency hash table */
+  coarptr->coarhashnbr = coarhashnbr * 4;
 
-  coarvelolocsum = 0;
-  coardegrlocmax = 0;
-  coarvertloctax = coargrafptr->vertloctax;
-  coarveloloctax = coargrafptr->veloloctax;
-  coaredgeloctax = coargrafptr->edgeloctax;
-  coaredloloctax = coargrafptr->edloloctax;
-  for (coarvertlocnum = coaredgelocnum = finegrafptr->baseval, coarvertglbnum = multlocadj, coarvertlocnnd = coarvertlocnum + coargrafptr->vertlocnbr;
-       coarvertlocnum < coarvertlocnnd; coarvertlocnum ++, coarvertglbnum ++) {
-    coarvertloctax[coarvertlocnum] = coaredgelocnum;
-
-    coaredgelocnum = dgraphCoarsenBuildAdj (finegrafptr, multloctax, coarvertlocnum, coarvertglbnum,
-                                            coarveloloctax, coaredgeloctax, coaredgelocnum, coaredloloctax,
-                                            vertlocadj, coargsttax, ercvdsptab, ercvdattab, procgsttax,
-                                            coarhashtab, coarhashmsk);
-#ifdef SCOTCH_DEBUG_DGRAPH2
-    if (coaredgelocnum >= (edgelocsiz + coargrafptr->baseval)) {
-      errorPrint ("dgraphCoarsenBuild: internal error (10)");
-      return (1);
-    }
-#endif /* SCOTCH_DEBUG_DGRAPH2 */
-
-    coarvelolocsum += coarveloloctax[coarvertlocnum];
-    if (coardegrlocmax < (coaredgelocnum - coarvertloctax[coarvertlocnum]))
-      coardegrlocmax = (coaredgelocnum - coarvertloctax[coarvertlocnum]);
+  if (dgraphCoarsenBuildSeq (coarptr)) {
+    errorPrint ("dgraphCoarsenBuild: could not compute adjacency");
+    return (1);
   }
-  coarvertloctax[coarvertlocnum] = coaredgelocnum; /* Set end of compact edge array */
-  coargrafptr->velolocsum = coarvelolocsum;
-  coargrafptr->veloglbsum = finegrafptr->veloglbsum;
-  coargrafptr->edgelocnbr =
-  coargrafptr->edgelocsiz = coaredgelocnum - coargrafptr->baseval;
 
-  coargrafptr->edgeloctax  = memRealloc (coaredgeloctax + coargrafptr->baseval, coargrafptr->edgelocnbr * sizeof (Gnum));
+  coargrafptr->edgeloctax  = memRealloc (coargrafptr->edgeloctax + coargrafptr->baseval, coargrafptr->edgelocsiz * sizeof (Gnum));
   coargrafptr->edgeloctax -= coargrafptr->baseval;
-  coargrafptr->edloloctax  = memRealloc (coaredloloctax + coargrafptr->baseval, coargrafptr->edgelocnbr * sizeof (Gnum));
+  coargrafptr->edloloctax  = memRealloc (coargrafptr->edloloctax + coargrafptr->baseval, coargrafptr->edgelocsiz * sizeof (Gnum));
   coargrafptr->edloloctax -= coargrafptr->baseval;
 
   reduloctab[0] = coargrafptr->vertlocnbr;        /* Get maximum over all processes */
-  reduloctab[1] = coargrafptr->edgelocnbr;
-  reduloctab[2] = coardegrlocmax;                 /* Get local maximum degree */
-  reduloctab[3] = coargrafptr->edgelocnbr;
+  reduloctab[1] = coargrafptr->edgelocnbr;        /* Get maximum over all processes */
+  reduloctab[2] = coarptr->degrlocmax;            /* Get maximum over all processes */
+  reduloctab[3] = coargrafptr->edgelocnbr;        /* Get sum over all processes     */
 
   if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 3, 1, proccomm) != 0) {
     errorPrint ("dgraphCoarsenBuild: communication error (5)");
