@@ -102,7 +102,7 @@ void * restrict const               vremptr)      /* Pointer to remote value */
     tlocptr->coardegrmax = tremptr->coardegrmax;
 }
 
-/* This routine performs a perfix scan
+/* This routine performs a prefix scan
 ** sum operation on a single Gnum value.
 */
 
