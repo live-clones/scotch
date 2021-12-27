@@ -42,7 +42,7 @@
 /**    DATES     : # Version 6.0  : from : 04 dec 2008     **/
 /**                                 to   : 10 oct 2013     **/
 /**                # Version 6.1  : from : 17 jun 2021     **/
-/**                                 to   : 17 jun 2021     **/
+/**                                 to   : 27 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -259,7 +259,7 @@ DgraphMatchData * restrict const  mateptr)
           return;
         }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
-        mategsttax[vertlocnum] =                  /* Create single multinode            */
+        mategsttax[vertlocnum] =                  /* Create single multinode */
         multloctab[multlocnbr].vertglbnum[0] =
         multloctab[multlocnbr].vertglbnum[1] = vertlocnum + vertlocadj;
         multlocnbr ++;                            /* One more coarse vertex created  */
@@ -289,7 +289,7 @@ DgraphMatchData * restrict const  mateptr)
 
         if (vertgstend >= vertlocnnd)             /* If end vertex is a ghost vertex        */
           mategsttax[vertlocnum] = -2 - edgelocnum; /* Local vertex index codes edge number */
-        else {                                    /* Perform local matching */
+        else {                                    /* Perform local matching                 */
           mategsttax[vertlocnum] = (vertgstend + vertlocadj);
           mategsttax[vertgstend] = (vertlocnum + vertlocadj);
 #ifdef SCOTCH_DEBUG_DGRAPH2
@@ -301,7 +301,7 @@ DgraphMatchData * restrict const  mateptr)
           multloctab[multlocnbr].vertglbnum[0] = (vertlocnum + vertlocadj);
           multloctab[multlocnbr].vertglbnum[1] = (vertgstend + vertlocadj);
           multlocnbr ++;                          /* One more coarse vertex created (two more local mates) */
-          edgekptnbr += (edgelocnnd - vertloctax[vertlocnum]) + (vendloctax[vertgstend] - vertloctax[vertgstend]) - 1;
+          edgekptnbr += (edgelocnnd - vertloctax[vertlocnum]) + (vendloctax[vertgstend] - vertloctax[vertgstend]) - 2; /* "-2" for collapsed arcs */
         }
       }                                           /* Else vertex stays enqueued */
     }
