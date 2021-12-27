@@ -109,9 +109,9 @@ DgraphMatchData * restrict const  mateptr)
 
       edgelocnum = vertloctax[vertlocnum];
       edgelocnnd = vendloctax[vertlocnum];
-      if (((flagval & DGRAPHCOARSENNOMERGE) == 0) && /* If merging isolated vertices is allowed  */
-          ((edgelocnnd - edgelocnum) == 0)) {     /* And if vertex is isolated                   */
-        while (mategsttax[-- vertlocnnt] != ~0) ; /* Search for first matchable local "neighbor" */
+      if (((edgelocnnd - edgelocnum) == 0) &&     /* If vertex is isolated                       */
+          ((flagval & DGRAPHCOARSENNOMERGE) == 0)) { /* And merging isolated vertices is allowed */
+        while (mategsttax[-- vertlocnnt] != ~0) ; /* Search for first matchable local neighbor   */
 
         mategsttax[vertlocnum] = (vertlocnnt + vertlocadj); /* At worst we will stop at vertlocnum */
         mategsttax[vertlocnnt] = (vertlocnum + vertlocadj);
