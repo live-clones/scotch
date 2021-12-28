@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2014,2015,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 10 nov 2011     **/
 /**                                 to   : 21 may 2018     **/
+/**                # Version 6.1  : from : 28 dec 2021     **/
+/**                                 to   : 28 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -141,7 +143,7 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  if (SCOTCH_dgraphLoad (&grafdat, file, 0, 0) != 0) {
+  if (SCOTCH_dgraphLoad (&grafdat, file, -1, 0) != 0) {
     SCOTCH_errorPrint ("main: cannot load graph");
     exit (EXIT_FAILURE);
   }
@@ -154,7 +156,7 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  SCOTCH_dgraphData (&grafdat, NULL, &vertglbnbr, &vertlocnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+  SCOTCH_dgraphData (&grafdat, &baseval, &vertglbnbr, &vertlocnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
   if ((fronloctab = malloc (vertlocnbr * sizeof (SCOTCH_Num))) == NULL) {
     SCOTCH_errorPrint ("main: cannot allocate frontier array");
@@ -166,7 +168,7 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  fronloctab[0] = 0;
+  fronloctab[0] = baseval;
 
   if (SCOTCH_dgraphBand (&grafdat, (proclocnum == 1) ? 1 : 0, fronloctab, 4, &bandgrafdat) != 0) {
     SCOTCH_errorPrint ("main: cannot compute band graph");
