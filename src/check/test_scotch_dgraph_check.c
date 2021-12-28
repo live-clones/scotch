@@ -1,4 +1,4 @@
-/* Copyright 2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 22 may 2018     **/
+/**                # Version 6.1  : from : 28 dec 2021     **/
+/**                                 to   : 28 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -132,7 +134,7 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  if (SCOTCH_dgraphLoad (&grafdat, file, 0, 0) != 0) {
+  if (SCOTCH_dgraphLoad (&grafdat, file, -1, 0) != 0) {
     SCOTCH_errorPrint ("main: cannot load graph");
     exit (EXIT_FAILURE);
   }
