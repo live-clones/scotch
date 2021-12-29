@@ -724,11 +724,6 @@ DgraphCoarsenData * restrict const  coarptr)
     return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
-  while (procnum < grafptr->procglbnbr) {         /* Complete edge data send displacement array */
-    esnddsptab[procnum] = esnddspval;
-    esndcnttab[procnum] = 0;
-    procnum ++;
-  }
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (MPI_Alltoall (esndcnttab, 1, MPI_INT, ercvdbgtab, 1, MPI_INT, proccomm) != MPI_SUCCESS) {
