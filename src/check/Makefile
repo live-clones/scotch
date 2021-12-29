@@ -465,6 +465,7 @@ test_scotch_dgraph_band		:	test_scotch_dgraph_band.c	\
 check_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen
 					$(EXECP3) ./test_scotch_dgraph_coarsen data/bump.grf
 					$(EXECP3) ./test_scotch_dgraph_coarsen data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_coarsen data/m4x4_b1.grf
 
 test_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
