@@ -5,31 +5,13 @@ Scotch 7.0 installation instructions
 1) Mandatory tools
 ==================
 
-In order for you to compile Scotch and/or PT-Scotch, you must have GNU
-Make installed on your system, as well as Flex and Bison. An
-implementation of the MPI message-passing library is also mandatory to
-compile PT-Scotch library and software.
+In order for you to compile Scotch and/or PT-Scotch, you must have
+Flex and Bison installed on your system, as well as GNU Make, and
+possibly CMake if you prefer this tool. An implementation of the MPI
+message-passing library is also mandatory to compile PT-Scotch library
+and software.
 
-To check if GNU Make is installed and is found first, please type:
-
-%prompt% make --version
-
-It should read:
-% GNU Make x.xx
-% Copyright (C) 20xx  Free Software Foundation, Inc.
-etc, etc.
-
-
-Alternatively, if GNU Make is installed but its directory does
-not appear first in the PATH variable that is searched for
-executables, you can try to locate it using the which command:
-
-%prompt% which make
-
-If several occurrences of make are found, one might be GNU Make,
-so try to figure out which of them.
-
-To see if Flex and Bison are present, type
+To check whether Flex and Bison are present, please type:
 %prompt% which flex
 %prompt% which bison
 
@@ -37,6 +19,12 @@ Note: to implement pure parsers, recent versions of the Flex and
 Bison tools are needed (e.g., the 3.4 branch). On MacOs, an older
 version is provided by default; users may get an adequate version from
 the "HomeBrew" repository, using command "brew install bison".
+
+To check whether GNU Make and/or CMake are installed and are found
+first, please type:
+
+%prompt% make --version
+%prompt% cmake --version
 
 If some of these are missing, please:
 - check your path variable (just in case they are located in
@@ -48,22 +36,46 @@ If some of these are missing, please:
   on your system;
 - install a local copy of the tools on your own (less recommended,
   please ask your system administrator first).
-  GNU Make is available from the FSF website, at:
-  http://www.gnu.org/software/make/ and
-  http://ftp.gnu.org/pub/gnu/make/ .
-  Flex and Bison are also available from the very same FSF
-  website, at:
+  Flex and Bison are available from the FSF website, at:
   http://www.gnu.org/software/flex/
   http://ftp.gnu.org/non-gnu/flex/
   http://www.gnu.org/software/bison/
   http://ftp.gnu.org/pub/gnu/bison/ .
+  CMake is available from its repository, at:
+  https://cmake.org/download/
+  GNU Make is available from the FSF website, at:
+  http://www.gnu.org/software/make/ and
+  http://ftp.gnu.org/pub/gnu/make/ .
 
 
 2) Configuration
 ================
 
-2.1) Creating the "Makefile.inc" file
--------------------------------------
+To compile and test Scotch, one can either use CMake, or GNU Make. The
+latter option provides most flexibility, but may be more tedious.
+Please read the following sections to see what options are available,
+as they may either favor or hinder the performance of Scotch on your
+system.
+
+
+2.1) Compiling with CMake
+-------------------------
+
+Go to the "src/" directory. Then, type the following commands:
+
+%prompt% mkdir build
+%prompt% cd build
+%prompt% cmake .. 
+
+These commands should create all the makefiles that are needed by GNU
+Make to perform automagically.
+
+
+2.2) Compiling with GNU Make
+----------------------------
+
+In order for GNU Make to run, one needs to create a "Makefile.inc"
+file containing the proper compilation commands and variables.
 
 Go to the "src/" directory.
 
@@ -98,7 +110,7 @@ Make.inc directory. This is for instance the case for the mingw32
 platform.
 
 
-2.2) Parser issues
+2.3) Parser issues
 ------------------
 
 Since Scotch uses a parser to analyze its strategy strings, it may
@@ -108,13 +120,13 @@ platform configuration files which are based on Flex / Bison are
 already tailored so as to prevent such conflicts. If you use other
 parsing tools, you may have to provide other options.
 
-Since version 7.0, Scotch uses reentrant versions of the parsers
+Since version 7.0, Scotch uses re-entrant versions of the parsers
 produced by Flex and Bison. They are inherently thread-safe and free
 all their work memory, which was not the case for the previous
-"un-pure" version.
+"un-pure" versions.
 
 
-2.3) Integer size issues
+2.4) Integer size issues
 ------------------------
 
 By default, all integers used in Scotch and PT-Scotch are of the "int"
@@ -160,7 +172,7 @@ version of "scotch.h" may lead to unpredictable behavior because of
 memory overflow.
 
 
-2.2) (Re)naming of library objects
+2.5) (Re)naming of library objects
 ----------------------------------
 
 In order to prevent conflicts with third-party software, the following
@@ -213,7 +225,7 @@ any renaming of all of the external objects, the preprocessor symbol
 "scotch.h", to be taken into account by the application programmer.
 
 
-2.5) Portability issues
+2.6) Portability issues
 -----------------------
 
 While most of the code of Scotch poses no compatibility issues, some
@@ -242,7 +254,7 @@ gettimeofday() are selected, depending on POSIX compilation flags.
 systems that do not allow process forking.
 
 
-2.6) Compression libraries
+2.7) Compression libraries
 --------------------------
 
 The binaries of the Scotch distribution can handle compressed
@@ -268,7 +280,7 @@ compressed files cannot be handled when the "-DCOMMON_PTHREAD_FILE"
 flag is not set (see below).
 
 
-2.7) Multi-threading
+2.8) Multi-threading
 --------------------
 
 Scotch can take advantage of Posix threads when they are
@@ -280,7 +292,7 @@ available. They are used in several places:
   "-DSCOTCH_PTHREAD" flag (see below). When the
   "-DSCOTCH_DETERMINISTIC" flag is also set, Scotch will automatically
   prevent itself, by default, from using multi-threaded versions of
-  some algorithms if this would yield undeterministic results;
+  some algorithms if this would yield non-deterministic results;
 
 - to compress and decompress file data. This can be done either
   by launching a service thread, or else by creating a separate
@@ -345,7 +357,7 @@ default number of threads to be used by Scotch. For instance, setting
 it to 1 will make Scotch run sequentially by default, unless otherwise
 prescribed at run time by the SCOTCH_PTHREAD_NUMBER environment
 variable. Indeed, some algorithms have had to be reformulated to
-accommodate for multi-threading, and will be most probably more
+accommodate for multi-threading, and will most probably be more
 efficient than sequential processing only for a number of
 threads strictly greater than 2. Setting "-DSCOTCH_PTHREAD_NUMBER=1"
 allows the user to run sequential algorithms by default instead of
@@ -373,8 +385,8 @@ When compiling under mingw32 on Windows systems, it is possible to
 benefit from multi-threading by including the "semaphore.h" and
 "pthread.h" files, included in the "src/misc" subdirectory, at compile
 time. These files have been kindly provided by Samuel Thibault, under
-a BSD 2-Clause License. These files will not work for Cygwin. This is
-not a problem, as Cygwin provides its own implementation of Posix
+the BSD 2-Clause License. These files will not work for Cygwin. This
+is not a problem, as Cygwin provides its own implementation of Posix
 threads.
 
 When Scotch is compiled with "-DSCOTCH_PTHREAD", Scotch makes use, by
@@ -397,7 +409,7 @@ set, the number of available threads is the number of cores declared
 at system level.
 
 
-2.8) Multi-threading and MPI
+2.9) Multi-threading and MPI
 ----------------------------
 
 Running a multi-threaded version of PT-Scotch on top of MPI requires
@@ -431,8 +443,8 @@ displayed using "--report-bindings"), e.g.:
 % mpirun -np 8 --map-by socket:PE=3 --bind-to core <program>
 
 
-2.9) Monitoring memory allocation
----------------------------------
+2.10) Monitoring memory allocation
+----------------------------------
 
 Some memory allocation information can be aggregated if PT-Scotch is
 compiled with the -DCOMMON_MEMORY_TRACE flag. When this flag is set,
@@ -452,7 +464,7 @@ memory checking should be enabled by default, and 0 else. This
 mechanism is absolutely NOT thread-safe at the time being.
 
 
-2.10) Randomness
+2.11) Randomness
 ----------------
 
 Many algorithms in Scotch and PT-Scotch are based on the random
@@ -467,7 +479,7 @@ pseudo-random numbers. Consequently, while using a different random
 seed for each run is likely to explore better the solution space,
 using a fixed random seed eases the debugging of programs, because
 algorithms behave identically across multiple runs (save for
-asynchronousness issues, see next section). When Scotch is compiled
+asynchronicity issues, see next section). When Scotch is compiled
 with the "-DCOMMON_RANDOM_FIXED_SEED" flag set, multiple executions of
 the same sequential programs will always yield the same results.
 
@@ -481,7 +493,7 @@ operating system-dependent pseudo-random generators has been
 deprecated since version 7.0.
 
 
-2.11) Deterministic behavior
+2.12) Deterministic behavior
 ----------------------------
 
 When Scotch is compiled with the "-DCOMMON_RANDOM_FIXED_SEED"
@@ -514,7 +526,7 @@ Setting this flag automatically results in setting the
 "-DCOMMON_RANDOM_FIXED_SEED" flag.
 
 
-2.12) Point-to-point or collective communications
+2.13) Point-to-point or collective communications
 -------------------------------------------------
 
 Since distributed graph vertices can have any initial distribution
@@ -531,7 +543,7 @@ numbers of processes. To disable it, set the "-DSCOTCH_PTOP" flag at
 compile time.
 
 
-2.13) MeTiS compatibility library
+2.14) MeTiS compatibility library
 ---------------------------------
 
 In order to ease the adoption of Scotch/PT-Scotch by people who
@@ -601,6 +613,17 @@ appeared between MeTiS v3 and MeTiS v5.
 
 3) Compilation
 ==============
+
+3.1) Compiling with CMake
+-------------------------
+
+With CMake, this step should be straightforward. Please type:
+
+%prompt% make 
+
+
+3.2) Compiling with GNU Make
+----------------------------
 
 Once you have performed the configuration of the "Makefile.inc" file,
 compile the Scotch distribution by typing:
@@ -685,6 +708,18 @@ will install the Scotch/PT-Scotch files in a subtree of directory
 
 4) Checking
 ===========
+
+4.1) Checking with CMake
+------------------------
+
+With CMake, this step should also be straightforward. Please type:
+
+%prompt% env CTEST_OUTPUT_ON_FAILURE=1 ctest
+%prompt% make install
+
+
+4.2) Checking with GNU Make
+---------------------------
 
 A set of test programs is available in the "src/check" directory. They
 serve as non-regression checks for both sequential and parallel
