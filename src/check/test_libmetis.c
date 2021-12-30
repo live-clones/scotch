@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 15 may 2019     **/
 /**                                 to   : 19 may 2019     **/
 /**                # Version 6.1  : from : 22 jun 2021     **/
-/**                                 to   : 22 jun 2021     **/
+/**                                 to   : 30 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,7 +89,7 @@ char *              argv[])
 #endif /* (SCOTCH_METIS_VERSION == 3) */
   const SCOTCH_Num          partnbr = 9;
 #if (SCOTCH_METIS_VERSION == 5)
-  const SCOTCH_Num          awgttab[9] = { 2, 2, 1, 2, 2, 3, 1, 1, 1 };
+  const double              awgttab[9] = { 0.10, 0.10, 0.05, 0.10, 0.20, 0.30, 0.05, 0.05, 0.05 };
   const SCOTCH_Num          nconval = 1;
   const double              kbaltab[1] = { 0.05 };
   SCOTCH_Num                options[METIS_NOPTIONS];

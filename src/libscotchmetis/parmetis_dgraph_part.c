@@ -65,6 +65,40 @@
 /*                                  */
 /************************************/
 
+/* This routine converts an array of doubles
+** into an array of proportionate integers.
+** It returns:
+** - void  : in all cases.
+*/
+
+#define EPSILON 1e-6F
+
+static
+void
+_SCOTCH_ParMETIS_floatToInt (
+const SCOTCH_Num            valunbr,
+const float * const         flottab,
+SCOTCH_Num * const          intetab)
+{
+  float               flotadj;
+  SCOTCH_Num          i;
+
+  for (i = 0, flotadj = 1.0; i < valunbr; i ++) {
+    float               flotval;
+    float               flottmp;
+
+    flotval  = flottab[i];
+    flotval *= flotadj;                         /* See if renormalization factor works        */
+    flottmp  = flotval - floor (flotval + EPSILON); /* Determine its possible fractional part */
+    if (fabs (flottmp) >= EPSILON) {            /* If a residual fractional part exists       */
+      flottmp = flotadj / flottmp;              /* Incorporate it in renormalization factor   */
+      flotadj = (flotadj * flottmp) / (float) intGcd ((SCOTCH_Num) round (flotadj), (SCOTCH_Num) round (flottmp));
+    }
+  }
+  for (i = 0; i < valunbr; i ++)
+    intetab[i] = (SCOTCH_Num) round (flottab[i] * flotadj);
+}
+
 int
 SCOTCH_ParMETIS_V3_PartKway (
 const SCOTCH_Num * const    vtxdist,
@@ -95,36 +129,15 @@ MPI_Comm *                  commptr)
   SCOTCH_Num *        veloloctab;
   SCOTCH_Num          edgelocnbr;
   SCOTCH_Num *        edloloctab;
-  SCOTCH_Num *        velotab;
-  double *            vwgttab;
-  SCOTCH_Num          i;
+  SCOTCH_Num *        twintab;                    /* Integer array of target weights                               */
 
-  if ((vwgttab = malloc (*nparts * sizeof (double))) == NULL)
+  if ((twintab = malloc (*nparts * sizeof (SCOTCH_Num))) == NULL)
     return (METIS_ERROR_MEMORY);
-  if ((velotab = malloc (*nparts * sizeof (SCOTCH_Num))) == NULL) {
-    free (vwgttab);
-    return (METIS_ERROR_MEMORY);
-  }
-  for (i = 0; i < *nparts; i ++)
-    vwgttab[i] = (double) tpwgts[i] * (double) (*nparts);
-  for (i = 0; i < *nparts; i ++) {
-    double deltval;
-    deltval = fabs (vwgttab[i] - floor (vwgttab[i] + 0.5));
-    if (deltval > 0.01) {
-      SCOTCH_Num          j;
-
-      deltval = 1.0 / deltval;
-      for (j = 0; j < *nparts; j ++)
-        vwgttab[j] *= deltval;
-    }
-  }
-  for (i = 0; i < *nparts; i ++)
-    velotab[i] = (SCOTCH_Num) (vwgttab[i] + 0.5);
+  _SCOTCH_ParMETIS_floatToInt (*nparts, tpwgts, twintab);
 
   proccomm = *commptr;
   if (SCOTCH_dgraphInit (&grafdat, proccomm) != 0) {
-    free   (velotab);
-    free   (vwgttab);
+    free   (twintab);
     return (METIS_ERROR);
   }
 
@@ -146,7 +159,7 @@ MPI_Comm *                  commptr)
     {
       SCOTCH_archInit (&archdat);
 
-      if ((SCOTCH_archCmpltw (&archdat, *nparts, velotab) == 0) &&
+      if ((SCOTCH_archCmpltw (&archdat, *nparts, twintab) == 0) &&
           (SCOTCH_dgraphMapInit (&grafdat, &mappdat, &archdat, part) == 0)) {
         SCOTCH_dgraphMapCompute (&grafdat, &mappdat, &stradat);
 
@@ -160,8 +173,7 @@ MPI_Comm *                  commptr)
 
   *edgecut = 0;                                   /* TODO : compute real edge cut for people who might want it */
 
-  free (velotab);
-  free (vwgttab);
+  free (twintab);
 
   if (baseval != 0) {                             /* MeTiS part array is based, Scotch is not */
     SCOTCH_Num          vertlocnum;
