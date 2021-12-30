@@ -44,6 +44,8 @@
 /**                                 to   : 22 apr 2009     **/
 /**                # Version 6.0  : from : 03 apr 2012     **/
 /**                                 to   : 03 apr 2012     **/
+/**                # Version 6.1  : from : 27 dec 2021     **/
+/**                                 to   : 27 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -308,9 +310,9 @@ DgraphMatchData * restrict const  mateptr)
             flagval = ((mateglbnum + (mateglbnum - vertglbnum) * flagval) & 1) ^ flagval;
             if (flagval == 0) {                   /* If flag is even, create multinode */
               multloctab[multlocnbr].vertglbnum[0] = vertglbnum;
-              multloctab[multlocnbr].vertglbnum[1] = mategstnum; /* Remote mate: negative value */
-              multlocnbr ++;                      /* One more coarse vertex created             */
-            edgekptnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum];
+              multloctab[multlocnbr].vertglbnum[1] = mategstnum; /* Remote mate: negative value         */
+              multlocnbr ++;                      /* One more coarse vertex created                     */
+              edgekptnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum] - 1; /* "-1" for ghost edge */
             }
             else {                                /* If flag is odd, prepare to send vertex data at build time */
               vertsndnbr ++;
@@ -483,7 +485,7 @@ DgraphMatchData * restrict const  mateptr)
         multloctab[multlocnbr].vertglbnum[1] = mategstnum; /* Remote mate: negative value */
         multlocnbr ++;                            /* One more coarse vertex created       */
         matelocnbr ++;
-        edgekptnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum];
+        edgekptnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum] - 1; /* "-1" for ghost edge */
       }
       else {                                      /* If negative answer from the mate we wanted  */
         mategsttax[vertlocnum] = -1;              /* Reset local vertex as free for mating       */

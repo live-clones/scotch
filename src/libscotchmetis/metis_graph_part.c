@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 23 dec 2011     **/
 /**                                 to   : 19 aug 2019     **/
 /**                # Version 6.1  : from : 20 jun 2021     **/
-/**                                 to   : 20 jun 2021     **/
+/**                                 to   : 30 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -196,6 +196,39 @@ SCOTCH_Num * const          cvolptr)
 /*                                  */
 /************************************/
 
+/* This routine converts an array of doubles
+** into an array of proportionate integers.
+** It returns:
+** - void  : in all cases.
+*/
+
+#define EPSILON 1e-6
+
+void
+_SCOTCH_METIS_doubleToInt (
+const SCOTCH_Num            valunbr,
+const double * const        doubtab,
+SCOTCH_Num * const          intetab)
+{
+  double              doubadj;
+  SCOTCH_Num          i;
+
+  for (i = 0, doubadj = 1.0; i < valunbr; i ++) {
+    double              doubval;
+    double              doubtmp;
+
+    doubval  = doubtab[i];
+    doubval *= doubadj;                         /* See if renormalization factor works        */
+    doubtmp  = doubval - floor (doubval + EPSILON); /* Determine its possible fractional part */
+    if (fabs (doubtmp) >= EPSILON) {            /* If a residual fractional part exists       */
+      doubtmp = doubadj / doubtmp;              /* Incorporate it in renormalization factor   */
+      doubadj = (doubadj * doubtmp) / (double) intGcd ((int) round (doubadj), (int) round (doubtmp));
+    }
+  }
+  for (i = 0; i < valunbr; i ++)
+    intetab[i] = (SCOTCH_Num) round (doubtab[i] * doubadj);
+}
+
 /* This routine is the interface between MeTiS
 ** and Scotch. It computes the partition of a
 ** weighted or unweighted graph.
@@ -208,23 +241,43 @@ static
 int
 _SCOTCH_METIS_PartGraph2 (
 const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    ncon,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
 const SCOTCH_Num * const    vwgt,
 const SCOTCH_Num * const    adjwgt,
 const SCOTCH_Num * const    numflag,
 const SCOTCH_Num * const    nparts,
-const SCOTCH_Num * const    tpwgts,
+const double * const        tpwgts,
 SCOTCH_Num * const          part,
 SCOTCH_Num                  flagval,
 const double * const        kbalval)
 {
   SCOTCH_Graph        grafdat;                    /* Scotch graph object to interface with libScotch */
+  SCOTCH_Num *        twintab;                    /* Integer array of target weights (if any)        */
   SCOTCH_Strat        stradat;
   SCOTCH_Num          baseval;
   SCOTCH_Num          vertnbr;
   int                 o;
 
+  twintab = NULL;
+  if (tpwgts != NULL) {                           /* If weighted part array         */
+    double *            twdbtab;                  /* Double array of target weights */
+    SCOTCH_Num          i;
+
+    if ((twintab = malloc (*nparts * sizeof (SCOTCH_Num))) == NULL)
+      return (METIS_ERROR_MEMORY);
+    if ((twdbtab = malloc (*nparts * sizeof (double))) == NULL) {
+      free   (twintab);
+      return (METIS_ERROR_MEMORY);
+    }
+    for (i = 0; i < *nparts; i ++)                /* Gather first target constraint; only this one is used */
+      twdbtab[i] = tpwgts[i * *ncon];
+    _SCOTCH_METIS_doubleToInt (*nparts, twdbtab, twintab); /* Convert balance array to integers */
+
+    free (twdbtab);                               /* Array no longer of use */
+  }
+  
   SCOTCH_graphInit (&grafdat);
 
   baseval = *numflag;
@@ -245,15 +298,19 @@ const double * const        kbalval)
         SCOTCH_Arch         archdat;
 
         if (SCOTCH_archInit (&archdat) == 0) {
-          if (SCOTCH_archCmpltw (&archdat, *nparts, tpwgts) == 0)
-            o = SCOTCH_graphMap(&grafdat, &archdat, &stradat, part);
-          SCOTCH_archExit(&archdat);
+          if (SCOTCH_archCmpltw (&archdat, *nparts, twintab) == 0) {
+            o = SCOTCH_graphMap (&grafdat, &archdat, &stradat, part);
+          }
+	  SCOTCH_archExit(&archdat);
         }
       }
     }
     SCOTCH_stratExit (&stradat);
   }
   SCOTCH_graphExit (&grafdat);
+
+  if (twintab != NULL)
+    free (twintab);
 
   if (o != 0)
     return (1);
@@ -276,20 +333,21 @@ static
 int
 _SCOTCH_METIS_PartGraph (
 const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    ncon,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
 const SCOTCH_Num * const    vwgt,
 const SCOTCH_Num * const    adjwgt,
 const SCOTCH_Num * const    numflag,
 const SCOTCH_Num * const    nparts,
-const SCOTCH_Num * const    tpwgts,
+const double * const        tpwgts,
 const SCOTCH_Num * const    options,
 SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part,
 SCOTCH_Num                  flagval,
 const double * const        kbalval)
 {
-  if (_SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt, adjwgt, numflag, nparts, tpwgts, part, flagval, kbalval) != 0) {
+  if (_SCOTCH_METIS_PartGraph2 (n, ncon, xadj, adjncy, vwgt, adjwgt, numflag, nparts, tpwgts, part, flagval, kbalval) != 0) {
     *edgecut = -1;                                /* Indicate error */
     return (METIS_ERROR);
   }
@@ -309,13 +367,14 @@ static
 int
 _SCOTCH_METIS_PartGraph_Volume (
 const SCOTCH_Num * const    n,
+const SCOTCH_Num * const    ncon,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
 const SCOTCH_Num * const    vwgt,
 const SCOTCH_Num * const    vsize,
 const SCOTCH_Num * const    numflag,
 const SCOTCH_Num * const    nparts,
-const SCOTCH_Num * const    tpwgts,
+const double * const        tpwgts,
 const SCOTCH_Num * const    options,
 SCOTCH_Num * const          volume,
 SCOTCH_Num * const          part,
@@ -334,7 +393,7 @@ const double * const        kbalval)
   edgetax = adjncy - baseval;
 
   if (vsize == NULL) {                            /* If no communication load data provided */
-    if (_SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt, NULL, numflag, nparts, tpwgts, part, flagval, kbalval) != 0)
+    if (_SCOTCH_METIS_PartGraph2 (n, ncon, xadj, adjncy, vwgt, NULL, numflag, nparts, tpwgts, part, flagval, kbalval) != 0)
       return (METIS_ERROR);
     vsiztax = NULL;
   }
@@ -363,7 +422,7 @@ const double * const        kbalval)
       }
     }
 
-    o = _SCOTCH_METIS_PartGraph2 (n, xadj, adjncy, vwgt, edlotax + baseval, numflag, nparts, tpwgts, part,
+    o = _SCOTCH_METIS_PartGraph2 (n, ncon, xadj, adjncy, vwgt, edlotax + baseval, numflag, nparts, tpwgts, part,
                                   flagval, kbalval);
 
     memFree (edlotax + baseval);
@@ -401,7 +460,7 @@ SCOTCH_Num * const          part)
   vwgt2   = ((wgtflag == NULL) || ((*wgtflag & 2) != 0)) ? vwgt   : NULL;
   adjwgt2 = ((wgtflag == NULL) || ((*wgtflag & 1) != 0)) ? adjwgt : NULL;
 
-  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt2, adjwgt2,
+  return (_SCOTCH_METIS_PartGraph (n, 0, xadj, adjncy, vwgt2, adjwgt2,
                                    numflag, nparts, NULL, options, edgecut, part,
                                    SCOTCH_STRATDEFAULT, &kbalval));
 }
@@ -432,7 +491,7 @@ SCOTCH_Num * const          part)
   vwgt2   = ((wgtflag == NULL) || ((*wgtflag & 2) != 0)) ? vwgt   : NULL;
   adjwgt2 = ((wgtflag == NULL) || ((*wgtflag & 1) != 0)) ? adjwgt : NULL;
 
-  return (_SCOTCH_METIS_PartGraph (n, xadj, adjncy, vwgt2, adjwgt2,
+  return (_SCOTCH_METIS_PartGraph (n, 0, xadj, adjncy, vwgt2, adjwgt2,
                                    numflag, nparts, NULL, options, edgecut, part,
                                    SCOTCH_STRATRECURSIVE, &kbalval));
 }
@@ -463,7 +522,7 @@ SCOTCH_Num * const          part)
   vsize2  = ((wgtflag == NULL) || ((*wgtflag & 1) != 0)) ? vsize : NULL;
   vwgt2   = ((wgtflag == NULL) || ((*wgtflag & 2) != 0)) ? vwgt  : NULL;
 
-  return (_SCOTCH_METIS_PartGraph_Volume (n, xadj, adjncy, vwgt2, vsize2,
+  return (_SCOTCH_METIS_PartGraph_Volume (n, 0, xadj, adjncy, vwgt2, vsize2,
                                           numflag, nparts, NULL, options, volume, part,
                                           SCOTCH_STRATDEFAULT, &kbalval));
 }
@@ -482,7 +541,7 @@ const SCOTCH_Num * const    vwgt,
 const SCOTCH_Num * const    vsize,
 const SCOTCH_Num * const    adjwgt,
 const SCOTCH_Num * const    nparts,
-const SCOTCH_Num * const    tpwgts,
+const double * const        tpwgts,
 const double * const        ubvec,
 const SCOTCH_Num * const    options,
 SCOTCH_Num * const          objval,
@@ -493,10 +552,10 @@ SCOTCH_Num * const          part)
   baseval = ((options != NULL) && (options != xadj)) ? options[METIS_OPTION_NUMBERING] : 0;
 
   return ((vsize == NULL)
-          ? _SCOTCH_METIS_PartGraph (nvtxs, xadj, adjncy, vwgt, adjwgt,
+          ? _SCOTCH_METIS_PartGraph (nvtxs, ncon, xadj, adjncy, vwgt, adjwgt,
                                      &baseval, nparts, tpwgts, options, objval, part,
                                      SCOTCH_STRATDEFAULT, ubvec)
-          : _SCOTCH_METIS_PartGraph_Volume (nvtxs, xadj, adjncy, vwgt, vsize,
+          : _SCOTCH_METIS_PartGraph_Volume (nvtxs, ncon, xadj, adjncy, vwgt, vsize,
                                             &baseval, nparts, tpwgts, options, objval, part,
                                             SCOTCH_STRATDEFAULT, ubvec));
 }
@@ -515,7 +574,7 @@ const SCOTCH_Num * const    vwgt,
 const SCOTCH_Num * const    vsize,
 const SCOTCH_Num * const    adjwgt,
 const SCOTCH_Num * const    nparts,
-const SCOTCH_Num * const    tpwgts,
+const double * const        tpwgts,
 const double * const        ubvec,
 const SCOTCH_Num * const    options,
 SCOTCH_Num * const          objval,
@@ -526,10 +585,10 @@ SCOTCH_Num * const          part)
   baseval = ((options != NULL) && (options != xadj)) ? options[METIS_OPTION_NUMBERING] : 0;
 
   return ((vsize == NULL)
-          ? _SCOTCH_METIS_PartGraph (nvtxs, xadj, adjncy, vwgt, adjwgt,
+          ? _SCOTCH_METIS_PartGraph (nvtxs, ncon, xadj, adjncy, vwgt, adjwgt,
                                      &baseval, nparts, tpwgts, options, objval, part,
                                      SCOTCH_STRATRECURSIVE, ubvec)
-          : _SCOTCH_METIS_PartGraph_Volume (nvtxs, xadj, adjncy, vwgt, vsize,
+          : _SCOTCH_METIS_PartGraph_Volume (nvtxs, ncon, xadj, adjncy, vwgt, vsize,
                                             &baseval, nparts, tpwgts, options, objval, part,
                                             SCOTCH_STRATRECURSIVE, ubvec));
 }
@@ -621,7 +680,7 @@ const SCOTCH_Num * const    vwgt,
 const SCOTCH_Num * const    vsize,
 const SCOTCH_Num * const    adjwgt,
 const SCOTCH_Num * const    nparts,
-const SCOTCH_Num * const    tpwgts,
+const double * const        tpwgts,
 const double * const        ubvec,
 const SCOTCH_Num * const    options,
 SCOTCH_Num * const          objval,
@@ -644,7 +703,7 @@ const SCOTCH_Num * const    vwgt,
 const SCOTCH_Num * const    vsize,
 const SCOTCH_Num * const    adjwgt,
 const SCOTCH_Num * const    nparts,
-const SCOTCH_Num * const    tpwgts,
+const double * const        tpwgts,
 const double * const        ubvec,
 const SCOTCH_Num * const    options,
 SCOTCH_Num * const          objval,

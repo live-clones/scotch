@@ -49,7 +49,7 @@
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 6.1  : from : 17 jun 2021     **/
-/**                                 to   : 24 sep 2021     **/
+/**                                 to   : 27 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -123,8 +123,8 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
       case 0 :                                    /* No folding */
         multlocsiz = vertlocnbr;
         break;
-     case DGRAPHCOARSENFOLD :                    /* Simple folding; maximum coarsening ratio is 1         */
-       multlocsiz = ((finegrafptr->vertglbnbr * 2) / procglbnbr) + 1; /* Maximum ratio for FOLD is 2 -> 1 */
+      case DGRAPHCOARSENFOLD :                    /* Simple folding; maximum coarsening ratio is 1         */
+        multlocsiz = ((finegrafptr->vertglbnbr * 2) / procglbnbr) + 1; /* Maximum ratio for FOLD is 2 -> 1 */
         break;
       case DGRAPHCOARSENFOLDDUP :                 /* Folding with duplication; maximum coarsening ratio is 1                        */
         multlocsiz = ((finegrafptr->vertglbnbr * 2) / (procglbnbr - (procglbnbr % 2))) + 1; /* Maximum ratio for FOLD-DUP is 3 -> 1 */
@@ -423,7 +423,7 @@ dgraphCoarsenBuild (
 DgraphCoarsenData * restrict const  coarptr)
 {
   Gnum                          vertlocadj;
-  Gnum                          edgelocnbr;
+  Gnum                          edgelocsiz;       /* Size of coarse edge array          */
   Gnum                          edlolocval;
   Gnum * restrict               ercvdattab;
   Gnum * restrict               esnddattab;
@@ -490,7 +490,7 @@ DgraphCoarsenData * restrict const  coarptr)
     nsndidxtab[procngbnum] = coarptr->vsnddsptab[procngbtab[procngbnum]];
 
   vertlocadj = grafptr->procvrttab[grafptr->proclocnum] - grafptr->baseval;
-  multlocadj = coarptr->coargrafptr->procdsptab[grafptr->proclocnum];
+  multlocadj = coargrafptr->procdsptab[grafptr->proclocnum];
   for (multlocnum = 0; multlocnum < coarptr->multlocnbr; multlocnum ++) {
     Gnum                vertlocnum0;
     Gnum                vertlocnum1;
@@ -568,8 +568,8 @@ DgraphCoarsenData * restrict const  coarptr)
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  ercvcnttab = coarptr->coargrafptr->procrcvtab;  /* TRICK: re-use some private coarse graph arrays after vertex exchange phase */
-  ercvdsptab = coarptr->coargrafptr->procsndtab;
+  ercvcnttab = coargrafptr->procrcvtab;           /* TRICK: re-use some private coarse graph arrays after vertex exchange phase */
+  ercvdsptab = coargrafptr->procsndtab;
   for (procnum = 0, ercvdspval = 0; procnum < grafptr->procglbnbr; procnum ++) { /* TRICK: dcntglbtab array no longer needed afterwards; can be freed */
     ercvdsptab[procnum] = ercvdspval;
     ercvcnttab[procnum] = coarptr->dcntglbtab[procnum].vertsndnbr * ((veloloctax != NULL) ? 2 : 1) +
@@ -594,8 +594,8 @@ DgraphCoarsenData * restrict const  coarptr)
     return (1);
   }
 
-  edgelocnbr = coarptr->edgekptnbr + coarptr->edgercvnbr; /* Upper bound on number of edges     */
-  ercvdatsiz = coarptr->vertrcvnbr + coarptr->edgercvnbr; /* Basic size: degrees plus edge data */
+  edgelocsiz = coarptr->edgekptnbr + coarptr->edgercvnbr - coarptr->vertrcvnbr; /* TRICK: remote edge to local vertex will always collapse */
+  ercvdatsiz = coarptr->vertrcvnbr + coarptr->edgercvnbr; /* Basic size: degrees plus edge data                                            */
   esnddatsiz = coarptr->vertsndnbr + coarptr->edgesndnbr;
   if (grafptr->veloloctax != NULL) {              /* Add vertex loads if necessary */
     ercvdatsiz += coarptr->vertrcvnbr;
@@ -625,11 +625,11 @@ DgraphCoarsenData * restrict const  coarptr)
     errorPrint ("dgraphCoarsenBuild: out of memory (1)");
     cheklocval = 1;
   }
-  else if ((coargrafptr->edgeloctax = memAlloc (edgelocnbr * sizeof (Gnum))) == NULL) {
+  else if ((coargrafptr->edgeloctax = memAlloc (edgelocsiz * sizeof (Gnum))) == NULL) {
     errorPrint ("dgraphCoarsenBuild: out of memory (2)");
     cheklocval = 1;
   }
-  else if ((coargrafptr->edloloctax = memAlloc (edgelocnbr * sizeof (Gnum))) == NULL) {
+  else if ((coargrafptr->edloloctax = memAlloc (edgelocsiz * sizeof (Gnum))) == NULL) {
     errorPrint ("dgraphCoarsenBuild: out of memory (3)");
     cheklocval = 1;
   }
@@ -724,11 +724,6 @@ DgraphCoarsenData * restrict const  coarptr)
     return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
-  while (procnum < grafptr->procglbnbr) {         /* Complete edge data send displacement array */
-    esnddsptab[procnum] = esnddspval;
-    esndcnttab[procnum] = 0;
-    procnum ++;
-  }
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (MPI_Alltoall (esndcnttab, 1, MPI_INT, ercvdbgtab, 1, MPI_INT, proccomm) != MPI_SUCCESS) {
@@ -797,7 +792,7 @@ DgraphCoarsenData * restrict const  coarptr)
             coarhashtab[h].vertendnum = coarvertglbend;
             coarhashtab[h].edgelocnum = coaredgelocnum;
 #ifdef SCOTCH_DEBUG_DGRAPH2
-            if (coaredgelocnum >= (edgelocnbr + coargrafptr->baseval)) {
+            if (coaredgelocnum >= (edgelocsiz + coargrafptr->baseval)) {
               errorPrint ("dgraphCoarsenBuild: internal error (10)");
               return (1);
             }
@@ -849,7 +844,7 @@ DgraphCoarsenData * restrict const  coarptr)
             coarhashtab[h].vertendnum = coarvertglbend;
             coarhashtab[h].edgelocnum = coaredgelocnum;
 #ifdef SCOTCH_DEBUG_DGRAPH2
-            if (coaredgelocnum >= (edgelocnbr + coargrafptr->baseval)) {
+            if (coaredgelocnum >= (edgelocsiz + coargrafptr->baseval)) {
               errorPrint ("dgraphCoarsenBuild: internal error (11)");
               return (1);
             }

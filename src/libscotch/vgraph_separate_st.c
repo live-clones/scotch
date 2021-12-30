@@ -245,21 +245,21 @@ const Strat * restrict const  strat)              /*+ Separation strategy +*/
 #ifdef SCOTCH_DEBUG_VGRAPH2
   if (sizeof (Gnum) != sizeof (INT)) {
     errorPrint ("vgraphSeparateSt: invalid type specification for parser variables");
-    return     (1);
+    return (1);
   }
   if ((sizeof (VgraphSeparateFmParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (VgraphSeparateGgParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (VgraphSeparateGpParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (VgraphSeparateMlParam) > sizeof (StratNodeMethodData))) {
     errorPrint ("vgraphSeparateSt: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
 #ifdef SCOTCH_DEBUG_VGRAPH1
   if ((strat->tabl != &vgraphseparateststratab) &&
       (strat       != &stratdummy)) {
     errorPrint ("vgraphSeparateSt: invalid parameter (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VGRAPH1 */
 
@@ -296,7 +296,7 @@ const Strat * restrict const  strat)              /*+ Separation strategy +*/
           ((vgraphStoreInit (grafptr, &savetab[1])) != 0)) {
         errorPrint      ("vgraphSeparateSt: out of memory");
         vgraphStoreExit (&savetab[0]);
-        return          (1);
+        return (1);
       }
 
       vgraphStoreSave (grafptr, &savetab[1]);     /* Save initial bipartition                              */
@@ -329,7 +329,7 @@ const Strat * restrict const  strat)              /*+ Separation strategy +*/
 #ifdef SCOTCH_DEBUG_VGRAPH1
     default :
       errorPrint ("vgraphSeparateSt: invalid parameter (2)");
-      return     (1);
+      return (1);
 #endif /* SCOTCH_DEBUG_VGRAPH1 */
   }
   return (o);

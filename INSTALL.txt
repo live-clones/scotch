@@ -567,7 +567,7 @@ PT-Scotch distribution, type:
 
 in the same "src/" directory. This can be done in any order. Typing:
 
-%prompt% ptscotch
+%prompt% make ptscotch
 
 will in fact compile both Scotch and PT-Scotch, since PT-Scotch
 requires Scotch.

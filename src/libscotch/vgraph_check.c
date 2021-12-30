@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 16 sep 2006     **/
 /**                # Version 5.1  : from : 09 nov 2008     **/
 /**                                 to   : 09 nov 2008     **/
+/**                # Version 6.1  : from : 21 nov 2021     **/
+/**                                 to   : 21 nov 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,22 +86,17 @@ const Vgraph * const        grafptr)
   Gnum                compsize[3];
   Gnum                commcut[3];
 
-  if (grafptr->comploaddlt != (grafptr->compload[0] - grafptr->compload[1])) {
-    errorPrint ("vgraphCheck: invalid balance");
-    return     (1);
-  }
-
   for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) {
     if (grafptr->parttax[vertnum] > 2) {
       errorPrint ("vgraphCheck: invalid part array");
-      return     (1);
+      return (1);
     }
   }
 
   if ((grafptr->fronnbr < 0) ||
       (grafptr->fronnbr > grafptr->s.vertnbr)) {
     errorPrint ("vgraphCheck: invalid number of frontier vertices");
-    return     (1);
+    return (1);
   }
   for (fronnum = 0; fronnum < grafptr->fronnbr; fronnum ++) {
     Gnum                vertnum;
@@ -107,11 +104,11 @@ const Vgraph * const        grafptr)
     vertnum = grafptr->frontab[fronnum];
     if ((vertnum < grafptr->s.baseval) || (vertnum >= grafptr->s.vertnnd)) {
       errorPrint ("vgraphCheck: invalid vertex index in frontier array");
-      return     (1);
+      return (1);
     }
     if (grafptr->parttax[vertnum] != 2) {
       errorPrint ("vgraphCheck: invalid vertex in frontier array");
-      return     (1);
+      return (1);
     }
   }
 
@@ -136,7 +133,7 @@ const Vgraph * const        grafptr)
     if ((grafptr->s.verttax[vertnum] < grafptr->s.baseval) ||
         (grafptr->s.verttax[vertnum] > grafptr->s.vendtax[vertnum])) {
       errorPrint ("vgraphCheck: invalid graph structure (1)");
-      return     (1);
+      return (1);
     }
     for (edgenum = grafptr->s.verttax[vertnum]; edgenum < grafptr->s.vendtax[vertnum]; edgenum ++) {
       Gnum                vertend;
@@ -145,7 +142,7 @@ const Vgraph * const        grafptr)
       if ((vertend <  grafptr->s.baseval) ||
           (vertend >= grafptr->s.vertnnd)) {
         errorPrint ("vgraphCheck: invalid graph structure (2)");
-        return     (1);
+        return (1);
       }
       commcut[grafptr->parttax[vertend]] ++;
     }
@@ -164,26 +161,26 @@ const Vgraph * const        grafptr)
 #endif /* SCOTCH_DEBUG_VGRAPH3 */
       if (commcut[1 - partnum] != 0) {
         errorPrint ("vgraphCheck: vertex should be in separator (%ld)", (long) vertnum);
-        return     (1);
+        return (1);
       }
     }
   }
 
-  if ((grafptr->compload[0] != compload[0]) ||
-      (grafptr->compload[1] != compload[1]) ||
-      (grafptr->compload[2] != compload[2])) {
-    errorPrint ("vgraphCheck: invalid part loads");
-    return     (1);
-  }
-  if (grafptr->comploaddlt != (grafptr->compload[0] - grafptr->compload[1])) {
-    errorPrint ("vgraphCheck: invalid balance");
-    return     (1);
-  }
   if ((grafptr->compsize[0] != compsize[0]) ||
       (grafptr->compsize[1] != compsize[1]) ||
       (grafptr->fronnbr     != compsize[2])) {
     errorPrint ("vgraphCheck: invalid part sizes");
-    return     (1);
+    return (1);
+  }
+  if ((grafptr->compload[0] != compload[0]) ||
+      (grafptr->compload[1] != compload[1]) ||
+      (grafptr->compload[2] != compload[2])) {
+    errorPrint ("vgraphCheck: invalid part loads");
+    return (1);
+  }
+  if (grafptr->comploaddlt != (grafptr->compload[0] * grafptr->dwgttab[1] - grafptr->compload[1] * grafptr->dwgttab[0])) {
+    errorPrint ("vgraphCheck: invalid balance");
+    return (1);
   }
 
   return (0);

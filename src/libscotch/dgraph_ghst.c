@@ -289,7 +289,7 @@ const int                   flagval)              /* Replacement flag */
   reduloctab[2] = grafptr->procngbnbr;
   if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 2, 1, grafptr->proccomm) != 0) {
     errorPrint ("dgraphGhst: communication error (5)");
-    return     (1);
+    return (1);
   }
   if (reduglbtab[0] != 0)                         /* If error, propagated by some previous reduction operator */
     return (1);
@@ -306,7 +306,7 @@ const int                   flagval)              /* Replacement flag */
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphHaloCheck (grafptr) != 0) {
     errorPrint ("dgraphGhst: internal error (3)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 

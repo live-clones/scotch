@@ -70,7 +70,7 @@
 #define BGRAPH_H
 
 /*
-**  The type and structure definitions.
+**  The defines.
 */
 
 /*+ Graph option flags. +*/
@@ -79,6 +79,10 @@
 #define BGRAPHFREEPART              (GRAPHBITSNOTUSED << 1) /* Free part array              */
 #define BGRAPHFREEVEEX              (GRAPHBITSNOTUSED << 2) /* Free external gain array     */
 #define BGRAPHHASANCHORS            (GRAPHBITSNOTUSED << 3) /* If graph has anchor vertices */
+
+/*
+**  The type and structure definitions.
+*/
 
 /*+ The bipartition graph structure. +*/
 

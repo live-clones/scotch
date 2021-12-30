@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 09 nov 2008     **/
 /**                # Version 6.0  : from : 23 jan 2020     **/
 /**                                 to   : 06 feb 2020     **/
+/**                # Version 6.1  : from : 05 dec 2021     **/
+/**                                 to   : 05 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,7 +105,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
 
   if (meshptr->m.velmnbr == 0) {                  /* If only a single node or disconnected nodes */
     vmeshZero (meshptr);                          /* Don't bother with parts                     */
-    return    (0);
+    return (0);
   }
 
   velssiz = (meshptr->m.vnlotax == NULL) ? 0 : meshptr->m.velmnbr; /*  Compute size of vertex load sum array */
@@ -116,7 +118,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
     if (tablptr != NULL)
       gainTablExit (tablptr);
     errorPrint ("vmeshSeparateGg: out of memory (1)");
-    return     (1);
+    return (1);
   }
   vexxsiz  = (byte *) velitax - vexxtab;          /* Size of arrays that must be reset at each pass */
   velxtax -= meshptr->m.velmbas;                  /* Base access to auxiliary arrays                */
@@ -231,7 +233,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
 #ifdef SCOTCH_DEBUG_VMESH2
           if (vnoxtax[vnodnum].partval == 1) {
             errorPrint ("vmeshSeparateGg: internal error (1)");
-            return     (1);
+            return (1);
           }
 #endif /* SCOTCH_DEBUG_VMESH2 */
           if (vnoxtax[vnodnum].partval == 0) {    /* If yet untouched neighbor node        */
@@ -254,7 +256,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
               if ((velxtax[velmend].gainlink.next == VMESHSEPAGGSTATEPART1) &&
                   (velmend != velmnum)) {
                 errorPrint ("vmeshSeparateGg: internal error (2)");
-                return     (1);
+                return (1);
               }
 #endif /* SCOTCH_DEBUG_VMESH2 */
               if (velxtax[velmend].gainlink.next == VMESHSEPAGGSTATEPART0) { /* If untouched element */
@@ -283,12 +285,12 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
                   if ((vnoxtax[vnodend].partval == 1) ||
                       ((vnoxtax[vnodend].partval == 2) && (vnodend != vnodnum))) {
                     errorPrint ("vmeshSeparateGg: internal error (3)");
-                    return     (1);
+                    return (1);
                   }
                   if (meshptr->m.vendtax[vnodend] - meshptr->m.verttax[vnodend] == 1) {
                     if (vnoxtax[vnodend].partval != 0) {
                       errorPrint ("vmeshSeparateGg: internal error (4)");
-                      return     (1);
+                      return (1);
                     }
                   }
                 }
@@ -325,7 +327,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
 #ifdef SCOTCH_DEBUG_VMESH2
             if (velxtax[velmend].gainlink.next < VMESHSEPAGGSTATEPART2) { /* Element should have been declared in part 0 at this stage */
               errorPrint ("vmeshSeparateGg: internal error (5)");
-              return     (1);
+              return (1);
             }
 #endif /* SCOTCH_DEBUG_VMESH2 */
 
@@ -351,7 +353,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
 #ifdef SCOTCH_DEBUG_VMESH3
         if (vmeshSeparateGgCheck (meshptr, ncmpload2, ncmploaddlt, velxtax, vnoxtax) != 0) {
           errorPrint ("vmeshSeparateGg: internal error (6)");
-          return     (1);
+          return (1);
         }
 #endif /* SCOTCH_DEBUG_VMESH3 */
       } while ((velxptr = (VmeshSeparateGgElem *) gainTablFrst (tablptr)) != NULL);
@@ -377,7 +379,7 @@ next:                                             /* Select next root element sy
 #ifdef SCOTCH_DEBUG_VMESH2
         if (velxtax[velmnum].gainlink.next >= VMESHSEPAGGSTATEPART2) {
           errorPrint ("vmeshSeparateGg: internal error (7)");
-          return     (1);
+          return (1);
         }
 #endif /* SCOTCH_DEBUG_VMESH2 */
         if ((velxtax[velmnum].gainlink.next == VMESHSEPAGGSTATEPART0) && /* If still in part 0 */
@@ -426,7 +428,7 @@ next:                                             /* Select next root element sy
 #ifdef SCOTCH_DEBUG_VMESH2
   if (vmeshCheck (meshptr) != 0) {
     errorPrint ("vmeshSeparateGg: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VMESH2 */
 
@@ -434,8 +436,6 @@ next:                                             /* Select next root element sy
     memFree (permtab);
   memFree      (vexxtab);                         /* Free group leader */
   gainTablExit (tablptr);
-
-/* printf ("GG Sepa\tsize=%ld\tload=%ld\tbal=%ld\n", (long) meshptr->fronnbr, (long) meshptr->ncmpload[2], (long) meshptr->ncmploaddlt); */
 
   return (0);
 }
@@ -459,7 +459,6 @@ const VmeshSeparateGgNode * restrict const  vnoxtax)
 {
   Gnum                vnodnum;
   Gnum                vnloval;
-  Gnum                ncmpsize0c;
   Gnum                ncmpsize1c;
   Gnum                ncmpsize2c;
   Gnum                ncmpload0c;
@@ -483,23 +482,22 @@ const VmeshSeparateGgNode * restrict const  vnoxtax)
       vnloval = meshptr->m.vnlotax[vnodnum];
     if (partval > 2) {
       errorPrint ("vmeshSeparateGgCheck: invalid node part value");
-      return     (1);
+      return (1);
     }
     ncmpsize1c += partval1;
     ncmpsize2c += partval2;
     ncmpload1c += partval1 * vnloval;
     ncmpload2c += partval2 * vnloval;
   }
-  ncmpsize0c = meshptr->m.vnodnbr - ncmpsize1c - ncmpsize2c;
   ncmpload0c = meshptr->m.vnlosum - ncmpload1c - ncmpload2c;
 
   if (ncmpload2c != ncmpload2) {
-    errorPrint ("vmeshSeparateGgCheck: invalid separator size");
-    return     (1);
+    errorPrint ("vmeshSeparateGgCheck: invalid separator load");
+    return (1);
   }
   if (ncmploaddlt != (ncmpload0c - ncmpload1c)) {
     errorPrint ("vmeshSeparateGgCheck: invalid separator balance");
-    return     (1);
+    return (1);
   }
 
   return (0);
