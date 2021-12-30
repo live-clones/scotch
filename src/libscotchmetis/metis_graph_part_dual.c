@@ -42,7 +42,7 @@
 /**                to dual graphs                          **/
 /**                                                        **/
 /**   DATES      : # Version 6.1  : from : 01 sep 2020     **/
-/**                                 to   : 15 jun 2021     **/
+/**                                 to   : 30 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -111,44 +111,27 @@ SCOTCH_Num * const          npart)                /*+ Node partition array to be
   if ((tpwgts != NULL) && ((const SCOTCH_Num * const) tpwgts != ne)) {
     SCOTCH_Num * restrict wtgttab;                /* Array of integer loads            */
     double                wtgtsum;                /* Sum of floating-point part weigts */
-    double                wtgtadj;                /* Renormalization factor            */
     SCOTCH_Num            partnum;
 
-    for (partnum = 0, wtgtsum = 0.0, wtgtadj = 1.0; partnum < *nparts; partnum ++) {
-      double              wtgtval;
-      double              wtgttmp;
-
-      wtgtval = tpwgts[partnum];
-      if (wtgtval <= 0.0) {
-        SCOTCH_errorPrint ("METIS_PartMeshDual: invalid partition weight");
-        *objval = METIS_ERROR_INPUT;              /* Error value for the Fortran interface */
-        return (METIS_ERROR_INPUT);
-      }
-      wtgtsum += wtgtval;                         /* Sum floating-point part weights            */
-      wtgtval *= wtgtadj;                         /* See if renormalization factor works        */
-      wtgttmp  = wtgtval - floor (wtgtval + EPSILON); /* Determine its possible fractional part */
-      if (fabs (wtgttmp) >= EPSILON)              /* If a residual fractional part exists       */
-        wtgtadj /= (wtgtval - floor (wtgtval));   /* Incorporate it in renormalization factor   */
-    }
-
+    for (partnum = 0, wtgtsum = 0.0; partnum < *nparts; partnum ++)
+      wtgtsum += tpwgts[partnum];                 /* Sum floating-point part weights */
     if (fabs (wtgtsum - 1.0) >= EPSILON) {
       SCOTCH_errorPrint ("METIS_PartMeshDual: invalid partition weight sum");
       *objval = METIS_ERROR_INPUT;
       return (METIS_ERROR_INPUT);
     }
-
     if ((wtgttab = memAlloc (*nparts * sizeof (SCOTCH_Num))) == NULL) {
       SCOTCH_errorPrint ("METIS_PartMeshDual: out of memory (1)");
       *objval = METIS_ERROR_MEMORY;
       return (METIS_ERROR_MEMORY);
     }
 
-    for (partnum = 0; partnum < *nparts; partnum ++)
-      wtgttab[partnum] = (SCOTCH_Num) round (tpwgts[partnum] * wtgtadj);
+    _SCOTCH_METIS_doubleToInt (*nparts, tpwgts, wtgttab); /* Convert array of doubles to array of ints */
 
     SCOTCH_archInit (&archdat);
     o = SCOTCH_archCmpltw (&archdat, *nparts, wtgttab);
     memFree (wtgttab);
+
     if (o != 0) {
       SCOTCH_errorPrint ("METIS_PartMeshDual: cannot create weighted architecture");
       SCOTCH_archExit   (&archdat);

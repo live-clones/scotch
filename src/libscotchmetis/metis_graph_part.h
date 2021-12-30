@@ -40,13 +40,15 @@
 /**                internal routines.                      **/
 /**                                                        **/
 /**   DATES      : # Version 6.1  : from : 15 jun 2021     **/
-/**                                 to   : 15 jun 2021     **/
+/**                                 to   : 30 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The function prototypes.
 */
+
+void                        _SCOTCH_METIS_doubleToInt (const SCOTCH_Num, const double * const, SCOTCH_Num * const);
 
 int                         _SCOTCH_METIS_OutputCut (const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const);
 int                         _SCOTCH_METIS_OutputVol (const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num * const, SCOTCH_Num * const);
