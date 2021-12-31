@@ -1,4 +1,4 @@
-/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 sep 2012     **/
 /**                                 to   : 21 may 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 08 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +54,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "dgraph_halo.h"
 #include "ptscotch.h"
@@ -106,16 +109,32 @@ SCOTCH_Num * const          partgsttab)
   Gnum                bandvertlocnbr;             /* Not used */
   Gnum                bandvertlvlnum;             /* Not used */
   Gnum                bandedgelocsiz;             /* Not used */
+  CONTEXTDECL        (orggrafptr);
+  Dgraph              grafdat;
+  int                 o;
 
-  Dgraph * restrict const grafptr = (Dgraph *) orggrafptr;
+  o = 1;                                          /* Assume an error */
 
-  if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
-    errorPrint (STRINGIFY (SCOTCH_dgraphGrow) ": cannot compute ghost edge array");
-    return     (1);
+  if (CONTEXTINIT (orggrafptr)) {
+    errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": cannot initialize context");
+    goto abort;
   }
 
-  bandpartgsttax = (partgsttab != NULL) ? (Gnum *) partgsttab - grafptr->baseval : NULL;
+  grafdat = *((Dgraph *) CONTEXTGETOBJECT (orggrafptr)); /* Clone original graph */
+  grafdat.flagval &= ~DGRAPHFREEALL;              /* Never free existing fields  */
 
-  return ((((grafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphGrow2Ptop : dgraphGrow2Coll)
-          (grafptr, seedlocnbr, seedloctab, distval, bandpartgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz));
+  if (dgraphGhst (&grafdat) != 0) {               /* Compute ghost edge array if not already present */
+    errorPrint (STRINGIFY (SCOTCH_dgraphGrow) ": cannot compute ghost edge array");
+    return (1);
+  }
+
+  bandpartgsttax = (partgsttab != NULL) ? (Gnum *) partgsttab - grafdat.baseval : NULL;
+
+  o = (((grafdat.flagval & DGRAPHCOMMPTOP) != 0) ? dgraphGrow2Ptop : dgraphGrow2Coll)
+        (&grafdat, seedlocnbr, seedloctab, distval, bandpartgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz, CONTEXTGETDATA (orggrafptr));
+
+  dgraphExit (&grafdat);                          /* Free ghost edge arrays if any */
+abort:
+  CONTEXTEXIT (orggrafptr);
+  return (o);
 }

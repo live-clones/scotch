@@ -4,7 +4,7 @@ stages:
   - sonar
 
 # JOB_INT: [ 32 | 64 | 32-64 ]
-# JOB_THREAD: [ n | c | y ]
+# JOB_THREAD: [ n | c | k | s | m ]
 # JOB_DEBUG: [ n | a | f ]
 # JOB_RENAME: [ n | r ]
 
@@ -16,11 +16,11 @@ stages:
         JOB_DEBUG: [ n ]
         JOB_RENAME: [ n ]
       - JOB_INT: [ 32-64 ]
-        JOB_THREAD: [ n ]
+        JOB_THREAD: [ n, k ]
         JOB_DEBUG: [ a ]
         JOB_RENAME: [ n ]
       - JOB_INT: [ 32 ]
-        JOB_THREAD: [ n, y ]
+        JOB_THREAD: [ n, c, m ]
         JOB_DEBUG: [ f ]
         JOB_RENAME: [ n ]
 
@@ -32,11 +32,11 @@ stages:
         JOB_DEBUG: [ n ]
         JOB_RENAME: [ n ]
       - JOB_INT: [ 64 ]
-        JOB_THREAD: [ n, c, y ]
+        JOB_THREAD: [ n, c, s, m ]
         JOB_DEBUG: [ a ]
         JOB_RENAME: [ n ]
       - JOB_INT: [ 64 ]
-        JOB_THREAD: [ y ]
+        JOB_THREAD: [ m ]
         JOB_DEBUG: [ a ]
         JOB_RENAME: [ r ]
 
@@ -71,8 +71,12 @@ stages:
           export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DSCOTCH_MPI_ASYNC_COLL" ;;
         c )
           export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD" ;;
-        y )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DSCOTCH_PTHREAD -DSCOTCH_PTHREAD_NUMBER=2" ;;
+        k )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DCOMMON_PTHREAD_REDUCE_CANONICAL -DCOMMON_PTHREAD_SCAN_CANONICAL -DSCOTCH_MPI_ASYNC_COLL -DSCOTCH_PTHREAD" ;;
+        s )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DCOMMON_PTHREAD_AFFINITY_LINUX -DSCOTCH_MPI_ASYNC_COLL -DSCOTCH_PTHREAD -DSCOTCH_PTHREAD_NUMBER=2" ;;
+        m )
+          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DCOMMON_PTHREAD_AFFINITY_LINUX -DSCOTCH_MPI_ASYNC_COLL -DSCOTCH_PTHREAD -DSCOTCH_PTHREAD_MPI" ;;
       esac
     - export JOBCHECK=""
     - case "${JOB_DEBUG}" in

@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 6.1  : from : 26 nov 2021     **/
 /**                                 to   : 26 nov 2021     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -142,6 +144,7 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
   cgrfptr->dwgttab[0] =                           /* Parts should be evenly partitioned */
   cgrfptr->dwgttab[1] = 1;
   cgrfptr->levlnum    = dgrfptr->levlnum;         /* Set level of separation graph as level of halo graph */
+  cgrfptr->contptr    = dgrfptr->contptr;
 
   if (dgrfptr->partgsttax == NULL) {              /* If distributed graph does not have a part array yet */
     vgraphZero (cgrfptr);
@@ -205,8 +208,8 @@ Vgraph * restrict              cgrfptr)           /* Centralized graph */
   memFree (froncnttab);                           /* Free group leader */
 
   for (procnum = 0; procnum < dgrfptr->s.proclocnum; procnum ++) /* Desynchronize random generators across processes */
-    intRandVal (2);
-  intPerm (cgrfptr->frontab, dgrfptr->compglbsize[2]); /* Compute permutation of frontier array to have different solutions on every process */
+    contextIntRandVal (dgrfptr->contptr, 2);
+  intPerm (cgrfptr->frontab, dgrfptr->compglbsize[2], dgrfptr->contptr); /* Compute permutation of frontier array to have different solutions on every process */
 
   cgrfptr->compload[0] = dgrfptr->compglbload[0]; /* Update other fields */
   cgrfptr->compload[1] = dgrfptr->compglbload[1];

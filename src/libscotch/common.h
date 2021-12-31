@@ -56,6 +56,8 @@
 /**                                 to   : 21 aug 2020     **/
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
+/**                # Version 7.0  : from : 03 jun 2018     **/
+/**                                 to   : 07 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,11 +70,13 @@
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE               600
 #endif /* _XOPEN_SOURCE */
-#ifndef __USE_XOPEN2K
-#define __USE_XOPEN2K                             /* For POSIX pthread_barrier_t */
-#endif /* __USE_XOPEN2K */
 
-#ifdef COMMON_WINDOWS
+#ifdef COMMON_OS_MACOS
+#define _DARWIN_C_SOURCE
+#define HAVE_SYS_SYSCTL_H
+#endif /* COMMON_OS_MACOS */
+
+#ifdef COMMON_OS_WINDOWS
 #include            <io.h>                        /* For _pipe ()              */
 #include            <fcntl.h>                     /* Fow Windows _pipe () call */
 #include            <windows.h>
@@ -87,8 +91,11 @@
 #define strcasecmp                  stricmp
 #endif /* _WIN32 */
 #define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
-#endif /* COMMON_WINDOWS */
+#endif /* COMMON_OS_WINDOWS */
 
+#if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
+#include            <unistd.h>
+#endif /* ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
 #include            <ctype.h>
 #include            <math.h>
 #include            <memory.h>
@@ -117,9 +124,9 @@
 #if ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H))
 #include            <sys/resource.h>
 #endif /* ((defined COMMON_TIMING_OLD) || (defined HAVE_SYS_RESOURCE_H)) */
-#if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
-#include            <unistd.h>
-#endif /* ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
+#if (defined HAVE_SYS_SYSCTL_H)
+#include            <sys/sysctl.h>
+#endif /* (defined HAVE_SYS_SYSCTL_H) */
 
 #ifdef COMMON_MPI
 #include            <mpi.h>
@@ -170,8 +177,10 @@
 
 #if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T))
 #define UINT32                      uint32_t
+#define UINT64                      uint64_t
 #else /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T)) */
 #define UINT32                      u_int32_t
+#define UINT64                      u_int64_t
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_UINT_T)) */
 
 #ifndef INT                                       /* If type not externally overriden */
@@ -252,13 +261,25 @@
 */
 
 /* The pseudo-random state structure. It is
-   based on a Mersenne twister generator, also
-   referred to as MT19937. */
+   based on the xorshift128+ algorithm by Vigna,
+   both for 32- and 64-bit integers.             */
 
 typedef struct IntRandState_ {
-  UINT32                    randtab[624];         /* State vector */
-  int                       randnum;              /* Index value  */
+  UINT64                    randtab[2];           /*+ State vector +*/
 } IntRandState;
+
+/** The pseudo-random context. **/
+
+typedef struct IntRandContext_ {
+  volatile int              flagval;              /*+ Initialized flag +*/
+  int                       procval;              /*+ Process number   +*/
+  UINT64                    seedval;              /*+ Seed value       +*/
+  IntRandState              statdat;              /*+ State data       +*/
+} IntRandContext;
+
+/** The global pseudo-random context. **/
+
+extern IntRandContext       intranddat;           /*+ Global random context +*/
 
 /*
 **  Handling of flag arrays.
@@ -282,77 +303,56 @@ typedef struct Clock_ {
 **  Handling of threads.
 */
 
-/** The thread creation flags **/
+/** The abstract thread context. **/
 
-#define THREADNONE                  0x0000        /* Thread capabilities */
+struct ThreadContext_;
+typedef struct ThreadContext_ ThreadContext;
 
-#define THREADHASBARRIER            0x0001
+/** The thread descriptor. **/
 
-#define THREADCANBARRIER            THREADHASBARRIER
-#define THREADCANSCAN               THREADHASBARRIER
-#define THREADCANREDUCE             THREADHASBARRIER
+typedef struct ThreadDescriptor_ {
+  ThreadContext *           contptr;              /*+ Pointer to thread context +*/
+  int                       thrdnum;              /*+ Thread instance number    +*/
+} ThreadDescriptor;
 
-/** The thread barrier structure and routines **/
+/** The thread service routines auxiliary function types. **/
 
-#ifdef COMMON_PTHREAD_BARRIER
+typedef void (* ThreadFunc) (ThreadDescriptor * const, void * const);
+typedef void (* ThreadReduceFunc) (void * const, void * const, const void * const);
+typedef void (* ThreadScanFunc) (void * const, void * const, const int, const int, const void * const);
 
-#ifndef PTHREAD_BARRIER_SERIAL_THREAD
-#define PTHREAD_BARRIER_SERIAL_THREAD -1
-#endif /* PTHREAD_BARRIER_SERIAL_THREAD */
+/*
+**  Handling of values.
+*/
 
-typedef struct ThreadBarrier_ {
-  int                       thrdnbr;              /*+ Number of threads to wait for       +*/
-  volatile int              thrdcur;              /*+ Number of threads currently blocked +*/
-  volatile int              instnum;              /*+ Number of barrier instance          +*/
-  pthread_mutex_t           mutedat;
-  pthread_cond_t            conddat;
-} ThreadBarrier;
+/*+ The abstract context values datatype. +*/
 
-int                         threadBarrierDestroy (ThreadBarrier *);
-int                         threadBarrierInit   (ThreadBarrier *, void *, int); /* Thread attribute not used */
-int                         threadBarrierWait   (ThreadBarrier *);
+struct ValuesContext_;
+typedef struct ValuesContext_ ValuesContext;
 
-#else /* COMMON_PTHREAD_BARRIER */
+/*
+**  Handling of execution contexts.
+*/
 
-#define ThreadBarrier               pthread_barrier_t
+/** The execution context. **/
 
-#define threadBarrierDestroy        pthread_barrier_destroy
-#define threadBarrierInit           pthread_barrier_init
-#define threadBarrierWait           pthread_barrier_wait
+typedef struct Context_ {
+  ThreadContext *           thrdptr;              /*+ Threading context +*/
+  IntRandContext *          randptr;              /*+ Random context    +*/
+  ValuesContext *           valuptr;              /*+ Values context    +*/
+} Context;
 
-#endif /* COMMON_PTHREAD_BARRIER */
+/*+ The context splitting user function. +*/
 
-#define threadBarrier(t)            threadBarrierWait (&(((ThreadGroupHeader *) (((ThreadHeader *) (void *) (t))->grouptr))->barrdat))
+typedef void (* ContextSplitFunc) (Context * const, const int, void * const);
 
-/** The thread service routines auxiliary function types **/
+/*+ The data structure for passing arguments to the context splitting threaded routine. +*/
 
-typedef int (* ThreadLaunchJoinFunc) (void * const, void * const);
-typedef int (* ThreadLaunchStartFunc) (void * const);
-typedef void (* ThreadReduceFunc) (void * const, void * const, void * const);
-typedef void (* ThreadScanFunc)   (void * const, void * const, void * const, const int);
-
-/** The thread group header block. **/
-
-typedef struct ThreadGroupHeader_ {
-  int                       flagval;              /*+ Thread block flags       +*/
-#ifdef COMMON_PTHREAD
-  size_t                    datasiz;              /*+ Size of data array cell  +*/
-  int                       thrdnbr;              /*+ Number of threads        +*/
-  ThreadLaunchStartFunc     stafptr;              /*+ Pointer to start routine +*/
-  ThreadLaunchJoinFunc      joifptr;              /*+ Pointer to join routine  +*/
-  ThreadBarrier             barrdat;              /*+ Barrier data structure   +*/
-#endif /* COMMON_PTHREAD */
-} ThreadGroupHeader;
-
-/** The thread header block. **/
-
-typedef struct ThreadHeader_ {
-  void *                    grouptr;              /*+ Pointer to thread group +*/
-#ifdef COMMON_PTHREAD
-  pthread_t                 thidval;              /*+ Thread ID               +*/
-  int                       thrdnum;              /*+ Thread instance number  +*/
-#endif /* COMMON_PTHREAD */
-} ThreadHeader;
+typedef struct ContextSplit_ {
+  Context                   conttab[2];           /*+ Context data for sub-context                     +*/
+  ContextSplitFunc          funcptr;              /*+ Pointer to user function to be called by leaders +*/
+  void *                    paraptr;              /*+ Parameter data                                   +*/
+} ContextSplit;
 
 /*
 **  Handling of files.
@@ -377,6 +377,8 @@ typedef struct File_ {
 /*
 **  Function prototypes.
 */
+
+int                         envGetInt           (const char * const, const int);
 
 void *                      memAllocGroup       (void **, ...);
 void *                      memReallocGroup     (void *, ...);
@@ -409,21 +411,21 @@ void                        errorPrintW         (const char * const, ...);
 int                         intLoad             (FILE * const, INT * const);
 int                         intSave             (FILE * const, const INT);
 void                        intAscn             (INT * const, const INT, const INT);
-void                        intPerm             (INT * const, const INT);
-void                        intRandInit         (void);
-int                         intRandLoad         (FILE * const);
-void                        intRandProc         (int);
-void                        intRandReset        (void);
-int                         intRandSave         (FILE * const);
-void                        intRandSeed         (INT);
-#ifndef COMMON_RANDOM_SYSTEM
-UINT                        intRandVal          (UINT);
-#endif /* COMMON_RANDOM_SYSTEM */
+void                        intPerm             (INT * const, const INT, Context * const);
+void                        intRandInit         (IntRandContext * const);
+int                         intRandLoad         (IntRandContext * const, FILE * const);
+void                        intRandProc         (IntRandContext * const, int);
+void                        intRandReset        (IntRandContext * const);
+int                         intRandSave         (IntRandContext * const, FILE * const);
+void                        intRandSeed         (IntRandContext * const, INT);
+UINT                        intRandVal          (IntRandContext * const, UINT);
+UINT                        intRandVal2         (IntRandContext * const);
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
 void                        intSort2asc2        (void * const, const INT);
 void                        intSort3asc1        (void * const, const INT);
 void                        intSort3asc2        (void * const, const INT);
+void                        intPsort2asc1       (void * const, const INT, const int);
 INT                         intSearchDicho      (const INT * const, const INT, const INT, const INT);
 INT                         intGcd              (INT, INT);
 
@@ -435,11 +437,28 @@ double                      clockGet            (void);
 
 void                        stringSubst         (char * const, const char * const, const char * const);
 
-#ifdef COMMON_PTHREAD
-int                         threadLaunch        (void * const, void * const, const size_t, int (*) (void *), int (*) (void *, void *), const int, const int);
-void                        threadReduce        (void * const, void * const, ThreadReduceFunc const, const int);
-void                        threadScan          (void * const, void * const, ThreadScanFunc const);
-#endif /* COMMON_PTHREAD */
+int                         threadContextInit   (ThreadContext * const, const int, const int * const);
+void                        threadContextExit   (ThreadContext * const);
+int                         threadContextBarrier (ThreadContext * const);
+void                        threadContextImport1 (ThreadContext * const, const int);
+void                        threadContextImport2 (ThreadContext * const, const int);
+int                         threadContextNbr    (ThreadContext * const);
+void                        threadLaunch        (ThreadContext * const, ThreadFunc const, void * const);
+void                        threadReduce        (const ThreadDescriptor * const, void * const, const size_t, ThreadReduceFunc const, const int, const void * const);
+void                        threadScan          (const ThreadDescriptor * const, void * const, const size_t, ThreadScanFunc const, const void * const);
+
+void                        contextInit         (Context * const);
+void                        contextExit         (Context * const);
+int                         contextCommit       (Context * const);
+int                         contextRandomClone  (Context * const);
+int                         contextThreadInit2  (Context * const, const int, const int * const);
+int                         contextThreadInit   (Context * const);
+int                         contextThreadLaunchSplit (Context * const, ContextSplitFunc const, void * const);
+int                         contextValuesInit   (Context * const, void * const, const size_t, const int, const size_t, const int, const size_t);
+int                         contextValuesGetDbl (Context * const, const int, double * const);
+int                         contextValuesGetInt (Context * const, const int, INT * const);
+int                         contextValuesSetDbl (Context * const, const int, const double);
+int                         contextValuesSetInt (Context * const, const int, const INT);
 
 /*
 **  Macro definitions.
@@ -454,13 +473,14 @@ void                        threadScan          (void * const, void * const, Thr
 #define fileBlockMode(b,i)          ((b)[i].modeptr)
 #define fileBlockName(b,i)          ((b)[i].nameptr)
 
-#ifdef COMMON_RANDOM_SYSTEM
-#ifdef COMMON_RANDOM_RAND
-#define intRandVal(ival)            ((UINT) (((UINT) rand ()) % ((UINT) (ival))))
-#else /* COMMON_RANDOM_RAND */
-#define intRandVal(ival)            ((UINT) (((UINT) random ()) % ((UINT) (ival))))
-#endif /* COMMON_RANDOM_RAND */
-#endif /* COMMON_RANDOM_SYSTEM */
+#define threadBarrier(t)            threadContextBarrier ((t)->contptr)
+#define threadNbr(t)                threadContextNbr ((t)->contptr)
+#define threadNum(t)                ((t)->thrdnum)
+
+#define contextIntRandVal(c,n)      intRandVal ((c)->randptr, (n))
+
+#define contextThreadLaunch(c,f,d)  threadLaunch ((c)->thrdptr, (f), (d))
+#define contextThreadNbr(c)         threadContextNbr ((c)->thrdptr)
 
 #define DATASIZE(n,p,i)             ((INT) (((n) + ((p) - 1 - (i))) / (p)))
 #define DATASCAN(n,p,i)             ((i) * ((INT) (n) / (INT) (p)) + (((i) > ((n) % (p))) ? ((n) % (p)) : (i)))

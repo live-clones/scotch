@@ -1,4 +1,4 @@
-/* Copyright 2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 28 mar 2012     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 7.0  : from : 20 sep 2019     **/
+/**                                 to   : 20 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +54,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "graph.h"
 #include "dgraph.h"
 #include "dgraph_redist.h"
@@ -73,29 +76,31 @@
 
 int
 SCOTCH_dgraphRedist (
-SCOTCH_Dgraph * const       orggrafptr,
+SCOTCH_Dgraph * const       liborggrafptr,
 const SCOTCH_Num * const    partloctab,           /* Array of part numbers for each local vertex */
 const SCOTCH_Num * const    permgsttab,           /* Redistribution permutation array            */
 const SCOTCH_Num            vertlocdlt,           /* Extra size of local vertex array            */
 const SCOTCH_Num            edgelocdlt,           /* Extra size of local edge array              */
-SCOTCH_Dgraph * const       redgrafptr)
+SCOTCH_Dgraph * const       libredgrafptr)
 {
   SCOTCH_Num          baseval;
+
+  Dgraph * const            orggrafptr = (Dgraph *) CONTEXTOBJECT (liborggrafptr);
+  Dgraph * const            redgrafptr = (Dgraph *) CONTEXTOBJECT (libredgrafptr);
 #ifdef SCOTCH_DEBUG_LIBRARY1
   int                 o;
 
-  MPI_Comm_compare (((Dgraph * restrict const) orggrafptr)->proccomm,
-                    ((Dgraph * restrict const) redgrafptr)->proccomm, &o);
+  MPI_Comm_compare (orggrafptr->proccomm, redgrafptr->proccomm, &o);
   if ((o != MPI_IDENT) && (o != MPI_CONGRUENT)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphRedist) ": communicators are not congruent");
     return     (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-  baseval = ((Dgraph *) orggrafptr)->baseval;
+  baseval = orggrafptr->baseval;
 
-  return (dgraphRedist ((Dgraph *) orggrafptr,
+  return (dgraphRedist (orggrafptr,
                         ((partloctab != NULL) && (partloctab != (SCOTCH_Num *) orggrafptr)) ? (const Gnum * restrict const) (partloctab - baseval) : NULL,
                         ((permgsttab != NULL) && (permgsttab != (SCOTCH_Num *) orggrafptr)) ? (const Gnum * restrict const) (permgsttab - baseval) : NULL,
-                        (vertlocdlt < 0) ? 0 : vertlocdlt, (edgelocdlt < 0) ? 0 : edgelocdlt, (Dgraph *) redgrafptr));
+                        (vertlocdlt < 0) ? 0 : vertlocdlt, (edgelocdlt < 0) ? 0 : edgelocdlt, redgrafptr));
 }

@@ -45,6 +45,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 30 apr 2019     **/
+/**                # Version 7.0  : from : 28 aug 2019     **/
+/**                                 to   : 28 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,7 +98,8 @@ typedef struct HdgraphOrderNdData_ {
 */
 
 #ifdef HDGRAPH_ORDER_ND
-static void *               hdgraphOrderNdFold2 (void * const);
+static int                  hdgraphOrderNdFold2 (HdgraphOrderNdData * const);
+static void                 hdgraphOrderNdFold3 (ThreadDescriptor * restrict const, HdgraphOrderNdData * restrict const);
 static int                  hdgraphOrderNdFold  (Hdgraph * restrict const, const Gnum, const Gnum * restrict const, const Gnum, const Gnum * restrict const, HdgraphOrderNdGraph * restrict const);
 static int                  hdgraphOrderNd2     (Hdgraph * const, DorderCblk * const, const HdgraphOrderNdParam * const);
 #endif /* HDGRAPH_ORDER_ND */

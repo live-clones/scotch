@@ -57,6 +57,8 @@
 /**                                 to   : 20 jan 2020     **/
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 01 apr 2021     **/
+/**                # Version 7.0  : from : 25 aug 2019     **/
+/**                                 to   : 10 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,7 +92,15 @@ typedef DUMMYINT SCOTCH_Num;
 #endif /* ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL)) */
 #endif /* LIB_SCOTCH_H_UNIQUE */
 
-/*+ Coarsening flags +*/
+/*+ Option numbers. +*/
+
+#ifndef SCOTCH_OPTIONNUMNBR
+#define SCOTCH_OPTIONNUMDETERMINISTIC 0
+#define SCOTCH_OPTIONNUMRANDOMFIXEDSEED 1
+#define SCOTCH_OPTIONNUMNBR         2
+#endif /* SCOTCH_OPTIONNUMNBR */
+
+/*+ Coarsening flags. +*/
 
 #ifndef SCOTCH_COARSENNONE
 #define SCOTCH_COARSENNONE          0x0000
@@ -99,7 +109,7 @@ typedef DUMMYINT SCOTCH_Num;
 #define SCOTCH_COARSENNOMERGE       0x4000
 #endif /* SCOTCH_COARSENNONE */
 
-/*+ Strategy string parametrization values +*/
+/*+ Strategy string parametrization values. +*/
 
 #ifndef SCOTCH_STRATDEFAULT
 #define SCOTCH_STRATDEFAULT         0x00000
@@ -120,7 +130,7 @@ typedef DUMMYINT SCOTCH_Num;
 /*+ Opaque objects. The dummy sizes of these
 objects, computed at compile-time by program
 "dummysizes", are given as double values for
-proper padding                               +*/
+proper padding.                              +*/
 
 #ifndef LIB_SCOTCH_H_UNIQUE
 typedef unsigned char       SCOTCH_GraphPart2;
@@ -133,6 +143,10 @@ typedef struct {
 typedef struct {
   double                    dummy[DUMMYSIZEARCHDOM];
 } SCOTCH_ArchDom;
+
+typedef struct {
+  double                    dummy[DUMMYSIZECONTEXT];
+} SCOTCH_Context;
 
 typedef struct {
   double                    dummy[DUMMYSIZEGEOM];
@@ -203,6 +217,21 @@ SCOTCH_Num                  SCOTCH_archDomDist  (SCOTCH_Arch * const, const SCOT
 int                         SCOTCH_archDomFrst  (SCOTCH_Arch * const, SCOTCH_ArchDom * const);
 int                         SCOTCH_archDomBipart (SCOTCH_Arch * const, const SCOTCH_ArchDom * const, SCOTCH_ArchDom * const, SCOTCH_ArchDom * const);
 
+SCOTCH_Context *            SCOTCH_contextAlloc (void);
+int                         SCOTCH_contextInit  (SCOTCH_Context * const);
+void                        SCOTCH_contextExit  (SCOTCH_Context * const);
+int                         SCOTCH_contextOptionGetNum (SCOTCH_Context * const, const int, SCOTCH_Num * const);
+int                         SCOTCH_contextOptionSetNum (SCOTCH_Context * const, const int, const SCOTCH_Num);
+int                         SCOTCH_contextOptionParse (SCOTCH_Context * const, const char *);
+int                         SCOTCH_contextRandomClone (SCOTCH_Context * const);
+void                        SCOTCH_contextRandomReset (SCOTCH_Context * const);
+void                        SCOTCH_contextRandomSeed (SCOTCH_Context * const, const SCOTCH_Num);
+int                         SCOTCH_contextThreadImport1 (SCOTCH_Context * const, const int);
+int                         SCOTCH_contextThreadImport2 (SCOTCH_Context * const, const int);
+int                         SCOTCH_contextThreadSpawn (SCOTCH_Context * const, const int, const int * const);
+int                         SCOTCH_contextBindGraph (SCOTCH_Context * const, const SCOTCH_Graph * const, SCOTCH_Graph * const);
+int                         SCOTCH_contextBindMesh (SCOTCH_Context * const, const SCOTCH_Mesh * const, SCOTCH_Mesh * const);
+
 void                        SCOTCH_errorProg    (const char * const);
 void                        SCOTCH_errorPrint   (const char * const, ...);
 void                        SCOTCH_errorPrintW  (const char * const, ...);
@@ -265,7 +294,7 @@ int                         SCOTCH_graphRepart  (SCOTCH_Graph * const, const SCO
 int                         SCOTCH_graphRepartFixed (SCOTCH_Graph * const, const SCOTCH_Num, SCOTCH_Num * const, const double, const SCOTCH_Num *, SCOTCH_Strat * const, SCOTCH_Num * const);
 int                         SCOTCH_graphTabLoad (const SCOTCH_Graph * const, SCOTCH_Num * const, FILE * const);
 int                         SCOTCH_graphTabSave (const SCOTCH_Graph * const, const SCOTCH_Num * const, FILE * const);
- 
+
 int                         SCOTCH_graphOrderInit (const SCOTCH_Graph * const, SCOTCH_Ordering * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 void                        SCOTCH_graphOrderExit (const SCOTCH_Graph * const, SCOTCH_Ordering * const);
 int                         SCOTCH_graphOrderLoad (const SCOTCH_Graph * const, SCOTCH_Ordering * const, FILE * const);
@@ -323,6 +352,7 @@ int                         SCOTCH_randomSave   (FILE *);
 void                        SCOTCH_randomProc   (int);
 void                        SCOTCH_randomReset  (void);
 void                        SCOTCH_randomSeed   (SCOTCH_Num);
+SCOTCH_Num                  SCOTCH_randomVal    (SCOTCH_Num);
 
 SCOTCH_Strat *              SCOTCH_stratAlloc   (void);
 int                         SCOTCH_stratSizeof  (void);

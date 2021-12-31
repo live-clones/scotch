@@ -63,6 +63,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 10 may 2019     **/
+/**                # Version 7.0  : from : 08 jun 2018     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,19 +121,7 @@ typedef struct VertList_ {
 
 /*+ The graph flag type. +*/
 
-typedef int GraphFlag;                            /*+ Graph property flags +*/
-
-/*+ The graph parallel context structure. +*/
-
-#ifdef SCOTCH_PTSCOTCH
-
-typedef struct GraphProc_ {
-  MPI_Comm                  proccomm;             /*+ Communicator used for parallel algorithm +*/
-  int                       procglbnbr;           /*+ Number of processes in communicator      +*/
-  int                       proclocnum;           /*+ Rank of process in current communicator  +*/
-} GraphProc;
-
-#endif /* SCOTCH_PTSCOTCH */
+typedef unsigned int GraphFlag;                   /*+ Graph property flags +*/
 
 /*+ The graph structure. +*/
 
@@ -151,7 +141,6 @@ typedef struct Graph_ {
   Gnum *                    edlotax;              /*+ Edge load array (if present)              +*/
   Gnum                      edlosum;              /*+ Sum of edge (in fact arc) loads           +*/
   Gnum                      degrmax;              /*+ Maximum degree                            +*/
-  struct GraphProc_ *       procptr;              /*+ Pointer to parallel context (if any)      +*/
 } Graph;
 
 /*
@@ -174,7 +163,7 @@ Gnum                        graphBase           (Graph * const, const Gnum);
 int                         graphBand           (const Graph * restrict const, const Gnum, Gnum * restrict const, const Gnum, Gnum * restrict * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, const Gnum * restrict const, Gnum * restrict const);
 int                         graphCheck          (const Graph *);
 int                         graphClone          (const Graph *, Graph *);
-Gnum                        graphDiamPV         (const Graph * const);
+Gnum                        graphDiamPV         (const Graph * restrict const, Context * restrict const);
 Gnum                        graphIelo           (const Graph * const, Gnum * const, Gnum * const);
 int                         graphInduceList     (const Graph * restrict const, const Gnum, const Gnum * restrict const, Graph * restrict const);
 int                         graphInducePart     (const Graph * restrict const, const GraphPart * restrict const, const Gnum, const GraphPart, Graph * restrict const);

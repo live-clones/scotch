@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014,2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to   : 28 jun 2011     **/
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
+/**                # Version 7.0  : from : 21 aug 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +123,8 @@ archDecoArchBuild (
 Arch * restrict const       tgtarchptr,           /*+ Decomposition architecture to build    +*/
 const Graph * const         tgtgrafptr,           /*+ Source graph modeling the architecture +*/
 const VertList * const      tgtlistptr,           /*+ Subset of source graph vertices        +*/
-const Strat * const         mapstrat)             /*+ Bipartitioning strategy                +*/
+const Strat * const         mapstrat,             /*+ Bipartitioning strategy                +*/
+Context * const             contptr)              /*+ Execution context                      +*/
 {
   Arch                              archdat;      /* Variable-sized architecture for bipartitioning */
   ArchDom                           domsub0;      /* Temporary space for subdomain 0                */
@@ -158,8 +161,6 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
   termdomnbr = (tgtlistptr != NULL) ? tgtlistptr->vnumnbr : tgtgrafptr->vertnbr;
   if (termdomnbr == 0)                            /* If nothing to do */
     return (0);
-
-  intRandInit ();                                 /* Initialize random generator */
 
   invedlosiz = (tgtedlotax != NULL) ? tgtgrafptr->edgenbr : 0;
   if ((memAllocGroup ((void **) (void *)
@@ -208,6 +209,7 @@ const Strat * const         mapstrat)             /*+ Bipartitioning strategy   
   actgrafdat.veextax = NULL;                      /* No external gain array      */
   actgrafdat.parttax = actparttax;                /* Set global auxiliary arrays */
   actgrafdat.frontab = actfrontab;
+  actgrafdat.contptr = contptr;                   /* Use same context for all jobs  */
   joblink = NULL;                                 /* Initialize job list            */
   if (jobtab[0].grafdat.vertnbr > 1) {            /* If job is worth bipartitioning */
     jobtab[0].joblink = joblink;                  /* Add initial job to list        */

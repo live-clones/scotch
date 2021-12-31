@@ -1,4 +1,4 @@
-/* Copyright 2010,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 6.1  : from : 02 dec 2021     **/
 /**                                 to   : 20 dec 2021     **/
+/**                # Version 7.0  : from : 07 may 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +56,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "parser.h"
 #include "graph.h"
 #include "arch.h"
@@ -78,14 +81,22 @@
 
 int
 SCOTCH_graphPartOvl (
-SCOTCH_Graph * const        grafptr,              /*+ Graph to map          +*/
+SCOTCH_Graph * const        libgrafptr,           /*+ Graph to map          +*/
 const SCOTCH_Num            partnbr,              /*+ Number of parts       +*/
 SCOTCH_Strat * const        straptr,              /*+ Partitioning strategy +*/
 SCOTCH_Num * const          parttab)              /*+ Partition array       +*/
 {
   Wgraph              grafdat;
   const Strat *       partstraptr;
+  CONTEXTDECL        (libgrafptr);
   int                 o;
+
+  o = 1;                                          /* Assume an error */
+
+  if (CONTEXTINIT (libgrafptr)) {
+    errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": cannot initialize context");
+    return     (o);
+  }
 
   if (*((Strat **) straptr) == NULL)              /* Set default partitioning strategy if necessary */
     SCOTCH_stratGraphPartOvlBuild (straptr, SCOTCH_STRATQUALITY, (Gnum) partnbr, (double) 0.05);
@@ -93,23 +104,25 @@ SCOTCH_Num * const          parttab)              /*+ Partition array       +*/
   partstraptr = *((Strat **) straptr);
   if (partstraptr->tabl != &wgraphpartststratab) {
     errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": not a graph partitioning with overlap strategy");
-    return (1);
+    goto abort;
   }
 
-  intRandInit ();                                 /* Check that random number generator is initialized */
-
-  wgraphInit (&grafdat, (Graph *) grafptr, partnbr); /* Initialize graph from given graph    */
-  grafdat.parttax = ((Gnum *) parttab) - grafdat.s.baseval; /* Directly use given part array */
+  wgraphInit (&grafdat, (Graph *) CONTEXTGETOBJECT (libgrafptr), partnbr); /* Initialize graph from given graph */
+  grafdat.parttax = ((Gnum *) parttab) - grafdat.s.baseval; /* Directly use given part array                    */
   grafdat.levlnum = 0;
+  grafdat.contptr = CONTEXTGETDATA (libgrafptr);
+
   if (wgraphAlloc (&grafdat) != 0) {              /* Always allocate graph data when calling */
     errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": out of memory");
-    return (1);
+    goto abort;
   }
 
   o = wgraphPartSt (&grafdat, partstraptr);
 
   wgraphExit (&grafdat);
 
+abort:
+  CONTEXTEXIT (libgrafptr);
   return (o);
 }
 

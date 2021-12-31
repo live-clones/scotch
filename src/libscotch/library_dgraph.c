@@ -1,4 +1,4 @@
-/* Copyright 2007,2009,2010,2012,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2009,2010,2012,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,6 +47,8 @@
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
+/**                # Version 7.0  : from : 20 sep 2019     **/
+/**                                 to   : 07 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,6 +60,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "graph.h"                                /* For graphPtscotch() */
 #include "dgraph.h"
 #include "ptscotch.h"
@@ -109,18 +112,7 @@ SCOTCH_dgraphInit (
 SCOTCH_Dgraph * const       grafptr,
 MPI_Comm                    proccomm)             /* Communicator to be used for all communications */
 {
-#ifdef SCOTCH_PTHREAD
-  int                 thrdlvlval;
-#endif /* SCOTCH_PTHREAD */
-
-#ifdef SCOTCH_PTHREAD
-  MPI_Query_thread (&thrdlvlval);
-  if (thrdlvlval < MPI_THREAD_MULTIPLE) {
-    errorPrint (STRINGIFY (SCOTCH_dgraphInit) ": Scotch compiled with SCOTCH_PTHREAD and program not launched with MPI_THREAD_MULTIPLE");
-    return     (1);
-  }
-#endif /* SCOTCH_PTHREAD */
-
+#ifdef SCOTCH_DEBUG_DGRAPH2
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphInit) ": internal error (1)");
     return     (1);
@@ -129,6 +121,7 @@ MPI_Comm                    proccomm)             /* Communicator to be used for
     errorPrint (STRINGIFY (SCOTCH_dgraphInit) ": internal error (2)");
     return     (1);
   }
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   return (dgraphInit ((Dgraph *) grafptr, proccomm));
 }
@@ -143,7 +136,8 @@ void
 SCOTCH_dgraphExit (
 SCOTCH_Dgraph * const       grafptr)
 {
-  dgraphExit ((Dgraph *) grafptr);
+  if (! contextContainerTrue (grafptr))
+    dgraphExit ((Dgraph *) grafptr);
 }
 
 /*+ This routine frees the contents of the
@@ -157,7 +151,8 @@ void
 SCOTCH_dgraphFree (
 SCOTCH_Dgraph * const       grafptr)
 {
-  dgraphFree ((Dgraph *) grafptr);
+  if (! contextContainerTrue (grafptr))
+    dgraphFree ((Dgraph *) grafptr);
 }
 
 /*+ This routine accesses graph size data.
@@ -169,15 +164,13 @@ SCOTCH_Dgraph * const       grafptr)
 
 void
 SCOTCH_dgraphSize (
-const SCOTCH_Dgraph * const grafptr,
+const SCOTCH_Dgraph * const libgrafptr,
 SCOTCH_Num * const          vertglbnbr,
 SCOTCH_Num * const          vertlocnbr,
 SCOTCH_Num * const          edgeglbnbr,
 SCOTCH_Num * const          edgelocnbr)
 {
-  const Dgraph *      srcgrafptr;
-
-  srcgrafptr = (Dgraph *) grafptr;
+  const Dgraph * const      srcgrafptr = (Dgraph *) CONTEXTOBJECT (libgrafptr);
 
   if (vertglbnbr != NULL)
     *vertglbnbr = (SCOTCH_Num) (srcgrafptr->vertglbnbr);
@@ -199,7 +192,7 @@ SCOTCH_Num * const          edgelocnbr)
 
 void
 SCOTCH_dgraphData (
-const SCOTCH_Dgraph * const grafptr,              /* Graph structure to read          */
+const SCOTCH_Dgraph * const libgrafptr,           /* Graph structure to read          */
 SCOTCH_Num * const          baseptr,              /* Base value                       */
 SCOTCH_Num * const          vertglbptr,           /* Number of global vertices        */
 SCOTCH_Num * const          vertlocptr,           /* Number of local vertices         */
@@ -217,9 +210,7 @@ SCOTCH_Num ** const         edgegsttab,           /* Ghost edge array [edgelocsi
 SCOTCH_Num ** const         edloloctab,           /* Edge load array [edgelocsiz]     */
 MPI_Comm * const            comm)                 /* MPI Communicator                 */
 {
-  const Dgraph *      srcgrafptr;                 /* Pointer to source graph structure */
-
-  srcgrafptr = (const Dgraph *) grafptr;
+  const Dgraph * const      srcgrafptr = (Dgraph *) CONTEXTOBJECT (libgrafptr);
 
   if (baseptr != NULL)
     *baseptr = srcgrafptr->baseval;

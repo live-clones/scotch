@@ -1,4 +1,4 @@
-/* Copyright 2008,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,11 +44,39 @@
 /**                                 to   : 14 apr 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 06 may 2021     **/
+/**                                 to   : 27 jul 2021     **/
 /**                                                        **/
 /************************************************************/
+
+/*
+**  The type and structure definitions.
+*/
+
+/*+ This structure holds the splitting parameters. +*/
+
+typedef struct KgraphMapRbPartSplit2_ {
+  Gnum                        vertnbr;            /*+ Number of vertices in part or in graph         +*/
+  Anum                        vflonbr;            /*+ Number of fixed vertex load slots              +*/
+  KgraphMapRbVflo * restrict  vflotab;            /*+ Array of fixed vertex load slots               +*/
+  ArchDom *                   domnptr;            /*+ Original domain to bipartition (to avoid lock) +*/
+} KgraphMapRbPartSplit2;
+
+typedef struct KgraphMapRbPartSplit_ {
+  KgraphMapRbPartSplit2             splttab[2];   /*+ Array of induced subgraph data           +*/
+  const KgraphMapRbData * restrict  dataptr;      /*+ Global mapping data                      +*/
+  const Graph * restrict            grafptr;      /*+ Graph to induce and bipartition          +*/
+  const GraphPart * restrict        parttax;      /*+ Part array of original graph to consider +*/
+  Gnum                              levlnum;      /*+ Recursion level number                   +*/
+  int *                             revaptr;      /*+ Pointer to return value                  +*/
+} KgraphMapRbPartSplit;
 
 /*
 **  The function prototypes.
 */
 
-int                         kgraphMapRbPart     (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict);
+#ifdef KGRAPH_MAP_RB_PART
+static void                 kgraphMapRbPart2    (Context * restrict const, const int, KgraphMapRbPartSplit * const);
+#endif /* KGRAPH_MAP_RB_PART */
+
+int                         kgraphMapRbPart     (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict, Context * restrict const);

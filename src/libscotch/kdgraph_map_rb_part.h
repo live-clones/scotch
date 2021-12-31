@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2011,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2011,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -86,10 +88,17 @@ typedef struct KdgraphMapRbPartData_ {
   double                    comploadrat;          /*+ Ideal vertex load per target load   +*/
   double                    comploadmin;          /*+ Minimum vertex load per target load +*/
   double                    comploadmax;          /*+ Maximum vertex load per target load +*/
+  Context *                 contptr;              /*+ Execution context                   +*/
 } KdgraphMapRbPartData;
 
 /*
 **  The function prototypes.
 */
+
+#ifdef KDGRAPH_MAP_RB_PART
+static int                  kdgraphMapRbPartFold2 (KdgraphMapRbPartThread * const);
+static void                 kdgraphMapRbPartFold3 (ThreadDescriptor * restrict const, KdgraphMapRbPartThread * restrict const);
+static int                  kdgraphMapRbPartFold (Bdgraph * restrict const, Dmapping * restrict const, const ArchDom * restrict const, KdgraphMapRbPartGraph * restrict const);
+#endif /* KDGRAPH_MAP_RB_PART */
 
 int                         kdgraphMapRbPart    (Kdgraph * const, Kdmapping * const, const KdgraphMapRbParam * const);

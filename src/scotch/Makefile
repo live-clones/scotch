@@ -34,6 +34,12 @@ bindir		= ../../bin
 includedir	= ../../include
 libdir		= ../../lib
 
+ifeq ($(strip $(CODENAME)),)
+CODENAMEDEF	=
+else
+CODENAMEDEF	= "-DSCOTCH_CODENAME=\"$(CODENAME)\""
+endif
+
 ##
 ##  General inference rules.
 ##
@@ -44,10 +50,10 @@ include ../Makefile.inc
 		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -lscotch -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
 %$(OBJ)	:	%.c
-				$(CC) $(CFLAGS) -I$(includedir) -I../libscotch -c $(<) -o $(@)
+				$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(CODENAMEDEF) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -lscotch -l$(SCOTCHLIB)errexit $(LDFLAGS)
+				$(CC) $(CFLAGS) -I$(includedir) -I../libscotch $(CODENAMEDEF) $(<) -o $(@) -L$(libdir) -l$(SCOTCHLIB) -lscotch -l$(SCOTCHLIB)errexit $(LDFLAGS)
 
 ##
 ##  Project rules.

@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2011,2014,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2011,2014,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                # Version 6.0  : from : 29 oct 2014     **/
 /**                                 to   : 29 oct 2014     **/
 /**                # Version 6.1  : from : 05 apr 2021     **/
+/**                                 to   : 18 dec 2021     **/
+/**                # Version 7.0  : from : 03 sep 2020     **/
 /**                                 to   : 18 dec 2021     **/
 /**                                                        **/
 /************************************************************/
@@ -335,16 +337,6 @@ const MPI_Datatype            attrglbtype)        /* Attribute datatype       */
 ** - !0  : on error.
 */
 
-#ifdef SCOTCH_PTHREAD
-static
-void *
-dgraphHaloAsync2 (
-DgraphHaloRequest * restrict  requptr)
-{
-  return ((void *) (intptr_t) dgraphHaloSync (requptr->grafptr, requptr->attrgsttab, requptr->attrglbtype));
-}
-#endif /* SCOTCH_PTHREAD */
-
 void
 dgraphHaloAsync (
 Dgraph * restrict const       grafptr,
@@ -352,24 +344,11 @@ void * restrict const         attrgsttab,         /* Attribute array to share */
 const MPI_Datatype            attrglbtype,        /* Attribute datatype       */
 DgraphHaloRequest * restrict  requptr)
 {
-#ifndef SCOTCH_PTHREAD
 #ifdef SCOTCH_MPI_ASYNC_COLL
   int *               senddsptab;
   int *               recvdsptab;
   MPI_Request *       requtab;                    /* Not used as only a single asynchronous communication takes place */
-#endif /* SCOTCH_MPI_ASYNC_COLL */
-#endif /* SCOTCH_PTHREAD        */
 
-#ifdef SCOTCH_PTHREAD
-  requptr->flagval     = -1;                      /* Assume thread will be successfully launched */
-  requptr->grafptr     = grafptr;
-  requptr->attrgsttab  = attrgsttab;
-  requptr->attrglbtype = attrglbtype;
-
-  if (pthread_create (&requptr->thrdval, NULL, (void * (*) (void *)) dgraphHaloAsync2, (void *) requptr) != 0) /* If could not create thread */
-    requptr->flagval = (int) (intptr_t) dgraphHaloAsync2 (requptr); /* Call function synchronously */
-#else /* SCOTCH_PTHREAD */
-#ifdef SCOTCH_MPI_ASYNC_COLL
   requptr->flagval    = 1;                        /* Assume error */
   requptr->attrsndtab = NULL;                     /* No memory    */
 
@@ -386,9 +365,8 @@ DgraphHaloRequest * restrict  requptr)
   }
   requptr->flagval = -1;                          /* Communication successfully launched */
 #else /* SCOTCH_MPI_ASYNC_COLL */
-  requptr->flagval = dgraphHaloSync (grafptr, attrgsttab, attrglbtype); /* Last resort is synchronous communication */
+  requptr->flagval = dgraphHaloSync (grafptr, attrgsttab, attrglbtype); /* Else perform synchronous communication */
 #endif /* SCOTCH_MPI_ASYNC_COLL */
-#endif /* SCOTCH_PTHREAD        */
 }
 
 /* This function performs an asynchronous collective
@@ -404,14 +382,6 @@ int
 dgraphHaloWait (
 DgraphHaloRequest * restrict  requptr)
 {
-#ifdef SCOTCH_PTHREAD
-  void *                    o;
-
-  if (requptr->flagval == -1) {                   /* If thread launched              */
-    pthread_join (requptr->thrdval, &o);          /* Wait for its completion         */
-    requptr->flagval = (int) (intptr_t) o;        /* Get thread return value         */
-  }                                               /* Else return value already known */
-#else /* SCOTCH_PTHREAD */
 #ifdef SCOTCH_MPI_ASYNC_COLL
   if (requptr->flagval == -1)                     /* If communication launched */
     requptr->flagval = (MPI_Wait (&requptr->requval, MPI_STATUS_IGNORE) != MPI_SUCCESS); /* Wait for completion of asynchronous collective communication */
@@ -419,7 +389,6 @@ DgraphHaloRequest * restrict  requptr)
   if (requptr->attrsndtab != NULL)                /* Free group leader if it was successfully allocated before */
     memFree (requptr->attrsndtab);
 #endif /* SCOTCH_MPI_ASYNC_COLL */
-#endif /* SCOTCH_PTHREAD        */
 
   return (requptr->flagval);                      /* Return asynchronous or synchronous error code */
 }

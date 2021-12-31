@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 6.0  : from : 27 nov 2012     **/
 /**                                 to   : 23 may 2018     **/
+/**                # Version 7.0  : from : 04 aug 2018     **/
+/**                                 to   : 29 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -176,13 +178,13 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
       cgrfptr->s.edgenbr = edgenbr;
       cgrfptr->s.edlotax = NULL;
       cgrfptr->s.edlosum = edgenbr;
-      cgrfptr->s.procptr = NULL;                  /* Not a multi-sequential gather: no communication possible */
       cgrfptr->vnohnbr   = vnohnbr;
       cgrfptr->vnohnnd   = vnohnbr + dgrfptr->s.baseval;
       cgrfptr->vnlosum   = dgrfptr->s.veloglbsum;
       cgrfptr->enohnbr   =
       cgrfptr->enlosum   = dgrfptr->s.edgeglbnbr;
       cgrfptr->levlnum   = dgrfptr->levlnum;
+      cgrfptr->contptr   = dgrfptr->contptr;
     }
   }
   if ((cheklocval == 0) &&

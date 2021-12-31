@@ -54,6 +54,8 @@
 /**                                 to   : 24 aug 2020     **/
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 25 sep 2021     **/
+/**                # Version 7.0  : from : 02 mar 2018     **/
+/**                                 to   : 03 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,17 +67,11 @@
 
 #define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2021 IPB, Universite de Bordeaux, INRIA & CNRS, France"
 #define SCOTCH_LICENSE_STRING       "This software is libre/free software under CeCILL-C -- see the user's manual for more information"
+#ifdef SCOTCH_CODENAME
+#define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL) " (" SCOTCH_CODENAME ")"
+#else /* SCOTCH_CODENAME */
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL)
-
-/*
-** Handling of determinism.
-*/
-
-#ifdef SCOTCH_DETERMINISTIC
-#ifndef COMMON_RANDOM_FIXED_SEED
-#define COMMON_RANDOM_FIXED_SEED
-#endif /* COMMON_RANDOM_FIXED_SEED */
-#endif /* SCOTCH_DETERMINISTIC     */
+#endif /* SCOTCH_CODENAME */
 
 /*
 ** Handling of parallelism.
@@ -121,22 +117,6 @@
 #endif /* COMMON_PTHREAD_MEMORY */
 #endif /* SCOTCH_PTHREAD        */
 
-/*+ Handle number of threads. +*/
-
-#ifdef SCOTCH_PTHREAD
-#ifndef SCOTCH_PTHREAD_NUMBER
-#define SCOTCH_PTHREAD_NUMBER       1
-#endif /* SCOTCH_PTHREAD_NUMBER */
-
-#else /* SCOTCH_PTHREAD */
-
-#ifdef SCOTCH_PTHREAD_NUMBER
-#undef SCOTCH_PTHREAD_NUMBER
-#endif /* SCOTCH_PTHREAD_NUMBER */
-#define SCOTCH_PTHREAD_NUMBER       1
-
-#endif /* SCOTCH_PTHREAD */
-
 /*+ Handle old semantics of thread affinity. */
 
 #ifdef SCOTCH_PTHREAD_AFFINITY_LINUX
@@ -175,6 +155,7 @@
 #define SCOTCH_DEBUG_FIBO2
 #define SCOTCH_DEBUG_GAIN2
 #define SCOTCH_DEBUG_PARSER2
+#define SCOTCH_DEBUG_CONTEXT2
 #define SCOTCH_DEBUG_BDGRAPH2
 #define SCOTCH_DEBUG_BGRAPH2
 #define SCOTCH_DEBUG_DGRAPH2
@@ -204,6 +185,7 @@
 #define SCOTCH_DEBUG_FIBO1
 #define SCOTCH_DEBUG_GAIN1
 #define SCOTCH_DEBUG_PARSER1
+#define SCOTCH_DEBUG_CONTEXT1
 #define SCOTCH_DEBUG_BDGRAPH1
 #define SCOTCH_DEBUG_BGRAPH1
 #define SCOTCH_DEBUG_DGRAPH1
@@ -338,9 +320,8 @@
 #define intRandProc                 SCOTCH_NAME_INTERN (intRandProc)
 #define intRandReset                SCOTCH_NAME_INTERN (intRandReset)
 #define intRandSeed                 SCOTCH_NAME_INTERN (intRandSeed)
-#ifndef COMMON_RANDOM_SYSTEM
 #define intRandVal                  SCOTCH_NAME_INTERN (intRandVal)
-#endif /* COMMON_RANDOM_SYSTEM */
+#define intRandVal2                 SCOTCH_NAME_INTERN (intRandVal2)
 #define intSort1asc1                SCOTCH_NAME_INTERN (intSort1asc1)
 #define intSort2asc1                SCOTCH_NAME_INTERN (intSort2asc1)
 #define intSort2asc2                SCOTCH_NAME_INTERN (intSort2asc2)
@@ -987,10 +968,8 @@
 #define orderRang                   SCOTCH_NAME_INTERN (orderRang)
 #define orderTree                   SCOTCH_NAME_INTERN (orderTree)
 
-#define parsermethtokentab          SCOTCH_NAME_INTERN (parsermethtokentab)
-#define parserparamcurr             SCOTCH_NAME_INTERN (parserparamcurr)
-#define parserstratcurr             SCOTCH_NAME_INTERN (parserstratcurr)
-#define parserstrattab              SCOTCH_NAME_INTERN (parserstrattab)
+#define stratmethtokentab           SCOTCH_NAME_INTERN (stratmethtokentab)
+#define stratenvdat                 SCOTCH_NAME_INTERN (stratenvdat)
 
 #define stratdummy                  SCOTCH_NAME_INTERN (stratdummy)
 #define stratInit                   SCOTCH_NAME_INTERN (stratInit)

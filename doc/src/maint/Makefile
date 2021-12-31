@@ -30,7 +30,7 @@
 ## knowledge of the CeCILL-C license and that you accept its terms.
 ##
 
-VERSION		= 6.1
+VERSION		= 7.0
 
 MMAN		= scotch_maint$(VERSION)
 

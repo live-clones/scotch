@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 29 aug 2012     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,9 +64,10 @@ typedef struct Kdmapping_ {
 /*+ The graph structure. +*/
 
 typedef struct Kdgraph_ {
-  Dgraph                    s;                    /*+ Source graph +*/
-  Kdmapping                 m;                    /*+ Mapping      +*/
-  INT                       levlnum;
+  Dgraph                    s;                    /*+ Source graph           +*/
+  Kdmapping                 m;                    /*+ Mapping                +*/
+  INT                       levlnum;              /*+ Graph coarsening level +*/
+  Context *                 contptr;              /*+ Execution context      +*/
 } Kdgraph;
 
 /*

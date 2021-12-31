@@ -17,6 +17,7 @@ src/check/*
 !src/check/*[.][ch]
 !src/check/*[.]f90
 src/check/test_scotch_graph_dump2.c
+!src/check/CMakeLists.txt
 !src/check/Makefile
 !src/check/data
 src/esmumps/*[.][ao]
@@ -39,4 +40,5 @@ src/libscotchmetis/metisf.h
 src/libscotchmetis/parmetis.h
 src/scotch/*
 !src/scotch/*[.][ch]
+!src/check/CMakeLists.txt
 !src/scotch/Makefile

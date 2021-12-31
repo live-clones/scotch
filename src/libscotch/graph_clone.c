@@ -1,4 +1,4 @@
-/* Copyright 2016 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 22 feb 2016     **/
 /**                                 to   : 22 feb 2018     **/
+/**                # Version 7.0  : from : 04 aug 2018     **/
+/**                                 to   : 04 aug 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -181,7 +183,6 @@ Graph * restrict const          clngrafptr)
 
   clngrafptr->edlosum = orggrafptr->edlosum;
   clngrafptr->degrmax = orggrafptr->degrmax;
-  clngrafptr->procptr = orggrafptr->procptr;
 
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (graphCheck (clngrafptr) != 0) {             /* Check graph consistency */

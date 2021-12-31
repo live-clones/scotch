@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2019,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 31 aug 2005     **/
 /**                # Version 5.0  : from : 30 jan 2008     **/
 /**                                 to   : 30 jan 2008     **/
+/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                                 to   : 28 aug 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,12 +93,14 @@ const VmeshSeparateMlParam * const  paraptr)      /*+ Method parameters         
   if (finemeshptr->m.vnodnbr <= (Gnum) paraptr->vnodnbr)
     return (1);
 
-  if ((o = meshCoarsen (&finemeshptr->m, &coarmeshptr->m, finecoarptr, (Gnum) paraptr->vnodnbr, paraptr->coarrat, paraptr->coartype)) != 0)
+  if ((o = meshCoarsen (&finemeshptr->m, &coarmeshptr->m, finecoarptr, (Gnum) paraptr->vnodnbr,
+                        paraptr->coarrat, paraptr->coartype, finemeshptr->contptr)) != 0)
     return (o);                                   /* Return if coarsening failed */
 
   coarmeshptr->parttax = NULL;                    /* Do not allocate partition data yet     */
   coarmeshptr->frontab = finemeshptr->frontab;    /* Re-use frontier array for coarser mesh */
   coarmeshptr->levlnum = finemeshptr->levlnum + 1; /* Mesh level is coarsening level        */
+  coarmeshptr->contptr = finemeshptr->contptr;
 
   return (0);
 }

@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014,2019,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 26 aug 2010     **/
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 28 sep 2014     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,11 +101,9 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
     case 2 :
       foldval = DGRAPHCOARSENFOLDDUP;
       break;
-#ifdef SCOTCH_DEBUG_VDGRAPH2
     default :
       errorPrint ("vdgraphSeparateMlCoarsen: invalid parameter");
-      return     (1);
-#endif /* SCOTCH_DEBUG_VDGRAPH2 */
+      return (1);
   }
   if ((finegrafptr->s.vertglbnbr / finegrafptr->s.procglbnbr) > paraptr->foldmax) /* If no need to fold */
     foldval = DGRAPHCOARSENNONE;
@@ -111,7 +111,7 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
   *coarmultptr = NULL;                            /* Let the routine create the multinode array */
   dgraphInit (&coargrafptr->s, finegrafptr->s.proccomm); /* Re-use fine graph communicator      */
   if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->passnbr,
-                     paraptr->coarnbr, paraptr->coarrat, foldval) != 0)
+                     paraptr->coarnbr, paraptr->coarrat, foldval, finegrafptr->contptr) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   coargrafptr->fronloctab = NULL;
@@ -122,7 +122,9 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
     return (0);
   }
 
-  coargrafptr->levlnum = finegrafptr->levlnum + 1; /* Graph level is coarsening level                 */
+  coargrafptr->levlnum = finegrafptr->levlnum + 1; /* Graph level is coarsening level */
+  coargrafptr->contptr = finegrafptr->contptr;
+
   if (coargrafptr->s.vertlocnbr <= finegrafptr->s.vertlocnbr) /* If (folded) coarser graph is smaller */
     coargrafptr->fronloctab = finegrafptr->fronloctab; /* Re-use frontier array for coarser graph     */
   else {                                          /* Else allocate new private frontier array         */
@@ -130,7 +132,7 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
       errorPrint ("vdgraphSeparateMlCoarsen: out of memory");
       dgraphExit (&coargrafptr->s);               /* Only free Dgraph since fronloctab not allocated */
       memFree    (*coarmultptr);                  /* Free un-based array                             */
-      return     (1);
+      return (1);
     }
   }
 
@@ -381,7 +383,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
 #ifdef SCOTCH_DEBUG_BDGRAPH1                      /* Communication cannot be overlapped by a useful one */
     if (MPI_Allreduce (&reduloctab[5], &reduglbtab[5], 1, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS) {
       errorPrint ("vdgraphSeparateMlUncoarsen: communication error (1)");
-      return     (1);
+      return (1);
     }
 #else /* SCOTCH_DEBUG_BDGRAPH1 */
     reduglbtab[5] = reduloctab[5];
@@ -424,18 +426,18 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
       (MPI_Type_commit (&besttypedat)                                                 != MPI_SUCCESS) ||
       (MPI_Op_create ((MPI_User_function *) vdgraphSeparateMlOpBest, 1, &bestoperdat) != MPI_SUCCESS)) {
     errorPrint ("vdgraphSeparateMlUncoarsen: communication error (2)");
-    return     (1);
+    return (1);
   }
 
   if (MPI_Allreduce (reduloctab, reduglbtab, 1, besttypedat, bestoperdat, finegrafptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphSeparateMlUncoarsen: communication error (3)");
-    return     (1);
+    return (1);
   }
 
   if ((MPI_Op_free   (&bestoperdat) != MPI_SUCCESS) ||
       (MPI_Type_free (&besttypedat) != MPI_SUCCESS)) {
     errorPrint ("vdgraphSeparateMlUncoarsen: communication error (4)");
-    return     (1);
+    return (1);
   }
 
   if (reduglbtab[5] != 0) {                       /* If memory error, return                     */
@@ -461,7 +463,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
   finegrafptr->complocsize[0] =
   finegrafptr->complocsize[1] =
   finegrafptr->complocsize[2] = 0;
- 
+
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   memSet (finegrafptr->partgsttax + finegrafptr->s.baseval, 3, finegrafptr->s.vertgstnbr * sizeof (GraphPart)); /* Mark all vertices as unvisited */
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
@@ -497,7 +499,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
 #ifdef SCOTCH_DEBUG_VDGRAPH2
       if ((coarpartval < 0) || (coarpartval > 2)) {
         errorPrint ("vdgraphSeparateMlUncoarsen: internal error (2)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
 
@@ -595,7 +597,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
 
   if (MPI_Alltoall (ssnddattab, 3, GNUM_MPI, srcvdattab, 3, GNUM_MPI, finegrafptr->s.proccomm) != MPI_SUCCESS) { /* Exchange sizes */
     errorPrint ("vdgraphSeparateMlUncoarsen: communication error (2)");
-    return     (1);
+    return (1);
   }
 
   vrcvcnttab = (int *) ssnddattab;                /* TRICK: re-use ssnddattab */
@@ -612,7 +614,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
   if (MPI_Alltoallv (vsnddattab, vsndcnttab, vsnddsptab, GNUM_MPI, /* Exchange data */
                      vrcvdattab, vrcvcnttab, vrcvdsptab, GNUM_MPI, finegrafptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphSeparateMlUncoarsen: communication error (3)");
-    return     (1);
+    return (1);
   }
 
   finecomplocload0 = finegrafptr->complocload[0];
@@ -717,7 +719,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
 
   if (MPI_Allreduce (reduloctab, reduglbtab, 6, GNUM_MPI, MPI_SUM, finegrafptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphSeparateMlUncoarsen: communication error (4)");
-    return     (1);
+    return (1);
   }
 
   finegrafptr->compglbload[0] = reduglbtab[0];
@@ -731,7 +733,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Based multinode array
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   if (vdgraphCheck (finegrafptr) != 0) {
     errorPrint ("vdgraphSeparateMlUncoarsen: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
 

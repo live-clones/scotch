@@ -1,4 +1,4 @@
-/* Copyright 2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -33,7 +33,7 @@
 /**                                                        **/
 /**   NAME       : test_scotch_dgraph_induce.c             **/
 /**                                                        **/
-/**   AUTHOR     : Amaury JACQUES                          **/
+/**   AUTHOR     : Amaury JACQUES (v6.0)                   **/
 /**                Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operations of     **/
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 16 apr 2019     **/
 /**                                 to   : 22 apr 2019     **/
+/**                # Version 7.0  : from : 14 jan 2020     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,12 +59,8 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "../libscotch/module.h"
+#include "scotch.h"
 #include "ptscotch.h"
-
-void                        intRandInit         (void);
-void                        intAscn             (SCOTCH_Num *, SCOTCH_Num, SCOTCH_Num);
-void                        intPerm             (SCOTCH_Num *, SCOTCH_Num);
 
 /*********************/
 /*                   */
@@ -80,6 +78,7 @@ char *              argv[])
   int                 proclocnum;                 /* Number of this process                 */
   FILE *              fileptr;
   SCOTCH_Num          baseval;
+  SCOTCH_Num          orgvertlocnum;
   SCOTCH_Num          orgvertlocnbr;
   SCOTCH_Num *        orgpartloctab;
   SCOTCH_Dgraph       orggrafdat;
@@ -166,9 +165,19 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  intRandInit ();                                 /* Initialize random generator */
-  intAscn (indlistloctab, orgvertlocnbr, baseval);
-  intPerm (indlistloctab, orgvertlocnbr);         /* Random permutation of all original graph vertices */
+  SCOTCH_randomReset ();                          /* Initialize random generator */
+  for (orgvertlocnum = 0, indvertlocnum = baseval;
+       orgvertlocnum < orgvertlocnbr; orgvertlocnum ++)
+    indlistloctab[orgvertlocnum] = indvertlocnum ++;
+  for (orgvertlocnum = 0; orgvertlocnum < orgvertlocnbr; orgvertlocnum ++) {
+    SCOTCH_Num          orgvertloctmp;
+    SCOTCH_Num          indlistloctmp;
+
+    orgvertloctmp = orgvertlocnum + SCOTCH_randomVal (orgvertlocnbr - orgvertlocnum);
+    indlistloctmp                = indlistloctab[orgvertlocnum];
+    indlistloctab[orgvertlocnum] = indlistloctab[orgvertloctmp];
+    indlistloctab[orgvertloctmp] = indlistloctmp;
+  }
 
   indvertlocnbr = (orgvertlocnbr + 1) / 2;        /* Keep only half of the original vertices */
 

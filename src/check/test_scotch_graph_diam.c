@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 jan 2017     **/
 /**                                 to   : 22 may 2018     **/
+/**                # Version 7.0  : from : 17 jan 2020     **/
+/**                                 to   : 17 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,9 +57,6 @@
 #include <string.h>
 
 #include "scotch.h"
-
-void                        _SCOTCHintRandInit  (void);
-SCOTCH_Num                  _SCOTCHintRandVal   (SCOTCH_Num);
 
 /*********************/
 /*                   */
@@ -98,7 +97,7 @@ char *              argv[])
 
   fclose (fileptr);
 
-  _SCOTCHintRandInit ();
+  SCOTCH_randomReset ();
 
   if ((diamval = SCOTCH_graphDiamPV (&grafdat)) < 0) {
     SCOTCH_errorPrint ("main: cannot compute graph pseudo-diameter");

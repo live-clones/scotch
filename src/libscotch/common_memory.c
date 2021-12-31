@@ -473,7 +473,7 @@ memMax ()
 ** terminated by a NULL pointer.
 ** It returns:
 ** - !NULL  : pointer to block, all arrays allocated.
-** - NULL   : no array allocated.
+** - NULL   : no array allocated; first block pointer is also set to NULL.
 */
 
 void *

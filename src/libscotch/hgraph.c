@@ -44,6 +44,8 @@
 /**                                 to   : 30 may 2008     **/
 /**                # Version 6.0  : from : 17 oct 2012     **/
 /**                                 to   : 23 may 2018     **/
+/**                # Version 7.0  : from : 04 aug 2018     **/
+/**                                 to   : 04 aug 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -138,5 +140,4 @@ Graph * restrict const        ugrfptr)
   ugrfptr->edlotax = grafptr->s.edlotax;
   ugrfptr->edlosum = grafptr->enlosum;
   ugrfptr->degrmax = grafptr->s.degrmax;          /* Upper bound */
-  ugrfptr->procptr = grafptr->s.procptr;
 }

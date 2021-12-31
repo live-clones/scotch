@@ -1,42 +1,30 @@
-Scotch 6.1 installation instructions
+Scotch 7.0 installation instructions
 ====================================
 
 
 1) Mandatory tools
 ==================
 
-In order for you to compile Scotch and/or PT-Scotch, you must have GNU
-Make installed on your system, as well as an implementation of the MPI
-message-passing library in the case of PT-Scotch. Flex and Bison are
-optional. There is a possibility to install Scotch without having Flex
-or Bison, but it may require the tuning of pre-compiled Flex and Bison
-outputs created on a Linux system, which may need some tricky work to
-compile on other systems, because of different C library
-implementations. Therefore, it is much more secure to have them
-installed.
+In order for you to compile Scotch and/or PT-Scotch, you must have
+Flex and Bison installed on your system, as well as GNU Make, and
+possibly CMake if you prefer this tool. An implementation of the MPI
+message-passing library is also mandatory to compile PT-Scotch library
+and software.
 
-To check if GNU Make is installed and is found first, please type:
-
-%prompt% make --version
-
-It should read:
-% GNU Make x.xx
-% Copyright (C) 20xx  Free Software Foundation, Inc.
-etc, etc.
-
-
-Alternatively, if GNU Make is installed but its directory does
-not appear first in the PATH variable that is searched for
-executables, you can try to locate it using the which command:
-
-%prompt% which make
-
-If several occurrences of make are found, one might be GNU Make,
-so try to figure out which of them.
-
-To see if Flex and Bison are present, type
+To check whether Flex and Bison are present, please type:
 %prompt% which flex
 %prompt% which bison
+
+Note: to implement pure parsers, recent versions of the Flex and
+Bison tools are needed (e.g., the 3.4 branch). On MacOs, an older
+version is provided by default; users may get an adequate version from
+the "HomeBrew" repository, using command "brew install bison".
+
+To check whether GNU Make and/or CMake are installed and are found
+first, please type:
+
+%prompt% make --version
+%prompt% cmake --version
 
 If some of these are missing, please:
 - check your path variable (just in case they are located in
@@ -44,42 +32,50 @@ If some of these are missing, please:
   /opt/local/bin/, /opt/gnu/bin, etc). Tools such as "which",
   "locate" or "find" may help you find them;
 - ask your system administrator (highly recommended);
-- install a copy of GNU Make of your own (less recommended,
-  please ask your system administrator first). GNU Make is
-  available from the FSF website, at:
-  http://www.gnu.org/software/make/ and
-  http://ftp.gnu.org/pub/gnu/make/ .
-  Flex and Bison are also available from the very same FSF
-  website, at:
+- if you have system administrator rights, install the packages
+  on your system;
+- install a local copy of the tools on your own (less recommended,
+  please ask your system administrator first).
+  Flex and Bison are available from the FSF website, at:
   http://www.gnu.org/software/flex/
   http://ftp.gnu.org/non-gnu/flex/
   http://www.gnu.org/software/bison/
-  http://ftp.gnu.org/pub/gnu/bison/ ;
-- use the "last resort" files placed in a directory judiciously
-  called "last_resort", located in subdirectory "src/libscotch".
-  These files are:
-  . parser_ll.c
-  . parser_ly.h
-  . parser_yy.c .
-  They should be copied in the directory where object files are
-  created, and "touch"ed so that their modification date is more
-  recent than those of the corresponding "parser_ll.l" and
-  "parser_yy.y" files. Then cross your fingers and hope it
-  compiles properly on your system. Else, you will have to dig in
-  their code to have them compile properly...
-  The Makefile of the libScotch library has been designed so as
-  to copy the last_resort/* files automatically when the Flex or
-  Bison tools are not found.
-  In this case, depending on your platform, you may also have to set
-  the "-DSCOTCH_RENAME_PARSER" flag in order for all symbols to be
-  properly redefined (see Section 2.2).
+  http://ftp.gnu.org/pub/gnu/bison/ .
+  CMake is available from its repository, at:
+  https://cmake.org/download/
+  GNU Make is available from the FSF website, at:
+  http://www.gnu.org/software/make/ and
+  http://ftp.gnu.org/pub/gnu/make/ .
 
 
 2) Configuration
 ================
 
-2.1) Creating the "Makefile.inc" file
--------------------------------------
+To compile and test Scotch, one can either use CMake, or GNU Make. The
+latter option provides most flexibility, but may be more tedious.
+Please read the following sections to see what options are available,
+as they may either favor or hinder the performance of Scotch on your
+system.
+
+
+2.1) Compiling with CMake
+-------------------------
+
+Go to the "src/" directory. Then, type the following commands:
+
+%prompt% mkdir build
+%prompt% cd build
+%prompt% cmake .. 
+
+These commands should create all the makefiles that are needed by GNU
+Make to perform automagically.
+
+
+2.2) Compiling with GNU Make
+----------------------------
+
+In order for GNU Make to run, one needs to create a "Makefile.inc"
+file containing the proper compilation commands and variables.
 
 Go to the "src/" directory.
 
@@ -114,21 +110,23 @@ Make.inc directory. This is for instance the case for the mingw32
 platform.
 
 
-2.2) Parser symbol conflicts
-----------------------------
+2.3) Parser issues
+------------------
 
 Since Scotch uses a parser to analyze its strategy strings, it may
 happen that the symbols of this parser conflict with those of
 another parser used in a third-party library. All "Makefile.inc.*"
-platform configuration files which base on Flex/Bison are already
-tailored so as to prevent such conflicts. If you use other parsing
-tools, you may have to provide other options. Another solution is to
-use the pre-processed parser files of the "src/libscotch/last_resort"
-subdirectory (corresponding operation instructions are given in
-Section 1).
+platform configuration files which are based on Flex / Bison are
+already tailored so as to prevent such conflicts. If you use other
+parsing tools, you may have to provide other options.
+
+Since version 7.0, Scotch uses re-entrant versions of the parsers
+produced by Flex and Bison. They are inherently thread-safe and free
+all their work memory, which was not the case for the previous
+"un-pure" versions.
 
 
-2.3) Integer size issues
+2.4) Integer size issues
 ------------------------
 
 By default, all integers used in Scotch and PT-Scotch are of the "int"
@@ -174,7 +172,7 @@ version of "scotch.h" may lead to unpredictable behavior because of
 memory overflow.
 
 
-2.2) (Re)naming of library objects
+2.5) (Re)naming of library objects
 ----------------------------------
 
 In order to prevent conflicts with third-party software, the following
@@ -227,7 +225,7 @@ any renaming of all of the external objects, the preprocessor symbol
 "scotch.h", to be taken into account by the application programmer.
 
 
-2.5) Portability issues
+2.6) Portability issues
 -----------------------
 
 While most of the code of Scotch poses no compatibility issues, some
@@ -242,18 +240,21 @@ Some common platform configurations are available in the
 The compilation flags used to manage portability issues are the
 following:
 
-"-DCOMMON_WINDOWS" tweaks some includes and definitions to resolve
+"-DCOMMON_OS_MACOS" tweaks some includes and definitions to resolve
+most issues encountered on MacOS platforms.
+
+"-DCOMMON_OS_WINDOWS" tweaks some includes and definitions to resolve
 most issues encountered on Windows platforms.
 
 "-DCOMMON_TIMING_OLD" selects the getrusage()-based timing routine,
-when "-DCOMMON_WINDOWS" is not set. Else, either clock_gettime() or
+when "-DCOMMON_OS_WINDOWS" is not set. Else, either clock_gettime() or
 gettimeofday() are selected, depending on POSIX compilation flags.
 
 "-DCOMMON_STUB_FORK" provides a stub for the fork() system call on
 systems that do not allow process forking.
 
 
-2.6) Compression libraries
+2.7) Compression libraries
 --------------------------
 
 The binaries of the Scotch distribution can handle compressed
@@ -279,11 +280,19 @@ compressed files cannot be handled when the "-DCOMMON_PTHREAD_FILE"
 flag is not set (see below).
 
 
-2.7) Multi-threading
+2.8) Multi-threading
 --------------------
 
-Scotch can also take advantage of Posix threads when they are
+Scotch can take advantage of Posix threads when they are
 available. They are used in several places:
+
+- to run in a multi-threaded way several key algorithms of the Scotch
+  (no longer really so) sequential library, such as graph coarsening
+  and diffusion-based methods. This choice is controlled by the
+  "-DSCOTCH_PTHREAD" flag (see below). When the
+  "-DSCOTCH_DETERMINISTIC" flag is also set, Scotch will automatically
+  prevent itself, by default, from using multi-threaded versions of
+  some algorithms if this would yield non-deterministic results;
 
 - to compress and decompress file data. This can be done either
   by launching a service thread, or else by creating a separate
@@ -296,52 +305,72 @@ available. They are used in several places:
   error. Therefore, without both fork() and threads, you must set the
   "-DCOMMON_STUB_FORK" flag without setting "-DCOMMON_PTHREAD_FILE",
   so that compilation will successfully complete; however, in this
-  case, compressed graphs shall not be handled in practice.
+  case, compressed graphs shall not be handled in practice;
 
 - to create distributed graphs in parallel. Since this task involves
   concurrent MPI communications, the MPI library must support the
-  MPI_THREAD_MULTIPLE level. The use of threads within Scotch itself
-  is controlled by the "-DSCOTCH_PTHREAD" flag, which is completely
-  independent from the "-DCOMMON_PTHREAD_FILE" flag. Any of them can
-  be set without setting the other.
+  MPI_THREAD_MULTIPLE level. In order to take advantage of these
+  features, the "-DSCOTCH_PTHREAD_MPI" flag must be set, in addition
+  to the "-DSCOTCH_PTHREAD" flag. These two flags are completely
+  independent from the "-DCOMMON_PTHREAD_FILE" flag, which can be set
+  independently from the others.
 
-  Note that if you compile Scotch with the "-DSCOTCH_PTHREAD" flag,
-  you will have to initialize your communication subsystem by using
-  the MPI_Init_thread() MPI call, not MPI_Init(), and the provided
-  thread support level value returned by the routine must be
-  checked carefully.
-  If you have doubts on the stability of your MPI implementation, it
-  is better not to set "-DSCOTCH_PTHREAD". For instance, on Linux
-  platforms, concurrency problems have been experienced with MPICH2
-  versions prior to 1.0.7 using TCP; consequently, if the MPI
-  implementation on your platform is based on an older MPICH2 version,
-  do not set the "-DSCOTCH_PTHREAD" flag.
+  Note that if you compile Scotch with the "-DSCOTCH_PTHREAD_MPI"
+  flag, you will have to initialize your communication subsystem by
+  using the MPI_Init_thread() MPI call instead of MPI_Init(), and the
+  provided thread support level value returned by the routine must be
+  checked carefully to assert it is indeed MPI_THREAD_MULTIPLE.
 
-  Note that since the Scotch and PT-Scotch libraries are distinct, you
-  can still compile Scotch with threads enabled, and compile PT-Scotch
-  with threads disabled. However, since PT-Scotch calls Scotch
-  routines when operating on a single process, threaded routines will
-  be used on each process, without interfering with MPI.
+  Note also that since PT-Scotch calls Scotch routines when operating
+  on a single process, setting "-DSCOTCH_PTHREAD" but not
+  "-DSCOTCH_PTHREAD_MPI" will still allow multiple threads to be used
+  on each MPI process, without interfering with MPI itself. In this
+  case, the MPI thread level MPI_THREAD_FUNNELED will be sufficient.
 
-- to run in a multi-threaded way several key algorithms of the Scotch
-  (no longer really) sequential library, such as graph coarsening and
-  k-way diffusion. More algorithms will be re-coded in a threaded way
-  in future versions.
-
-To date, thread management is performed in a very rudimentary way.
-The available number of threads can only be set at compile-time, and
-the assignment of threads to cores is performed in increasing order,
-starting from 0, which may not always prove to be the most efficient
-mapping in terms of memory affinity. We plan to add a mechanism for
-dynamic thread allocation in the near future, based upon the Hwloc
-library.
+Since v7.0 of Scotch, thread management is dynamic. Scotch standalone
+programs and library routines will detect the number of cores
+available on the system and will use all of them, unless explicitly
+prevented to do so (see the use of the "SCOTCH_PTHREAD_NUMBER"
+environment variable below). By default, when the
+"-DCOMMON_PTHREAD_AFFINITY_LINUX" flag is set (see below), the
+assignment of threads to cores is performed in increasing order,
+starting from 0 for the main thread.
 
 The compilation flags used to manage threads are the following:
 
+"-DSCOTCH_PTHREAD" is mandatory to enable multi-threaded algorithms
+in Scotch and/or PT-Scotch. It has to be used in conjunction with
+the "-DCOMMON_PTHREAD" flag that enables thread management at the
+lower levels of the Scotch implementation.
+
+"-DSCOTCH_PTHREAD_MPI" enables some algorithms of PT-Scotch that may
+make concurrent calls to the MPI communication subsystem. It has to be
+used in conjunction with the "-DCOMMON_PTHREAD" flag (hence also with
+the "-DCOMMON_PTHREAD" flag). Alternately, the compilation flag
+"-DSCOTCH_MPI_ASYNC_COLL" can be used to replace threaded synchronous
+communication routines by non-threaded asynchronous communication
+routines.
+
+"-DSCOTCH_PTHREAD_NUMBER=x" (not to be mistaken with the environment
+variable of same name, see below) is an optional flag that sets the
+default number of threads to be used by Scotch. For instance, setting
+it to 1 will make Scotch run sequentially by default, unless otherwise
+prescribed at run time by the SCOTCH_PTHREAD_NUMBER environment
+variable. Indeed, some algorithms have had to be reformulated to
+accommodate for multi-threading, and will most probably be more
+efficient than sequential processing only for a number of
+threads strictly greater than 2. Setting "-DSCOTCH_PTHREAD_NUMBER=1"
+allows the user to run sequential algorithms by default instead of
+multi-threaded ones, while benefiting from multi-threading for file
+compression and distributed graph handling. If the user's platform
+comprises more than 2 cores, the user can set the
+SCOTCH_PTHREAD_NUMBER environment variable to -1, to override the
+compilation flag and take advantage of all available cores. When the
+"-DSCOTCH_PTHREAD_NUMBER" flag is not set, by default, all the
+available cores will be used at run time.
+
 "-DCOMMON_PTHREAD_AFFINITY_LINUX" enables Linux extensions for
-handling thread affinity. As said above, this may not prove
-efficient in all cases. More options will be provided in the
-near future.
+handling thread affinity (see below).
 
 "-DCOMMON_PTHREAD_BARRIER" creates a replacement for missing
 pthread_barrier_t implementations, which unfortunately happens on some
@@ -352,30 +381,70 @@ files. This flag does not interfere with the use of threads by graph
 algorithms, e.g. for graph partitioning and/or ordering, which depends
 on other flags (see below).
 
-"-DSCOTCH_PTHREAD" is necessary to enable multi-threaded algorithms
-in Scotch and/or PT-Scotch.
-
-"-DSCOTCH_PTHREAD_NUMBER=x" sets the maximum number of threads to be
-used by multi-threaded algorithms. This number may not necessarily be
-a power of two. Some algorithms have had to be reformulated to
-accommodate for multi-threading, and will be most probably much more
-efficient than sequential processing only for a number of
-threads strictly greater than 2. Setting "-DSCOTCH_PTHREAD_NUMBER=1"
-allows you to run sequential algorithms instead of multi-threaded
-ones, while benefiting from multi-threading for file compression and
-distributed graph handling.
-
 When compiling under mingw32 on Windows systems, it is possible to
 benefit from multi-threading by including the "semaphore.h" and
 "pthread.h" files, included in the "src/misc" subdirectory, at compile
 time. These files have been kindly provided by Samuel Thibault, under
-a BSD 2-Clause License. These files will not work for Cygwin. This is
-not a problem, as Cygwin provides its own implementation of Posix
+the BSD 2-Clause License. These files will not work for Cygwin. This
+is not a problem, as Cygwin provides its own implementation of Posix
 threads.
 
+When Scotch is compiled with "-DSCOTCH_PTHREAD", Scotch makes use, by
+default, of all threads available to it on the platform it is running
+on (save for when the "-DSCOTCH_PTHREAD_NUMBER" flag has been used at
+compile time, see above). It is possible to influence this mechanism
+at run time, by setting the "SCOTCH_PTHREAD_NUMBER=x" environment
+variable, where "x" is the prescribed maximum number of threads to be
+used. Setting a thread number to 1 will coerce Scotch into using only
+purely sequential algorithms (which may differ in nature from their
+multi-threaded counterparts). Setting the thread number to -1 will
+make Scotch use all available threads, overriding the value possibly
+set by using the "-DSCOTCH_PTHREAD_NUMBER" flag at compile time.
 
-2.8) Monitoring memory allocation
----------------------------------
+When the "-DCOMMON_PTHREAD_AFFINITY_LINUX" flag is set, the number of
+threads that are available to run a Scotch routine is determined from
+the run-time thread binding: as many threads will be used as the
+number of cores to which the main thread is bound. If this flag is not
+set, the number of available threads is the number of cores declared
+at system level.
+
+
+2.9) Multi-threading and MPI
+----------------------------
+
+Running a multi-threaded version of PT-Scotch on top of MPI requires
+great care, not to degrade performance. The key issue is to make sure
+that, at run time, MPI processes that run on the same computer are
+bound to disjoint subsets of cores.
+
+Indeed, when several MPI processes run on the same computer without
+such an exclusive binding, each of the MPI processes will consider it
+can use all of the computer cores, and as many threads will be created
+and bound to each of the cores as there are MPI processes on the
+computer.
+
+In order to solve this problem, three conditions must be met
+concurrently:
+1- your MPI implementation must support thread binding; and
+2- you must launch your parallel program with the appropriate thread
+   binding options; and
+3- the Scotch routines must use thread binding information, i.e.,
+   Scotch must be compiled with the "-DCOMMON_PTHREAD_AFFINITY_LINUX"
+   flag set (support for other binding APIs may be provided in the
+   future, upon request and if documentation is available).
+
+For instance, regarding the second condition, in the OpenMPI
+environment, one may use options such as "--map-by socket", "--bind-to
+socket", "--bind-to core", etc. (the result of the binding can be
+displayed using "--report-bindings"), e.g.:
+
+% mpirun -np 2 --map-by socket --bind-to socket <program>
+% mpirun -np 4 --map-by socket:PE=7 --bind-to core <program>
+% mpirun -np 8 --map-by socket:PE=3 --bind-to core <program>
+
+
+2.10) Monitoring memory allocation
+----------------------------------
 
 Some memory allocation information can be aggregated if PT-Scotch is
 compiled with the -DCOMMON_MEMORY_TRACE flag. When this flag is set,
@@ -395,8 +464,8 @@ memory checking should be enabled by default, and 0 else. This
 mechanism is absolutely NOT thread-safe at the time being.
 
 
-2.9) Randomness
----------------
+2.11) Randomness
+----------------
 
 Many algorithms in Scotch and PT-Scotch are based on the random
 selection of vertices (e.g. seed vertices for graph growing
@@ -410,26 +479,22 @@ pseudo-random numbers. Consequently, while using a different random
 seed for each run is likely to explore better the solution space,
 using a fixed random seed eases the debugging of programs, because
 algorithms behave identically across multiple runs (save for
-asynchronousness issues, see next section). By default, Scotch is
-compiled with the "-DCOMMON_RANDOM_FIXED_SEED" flag set, so that
-multiple executions of the same sequential programs will always yield
-the same results.
+asynchronicity issues, see next section). When Scotch is compiled
+with the "-DCOMMON_RANDOM_FIXED_SEED" flag set, multiple executions of
+the same sequential programs will always yield the same results.
 
 Before version 6.0, Scotch relied on the operating system
 pseudo-random generator. While this posed no problem for most
 sequential programs, parallel runs of PT-Scotch were not reproducible
 on some systems, because the MPI implementation also used this
 pseudo-random generator for its own purposes. In order to avoid this
-problem, Scotch uses its own pseudo-random generator. Users that want
-to go on using the operating system pseudo-random generator (e.g. for
-regression testing with respect to version 5.x) can still do so, by
-compiling with the "-DCOMMON_RANDOM_SYSTEM" flag set. In this case,
-the "-DCOMMON_RANDOM_RAND" flag allows you to use the srand() routine
-instead of the default srandom() routine.
+problem, Scotch now uses its own pseudo-random generator. The use of
+operating system-dependent pseudo-random generators has been
+deprecated since version 7.0.
 
 
-2.10) Deterministic behavior
----------------------------
+2.12) Deterministic behavior
+----------------------------
 
 When Scotch is compiled with the "-DCOMMON_RANDOM_FIXED_SEED"
 flag set, multiple executions of the same sequential programs
@@ -445,10 +510,9 @@ consecutive runs of Scotch on the same graph and same number of
 processes and/or threads will always yield the same result. However,
 it does not mean that two executions of Scotch on different numbers of
 processes and/or threads will always yield the same result. Indeed,
-changing the number of processes impacts graph data distribution and
-consequently the order in which vertices are processed. Consequently,
-coarsening algorithms are likely to produce different coarse graphs,
-leading to different partitions.
+changing the number of processes impacts graph data distribution and,
+consequently, the order in which vertices are processed, leading to
+different results.
 
 This option is likely to have adverse impact on performance, since all
 non-deterministic multi-threaded algorithms will be disabled. In the
@@ -459,14 +523,11 @@ messages will be received in a fixed order rather than being processed
 on a first-come, first-serve basis.
 
 Setting this flag automatically results in setting the
-"-DCOMMON_RANDOM_FIXED_SEED" flag. Users are also strongly advised to
-compile without setting the "-DCOMMON_RANDOM_SYSTEM" flag, in order to
-avoid any interference with third-party libraries that might use the
-operating system pseudo-random generator.
+"-DCOMMON_RANDOM_FIXED_SEED" flag.
 
 
-2.11) Point-to-point or collective communications
-------------------------------------------------
+2.13) Point-to-point or collective communications
+-------------------------------------------------
 
 Since distributed graph vertices can have any initial distribution
 across processes, communication rounds are likely to involve all of
@@ -482,7 +543,7 @@ numbers of processes. To disable it, set the "-DSCOTCH_PTOP" flag at
 compile time.
 
 
-2.12) MeTiS compatibility library
+2.14) MeTiS compatibility library
 ---------------------------------
 
 In order to ease the adoption of Scotch/PT-Scotch by people who
@@ -495,23 +556,25 @@ sufficient to link against the proper version of the "libscotchmetis"
 library to use Scotch instead of MeTiS, by adding the two libraries in
 sequence, plus the adequate Scotch error handling library :
 
-  [...] -lscotchmetis -lscotch -lscotcherr [...]
+  [...] -lscotchmetisvX -lscotch -lscotcherr [...]
 
 Note that there exists a naming conflict between versions v3 and v5 of
 the genuine MeTiS library, as some routines have the same name but a
 different prototype across the two versions.
 
-Because of these naming conflicts, users have to choose between the v3
-or v5 versions of the MeTiS API when compiling and/or linking with the
-Scotch compatibility library. To expose the relevant version of the
-API when using the "metis.h" file provided by Scotch, compile Scotch
-and/or your code with the "-DSCOTCH_METIS_VERSION=x" flag set. For
-Scotch v6.1, the default MeTiS API version is 3. This might change in
-the future. By setting "-DSCOTCH_METIS_VERSION=0", no MeTiS version
-will be exposed, hence avoiding potential conflicts with the genuine
-MeTiS include and library files. The same holds for ParMeTiS and the
-flag "-DSCOTCH_PARMETIS_VERSION=x", for which only the ParMeTiS v3 API
-is available.
+Prior to Scotch v7.0, users had to choose which version of the
+libscotchmetis to compile, by using either the macro
+"-DSCOTCH_METIS_VERSION=3" or "-DSCOTCH_METIS_VERSION=5" when building
+the libScotch library. Starting from Scotch v7, both versions of the
+libscotchmetis are created simultaneously. Hence, users can link
+their existing software by using either "-lscotchmetisv3" or
+"-lscotchmetisv5" at link time. However, the
+"-DSCOTCH_METIS_VERSION=x" flag is still necessary when compiling
+third-party software using the alternate "metis.h" file provided by
+Scotch, to expose either the prototypes of the routines of libmetis v3
+or those of v5. The same holds for ParMeTiS and the flag
+"-DSCOTCH_PARMETIS_VERSION=x", for which only the ParMeTiS v3 API is
+available.
 
 An advantage of the Scotch/PT-Scotch stubs over the genuine
 MeTiS/ParMeTiS routines is that they can be available in a 64-bit
@@ -550,6 +613,17 @@ appeared between MeTiS v3 and MeTiS v5.
 
 3) Compilation
 ==============
+
+3.1) Compiling with CMake
+-------------------------
+
+With CMake, this step should be straightforward. Please type:
+
+%prompt% make 
+
+
+3.2) Compiling with GNU Make
+----------------------------
 
 Once you have performed the configuration of the "Makefile.inc" file,
 compile the Scotch distribution by typing:
@@ -635,6 +709,18 @@ will install the Scotch/PT-Scotch files in a subtree of directory
 4) Checking
 ===========
 
+4.1) Checking with CMake
+------------------------
+
+With CMake, this step should also be straightforward. Please type:
+
+%prompt% env CTEST_OUTPUT_ON_FAILURE=1 ctest
+%prompt% make install
+
+
+4.2) Checking with GNU Make
+---------------------------
+
 A set of test programs is available in the "src/check" directory. They
 serve as non-regression checks for both sequential and parallel
 features of Scotch and PT-Scotch. They can be launched by typing:
@@ -697,21 +783,16 @@ PT-Scotch distributions.
 7) Note to packagers
 ====================
 
-Since version 6.0, the Scotch and PT-Scotch packages can be made
-independent. The libScotch will not be tied by any dependency against
-any MPI package, while the libPTScotch has to depend on the one with
-which it has been compiled, in addition to the libScotch package that
-it uses.
-
-In versions 5.x, the libPTScotch also contained a modified copy of the
-libScotch. It is no longer the case, which will result in lower disk
-footprint.
-
-Regarding the use of threads, since Scotch is at the time being  not
-dynamically configurable, one has to decide whether to compile it with
-threads enabled or not and, additionally, with which number of threads
-it will run. Based on the current processor market, I recommend to
-compile with -DSCOTCH_PTHREAD_NUMBER=2 (and, of course,
--DCOMMON_PTHREAD_AFFINITY_LINUX whenever possible). The penalty for
-single-thread CPUs will not be too high, while hyper-threaded and
-many-core CPUs will benefit from the extra thread.
+Unlike for the v6.1 and earlier branches, Scotch v7.0 now handles
+threads dynamically at run time. Packagers have to decide whether to
+compile it with threads enabled or not. Based on the current processor
+market, I would recommend to compile it with "-DCOMMON_PTHREAD" and
+"-DSCOTCH_PTHREAD" enabled (and with "-DCOMMON_PTHREAD_AFFINITY_LINUX"
+whenever possible). The penalty for single-threaded CPUs will be
+minimal, while hyper-threaded and many-core CPUs will benefit from the
+multi-threaded algorithms. Packagers that do not want to activate
+threads by default can set the compilation flag
+"-DSCOTCH_PTHREAD_NUMBER=1", so that only one thread will be used at
+run time (hence resorting to the sequential algorithms) unless
+explicitly decided by the user by way of the SCOTCH_PTHREAD_NUMBER
+environment variable.

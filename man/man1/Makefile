@@ -1,4 +1,4 @@
-## Copyright 2004,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -46,6 +46,7 @@ MANSCOTCHFILES	=	acpl.1		\
 			gdump.1		\
 			gmap.1		\
 			gmk_hy.1	\
+			gmk_m2.1	\
 			gmk_msh.1	\
 			gmtst.1		\
 			gord.1		\
@@ -114,6 +115,9 @@ gmap.1		:	gmap.1.txt
 
 gmk_hy.1	:	gmk_hy.1.txt
 			$(TXT2MAN) -v "Scotch user's manual" -s 1 -t gmk_hy -B gmk_ -Icfile < $(<) > $(@)
+
+gmk_m2.1	:	gmk_m2.1.txt
+			$(TXT2MAN) -v "Scotch user's manual" -s 1 -t gmk_m2 -B gmk_ -Icfile < $(<) > $(@)
 
 gmk_msh.1	:	gmk_msh.1.txt
 			$(TXT2MAN) -v "Scotch user's manual" -s 1 -t gmk_msh -Igfile -Imfile < $(<) > $(@)

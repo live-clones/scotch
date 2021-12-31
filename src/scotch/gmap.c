@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,6 +67,8 @@
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 29 may 2010     **/
 /**                                 to   : 26 aug 2020     **/
+/**                # Version 7.0  : from : 10 oct 2021     **/
+/**                                 to   : 10 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,6 +105,12 @@ static const char *         C_usageList[] = {     /* Usage */
   "gmap [<input source file> [<input target file> [<output mapping file> [<output log file>]]]] <options>",
   "gpart [<nparts/pwght>] [<input source file> [<output mapping file> [<output log file>]]] <options>",
   "  -b<val>    : Load imbalance tolerance (default: 0.05)",
+  "  -C<opt>    : Choose execution context options according to one or several of <opt>:",
+  "                 d  : deterministic behavior (even across multiple threads; implies 'f')",
+  "                 f  : fixed random seed",
+  "                 r  : variable random seed",
+  "                 u  : undeterministic behavior (may be faster with several threads)",
+  "                 Default behavior depends on compilation flags",
   "  -c<opt>    : Choose default mapping strategy according to one or several of <opt>:",
   "                 b  : enforce load balance as much as possible",
   "                 q  : privilege quality over speed (default)",
@@ -141,6 +149,8 @@ main (
 int                         argc,
 char *                      argv[])
 {
+  SCOTCH_Context        contdat;                  /* Execution context              */
+  SCOTCH_Graph          cogrdat;                  /* Context graph binding          */
   SCOTCH_Graph          grafdat;                  /* Source graph                   */
   SCOTCH_Num            grafflag;                 /* Source graph properties        */
   SCOTCH_Arch           archdat;                  /* Target architecture            */
@@ -181,7 +191,8 @@ char *                      argv[])
   }
 
   grafflag = 0;                                   /* Use vertex and edge weights  */
-  SCOTCH_stratInit (&stradat);                    /* Set default mapping strategy */
+  SCOTCH_contextInit (&contdat);                  /* Set default context          */
+  SCOTCH_stratInit   (&stradat);                  /* Set default mapping strategy */
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
 
@@ -207,11 +218,13 @@ char *                      argv[])
           if ((kbalval < 0.0) ||
               (kbalval > 1.0) ||
               ((kbalval == 0.0) &&
-               ((argv[i][2] != '0') && (argv[i][2] != '.')))) {
+               ((argv[i][2] != '0') && (argv[i][2] != '.'))))
             errorPrint ("main: invalid load imbalance ratio");
-          }
           break;
         case 'C' :
+          if (SCOTCH_contextOptionParse (&contdat, &argv[i][2]) != 0)
+            errorPrint ("main: invalid context option string");
+          break;
         case 'c' :                                /* Strategy selection parameters */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
@@ -422,6 +435,8 @@ char *                      argv[])
     }
   }
 
+  SCOTCH_contextBindGraph (&contdat, &grafdat, &cogrdat);
+
   clockStop  (&runtime[0]);                       /* Get input time */
   clockInit  (&runtime[1]);
   clockStart (&runtime[1]);
@@ -430,7 +445,7 @@ char *                      argv[])
     if (straptr != NULL)                          /* Set overlap partitioning strategy if needed */
       SCOTCH_stratGraphPartOvl (&stradat, straptr);
 
-    SCOTCH_graphPartOvl (&grafdat, C_partNbr, &stradat, parttab); /* Perform overlap partitioning */
+    SCOTCH_graphPartOvl (&cogrdat, C_partNbr, &stradat, parttab); /* Perform overlap partitioning */
 
     clockStop  (&runtime[1]);                     /* Get computation time */
     clockStart (&runtime[0]);
@@ -445,15 +460,15 @@ char *                      argv[])
 
     if ((flagval & C_FLAGRMAPOLD) != 0) {
       if ((flagval & C_FLAGFIXED) != 0)
-        SCOTCH_graphRemapFixedCompute (&grafdat, &mappdat, &mapodat, emraval, vmlotab, &stradat); /* Perform remapping */
+        SCOTCH_graphRemapFixedCompute (&cogrdat, &mappdat, &mapodat, emraval, vmlotab, &stradat); /* Perform remapping */
       else
-        SCOTCH_graphRemapCompute (&grafdat, &mappdat, &mapodat, emraval, vmlotab, &stradat);
+        SCOTCH_graphRemapCompute (&cogrdat, &mappdat, &mapodat, emraval, vmlotab, &stradat);
     }
     else {
       if ((flagval & C_FLAGFIXED) != 0)
-        SCOTCH_graphMapFixedCompute (&grafdat, &mappdat, &stradat); /* Perform mapping */
+        SCOTCH_graphMapFixedCompute (&cogrdat, &mappdat, &stradat); /* Perform mapping */
       else
-        SCOTCH_graphMapCompute (&grafdat, &mappdat, &stradat);
+        SCOTCH_graphMapCompute (&cogrdat, &mappdat, &stradat);
     }
 
     clockStop  (&runtime[1]);                     /* Get computation time */
@@ -498,9 +513,11 @@ char *                      argv[])
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
-  SCOTCH_graphExit (&grafdat);
-  SCOTCH_stratExit (&stradat);
-  SCOTCH_archExit  (&archdat);
+  SCOTCH_graphExit   (&cogrdat);                  /* Destroy context binding first */
+  SCOTCH_graphExit   (&grafdat);
+  SCOTCH_stratExit   (&stradat);
+  SCOTCH_archExit    (&archdat);
+  SCOTCH_contextExit (&contdat);
 
   memFree (parttab);                              /* Free hand-made partition array */
 
