@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 03 nov 1997     **/
 /**                # Version 4.0  : from : 12 dec 2001     **/
 /**                                 to   : 08 jan 2004     **/
+/**                # Version 6.1  : from : 21 nov 2021     **/
+/**                                 to   : 21 nov 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,10 +75,12 @@ void
 vgraphExit (
 Vgraph * const              grafptr)
 {
-  if (grafptr->parttax != NULL)
-    memFree (grafptr->parttax + grafptr->s.baseval);
-  if (grafptr->frontab != NULL)
+  if ((grafptr->frontab != NULL) &&
+      ((grafptr->s.flagval & VGRAPHFREEFRON) != 0))
     memFree (grafptr->frontab);
+  if ((grafptr->parttax != NULL) &&
+      ((grafptr->s.flagval & VGRAPHFREEPART) != 0))
+    memFree (grafptr->parttax + grafptr->s.baseval);
 
   graphFree (&grafptr->s);                        /* Free source graph */
 
@@ -97,11 +101,11 @@ Vgraph * const              grafptr)
 {
   memSet (grafptr->parttax + grafptr->s.baseval, 0, grafptr->s.vertnbr * sizeof (GraphPart)); /* Set all vertices to part 0 */
 
-  grafptr->compload[0] = grafptr->s.velosum;      /* No frontier vertices */
+  grafptr->fronnbr     = 0;                       /* No frontier vertices */
+  grafptr->compsize[0] = grafptr->s.vertnbr;
+  grafptr->compsize[1] = 0;
+  grafptr->compload[0] = grafptr->s.velosum;
   grafptr->compload[1] =
   grafptr->compload[2] = 0;
-  grafptr->comploaddlt = grafptr->s.velosum;
-  grafptr->compsize[0] = grafptr->s.vertnbr;
-  grafptr->compsize[1] =
-  grafptr->fronnbr     = 0;
+  grafptr->comploaddlt = grafptr->s.velosum * grafptr->dwgttab[1];
 }

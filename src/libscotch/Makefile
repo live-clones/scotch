@@ -448,7 +448,6 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			wgraph_check$(OBJ)			\
 			wgraph_part_es$(OBJ)  			\
 			wgraph_part_fm$(OBJ)  			\
-			wgraph_part_gg$(OBJ)          		\
 			wgraph_part_ml$(OBJ)   			\
 			wgraph_part_rb$(OBJ)  			\
 			wgraph_part_st$(OBJ)  			\
@@ -2435,6 +2434,7 @@ library_graph_part_ovl$(OBJ)	:	library_graph_part_ovl.c		\
 					common.h				\
 					parser.h				\
 					graph.h					\
+					arch.h					\
 					wgraph.h				\
 					wgraph_part_st.h			\
 					scotch.h
@@ -2993,12 +2993,14 @@ wgraph$(OBJ)			:	wgraph.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
+					arch.h					\
 					wgraph.h
 
 wgraph_check$(OBJ)		:	wgraph_check.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
+					arch.h					\
 					wgraph.h
 
 wgraph_part_es$(OBJ)		:	wgraph_part_es.c			\
@@ -3006,7 +3008,7 @@ wgraph_part_es$(OBJ)		:	wgraph_part_es.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					mapping.h				\
 					kgraph.h				\
 					kgraph_map_st.h				\
@@ -3016,26 +3018,27 @@ wgraph_part_es$(OBJ)		:	wgraph_part_es.c			\
 wgraph_part_fm$(OBJ)		:	wgraph_part_fm.c			\
 					module.h				\
 					common.h				\
+					gain.h					\
+					parser.h				\
 					graph.h					\
+					arch.h					\
+					vgraph.h				\
+					vgraph_separate_st.h			\
 					wgraph.h				\
+					wgraph_part_rb.h			\
 					wgraph_part_fm.h
-
-wgraph_part_gg$(OBJ)		:	wgraph_part_gg.c			\
-					module.h				\
-					common.h				\
-					graph.h					\
-					wgraph.h				\
-					wgraph_part_gg.h
 
 wgraph_part_ml$(OBJ)		: 	wgraph_part_ml.c			\
 					module.h				\
 					common.h				\
 					parser.h				\
 					graph.h					\
+					arch.h					\
+					mapping.h				\
 					graph_coarsen.h				\
 					wgraph.h				\
-					wgraph_part_ml.h			\
-					wgraph_part_st.h
+					wgraph_part_st.h			\
+					wgraph_part_ml.h
 
 wgraph_part_rb$(OBJ)		:	wgraph_part_rb.c			\
 					module.h				\
@@ -3043,20 +3046,20 @@ wgraph_part_rb$(OBJ)		:	wgraph_part_rb.c			\
 					parser.h                                \
 					graph.h                                 \
 					arch.h                                  \
-					mapping.h                               \
 					vgraph.h                                \
 					vgraph_separate_st.h                    \
 					vgraph_separate_zr.h                    \
 					wgraph.h                                \
-					wgraph_part_rb.h			\
-					scotch.h
+					wgraph_part_rb.h
 
 wgraph_part_st$(OBJ)		:	wgraph_part_st.c			\
-					gain.h					\
 					module.h				\
 					common.h				\
+					gain.h					\
 					parser.h				\
 					graph.h					\
+					arch.h					\
+					mapping.h				\
 					graph_coarsen.h				\
 					kgraph.h				\
 					kgraph_map_st.h				\
@@ -3065,7 +3068,6 @@ wgraph_part_st$(OBJ)		:	wgraph_part_st.c			\
 					wgraph.h				\
 					wgraph_part_es.h			\
 					wgraph_part_fm.h			\
-					wgraph_part_gg.h			\
 					wgraph_part_ml.h			\
 					wgraph_part_rb.h			\
 					wgraph_part_zr.h			\
@@ -3075,6 +3077,7 @@ wgraph_part_zr$(OBJ)		: 	wgraph_part_zr.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
+					arch.h					\
 					wgraph.h				\
 					wgraph_part_zr.h
 
@@ -3082,6 +3085,7 @@ wgraph_store$(OBJ)		:	wgraph_store.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
+					arch.h					\
 					wgraph.h
 
 dummysizes$(EXE)		:	dummysizes.c				\

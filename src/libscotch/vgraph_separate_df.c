@@ -1,4 +1,4 @@
-/* Copyright 2007,2013,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2013,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 /**                                 to   : 24 may 2008     **/
 /**                # Version 6.0  : from : 24 dec 2013     **/
 /**                                 to   : 31 may 2018     **/
+/**                # Version 6.1  : from : 27 nov 2021     **/
+/**                                 to   : 27 nov 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,7 +108,7 @@ const VgraphSeparateDfParam * const paraptr)      /*+ Method parameters +*/
   const Gnum * restrict const verttax = grafptr->s.verttax; /* Fast accesses */
   const Gnum * restrict const vendtax = grafptr->s.vendtax;
   const Gnum * restrict const edgetax = grafptr->s.edgetax;
-  Gnum *       restrict const frontab = grafptr->frontab;
+  Gnum * restrict const       frontab = grafptr->frontab;
   GraphPart *  restrict const parttax = grafptr->parttax;
 
   if (memAllocGroup ((void **) (void *)
@@ -141,29 +143,33 @@ const VgraphSeparateDfParam * const paraptr)      /*+ Method parameters +*/
     }
   }
 
-  compload0avg = grafptr->compload[0] + grafptr->compload[2] / 2;
+  compload0avg = (grafptr->compload[0] + grafptr->compload[2] / 2);
 
   passnum = 0;
   do {
     const Gnum * restrict velobax;
     Gnum                  velomsk;
-    Gnum                  vertnum;
     Gnum                  compload0;
     Gnum                  compload1;
     int                   rootval;                /* Root part for separator vertices */
+    Gnum                  vertnum;
    
     compload0  = compload0avg - grafptr->compload[2] / 2;
     compload1  = grafptr->s.velosum - compload0avg - (grafptr->compload[2] + 1) / 2;
-    vanctab[0] = (float) (- compload0);           /* Values to be injected to anchor vertices at every iteration  */
-    vanctab[1] = (float)    compload1 - VGRAPHSEPARATEDFEPSILON; /* Slightly tilt value to add to part 1          */
-    rootval    = (paraptr->partval + passnum) & 1; /* Compute index of part which will receive separator vertices */
-    if (rootval == 0)                             /* If separator must be aggregated to part 0                    */
-      vanctab[0] -= (float) grafptr->compload[2];
+    vanctab[0] = (float) (- compload0 * grafptr->dwgttab[0]); /* Values to be injected to anchor vertices at every iteration    */
+    vanctab[1] = (float) (  compload1 * grafptr->dwgttab[1]) - VGRAPHSEPARATEDFEPSILON; /* Slightly tilt value to add to part 1 */
+    rootval    = (paraptr->partval + passnum) & 1; /* Compute index of part which will receive separator vertices               */
+    if (rootval == 0)                             /* If separator must be aggregated to part 0                                  */
+      vanctab[0] -= (float) grafptr->compload[2] * grafptr->dwgttab[0];
     else
-      vanctab[1] += (float) grafptr->compload[2];
+      vanctab[1] += (float) grafptr->compload[2] * grafptr->dwgttab[1];
 
+#ifdef COMMON_CODING_FLOAT_NOIEEE
     for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd - 2; vertnum ++)
       difotax[vertnum] = 0.0F;
+#else /* COMMON_CODING_FLOAT_NOIEEE */
+    memSet (difotax + grafptr->s.baseval, 0, (grafptr->s.vertnbr - 2) * sizeof (float));
+#endif /* COMMON_CODING_FLOAT_NOIEEE */
     difotax[grafptr->s.vertnnd - 2] = vanctab[0] / edlstax[grafptr->s.vertnnd - 2]; /* Load anchor vertices for first move */
     difotax[grafptr->s.vertnnd - 1] = vanctab[1] / edlstax[grafptr->s.vertnnd - 1];
 
@@ -264,7 +270,7 @@ abort :                                           /* If overflow occured, resume
     grafptr->compload[1] = compload1;
     grafptr->compload[2] = compload2;
     grafptr->compload[rootval] -= compload2;
-    grafptr->comploaddlt = grafptr->compload[0] - grafptr->compload[1];
+    grafptr->comploaddlt = grafptr->compload[0] * grafptr->dwgttab[1] - grafptr->compload[1] * grafptr->dwgttab[0];
     grafptr->compsize[0] = grafptr->s.vertnbr - compsize1;
     grafptr->compsize[1] = compsize1;
     grafptr->compsize[rootval] -= fronnum;

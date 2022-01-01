@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 01 jul 2008     **/
 /**                # Version 6.0  : from : 05 nov 2009     **/
 /**                                 to   : 31 may 2018     **/
+/**                # Version 6.1  : from : 23 nov 2021     **/
+/**                                 to   : 02 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,10 +57,6 @@
 */
 
 /*+ The graph structure. +*/
-
-#ifndef ARCH_H
-typedef INT Anum;                                 /*+ Generic integer +*/
-#endif /* ARCH_H */
 
 typedef struct Wgraph_ {
   Graph                     s;                    /*+ Source graph                            +*/
@@ -97,6 +95,7 @@ void                        wgraphExit          (Wgraph * const);
 int                         wgraphAlloc         (Wgraph * const);
 void                        wgraphZero          (Wgraph * const);
 int                         wgraphCheck         (const Wgraph * const);
+int                         wgraphCost          (Wgraph * const);
 
 int                         wgraphStoreInit     (const Wgraph * const, WgraphStore * const);
 void                        wgraphStoreExit     (WgraphStore * const);

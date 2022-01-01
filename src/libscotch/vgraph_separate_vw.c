@@ -90,7 +90,7 @@ Vgraph * restrict const             grafptr)      /*+ Separation graph +*/
   sprintf (nametab, "vgraphseparatevw_output_%08d.map", vgraphseparatevwfilenum ++);
   if ((fileptr = fopen (nametab, "w+")) == NULL) {
     errorPrint ("vgraphSeparateVw: cannot open partition file");
-    return     (1);
+    return (1);
   }
 
   fprintf (fileptr, GNUMSTRING "\n",              /* Output size of mapping; test if failure later, in main loop */
@@ -102,7 +102,7 @@ Vgraph * restrict const             grafptr)      /*+ Separation graph +*/
                  (int) grafptr->parttax[vertnum]) <= 0) {
       errorPrint ("vgraphSeparateVw: bad output");
       fclose     (fileptr);
-      return     (1);
+      return (1);
     }
   }
 

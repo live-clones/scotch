@@ -131,12 +131,12 @@ FILE * const                  stream)
 
   if (archVar (&mappptr->m.archdat)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": not implemented");
-    return     (1);
+    return (1);
   }
 
   if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
     errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": cannot compute ghost edge array");
-    return     (1);
+    return (1);
   }
 
   nmskidxnbr = (tgtnbr + 1 + ((sizeof (int) << 3) - 1)) / (sizeof (int) << 3); /* Size of neighbor subdomain bitfield; TRICK: "+1" to have a "-1" cell for unmapped vertices */
@@ -152,19 +152,19 @@ FILE * const                  stream)
   }
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": communication error (1)");
-    return     (1);
+    return (1);
   }
   if (chekglbval != 0) {
     if (nmskloctab != NULL)
       memFree (nmskloctab);
     errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": out of memory");
-    return     (1);
+    return (1);
   }
 
   if (dmapTerm (&mappptr->m, grafptr, termgsttax) != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": cannot build local terminal array");
     memFree    (nmskloctab);
-    return     (1);
+    return (1);
   }
   dgraphHaloAsync (grafptr, termgsttax, GNUM_MPI, &requdat);
   termgsttax -= grafptr->baseval;
@@ -178,7 +178,7 @@ FILE * const                  stream)
     if ((termgsttax[vertlocnum] < -1) || (termgsttax[vertlocnum] >= tgtnbr)) {
       errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": invalid local terminal array");
       memFree    (nmskloctab);                      /* Free group leader */
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DMAP2 */
     if (grafptr->veloloctax != NULL)
@@ -189,7 +189,7 @@ FILE * const                  stream)
   if (MPI_Allreduce (tgloloctab, tgloglbtab, tgtnbr, GNUM_MPI, MPI_SUM, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": communication error (2)");
     memFree    (nmskloctab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 
   mapmin = GNUMMAX;
@@ -233,7 +233,7 @@ FILE * const                  stream)
   if (dgraphHaloWait (&requdat) != 0) {           /* Wait for ghost terminal data to be exchanged */
     errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": cannot complete asynchronous halo exchange");
     memFree    (nmskloctab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 
   ngbmin = ANUMMAX;
@@ -274,7 +274,7 @@ FILE * const                  stream)
     if (MPI_Allreduce (nmskloctab, nmskglbtab, nmskidxnbr, MPI_INT, MPI_BOR, grafptr->proccomm) != MPI_SUCCESS) {
       errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": communication error (3)");
       memFree    (nmskloctab);                    /* Free group leader */
-      return     (1);
+      return (1);
     }
 
     for (nmskidxnum = 0, ngbnbr = 0; nmskidxnum < nmskidxnbr; nmskidxnum ++) {
@@ -346,7 +346,7 @@ FILE * const                  stream)
   if (MPI_Allreduce (commlocdist, commglbdist, 256 + 3, GNUM_MPI, MPI_SUM, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint (STRINGIFY (SCOTCH_dgraphMapView) ": communication error (4)");
     memFree    (nmskloctab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 
   if (stream != NULL) {

@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 6.1  : from : 16 jun 2021     **/
-/**                                 to   : 24 sep 2021     **/
+/**                                 to   : 28 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -141,7 +141,7 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  if (SCOTCH_dgraphLoad (&grafdat, file, 0, 0) != 0) {
+  if (SCOTCH_dgraphLoad (&grafdat, file, -1, 0) != 0) {
     SCOTCH_errorPrint ("main: cannot load graph");
     exit (EXIT_FAILURE);
   }

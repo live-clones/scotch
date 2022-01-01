@@ -53,7 +53,7 @@
 /**                # Version 6.0  : from : 12 sep 2008     **/
 /**                                 to   : 24 aug 2020     **/
 /**                # Version 6.1  : from : 24 aug 2020     **/
-/**                                 to   : 25 sep 2021     **/
+/**                                 to   : 30 dec 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -1073,6 +1073,7 @@
 #define wgraphInit                  SCOTCH_NAME_INTERN (wgraphInit)
 #define wgraphExit                  SCOTCH_NAME_INTERN (wgraphExit)
 #define wgraphCheck                 SCOTCH_NAME_INTERN (wgraphCheck)
+#define wgraphCost                  SCOTCH_NAME_INTERN (wgraphCost)
 #define wgraphZero                  SCOTCH_NAME_INTERN (wgraphZero)
 #define wgraphPartEs                SCOTCH_NAME_INTERN (wgraphPartEs)
 #define wgraphPartFm                SCOTCH_NAME_INTERN (wgraphPartFm)

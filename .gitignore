@@ -9,9 +9,9 @@ doc/src/*/*.log
 doc/src/*/*.toc
 doc/src/*/*scotch*.pdf
 doc/src/*/*scotch*.ps.gz
-doc/src/scotch/m.ps
-doc/src/scotch/s.ps
+doc/src/maint/m.ps
 doc/src/ptscotch/p.ps
+doc/src/scotch/s.ps
 src/Makefile.inc*
 src/check/*
 !src/check/*[.][ch]
