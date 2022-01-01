@@ -1,4 +1,4 @@
-/* Copyright 2017,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2017-2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 26 jan 2017     **/
 /**                                 to   : 22 apr 2018     **/
+/**                # Version 7.0  : from : 07 may 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +54,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "graph.h"
 #include "scotch.h"
 
@@ -72,7 +75,18 @@
 
 SCOTCH_Num
 SCOTCH_graphDiamPV (
-const SCOTCH_Graph * const  grafptr)
+const SCOTCH_Graph * const  libgrafptr)
 {
-  return ((SCOTCH_Num) graphDiamPV ((Graph * const) grafptr));
+  CONTEXTDECL        (libgrafptr);
+  SCOTCH_Num          diamval;
+
+  if (CONTEXTINIT (libgrafptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_graphDiamPV) ": cannot initialize context");
+    return     (1);
+  }
+
+  diamval = (SCOTCH_Num) graphDiamPV ((Graph * const) CONTEXTGETOBJECT (libgrafptr), CONTEXTGETDATA (libgrafptr));
+
+  CONTEXTEXIT (libgrafptr);
+  return      (diamval);
 }

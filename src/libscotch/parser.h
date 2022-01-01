@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,14 +51,10 @@
 /**                                 to   : 20 feb 2008     **/
 /**                # Version 6.0  : from : 30 sep 2014     **/
 /**                                 to   : 30 sep 2014     **/
+/**                # Version 7.0  : from : 02 mar 2018     **/
+/**                                 to   : 06 jul 2021     **/
 /**                                                        **/
 /************************************************************/
-
-/*
-**  The defines.
-*/
-
-#define PARSERSTRINGLEN             256           /*+ Length of parser strings +*/
 
 /*
 **  The type definitions.
@@ -206,6 +202,45 @@ typedef struct Strat_ {
   } data;
 } Strat;
 
+/*+ The parser environment structure. +*/
+
+typedef struct ParserEnv_ {
+  const StratTab *          stratab;              /*+ Pointer to parsing tables        +*/
+  Strat *                   straptr;              /*+ Pointer to current strategy node +*/
+  const StratParamTab *     paraptr;              /*+ Pointer to current parameter     +*/
+  const char *              textptr;              /*+ Pointer to strategy string       +*/
+} ParserEnv;
+
+/*+ The text parsing location structure. +*/
+
+typedef struct ParserLocation_ {
+  int                       cobenum;              /*+ Column of beginning of area  +*/
+  int                       libenum;              /*+ Line of beginning of area    +*/
+  const char *              tebeptr;              /*+ Pointer to beginning of area +*/
+  int                       coennum;              /*+ Column of end of area        +*/
+  int                       liennum;              /*+ Line of end of area          +*/
+  const char *              teenptr;              /*+ Pointer to end of area       +*/
+} ParserLocation;
+
+#define YYLTYPE                     ParserLocation /* Trigger use of locations in parser */
+
+#define YYLLOC_DEFAULT(Current, Rhs, N)                                  \
+  do {                                                                   \
+    if (N) {                                                             \
+      (Current).cobenum = YYRHSLOC (Rhs, 1).cobenum;                     \
+      (Current).libenum = YYRHSLOC (Rhs, 1).libenum;                     \
+      (Current).tebeptr = YYRHSLOC (Rhs, 1).tebeptr;                     \
+      (Current).coennum = YYRHSLOC (Rhs, N).coennum;                     \
+      (Current).liennum = YYRHSLOC (Rhs, N).liennum;                     \
+      (Current).teenptr = YYRHSLOC (Rhs, N).teenptr;                     \
+    }                                                                    \
+    else {                                                               \
+      (Current).cobenum = (Current).coennum = YYRHSLOC (Rhs, 0).coennum; \
+      (Current).libenum = (Current).liennum = YYRHSLOC (Rhs, 0).liennum; \
+      (Current).tebeptr = (Current).teenptr = YYRHSLOC (Rhs, 0).teenptr; \
+    }                                                                    \
+  } while (0)
+
 /*
 **  The external declarations.
 */
@@ -227,3 +262,5 @@ int                         stratSave           (const Strat * const, FILE * con
 int                         stratTestEval       (const StratTest * const, StratTest * const, const void * const);
 int                         stratTestExit       (StratTest * const);
 int                         stratTestSave       (const StratTest * const, FILE * const);
+
+void                        parserLocationUpdate (ParserLocation * const, const char * const);

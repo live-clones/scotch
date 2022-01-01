@@ -1,4 +1,4 @@
-/* Copyright 2008-2010,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2010,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,6 +57,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "parser.h"
 #include "dgraph.h"
 #include "dgraph_halo.h"
@@ -119,7 +122,7 @@ FILE * const                  stream)
   int                           chekglbval;
   DgraphHaloRequest             requdat;
 
-  grafptr = (Dgraph *) libgrafptr;
+  grafptr = (Dgraph *) CONTEXTOBJECT (libgrafptr);
   mappptr = (LibDmapping *) libmappptr;
 
   if ((grafptr->vertglbnbr == 0) ||               /* Return if nothing to do */

@@ -1,4 +1,4 @@
-/* Copyright 2017,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2017,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 22 feb 2018     **/
 /**                # Version 6.1  : from : 31 mar 2021     **/
 /**                                 to   : 31 mar 2021     **/
+/**                # Version 7.0  : from : 12 sep 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,7 +97,8 @@ const FiboNode *            nod1ptr)
 
 Gnum
 graphDiamPV (
-const Graph * const         grafptr)
+const Graph * const         grafptr,
+Context * restrict const    contptr)
 {
   FiboHeap                    fibodat;
   GraphDiamVertex * restrict  vexxtax;            /* Extended vertex array */
@@ -124,7 +127,7 @@ const Graph * const         grafptr)
   }
   vexxtax -= grafptr->baseval;
 
-  rootnum = intRandVal (grafptr->vertnbr) + grafptr->baseval;
+  rootnum = contextIntRandVal (contptr, grafptr->vertnbr) + grafptr->baseval;
   diammax = 0;                                    /* Ensure at least one pass */
 
   do {

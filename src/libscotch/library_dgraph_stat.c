@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2012,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 21 may 2018     **/
 /**                # Version 6.1  : from : 05 apr 2021     **/
 /**                                 to   : 05 apr 2021     **/
+/**                # Version 7.0  : from : 20 sep 2019     **/
+/**                                 to   : 20 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,6 +58,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "library_dgraph_stat.h"
 #include "ptscotch.h"
@@ -149,7 +152,7 @@ double *                    edlodltptr)
   double              edlolocdlt;
   int                 o;
 
-  srcgrafptr = (Dgraph *) grafptr;
+  srcgrafptr = (Dgraph *) CONTEXTOBJECT (grafptr);
 
   velolocdlt = 0.0L;
   if (srcgrafptr->vertglbnbr > 0) {

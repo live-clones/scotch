@@ -142,11 +142,12 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
     return (1);
   }
 
-  if ((vertnbrtab = memAlloc (domnnbr * sizeof(Gnum))) == NULL) {
+  if ((vertnbrtab = memAlloc (domnnbr * sizeof (Gnum))) == NULL) {
     errorPrint ("kgraphMapBd: out of memory (1)");
+    memFree    (bndvnumtax + bndgrafdat.s.baseval);
     return (1);
   }
-  memSet (vertnbrtab, 0, domnnbr * sizeof(Gnum));
+  memSet (vertnbrtab, 0, domnnbr * sizeof (Gnum));
   for (vertnum = orggrafptr->s.baseval; vertnum < orggrafptr->s.vertnnd; vertnum ++)
     vertnbrtab[orgparttax[vertnum]] ++;           /* TODO check optimize? */
 
@@ -170,11 +171,13 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
 
   if (kgraphMapSt (&bndgrafdat, paraptr->stratbnd) != 0) { /* Partition band graph */
     errorPrint  ("kgraphMapBd: cannot partition band graph");
+    memFree     (bndvnumtax + bndgrafdat.s.baseval);
     kgraphExit  (&bndgrafdat);
     return (1);
   }
   if (bndgrafdat.m.domnnbr != orggrafptr->m.domnnbr) {
     errorPrint  ("kgraphMapBd: change in band graph number of parts not supported");
+    memFree     (bndvnumtax + bndgrafdat.s.baseval);
     kgraphExit  (&bndgrafdat);
     return (1);
   }

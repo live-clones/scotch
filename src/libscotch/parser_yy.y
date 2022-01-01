@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007,2008,2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,6 +51,8 @@
 /**                                 to   : 24 jul 2011     **/
 /**                # Version 6.0  : from : 30 sep 2014     **/
 /**                                 to   : 27 apr 2018     **/
+/**                # Version 7.0  : from : 02 mar 2018     **/
+/**                                 to   : 06 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,13 +68,25 @@
 #undef INTEGER                                    /* In case someone defined them */
 #undef DOUBLE
 
-#include "parser.h"
-#include "parser_ll.h"
-#include "parser_yy.h"
+/*
+**  The type and structure definitions.
+*/
 
-/* #define SCOTCH_DEBUG_PARSER3 */
+/* Helpful definitions */
+
+typedef void * yyscan_t;                          /* Should have been exported by Flex in y.tab.h */
+typedef void * YY_BUFFER_STATE;                   /* The same; Flex and Bison design is just crap */
+
+/*
+**  The defines and includes (bis).
+*/
+
+#include "parser.h"
+#include "parser_yy.h"
+#include "parser_ly.h"
+#include "parser_ll.h"
+
 #ifdef SCOTCH_DEBUG_PARSER3
-extern int                  yydebug;
 #define YYDEBUG                     1
 #endif /* SCOTCH_DEBUG_PARSER3 */
 
@@ -81,13 +95,29 @@ extern int                  yydebug;
 **  See also at the end of this file.
 */
 
-static const StratTab *     parserstrattab;       /* Pointer to parsing tables          */
-static Strat *              parserstratcurr = NULL; /* Pointer to current strategy node */
-static StratParamTab *      parserparamcurr = NULL; /* Pointer to current parameter     */
+/*+ Method token conversion array. +*/
 
-extern unsigned int         parsermethtokentab[]; /* Pre-definition for stupid compilers */
+extern unsigned int         parsermethtokentab[];  /* Pre-definition */
+
+/*+ Function prototypes that should have been exported by Flex. +*/
+
+YY_BUFFER_STATE scotchyy_scan_string (const char *, yyscan_t);
 
 %}
+
+%define api.pure full
+%locations
+%param {void * scanptr}
+%parse-param {ParserEnv * penvptr}
+
+%initial-action {
+  @$.cobenum =
+  @$.libenum =
+  @$.coennum =
+  @$.liennum = 1;
+  @$.tebeptr =
+  @$.teenptr = penvptr->textptr;
+}
 
 %union {
   char                      CASEVAL;              /* Case value          */
@@ -99,7 +129,7 @@ extern unsigned int         parsermethtokentab[]; /* Pre-definition for stupid c
   struct {
     const StratTab *        tabl;                 /* Current tables    */
     Strat *                 strat;                /* Current method    */
-    StratParamTab *         param;                /* Current parameter */
+    const StratParamTab *   param;                /* Current parameter */
   } SAVE;                                         /* Parameter type    */
   Strat *                   STRAT;                /* Strategy tree     */
 }
@@ -131,27 +161,27 @@ extern unsigned int         parsermethtokentab[]; /* Pre-definition for stupid c
 
 STRAT         : STRATSELECT
               {
-                parserstratcurr = ($1);           /* Save pointer to root of tree */
+                penvptr->straptr = ($1);          /* Save pointer to root of tree */
               }
               ;
 
 STRATSELECT   : STRATSELECT '|' STRATEMPTY
               {
-                Strat *           strat;
+                Strat *             straptr;
 
-                if ((strat = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
-                  errorPrint ("stratParserParse: out of memory (2)");
+                if ((straptr = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
+                  errorPrint ("stratParserParse: out of memory (1)");
                   stratExit  ($1);
                   stratExit  ($3);
                   YYABORT;
                 }
 
-                strat->tabl                 = parserstrattab;
-                strat->type                 = STRATNODESELECT;
-                strat->data.select.strat[0] = ($1);
-                strat->data.select.strat[1] = ($3);
+                straptr->tabl                 = penvptr->stratab;
+                straptr->type                 = STRATNODESELECT;
+                straptr->data.select.strat[0] = ($1);
+                straptr->data.select.strat[1] = ($3);
 
-                ($$) = strat;
+                ($$) = straptr;
               }
               | STRATEMPTY
               ;
@@ -159,69 +189,69 @@ STRATSELECT   : STRATSELECT '|' STRATEMPTY
 STRATEMPTY    : STRATCONCAT
               |
               {
-                Strat *           strat;
+                Strat *             straptr;
 
-                if ((strat = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
-                  errorPrint ("stratParserParse: out of memory (3)");
+                if ((straptr = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
+                  errorPrint ("stratParserParse: out of memory (2)");
                   YYABORT;
                 }
 
-                strat->tabl = parserstrattab;
-                strat->type = STRATNODEEMPTY;
+                straptr->tabl = penvptr->stratab;
+                straptr->type = STRATNODEEMPTY;
 
-                ($$) = strat;
+                ($$) = straptr;
               }
               ;
 
 STRATCONCAT   : STRATCONCAT STRATTEST
               {
-                Strat *           strat;
+                Strat *             straptr;
 
-                if ((strat = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
-                  errorPrint ("stratParserParse: out of memory (4)");
+                if ((straptr = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
+                  errorPrint ("stratParserParse: out of memory (3)");
                   stratExit  ($1);
                   stratExit  ($2);
                   YYABORT;
                 }
 
-                strat->tabl                 = parserstrattab;
-                strat->type                 = STRATNODECONCAT;
-                strat->data.concat.strat[0] = ($1);
-                strat->data.concat.strat[1] = ($2);
+                straptr->tabl                 = penvptr->stratab;
+                straptr->type                 = STRATNODECONCAT;
+                straptr->data.concat.strat[0] = ($1);
+                straptr->data.concat.strat[1] = ($2);
 
-                ($$) = strat;
+                ($$) = straptr;
               }
               | STRATTEST
               ;
 
 STRATTEST     :
               {
-                stratParserSelect (VALTEST);      /* Parse parameter tokens */
+                PARSERLLBEGIN (VALTEST);          /* Parse parameter tokens */
               }
                 '/' TEST
               {
-                stratParserSelect (VALSTRAT);     /* Parse strategy tokens */
+                PARSERLLBEGIN (VALSTRAT);         /* Parse strategy tokens */
               }
                 '?' STRATSELECT STRATTESTELSE ';'
               {
-                Strat *           strat;
+                Strat *             straptr;
 
-                if ((strat = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
-                  errorPrint  ("stratParserParse: out of memory (1)");
-                  stratExit ($6);
+                if ((straptr = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
+                  errorPrint ("stratParserParse: out of memory (4)");
+                  stratExit  ($6);
                   if (($7) != NULL)
                     stratExit ($7);
                   stratTestExit ($3);
                   YYABORT;
                 }
 
-                strat->tabl               = parserstrattab;
-                strat->type               = STRATNODECOND;
-                strat->data.cond.test     = ($3);
-                strat->data.cond.strat[0] = ($6);
-                strat->data.cond.strat[1] = ($7);
+                straptr->tabl               = penvptr->stratab;
+                straptr->type               = STRATNODECOND;
+                straptr->data.cond.test     = ($3);
+                straptr->data.cond.strat[0] = ($6);
+                straptr->data.cond.strat[1] = ($7);
 
-                ($$) = strat;
+                ($$) = straptr;
               }
               | STRATGROUP
               ;
@@ -245,72 +275,73 @@ STRATGROUP    : '(' STRATSELECT ')'
 
 STRATMETHOD   : METHODNAME
               {
-                Strat *           strat;
-                int               meth;
-                int               methlen;
-                StratMethodTab *  methtab;
-                int               i, j;
+                Strat *             straptr;
+                int                 methnum;
+                int                 methlen;
+                StratMethodTab *    methtab;
+                int                 i, j;
 
-                meth    =
-                methlen = 0;                      /* No method recognized yet   */
-                methtab = parserstrattab->methtab; /* Point to the method table */
+                methnum =
+                methlen = 0;                      /* No method recognized yet     */
+                methtab = penvptr->stratab->methtab; /* Point to the method table */
                 for (i = 0; methtab[i].name != NULL; i ++) {
                   if ((strncasecmp (($1),         /* Find longest matching code name */
                        methtab[i].name,
                        j = strlen (methtab[i].name)) == 0) &&
                       (j > methlen)) {
-                    meth    = methtab[i].meth;
+                    methnum = methtab[i].meth;
                     methlen = j;
                   }
                 }
                 if (methlen == 0) {               /* If method name not known */
-                  errorPrint ("stratParserParse: invalid method name \"%s\", before \"%s\"",
-                              ($1), stratParserRemain ());
+                  errorPrint ("stratParserParse: invalid method name \"%s\", line %d, column %d, at \"%s\"",
+                              ($1), (@1).libenum, (@1).cobenum, (@1).tebeptr);
                   YYABORT;
                 }
-                if ((strat = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
+                if ((straptr = (Strat *) memAlloc (sizeof (Strat))) == NULL) {
                   errorPrint ("stratParserParse: out of memory (5)");
                   YYABORT;
                 }
 
-                strat->tabl             = parserstrattab;
-                strat->type             = STRATNODEMETHOD;
-                strat->data.method.meth = meth;   /* Set method type         */
-                if (methtab[meth].data != NULL)   /* If default values exist */
-                  memcpy (&strat->data.method.data, /* Set values to default */
-                          methtab[meth].data,
+                straptr->tabl             = penvptr->stratab;
+                straptr->type             = STRATNODEMETHOD;
+                straptr->data.method.meth = methnum; /* Set method type        */
+                if (methtab[methnum].data != NULL) /* If default values exist  */
+                  memcpy (&straptr->data.method.data, /* Set values to default */
+                          methtab[methnum].data,
                           sizeof (StratNodeMethodData));
 
-                parserstratcurr = strat;          /* Structure available for parameter processing */
+                penvptr->straptr = straptr;       /* Structure available for parameter processing */
               }
                 METHODPARAM
               {
-                StratParamTab *   paratab;
-                int               i;
+                StratParamTab *     paratab;
+                int                 paraidx;
 
-                paratab = parserstrattab->paratab; /* Point to the parameter table */
-                for (i = 0; paratab[i].name != NULL; i ++) {
-                  if ((paratab[i].meth == parserstratcurr->data.method.meth) && /* If a strategy parameter found for this method */
-                      (paratab[i].type == STRATPARAMSTRAT)) {
-                    if (*((Strat **) ((byte *) &parserstratcurr->data.method.data + /* And this parameter has not been set */
-                        (paratab[i].dataofft - paratab[i].database))) == NULL)
-                      errorPrintW ("stratParserParse: strategy parameter \"%s\" of method \"%s\" not set, before \"%s\"",
-                                   paratab[i].name, parserstrattab->methtab[parserstratcurr->data.method.meth].name, stratParserRemain ());
+                paratab = penvptr->stratab->paratab; /* Point to the parameter table */
+                for (paraidx = 0; paratab[paraidx].name != NULL; paraidx ++) {
+                  if ((paratab[paraidx].meth == penvptr->straptr->data.method.meth) && /* If a strategy parameter found for this method */
+                      (paratab[paraidx].type == STRATPARAMSTRAT)) {
+                    if (*((Strat **) ((byte *) &penvptr->straptr->data.method.data + /* And this parameter has not been set */
+                        (paratab[paraidx].dataofft - paratab[paraidx].database))) == NULL)
+                      errorPrintW ("stratParserParse: strategy parameter \"%s\" of method \"%s\" not set, line %d, column %d, before \"%s\"",
+                                   paratab[paraidx].name, penvptr->stratab->methtab[penvptr->straptr->data.method.meth].name,
+                                   (@2).libenum, (@2).cobenum, (@2).tebeptr);
                   }
                 }
 
-                ($$) = parserstratcurr;           /* Return current structure */
-                parserstratcurr = NULL;           /* No current structure     */
+                ($$) = penvptr->straptr;          /* Return current structure */
+                penvptr->straptr = NULL;          /* No current structure     */
               }
               ;
 
 METHODPARAM   :
               {
-                stratParserSelect (VALPARAM);     /* Parse parameter tokens */
+                PARSERLLBEGIN (VALPARAM);         /* Parse parameter tokens */
               }
                 '{' PARAMLIST
               {
-                stratParserSelect (VALSTRAT);     /* Parse strategy tokens */
+                PARSERLLBEGIN (VALSTRAT);         /* Parse strategy tokens */
               }
                 '}'
               |                                   /* No parameters at all */
@@ -322,40 +353,40 @@ PARAMLIST     : PARAMLIST ',' PARAMPARAM
 
 PARAMPARAM    : PARAMNAME
               {
-                int               para;
+                int               paraidx;
                 int               paralen;
                 StratParamTab *   paratab;
                 int               i, j;
 
-                para    =
-                paralen = 0;                      /* No parameter recognized yet   */
-                paratab = parserstrattab->paratab; /* Point to the parameter table */
+                paraidx =
+                paralen = 0;                      /* No parameter recognized yet     */
+                paratab = penvptr->stratab->paratab; /* Point to the parameter table */
                 for (i = 0; paratab[i].name != NULL; i ++) {
-                  if ((paratab[i].meth == parserstratcurr->data.method.meth) &&
+                  if ((paratab[i].meth == penvptr->straptr->data.method.meth) &&
                       (strncasecmp (($1),         /* Find longest matching parameter name */
                                     paratab[i].name,
                                     j = strlen (paratab[i].name)) == 0) &&
                       (j > paralen)) {
-                    para    = i;
+                    paraidx = i;
                     paralen = j;
                   }
                 }
                 if (paralen == 0) {
-                  errorPrint ("stratParserParse: invalid method parameter name \"%s\", before \"%s\"",
-                              ($1), stratParserRemain ());
+                  errorPrint ("stratParserParse: invalid method parameter name \"%s\", line %d, column %d, before \"%s\"",
+                              ($1), (@1).libenum, (@1).cobenum, (@1).tebeptr);
                   YYABORT;
                 }
 
-                ($<SAVE>$).tabl = parserstrattab; /* Save current strategy tables */
-                parserparamcurr = &paratab[para]; /* Save current parameter value */
-                stratParserSelect (parsermethtokentab[parserparamcurr->type & ~STRATPARAMDEPRECATED]); /* Get non-deprecated type */
-                if (parserparamcurr->type == STRATPARAMSTRAT) /* If parameter is a strategy           */
-                  parserstrattab = (StratTab *) parserparamcurr->datasltr; /* Use new strategy tables */
+                ($<SAVE>$).tabl = penvptr->stratab; /* Save current strategy tables   */
+                penvptr->paraptr = &paratab[paraidx]; /* Save current parameter value */
+                PARSERLLBEGIN (stratmethtokentab[penvptr->paraptr->type & ~STRATPARAMDEPRECATED]); /* Get non-deprecated type */
+                if (penvptr->paraptr->type == STRATPARAMSTRAT) /* If parameter is a strategy                                  */
+                  penvptr->stratab = (StratTab *) penvptr->paraptr->datasltr; /* Use new strategy tables                      */
               }
                 '=' PARAMVAL
               {
-                stratParserSelect (VALPARAM);     /* Go-on reading parameters        */
-                parserstrattab = ($<SAVE>2).tabl; /* Restore current strategy tables */
+                PARSERLLBEGIN (VALPARAM);         /* Go-on reading parameters          */
+                penvptr->stratab = ($<SAVE>2).tabl; /* Restore current strategy tables */
               }
               ;
 
@@ -365,110 +396,111 @@ PARAMVAL      : VALCASE
                 char *            p;              /* Pointer to selector string */
                 int               i;              /* Index in selector string   */
 
-                if ((parserparamcurr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
-                  c = ($1);                       /* First, use char as is                                   */
-                  for (p = (char *) parserparamcurr->datasltr, i = 0;
+                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                  c = ($1);                       /* First, use char as is */
+                  for (p = (char *) penvptr->paraptr->datasltr, i = 0;
                        (*p != '\0') && (*p != c);
                        p ++, i ++) ;
                   if (*p == '\0') {               /* Char was not found         */
                     c = tolower (c);              /* Convert char to lower case */
-                    for (p = (char *) parserparamcurr->datasltr, i = 0;
+                    for (p = (char *) penvptr->paraptr->datasltr, i = 0;
                          (*p != '\0') && (*p != c);
                          p ++, i ++) ;
                     if (*p == '\0') {
-                      errorPrint ("stratParserParse: invalid method parameter switch \"%s=%c\", before \"%s\"",
-                                  parserparamcurr->name, ($1), stratParserRemain ());
+                      errorPrint ("stratParserParse: invalid method parameter switch \"%s=%c\", line %d, column %d, before \"%s\"",
+                                  penvptr->paraptr->name, ($1), (@1).libenum, (@1).cobenum, (@1).tebeptr);
                       YYABORT;
                     }
                   }
 
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (int)) > sizeof (StratNodeMethodData)) {
+                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + sizeof (int)) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (1)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  *((int *) ((byte *) &parserstratcurr->data.method.data +
-                             (parserparamcurr->dataofft -
-                              parserparamcurr->database))) = i;
+                  *((int *) ((byte *) &penvptr->straptr->data.method.data +
+                             (penvptr->paraptr->dataofft -
+                              penvptr->paraptr->database))) = i;
                 }
               }
               | VALSDOUBLE
               {
-                if ((parserparamcurr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (double)) > sizeof (StratNodeMethodData)) {
+                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + sizeof (double)) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (2)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  *((double *) ((byte *) &parserstratcurr->data.method.data +
-                                (parserparamcurr->dataofft -
-                                 parserparamcurr->database))) = ($1);
+                  *((double *) ((byte *) penvptr->straptr->data.method.data +
+                                (penvptr->paraptr->dataofft -
+                                 penvptr->paraptr->database))) = ($1);
                 }
               }
               | VALSINT
               {
-                if ((parserparamcurr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (INT)) > sizeof (StratNodeMethodData)) {
+                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + sizeof (INT)) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (3)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  *((INT *) ((byte *) &parserstratcurr->data.method.data +
-                             (parserparamcurr->dataofft -
-                              parserparamcurr->database))) = (INT) ($1);
+                  *((INT *) ((byte *) &penvptr->straptr->data.method.data +
+                             (penvptr->paraptr->dataofft -
+                              penvptr->paraptr->database))) = (INT) ($1);
                 }
               }
               | VALSTRING
               {
-                if ((parserparamcurr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((parserparamcurr->dataofft - parserparamcurr->database + strlen ($1) + 1) > sizeof (StratNodeMethodData)) {
+                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + strlen ($1) + 1) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (4)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  strcpy ((char *) ((byte *) &parserstratcurr->data.method.data +
-                                    (parserparamcurr->dataofft -
-                                     parserparamcurr->database)),
+                  strcpy ((char *) ((byte *) &penvptr->straptr->data.method.data +
+                                    (penvptr->paraptr->dataofft -
+                                     penvptr->paraptr->database)),
                           ($1));
                 }
               }
               |
               {
-                ($<SAVE>$).strat = parserstratcurr;
-                ($<SAVE>$).param = parserparamcurr;
-                parserstratcurr  = NULL;
-                parserparamcurr  = NULL;
+                ($<SAVE>$).strat = penvptr->straptr;
+                ($<SAVE>$).param = penvptr->paraptr;
+                penvptr->straptr = NULL;
+                penvptr->paraptr = NULL;
               }
                 STRATSELECT
               {
-                parserstratcurr = ($<SAVE>1).strat; /* Restore current method    */
-                parserparamcurr = ($<SAVE>1).param; /* Restore current parameter */
+                penvptr->straptr = ($<SAVE>1).strat; /* Restore current method    */
+                penvptr->paraptr = ($<SAVE>1).param; /* Restore current parameter */
 
-                if ((parserparamcurr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((parserparamcurr->dataofft - parserparamcurr->database + sizeof (Strat *)) > sizeof (StratNodeMethodData)) {
+                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + sizeof (Strat *)) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (5)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  *((Strat **) ((byte *) &parserstratcurr->data.method.data +
-                                (parserparamcurr->dataofft -
-                                 parserparamcurr->database))) = ($2);
+                  *((Strat **) ((byte *) &penvptr->straptr->data.method.data +
+                                (penvptr->paraptr->dataofft -
+                                 penvptr->paraptr->database))) = ($2);
                 }
               }
               | error
               {
-                errorPrint ("stratParserParse: invalid value for parameter \"%s\" of method \"%s\", before \"%s\"",
-                            parserparamcurr->name, parserstratcurr->tabl->methtab[parserstratcurr->data.method.meth].name, stratParserRemain ());
+                errorPrint ("stratParserParse: invalid value for parameter \"%s\" of method \"%s\", line %d, column %d, before \"%s\"",
+                            penvptr->paraptr->name, penvptr->straptr->tabl->methtab[penvptr->straptr->data.method.meth].name,
+                            (@1).libenum, (@1).cobenum, (@1).tebeptr);
                 YYABORT;
               }
               ;
@@ -478,61 +510,61 @@ TEST          : TESTOR
 
 TESTOR        : TESTOR '|' TESTAND
               {
-                StratTest *       test;
+                StratTest *         testptr;
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   errorPrint    ("stratParserParse: out of memory (6)");
                   stratTestExit ($1);
                   stratTestExit ($3);
                   YYABORT;
                 }
 
-                test->typetest     = STRATTESTOR;
-                test->typenode     = STRATPARAMLOG;
-                test->data.test[0] = ($1);
-                test->data.test[1] = ($3);
+                testptr->typetest     = STRATTESTOR;
+                testptr->typenode     = STRATPARAMLOG;
+                testptr->data.test[0] = ($1);
+                testptr->data.test[1] = ($3);
 
-                ($$) = test;
+                ($$) = testptr;
               }
               | TESTAND
               ;
 
 TESTAND       : TESTAND '&' TESTNOT
               {
-                StratTest *       test;
+                StratTest *         testptr;
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   errorPrint    ("stratParserParse: out of memory (7)");
                   stratTestExit ($1);
                   stratTestExit ($3);
                   YYABORT;
                 }
 
-                test->typetest     = STRATTESTAND;
-                test->typenode     = STRATPARAMLOG;
-                test->data.test[0] = ($1);
-                test->data.test[1] = ($3);
+                testptr->typetest     = STRATTESTAND;
+                testptr->typenode     = STRATPARAMLOG;
+                testptr->data.test[0] = ($1);
+                testptr->data.test[1] = ($3);
 
-                ($$) = test;
+                ($$) = testptr;
               }
               | TESTNOT
               ;
 
 TESTNOT       : '!' TESTNOT
               {
-                StratTest *       test;
+                StratTest *         testptr;
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   errorPrint    ("stratParserParse: out of memory (8)");
                   stratTestExit ($2);
                   YYABORT;
                 }
 
-                test->typetest     = STRATTESTNOT;
-                test->typenode     = STRATPARAMLOG;
-                test->data.test[0] = ($2);
+                testptr->typetest     = STRATTESTNOT;
+                testptr->typenode     = STRATPARAMLOG;
+                testptr->data.test[0] = ($2);
 
-                ($$) = test;
+                ($$) = testptr;
               }
               | '(' TESTOR ')'
               {
@@ -543,20 +575,20 @@ TESTNOT       : '!' TESTNOT
 
 TESTREL       : TESTEXPR1 TESTRELOP TESTEXPR1
               {
-                StratTest *       test;
+                StratTest *         testptr;
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   errorPrint    ("stratParserParse: out of memory (9)");
                   stratTestExit ($1);
                   stratTestExit ($3);
                   YYABORT;
                 }
-                test->typetest     = ($2);
-                test->typenode     = STRATPARAMLOG;
-                test->data.test[0] = ($1);
-                test->data.test[1] = ($3);
+                testptr->typetest     = ($2);
+                testptr->typenode     = STRATPARAMLOG;
+                testptr->data.test[0] = ($1);
+                testptr->data.test[1] = ($3);
 
-                ($$) = test;
+                ($$) = testptr;
               }
               ;
 
@@ -576,19 +608,19 @@ TESTRELOP     : '<'
 
 TESTEXPR1     : TESTEXPR1 TESTEXPR1OP TESTEXPR2
               {
-                StratTest *       test;
+                StratTest *         testptr;
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   errorPrint    ("stratParserParse: out of memory (10)");
                   stratTestExit ($1);
                   stratTestExit ($3);
                   YYABORT;
                 }
-                test->typetest     = ($2);
-                test->data.test[0] = ($1);
-                test->data.test[1] = ($3);
+                testptr->typetest     = ($2);
+                testptr->data.test[0] = ($1);
+                testptr->data.test[1] = ($3);
 
-                ($$) = test;
+                ($$) = testptr;
               }
               | TESTEXPR2
               ;
@@ -605,19 +637,19 @@ TESTEXPR1OP   : '+'
 
 TESTEXPR2     : TESTEXPR2 TESTEXPR2OP TESTEXPR3
               {
-                StratTest *       test;
+                StratTest *         testptr;
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   stratTestExit ($1);
                   stratTestExit ($3);
                   errorPrint    ("stratParserParse: out of memory (11)");
                   YYABORT;
                 }
-                test->typetest     = ($2);
-                test->data.test[0] = ($1);
-                test->data.test[1] = ($3);
+                testptr->typetest     = ($2);
+                testptr->data.test[0] = ($1);
+                testptr->data.test[1] = ($3);
 
-                ($$) = test;
+                ($$) = testptr;
               }
               | TESTEXPR3
               ;
@@ -630,19 +662,19 @@ TESTEXPR2OP   : '*'
 
 TESTEXPR3     : TESTEXPR3 TESTEXPR3OP TESTEXPR4
               {
-                StratTest *       test;
+                StratTest *         testptr;
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   errorPrint    ("stratParserParse: out of memory (12)");
                   stratTestExit ($1);
                   stratTestExit ($3);
                   YYABORT;
                 }
-                test->typetest     = ($2);
-                test->data.test[0] = ($1);
-                test->data.test[1] = ($3);
+                testptr->typetest     = ($2);
+                testptr->data.test[0] = ($1);
+                testptr->data.test[1] = ($3);
 
-                ($$) = test;
+                ($$) = testptr;
               }
               | TESTEXPR4
               ;
@@ -663,39 +695,39 @@ TESTEXPR4     : '(' TESTEXPR1 ')'
 
 TESTVAL       : VALSDOUBLE
               {
-                StratTest *       test;
+                StratTest *         testptr;
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   errorPrint ("stratParserParse: out of memory (13)");
                   YYABORT;
                 }
 
-                test->typetest        = STRATTESTVAL;
-                test->typenode        = STRATPARAMDOUBLE;
-                test->data.val.valdbl = ($1);
+                testptr->typetest        = STRATTESTVAL;
+                testptr->typenode        = STRATPARAMDOUBLE;
+                testptr->data.val.valdbl = ($1);
 
-                ($$) = test;
+                ($$) = testptr;
               }
               | VALSINT
               {
-                StratTest *       test;
+                StratTest *         testptr;
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   errorPrint ("stratParserParse: out of memory (14)");
                   YYABORT;
                 }
 
-                test->typetest        = STRATTESTVAL;
-                test->typenode        = STRATPARAMINT;
-                test->data.val.valint = ($1);
+                testptr->typetest        = STRATTESTVAL;
+                testptr->typenode        = STRATPARAMINT;
+                testptr->data.val.valint = ($1);
 
-                ($$) = test;
+                ($$) = testptr;
               }
               ;
 
 TESTVAR       : PARAMNAME
               {
-                StratTest *       test;
+                StratTest *       testptr;
                 StratParamTab *   condtab;
                 int               para;
                 int               paralen;
@@ -703,7 +735,7 @@ TESTVAR       : PARAMNAME
 
                 para    =
                 paralen = 0;                      /* No parameter recognized yet */
-                condtab = parserstrattab->condtab; /* Point to parameter table   */
+                condtab = penvptr->stratab->condtab; /* Point to parameter table */
                 for (i = 0; condtab[i].name != NULL; i ++) {
                   if ((strncasecmp (($1),         /* Find longest matching parameter name */
                                     condtab[i].name,
@@ -714,23 +746,23 @@ TESTVAR       : PARAMNAME
                   }
                 }
                 if (paralen == 0) {
-                  errorPrint ("stratParserParse: invalid graph parameter name \"%s\", before \"%s\"",
-                              ($1), stratParserRemain ());
+                  errorPrint ("stratParserParse: invalid graph parameter name \"%s\", line %d, column %d, before \"%s\"",
+                              ($1), (@1).libenum, (@1).cobenum, (@1).tebeptr);
                   YYABORT;
                 }
 
-                if ((test = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
+                if ((testptr = (StratTest *) memAlloc (sizeof (StratTest))) == NULL) {
                   errorPrint ("stratParserParse: out of memory (15)");
                   YYABORT;
                 }
 
-                test->typetest          = STRATTESTVAR;
-                test->typenode          = condtab[para].type;
-                test->data.var.datatab  = parserstrattab;
-                test->data.var.datadisp = condtab[para].dataofft -
-                                          condtab[para].database;
+                testptr->typetest          = STRATTESTVAR;
+                testptr->typenode          = condtab[para].type;
+                testptr->data.var.datatab  = penvptr->stratab;
+                testptr->data.var.datadisp = condtab[para].dataofft -
+                                             condtab[para].database;
 
-                ($$) = test;
+                ($$) = testptr;
               }
               ;
 
@@ -757,7 +789,7 @@ VALSINT       : TESTEXPR1OP VALINT
 **  defined in the first section of the file.
 */
 
-unsigned int                parsermethtokentab[] = { /* Table for parameter/token type conversion */
+unsigned int                stratmethtokentab[] = { /* Table for parameter/token type conversion */
                               VALCASE,
                               VALDOUBLE,
                               VALINT,
@@ -782,38 +814,52 @@ unsigned int                parsermethtokentab[] = { /* Table for parameter/toke
 
 Strat *
 stratParserParse (
-const StratTab * const      strattab,             /*+ Pointer to parsing tables +*/
-const char * const          string)               /*+ Strategy string to parse  +*/
+const StratTab * const      stratab,              /*+ Pointer to parsing tables +*/
+const char * const          textptr)              /*+ Strategy string to parse  +*/
 {
-  yyclearin;                                      /* Reset the parser state */
+  YY_BUFFER_STATE     buffdat;
+  ParserEnv           penvdat;                    /* Parser environment    */
+  yyscan_t            scandat;                    /* Pointer to lex memory */
+  int                 o;
 
-#ifdef SCOTCH_DEBUG_PARSER3
-  yydebug = 1;                                    /* Set debugging if needed */
-#endif /* SCOTCH_DEBUG_PARSER3 */
+  penvdat.stratab = stratab;                      /* Point to the parsing tables             */
+  penvdat.straptr = NULL;                         /* Clear up the temporary strategy pointer */
+  penvdat.textptr = textptr;                      /* Initialize the lexical parser           */
 
-  stratParserInit (string);                       /* Initialize the lexical parser           */
-  parserstrattab  = strattab;                     /* Point to the parsing tables             */
-  parserstratcurr = NULL;                         /* Clear up the temporary strategy pointer */
+  if (scotchyylex_init (&scandat) != 0) {
+    errorPrint ("stratParserParse: cannot initialize reentrant parser");
+    return     (NULL);
+  }
+  buffdat = scotchyy_scan_string (textptr, scandat); /* Let's hope nothing breaks; error management in flex is just crap */
+  scotchyy_switch_to_buffer (buffdat, scandat);
 
-  if (yyparse () != 0) {                          /* Parse the strategy string */
-    if (parserstratcurr != NULL)
-      stratExit (parserstratcurr);
+  o = yyparse (scandat, &penvdat);                /* Parse the strategy string */
+
+  scotchyy_delete_buffer (buffdat, scandat);
+  scotchyylex_destroy (scandat);
+
+  if (o != 0) {
+    if (penvdat.straptr != NULL)
+      stratExit (penvdat.straptr);
     return (NULL);
   }
 
-  return (parserstratcurr);                       /* Return strategy pointer */
+  return (penvdat.straptr);                       /* Return strategy pointer */
 }
 
 /* This routine displays the parser error message.
 ** It returns:
-** - 1  : in all cases.
+** - void  : in all cases.
 */
 
 static
-int
+void
 yyerror (
-const char * const          errstr)
+const ParserLocation * const  plocptr,            /*+ Scan location +*/
+void * const                  scanptr,            /*+ Not used      +*/
+const ParserEnv * const       penvptr,            /*+ Not used      +*/
+const char * const            mesgptr)            /*+ Not used      +*/
 {
-  errorPrint ("stratParserParse: invalid strategy string, before \"%s\"", stratParserRemain ());
-  return     (1);
+  errorPrint ("stratParserParse: invalid strategy string, line %d, column %d, at \"%s\"",
+              plocptr->libenum, plocptr->cobenum, plocptr->tebeptr);
 }

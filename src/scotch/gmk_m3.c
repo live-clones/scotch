@@ -46,6 +46,8 @@
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
+/**                # Version 7.0  : from : 02 apr 2021     **/
+/**                                 to   : 02 apr 2021     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY,dZ) mesh   **/
 /**                  are numbered as terminals so that     **/
@@ -82,8 +84,9 @@ static const char *         C_usageList[] = {
   "  -b<val>   : Set base value for output (0 or 1)",
   "  -g<file>  : Output the geometry to <file>",
   "  -h        : Display this help",
-  "  -t        : Build a torus rather than a mesh",
+  "  -t        : Build a torus rather than a grid",
   "  -V        : Print program version and copyright",
+  "  -y        : Invert y coordinate in geometry",
   NULL };
 
 /****************************************/
@@ -156,6 +159,10 @@ char *                      argv[])
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
           return  (EXIT_SUCCESS);
+        case 'Y' :                                /* Invert the y coordinate in geometry file */
+        case 'y' :
+          flagval |= C_FLAGGEOINVY;
+          break;
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
       }
@@ -253,7 +260,7 @@ char *                      argv[])
           fprintf (C_filepntrgeoout, SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n",
                    (SCOTCH_Num) ((c[2] * d[1] + c[1]) * d[0] + c[0] + baseval),
                    (SCOTCH_Num) c[0],
-                   (SCOTCH_Num) (d[1] - 1 - c[1]),
+                   (SCOTCH_Num) ((flagval & C_FLAGGEOINVY) ? (d[1] - 1 - c[1]) : c[1]),
                    (SCOTCH_Num) c[2]);
       }
     }

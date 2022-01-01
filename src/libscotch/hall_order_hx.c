@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 29 may 2008     **/
 /**                # Version 6.1  : from : 18 jan 2020     **/
 /**                                 to   : 18 jan 2020     **/
+/**                # Version 7.0  : from : 26 apr 2021     **/
+/**                                 to   : 26 apr 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -308,9 +310,15 @@ const float                 fillrat)
       errorPrint ("hallOrderHxBuild: out of memory");
       return     (1);
     }
-    cblkptr->cblknbr  = cblknbr;
+    cblkptr->cblknbr = cblknbr;
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_lock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
     ordeptr->cblknbr += cblknbr - 1;              /* These more column blocks created */
     ordeptr->treenbr += cblknbr;                  /* These more tree nodes created    */
+#ifdef SCOTCH_PTHREAD
+    pthread_mutex_unlock (&ordeptr->mutedat);
+#endif /* SCOTCH_PTHREAD */
 
     for (i = 0, cblknum = 0; i < vnohnbr; i ++) {
       if (nvartax[peritab[i]] == 0)               /* If secondary variable      */

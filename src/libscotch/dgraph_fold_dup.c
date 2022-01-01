@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 28 oct 2009     **/
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 28 sep 2014     **/
+/**                # Version 7.0  : from : 03 sep 2020     **/
+/**                                 to   : 03 sep 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,40 +77,40 @@
 ** - !0  : on error.
 */
 
-#ifdef SCOTCH_PTHREAD
 static
-void *
+void
 dgraphFoldDup2 (
-void * const                    dataptr)          /* Pointer to thread data */
+Context * restrict const          contptr,        /*+ (Sub-)context (not used)               +*/
+const int                         spltnum,        /*+ Rank of sub-context in initial context +*/
+const DgraphFoldDupSplit * const  spltptr)
 {
-  DgraphFoldDupData *             fldthrdptr;
+  int                 o;
 
-  fldthrdptr = (DgraphFoldDupData *) dataptr;
+  o = dgraphFold2 (spltptr->splttab[spltnum].orggrafptr, spltnum, spltptr->fldgrafptr,
+                   spltptr->splttab[spltnum].fldproccomm, spltptr->orgdataptr, spltptr->flddataptr, spltptr->datatype);
 
-  return ((void *) (intptr_t) dgraphFold2 (fldthrdptr->orggrafptr, fldthrdptr->partval, fldthrdptr->fldgrafptr,
-                                           fldthrdptr->fldproccomm, fldthrdptr->orgdataptr,
-                                           fldthrdptr->flddataptr, fldthrdptr->datatype));
+  if (o != 0)
+    *spltptr->revaptr = 1;                        /* No mutex protection */
 }
-#endif /* SCOTCH_PTHREAD */
 
 int
 dgraphFoldDup (
 const Dgraph * restrict const orggrafptr,
 Dgraph * restrict const       fldgrafptr,
-void * restrict const         orgdataptr,         /* Un-based array of data which must be folded, e.g. coarmulttab */
-void ** restrict const        flddataptr,         /* Un-based array of data which must be folded, e.g. coarmulttab */
-MPI_Datatype                  datatype)
+void * restrict const         orgdataptr,         /*+ Un-based array of data which must be folded, e.g. coarmulttab +*/
+void ** restrict const        flddataptr,         /*+ Un-based array of data which must be folded, e.g. coarmulttab +*/
+MPI_Datatype                  datatype,
+Context * restrict const      contptr)            /*+ Context                                                       +*/
 {
-  int                       fldprocnbr;
-  int                       fldprocnum;
-  int                       fldproccol;
-  MPI_Comm                  fldproccommtab[2];
-#ifdef SCOTCH_PTHREAD
-  Dgraph                    orggrafdat;
-  DgraphFoldDupData         fldthrdtab[2];
-  pthread_t                 thrdval;              /* Data of second thread */
-#endif /* SCOTCH_PTHREAD */
-  int                       o;
+#ifdef SCOTCH_PTHREAD_MPI
+  Dgraph              orggrafdat;
+#endif /* SCOTCH_PTHREAD_MPI */
+  int                 fldprocnbr;
+  int                 fldprocnum;
+  int                 fldproccol;
+  MPI_Comm            fldproccommtab[2];
+  DgraphFoldDupSplit  fldspltdat;
+  int                 o;
 
   fldprocnbr = (orggrafptr->procglbnbr + 1) / 2;  /* Median cut on number of processors     */
   if (orggrafptr->proclocnum < fldprocnbr) {      /* Compute color and rank in two subparts */
@@ -122,50 +124,42 @@ MPI_Datatype                  datatype)
     fldproccommtab[0] = MPI_COMM_NULL;
   }
   if (MPI_Comm_split (orggrafptr->proccomm, fldproccol, fldprocnum, &fldproccommtab[fldproccol]) != MPI_SUCCESS) {
-    errorPrint  ("dgraphFoldDup: communication error (1)");
-    return      (1);
+    errorPrint ("dgraphFoldDup: communication error (1)");
+    return (1);
   }
 
-#ifdef SCOTCH_PTHREAD
-  orggrafdat = *orggrafptr;                       /* Create a separate graph structure to change its communicator */
+  fldspltdat.splttab[0].orggrafptr  = orggrafptr;
+  fldspltdat.splttab[0].fldproccomm = fldproccommtab[0];
+  fldspltdat.splttab[1].fldproccomm = fldproccommtab[1];
+  fldspltdat.orgdataptr = orgdataptr;
+  fldspltdat.flddataptr = flddataptr;
+  fldspltdat.fldgrafptr = fldgrafptr;
+  fldspltdat.datatype   = datatype;
+  fldspltdat.revaptr    = &o;
 
-  fldthrdtab[0].orggrafptr  = orggrafptr;
-  fldthrdtab[0].fldgrafptr  = fldgrafptr;
-  fldthrdtab[0].fldproccomm = fldproccommtab[0];
-  fldthrdtab[0].partval     = 0;
-  fldthrdtab[0].orgdataptr  = orgdataptr;
-  fldthrdtab[0].flddataptr  = flddataptr;
-  fldthrdtab[0].datatype    = datatype;
-  fldthrdtab[1].orggrafptr  = &orggrafdat;
-  fldthrdtab[1].fldgrafptr  = fldgrafptr;
-  fldthrdtab[1].fldproccomm = fldproccommtab[1];
-  fldthrdtab[1].partval     = 1;
-  fldthrdtab[1].orgdataptr  = orgdataptr;
-  fldthrdtab[1].flddataptr  = flddataptr;
-  fldthrdtab[1].datatype    = datatype;
+  o = 0;                                          /* Assume splitting will go well */
+#ifdef SCOTCH_PTHREAD_MPI
+  fldspltdat.splttab[1].orggrafptr = &orggrafdat;
+  orggrafdat = *orggrafptr;                       /* Create a separate graph structure to change its communicator */
 
   if (MPI_Comm_dup (orggrafptr->proccomm, &orggrafdat.proccomm) != MPI_SUCCESS) { /* Duplicate communicator to avoid interferences in communications */
     errorPrint ("dgraphFoldDup: communication error (2)");
-    return     (1);
+    return (1);
   }
-
-  if (pthread_create (&thrdval, NULL, dgraphFoldDup2, (void *) &fldthrdtab[1]) != 0) /* If could not create thread */
-    o = (int) (intptr_t) dgraphFold2 (orggrafptr, 0, fldgrafptr, fldproccommtab[0], orgdataptr, flddataptr, datatype) || /* Call routines in sequence */
-        (int) (intptr_t) dgraphFold2 (orggrafptr, 1, fldgrafptr, fldproccommtab[1], orgdataptr, flddataptr, datatype);
-  else {                                          /* Newly created thread is processing subgraph 1, so let's process subgraph 0 */
-    void *                    o2;
-
-    o = (int) (intptr_t) dgraphFoldDup2 ((void *) &fldthrdtab[0]); /* Work on copy with private communicator */
-
-    pthread_join (thrdval, &o2);
-    o |= (int) (intptr_t) o2;
+#ifndef DGRAPHFOLDDUPNOTHREAD
+  if (contextThreadLaunchSplit (contptr, (ContextSplitFunc) dgraphFoldDup2, &fldspltdat) != 0) /* If counld not split context to run concurrently */
+#endif /* DGRAPHFOLDDUPNOTHREAD */
+#else /* SCOTCH_PTHREAD_MPI */
+  fldspltdat.splttab[1].orggrafptr = orggrafptr;  /* No need for separate graph with separate communicator */
+#endif /* SCOTCH_PTHREAD_MPI */
+  {
+    dgraphFoldDup2 (contptr, 0, &fldspltdat); /* Run tasks in sequence */
+    if (o == 0)
+      dgraphFoldDup2 (contptr, 1, &fldspltdat);
   }
+#ifdef SCOTCH_PTHREAD_MPI
   MPI_Comm_free (&orggrafdat.proccomm);
-
-#else /* SCOTCH_PTHREAD */
-  o = (dgraphFold2 (orggrafptr, 0, fldgrafptr, fldproccommtab[0], orgdataptr, flddataptr, datatype) || /* Call routines in sequence */
-       dgraphFold2 (orggrafptr, 1, fldgrafptr, fldproccommtab[1], orgdataptr, flddataptr, datatype));
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 
   fldgrafptr->prockeyval = fldproccol;            /* Discriminate between folded communicators at same level */
 

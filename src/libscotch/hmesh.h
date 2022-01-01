@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 29 apr 2004     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 12 sep 2019     **/
+/**                                 to   : 12 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,6 +90,7 @@ typedef struct Hmesh_ {
   Gnum                      vnhlsum;              /*+ Sum of non-halo node vertex weights                                      +*/
   Gnum                      enohnbr;              /*+ Number of non-halo edges                                                 +*/
   Gnum                      levlnum;              /*+ Nested dissection level                                                  +*/
+  Context *                 contptr;              /*+ Execution context                                                        +*/
 } Hmesh;
 
 /*

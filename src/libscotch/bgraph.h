@@ -64,6 +64,8 @@
 /**                                 to   : 18 mar 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 05 apr 2018     **/
+/**                # Version 7.0  : from : 08 jun 2018     **/
+/**                                 to   : 08 jun 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -107,6 +109,7 @@ typedef struct Bgraph_ {
   Gnum                      domnwght[2];          /*+ Weights of the two subdomains                      +*/
   Gnum                      vfixload[2];          /*+ Vertex load biases of the two subdomains           +*/
   INT                       levlnum;              /*+ Coarsening level                                   +*/
+  Context *                 contptr;              /*+ Execution context                                  +*/
 } Bgraph;
 
 /*+ The save graph structure. +*/

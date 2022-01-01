@@ -54,6 +54,8 @@
 /**                                 to   : 24 aug 2020     **/
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
+/**                # Version 7.0  : from : 02 mar 2018     **/
+/**                                 to   : 07 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,17 +67,11 @@
 
 #define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2021 IPB, Universite de Bordeaux, INRIA & CNRS, France"
 #define SCOTCH_LICENSE_STRING       "This software is libre/free software under CeCILL-C -- see the user's manual for more information"
+#ifdef SCOTCH_CODENAME
+#define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL) " (" SCOTCH_CODENAME ")"
+#else /* SCOTCH_CODENAME */
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL)
-
-/*
-** Handling of determinism.
-*/
-
-#ifdef SCOTCH_DETERMINISTIC
-#ifndef COMMON_RANDOM_FIXED_SEED
-#define COMMON_RANDOM_FIXED_SEED
-#endif /* COMMON_RANDOM_FIXED_SEED */
-#endif /* SCOTCH_DETERMINISTIC     */
+#endif /* SCOTCH_CODENAME */
 
 /*
 ** Handling of parallelism.
@@ -121,22 +117,6 @@
 #endif /* COMMON_PTHREAD_MEMORY */
 #endif /* SCOTCH_PTHREAD        */
 
-/*+ Handle number of threads. +*/
-
-#ifdef SCOTCH_PTHREAD
-#ifndef SCOTCH_PTHREAD_NUMBER
-#define SCOTCH_PTHREAD_NUMBER       1
-#endif /* SCOTCH_PTHREAD_NUMBER */
-
-#else /* SCOTCH_PTHREAD */
-
-#ifdef SCOTCH_PTHREAD_NUMBER
-#undef SCOTCH_PTHREAD_NUMBER
-#endif /* SCOTCH_PTHREAD_NUMBER */
-#define SCOTCH_PTHREAD_NUMBER       1
-
-#endif /* SCOTCH_PTHREAD */
-
 /*+ Handle old semantics of thread affinity. */
 
 #ifdef SCOTCH_PTHREAD_AFFINITY_LINUX
@@ -175,6 +155,7 @@
 #define SCOTCH_DEBUG_FIBO2
 #define SCOTCH_DEBUG_GAIN2
 #define SCOTCH_DEBUG_PARSER2
+#define SCOTCH_DEBUG_CONTEXT2
 #define SCOTCH_DEBUG_BDGRAPH2
 #define SCOTCH_DEBUG_BGRAPH2
 #define SCOTCH_DEBUG_DGRAPH2
@@ -204,6 +185,7 @@
 #define SCOTCH_DEBUG_FIBO1
 #define SCOTCH_DEBUG_GAIN1
 #define SCOTCH_DEBUG_PARSER1
+#define SCOTCH_DEBUG_CONTEXT1
 #define SCOTCH_DEBUG_BDGRAPH1
 #define SCOTCH_DEBUG_BGRAPH1
 #define SCOTCH_DEBUG_DGRAPH1
@@ -316,6 +298,22 @@
 
 #define commonStubDummy             SCOTCH_NAME_INTERN (commonStubDummy)
 
+#define contextCommit               SCOTCH_NAME_INTERN (contextCommit)
+#define contextExit                 SCOTCH_NAME_INTERN (contextExit)
+#define contextInit                 SCOTCH_NAME_INTERN (contextInit)
+#define contextRandomClone          SCOTCH_NAME_INTERN (contextRandomClone)
+#define contextThreadInit           SCOTCH_NAME_INTERN (contextThreadInit)
+#define contextThreadInit2          SCOTCH_NAME_INTERN (contextThreadInit2)
+#define contextThreadLaunchSplit    SCOTCH_NAME_INTERN (contextThreadLaunchSplit)
+
+#define contextValuesGetDbl         SCOTCH_NAME_INTERN (contextValuesGetDbl)
+#define contextValuesGetInt         SCOTCH_NAME_INTERN (contextValuesGetInt)
+#define contextValuesInit           SCOTCH_NAME_INTERN (contextValuesInit)
+#define contextValuesSetDbl         SCOTCH_NAME_INTERN (contextValuesSetDbl)
+#define contextValuesSetInt         SCOTCH_NAME_INTERN (contextValuesSetInt)
+
+#define envGetInt                   SCOTCH_NAME_INTERN (envGetInt)
+
 #define fileBlockInit               SCOTCH_NAME_INTERN (fileBlockInit)
 #define fileBlockClose              SCOTCH_NAME_INTERN (fileBlockClose)
 #define fileBlockOpen               SCOTCH_NAME_INTERN (fileBlockOpen)
@@ -332,15 +330,17 @@
 #define intAscn                     SCOTCH_NAME_INTERN (intAscn)
 #define intGcd                      SCOTCH_NAME_INTERN (intGcd)
 #define intPerm                     SCOTCH_NAME_INTERN (intPerm)
+#define intPsort2asc1               SCOTCH_NAME_INTERN (intPsort2asc1)
+#define intranddat                  SCOTCH_NAME_INTERN (intranddat) /* Public pseudo-random number generator */
 #define intRandInit                 SCOTCH_NAME_INTERN (intRandInit)
 #define intRandLoad                 SCOTCH_NAME_INTERN (intRandLoad)
 #define intRandSave                 SCOTCH_NAME_INTERN (intRandSave)
 #define intRandProc                 SCOTCH_NAME_INTERN (intRandProc)
 #define intRandReset                SCOTCH_NAME_INTERN (intRandReset)
 #define intRandSeed                 SCOTCH_NAME_INTERN (intRandSeed)
-#ifndef COMMON_RANDOM_SYSTEM
 #define intRandVal                  SCOTCH_NAME_INTERN (intRandVal)
-#endif /* COMMON_RANDOM_SYSTEM */
+#define intRandVal2                 SCOTCH_NAME_INTERN (intRandVal2)
+#define intRandVal3                 SCOTCH_NAME_INTERN (intRandVal3)
 #define intSort1asc1                SCOTCH_NAME_INTERN (intSort1asc1)
 #define intSort2asc1                SCOTCH_NAME_INTERN (intSort2asc1)
 #define intSort2asc2                SCOTCH_NAME_INTERN (intSort2asc2)
@@ -360,6 +360,16 @@
 #define memOffset                   SCOTCH_NAME_INTERN (memOffset)
 
 #define stringSubst                 SCOTCH_NAME_INTERN (stringSubst)
+
+#define threadContextBarrier        SCOTCH_NAME_INTERN (threadContextBarrier)
+#define threadContextExit           SCOTCH_NAME_INTERN (threadContextExit)
+#define threadContextImport1        SCOTCH_NAME_INTERN (threadContextImport1)
+#define threadContextImport2        SCOTCH_NAME_INTERN (threadContextImport2)
+#define threadContextInit           SCOTCH_NAME_INTERN (threadContextInit)
+#define threadContextNbr            SCOTCH_NAME_INTERN (threadContextNbr)
+#define threadContextParam          SCOTCH_NAME_INTERN (threadContextParam)
+
+#define threadSystemCoreNbr         SCOTCH_NAME_INTERN (threadSystemCoreNbr)
 
 #define usagePrint                  SCOTCH_NAME_INTERN (usagePrint)
 #endif /* ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) */
@@ -700,6 +710,8 @@
 #define commScatterv                SCOTCH_NAME_INTERN (commScatterv)
 #endif /* ((defined INTSIZE64) || (defined COMM)) */
 
+#define contextOptionsInit          SCOTCH_NAME_INTERN (contextOptionsInit)
+
 #define dgraphAllreduceMaxSum2      SCOTCH_NAME_INTERN (dgraphAllreduceMaxSum2)
 #define dgraphBuild                 SCOTCH_NAME_INTERN (dgraphBuild)
 #define dgraphBuild2                SCOTCH_NAME_INTERN (dgraphBuild2)
@@ -987,10 +999,10 @@
 #define orderRang                   SCOTCH_NAME_INTERN (orderRang)
 #define orderTree                   SCOTCH_NAME_INTERN (orderTree)
 
-#define parsermethtokentab          SCOTCH_NAME_INTERN (parsermethtokentab)
-#define parserparamcurr             SCOTCH_NAME_INTERN (parserparamcurr)
-#define parserstratcurr             SCOTCH_NAME_INTERN (parserstratcurr)
-#define parserstrattab              SCOTCH_NAME_INTERN (parserstrattab)
+#define parserLocationUpdate        SCOTCH_NAME_INTERN (parserLocationUpdate)
+
+#define stratmethtokentab           SCOTCH_NAME_INTERN (stratmethtokentab)
+#define stratenvdat                 SCOTCH_NAME_INTERN (stratenvdat)
 
 #define stratdummy                  SCOTCH_NAME_INTERN (stratdummy)
 #define stratInit                   SCOTCH_NAME_INTERN (stratInit)

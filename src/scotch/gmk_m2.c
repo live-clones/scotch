@@ -56,6 +56,8 @@
 /**                                 to   : 24 sep 2019     **/
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 02 apr 2021     **/
+/**                # Version 7.0  : from : 02 apr 2021     **/
+/**                                 to   : 02 apr 2021     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -101,6 +103,7 @@ static const char *         C_usageList[] = {
   "  -h        : Display this help",
   "  -t        : Build a torus rather than a grid",
   "  -V        : Print program version and copyright",
+  "  -y        : Invert y coordinate in geometry",
   NULL };
 
 /****************************************/
@@ -181,6 +184,10 @@ char *                      argv[])
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, SCOTCH_LICENSE_STRING "\n");
           return  (EXIT_SUCCESS);
+        case 'Y' :                                /* Invert the y coordinate in geometry file */
+        case 'y' :
+          flagval |= C_FLAGGEOINVY;
+          break;
         default :
           errorPrint ("main: unprocessed option '%s'", argv[i]);
       }
@@ -193,7 +200,7 @@ char *                      argv[])
     edgenbr = ((flagval & C_FLAGELEM) != 0)       /* Compute number of edges */
               ? (8 * (d[0] * d[1]) - ((d[0] < 3) ? (6 * d[1]) : 0) - ((d[1] < 3) ? (6 * d[0]) : 0))
               : (4 * (d[0] * d[1]) - ((d[0] < 3) ? (2 * d[1]) : 0) - ((d[1] < 3) ? (2 * d[0]) : 0));
- 
+
     fprintf (C_filepntrsrcout, "0\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t000\n",
              (SCOTCH_Num) (d[0] * d[1]),          /* Print number of vertices */
              (SCOTCH_Num) edgenbr,
@@ -257,7 +264,7 @@ char *                      argv[])
         fprintf (C_filepntrgeoout, SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n",
                  (SCOTCH_Num) (c[1] * d[0] + c[0] + baseval),
                  (SCOTCH_Num) c[0],
-                 (SCOTCH_Num) (d[1] - 1 - c[1]));
+                 (SCOTCH_Num) (((flagval & C_FLAGGEOINVY) != 0) ? (d[1] - 1 - c[1]) : c[1]));
     }
   }
 

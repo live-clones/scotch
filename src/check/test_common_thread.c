@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2015,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 nov 2012     **/
 /**                                 to   : 10 jul 2018     **/
+/**                # Version 7.0  : from : 21 aug 2019     **/
+/**                                 to   : 31 aug 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,34 +57,37 @@
 #endif /* __USE_XOPEN2K */
 
 #include <stdio.h>
-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
-#include <pthread.h>
-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
 
 #include "../libscotch/module.h"
 #include "../libscotch/common.h"
+#include "../libscotch/common_thread.h"
+#include "../libscotch/common_thread_system.h"
 
 #define COMPVAL(n)                  (((n) * ((n) + 1)) / 2)
+
+/*
+**  The static and global variables.
+*/
+
+static int                  C_erroval = 0;        /* Global error value */
 
 /*
 **  The type and structure definitions.
 */
 
-/*+ The block data structure +*/
-
-typedef struct TestThreadGroup_ {
-  ThreadGroupHeader         thrddat;              /*+ Thread handling data          +*/
-  int                       redusum;              /*+ Value to compare reduction to +*/
-} TestThreadGroup;
-
 /*+ The thread-specific data block. +*/
 
-typedef struct TestThread_ {
-  ThreadHeader              thrddat;              /*+ Thread management data +*/
-  int                       reduval;              /*+ Value to reduce        +*/
-  int                       scanval;              /*+ Value for scan         +*/
-  int                       dummval;              /*+ Dummy value for scan   +*/
-} TestThread;
+typedef struct TestData_ {
+  int                       reduval;              /*+ Value to reduce +*/
+  int                       scanval[2];           /*+ Values for scan +*/
+} TestData;
+
+/*+ The block data structure +*/
+
+typedef struct TestGroup_ {
+  TestData *                datatab;              /*+ Thread test data              +*/
+  int                       redusum;              /*+ Value to compare reduction to +*/
+} TestGroup;
 
 /*************************/
 /*                       */
@@ -90,77 +95,75 @@ typedef struct TestThread_ {
 /*                       */
 /*************************/
 
-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
-
 static
 void
 testReduce (
-TestThread * restrict const tlocptr,              /* Pointer to local thread */
-void * restrict const       vlocptr,              /* Pointer to local value  */
-void * restrict const       vremptr)              /* Pointer to remote value */
+TestData * restrict const   vlocptr,              /* Pointer to local value  */
+TestData * restrict const   vremptr,              /* Pointer to remote value */
+void *                      dataptr)              /* Pointer to shared data  */
 {
-  TestThread * restrict const tremptr = (TestThread *) vremptr;
+  if (dataptr != &C_erroval)
+    errorPrint ("testReduce: invalid data pointer");
 
-  tlocptr->reduval += tremptr->reduval;
+  vlocptr->reduval += vremptr->reduval;
 }
 
 static
 void
 testScan (
-TestThread * restrict const tlocptr,              /* Pointer to local thread */
-int * restrict const        vlocptr,              /* Pointer to local value  */
-int * restrict const        vremptr,              /* Pointer to remote value */
-const int                   phasval)              /* Phase index             */
+TestData * restrict const   vlocptr,              /* Pointer to local value  */
+TestData * restrict const   vremptr,              /* Pointer to remote value */
+const int                   srcpval,              /* Source phase value      */
+const int                   dstpval,              /* Destination phase value */
+void *                      dataptr)              /* Pointer to shared data  */
 {
-  vlocptr[1 - phasval] = vlocptr[phasval] + ((vremptr == NULL) ? 0 : vremptr[phasval]);
+  if (dataptr != &C_erroval)
+    errorPrint ("testScan: invalid data pointer");
+
+  vlocptr->scanval[dstpval] = vlocptr->scanval[srcpval] + ((vremptr == NULL) ? 0 : vremptr->scanval[srcpval]);
 }
 
 static
-int
+void
 testThreads (
-TestThread * restrict   thrdptr)
+ThreadDescriptor * restrict const descptr,
+volatile TestGroup * restrict     grouptr)
 {
-  TestThreadGroup * restrict const  grouptr = (TestThreadGroup *) (thrdptr->thrddat.grouptr);
-  const int                         thrdnum = thrdptr->thrddat.thrdnum;
-  int                               o;
+  const int           thrdnum = threadNum (descptr);
+  TestData * const    dataptr = &grouptr->datatab[thrdnum];
 
   printf ("%d: running\n", thrdnum);
 
-  o = 0;
+  threadBarrier (descptr);
+  fflush (stdout);
 
   if (thrdnum == 0)
     printf ("Performing reduction\n");
 
-  threadBarrier (thrdptr);
-
-  thrdptr->reduval = 1 + thrdptr->thrddat.thrdnum;
-  threadReduce (thrdptr, thrdptr, (ThreadReduceFunc) testReduce, 0);
+  dataptr->reduval = thrdnum + 1;
+  threadReduce (descptr, (void *) dataptr, sizeof (TestData), (ThreadReduceFunc) testReduce, 0, &C_erroval);
 
   if ((thrdnum == 0) &&                           /* Test reduction result on thread 0 */
-      (thrdptr->reduval != grouptr->redusum)) {
-    printf ("0: invalid reduction operator\n");
-    o = 1;
+      (dataptr->reduval != grouptr->redusum)) {
+    SCOTCH_errorPrint ("0: invalid reduction operator\n");
+    C_erroval = 1;
   }
+
+  threadBarrier (descptr);
 
   if (thrdnum == 0)
     printf ("Performing scan\n");
 
-  threadBarrier (thrdptr);
+  dataptr->scanval[0] = 1 + thrdnum;
+  threadScan (descptr, (void *) dataptr, sizeof (TestData), (ThreadScanFunc) testScan, &C_erroval);
 
-  thrdptr->scanval = 1 + thrdptr->thrddat.thrdnum;
-  threadScan (thrdptr, &thrdptr->scanval, (ThreadScanFunc) testScan);
-
-  if (thrdptr->scanval != COMPVAL (thrdnum + 1)) {
-    printf ("%d: invalid scan operator\n", thrdnum);
-    o = 1;
+  if (dataptr->scanval[0] != COMPVAL (thrdnum + 1)) {
+    SCOTCH_errorPrint ("%d: invalid scan operator\n", thrdnum);
+    C_erroval = 1;
   }
 
-  threadBarrier (thrdptr);
-
-  return (o);
+  threadBarrier (descptr);                        /* Final barrier before freeing work array */
 }
-
-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
 
 /*********************/
 /*                   */
@@ -173,34 +176,40 @@ main (
 int                 argc,
 char *              argv[])
 {
-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
-  TestThreadGroup       groudat;
-  TestThread * restrict thrdtab;
-  int                   thrdnbr;
-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
+  ThreadContext       contdat;
+  TestGroup           groudat;
+  int                 thrdnbr;
 
   SCOTCH_errorProg (argv[0]);
 
-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
-  thrdnbr = SCOTCH_PTHREAD_NUMBER;
+#ifdef SCOTCH_PTHREAD_NUMBER
+  thrdnbr = SCOTCH_PTHREAD_NUMBER;                /* If prescribed number defined at compile time, use it as default */
+#else /* SCOTCH_PTHREAD_NUMBER */
+  thrdnbr = -1;                                   /* Else take the number of cores at run time */
+#endif /* SCOTCH_PTHREAD_NUMBER */
+  thrdnbr = envGetInt ("SCOTCH_PTHREAD_NUMBER", thrdnbr);
+  if (thrdnbr < 1)
+    thrdnbr = threadSystemCoreNbr ();
 
+  if (threadContextInit (&contdat, thrdnbr, NULL) != 0) {
+    SCOTCH_errorPrint ("main: cannot initialize thread context");
+    exit              (EXIT_FAILURE);
+  }
+
+  thrdnbr = threadContextNbr (&contdat);
+  printf ("%d threads in context\n", thrdnbr);
+
+  if ((groudat.datatab = malloc (thrdnbr * sizeof (TestData))) == NULL) {
+    SCOTCH_errorPrint ("main: out of memory");
+    exit              (EXIT_FAILURE);
+  }
   groudat.redusum = COMPVAL (thrdnbr);
 
-  if ((thrdtab = malloc (thrdnbr * sizeof (TestThread))) == NULL) {
-    SCOTCH_errorPrint ("main: out of memory");
-    exit (EXIT_FAILURE);
-  }
+  threadLaunch (&contdat, (ThreadFunc) testThreads, (void *) &groudat);
 
-  if (threadLaunch (&groudat, thrdtab, sizeof (TestThread), (ThreadLaunchStartFunc) testThreads, (ThreadLaunchJoinFunc) NULL,
-                    thrdnbr, THREADCANBARRIER | THREADCANREDUCE | THREADCANSCAN) != 0) {
-    SCOTCH_errorPrint ("main: cannot launch or run threads");
-    exit (EXIT_FAILURE);
-  }
+  free (groudat.datatab);
 
-  free (thrdtab);
-#else /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
-  printf ("Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD\n");
-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
+  threadContextExit (&contdat);
 
-  exit (EXIT_SUCCESS);
+  exit ((C_erroval == 0) ? EXIT_SUCCESS : EXIT_FAILURE);
 }

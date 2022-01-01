@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2010,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 19 jan 2004     **/
 /**                # Version 5.1  : from : 27 apr 2010     **/
 /**                                 to   : 27 apr 2010     **/
+/**                # Version 7.0  : from : 07 may 2019     **/
+/**                                 to   : 07 may 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,6 +58,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "geom.h"
 #include "graph.h"
 #include "scotch.h"
@@ -82,7 +85,7 @@ FILE * const                  filegrfptr,
 FILE * const                  filegeoptr,
 const char * const            dataptr)
 {
-  return (graphGeomLoadScot ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, dataptr));
+  return (graphGeomLoadScot ((Graph *) CONTEXTOBJECT (grafptr), (Geom *) geomptr, filegrfptr, filegeoptr, dataptr));
 }
 
 /*+ This routine saves the contents of the given
@@ -100,5 +103,5 @@ FILE * const                        filegrfptr,
 FILE * const                        filegeoptr,
 const char * const                  dataptr)
 {
-  return (graphGeomSaveScot ((Graph *) grafptr, (Geom *) geomptr, filegrfptr, filegeoptr, dataptr));
+  return (graphGeomSaveScot ((Graph *) CONTEXTOBJECT (grafptr), (Geom *) geomptr, filegrfptr, filegeoptr, dataptr));
 }

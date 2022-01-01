@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2013,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -68,6 +68,8 @@
 /**                                 to   : 07 oct 2008     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 jun 2019     **/
+/**                # Version 7.0  : from : 23 aug 2019     **/
+/**                                 to   : 27 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -120,6 +122,11 @@ const KgraphMapRbParam * restrict const paraptr)
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
   int                         o;
 
+  if (mapAlloc (&grafptr->m) != 0) {
+    errorPrint ("kgraphMapRb: cannot allocate mapping arrays");
+    return (1);
+  }
+
   grafptr->kbalval = paraptr->kbalval;            /* Store last k-way imbalance ratio */
 
   datadat.grafptr = &grafptr->s;
@@ -144,12 +151,12 @@ const KgraphMapRbParam * restrict const paraptr)
     if (kgraphMapRbVfloBuild (grafptr->m.archptr, &grafptr->s, grafptr->vfixnbr, grafptr->pfixtax,
                               &indgrafdat, &vflonbr, &vflotab) != 0) {
       errorPrint ("kgraphMapRb: cannot create induced graph");
-      return     (1);
+      return (1);
     }
     indgrafptr = &indgrafdat;
   }
 
-  o = ((archPart (grafptr->m.archptr) != 0) ? kgraphMapRbPart : kgraphMapRbMap) (&datadat, indgrafptr, vflonbr, vflotab); /* Compute recursive bipartitioning */
+  o = ((archPart (grafptr->m.archptr) != 0) ? kgraphMapRbPart : kgraphMapRbMap) (&datadat, indgrafptr, vflonbr, vflotab, grafptr->contptr); /* Compute recursive bipartitioning */
 
   if (grafptr->pfixtax != NULL) {                 /* If fixed vertices   */
     memFree (vflotab);                            /* Not used any longer */
@@ -157,7 +164,7 @@ const KgraphMapRbParam * restrict const paraptr)
     graphExit (&indgrafdat);
     if (kgraphMapRbVfloMerge (&grafptr->m, grafptr->vfixnbr, grafptr->pfixtax, vflonbr) != 0) {
       errorPrint ("kgraphMapRb: cannot merge fixed vertex domains");
-      return     (1);
+      return (1);
     }
   }
 
@@ -165,7 +172,7 @@ const KgraphMapRbParam * restrict const paraptr)
                        &grafptr->comploadavg, (size_t) (grafptr->m.domnmax * sizeof (Gnum)), /* TRICK: can send both compload arrays in one piece */
                        &grafptr->comploaddlt, (size_t) (grafptr->m.domnmax * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("kgraphMapRb: out of memory (3)");
-    return     (1);
+    return (1);
   }
   kgraphFron (grafptr);
   kgraphCost (grafptr);                           /* Compute cost of full k-way partition */
@@ -174,13 +181,13 @@ const KgraphMapRbParam * restrict const paraptr)
   for (domnnum = 0; domnnum < grafptr->m.domnnbr; domnnum ++) {
     if (archDomSize (grafptr->m.archptr, &grafptr->m.domntab[domnnum]) != 1) {
       errorPrint ("kgraphMapRb: invalid mapping");
-      return     (1);
+      return (1);
     }
   }
 
   if (kgraphCheck (grafptr) != 0) {
     errorPrint ("kgraphMapRb: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
@@ -242,7 +249,7 @@ KgraphMapRbVflo * restrict * restrict const vflotabptr) /*+ Pointer to fixed ver
                      &hashtab,    (size_t) (hashsiz             * sizeof (KgraphMapRbVflo)), /* Use fixed vertex load slots as hash slots */
                      &orgparttax, (size_t) (orggrafptr->vertnbr * sizeof (GraphPart)), NULL) == NULL) {
     errorPrint ("kgraphMapRbVfloBuild: out of memory");
-    return     (1);
+    return (1);
   }
   orgparttax -= orggrafptr->baseval;
 
@@ -280,7 +287,7 @@ KgraphMapRbVflo * restrict * restrict const vflotabptr) /*+ Pointer to fixed ver
   if (graphInducePart (orggrafptr, orgparttax, orggrafptr->vertnbr - orgvfixnbr, 0, indgrafptr) != 0) { /* Keep non-fixed vertices in induced graph */
     errorPrint ("kgraphMapRbVfloBuild: cannot build induced subgraph");
     memFree    (hashtab);
-    return     (1);
+    return (1);
   }
 
   if (velomsk == 0) {                             /* If all fixed vertex loads are zero */
@@ -466,7 +473,7 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
 
   if ((hashtab = memAlloc (hashsiz * sizeof (KgraphMapRbVfloHash))) == NULL) { /* Use fixed vertex load slots as hash slots */
     errorPrint ("kgraphMapRbVfloMerge: out of memory (1)");
-    return     (1);
+    return (1);
   }
   memSet (hashtab, ~0, hashsiz * sizeof (KgraphMapRbVfloHash)); /* Set all vertex numbers to ~0 */
 
@@ -493,7 +500,7 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
 #ifdef SCOTCH_DEBUG_KGRAPH2
       if (mappptr->parttax[vertnum] < 0) {        /* If vertex has not been mapped */
         errorPrint ("kgraphMapRbVfloMerge: internal error (1)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
       continue;                                   /* Skip to next vertex */
@@ -502,7 +509,7 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
 #ifdef SCOTCH_DEBUG_KGRAPH2
     if (mappptr->parttax[vertnum] >= 0) {         /* If fixed vertex has been mapped */
       errorPrint ("kgraphMapRbVfloMerge: internal error (2)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
@@ -513,7 +520,7 @@ const Anum                  vflonbr)              /*+ Number of fixed vertex loa
         if (domnnum >= mappptr->domnmax) {
           if (mapResize (mappptr, mappptr->domnmax + (mappptr->domnmax >> 2) + 8) != 0) { /* Increase size by 25% */
             errorPrint ("kgraphMapRbVfloMerge: out of memory (2)");
-            return     (1);
+            return (1);
           }
         }
         archDomTerm (archptr, &mappptr->domntab[domnnum], pfixval); /* Add new domain to domain array */
@@ -556,7 +563,8 @@ Bgraph * restrict const                 actgrafptr, /*+ Graph to build          
 const Graph * restrict const            srcgrafptr, /*+ Source graph                  +*/
 const Mapping * restrict const          srcmappptr, /*+ Current mapping               +*/
 const ArchDom * restrict const          domnsubtab, /*+ Array of the two subdomains   +*/
-const Gnum * restrict const             vflowgttab) /*+ Array of vertex weight biases +*/
+const Gnum * restrict const             vflowgttab, /*+ Array of vertex weight biases +*/
+Context * const                         contptr)  /*+ Execution context               +*/
 {
   Gnum                  actvertnum;               /* Number of current active vertex   */
   Gnum                  commloadextn0;            /* External communication load       */
@@ -583,6 +591,7 @@ const Gnum * restrict const             vflowgttab) /*+ Array of vertex weight b
     errorPrint ("kgraphMapRbBgraph: cannot create bipartition graph");
     return     (1);
   }
+  actgrafptr->contptr = contptr;
 
   flagval = KGRAPHMAPRBVEEXNONE;                  /* Assume no processing */
   if ((! archPart (archptr)) && (actvnumtax != NULL))
@@ -597,7 +606,7 @@ const Gnum * restrict const             vflowgttab) /*+ Array of vertex weight b
 
   if ((veextax = (Gnum *) memAlloc (actgrafptr->s.vertnbr * sizeof (Gnum))) == NULL) {
     errorPrint ("kgraphMapRbBgraph: out of memory");
-    return     (1);
+    return (1);
   }
   veextax -= actgrafptr->s.baseval;
 

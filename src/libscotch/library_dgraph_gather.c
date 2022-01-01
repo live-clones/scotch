@@ -1,4 +1,4 @@
-/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 17 jul 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +56,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "graph.h"
 #include "dgraph.h"
 #include "ptscotch.h"
@@ -77,13 +80,14 @@ SCOTCH_dgraphGather (
 const SCOTCH_Dgraph * const dgrfptr,
 SCOTCH_Graph * const        cgrfptr)
 {
-  Dgraph * restrict   srcdgrfptr;
   Gnum                reduloctab[3];
   Gnum                reduglbtab[3];
 
-  srcdgrfptr = (Dgraph *) dgrfptr;
+  Dgraph * restrict const srcdgrfptr = (Dgraph *) CONTEXTOBJECT (dgrfptr);
 
-  if ((cgrfptr != NULL) && (((void *) cgrfptr) != ((void *) dgrfptr))) { /* If centralized graph provided */
+  if ((cgrfptr != NULL) &&                        /* If centralized graph provided */
+      (((void *) cgrfptr) != ((void *) dgrfptr)) &&
+      (((void *) cgrfptr) != ((void *) srcdgrfptr))) {
     reduloctab[0] = 1;                            /* Process is a potential root                          */
     reduloctab[1] = (Gnum) srcdgrfptr->proclocnum;
   }

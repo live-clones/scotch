@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 4.0  : from : 13 oct 2003     **/
 /**                                 to   : 13 oct 2003     **/
+/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -97,6 +99,7 @@ const VmeshSeparateGrParam * restrict const paraptr) /*+ Method parameters    +*
   grafdat.fronnbr     = meshptr->fronnbr;
   grafdat.frontab     = meshptr->frontab;         /* Re-use frontier array */
   grafdat.levlnum     = meshptr->levlnum;
+  grafdat.contptr     = meshptr->contptr;
 
   for (fronnum = 0; fronnum < grafdat.fronnbr; fronnum ++)
     grafdat.frontab[fronnum] -= (meshptr->m.vnodbas - grafdat.s.baseval);

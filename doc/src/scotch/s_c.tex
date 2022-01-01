@@ -11,6 +11,38 @@
 \section{Updates}
 \label{sec-changes}
 
+\subsection{Changes in version 7.0 from version 6.1}
+
+Thread management in \scotch\ is now dynamic. This allows the user to
+control dynamically the number of threads that are used by the
+threaded algorithms of the \libscotch\ library and, consequently, by
+the \scotch\ standalone programs that call them. Users can also
+control concurrency by using \texttt{SCOTCH\_\lbt Context}
+objects. These objects define user-configurable execution contexts, in
+which \libscotch\ library routines can be executed independently from
+others; see Section~\ref{sec-lib-context},
+page~\pageref{sec-lib-context} for further information.
+
+Execution contexts also comprise option values, which dynamically
+determine the behavior of the \scotch\ routines. In previous versions,
+such behavior was controlled at compile-time by flags
+\texttt{COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt SEED} and
+\texttt{SCOTCH\_\lbt DETERMINISTIC}. It is now possible to define
+these flags dynamically, using the relevant option setting routine
+(see Section~\ref{sec-lib-context-option-set-num}).
+\\
+
+Support for CMake has been added.
+\\
+
+A new, faster, pseudo-random number generator has been implemented.
+\\
+
+The y cordinate of the grid geometry files provided by the
+\texttt{gmk\_m*} programs has been set to the ascending order. Use
+option \texttt{-y} to restore the previous behavior of descending
+order.
+
 \subsection{Changes in version 6.1 from version 6.0}
 
 The k-way refinement routine of the module that computes graph

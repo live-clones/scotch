@@ -2,15 +2,15 @@
 %                                  %
 % Titre  : p.tex                   %
 % Sujet  : Manuel de l'utilisateur %
-%          de PT-Scotch 6.1        %
+%          de PT-Scotch 7.0        %
 %          Corps du document       %
 % Auteur : Francois Pellegrini     %
 %                                  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % pdflatex -sPAPERSIZE=a4 p.tex
-% dvips -sPAPERSIZE=a4 p.dvi -o ptscotch_user6.1.ps
-% ps2pdf -sPAPERSIZE=a4 ptscotch_user6.1.ps ptscotch_user6.1.pdf
+% dvips -sPAPERSIZE=a4 p.dvi -o ptscotch_user7.0.ps
+% ps2pdf -sPAPERSIZE=a4 ptscotch_user7.0.ps ptscotch_user7.0.pdf
 
 %% Formatage et pagination.
 
@@ -161,8 +161,8 @@
 
 %% Version du document.
 
-\newcommand{\scotchver}{6.1}
-\newcommand{\scotchversub}{6.1.3}
+\newcommand{\scotchver}{7.0}
+\newcommand{\scotchversub}{7.0.0}
 \newcommand{\scotchcitepuser}{\protect\cite{pell08c}}
 \newcommand{\scotchcitesuser}{\protect\cite{pell08b}}
 
@@ -234,6 +234,9 @@ algorithms. Many thanks to him for the great job!
 \item
 Amaury Jacques improved the development environment and contributed to
 the consistency checking and non-regression testing routines;
+\item
+Selmane Lebdaoui coded the prototype of the threaded version of the
+distributed coarse graph building algorithm;
 \item
 Yves Secretan contributed to the MinGW32 port.
 \end{itemize}

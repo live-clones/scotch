@@ -1,4 +1,4 @@
-/* Copyright 2007-2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 14 apr 2011     **/
 /**              : # Version 6.0  : from : 11 sep 2011     **/
 /**                                 to   : 31 aug 2019     **/
+/**              : # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,7 +112,7 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
   *coarmultptr = NULL;                            /* Let the routine create the multinode array */
   dgraphInit (&coargrafptr->s, finegrafptr->s.proccomm); /* Re-use fine graph communicator      */
   if (dgraphCoarsen (&finegrafptr->s, &coargrafptr->s, coarmultptr, paraptr->passnbr,
-                     paraptr->coarnbr, paraptr->coarrat, foldval) != 0)
+                     paraptr->coarnbr, paraptr->coarrat, foldval, finegrafptr->contptr) != 0)
     return (1);                                   /* Return if coarsening failed */
 
   *coarmultptr -= coargrafptr->s.baseval;         /* Base pointer to multinode array    */
@@ -162,6 +164,7 @@ const BdgraphBipartMlParam * const    paraptr)    /*+ Method parameters         
   coargrafptr->domnwght[0]      = finegrafptr->domnwght[0];
   coargrafptr->domnwght[1]      = finegrafptr->domnwght[1];
   coargrafptr->levlnum          = finegrafptr->levlnum + 1;
+  coargrafptr->contptr          = finegrafptr->contptr;
 
   return (0);
 }

@@ -73,8 +73,7 @@ For instance, the {\tt SCOTCH\_\lbt graph\lbt Init} and
 sections~\ref{sec-lib-func-graphinit}
 and~\ref{sec-lib-func-graphload}, respectively, can
 be called from C by using the following code.
-{\tt
-\begin{verbatim}
+\begin{lstlisting}[style=language-c]
 #include <stdio.h>
 #include "scotch.h"
   ...
@@ -91,8 +90,7 @@ be called from C by using the following code.
     ... /* Error handling */
   }
   ...
-\end{verbatim}
-}
+\end{lstlisting}
 
 Since ``{\tt scotch.h}'' uses several system objects which are
 declared in ``{\tt stdio.h}'', this latter file must be
@@ -144,8 +142,7 @@ For instance, the {\tt SCOTCH\_\lbt graph\lbt Init} and
 sections~\ref{sec-lib-func-graphinit}
 and~\ref{sec-lib-func-graphload}, respectively, can
 be called from Fortran by using the following code.
-{\tt
-\begin{verbatim}
+\begin{lstlisting}[style=language-f]
         INCLUDE "scotchf.h"
         DOUBLEPRECISION GRAFDAT(SCOTCH_GRAPHDIM)
         INTEGER RETVAL
@@ -158,8 +155,7 @@ be called from Fortran by using the following code.
         CLOSE (10)
         IF (RETVAL .NE. 0) THEN
         ...
-\end{verbatim}
-}
+\end{lstlisting}
 
 Although the ``{\tt scotchf.h}'' and ``{\tt ptscotchf.h}'' files may
 look very similar on your system, never mistake them, and always use
@@ -274,6 +270,48 @@ the option configuration values). However, in this case, you will no
 longer be able to link against the service routines of the genuine
 \metis\ v3 library, as they are only available as a 32-bit
 implementation.
+
+\subsubsection{Using multi-threading}
+\label{sec-lib-multithread}
+
+Starting from version \textsc{6.1.0}, thread management in \scotch\ is
+dynamic. This allows the user to control dynamically the number of
+threads that are used by the threaded algorithms of the
+\libscotch\ library. These algorithms are enabled when \scotch\ is
+compiled with the flag ``\texttt{-DSCOTCH\_\lbt PTHREAD}'' set.
+
+Unless explicitly prevented to do so, \libscotch\ library routines
+will detect the number of cores available on the user's system and
+will use as many of them as prescribed at compile time or, if no upper
+threshold was set at that time, all of those which are currently
+available. This behavior can be controlled further by means of the
+shell environment variable
+``\texttt{SCOTCH\_\lbt PTHREAD\_\lbt NUMBER=}$x$'', where $x$ is the
+prescribed maximum number of threads to be used. Setting a thread
+number to $1$ will coerce \scotch\ into using only purely sequential
+algorithms (which may differ in nature from their multi-threaded
+counterparts). Setting the thread number to $-1$ will make
+\scotch\ use all available cores, overriding the value possibly set at
+compile time.
+
+Another way for users to control concurrency is to use
+\texttt{SCOTCH\_\lbt Context} objects (see
+Section~\ref{sec-lib-context}). These objects define user-configurable
+execution contexts, in which \libscotch\ library routines can be
+executed independently from others. They allow the user to prescribe a
+given number of threads, as well as their binding to the available
+cores, or even to capture a pool of existing threads, to make them
+participate in the computation of \libscotch\ library routines. They
+also allow the user to create private pseudo-random generators, so
+that concurrently executing library routines do not interfere with
+each other and produce fully reproducible results.
+
+Thread binding is essential to achieve good performance of
+multi-threaded programs. In \scotch, the only thread binding mechanism
+implemented to date relies on the Linux binding API. Please make sure
+to compile with flag ``\texttt{-DCOMMON\_\lbt PTHREAD\_\lbt
+AFFINITY\_\lbt LINUX}'' set whenever possible, to benefit from these
+features.
 
 \subsection{Data formats}
 
@@ -7354,8 +7392,722 @@ is defined in {\tt lib\lbt scotch\lbt err.a} and is used by the
 standalone programs of the \scotch\ distribution.
 \end{itemize}
 
-\subsection{Miscellaneous routines}
-\label{sec-lib-misc}
+\subsection{Random generator handling}
+\label{sec-lib-random}
+
+In order not to be influenced by the concurrent execution of third-party
+software and/or library routines, the \libscotch\ library embeds its
+own pseudo-random number generator. This generator is used by default
+by all \libscotch\ routines.
+
+When \scotch\ has been compiled with any of the flags {\tt
+COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt SEED} or {\tt SCOTCH\_\lbt
+DETERMINISTIC} set, this random number generator is initialized with
+a prescribed, default seed. In this case, any two runs of the same
+sequence of \libscotch\ routines will yield the same result. The
+first flag will be sufficient when \scotch\ is run on a single thread,
+while he second one is necessary when \scotch\ is run on several
+threads, because multi-threaded versions of the \libscotch\ routines
+may rely by default on non-deterministic algorithms that are not only
+sensitive to the pseudo-random sequence but also to system artifacts
+(see Section~\ref{sec-lib-thread}).
+
+In certain cases, it may be interesting, when running the same
+sequential \scotch\ routine on different processors, to explore
+different solution spaces. The \texttt{SCOTCH\_\lbt random\lbt Proc}
+routine allows the user to set an instance (processor) number that
+will be used to parametrize the random seed, hence providing different
+pseudo-random sequences for each instance number. However, when any of
+the two aforementioned compilation flags have been set, these sequence
+will still be deterministic: two runs of a sequence of
+\libscotch\ routines taking place after a call to \texttt{SCOTCH\_\lbt
+random\lbt Reset} will always yield the same results.
+
+In the case where the user wants to run concurrently
+\libscotch\ routines on different threads or sets of threads,
+determinism cannot be ensured using the global pseudo-random
+generator, because of the non-determinism in the way concurrent
+routines retrieve the values of the pseudo-random sequence. Moreover,
+because the global pseudo-number generator is not protected against
+race conditions, calling it concurrently from several threads may
+yield unpredictable results. Hence, in this case, users should use a
+different \texttt{SCOTCH\_\lbt Context} for each master thread, that
+will contain its own pseudo-random generator (see
+Section~\ref{sec-lib-context}).
+
+\subsubsection{\texttt{SCOTCH\_randomProc}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+void SCOTCH\_randomProc ( & SCOTCH\_Num & procnum)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfrandomproc ( & integer*{\it num} & procnum)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_randomProc} routine sets to \texttt{procnum} the
+internal instance of the \libscotch\ library. This instance number
+influences the random seed that is used to initialize pseudo-random
+number generators.
+
+In order for this instance number to be taken into account as a seed
+for the global pseudo-random generator of the \libscotch\ library,
+\texttt{SCOTCH\_randomProc} must be either called before any other
+library routine, or followed by a call to
+\texttt{SCOTCH\_\lbt random\lbt Reset}. Subsequent calls to
+\texttt{SCOTCH\_\lbt random\lbt Reset} will make use of this number as
+well.
+
+The current value of \texttt{procnum} is copied along with the random
+seed, when the global pseudo-random number generator is cloned into a
+context by routine \texttt{SCOTCH\_\lbt context\lbt Random\lbt Clone}.
+
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_randomReset}}
+\label{sec-lib-random-reset}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+void SCOTCH\_randomReset ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}l}
+scotchfrandomreset ( & )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_randomReset} routine resets the seed of the
+global pseudo-random generator used by default by the routines
+of the \libscotch\ library.
+
+Two consecutive calls to the same \libscotch\ partitioning or ordering
+routines within the same program, separated by a call to
+{\tt SCOTCH\_\lbt random\lbt Reset}, will always yield the same
+results. Moreover, when \scotch\ has been compiled with any of the
+flags {\tt COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt SEED} or
+{\tt SCOTCH\_\lbt DETERMINISTIC} set, any two runs of the same program
+at different times will yield the same result.
+
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_randomSeed}}
+\label{sec-lib-random-seed}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+void SCOTCH\_randomSeed ( & SCOTCH\_Num & seedval)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfrandomseed ( & integer*{\it num} & seedval)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_randomSeed} routine sets to {\tt seedval} the
+seed of the global pseudo-random generator used by default by
+some \scotch\ algorithms. All subsequent calls to {\tt SCOTCH\_\lbt
+random\lbt Reset} will use this value to reset the pseudo-random
+generator. In he case when no random seed is defined by the user, then
+depending whether \scotch\ has been compiled with any of the flags
+{\tt COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt SEED} or {\tt SCOTCH\_\lbt
+DETERMINISTIC} set or not, either the same pseudo-random seed will be
+always used, or a situation-dependent seed will be used,
+respectively.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_randomVal}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+SCOTCH\_Num SCOTCH\_randomVal ( & SCOTCH\_Num & randmax)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfrandomval ( & integer*{\it num} & randmax, \\
+                   & integer*{\it num} & randval)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_randomVal} routine returns a positive integer random
+value from the global pseudo-random generator, in the range
+$[0;\mbox{textsc{randmax}}[$.
+\end{itemize}
+
+\subsection{Context handling routines}
+\label{sec-lib-context}
+
+By default, \scotch\ uses a global pseudo-random number generator and
+takes advantage of as many threads as it can discover on the system,
+using default, compile-time settings. This behavior makes sense when
+only one call to the \libscotch\ is made at a time. However, cases may
+arise where the user wants to perform different tasks on the same
+graph or mesh at the same time, by calling concurrently
+\libscotch\ routines from different sets of threads. This is when
+\texttt{SCOTCH\_\lbt Context} objects are necessary.
+
+A \texttt{SCOTCH\_\lbt Context} is a data structure that encapsulates
+an environment execution for the routines of the
+\libscotch\ library. Essentially, it contains the set of threads that
+will be used for performing computations, a private, independent
+pseudo-random number generator, and a set of flags and option values
+defined at compile-time.
+
+In order to associate a context with a task to be performed, one has
+to bind the context to a \scotch\ object (that is, a graph, a mesh or
+a distributed graph), so as to create a container of the same type as
+the object (that is, a graph, mesh or distributed graph,
+respectively). This dummy object, when passed to the
+\libscotch\ routines, will allow them to retrieve the context
+information as well as a reference to the original object (see
+Figure~\ref{fig-lib-context}). Several contexts can be bound to the
+same \scotch\ object, allowing different \libscotch\ routines to work
+concurrently on it. If the same context is shared by several
+containers, these should never be used concurrently. The original
+object and the context of a container must never be freed before it.
+
+\begin{figure}[hbt]
+\centering\includegraphics[scale=0.47]{s_f_cnt.eps}
+\caption{Dependencies between a context container and its underlying
+  object and context. The context container is always seen as a
+  \scotch\ object of the same type as the original object, for
+  instance a \texttt{SCOTCH\_\protect\lbt Graph} in this example.}
+\label{fig-lib-context}
+\end{figure}
+
+\subsubsection{\texttt{SCOTCH\_contextInit}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextInit ( & SCOTCH\_Context * & contptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextinit ( & doubleprecision (*) & contdat, \\
+                     & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextInit} function initializes a
+\texttt{SCOTCH\_\lbt Context} structure so as to make it suitable for
+future operations. It should be the first function to be called upon
+a \texttt{SCOTCH\_\lbt Context} structure. In the case when the
+context will be used to capture a pool of existing threads, it must be
+called only by the master thread.
+
+When the context data is no longer of use, call function
+\texttt{SCOTCH\_\lbt contextExit} to free its internal structures.
+A context must not be freed before the context containers that are
+created from it.
+
+\progret
+
+\texttt{SCOTCH\_contextInit} returns $0$ if the context structure has
+been successfully initialized, and $1$ else.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextExit}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+void SCOTCH\_contextExit ( & SCOTCH\_Context * & contptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextexit ( & doubleprecision (*) & contdat)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextExit} function frees the contents of a
+\texttt{SCOTCH\_\lbt Context} structure previously initialized by
+\texttt{SCOTCH\_\lbt contextInit}. In particular, it destroys the
+pseudo-random generator embedded in the context, and disposes of its
+threads. If the threads were created within the context, they are
+destroyed; if they were captured from an outside pool of threads (see
+\texttt{SCOTCH\_\lbt context\lbt Import1}), they are released.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextOptionGetNum}}
+\label{sec-lib-context-option-get-num}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextOptionGetNum ( & SCOTCH\_Context * & contptr, \\
+                                  & int               & optinum) \\
+                                  & SCOTCH\_Num *     & optivalptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextoptiongetnum ( & doubleprecision (*) & contdat, \\
+                             & integer             & optinum, \\
+                             & integer*{\it num}   & optival, \\
+                             & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextOptionGetNum} function retrieves, in
+the \texttt{SCOTCH\_\lbt Num} value \texttt{optival} pointed to by
+\texttt{optivalptr}, the current integer context value of index
+\texttt{optinum}. Integer option index values are of the form
+\texttt{SCOTCH\_\lbt OPTIONNUM*}, and range from
+\texttt{0} to (\texttt{SCOTCH\_\lbt OPTIONNUMNBR} - 1),
+inclusive. This allows users to capture in an array of
+\texttt{SCOTCH\_\lbt Num}s the values of relevant integer
+execution options, for the sake of reproducibility.
+
+\progret
+
+\texttt{SCOTCH\_contextOptionGetNum} returns $0$ if the value has been
+properly retrieved, and $1$ in case of an invalid \texttt{optinum}
+index.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextOptionSetNum}}
+\label{sec-lib-context-option-set-num}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextOptionSetNum ( & SCOTCH\_Context * & contptr, \\
+                                  & int               & optinum) \\
+                                  & SCOTCH\_Num       & optival)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextoptionsetnum ( & doubleprecision (*) & contdat, \\
+                             & integer             & optinum, \\
+                             & integer*{\it num}   & optival, \\
+                             & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextOptionSetNum} function sets the integer
+context value of index \texttt{optinum} with the value
+\texttt{optival}.
+
+Available integer option values are the following:
+\begin{itemize}
+\item \texttt{SCOTCH\_\lbt OPTIONNUMDETERMINISTIC}: a value of
+  \texttt{0} induces a non-deterministic behavior (\textit{i.e.},
+  different runs may yield different results), while a value of
+  \texttt{1} induces a deterministic behavior across multiple runs,
+  for any number of threads (yet, for the same number of MPI
+  processes, as data distribution varies across numbers of MPI
+  processes). The initial value of this option at run time is defined
+  by the compilation option \texttt{SCOTCH\_\lbt DETERMINISTIC} (see
+  the \scotch\ installation instructions). A deterministic behavior
+  implies the use of a fixed random seed (see below).
+\item \texttt{SCOTCH\_\lbt OPTIONNUMFIXEDSEED}: a value of
+  \texttt{0} induces that a distinct random seed be selected for each
+  launch of a program using the \libscotch\ library, while a value of
+  \texttt{1} induces that the same, fixed random seed be used at each
+  launch. The initial value of this option at run time is defined by
+  the compilation option \texttt{COMMON\_\lbt RANDOM\_\lbt FIXED\_\lbt
+  SEED} (see the \scotch\ installation instructions).
+\end{itemize}
+
+\progret
+
+\texttt{SCOTCH\_contextOptionSetNum} returns $0$ if the value has
+been properly set, and $1$ on error.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextRandomClone}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextRandomClone ( & SCOTCH\_Context * & contptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextrandomclone ( & doubleprecision (*) & contdat, \\
+                            & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextRandomClone} routine clones into the given
+context the current state of the global pseudo-random generator. It
+allows the user to run concurrently several routines of the
+\libscotch\ library in a reproducibile way, since the cloned
+generators within two different contexts can be parametrized
+independently.
+
+\progret
+
+\texttt{SCOTCH\_contextRandomClone} returns $0$ if the pseudo-random
+generator has been successfully cloned, and $1$ else.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextRandomReset}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+void SCOTCH\_contextRandomReset ( & SCOTCH\_Context * & contptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextrandomreset ( & doubleprecision (*) & contdat)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_contextRandomReset} routine resets the seed of the
+pseudo-random generator used by the given context. This generator may
+either be the default global pseudo-random generator of the
+\libscotch\ library (the routine then performs like
+\texttt{SCOTCH\_\lbt random\lbt Reset}) or a private generator created
+by means of the \texttt{SCOTCH\_\lbt context\lbt Random\lbt Clone}
+function.
+
+Please see the manual page of \texttt{SCOTCH\_\lbt random\lbt Reset},
+page~\pageref{sec-lib-random-reset}, for more information on the
+operations of the pseudo-random generator resetting routines.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextRandomSeed}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+void SCOTCH\_contextRandomSeed ( & SCOTCH\_Context * & contptr, \\
+                                 & SCOTCH\_Num       & seedval)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextrandomseed ( & doubleprecision (*) & contdat, \\
+                           & integer*{\it num}   & seedval)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_contextRandomSeed} routine sets to \texttt{seedval}
+the seed of the pseudo-random generator used by the given
+context. This generator may either be the default global pseudo-random
+generator of the \libscotch\ library (the routine then performs like
+\texttt{SCOTCH\_\lbt random\lbt Seed}) or a private generator created
+by means of the \texttt{SCOTCH\_\lbt context\lbt Random\lbt Clone}
+function.
+
+Please see the manual page of \texttt{SCOTCH\_\lbt random\lbt Seed},
+page~\pageref{sec-lib-random-seed}, for more information on the
+operations of the pseudo-random generator seed setting routines.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextThreadImport1}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextThreadImport1 ( & SCOTCH\_Context * & contptr, \\
+                                   & int               & thrdnbr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextthreadimport1 ( & doubleprecision (*) & contdat, \\
+                              & integer             & thrdnbr, \\
+                              & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextThreadImport1} function initiates the
+capture, into the given context, of an existing pool of threads. It
+must be called only by the master thread, which provides
+\texttt{thrdnbr}, the overall number of threads to be included in the
+context (including the master thread).
+
+See Listing~\ref{list-lib-context-import},
+page~\pageref{list-lib-context-import} for a sample of multi-threaded
+code using \texttt{SCOTCH\_\lbt context\lbt Thread\lbt Import1} and
+\texttt{SCOTCH\_\lbt context\lbt Thread\lbt Import2} to capture a pool
+of existing threads and use it for \libscotch\ computations.
+
+\progret
+
+\texttt{SCOTCH\_contextThreadImport1} returns $0$ if the context
+thread structure has been successfully initialized, and $1$ else.
+\end{itemize}
+
+\begin{lstlisting}[float,style=language-c,label={list-lib-context-import},caption={Sample
+code for capturing a pool of threads and launching multi-threaded
+computations using this pool. All \libscotch\ routines which are
+passed the context graph (instead of the regular graph) will make use
+of the captured threads.}]
+  SCOTCH_Context      contdat;         /* Context data */
+  SCOTCH_Graph        graftab[2];      /* A regular graph and a container graph */
+  ...
+  if (thrdnum == 0) {
+    SCOTCH_graphInit (&graftab[0]); /* Initialize regular graph */
+    SCOTCH_graphLoad (&graftab[0], ...); /* User places data in graph structure */
+    ...
+    SCOTCH_contextInit (&contdat);     /* Initialize context */
+    SCOTCH_contextRandomClone (&condtad); /* Set private random generator */
+    SCOTCH_contextThreadImport1 (&contdat, thrdnbr); /* Give number of threads */
+  }
+  user_thread_barrier (); /* User makes sure there is synchronization across threads here */
+  SCOTCH_contextThreadImport2 (&contdat, thrdnum); /* Every thread gives its rank */
+  ... /* From here, all slave threads are blocked until context is destroyed */
+  if (thrdnum == 0) {
+    SCOTCH_graphInit (&graftab[1]); /* Initialize container graph */
+    SCOTCH_contextBindGraph (&contdat, &graftab[0], &graftab[1]); /* Bind context */
+    ...
+    SCOTCH_graphOrder (&graftab[1], ...); /* Use container graph for multi-threading */
+    ...
+    SCOTCH_graphExit (&graftab[1]); /* Destroy container */
+    SCOTCH_contextExit (&contdat); /* Destroy context; slave threads are released */
+    ...
+    SCOTCH_graphExit (&graftab[0]); /* Destroy regular graph */
+  }
+\end{lstlisting}
+
+\subsubsection{\texttt{SCOTCH\_contextThreadImport2}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextThreadImport2 ( & SCOTCH\_Context * & contptr, \\
+                                   & int               & thrdnum)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextthreadimport2 ( & doubleprecision (*) & contdat, \\
+                              & integer             & thrdnum, \\
+                              & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextThreadImport2} function finalizes the
+capture, into the given context, of an existing pool of threads. It
+must be called by all threads, including the master thread, after the
+latter has returned from \texttt{SCOTCH\_\lbt context\lbt Thread\lbt
+Import1}; hence, some synchronization (e.g., a barrier) must be
+implemented between the two routines, for all threads to wait until
+the master thread has completed setting-up the context structure.
+
+Each thread provides \texttt{thrdnum}, its rank within the thread
+pool; it must be $0$ for the master thread. On success, only the
+master thread returns immediatly from the routine; all slave threads
+are captured within the context and put to sleep. The master thread
+can then bind the context to a \scotch\ object (see
+\texttt{SCOTCH\_\lbt context\lbt Bind\lbt Graph} and
+\texttt{SCOTCH\_\lbt context\lbt Bind\lbt Mesh}), and call
+\libscotch\ routines using the created context container.
+
+When the context is no longer of use, it can be destroyed by the
+master thread by calling \texttt{SCOTCH\_\lbt context\lbt Exit}. All
+slave threads will then return from their call to
+\texttt{SCOTCH\_\lbt context\lbt Thread\lbt Import2}.
+
+See Listing~\ref{list-lib-context-import},
+page~\pageref{list-lib-context-import} for an example of code using
+this routine.
+
+\progret
+
+\texttt{SCOTCH\_contextThreadImport2} returns $1$ to all threads in
+case of an error. Else, it returns $0$ to the master thread
+immediately, and $0$ to the slave threads once the capturing context
+has been destroyed by the master thread.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextThreadSpawn}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextThreadSpawn ( & SCOTCH\_Context * & contptr, \\
+                                 & int               & thrdnbr, \\
+                                 & int *             & coretab)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextthreadspawn ( & doubleprecision (*) & contdat, \\
+                            & integer             & thrdnbr, \\
+                            & integer             & coretab, \\
+                            & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextThreadSpawn} function populates the given
+context \texttt{contptr} with $(\mbox{\texttt{thrdnbr}} - 1)$ slave
+threads which, in addition to the master, calling thread, will enable
+\texttt{thrdnbr} threads to participate in the computation of the
+\libscotch\ routines called using this context.
+
+When \texttt{coretab} is not equal to \texttt{NULL} or
+\texttt{\&thrdnbr}, it represents an array of \texttt{thrdnbr} integer
+values that represent the logical indices of the cores onto which the
+threads will be bound. Valid core indices range from $0$ to the number
+of cores available on the platform, minus one. Core indices above this
+threshold are subject to modulus reduction. A core index of $-1$
+results in the thread not being bound to a specific core (which may be
+detrimental to memory locality if threads are not always executed on
+the same core). The conversion from logical core numbers to physical
+core numbers depends on the platform features selected at compile
+time, e.g., ``\texttt{-DCOMMON\_\lbt PTHREAD\_\lbt AFFINITY\_\lbt
+LINUX}'' (which binds theads to logical cores without accounting
+for hardware locality) or ``\texttt{-DCOMMON\_\lbt PTHREAD\_\lbt
+AFFINITY\_\lbt HWLOC}''. When no affinity module is defined at compile
+time, threads are left unbound.
+
+See Listing~\ref{list-lib-context-spawn},
+page~\pageref{list-lib-context-spawn} for a sample of sequential code
+using \texttt{SCOTCH\_\lbt context\lbt Thread\lbt Spawn} to create a
+thread pool of a prescribed number of threads.
+
+\progret
+
+\texttt{SCOTCH\_contextThreadSpawn} returns $0$ if the context
+thread structure has been successfully initialized, and $1$ else.
+\end{itemize}
+
+\begin{lstlisting}[float,style=language-c,label={list-lib-context-spawn},caption={Sample
+code for running multi-threaded computations using a dedicated
+pool of threads. This code is run by the main thread. All
+\libscotch\ routines which are passed the context graph (instead
+of the regular graph) will make use of the dedicated pool. If
+\libscotch\ routines are called on the regular graph, a local pool
+is created and destroyed for every function call.}]
+  SCOTCH_Context      contdat;         /* Context data */
+  SCOTCH_Graph        graftab[2];      /* A regular graph and a container graph */
+  ...
+  SCOTCH_graphInit (&graftab[0]); /* Initialize regular graph */
+  SCOTCH_graphLoad (&graftab[0], ...); /* User places data in graph structure */
+  ...
+  SCOTCH_contextInit (&contdat); /* Initialize context */
+  SCOTCH_contextThreadSpawn (&contdat, thrdnbr, NULL); /* Set number of threads */
+  ...
+  SCOTCH_graphInit (&graftab[1]); /* Initialize container graph */
+  SCOTCH_contextBindGraph (&contdat, &graftab[0], &graftab[1]); /* Bind context */
+  ...
+  SCOTCH_graphOrder (&graftab[1], ...); /* Use container graph for multi-threading */
+  ...
+  SCOTCH_graphExit (&graftab[1]); /* Destroy container */
+  SCOTCH_contextExit (&contdat); /* Destroy context */
+  ...
+  SCOTCH_graphExit (&graftab[0]); /* Destroy regular graph */
+\end{lstlisting}
+
+\subsubsection{\texttt{SCOTCH\_contextBindGraph}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextBindGraph ( & SCOTCH\_Context * & contptr,    \\
+                               & SCOTCH\_Graph *   & orggrafptr, \\
+                               & SCOTCH\_Graph *   & cntgrafptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextbindgraph ( & doubleprecision (*) & contdat,    \\
+                          & doubleprecision (*) & orggrafdat, \\
+                          & doubleprecision (*) & cntgrafdat, \\
+                          & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextBindGraph} function initializes a context
+container object \texttt{cnt\lbt graf}, with a type compatible with a
+\texttt{SCOTCH\_\lbt Graph} structure, to make it reference both the
+given genuine \texttt{SCOTCH\_\lbt Graph} structure
+\texttt{org\lbt graf} and the \texttt{SCOTCH\_\lbt Context} structure
+\texttt{cont}. The context container can then be used by routines of
+the \libscotch\ library that expect a \texttt{SCOTCH\_\lbt Graph},
+which will take advantage of all the features offered by the given
+context.
+
+When the context container is no longer of use, call function
+\texttt{SCOTCH\_\lbt graph\lbt Exit} to free its internal
+structures. The original graph and the context can then also be freed
+by using the adequate routines.
+
+\progret
+
+\texttt{SCOTCH\_contextBindGraph} returns $0$ if the context container
+graph structure has been successfully initialized, and $1$ else.
+\end{itemize}
+
+\subsubsection{\texttt{SCOTCH\_contextBindMesh}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_contextBindMesh ( & SCOTCH\_Context * & contptr,    \\
+                              & SCOTCH\_Mesh *    & orgmeshptr, \\
+                              & SCOTCH\_Mesh *    & cntmeshptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextBindMesh ( & doubleprecision (*) & contdat,    \\
+                         & doubleprecision (*) & orgmeshdat, \\
+                         & doubleprecision (*) & cntmeshdat, \\
+                         & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_contextBindMesh} function initializes a context
+container object \texttt{cnt\lbt mesh}, with a type compatible with a
+\texttt{SCOTCH\_\lbt Mesh} structure, to make it reference both the
+given genuine \texttt{SCOTCH\_\lbt Mesh} structure
+\texttt{org\lbt mesh} and the \texttt{SCOTCH\_\lbt Context} structure
+\texttt{cont}. The context container can then be used by routines of
+the \libscotch\ library that expect a \texttt{SCOTCH\_\lbt Mesh},
+which will take advantage of all the features offered by the given
+context.
+
+When the context container is no longer of use, call function
+\texttt{SCOTCH\_\lbt graph\lbt Exit} to free its internal
+structures. The original graph and the context can then also be freed
+by using the adequate routines.
+
+\progret
+
+\texttt{SCOTCH\_contextBindMesh} returns $0$ if the context container
+graph structure has been successfully initialized, and $1$ else.
+\end{itemize}
+
+\subsection{Memory management}
+\label{sec-lib-mem}
 
 \subsubsection{{\tt SCOTCH\_memCur}}
 
@@ -7474,6 +8226,9 @@ type of {\tt SCOTCH\_\lbt Idx} is large enough to not overflow. See
 section~\ref{sec-lib-inttypesize} for more information.
 \end{itemize}
 
+\subsection{Miscellaneous routines}
+\label{sec-lib-misc}
+
 \subsubsection{{\tt SCOTCH\_numSizeof}}
 
 \begin{itemize}
@@ -7493,59 +8248,6 @@ The {\tt SCOTCH\_numSizeof} routine returns the size, in bytes, of a
 {\tt SCOTCH\_\lbt Num}. This information is useful to export the
 interface of the {\sc libScotch} to interpreted languages, without
 access to the ``{\tt scotch.h}'' include file.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_randomReset}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}l}
-void SCOTCH\_randomReset ( & void)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}l}
-scotchfrandomreset ( & )
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_randomReset} routine resets the seed of the
-pseudo-random generator used by the graph partitioning routines
-of the \libscotch\ library. Two consecutive calls to
-the same \libscotch\ partitioning or ordering routines, separated
-by a call to {\tt SCOTCH\_\lbt random\lbt Reset}, will always yield
-the same results.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_randomSeed}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_randomSeed ( & SCOTCH\_Num & seedval)
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfrandomseed ( & integer*{\it num} & seedval )
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_randomSeed} routine sets to {\tt seedval} the
-seed of the pseudo-random generator used internally by several
-algorithms of \scotch. All subsequent calls to {\tt SCOTCH\_\lbt
-random\lbt Reset} will use this value to reset the pseudo-random
-generator.
-
-This routine needs only to be used by users willing to evaluate
-the robustness and quality of partitioning algorithms with respect to
-the variability of random seeds. Else, depending whether \scotch\ has
-been compiled with any of the flags {\tt COMMON\_\lbt RANDOM\_\lbt
-FIXED\_\lbt SEED} or {\tt SCOTCH\_\lbt DETERMINISTIC} set or not,
-either the same pseudo-random seed will be always used, or a
-process-dependent seed will be used, respectively.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_version}}

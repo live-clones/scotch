@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 07 aug 2011     **/
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +56,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "dgraph_coarsen.h"
 #include "ptscotch.h"
@@ -84,44 +87,48 @@
 
 int
 SCOTCH_dgraphCoarsen (
-SCOTCH_Dgraph * restrict const  finegrafptr,      /* Fine graph structure to fill      */
+SCOTCH_Dgraph * restrict const  flibgrafptr,      /* Fine graph structure to fill      */
 const SCOTCH_Num                coarnbr,          /* Minimum number of coarse vertices */
 const double                    coarrat,          /* Maximum contraction ratio         */
 const SCOTCH_Num                flagval,          /* Flag value                        */
-SCOTCH_Dgraph * restrict const  coargrafptr,      /* Coarse graph                      */
+SCOTCH_Dgraph * restrict const  clibgrafptr,      /* Coarse graph                      */
 SCOTCH_Num * restrict const     multloctab)       /* Pointer to multinode array        */
 {
   DgraphCoarsenMulti * restrict multlocptr;
-#ifdef SCOTCH_DEBUG_LIBRARY1
+  CONTEXTDECL                  (flibgrafptr);
   int                           o;
 
-  MPI_Comm_compare (((Dgraph * restrict const) coargrafptr)->proccomm,
-                    ((Dgraph * restrict const) finegrafptr)->proccomm, &o);
+  Dgraph * restrict const   coargrafptr = (Dgraph *) CONTEXTOBJECT (clibgrafptr);
+#ifdef SCOTCH_DEBUG_LIBRARY1
+  Dgraph * restrict const   finegrafptr = (Dgraph *) CONTEXTOBJECT (flibgrafptr);
+
+  MPI_Comm_compare (finegrafptr->proccomm, coargrafptr->proccomm, &o);
   if ((o != MPI_IDENT) && (o != MPI_CONGRUENT)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphCoarsen) ": communicators are not congruent");
     return     (3);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-  intRandInit ();                                 /* Check that random number generator is initialized */
+  if (CONTEXTINIT (flibgrafptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_dgraphCoarsen) ": cannot initialize context");
+    return     (1);
+  }
 
   multlocptr = (DgraphCoarsenMulti * restrict) multloctab; /* User-provided multinode array */
-  switch (dgraphCoarsen ((Dgraph * restrict const) finegrafptr, (Dgraph * restrict const) coargrafptr,
-                         &multlocptr, 5, coarnbr, coarrat, (int) flagval)) {
-    case 1 :
-      return (1);
-    case 2 :
-      return (3);
-  }
+  o = dgraphCoarsen (CONTEXTGETOBJECT (flibgrafptr), coargrafptr, &multlocptr,
+                     5, coarnbr, coarrat, (int) flagval, CONTEXTGETDATA (flibgrafptr));
+  if (o >= 2)
+    o = 3;
 
   if (multlocptr != (DgraphCoarsenMulti * restrict) multloctab) { /* If folding occurred */
     if (multlocptr == NULL)
-      return (2);
-
-    memCpy (multloctab, multlocptr,               /* Update array with folded multinode data */
-            ((Dgraph * restrict const) coargrafptr)->vertlocnbr * sizeof (DgraphCoarsenMulti));
-    memFree (multlocptr);                         /* Free allocated folded multinode array */
+      o = 2;
+    else {
+      memCpy  (multloctab, multlocptr, coargrafptr->vertlocnbr * sizeof (DgraphCoarsenMulti)); /* Update array with folded multinode data */
+      memFree (multlocptr);                       /* Free allocated folded multinode array */
+    }
   }
 
-  return (0);
+  CONTEXTEXIT (flibgrafptr);
+  return (o);
 }

@@ -1,4 +1,4 @@
-/* Copyright 2010,2011,2013,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2011,2013,2014,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 13 jul 2010     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 14 sep 2014     **/
+/**                # Version 7.0  : from : 11 jul 2021     **/
+/**                                 to   : 11 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,14 +104,14 @@ const Kgraph * restrict const grafptr)
 
   if (&grafptr->s != grafptr->m.grafptr) {
     errorPrint ("kgraphCheck: invalid mapping graph");
-    return     (1);
+    return (1);
   }
 
   if ((grafptr->m.domnmax <= 0)                 ||
       (grafptr->m.domnnbr > grafptr->m.domnmax) ||
       (grafptr->m.domnnbr > grafptr->s.vertnbr)) {
     errorPrint ("kgraphCheck: invalid number of domains");
-    return     (1);
+    return (1);
   }
 
   if (memAllocGroup ((void **) (void *)
@@ -198,7 +200,7 @@ const Kgraph * restrict const grafptr)
     Gnum                commcut;
 
     partval = parttax[vertnum];
-    tdomnum = archDomNum (&grafptr->a, &grafptr->m.domntab[partval]);
+    tdomnum = archDomNum (grafptr->m.archptr, &grafptr->m.domntab[partval]);
     tdfinum = (grafptr->pfixtax != NULL) ? grafptr->pfixtax[vertnum] : -1;
 
     if ((tdfinum != -1) &&                        /* If it is a fixed vertex */

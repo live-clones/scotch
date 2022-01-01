@@ -2,7 +2,7 @@
 %                                  %
 % Titre  : s.tex                   %
 % Sujet  : Manuel de l'utilisateur %
-%          de Scotch 6.1           %
+%          de Scotch 7.0           %
 %          Corps du document       %
 % Auteur : Francois Pellegrini     %
 %                                  %
@@ -11,26 +11,35 @@
 %% Formatage et pagination.
 
 % pdflatex -sPAPERSIZE=a4 s.tex
-% dvips -sPAPERSIZE=a4 s.dvi -o scotch_user6.1.ps
-% ps2pdf -sPAPERSIZE=a4 scotch_user6.1.ps scotch_user6.1.pdf
+% dvips -sPAPERSIZE=a4 s.dvi -o scotch_user7.0.ps
+% ps2pdf -sPAPERSIZE=a4 scotch_user7.0.ps scotch_user7.0.pdf
 
 \documentclass{article}
 \usepackage{a4}
 \usepackage{url}
 \usepackage[dvips]{graphicx}
-%\documentstyle[11pt,a4,fullpage,epsf]{article}
-%\textwidth      16.0cm
-%\oddsidemargin   -0.5cm
-%\evensidemargin  -0.5cm
-%\marginparwidth  0.0cm
-%\marginparsep    0.0cm
-%\marginparpush   0.0cm
-%\topmargin        0.5cm
-%\headheight      0.0cm
-%\headsep         0.0cm
-%\textheight     25.0cm
-%\footheight      0.0cm
-%\footskip        0.0cm
+\usepackage{courier}
+\usepackage{listings}
+\lstdefinestyle{language-c}
+{
+  language=C,
+  basicstyle=\small\sffamily,
+  numbers=left,
+  numberstyle=\tiny,
+  frame=tlrb,
+  columns=fullflexible,
+  showstringspaces=false
+}
+\lstdefinestyle{language-f}
+{
+  language=Fortran,
+  basicstyle=\small\sffamily,
+  numbers=left,
+  numberstyle=\tiny,
+  frame=tlrb,
+  columns=fullflexible,
+  showstringspaces=false
+}
 
 \sloppy                                          % Gestion des overfull hbox
 \renewcommand{\baselinestretch}{1.05}            % Hauteur lignes x 1.05
@@ -159,8 +168,8 @@
 
 %% Version du document.
 
-\newcommand{\scotchver}{6.1}
-\newcommand{\scotchversub}{6.1.3}
+\newcommand{\scotchver}{7.0}
+\newcommand{\scotchversub}{7.0.0}
 \newcommand{\scotchcitepuser}{\protect\cite{pell08c}}
 \newcommand{\scotchcitesuser}{\protect\cite{pell08b}}
 
@@ -238,8 +247,9 @@ S\'ebastien Fourestier coded the mapping with fixed vertices,
 remapping, and remapping with fixed vertices sequential routines that
 are available since version \textsc{6.0};
 \item
-Marc Fuentes designed the mesh-to-dual-graph routines and extended the
-functional scope of the \metis\ compatibility library;
+Marc Fuentes designed the mesh-to-dual-graph routines, extended the
+functional scope of the \metis\ compatibility library, and coded CMake
+environment files;
 \item
 Jun-Ho Her coded the graph partitioning with overlap routines that
 were introduced in the unpublished \textsc{5.2} release, subsequently
@@ -258,9 +268,8 @@ version \textsc{3.4};
 Florent Pruvost set up the continuous integration environment on
 Inria GitLab;
 \item
-Luca Scarano, visiting Erasmus student from the \textit{Universit\'a
-degli Studi di Bologna}, coded the multilevel graph algorithm
-in \scotch\ \textsc{3.1};
+Luca Scarano coded the multilevel graph algorithm in
+\scotch\ \textsc{3.1};
 \item
 Yves Secretan contributed to the \textsc{MinGW32} port;
 \item

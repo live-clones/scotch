@@ -1,4 +1,4 @@
-/* Copyright 2008,2012,2013,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2012,2013,2019-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 10 oct 2013     **/
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 27 dec 2021     **/
+/**                # Version 7.0  : from : 12 sep 2019     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -157,7 +159,7 @@ DgraphMatchData * restrict const  mateptr)
       if (edgefrenbr > 0) {                       /* If vertex has some free neighbor */
         Gnum                vertgstend;
 
-        edgefrenbr = intRandVal (edgefrenbr);     /* Select one of them randomly */
+        edgefrenbr = contextIntRandVal (mateptr->c.contptr, edgefrenbr); /* Select one of them randomly */
 
         for (edgelocnum = vertloctax[vertlocnum]; ; edgelocnum ++) { /* Loop again on edges */
 #ifdef SCOTCH_DEBUG_DGRAPH2
@@ -271,7 +273,7 @@ DgraphMatchData * restrict const  mateptr)
       if (edgefrenbr > 0) {                       /* If vertex has some free neighbor */
         Gnum                vertgstend;
 
-        edgefrenbr = intRandVal (edgefrenbr);     /* Select one of them randomly */
+        edgefrenbr = contextIntRandVal (mateptr->c.contptr, edgefrenbr); /* Select one of them randomly */
 
         for (edgelocnum = vertloctax[vertlocnum]; ; edgelocnum ++) { /* Loop again on edges */
 #ifdef SCOTCH_DEBUG_DGRAPH2

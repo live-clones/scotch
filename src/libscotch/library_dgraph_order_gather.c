@@ -1,4 +1,4 @@
-/* Copyright 2007,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 04 aug 2007     **/
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
+/**                # Version 7.0  : from : 20 sep 2019     **/
+/**                                 to   : 20 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +56,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "order.h"
 #include "dorder.h"
@@ -96,13 +99,13 @@ SCOTCH_Num * const          treetab)              /*+ Separator tree array      
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-  srcgrafptr = (Dgraph *) grafptr;                /* Use structure as distributed source graph */
+  srcgrafptr = (Dgraph *) CONTEXTOBJECT (grafptr); /* Use structure as distributed source graph */
   libcordptr = (LibOrder *) cordptr;
-  libcordptr->permtab = ((permtab == NULL) || ((void *) permtab == (void *) grafptr)) ? NULL : (Gnum *) permtab;
-  libcordptr->peritab = ((peritab == NULL) || ((void *) peritab == (void *) grafptr)) ? NULL : (Gnum *) peritab;
-  libcordptr->cblkptr = ((cblkptr == NULL) || ((void *) cblkptr == (void *) grafptr)) ? NULL : (Gnum *) cblkptr;
-  libcordptr->rangtab = ((rangtab == NULL) || ((void *) rangtab == (void *) grafptr)) ? NULL : (Gnum *) rangtab;
-  libcordptr->treetab = ((treetab == NULL) || ((void *) treetab == (void *) grafptr)) ? NULL : (Gnum *) treetab;
+  libcordptr->permtab = ((permtab == NULL) || ((void *) permtab == (void *) srcgrafptr)) ? NULL : (Gnum *) permtab;
+  libcordptr->peritab = ((peritab == NULL) || ((void *) peritab == (void *) srcgrafptr)) ? NULL : (Gnum *) peritab;
+  libcordptr->cblkptr = ((cblkptr == NULL) || ((void *) cblkptr == (void *) srcgrafptr)) ? NULL : (Gnum *) cblkptr;
+  libcordptr->rangtab = ((rangtab == NULL) || ((void *) rangtab == (void *) srcgrafptr)) ? NULL : (Gnum *) rangtab;
+  libcordptr->treetab = ((treetab == NULL) || ((void *) treetab == (void *) srcgrafptr)) ? NULL : (Gnum *) treetab;
 
   return (orderInit (&libcordptr->o, srcgrafptr->baseval, srcgrafptr->vertglbnbr, libcordptr->peritab));
 }

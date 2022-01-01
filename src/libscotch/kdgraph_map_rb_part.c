@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 31 aug 2011     **/
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 jul 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,7 +57,7 @@
 **  The defines and includes.
 */
 
-#define KDGRAPH_MAP_RB
+#define KDGRAPH_MAP_RB_PART
 
 #include "module.h"
 #include "common.h"
@@ -104,17 +106,18 @@ const KdgraphMapRbPartData * restrict const dataptr)
   DmappingFrag * restrict   fragptr;
 
   cgrfptr = &grafptr->data.cgrfdat;
-  if (kgraphInit (&kgrfdat, cgrfptr, &mappptr->archdat, &grafptr->domnorg, 0, NULL, NULL, 1, 1, NULL) != 0) {
+  if (kgraphInit (&kgrfdat, cgrfptr, &mappptr->archdat, &grafptr->domnorg, 0, NULL, 1, 1, NULL) != 0) {
     errorPrint ("kdgraphMapRbPartSequ: cannot initialize centralized graph");
-    return     (1);
+    return (1);
   }
   kgrfdat.s.flagval   = (kgrfdat.s.flagval & ~GRAPHBITSUSED) | cgrfptr->flagval; /* Free sequential graph along with mapping data */
   kgrfdat.s.vnumtax   = NULL;                     /* Remove index array if any                                                    */
-  kgrfdat.comploadrat = dataptr->comploadrat;     /* Use ideal load of full graph and not of subgraph                             */
+  kgrfdat.comploadrat = dataptr->comploadrat;     /* Use ideal load of full graph and not that of subgraph                        */
+  kgrfdat.contptr     = dataptr->contptr;
 
   if (kgraphMapSt (&kgrfdat, dataptr->paraptr->stratseq) != 0) { /* Compute sequential mapping */
     kgraphExit (&kgrfdat);
-    return     (1);
+    return (1);
   }
 
   if (((fragptr = memAlloc (sizeof (DmappingFrag))) == NULL) ||
@@ -123,7 +126,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
     if (fragptr != NULL)
       memFree (fragptr);
     kgraphExit (&kgrfdat);
-    return     (1);
+    return (1);
   }
 
   fragptr->vertnbr = cgrfptr->vertnbr;
@@ -160,42 +163,56 @@ const KdgraphMapRbPartData * restrict const dataptr)
 */
 
 static
-void *
+int
 kdgraphMapRbPartFold2 (
-void * const                    dataptr)          /* Pointer to thread data */
+KdgraphMapRbPartThread * const  fldthrdptr)
 {
-  KdgraphMapRbPartThread *          fldthrdptr;   /* Thread input parameters      */
   KdgraphMapRbPartGraph * restrict  fldgrafptr;   /* Pointer to folded graph area */
   Dgraph                            indgrafdat;   /* Induced distributed graph    */
-  void *                            o;
+  int                               o;
 
-  fldthrdptr = (KdgraphMapRbPartThread *) dataptr;
   fldgrafptr = fldthrdptr->fldgrafptr;
 
   if (fldthrdptr->fldprocnbr == 0)                /* If recursion stopped, build mapping of graph part */
-    return ((void *) (intptr_t) kdgraphMapRbAddPart (fldthrdptr->orggrafptr, fldthrdptr->mappptr, fldthrdptr->inddomnptr, fldthrdptr->indvertnbr,
-                                                     fldthrdptr->indparttax + fldthrdptr->orggrafptr->baseval, fldthrdptr->indpartval));
+    return (kdgraphMapRbAddPart (fldthrdptr->orggrafptr, fldthrdptr->mappptr, fldthrdptr->inddomnptr, fldthrdptr->indvertnbr,
+                                 fldthrdptr->indparttax + fldthrdptr->orggrafptr->baseval, fldthrdptr->indpartval));
 
   dgraphInit (&indgrafdat, fldthrdptr->orggrafptr->proccomm); /* Re-use communicator of original graph                          */
   if (dgraphInducePart (fldthrdptr->orggrafptr, fldthrdptr->indparttax, /* Compute unfinished induced subgraph on all processes */
                         fldthrdptr->indvertnbr, fldthrdptr->indpartval, &indgrafdat) != 0)
-    return ((void *) 1);
+    return (1);
 
-  if (fldthrdptr->fldprocnbr > 1) {               /* If subpart has several processes, fold a distributed graph                     */
-    o = (void *) (intptr_t) dgraphFold2 (&indgrafdat, fldthrdptr->fldpartval, /* Fold temporary induced subgraph from all processes */
-                                         &fldgrafptr->data.dgrfdat, fldthrdptr->fldproccomm, NULL, NULL, MPI_INT);
+  if (fldthrdptr->fldprocnbr > 1) {               /* If subpart has several processes, fold a distributed graph */
+    o = dgraphFold2 (&indgrafdat, fldthrdptr->fldpartval, /* Fold temporary induced subgraph from all processes */
+                     &fldgrafptr->data.dgrfdat, fldthrdptr->fldproccomm, NULL, NULL, MPI_INT);
     fldgrafptr->data.dgrfdat.flagval |= DGRAPHFREECOMM; /* Split communicator has to be freed */
   }
   else {                                          /* Create a centralized graph */
     Graph * restrict      fldcgrfptr;
 
-    fldcgrfptr = (fldthrdptr->fldprocnum == 0) ? &fldgrafptr->data.cgrfdat : NULL; /* See if we are the receiver            */
-    o = (void *) (intptr_t) dgraphGather (&indgrafdat, fldcgrfptr); /* Gather centralized subgraph from all other processes */
+    fldcgrfptr = (fldthrdptr->fldprocnum == 0) ? &fldgrafptr->data.cgrfdat : NULL; /* See if we are the receiver */
+    o = dgraphGather (&indgrafdat, fldcgrfptr); /* Gather centralized subgraph from all other processes          */
   }
   dgraphExit (&indgrafdat);                       /* Free temporary induced graph */
 
   return (o);
 }
+
+#ifdef SCOTCH_PTHREAD
+static
+void
+kdgraphMapRbPartFold3 (
+ThreadDescriptor * restrict const       descptr,
+KdgraphMapRbPartThread * restrict const fldthrdtab)
+{
+  const int           thrdnum = threadNum (descptr);
+
+  if (thrdnum < 2) {
+    if (kdgraphMapRbPartFold2 (&fldthrdtab[thrdnum]) != 0)
+      fldthrdtab[thrdnum].orggrafptr = NULL;      /* Indicate an error */
+  }
+}
+#endif /* SCOTCH_PTHREAD */
 
 static
 int
@@ -213,10 +230,6 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   Gnum                    indvertlocmax;          /* Local number of vertices in biggest subgraph */
   Gnum                    indflagtab[2];          /* Array of subjob continuation flags           */
   GraphPart               indpartmax;             /* Induced part having most vertices            */
-#ifdef SCOTCH_PTHREAD
-  Dgraph                  orggrafdat;             /* Structure for copying graph fields except communicator */
-  pthread_t               thrdval;                /* Data of second thread                                  */
-#endif /* SCOTCH_PTHREAD */
   int                       o;
 
   indflagtab[0] =                                 /* Assume both jobs will not continue */
@@ -288,36 +301,33 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
     fldproccol = MPI_UNDEFINED;                   /* Do not create any sub-communicator for it             */
   if (MPI_Comm_split (actgrafptr->s.proccomm, fldproccol, fldprocnum, &fldthrdtab[fldpartval].fldproccomm) != MPI_SUCCESS) { /* Assign folded communicator to proper part */
     errorPrint  ("kdgraphMapRbPartFold: communication error");
-    return      (1);
+    return (1);
   }
   fldthrdtab[fldpartval].fldprocnum      = fldprocnum; /* This will be our rank afterwards  */
   fldthrdtab[fldpartval ^ 1].fldprocnum  = -1;    /* Other part will not be in communicator */
   fldthrdtab[fldpartval ^ 1].fldproccomm = MPI_COMM_NULL;
 
 #ifdef SCOTCH_PTHREAD
-  if ((indflagtab[0] & indflagtab[1]) != 0) {     /* If both subjobs have meaningful things to do in parallel     */
+  if ((contextThreadNbr (actgrafptr->contptr) > 1) &&
+      ((indflagtab[0] & indflagtab[1]) != 0)) {   /* If both subjobs have meaningful things to do in parallel */
+    Dgraph              orggrafdat;               /* Structure for copying graph fields except communicator   */
+
     orggrafdat = actgrafptr->s;                   /* Create a separate graph structure to change its communicator */
     orggrafdat.flagval = (orggrafdat.flagval & ~DGRAPHFREEALL) | DGRAPHFREECOMM;
     fldthrdtab[1].orggrafptr = &orggrafdat;
     MPI_Comm_dup (actgrafptr->s.proccomm, &orggrafdat.proccomm); /* Duplicate communicator to avoid interferences in communications */
 
-    if (pthread_create (&thrdval, NULL, kdgraphMapRbPartFold2, (void *) &fldthrdtab[1]) != 0) /* If could not create thread */
-      o = ((int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence           */
-          ((int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[1]));
-    else {                                        /* Newly created thread is processing subgraph 1, so let's process subgraph 0 */
-      void *                    o2;
+    contextThreadLaunch (actgrafptr->contptr, (ThreadFunc) kdgraphMapRbPartFold3, (void *) fldthrdtab); /* Only threads 0 and 1 will work */
 
-      o = (int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[0]); /* Work on copy with private communicator */
-
-      pthread_join (thrdval, &o2);
-      o |= (int) (intptr_t) o2;
-    }
     MPI_Comm_free (&orggrafdat.proccomm);
+
+    o = ((fldthrdtab[0].orggrafptr == NULL) ||    /* See if an error occured */
+         (fldthrdtab[1].orggrafptr == NULL));
   }
   else
 #endif /* SCOTCH_PTHREAD */
-    o = ((int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence */
-        ((int) (intptr_t) kdgraphMapRbPartFold2 ((void *) &fldthrdtab[1]));
+    o = kdgraphMapRbPartFold2 (&fldthrdtab[0]) || /* Perform inductions in sequence */
+        kdgraphMapRbPartFold2 (&fldthrdtab[1]);
 
   return (o);
 }
@@ -354,16 +364,17 @@ const KdgraphMapRbPartData * restrict const dataptr)
       return (kdgraphMapRbAddOne (&grafptr->data.dgrfdat, mappptr, &grafptr->domnorg)); /* Update mapping and return */
     case 2 :                                      /* On error */
       errorPrint ("kdgraphMapRbPart2: cannot bipartition domain");
-      return     (1);
+      return (1);
   }
 
   if (dgraphGhst (&grafptr->data.dgrfdat) != 0) { /* Compute ghost edge array if not already present, to have vertgstnbr (and procsidtab) */
     errorPrint ("kdgraphMapRbPart2: cannot compute ghost edge array");
-    return     (1);
+    return (1);
   }
 
   o = bdgraphInit (&actgrafdat, &grafptr->data.dgrfdat, NULL, &mappptr->archdat, domnsubtab); /* Create active graph */
   actgrafdat.levlnum = grafptr->levlnum;          /* Initial level of bipartition graph is DRB recursion level       */
+  actgrafdat.contptr = dataptr->contptr;
 
   comploadavg = (double) actgrafdat.s.veloglbsum / (double) archDomWght (&mappptr->archdat, &grafptr->domnorg);
   actgrafdat.compglbload0min = actgrafdat.compglbload0avg -
@@ -375,7 +386,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
 
   if ((o != 0) || (bdgraphBipartSt (&actgrafdat, dataptr->paraptr->stratsep) != 0)) { /* Bipartition edge-separation graph   */
     bdgraphExit (&actgrafdat);
-    return      (1);
+    return (1);
   }
 
   o = kdgraphMapRbPartFold (&actgrafdat, mappptr, domnsubtab, &indgrafdat);
@@ -410,11 +421,12 @@ const KdgraphMapRbParam * restrict const  paraptr)
   datadat.comploadrat = (double) grafptr->s.veloglbsum / (double) archDomWght (&mappptr->mappptr->archdat, &grafptr->m.domnorg);
   datadat.comploadmin = (1.0 - paraptr->kbalval) * datadat.comploadrat;
   datadat.comploadmax = (1.0 + paraptr->kbalval) * datadat.comploadrat;
+  datadat.contptr = grafptr->contptr;
 
   if (grafptr->s.procglbnbr <= 1) {               /* If single process, switch immediately to sequential mode */
     if (dgraphGather (&grafptr->s, &grafdat.data.cgrfdat) != 0) {
       errorPrint ("kdgraphMapRbPart: cannot centralize graph");
-      return     (1);
+      return (1);
     }
     return (kdgraphMapRbPartSequ (&grafdat, mappptr->mappptr, &datadat));
   }

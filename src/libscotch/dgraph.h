@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2015,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2015,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,12 +60,12 @@
 /**                                 to   : 28 dec 2015     **/
 /**                # Version 6.1  : from : 19 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
+/**                # Version 7.0  : from : 03 may 2019     **/
+/**                                 to   : 01 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
 #define DGRAPH_H
-
-#define PTSCOTCH_FOLD_DUP                         /* Activate folding on coarsening */
 
 #ifndef SCOTCH_COMM_PTOP_RAT
 #define SCOTCH_COMM_PTOP_RAT        0.25          /* Percentage under which point-to-point is allowed */
@@ -138,7 +138,7 @@ typedef enum DgraphTag_ {
 
 /*+ The graph flag type. +*/
 
-typedef int DgraphFlag;                           /*+ Graph property flags +*/
+typedef unsigned int DgraphFlag;                  /*+ Graph property flags +*/
 
 /*+ The vertex part type, in compressed form. From graph.h +*/
 
@@ -206,13 +206,14 @@ int                         dgraphBuild4        (Dgraph * const);
 int                         dgraphBuildHcub     (Dgraph * const, const Gnum, const Gnum, const Gnum);
 int                         dgraphBuildGrid3D   (Dgraph * const, const Gnum, const Gnum, const Gnum, const Gnum, const Gnum, const int);
 int                         dgraphCheck         (const Dgraph * const);
+int                         dgraphCompact2      (const Dgraph * const, Gnum * restrict * const, Gnum * restrict * const, Gnum * restrict * const);
 int                         dgraphView          (const Dgraph * const, FILE * const);
 int                         dgraphGhst2         (Dgraph * const, const int);
-int                         dgraphBand          (Dgraph * restrict const, const Gnum, Gnum * restrict const, const GraphPart * restrict const, const Gnum, const Gnum, Gnum, Dgraph * restrict const, Gnum * restrict * const, GraphPart * restrict * const, Gnum * const, Gnum * const, Gnum * const);
+int                         dgraphBand          (Dgraph * restrict const, const Gnum, Gnum * restrict const, const GraphPart * restrict const, const Gnum, const Gnum, Gnum, Dgraph * restrict const, Gnum * restrict * const, GraphPart * restrict * const, Gnum * const, Gnum * const, Gnum * const, Context * restrict const);
 
 int                         dgraphFold          (const Dgraph * restrict const, const int, Dgraph * restrict const, const void * restrict const, void ** restrict const, MPI_Datatype);
 int                         dgraphFold2         (const Dgraph * restrict const, const int, Dgraph * const, MPI_Comm, const void * restrict const, void ** restrict const, MPI_Datatype);
-int                         dgraphFoldDup       (const Dgraph * restrict const, Dgraph * restrict const, void * restrict const, void ** restrict const, MPI_Datatype);
+int                         dgraphFoldDup       (const Dgraph * restrict const, Dgraph * restrict const, void * restrict const, void ** restrict const, MPI_Datatype, Context * restrict const);
 int                         dgraphInduce2       (Dgraph * restrict const, Gnum (*) (Dgraph * restrict const, Dgraph * restrict const, const void * restrict const, Gnum * restrict const), const void * const, const Gnum, Gnum *, Dgraph * restrict const);
 
 int                         dgraphInduceList    (Dgraph * const, const Gnum, const Gnum * const, Dgraph * const);

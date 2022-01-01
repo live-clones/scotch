@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2015,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2015,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 22 may 2018     **/
 /**                # Version 6.1  : from : 28 dec 2021     **/
 /**                                 to   : 28 dec 2021     **/
+/**                # Version 7.0  : from : 14 jan 2020     **/
+/**                                 to   : 14 jan 2020     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,10 +63,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#include "scotch.h"
 #include "ptscotch.h"
-
-void                        _SCOTCHintRandInit  (void);
-SCOTCH_Num                  _SCOTCHintRandVal   (SCOTCH_Num);
 
 /*********************/
 /*                   */
@@ -179,10 +179,10 @@ char *              argv[])
 
   memset (partgsttab, ~0, vertgstnbr * sizeof (SCOTCH_Num));
 
-  _SCOTCHintRandInit ();
-  seedloctab[0] = baseval + _SCOTCHintRandVal (vertlocnbr);
-  seedloctab[1] = baseval + _SCOTCHintRandVal (vertlocnbr);
-  seedloctab[2] = baseval + _SCOTCHintRandVal (vertlocnbr);
+  SCOTCH_randomReset ();
+  seedloctab[0] = baseval + SCOTCH_randomVal (vertlocnbr);
+  seedloctab[1] = baseval + SCOTCH_randomVal (vertlocnbr);
+  seedloctab[2] = baseval + SCOTCH_randomVal (vertlocnbr);
 
   partgsttab[seedloctab[0] - baseval] = 0;
   partgsttab[seedloctab[1] - baseval] = 1;

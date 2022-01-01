@@ -71,6 +71,30 @@ In this case, compare your data formats with the definitions
 given in section~\ref{sec-file}, and use the \texttt{gtst} and \texttt{mtst}
 programs to check the consistency of source graphs and meshes.
 
+\subsection{Using multi-threading}
+\label{sec-prog-multithread}
+
+Starting from version \textsc{6.1.0}, thread management in \scotch\ is
+dynamic. This allows the user to control dynamically the number of
+threads that are used by the threaded algorithms of the
+\libscotch\ library and, consequently, by the \scotch\ standalone
+programs that call them. These algorithms are enabled when \scotch\ is
+compiled with the flag ``\texttt{-DSCOTCH\_\lbt PTHREAD}'' set.
+
+Unless explicitly prevented to do so, \scotch\ standalone programs
+will detect the number of cores available on the user's system and
+will use as many of them as prescribed at compile time or, if no upper
+threshold was set at that time, all of those which are currently
+available. This behavior can be controlled further by means of the
+shell environment variable
+``\texttt{SCOTCH\_\lbt PTHREAD\_\lbt NUMBER=}$x$'', where $x$ is the
+prescribed maximum number of threads to be used. Setting a thread
+number to $1$ will coerce \scotch\ into using only purely sequential
+algorithms (which may differ in nature from their multi-threaded
+counterparts). Setting the thread number to $-1$ will make
+\scotch\ use all available cores, overriding the value possibly set at
+compile time.
+
 \subsection{Using compressed files}
 \label{sec-prog-compressed}
 
@@ -474,6 +498,26 @@ Set the maximum load imbalance ratio to \textit{rat}, which should
 be a value comprised between $0$ and $1$. This option can be used in
 conjunction with option \texttt{-c}, but is incompatible with option
 \texttt{-m}.
+\iteme[\texttt{-C}{\it flags}]
+Tune execution context options according to the given flags. Some of
+these flags are antagonistic, while others can be combined. Default
+values depend on compilation flags \texttt{COMMON\_\lbt RANDOM\_\lbt
+FIXED\_\lbt SEED} and \texttt{SCOTCH\_\lbt DETERMINISTIC}.
+\begin{itemize}
+\iteme[\texttt{d}]
+Enforce a deterministic behavior across multiple runs, even in a
+multi-threaded context. Determinism may slow down execution for some
+multi-threaded algorithms, as determinism requires more
+synchronization across threads. Implies '\texttt{f}'.
+\iteme[\texttt{f}]
+Use a fixed random seed. Suffices to enforce determinism in a
+single-threaded context.
+\iteme[\texttt{r}]
+Use a variable random seed for each run. Opposite of '\texttt{f}'.
+\iteme[\texttt{u}]
+Allow for undeterministic behavior across multiple runs. May result in
+faster execution in a multi-threaded context. Opposite of '\texttt{d}'.
+\end{itemize}
 \iteme[\texttt{-c}{\it flags}]
 Tune the default mapping strategy according to the given preference
 flags. Some of these flags are antagonistic, while others can be
@@ -584,18 +628,18 @@ of their binary representation.
 \\
 
 \noi
-Program \texttt{gmk\_m2} outputs the source file of a bidimensional mesh
+Program \texttt{gmk\_m2} outputs the source file of a bidimensional grid
 with {\it dimX\/} columns and {\it dimY\/} rows. If the \texttt{-t}
-option is set, tori are built instead of meshes. The vertex of
+option is set, tori are built instead of grids. The vertex of
 coordinates $(\mbox{\it posX},\mbox{\it posY\/})$ is labeled
 $\mbox{\it posY} \times \mbox{\it dimX} + \mbox{\it posX}$.
 \\
 
 \noi
-Program \texttt{gmk\_m3} outputs the source file of a tridimensional mesh
+Program \texttt{gmk\_m3} outputs the source file of a tridimensional grid
 with {\it dimZ} layers of {\it dimY\/} rows by {\it dimX\/}
 columns. If the \texttt{-t} option is set, tori are built instead of
-meshes. The vertex of coordinates $(\mbox{\it posX},\mbox{\it
+grids. The vertex of coordinates $(\mbox{\it posX},\mbox{\it
 posY\/})$ is labeled $(\mbox{\it posZ} \times \mbox{\it dimY} +
 \mbox{\it posY}) \times \mbox{\it dimX} + \mbox{\it posX}$.
 \\
@@ -607,17 +651,26 @@ the decimal value of their binary representation.
 
 \progopt
 \begin{itemize}
+\iteme[\texttt{-b}{\it base\_value}]
+Set the base value of the produced graph.
+\iteme[\texttt{-e}]
+Build a 8-neighbor grid rather than a 4-neighbor grid (for \texttt{gmk\_m2} only).
 \iteme[\texttt{-g}{\it output\_geometry\_file}]
 Output graph geometry to file {\it output\_geometry\_file}
-(for \texttt{gmk\_m2} only).
+(for \texttt{gmk\_m}* only).
 As for all other file names, ``\texttt{-}''
 may be used to indicate standard output.
 \iteme[\texttt{-h}]
 Display the program synopsis.
 \iteme[\texttt{-t}]
-Build a torus rather than a mesh (for \texttt{gmk\_m2} only).
+Build a torus rather than a grid (for \texttt{gmk\_m}* only).
 \iteme[\texttt{-V}]
 Print the program version and copyright.
+\iteme[\texttt{-y}]
+Invert the y coordinate in the produced geometry (for \texttt{gmk\_m}*
+only). This may be useful to display 2D grids in the PostScript
+format, using the \texttt{gout} program, since in this case the y axis
+is oriented downwards.
 \end{itemize}
 \end{itemize}
 
@@ -736,6 +789,26 @@ Since the program is devoted to experimental studies, it has many
 optional parameters, used to test various execution modes. Values
 set by default will give best results in most cases.
 \begin{itemize}
+\iteme[\texttt{-C}{\it flags}]
+Tune execution context options according to the given flags. Some of
+these flags are antagonistic, while others can be combined. Default
+values depend on compilation flags \texttt{COMMON\_\lbt RANDOM\_\lbt
+FIXED\_\lbt SEED} and \texttt{SCOTCH\_\lbt DETERMINISTIC}.
+\begin{itemize}
+\iteme[\texttt{d}]
+Enforce a deterministic behavior across multiple runs, even in a
+multi-threaded context. Determinism may slow down execution for some
+multi-threaded algorithms, as determinism requires more
+synchronization across threads. Implies '\texttt{f}'.
+\iteme[\texttt{f}]
+Use a fixed random seed. Suffices to enforce determinism in a
+single-threaded context.
+\iteme[\texttt{r}]
+Use a variable random seed for each run. Opposite of '\texttt{f}'.
+\iteme[\texttt{u}]
+Allow for undeterministic behavior across multiple runs. May result in
+faster execution in a multi-threaded context. Opposite of '\texttt{d}'.
+\end{itemize}
 \iteme[\texttt{-c}{\it flags}]
 Tune the default ordering strategy according to the given preference
 flags. Some of these flags are antagonistic, while others can be

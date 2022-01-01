@@ -1,4 +1,4 @@
-/* Copyright 2008,2009,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2009,2012,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 03 apr 2012     **/
 /**                # Version 6.1  : from : 27 dec 2021     **/
 /**                                 to   : 27 dec 2021     **/
+/**                # Version 7.0  : from : 22 oct 2021     **/
+/**                                 to   : 22 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,6 +59,7 @@
 
 #include "module.h"
 #include "common.h"
+#include "context.h"
 #include "dgraph.h"
 #include "dgraph_coarsen.h"
 #include "dgraph_match.h"
@@ -90,6 +93,7 @@ DgraphMatchData * restrict const  mateptr)
   int                 procngbidx;
   int                 procngbnum;
   int                 vrcvreqnbr;
+  Gnum                deteval;                    /* Flag set if deterministic behavior */
 
   Dgraph * restrict const             grafptr    = mateptr->c.finegrafptr;
   const int * restrict const          procngbtab = grafptr->procngbtab;
@@ -217,6 +221,8 @@ DgraphMatchData * restrict const  mateptr)
   multlocnbr = mateptr->c.multlocnbr;
   edgekptnbr = mateptr->c.edgekptnbr;
 
+  contextValuesGetInt (mateptr->c.contptr, CONTEXTOPTIONNUMDETERMINISTIC, &deteval);
+
   for (vrcvreqnbr = procngbnbr; vrcvreqnbr > 0; vrcvreqnbr --) { /* For all pending receive requests */
     int                 procglbnum;
     int                 procngbnum;
@@ -227,12 +233,13 @@ DgraphMatchData * restrict const  mateptr)
     int                 statsiz;
     int                 o;
 
-#ifdef SCOTCH_DETERMINISTIC
-    procngbnum = vrcvreqnbr - 1;
-    o = MPI_Wait (&mateptr->c.nrcvreqtab[procngbnum], &statdat);
-#else /* SCOTCH_DETERMINISTIC */
-    o = MPI_Waitany (procngbnbr, mateptr->c.nrcvreqtab, &procngbnum, &statdat);
-#endif /* SCOTCH_DETERMINISTIC */
+    if (deteval) {
+      procngbnum = vrcvreqnbr - 1;
+      o = MPI_Wait (&mateptr->c.nrcvreqtab[procngbnum], &statdat);
+    }
+    else
+      o = MPI_Waitany (procngbnbr, mateptr->c.nrcvreqtab, &procngbnum, &statdat);
+
     if ((o != MPI_SUCCESS) ||
         (MPI_Get_count (&statdat, GNUM_MPI, &statsiz) != MPI_SUCCESS)) {
       errorPrint ("dgraphMatchSyncPtop: communication error (4)");
@@ -423,9 +430,9 @@ DgraphMatchData * restrict const  mateptr)
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
   }
 
-#ifdef SCOTCH_DETERMINISTIC
-  vrcvreqnbr = procngbnbr;                        /* For deterministic behavior, consider all neighbors in order, whether communicating or not */
-#endif /* SCOTCH_DETERMINISTIC */
+  if (deteval)
+    vrcvreqnbr = procngbnbr;                      /* For deterministic behavior, consider all neighbors in order, whether communicating or not */
+
   for ( ; vrcvreqnbr > 0; vrcvreqnbr --) {        /* For all pending receive requests */
     int                 vrcvidxnnd;
     int                 vrcvidxnum;
@@ -434,14 +441,15 @@ DgraphMatchData * restrict const  mateptr)
     int                 statsiz;
     int                 o;
 
-#ifdef SCOTCH_DETERMINISTIC
-    procngbnum = vrcvreqnbr - 1;
-    if (mateptr->c.nrcvreqtab[procngbnum] == MPI_REQUEST_NULL) /* If we do not expect this message, skip it */
-      continue;
-    o = MPI_Wait (&mateptr->c.nrcvreqtab[procngbnum], &statdat);
-#else /* SCOTCH_DETERMINISTIC */
-    o = MPI_Waitany (procngbnbr, mateptr->c.nrcvreqtab, &procngbnum, &statdat);
-#endif /* SCOTCH_DETERMINISTIC */
+    if (deteval) {
+      procngbnum = vrcvreqnbr - 1;
+      if (mateptr->c.nrcvreqtab[procngbnum] == MPI_REQUEST_NULL) /* If we do not expect this message, skip it */
+        continue;
+      o = MPI_Wait (&mateptr->c.nrcvreqtab[procngbnum], &statdat);
+    }
+    else
+      o = MPI_Waitany (procngbnbr, mateptr->c.nrcvreqtab, &procngbnum, &statdat);
+
     if ((o != MPI_SUCCESS) ||
         (MPI_Get_count (&statdat, GNUM_MPI, &statsiz) != MPI_SUCCESS)) {
       errorPrint ("dgraphMatchSyncPtop: communication error (9)");

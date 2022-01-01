@@ -1,4 +1,4 @@
-/* Copyright 2016,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 23 aug 2016     **/
 /**                                 to   : 22 may 2018     **/
+/**                # Version 7.0  : from : 13 sep 2019     **/
+/**                                 to   : 13 sep 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -127,13 +129,13 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  intRandInit ();                                 /* Initialize random generator */
+  intRandInit (&intranddat);                      /* Initialize random generator */
 
   nodesiz = 100;
   passnbr = -1;
   switch (argc) {
     case 4 :
-      intRandSeed (MAX (0, atoi (argv[3])));
+      intRandSeed (&intranddat, MAX (0, atoi (argv[3])));
     case 3 :
       passnbr = MAX (1, atoi (argv[2]));
     case 2 :
@@ -157,7 +159,7 @@ char *              argv[])
   nodemax = nodesiz - 1;                          /* Set maximum index */
   nodenbr = 0;                                    /* Array is empty    */
   for (passnum = 0; passnum < passnbr; passnum ++) {
-    switch (intRandVal (6)) {
+    switch (intRandVal (&intranddat, 6)) {
       case 0 :                                    /* Add node */
       case 1 :
       case 2 :                                    /* More additions than deletions on average */
@@ -171,14 +173,14 @@ char *              argv[])
           SCOTCH_errorPrint ("main: invalid node array (1)");
           exit (EXIT_FAILURE);
         }
-        nodetab[nodenum].randval = abs (intRandVal (INTVALMAX));
+        nodetab[nodenum].randval = abs (intRandVal (&intranddat, INTVALMAX));
         fiboHeapAdd (&fibodat, (FiboNode *) &nodetab[nodenum]);
         nodenbr ++;
         break;
       case 3 :                                    /* Remove arbitrary node */
         if (nodenbr <= 0)
           break;
-        nodetmp = intRandVal (nodenbr);
+        nodetmp = intRandVal (&intranddat, nodenbr);
         for (nodenum = 0; ; nodenum ++) {         /* Search for non-empty slot */
           if (nodenum > nodemax) {
             SCOTCH_errorPrint ("main: invalid node array (2)");
@@ -211,7 +213,7 @@ char *              argv[])
       case 5 :                                    /* Decrease value of arbitrary node */
         if (nodenbr <= 0)
           break;
-        nodetmp = intRandVal (nodenbr);
+        nodetmp = intRandVal (&intranddat, nodenbr);
         for (nodenum = 0; ; nodenum ++) {         /* Search for non-empty slot */
           if (nodenum > nodemax) {
             SCOTCH_errorPrint ("main: invalid node array (3)");
@@ -224,7 +226,7 @@ char *              argv[])
         }
         if (nodetab[nodenum].randval <= 0)        /* Cannot decrease smallest value */
           break;
-        randtmp = intRandVal (nodetab[nodenum].randval + 1);
+        randtmp = intRandVal (&intranddat, nodetab[nodenum].randval + 1);
         if (randtmp > nodetab[nodenum].randval)
           break;
         nodetab[nodenum].randval -= randtmp;

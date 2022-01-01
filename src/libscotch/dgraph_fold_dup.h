@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 26 sep 2021     **/
+/**                                 to   : 09 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,24 +54,28 @@
 **  The type and structure definitions.
 */
 
-/*+ This structure holds the data passed to the subgraph building threads. +*/
+/*+ This structure holds the splitting parameters. +*/
 
-typedef struct DgraphFoldDupData_ {
-  const Dgraph *            orggrafptr;           /*+ Pointer to original graph                     +*/
-  Dgraph *                  fldgrafptr;           /*+ Pointer to folded graph                       +*/
-  MPI_Comm                  fldproccomm;          /*+ Communicator to be used in folded graph       +*/
-  int                       partval;              /*+ Part of processes to which to fold            +*/
+typedef struct DgraphFoldDupSplit2_ {
+  const Dgraph *            orggrafptr;           /*+ Pointer to original graph               +*/
+  MPI_Comm                  fldproccomm;          /*+ Communicator to be used in folded graph +*/
+} DgraphFoldDupSplit2;
+
+typedef struct DgraphFoldDupSplit_ {
+  DgraphFoldDupSplit2       splttab[2];           /*+ Array of folded graph data                    +*/
   void *                    orgdataptr;           /*+ Data associated to vertices, e.g. coarmulttab +*/
+  Dgraph *                  fldgrafptr;           /*+ Pointer to folded graph                       +*/
   void *                    flddataptr;           /*+ Data associated to vertices, e.g. coarmulttab +*/
   MPI_Datatype              datatype;             /*+ MPI type of associated information            +*/
-} DgraphFoldDupData;
+  int *                     revaptr;              /*+ Pointer to return value                       +*/
+} DgraphFoldDupSplit;
 
 /*
 **  The function prototypes.
 */
 
 #ifdef DGRAPH_FOLD_DUP
-#ifdef SCOTCH_PTHREAD
-static void *               dgraphFoldDup2      (void *);
-#endif /* SCOTCH_PTHREAD */
+#ifdef SCOTCH_PTHREAD_MPI
+static void                 dgraphFoldDup2      (Context * restrict const, const int, const DgraphFoldDupSplit * const);
+#endif /* SCOTCH_PTHREAD_MPI */
 #endif /* DGRAPH_FOLD_DUP */

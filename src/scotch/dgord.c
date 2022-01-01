@@ -1,4 +1,4 @@
-/* Copyright 2007-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2014,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 14 feb 2011     **/
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 17 apr 2019     **/
+/**                # Version 7.0  : from : 03 sep 2020     **/
+/**                                 to   : 24 oct 2021     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,6 +80,12 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 static const char *         C_usageList[] = {
   "dgord [<input source file> [<output ordering file> [<output log file>]]] <options>",
   "  -b         : Output block ordering data instead of plain ordering data",
+  "  -C<opt>    : Choose execution context options according to one or several of <opt>:",
+  "                 d  : deterministic behavior (even across multiple threads; implies 'f')",
+  "                 f  : fixed random seed",
+  "                 r  : variable random seed",
+  "                 u  : undeterministic behavior (may be faster with several threads)",
+  "                 Default behavior depends on compilation flags",
   "  -c<opt>    : Choose default ordering strategy according to one or several of <opt>:",
   "                 b  : enforce load balance as much as possible",
   "                 q  : privilege quality over speed (default)",
@@ -109,6 +117,8 @@ main (
 int                 argc,
 char *              argv[])
 {
+  SCOTCH_Context      contdat;                    /* Execution context     */
+  SCOTCH_Dgraph       cogrdat;                    /* Context graph binding */
   SCOTCH_Dgraph       grafdat;
   SCOTCH_Dordering    ordedat;
   SCOTCH_Strat        stradat;
@@ -117,30 +127,30 @@ char *              argv[])
   int                 flagval;
   int                 procglbnbr;
   int                 proclocnum;
-  int                 protglbnum;                 /* Root process        */
-  Clock               runtime[2];                 /* Timing variables    */
-  double              reduloctab[12];             /* 3 * (min, max, sum) */
+  int                 protglbnum;                 /* Root process          */
+  Clock               runtime[2];                 /* Timing variables      */
+  double              reduloctab[12];             /* 3 * (min, max, sum)   */
   double              reduglbtab[12];
   MPI_Datatype        redutype;
   MPI_Op              reduop;
   int                 i, j;
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
   int                 thrdlvlreqval;
   int                 thrdlvlproval;
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 
   errorProg ("dgord");
 
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
   thrdlvlreqval = MPI_THREAD_MULTIPLE;
   if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (1)");
   if (thrdlvlreqval > thrdlvlproval)
-    errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
-#else /* SCOTCH_PTHREAD */
+    errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD_MPI");
+#else /* SCOTCH_PTHREAD_MPI */
   if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (2)");
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 
   MPI_Comm_size (MPI_COMM_WORLD, &procglbnbr);    /* Get communicator data */
   MPI_Comm_rank (MPI_COMM_WORLD, &proclocnum);
@@ -156,7 +166,8 @@ char *              argv[])
   flagval = C_FLAGNONE;                           /* Default behavior  */
   straval = 0;                                    /* No strategy flags */
   straptr = NULL;
-  SCOTCH_stratInit (&stradat);
+  SCOTCH_contextInit (&contdat);                  /* Set default context */
+  SCOTCH_stratInit   (&stradat);
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
 
@@ -174,6 +185,9 @@ char *              argv[])
           flagval |= C_FLAGBLOCK;
           break;
         case 'C' :
+          if (SCOTCH_contextOptionParse (&contdat, &argv[i][2]) != 0)
+            errorPrint ("main: invalid context option string");
+          break;
         case 'c' :                                /* Strategy selection parameters */
           for (j = 2; argv[i][j] != '\0'; j ++) {
             switch (argv[i][j]) {
@@ -302,6 +316,8 @@ char *              argv[])
     SCOTCH_stratDgraphOrderBuild (&stradat, straval, (SCOTCH_Num) procglbnbr, 0, 0.2);
   }
 
+  SCOTCH_contextBindDgraph (&contdat, &grafdat, &cogrdat);
+
   clockStop (&runtime[0]);                        /* Get input time */
   clockInit (&runtime[1]);
 
@@ -315,7 +331,7 @@ char *              argv[])
   SCOTCH_dgraphGhst (&grafdat);                   /* Compute it once for good */
 
   SCOTCH_dgraphOrderInit (&grafdat, &ordedat);
-  SCOTCH_dgraphOrderCompute (&grafdat, &ordedat, &stradat);
+  SCOTCH_dgraphOrderCompute (&cogrdat, &ordedat, &stradat);
 
   clockStop (&runtime[1]);                        /* Get ordering time */
 
@@ -404,8 +420,10 @@ char *              argv[])
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end eventual (un)compression tasks */
 
   SCOTCH_dgraphOrderExit (&grafdat, &ordedat);
+  SCOTCH_dgraphExit      (&cogrdat);              /* Destroy context binding first */
   SCOTCH_dgraphExit      (&grafdat);
   SCOTCH_stratExit       (&stradat);
+  SCOTCH_contextExit     (&contdat);
 
   MPI_Finalize ();
 

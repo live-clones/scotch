@@ -44,6 +44,9 @@
 /**                                 to   : 11 nov 2008     **/
 /**                # Version 6.0  : from : 12 sep 2012     **/
 /**                                 to   : 01 may 2019     **/
+/**                # Version 7.0  : from : 27 aug 2019     **/
+/**                                 to   : 27 aug 2019     **/
+/**                                 to   : 28 aug 2019     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,39 +86,53 @@
 */
 
 static
-void *
+int
 hdgraphOrderNdFold2 (
-void * const                    dataptr)          /* Pointer to thread data */
+HdgraphOrderNdData * const  fldthrdptr)           /* Pointer to thread data */
 {
-  HdgraphOrderNdData *            fldthrdptr;     /* Thread input parameters        */
   HdgraphOrderNdGraph * restrict  fldgrafptr;     /* Pointer to folded graph area   */
   Hdgraph                         indgrafdat;     /* Induced distributed halo graph */
-  void *                          o;
+  int                             o;
 
-  fldthrdptr = (HdgraphOrderNdData *) dataptr;
   fldgrafptr = fldthrdptr->fldgrafptr;
 
   if (hdgraphInduceList (fldthrdptr->orggrafptr, fldthrdptr->indlistnbr, /* Compute unfinished induced subgraph on all processes */
                          fldthrdptr->indlisttab, &indgrafdat) != 0)
-    return ((void *) 1);
+    return (1);
 
-  o = ((void *) 0);
+  o = 0;
   if (fldthrdptr->fldprocnbr > 1) {               /* If subpart has several processes, fold a distributed graph  */
     if (hdgraphFold2 (&indgrafdat, fldthrdptr->fldpartval, /* Fold temporary induced subgraph from all processes */
                       &fldgrafptr->data.dgrfdat, fldthrdptr->fldproccomm) != 0)
-      o = ((void *) 1);
+      o = 1;
   }
   else {                                          /* Create a centralized graph */
     Hgraph * restrict         fldcgrfptr;
 
     fldcgrfptr = (fldthrdptr->fldprocnum == 0) ? &fldgrafptr->data.cgrfdat : NULL; /* See if we are the receiver */
     if (hdgraphGather (&indgrafdat, fldcgrfptr) != 0) /* Gather centralized subgraph from all other processes    */
-      o = ((void *) 1);
+      o = 1;
   }
   hdgraphExit (&indgrafdat);                      /* Free temporary induced graph */
 
   return (o);
 }
+
+#ifdef SCOTCH_PTHREAD
+static
+void
+hdgraphOrderNdFold3 (
+ThreadDescriptor * restrict const   descptr,
+HdgraphOrderNdData * restrict const fldthrdtab)
+{
+  const int           thrdnum = threadNum (descptr);
+
+  if (thrdnum < 2) {
+    if (hdgraphOrderNdFold2 (&fldthrdtab[thrdnum]) != 0)
+      fldthrdtab[thrdnum].orggrafptr = NULL;      /* Indicate an error */
+  }
+}
+#endif /* SCOTCH_PTHREAD */
 
 static
 int
@@ -133,10 +150,6 @@ HdgraphOrderNdGraph * restrict const  fldgrafptr)
   int                       fldprocnum;
   int                       fldproccol;
   int                       fldpartval;
-#ifdef SCOTCH_PTHREAD
-  Hdgraph                   orggrafdat;           /* Structure for copying graph fields except communicator */
-  pthread_t                 thrdval;              /* Data of second thread                                  */
-#endif /* SCOTCH_PTHREAD */
   int                       o;
 
 #ifdef SCOTCH_DEBUG_HDGRAPH2
@@ -188,28 +201,28 @@ HdgraphOrderNdGraph * restrict const  fldgrafptr)
   fldthrdtab[1].fldpartval  = 1;
 
 #ifdef SCOTCH_PTHREAD
-  orggrafdat = *orggrafptr;                       /* Create a separate graph structure to change its communicator */
-  fldthrdtab[1].orggrafptr = &orggrafdat;
-  MPI_Comm_dup (orggrafptr->s.proccomm, &orggrafdat.s.proccomm); /* Duplicate communicator to avoid interferences in communications */
+  if (contextThreadNbr (orggrafptr->contptr) > 1) {
+    Hdgraph             orggrafdat;               /* Structure for copying graph fields except communicator */
 
-  if (pthread_create (&thrdval, NULL, hdgraphOrderNdFold2, (void *) &fldthrdtab[1]) != 0) /* If could not create thread */
-    o = ((int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence           */
-        ((int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[1]));
-  else {                                          /* Newly created thread is processing subgraph 1, so let's process subgraph 0 */
-    void *                    o2;
+    orggrafdat = *orggrafptr;                     /* Create a separate graph structure to change its communicator */
+    fldthrdtab[1].orggrafptr = &orggrafdat;
+    MPI_Comm_dup (orggrafptr->s.proccomm, &orggrafdat.s.proccomm); /* Duplicate communicator to avoid interferences in communications */
 
-    o = (int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[0]); /* Work on copy with private communicator */
+    contextThreadLaunch (orggrafptr->contptr, (ThreadFunc) hdgraphOrderNdFold3, (void *) fldthrdtab); /* Only threads 0 and 1 will work */
 
-    pthread_join (thrdval, &o2);
-    o |= (int) (intptr_t) o2;
+    MPI_Comm_free (&orggrafdat.s.proccomm);
+
+    o = ((fldthrdtab[0].orggrafptr == NULL) ||    /* See if an error occured */
+         (fldthrdtab[1].orggrafptr == NULL));
   }
-  MPI_Comm_free (&orggrafdat.s.proccomm);
-#else /* SCOTCH_PTHREAD */
-  fldthrdtab[1].orggrafptr = orggrafptr;
-
-  o = ((int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[0])) || /* Perform inductions in sequence */
-      ((int) (intptr_t) hdgraphOrderNdFold2 ((void *) &fldthrdtab[1]));
+  else
 #endif /* SCOTCH_PTHREAD */
+  {
+    fldthrdtab[1].orggrafptr = orggrafptr;
+
+    o = hdgraphOrderNdFold2 (&fldthrdtab[0]) ||   /* Perform inductions in sequence */
+        hdgraphOrderNdFold2 (&fldthrdtab[1]);
+  }
 
   return (o);
 }
@@ -290,7 +303,8 @@ const HdgraphOrderNdParam * restrict const  paraptr)
 
   vspgrafdat.partgsttax -= vspgrafdat.s.baseval;
   vspgrafdat.levlnum     = grafptr->levlnum;      /* Set level of separation graph as level of halo graph */
-  vdgraphZero (&vspgrafdat);                      /* Set all local vertices to part 0                     */
+  vspgrafdat.contptr     = grafptr->contptr;
+  vdgraphZero (&vspgrafdat);                      /* Set all local vertices to part 0 */
 
   if (vdgraphSeparateSt (&vspgrafdat, paraptr->sepstrat) != 0) /* Separate vertex-separation graph */
     goto abort;
@@ -353,6 +367,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
     indgrafdat2.vhndloctax = indgrafdat2.s.vendloctax;
     indgrafdat2.ehallocnbr = 0;
     indgrafdat2.levlnum    = 0;                   /* Separator graph is at level zero not to be suppressed as an intermediate graph */
+    indgrafdat2.contptr    = grafptr->contptr;
 
     o = hdgraphOrderSt (&indgrafdat2, cblkptr2, paraptr->ordstratsep);
     hdgraphExit   (&indgrafdat2);
