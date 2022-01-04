@@ -31,87 +31,49 @@
 ##
 ############################################################
 ##                                                        ##
-##   AUTHORS    : Cedric LACHAT                           ##
-##                Amaury JACQUES                          ##
+##   AUTHORS    : Marc FUENTES                            ##
 ##                Florent PRUVOST                         ##
-##                Marc FUENTES                            ##
+##                Cedric LACHAT                           ##
+##                Amaury JACQUES                          ##
 ##                                                        ##
 ##   FUNCTION   : Secondary configuration file for CMake  ##
 ##                                                        ##
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     08 jan 2022     ##
+##                                 to     03 feb 2022     ##
 ##                                                        ##
 ############################################################
 
-set_source_files_properties(${GENERATED_INCLUDE_DIR}/scotch.h PROPERTIES GENERATED 1)
+set(SCOTCH_VERSION @SCOTCH_VERSION_LONG@)
 
-################
-#  libEsMUMPS  #
-################
+# Relocatable package
+@PACKAGE_INIT@
 
-# esmumps.h
-add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/esmumps.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library.h ${GENERATED_INCLUDE_DIR}/esmumps.h
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/library.h
-  COMMENT "Copy esmumps.h to include directory")
+set_and_check(@PROJECT_NAME@_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set_and_check(@PROJECT_NAME@_LIBRARY_DIR "@PACKAGE_LIBRARY_INSTALL_DIR@")
 
-add_custom_target(esmumps_h
-  DEPENDS "${GENERATED_INCLUDE_DIR}/esmumps.h")
+check_required_components(@PROJECT_NAME@)
 
-# libEsMUMPS
-set(esmumps_src
-  dof.c
-  esmumps.c
-  graph_graph.c
-  library_esmumps.c
-  library_esmumps_f.c
-  library_esmumps_strats.c
-  order.c
-  order_check.c
-  order_scotch_graph.c
-  symbol.c
-  symbol_check.c
-  symbol_cost.c
-  symbol_fax_graph.c
-  symbol_fax.c)
+# Manage dependencies
+include(CMakeFindDependencyMacro)
+find_dependency(Threads)
+if(@BUILD_PTSCOTCH@)
+  find_dependency(MPI REQUIRED)
+endif()
 
-set(esmumps_headers
-  module.h
-  library.h
-  ${GENERATED_INCLUDE_DIR}/scotch.h
-  ${LIBSCOTCH_INCLUDE_DIR}/common.h
-  graph.h
-  dof.h
-  symbol.h
-  order.h
-  fax.h
-  ${GENERATED_INCLUDE_DIR}/esmumps.h)
-
-add_library(esmumps ${esmumps_src} ${esmumps_headers})
-
-target_include_directories(esmumps PRIVATE
-  $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
-  $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:include>)
-
-target_link_libraries(esmumps PRIVATE scotch)
-add_dependencies(esmumps scotch_h)
-add_executable(main_esmumps main_esmumps.c ${esmumps_header})
-set_target_properties(main_esmumps PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(main_esmumps PRIVATE ${GENERATED_INCLUDE_DIR}/)
-target_link_libraries(main_esmumps PRIVATE esmumps scotch scotcherrexit)
-add_dependencies(main_esmumps scotch_h)
-
-# libEsMUMPS targets install
-install(EXPORT esmumpsTargets
-  FILE esmumpsTargets.cmake
-  NAMESPACE SCOTCH::
-  DESTINATION lib/cmake/scotch)
-
-install(TARGETS esmumps
-  EXPORT esmumpsTargets
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  PUBLIC_HEADER DESTINATION include)
+# Add target files
+include("${CMAKE_CURRENT_LIST_DIR}/scotcherrexitTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/scotcherrTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/scotchTargets.cmake")
+if(@BUILD_PTSCOTCH@)
+  include("${CMAKE_CURRENT_LIST_DIR}/ptscotcherrexitTargets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/ptscotcherrTargets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/ptscotchTargets.cmake")
+endif()
+if(@BUILD_LIBESMUMPS@)
+  include("${CMAKE_CURRENT_LIST_DIR}/esmumpsTargets.cmake")
+endif()
+if(@BUILD_LIBSCOTCHMETIS@)
+  include("${CMAKE_CURRENT_LIST_DIR}/scotchmetisTargets.cmake")
+endif()

@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -31,25 +31,25 @@
 ##
 ############################################################
 ##                                                        ##
-##   AUTHORS    : Cedric LACHAT                           ##
-##                Amaury JACQUES                          ##
+##   AUTHORS    : Marc FUENTES                            ##
 ##                Florent PRUVOST                         ##
-##                Marc FUENTES                            ##
+##                Cedric LACHAT                           ##
+##                Amaury JACQUES                          ##
 ##                                                        ##
 ##   FUNCTION   : Secondary configuration file for CMake  ##
 ##                                                        ##
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     30 dec 2021     ##
+##                                 to     04 feb 2022     ##
 ##                                                        ##
 ############################################################
 
-set_source_files_properties(${CMAKE_BINARY_DIR}/libscotch/scotch.h PROPERTIES GENERATED 1)
+set_source_files_properties(${GENERATED_INCLUDE_DIR}/scotch.h PROPERTIES GENERATED 1)
 
-# Macro to add quickly simple exectubles linked against the libScotch
+# Macro to add quickly simple exectubles linked against the libScotch library
 function(add_scotch_exe)
-  if (ARGC LESS_EQUAL 0)
+  if(ARGC LESS_EQUAL 0)
     message(FATAL_ERROR "Macro add_scotch_exe requires arguments")
   endif()
   set(file_we ${ARGV0})
@@ -61,15 +61,16 @@ function(add_scotch_exe)
   endif()
   add_executable(${file_we}
     ${src_exe}
-    ${CMAKE_SOURCE_DIR}/libscotch/module.h
-    ${CMAKE_BINARY_DIR}/libscotch/scotch.h
-    ${CMAKE_SOURCE_DIR}/libscotch/common.h)
+    ${LIBSCOTCH_INCLUDE_DIR}/module.h
+    ${GENERATED_INCLUDE_DIR}/scotch.h
+    ${LIBSCOTCH_INCLUDE_DIR}/common.h)
   add_dependencies(${file_we} scotch_h)
-  target_include_directories(${file_we} PRIVATE ${CMAKE_BINARY_DIR}/libscotch)
-  if (Threads_FOUND)
+  target_include_directories(${file_we} PRIVATE ${GENERATED_INCLUDE_DIR})
+  target_compile_definitions(${file_we} PUBLIC "SCOTCH_CODENAME=\"${SCOTCH_CODENAME}\"")
+  if(Threads_FOUND)
     target_compile_definitions(${file_we} PUBLIC SCOTCH_PTHREAD COMMON_PTHREAD)
     target_link_libraries(${file_we} PUBLIC Threads::Threads)
-  endif (Threads_FOUND)
+  endif(Threads_FOUND)
   target_link_libraries(${file_we} PUBLIC scotch scotcherrexit)
 endfunction(add_scotch_exe)
 
@@ -107,7 +108,7 @@ foreach(target ${scotch_exe})
   add_scotch_exe(${target})
 endforeach()
 
-# Targets which needs special source list
+# Targets which need special source lists
 add_scotch_exe(gout gout_c.c gout_o.c)
 target_link_libraries(gout PRIVATE m)
 
@@ -115,15 +116,20 @@ target_link_libraries(gout PRIVATE m)
 add_scotch_exe(gpart gmap.c gmap.h)
 target_compile_definitions(gpart PRIVATE SCOTCH_COMPILE_PART)
 
-# Executables linked against libPTScotch
-if (PTSCOTCH)
-  set_source_files_properties(${CMAKE_BINARY_DIR}/libscotch/ptscotch.h PROPERTIES GENERATED 1)
+# Install all Scotch executables
+foreach(target ${scotch_exe})
+  install(TARGETS ${target} RUNTIME DESTINATION bin)
+endforeach()
+
+# Executables linked against the libPTScotch library
+if(BUILD_PTSCOTCH)
+  set_source_files_properties(${GENERATED_INCLUDE_DIR}/ptscotch.h PROPERTIES GENERATED 1)
   function(add_ptscotch_exe)
-    if (ARGC LESS_EQUAL 0)
+    if(ARGC LESS_EQUAL 0)
       message(FATAL_ERROR "Macro add_ptscotch_exe requires arguments")
     endif()
     set(file_we ${ARGV0})
-    if (ARGC GREATER_EQUAL 2)
+    if(ARGC GREATER_EQUAL 2)
       set(src_exe ${ARGV})
       list(REMOVE_AT src_exe 0)
     elseif(ARGC EQUAL 1)
@@ -131,19 +137,20 @@ if (PTSCOTCH)
     endif()
     add_executable(${file_we}
       ${src_exe}
-      ${CMAKE_SOURCE_DIR}/libscotch/module.h
-      ${CMAKE_SOURCE_DIR}/libscotch/common.h
-      ${CMAKE_BINARY_DIR}/libscotch/ptscotch.h)
+      ${LIBSCOTCH_INCLUDE_DIR}/module.h
+      ${LIBSCOTCH_INCLUDE_DIR}/common.h
+      ${GENERATED_INCLUDE_DIR}/ptscotch.h)
     add_dependencies(${file_we} ptscotch_h)
-    if (Threads_FOUND)
+    target_compile_definitions(${file_we} PUBLIC "SCOTCH_CODENAME=\"${SCOTCH_CODENAME}\"")
+    if(Threads_FOUND)
       target_compile_definitions(${file_we} PUBLIC SCOTCH_PTHREAD COMMON_PTHREAD)
       target_link_libraries(${file_we} PUBLIC Threads::Threads)
-    endif (Threads_FOUND)
-    target_include_directories(${file_we} PRIVATE ${CMAKE_BINARY_DIR}/libscotch)
+    endif(Threads_FOUND)
+    target_include_directories(${file_we} PRIVATE ${GENERATED_INCLUDE_DIR})
     target_link_libraries(${file_we} PUBLIC scotch ptscotch ptscotcherrexit)
   endfunction(add_ptscotch_exe)
 
-  set (ptscotch_exe
+  set(ptscotch_exe
     dggath
     dgmap
     dgord
@@ -156,4 +163,8 @@ if (PTSCOTCH)
   endforeach()
   add_ptscotch_exe(dgpart dgmap.c dgmap.h)
   target_compile_definitions(dgpart PRIVATE SCOTCH_COMPILE_PART)
-endif(PTSCOTCH)
+  # Install all PT-Scotch executables
+  foreach(target ${ptscotch_exe})
+     install(TARGETS ${target} RUNTIME DESTINATION bin)
+  endforeach()
+ endif(BUILD_PTSCOTCH)

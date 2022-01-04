@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     30 dec 2021     ##
+##                                 to     08 jan 2022     ##
 ##                                                        ##
 ############################################################
 
@@ -49,18 +49,28 @@
 #  libScotchMeTiS  #
 ####################
 
-set_source_files_properties(${CMAKE_BINARY_DIR}/libscotch/scotch.h PROPERTIES GENERATED 1)
-set_source_files_properties(${CMAKE_BINARY_DIR}/libscotchmetis/metis.h PROPERTIES GENERATED 1)
+set_source_files_properties(${GENERATED_INCLUDE_DIR}/scotch.h PROPERTIES GENERATED 1)
+set_source_files_properties(${GENERATED_INCLUDE_DIR}/metis.h PROPERTIES GENERATED 1)
 
 # metis.h
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/metis.h
+add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/metis.h
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_metis.h ${CMAKE_CURRENT_BINARY_DIR}
-  COMMAND $<TARGET_FILE:dummysizes> library_metis.h metis.h DEPENDS dummysizes
+  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_metis.h ${GENERATED_INCLUDE_DIR}/metis.h DEPENDS dummysizes
   DEPENDS library_metis.h
   COMMENT "Generating metis.h")
 
 add_custom_target(metis_h
-  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/metis.h")
+  DEPENDS "${GENERATED_INCLUDE_DIR}/metis.h")
+
+# metisf.h
+add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/metisf.h
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_metis_f.h ${CMAKE_CURRENT_BINARY_DIR}
+  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_metis_f.h ${GENERATED_INCLUDE_DIR}/metisf.h DEPENDS dummysizes
+  DEPENDS library_metis_f.h
+  COMMENT "Generating metis.h")
+
+add_custom_target(metisf_h
+  DEPENDS "${GENERATED_INCLUDE_DIR}/metisf.h")
 
 # libScotchMeTiS
 foreach(version 3 5)
@@ -71,92 +81,112 @@ foreach(version 3 5)
     metis_graph_part_f.c
     metis_graph_dual.c
     metis_graph_dual_f.c
+    metis_graph_part_dual.c
+    metis_graph_part_dual_f.c
     metis_options.c
     metis_options_f.c
-    ${CMAKE_SOURCE_DIR}/libscotch/module.h
-    ${CMAKE_SOURCE_DIR}/libscotch/common.h
-    ${CMAKE_BINARY_DIR}/libscotch/scotch.h
-    metis.h)
+    ${LIBSCOTCH_INCLUDE_DIR}/module.h
+    ${LIBSCOTCH_INCLUDE_DIR}/common.h
+    ${GENERATED_INCLUDE_DIR}/scotch.h
+    ${GENERATED_INCLUDE_DIR}/metis.h
+    ${GENERATED_INCLUDE_DIR}/metisf.h)
 
   target_compile_definitions(scotchmetisv${version} PUBLIC SCOTCH_METIS_VERSION=${version})
 
-  target_include_directories(scotchmetisv${version}  PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libscotch>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/libscotch>
+  target_include_directories(scotchmetisv${version} PRIVATE
+    $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:include>)
+
   target_link_libraries(scotchmetisv${version} PRIVATE scotch)
 
-  add_dependencies(scotchmetisv${version} scotch_h)
-
-  set_target_properties(scotchmetisv${version} PROPERTIES PUBLIC_HEADER "${CMAKE_CURRENT_BINARY_DIR}/metis.h")
+  add_dependencies(scotchmetisv${version} scotch_h metisf_h)
+  if(INSTALL_METIS_HEADERS)
+    set_target_properties(scotchmetisv${version} PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/metis.h;${GENERATED_INCLUDE_DIR}/metisf.h")
+  endif()
 
   # libScotchMeTiS targets install
   install(EXPORT scotchmetisTargets
     FILE scotchmetisTargets.cmake
     NAMESPACE SCOTCH::
     DESTINATION lib/cmake/scotch)
-
-  install(TARGETS scotchmetisv${version}
-    EXPORT scotchmetisTargets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    PUBLIC_HEADER DESTINATION include)
+  if(INSTALL_METIS_HEADERS)
+    install(TARGETS scotchmetisv${version}
+      EXPORT scotchmetisTargets
+      ARCHIVE DESTINATION lib
+      LIBRARY DESTINATION lib
+      PUBLIC_HEADER DESTINATION include)
+  else()
+    install(TARGETS scotchmetisv${version}
+      EXPORT scotchmetisTargets
+      ARCHIVE DESTINATION lib
+      LIBRARY DESTINATION lib)
+  endif()
 endforeach(version 3 5)
 
 #########################
 #  libPTScotchParMeTiS  #
 #########################
 
-if (PTSCOTCH)
-  set_source_files_properties(${CMAKE_BINARY_DIR}/libscotch/ptscotch.h PROPERTIES GENERATED 1)
+if(BUILD_PTSCOTCH)
+  set_source_files_properties(${GENERATED_INCLUDE_DIR}/ptscotch.h PROPERTIES GENERATED 1)
 
   # parmetis.h
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parmetis.h
+  add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/parmetis.h
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_parmetis.h ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND $<TARGET_FILE:dummysizes> library_parmetis.h parmetis.h DEPENDS dummysizes
-    DEPENDS library_parmetis.h)
+    COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_parmetis.h ${GENERATED_INCLUDE_DIR}/parmetis.h DEPENDS dummysizes
+    DEPENDS library_parmetis.h
+    COMMENT "Generating parmetis.h")
 
   add_custom_target(parmetis_h
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/parmetis.h")
+    DEPENDS "${GENERATED_INCLUDE_DIR}/parmetis.h")
 
   # libPTScotchParMeTiS
-  add_library(ptscotchparmetis
-    parmetis_dgraph_order.c
-    parmetis_dgraph_order_f.c
-    parmetis_dgraph_part.c
-    parmetis_dgraph_part_f.c
-    ${CMAKE_SOURCE_DIR}/libscotch/module.h
-    ${CMAKE_SOURCE_DIR}/libscotch/common.h
-    ${CMAKE_BINARY_DIR}/libscotch/ptscotch.h
-    parmetis.h)
+  foreach(version 3)
+    add_library(ptscotchparmetisv${version}
+      parmetis_dgraph_order.c
+      parmetis_dgraph_order_f.c
+      parmetis_dgraph_part.c
+      parmetis_dgraph_part_f.c
+      ${LIBSCOTCH_INCLUDE_DIR}/module.h
+      ${LIBSCOTCH_INCLUDE_DIR}/common.h
+      ${GENERATED_INCLUDE_DIR}/ptscotch.h
+      ${GENERATED_INCLUDE_DIR}/parmetis.h)
 
-  target_link_libraries(ptscotchparmetis PUBLIC MPI::MPI_C)
+    target_compile_definitions(ptscotchparmetisv${version} PUBLIC SCOTCH_PTSCOTCH SCOTCH_METIS_VERSION=${version})
 
-  target_compile_definitions(ptscotchparmetis PUBLIC SCOTCH_PTSCOTCH)
+    target_include_directories(ptscotchparmetisv${version} PRIVATE
+      $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
+      $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+      $<INSTALL_INTERFACE:include>)
 
-  target_include_directories(ptscotchparmetis PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/libscotch>
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/libscotch>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include>)
+    target_link_libraries(ptscotchparmetisv${version} PRIVATE scotch)
+    target_link_libraries(ptscotchparmetisv${version} PUBLIC MPI::MPI_C)
 
-  target_link_libraries(ptscotchparmetis PRIVATE scotch)
+    add_dependencies(ptscotchparmetisv${version} ptscotch_h)
+    if(INSTALL_METIS_HEADERS)
+      set_target_properties(ptscotchparmetisv${version} PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/parmetis.h")
+    endif()
 
-  add_dependencies(ptscotchparmetis ptscotch_h)
-  set_target_properties(ptscotchparmetis PROPERTIES PUBLIC_HEADER "${CMAKE_CURRENT_BINARY_DIR}/parmetis.h")
+    # libPTScotchParMeTiS targets install
+    install(EXPORT ptscotchparmetisTargets
+      FILE ptscotchparmetisTargets.cmake
+      NAMESPACE SCOTCH::
+      DESTINATION lib/cmake/scotch)
 
-  # libPTScotchParMeTiS targets install
-  install(EXPORT ptscotchparmetisTargets
-    FILE ptscotchparmetisTargets.cmake
-    NAMESPACE SCOTCH::
-    DESTINATION lib/cmake/scotch)
-
-  install(TARGETS ptscotchparmetis
-    EXPORT ptscotchparmetisTargets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    PUBLIC_HEADER DESTINATION include)
-endif(PTSCOTCH)
+    if(INSTALL_METIS_HEADERS)
+      install(TARGETS ptscotchparmetisv${version}
+        EXPORT ptscotchparmetisTargets
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        PUBLIC_HEADER DESTINATION include)
+    else()
+      install(TARGETS ptscotchparmetisv${version}
+        EXPORT ptscotchparmetisTargets
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib)
+    endif()
+  endforeach(version 3)
+endif(BUILD_PTSCOTCH)

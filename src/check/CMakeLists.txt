@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -31,25 +31,30 @@
 ##
 ############################################################
 ##                                                        ##
-##   AUTHORS    : Cedric LACHAT                           ##
-##                Amaury JACQUES                          ##
+##   AUTHORS    : Marc FUENTES                            ##
 ##                Florent PRUVOST                         ##
-##                Marc FUENTES                            ##
+##                Cedric LACHAT                           ##
+##                Amaury JACQUES                          ##
 ##                                                        ##
 ##   FUNCTION   : Secondary configuration file for CMake  ##
 ##                                                        ##
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     30 dec 2021     ##
+##                                 to     08 jan 2022     ##
 ##                                                        ##
 ############################################################
+
+# Set directory aliases
+set(dat ${CMAKE_CURRENT_SOURCE_DIR}/data)
+set(tgt ${PROJECT_SOURCE_DIR}/tgt)
 
 # Macro to add quickly a Scotch test executable
 function(add_test_scotch)
   add_executable(${ARGV0} ${ARGV0}.c)
+  set_target_properties(${ARGV0} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
   target_link_libraries(${ARGV0} scotch scotcherr)
-  if (${ARGC} GREATER_EQUAL 2)
+  if(${ARGC} GREATER_EQUAL 2)
     add_test(NAME ${ARGV0} COMMAND ${ARGV0})
   endif()
 endfunction(add_test_scotch)
@@ -58,9 +63,6 @@ endfunction(add_test_scotch)
 #  Tests of the sequential libraries  #
 #######################################
 
-# Alias for data dir
-set(dat ${CMAKE_CURRENT_SOURCE_DIR}/data)
-
 # test_common_file_compress
 add_test_scotch(test_common_file_compress)
 include(FindUnixCommands)
@@ -68,9 +70,9 @@ foreach(ext "bz2" "gz" "lzma")
   set(cur ${CMAKE_CURRENT_BINARY_DIR})
   set(src_cur ${CMAKE_CURRENT_SOURCE_DIR})
   add_test(NAME test_common_file_compress_${ext} COMMAND ${BASH} -c
-    "${CMAKE_COMMAND} -E copy ${src_cur}/data/bump_b1.grf ${cur}/bump_b1.grf ; \
-     $<TARGET_FILE:test_common_file_compress> ${cur}/bump_b1.grf ${cur}/bump_b1.grf.${ext} ;  \
-     $<TARGET_FILE:test_common_file_compress> ${cur}/bump_b1.grf.${ext} ${cur}/bump_b1.grf; \
+    "${CMAKE_COMMAND} -E copy ${src_cur}/data/bump_b1.grf ${cur}/bump_b1.grf && \
+     $<TARGET_FILE:test_common_file_compress> ${cur}/bump_b1.grf ${cur}/bump_b1.grf.${ext} && \
+     $<TARGET_FILE:test_common_file_compress> ${cur}/bump_b1.grf.${ext} ${cur}/bump_b1.grf && \
      ${CMAKE_COMMAND} -E compare_files ${cur}/bump_b1.grf ${src_cur}/data/bump_b1.grf")
 endforeach()
 
@@ -85,39 +87,44 @@ add_test_scotch(test_common_thread 1)
 # test_fibo
 add_test_scotch(test_fibo 1)
 
-# EsMumps
-if (ESMUMPS)
+# Test EsMumps
+if(BUILD_LIBESMUMPS)
   add_executable(test_libesmumps test_libesmumps.c)
   add_dependencies(test_libesmumps esmumps_h)
-  target_include_directories(test_libesmumps PRIVATE ${CMAKE_BINARY_DIR}/esmumps/)
+  set_target_properties(test_libesmumps PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  target_include_directories(test_libesmumps PRIVATE ${GENERATED_INCLUDE_DIR})
   target_link_libraries(test_libesmumps scotch esmumps scotcherr)
   add_test(NAME test_libesmumps_1 COMMAND $<TARGET_FILE:test_libesmumps> ${dat}/bump.grf)
   add_test(NAME test_libesmumps_2 COMMAND $<TARGET_FILE:test_libesmumps> ${dat}/bump_imbal_32.grf)
-endif(ESMUMPS)
+endif(BUILD_LIBESMUMPS)
 
-# ScotchMetis
-if(SCOTCHMETIS)
+# Test libScotchMeTiS
+if(BUILD_LIBSCOTCHMETIS)
   foreach(version 3 5)
     add_executable(test_libmetisv${version} test_libmetis.c)
+    set_target_properties(test_libmetisv${version} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_compile_definitions(test_libmetisv${version} PRIVATE SCOTCH_METIS_VERSION=${version})
-    target_include_directories(test_libmetisv${version} PRIVATE ${CMAKE_SOURCE_DIR}/libscotchmetis ${CMAKE_BINARY_DIR}/libscotchmetis)
+    target_include_directories(test_libmetisv${version} PRIVATE ${GENERATED_INCLUDE_DIR})
     target_link_libraries(test_libmetisv${version} scotchmetisv${version} scotch scotcherr)
 
     add_test(NAME test_libmetisv${version}_1 COMMAND $<TARGET_FILE:test_libmetisv${version}> ${dat}/bump.grf)
     add_test(NAME test_libmetisv${version}_2 COMMAND $<TARGET_FILE:test_libmetisv${version}> ${dat}/bump_b1.grf)
     add_test(NAME test_libmetisv${version}_3 COMMAND $<TARGET_FILE:test_libmetisv${version}> ${dat}/bump_imbal_32.grf)
 
-    #add_executable(test_libmetis_dualv${version} test_libmetis_dual.c)
-    #target_include_directories(test_libmetis_dualv${version} PRIVATE ${CMAKE_SOURCE_DIR}/libscotchmetis ${CMAKE_BINARY_DIR}/libscotchmetis)
-    #target_link_libraries(test_libmetis_dualv${version} scotchmetisv${version} scotch scotcherr)
-    #add_test(NAME test_libmetis_dualv${version} COMMAND test_libmetis_dualv${version})
-
-    #add_executable(test_metis_dual_f test_metis_dual_f.f90)
-    #target_include_directories(test_metis_dual_f PRIVATE ${CMAKE_SOURCE_DIR}/libscotchmetis ${CMAKE_BINARY_DIR}/libscotchmetis)
-    #target_link_libraries(test_metis_dual_f scotch scotchmetis scotcherr)
-    #add_test(NAME test_metis_dual_f COMMAND test_metis_dual_f)
+    add_executable(test_libmetis_dualv${version} test_libmetis_dual.c)
+    target_compile_definitions(test_libmetis_dualv${version} PRIVATE SCOTCH_METIS_VERSION=${version})
+    target_include_directories(test_libmetis_dualv${version} PRIVATE ${GENERATED_INCLUDE_DIR})
+    target_link_libraries(test_libmetis_dualv${version} scotchmetisv${version} scotch scotcherr)
+    add_test(NAME test_libmetis_dualv${version} COMMAND test_libmetis_dualv${version})
+    if(${CMAKE_Fortran_COMPILER_SUPPORTS_F90}) # Safeguard to avoid x77 compilers
+      add_executable(test_libmetis_dual_f_v${version} test_libmetis_dual_f.f90)
+      target_compile_definitions(test_libmetis_dual_f_v${version} PRIVATE SCOTCH_METIS_VERSION=${version})
+      target_include_directories(test_libmetis_dual_f_v${version} PRIVATE ${GENERATED_INCLUDE_DIR})
+      target_link_libraries(test_libmetis_dual_f_v${version} scotch scotchmetisv${version} scotcherr)
+      add_test(NAME test_libmetis_dual_f_v${version} COMMAND test_libmetis_dual_f_v${version})
+    endif()
   endforeach(version 3 5)
-endif(SCOTCHMETIS)
+endif(BUILD_LIBSCOTCHMETIS)
 
 # test_scotch_arch
 add_test_scotch(test_scotch_arch)
@@ -190,10 +197,11 @@ add_test_scotch(test_strat_seq 1)
 #  Tests of the parallel libraries  #
 #####################################
 
-if(PTSCOTCH)
+if(BUILD_PTSCOTCH)
   # Macro to add quickly a PT-Scotch test executable
   function(add_exec_ptscotch)
     add_executable(${ARGV0} ${ARGV0}.c)
+    set_target_properties(${ARGV0} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(${ARGV0} ptscotch ptscotcherr)
   endfunction(add_exec_ptscotch)
 
@@ -201,7 +209,7 @@ if(PTSCOTCH)
     set(args ${ARGV})
     list(REMOVE_AT args 0) # in place of POP_FRONT which is available only for cmake >3.15
     string(REGEX REPLACE "^(.+)/data/(.+)\\.grf$" "\\2" arg_ext ${args})
-    add_test(NAME ${ARGV0}_${arg_ext} COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 3 ${ARGV0} ${args})
+    add_test(NAME ${ARGV0}_${arg_ext} COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:${ARGV0}> ${args})
   endfunction(add_test_ptscotch)
 
   # test_strat_par
@@ -238,14 +246,14 @@ if(PTSCOTCH)
   add_exec_ptscotch(test_scotch_dgraph_redist)
   add_test_ptscotch(test_scotch_dgraph_redist ${CMAKE_CURRENT_SOURCE_DIR}/data/bump.grf)
   add_test_ptscotch(test_scotch_dgraph_redist ${CMAKE_CURRENT_SOURCE_DIR}/data/bump_b100000.grf)
-endif(PTSCOTCH)
+endif(BUILD_PTSCOTCH)
 
 ######################################
 #  Tests of the sequential programs  #
 ######################################
 
-#check_prog_acpl
-add_test(NAME amk_acpl COMMAND ${BASH} -c "$<TARGET_FILE:amk_m2> 5 12 | $<TARGET_FILE:acpl> | $<TARGET_FILE:atst> ")
+# check_prog_acpl
+add_test(NAME amk_acpl COMMAND ${BASH} -c "$<TARGET_FILE:amk_m2> 5 12 | $<TARGET_FILE:acpl> | $<TARGET_FILE:atst>")
 
 # check_prog_amk
 add_test(NAME amk_ccc COMMAND $<TARGET_FILE:amk_ccc> 5 /dev/null)
@@ -261,19 +269,18 @@ add_test(NAME amk_grf_m16x16_2 COMMAND $<TARGET_FILE:amk_grf> -2 ${dat}/m16x16.g
 add_test(NAME amk_grf_m4x4 COMMAND $<TARGET_FILE:amk_grf> -l${dat}/m4x4_vertlist.txt ${dat}/m4x4.grf /dev/null)
 add_test(NAME amk_grf_m4x4_2 COMMAND $<TARGET_FILE:amk_grf> -l${dat}/m4x4_vertlist.txt -2 ${dat}/m4x4.grf /dev/null)
 
-# Set tgt to target data directory
-get_filename_component(PARENT_DIR ${CMAKE_SOURCE_DIR} DIRECTORY)
-set(tgt ${PARENT_DIR}/tgt) # TODO: is this portable?
-
 # check_prog_atst
 add_test(NAME atst_4x4x4 COMMAND $<TARGET_FILE:atst> ${tgt}/t4x4x4.tgt)
 
 # check_prog_gbase
-add_test(NAME test_gbase_1 COMMAND ${BASH} -c "$<TARGET_FILE:gbase> 1 ${dat}/m4x4.grf m4x4_b1.grf ; \
+add_test(NAME test_gbase_1 COMMAND ${BASH} -c
+  "$<TARGET_FILE:gbase> 1 ${dat}/m4x4.grf m4x4_b1.grf && \
   ${CMAKE_COMMAND} -E compare_files  ${dat}/m4x4_b1.grf m4x4_b1.grf")
-add_test(NAME test_gbase_2 COMMAND ${BASH} -c "$<TARGET_FILE:gbase> 1 ${dat}/m4x4_b1.grf m4x4_b1.grf ; \
+add_test(NAME test_gbase_2 COMMAND ${BASH} -c
+  "$<TARGET_FILE:gbase> 1 ${dat}/m4x4_b1.grf m4x4_b1.grf && \
   ${CMAKE_COMMAND} -E compare_files  ${dat}/m4x4_b1.grf m4x4_b1.grf")
-add_test(NAME test_gbase_3 COMMAND ${BASH} -c "$<TARGET_FILE:gbase> 0 ${dat}/m4x4_b1.grf m4x4.grf ; \
+add_test(NAME test_gbase_3 COMMAND ${BASH} -c
+  "$<TARGET_FILE:gbase> 0 ${dat}/m4x4_b1.grf m4x4.grf && \
   ${CMAKE_COMMAND} -E compare_files  ${dat}/m4x4.grf m4x4.grf")
 
 # check_prog_gmk
@@ -289,53 +296,53 @@ add_test(NAME gmk_ub2 COMMAND ${BASH} -c "$<TARGET_FILE:gmk_ub2> 5 | $<TARGET_FI
 # check_prog_gmk_gmsh
 foreach(msh_arg "5_1" "5_4")
   string(REPLACE "_" " " args ${msh_arg})
-  add_test(NAME gmk_msh_${msh_arg} COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> ${args} ${msh_arg}.msh \
-    && $<TARGET_FILE:gmk_msh> ${msh_arg}.msh ${msh_arg}.grf && $<TARGET_FILE:gtst> ${msh_arg}.grf")
+  add_test(NAME gmk_msh_${msh_arg} COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> ${args} ${msh_arg}.msh && \
+    $<TARGET_FILE:gmk_msh> ${msh_arg}.msh ${msh_arg}.grf && $<TARGET_FILE:gtst> ${msh_arg}.grf")
 endforeach()
-add_test(NAME gmk_msh_3_5_4_3 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m3> 5 4 3 3_5_4_3.msh \
-  && $<TARGET_FILE:gmk_msh> 3_5_4_3.msh 3_5_4_3.grf && $<TARGET_FILE:gtst> 3_5_4_3.grf")
-add_test(NAME gmk_msh_ship001 COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/ship001.msh ship001.grf \
-  && $<TARGET_FILE:gtst> ship001.grf")
+add_test(NAME gmk_msh_3_5_4_3 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m3> 5 4 3 3_5_4_3.msh && \
+  $<TARGET_FILE:gmk_msh> 3_5_4_3.msh 3_5_4_3.grf && $<TARGET_FILE:gtst> 3_5_4_3.grf")
+add_test(NAME gmk_msh_ship001 COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/ship001.msh ship001.grf && \
+  $<TARGET_FILE:gtst> ship001.grf")
 
 foreach(i RANGE 1 2)
-  add_test(NAME gmk_msh_dual_${i} COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/small_55.msh small_55_d${i}.grf -d${i} \
-    &&  ${CMAKE_COMMAND} -E compare_files  ${dat}/small_55_d${i}.grf small_55_d${i}.grf")
+  add_test(NAME gmk_msh_dual_${i} COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/small_55.msh small_55_d${i}.grf -d${i} && \
+    ${CMAKE_COMMAND} -E compare_files  ${dat}/small_55_d${i}.grf small_55_d${i}.grf")
 endforeach()
-add_test(NAME gmk_msh_dual_3 COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/small_55.msh small_55_d3.grf -d3 \
-  &&  ${CMAKE_COMMAND} -E compare_files  ${dat}/small_55_d2.grf small_55_d3.grf")
+add_test(NAME gmk_msh_dual_3 COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/small_55.msh small_55_d3.grf -d3 && \
+  ${CMAKE_COMMAND} -E compare_files  ${dat}/small_55_d2.grf small_55_d3.grf")
 
 # check_prog_mmk
-add_test(NAME mmk_m2_5_1 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> 5 1 m2_5_1.msh \
-  && $<TARGET_FILE:mtst> m2_5_1.msh")
-add_test(NAME mmk_m2_5_4 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> 5 4 m2_5_4.msh \
-  && $<TARGET_FILE:mtst> m2_5_4.msh")
-add_test(NAME mmk_m3_5_4_3 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m3> 5 4 3 m3_5_4_3.msh \
-  && $<TARGET_FILE:mtst> m3_5_4_3.msh")
+add_test(NAME mmk_m2_5_1 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> 5 1 m2_5_1.msh && \
+  $<TARGET_FILE:mtst> m2_5_1.msh")
+add_test(NAME mmk_m2_5_4 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> 5 4 m2_5_4.msh && \
+  $<TARGET_FILE:mtst> m2_5_4.msh")
+add_test(NAME mmk_m3_5_4_3 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m3> 5 4 3 m3_5_4_3.msh && \
+  $<TARGET_FILE:mtst> m3_5_4_3.msh")
 
 # check_prog_mcv
 foreach(msh_arg "5_1" "5_4")
   string(REPLACE "_" " " args ${msh_arg})
-  add_test(NAME mcv_msh_${msh_arg} COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> ${args} m2_${msh_arg}.msh \
-    && $<TARGET_FILE:mcv> m2_${msh_arg}.msh output_m2_${msh_arg}.msh -is -os && \
+  add_test(NAME mcv_msh_${msh_arg} COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> ${args} m2_${msh_arg}.msh && \
+    $<TARGET_FILE:mcv> m2_${msh_arg}.msh output_m2_${msh_arg}.msh -is -os && \
     ${CMAKE_COMMAND} -E compare_files m2_${msh_arg}.msh output_m2_${msh_arg}.msh")
 endforeach()
-add_test(NAME mcv_2_5_4_3 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m3> 5 4 3 m2_5_4_3.msh \
-  && $<TARGET_FILE:mcv> m2_5_4_3.msh output_m2_5_4_3.msh -is -os && \
+add_test(NAME mcv_2_5_4_3 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m3> 5 4 3 m2_5_4_3.msh && \
+  $<TARGET_FILE:mcv> m2_5_4_3.msh output_m2_5_4_3.msh -is -os && \
   ${CMAKE_COMMAND} -E compare_files m2_5_4_3.msh output_m2_5_4_3.msh")
 
 # check_prog_mord
 foreach(msh_arg "5_1" "5_4")
   string(REPLACE "_" " " args ${msh_arg})
-  add_test(NAME mord_${msh_arg} COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> ${args} m2_${msh_arg}.msh \
-    && $<TARGET_FILE:gmk_msh> m2_${msh_arg}.msh m2_${msh_arg}.grf \
-    && $<TARGET_FILE:mord> m2_${msh_arg}.msh  | $<TARGET_FILE:gotst> m2_${msh_arg}.grf")
+  add_test(NAME mord_${msh_arg} COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m2> ${args} m2_${msh_arg}.msh && \
+    $<TARGET_FILE:gmk_msh> m2_${msh_arg}.msh m2_${msh_arg}.grf && \
+    $<TARGET_FILE:mord> m2_${msh_arg}.msh | $<TARGET_FILE:gotst> m2_${msh_arg}.grf")
 endforeach()
-add_test(NAME mord_5_4_3 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m3> 5 4 3 m2_5_4_3.msh \
-  && $<TARGET_FILE:gmk_msh> m2_5_4_3.msh m2_5_4_3.grf && $<TARGET_FILE:mord> m2_5_4_3.msh \
-  | $<TARGET_FILE:gotst> m2_5_4_3.grf")
+add_test(NAME mord_5_4_3 COMMAND ${BASH} -c "$<TARGET_FILE:mmk_m3> 5 4 3 m2_5_4_3.msh && \
+  $<TARGET_FILE:gmk_msh> m2_5_4_3.msh m2_5_4_3.grf && \
+  $<TARGET_FILE:mord> m2_5_4_3.msh | $<TARGET_FILE:gotst> m2_5_4_3.grf")
 
-add_test(NAME mord_ship001 COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/ship001.msh ship001.grf \
-  && $<TARGET_FILE:mord> ${dat}/ship001.msh  | $<TARGET_FILE:gotst> ship001.grf")
+add_test(NAME mord_ship001 COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/ship001.msh ship001.grf && \
+  $<TARGET_FILE:mord> ${dat}/ship001.msh | $<TARGET_FILE:gotst> ship001.grf")
 
 # check_prog_gmap
 add_test(NAME gmap_bump COMMAND $<TARGET_FILE:gmap> ${dat}/bump.grf ${tgt}/h3.tgt bump_h3.map -vmt)
@@ -351,17 +358,17 @@ add_test(NAME gord_ship001 COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/shi
 
 # check_prog_gotst
 foreach(grf bump bump_b1 bump_imbal_32)
-  add_test(NAME gotst_${grf} COMMAND ${BASH} -c "$<TARGET_FILE:gord> ${dat}/${grf}.grf ${grf}.ord -vt \
-    && $<TARGET_FILE:gotst> ${dat}/${grf}.grf ${grf}.ord")
+  add_test(NAME gotst_${grf} COMMAND ${BASH} -c "$<TARGET_FILE:gord> ${dat}/${grf}.grf ${grf}.ord -vt && \
+    $<TARGET_FILE:gotst> ${dat}/${grf}.grf ${grf}.ord")
 endforeach()
 add_test(NAME gotst_ship001 COMMAND ${BASH} -c "$<TARGET_FILE:gmk_msh> ${dat}/ship001.msh ship001.grf && \
   $<TARGET_FILE:gord> ship001.grf ship001.ord -vt && \
   $<TARGET_FILE:gotst> ship001.grf ship001.ord ")
 
 # check_prog_gord_block
-add_test(NAME gord_block_1 COMMAND ${BASH} -c "$<TARGET_FILE:gord> ${dat}/m4x4_b1_ev.grf m4x4_b1.ord '-ob{cmin=3,strat=s}'")
-add_test(NAME gord_block_2 COMMAND ${BASH} -c "$<TARGET_FILE:gord> ${dat}/m4x4_b1_ev.grf m4x4_b1_ev.ord '-ob{cmin=2,strat=s}'")
-add_test(NAME gord_block_3 COMMAND ${BASH} -c "$<TARGET_FILE:gord> ${dat}/m4x4_b1_ev.grf m4x4_b1_ev.ord '-ob{cmin=1,strat=s}'")
+add_test(NAME gord_block_1 COMMAND $<TARGET_FILE:gord> ${dat}/m4x4_b1_ev.grf m4x4_b1.ord '-ob{cmin=3,strat=s}')
+add_test(NAME gord_block_2 COMMAND $<TARGET_FILE:gord> ${dat}/m4x4_b1_ev.grf m4x4_b1_ev.ord '-ob{cmin=2,strat=s}')
+add_test(NAME gord_block_3 COMMAND $<TARGET_FILE:gord> ${dat}/m4x4_b1_ev.grf m4x4_b1_ev.ord '-ob{cmin=1,strat=s}')
 
 # check_prog_gout
 add_test(NAME gout_1 COMMAND ${BASH} -c "$<TARGET_FILE:gpart> 9 ${dat}/bump.grf bump_k9.map -vmt && \
@@ -387,8 +394,7 @@ add_test(NAME gpart_cluster_2 COMMAND ${BASH} -c "$<TARGET_FILE:gpart> -q 1 ${da
 add_test(NAME gpart_overlap_1 COMMAND ${BASH} -c "$<TARGET_FILE:gpart> -o 9 ${dat}/bump.grf bump_part_ovl_9.map -vmt && \
   $<TARGET_FILE:gpart> -o 9 ${dat}/bump_b100000.grf bump_b100000_part_ovl_9.map -vmt && \
   $<TARGET_FILE:gmtst> -o ${dat}/bump_b100000.grf ${tgt}/k9.tgt bump_b100000_part_ovl_9.map ")
-add_test(NAME gpart_overlap_2 COMMAND ${BASH} -c "$<TARGET_FILE:gpart> -o 32 ${dat}/bump_imbal_32.grf  \
-  bump_imbal_32_part_ovl_32.map -vmt && \
+add_test(NAME gpart_overlap_2 COMMAND ${BASH} -c "$<TARGET_FILE:gpart> -o 32 ${dat}/bump_imbal_32.grf bump_imbal_32_part_ovl_32.map -vmt && \
   $<TARGET_FILE:gmtst> ${dat}/bump_imbal_32.grf ${tgt}/k32.tgt bump_imbal_32_part_ovl_32.map")
 add_test(NAME gpart_overlap_3 COMMAND ${BASH} -c "$<TARGET_FILE:gpart> -o 6 ${dat}/bump_imbal_32.grf bump_imbal_32_part_ovl_32_6.map '-me{strat=m{asc=b{width=3,bnd=d{pass=40,dif=1,rem=0}f{move=80,pass=-1,bal=0.01},org=f{move=80,pass=-1,bal=0.01}},low=r{job=t,bal=0.01,map=t,poli=S,sep=(m{asc=b{bnd=f{move=120,pass=-1,bal=0.01,type=b},org=f{move=120,pass=-1,bal=0.01,type=b},width=3},low=h{pass=10}f{move=120,pass=-1,bal=0.01,type=b},vert=120,rat=0.8}|m{asc=b{bnd=f{move=120,pass=-1,bal=0.01,type=b},org=f{move=120,pass=-1,bal=0.01,type=b},width=3},low=h{pass=10}f{move=120,pass=-1,bal=0.01,type=b},vert=120,rat=0.8})},vert=10000,rat=0.8,type=h}}f' -vmt")
 
@@ -402,7 +408,8 @@ add_test(NAME gscat COMMAND $<TARGET_FILE:gscat> 4 ${dat}/small.grf small_%r.grf
 add_test(NAME gtst COMMAND ${BASH} -c "$<TARGET_FILE:gtst> ${dat}/m4x4_b1_ev.grf gtst_ev.txt && \
   $<TARGET_FILE:gtst> ${dat}/m4x4_b1_elv.grf gtst_elv.txt && \
   ${CMAKE_COMMAND} -E compare_files gtst_ev.txt gtst_elv.txt" )
-  #check_prog_full
+
+#check_prog_full
 add_test(NAME prg_full_1 COMMAND $<TARGET_FILE:gord> ${dat}/bump.grf bump_f.ord -vt)
 add_test(NAME prg_full_2 COMMAND $<TARGET_FILE:gpart> 3 ${dat}/bump.grf bump_f.map -vt)
 add_test(NAME prg_full_3 COMMAND $<TARGET_FILE:gpart> -o 3 ${dat}/bump.grf bump_fo.map -vt)
@@ -411,36 +418,36 @@ add_test(NAME prg_full_3 COMMAND $<TARGET_FILE:gpart> -o 3 ${dat}/bump.grf bump_
 #  Tests of the parallel programs  #
 ####################################
 
-if (PTSCOTCH)
+if(BUILD_PTSCOTCH)
   # check_prog_dgord
-  add_test(NAME dgord_1 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgord> ${dat}/bump.grf /dev/null -vt)
-  add_test(NAME dgord_2 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgord> ${dat}/bump_b100000.grf /dev/null -vt)
-  add_test(NAME dgord_3 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgord> ${dat}/small_%r.grf small.ord -vt)
+  add_test(NAME dgord_1 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgord> ${dat}/bump.grf /dev/null -vt)
+  add_test(NAME dgord_2 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgord> ${dat}/bump_b100000.grf /dev/null -vt)
+  add_test(NAME dgord_3 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgord> ${dat}/small_%r.grf small.ord -vt)
 
   # check_prog_dgpart
-  add_test(NAME dgpart_1 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgpart> 9 ${dat}/bump.grf /dev/null -vmt)
-  add_test(NAME dgpart_2 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgpart> 9 ${dat}/bump_b100000.grf /dev/null -vmt)
-  add_test(NAME dgpart_3 COMMAND ${BASH} -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgpart> 50 ${dat}/small_%r.grf /dev/null -vmt")
+  add_test(NAME dgpart_1 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgpart> 9 ${dat}/bump.grf /dev/null -vmt)
+  add_test(NAME dgpart_2 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgpart> 9 ${dat}/bump_b100000.grf /dev/null -vmt)
+  add_test(NAME dgpart_3 COMMAND ${BASH} -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgpart> 50 ${dat}/small_%r.grf /dev/null -vmt")
 
   # check_prog_dgscat-dggath
   add_test(NAME test_dgscat COMMAND
-    ${BASH} -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgscat> \
+    ${BASH} -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgscat> \
       -r1 -c ${dat}/m16x16.grf out_dgscat_%r.grf ; \
-      ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dggath> \
+      ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dggath> \
       -r1 -c out_dgscat_%r.grf out_dggat.grf ; \
       ${CMAKE_COMMAND} -E compare_files  ${dat}/m16x16.grf out_dggat.grf")
 
   add_test(NAME test_dgscat_b1 COMMAND
-    ${BASH} -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgscat> \
+    ${BASH} -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dgscat> \
       -c ${dat}/m16x16_b1.grf out_b1_dgscat_%r.grf ; \
-      ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dggath> \
+      ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:dggath> \
       -c out_b1_dgscat_%r.grf out_b1_ddgat.grf ; \
       ${CMAKE_COMMAND} -E compare_files ${dat}/m16x16_b1.grf out_b1_ddgat.grf")
 
   # check_prog_dgtst
-  add_test(NAME dgtst COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgtst> ${dat}/small_%r.grf)
+  add_test(NAME dgtst COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgtst> ${dat}/small_%r.grf)
 
   # check_prog_dfull
-  add_test(NAME dfull_1 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgord> ${dat}/bump.grf bump_f.ord -vt)
-  add_test(NAME dfull_2 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgpart> 3 ${dat}/bump.grf bump_f.map -vmt)
-endif(PTSCOTCH)
+  add_test(NAME dfull_1 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgord> ${dat}/bump.grf bump_f.ord -vt)
+  add_test(NAME dfull_2 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:dgpart> 3 ${dat}/bump.grf bump_f.map -vmt)
+endif(BUILD_PTSCOTCH)
