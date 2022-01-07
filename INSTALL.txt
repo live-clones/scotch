@@ -300,9 +300,9 @@ available. They are used in several places:
   controlled by the "-DCOMMON_PTHREAD_FILE" flag: if it is set,
   threads will be used, else fork() calls will be performed. For
   systems which do not support the fork() system call, such as the
-  MinGW32 platform, you can set the "-DCOMMON_STUB_FORK" flag, which
+  MinGW32 platform, one can set the "-DCOMMON_STUB_FORK" flag, which
   creates a stub fork() routine which always returns an
-  error. Therefore, without both fork() and threads, you must set the
+  error. Therefore, without both fork() and threads, one must set the
   "-DCOMMON_STUB_FORK" flag without setting "-DCOMMON_PTHREAD_FILE",
   so that compilation will successfully complete; however, in this
   case, compressed graphs shall not be handled in practice;
@@ -389,7 +389,7 @@ the BSD 2-Clause License. These files will not work for Cygwin. This
 is not a problem, as Cygwin provides its own implementation of Posix
 threads.
 
-When Scotch is compiled with "-DSCOTCH_PTHREAD", Scotch makes use, by
+When Scotch is compiled with "-DSCOTCH_PTHREAD", it makes use, by
 default, of all threads available to it on the platform it is running
 on (save for when the "-DSCOTCH_PTHREAD_NUMBER" flag has been used at
 compile time, see above). It is possible to influence this mechanism
