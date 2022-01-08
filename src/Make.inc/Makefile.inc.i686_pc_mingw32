@@ -55,8 +55,11 @@ LDFLAGS	+= -L$(ZLIB_ROOTDIR)/lib -lzdll
 #--- COMMON_PTHREAD: Uncomment for compressed files
 #CFLAGS_DEF	+= -DCOMMON_PTHREAD -DCOMMON_FILE_COMPRESS_GZ
 
-#--- SCOTCH_PTHREAD: Uncomment for threaded MPI
+#--- SCOTCH_PTHREAD: Uncomment for threads (save for MPI)
 #CFLAGS_DEF	+= -DSCOTCH_PTHREAD
+
+#--- SCOTCH_PTHREAD: Uncomment for threaded MPI (with SCOTCH_PTHREAD on)
+#CFLAGS_DEF	+= -DSCOTCH_PTHREAD_MPI
 
 CFLAGS		= $(CFLAGS_CPL) $(CFLAGS_INC) $(CFLAGS_DEF)
 CP		= cp
