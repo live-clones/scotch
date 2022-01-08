@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2012,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2012,2019,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,8 +45,7 @@
 /**                # Version 6.0  : from : 12 sep 2012     **/
 /**                                 to   : 01 may 2019     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 27 aug 2019     **/
-/**                                 to   : 28 aug 2019     **/
+/**                                 to   : 08 jan 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -118,7 +117,7 @@ HdgraphOrderNdData * const  fldthrdptr)           /* Pointer to thread data */
   return (o);
 }
 
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
 static
 void
 hdgraphOrderNdFold3 (
@@ -132,7 +131,7 @@ HdgraphOrderNdData * restrict const fldthrdtab)
       fldthrdtab[thrdnum].orggrafptr = NULL;      /* Indicate an error */
   }
 }
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 
 static
 int
@@ -200,7 +199,7 @@ HdgraphOrderNdGraph * restrict const  fldgrafptr)
   fldthrdtab[1].fldgrafptr  = fldgrafptr;
   fldthrdtab[1].fldpartval  = 1;
 
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
   if (contextThreadNbr (orggrafptr->contptr) > 1) {
     Hdgraph             orggrafdat;               /* Structure for copying graph fields except communicator */
 
@@ -216,7 +215,7 @@ HdgraphOrderNdGraph * restrict const  fldgrafptr)
          (fldthrdtab[1].orggrafptr == NULL));
   }
   else
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
   {
     fldthrdtab[1].orggrafptr = orggrafptr;
 
