@@ -1,4 +1,4 @@
-/* Copyright 2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2019,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 05 jun 2018     **/
-/**                                 to   : 14 aug 2021     **/
+/**                                 to   : 13 jan 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,6 +80,11 @@ typedef struct ThreadContext_ {
   volatile unsigned int         bainnum;          /*+ Number of barrier instance          +*/
   pthread_mutex_t               lockdat;          /*+ Lock for updating status            +*/
   pthread_cond_t                conddat;          /*+ Wakeup condition for slave threads  +*/
+  union {                                         /*+ Context save area for main thread   +*/
+#ifdef COMMON_PTHREAD_AFFINITY_LINUX
+    cpu_set_t                   cpusdat;          /*+ Original thread mask of main thread +*/
+#endif /* COMMON_PTHREAD_AFFINITY_LINUX */
+  }                             savedat;
 #endif /* COMMON_PTHREAD */
 } ThreadContext;
 
@@ -93,7 +98,9 @@ static void                 threadWaitBarrier   (ThreadContext * const);
 static void *               threadWait          (ThreadDescriptor * const);
 
 static int                  threadCreate        (ThreadDescriptor * const, const int, const int);
-static int                  threadProcessCoreNbr (void);
-static int                  threadProcessCoreNum (int);
+static int                  threadProcessCoreNbr (ThreadContext * const);
+static int                  threadProcessCoreNum (ThreadContext * const, int);
+static void                 threadProcessStateRestore (ThreadContext * const);
+static void                 threadProcessStateSave (ThreadContext * const);
 #endif /* COMMON_PTHREAD */
 #endif /* COMMON_THREAD */
