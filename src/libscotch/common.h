@@ -445,7 +445,7 @@ double                      clockGet            (void);
 
 void                        stringSubst         (char * const, const char * const, const char * const);
 
-int                         threadContextInit   (ThreadContext * const, const int, const int * const);
+int                         threadContextInit   (ThreadContext * const, int, const int * const);
 void                        threadContextExit   (ThreadContext * const);
 int                         threadContextBarrier (ThreadContext * const);
 void                        threadContextImport1 (ThreadContext * const, const int);

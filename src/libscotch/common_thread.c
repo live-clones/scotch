@@ -81,13 +81,18 @@
 int
 threadContextInit (
 ThreadContext * const       contptr,
-const int                   thrdnbr,
+int                         thrdnbr,
 const int * const           coretab)
 {
   ThreadDescriptor *  desctab;
   int                 corenbr;
   int                 corenum;
   int                 thrdnum;
+
+  threadProcessStateSave (contptr);               /* Save state of main thread        */
+  corenbr = threadProcessCoreNbr (contptr);       /* Get number of assigned cores     */
+  if (thrdnbr < 0)                                /* If unspecified number of threads */
+    thrdnbr = corenbr;                            /* Take as many as available        */
 
   contptr->barrnbr = 0;
   contptr->bainnum = 0;
@@ -100,8 +105,6 @@ const int * const           coretab)
     return (0);
   }
 
-  threadProcessStateSave (contptr);               /* Save state of main thread */
-
   if ((desctab = memAlloc (thrdnbr * sizeof (ThreadDescriptor))) == NULL) {
     errorPrint ("threadContextInit: out of memory");
     return (1);
@@ -110,8 +113,6 @@ const int * const           coretab)
   pthread_mutex_init (&contptr->lockdat, NULL);
   pthread_cond_init  (&contptr->conddat, NULL);
   contptr->statval = THREADCONTEXTSTATUSRDY;
-
-  corenbr = threadProcessCoreNbr (contptr);
 
   for (thrdnum = 1; thrdnum < thrdnbr; thrdnum ++) { /* Launch threads from 1 to (thrdnbr - 1) */
     desctab[thrdnum].contptr = contptr;
