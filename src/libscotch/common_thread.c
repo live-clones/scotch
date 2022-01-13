@@ -102,7 +102,7 @@ const int * const           coretab)
 
   if ((desctab = memAlloc (thrdnbr * sizeof (ThreadDescriptor))) == NULL) {
     errorPrint ("threadContextInit: out of memory");
-    return     (1);
+    return (1);
   }
 
   pthread_mutex_init (&contptr->lockdat, NULL);
@@ -114,7 +114,7 @@ const int * const           coretab)
   for (thrdnum = 1; thrdnum < thrdnbr; thrdnum ++) { /* Launch threads from 1 to (thrdnbr - 1) */
     desctab[thrdnum].contptr = contptr;
     desctab[thrdnum].thrdnum = thrdnum;
-    corenum = (coretab != NULL) ? (coretab[thrdnum]  % corenbr) : threadProcessCoreNum (thrdnum);
+    corenum = (coretab != NULL) ? (coretab[thrdnum] % corenbr) : threadProcessCoreNum (thrdnum);
 
     if (threadCreate (&desctab[thrdnum], thrdnum, corenum) != 0) {
       errorPrint ("threadContextInit: cannot create thread (%d)", thrdnum);
@@ -757,7 +757,7 @@ const int                   corenum)
 
   if (thrdnum > 0) {                              /* Do not create master thread */
     if (pthread_create (&thidval, NULL, (void * (*) (void *)) threadWait, (void *) descptr) != 0) {
-      errorPrint ("threadAffinityCreate: cannot launch thread (%d)", thrdnum);
+      errorPrint ("threadCreate: cannot launch thread (%d)", thrdnum);
       return (1);
     }
     pthread_detach (thidval);                     /* Nobody will wait for us to join */
