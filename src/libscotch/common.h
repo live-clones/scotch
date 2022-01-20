@@ -150,7 +150,7 @@
 #define memFree(ptr)                memFreeRecord ((void *) (ptr))
 #else /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 #define memAlloc(size)              malloc ((size) | 8) /* For platforms which return NULL for malloc(0) */
-#define memRealloc(ptr,size)        realloc ((ptr),((size) | 8))
+#define memRealloc(ptr,size)        realloc ((ptr), ((size) | 8))
 #define memFree(ptr)                free ((char *) (ptr))
 #endif /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 
