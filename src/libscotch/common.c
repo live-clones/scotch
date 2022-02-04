@@ -60,6 +60,8 @@
 **  The defines and includes.
 */
 
+#include <sys/time.h>
+
 #define COMMON
 
 #ifndef COMMON_NOMODULE
