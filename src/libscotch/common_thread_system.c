@@ -51,6 +51,8 @@
 **  The defines and includes.
 */
 
+#include <unistd.h>
+
 #define COMMON_THREAD_SYSTEM
 
 #ifndef COMMON_NOMODULE
