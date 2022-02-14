@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 07 oct 2021     **/
+/**                                 to   : 12 feb 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,8 +72,16 @@
 #endif /* _XOPEN_SOURCE */
 
 #ifdef COMMON_OS_MACOS
+#ifndef _DARWIN_C_SOURCE
 #define _DARWIN_C_SOURCE
+#endif /* _DARWIN_C_SOURCE */
 #define HAVE_SYS_SYSCTL_H
+#ifndef COMMON_PTHREAD_BARRIER
+#define COMMON_PTHREAD_BARRIER
+#endif /* COMMON_PTHREAD_BARRIER */
+#ifndef COMMON_TIMING_OLD
+#define COMMON_TIMING_OLD
+#endif /* COMMON_TIMING_OLD */
 #endif /* COMMON_OS_MACOS */
 
 #ifdef COMMON_OS_WINDOWS
@@ -150,7 +158,7 @@
 #define memFree(ptr)                memFreeRecord ((void *) (ptr))
 #else /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 #define memAlloc(size)              malloc ((size) | 8) /* For platforms which return NULL for malloc(0) */
-#define memRealloc(ptr,size)        realloc ((ptr),((size) | 8))
+#define memRealloc(ptr,size)        realloc ((ptr), ((size) | 8))
 #define memFree(ptr)                free ((char *) (ptr))
 #endif /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 
@@ -437,7 +445,7 @@ double                      clockGet            (void);
 
 void                        stringSubst         (char * const, const char * const, const char * const);
 
-int                         threadContextInit   (ThreadContext * const, const int, const int * const);
+int                         threadContextInit   (ThreadContext * const, int, const int * const);
 void                        threadContextExit   (ThreadContext * const);
 int                         threadContextBarrier (ThreadContext * const);
 void                        threadContextImport1 (ThreadContext * const, const int);

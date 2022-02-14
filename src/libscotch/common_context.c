@@ -1,4 +1,4 @@
-/* Copyright 2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                context management routines.            **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 22 oct 2021     **/
+/**                                 to   : 13 jan 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -224,8 +224,6 @@ Context * const             contptr)
   thrdnbr = -1;                                   /* Else take the number of cores at run time */
 #endif /* SCOTCH_PTHREAD_NUMBER */
   thrdnbr = envGetInt ("SCOTCH_PTHREAD_NUMBER", thrdnbr);
-  if (thrdnbr < 1)
-    thrdnbr = threadSystemCoreNbr ();
 #else /* SCOTCH_PTHREAD */
   thrdnbr = 1;                                    /* No threads allowed */
 #endif /* SCOTCH_PTHREAD */

@@ -1,4 +1,4 @@
-/* Copyright 2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2016,2018,2019,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 23 aug 2016     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 13 sep 2019     **/
-/**                                 to   : 13 sep 2019     **/
+/**                                 to   : 12 feb 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,7 +73,7 @@
 
 typedef struct TestFibo_ {
   FiboNode                  nodedat;              /* TRICK: FIRST */
-  int                       randval;
+  INT                       randval;
 } TestFibo;
 
 /***************************/
@@ -88,8 +88,8 @@ testFiboCmpFunc (
 const FiboNode *            nod0ptr,
 const FiboNode *            nod1ptr)
 {
-  int                 ran0val;
-  int                 ran1val;
+  INT                 ran0val;
+  INT                 ran1val;
 
   ran0val = ((TestFibo *) nod0ptr)->randval;
   ran1val = ((TestFibo *) nod1ptr)->randval;
@@ -118,7 +118,6 @@ char *              argv[])
   int                 nodenum;
   int                 nodetmp;
   int                 randval;
-  int                 randtmp;
   int                 passnbr;
   int                 passnum;
 
@@ -159,6 +158,8 @@ char *              argv[])
   nodemax = nodesiz - 1;                          /* Set maximum index */
   nodenbr = 0;                                    /* Array is empty    */
   for (passnum = 0; passnum < passnbr; passnum ++) {
+    INT                 randtmp;
+
     switch (intRandVal (&intranddat, 6)) {
       case 0 :                                    /* Add node */
       case 1 :
@@ -173,14 +174,14 @@ char *              argv[])
           SCOTCH_errorPrint ("main: invalid node array (1)");
           exit (EXIT_FAILURE);
         }
-        nodetab[nodenum].randval = abs (intRandVal (&intranddat, INTVALMAX));
+        nodetab[nodenum].randval = (INT) intRandVal (&intranddat, INTVALMAX); /* Only take positive numbers */
         fiboHeapAdd (&fibodat, (FiboNode *) &nodetab[nodenum]);
         nodenbr ++;
         break;
       case 3 :                                    /* Remove arbitrary node */
         if (nodenbr <= 0)
           break;
-        nodetmp = intRandVal (&intranddat, nodenbr);
+        nodetmp = (int) intRandVal (&intranddat, nodenbr);
         for (nodenum = 0; ; nodenum ++) {         /* Search for non-empty slot */
           if (nodenum > nodemax) {
             SCOTCH_errorPrint ("main: invalid node array (2)");
