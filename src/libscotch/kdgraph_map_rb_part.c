@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2014,2018,2019,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 27 jul 2021     **/
+/**                                 to   : 08 jan 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -198,7 +198,7 @@ KdgraphMapRbPartThread * const  fldthrdptr)
   return (o);
 }
 
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
 static
 void
 kdgraphMapRbPartFold3 (
@@ -212,7 +212,7 @@ KdgraphMapRbPartThread * restrict const fldthrdtab)
       fldthrdtab[thrdnum].orggrafptr = NULL;      /* Indicate an error */
   }
 }
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
 
 static
 int
@@ -307,7 +307,7 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   fldthrdtab[fldpartval ^ 1].fldprocnum  = -1;    /* Other part will not be in communicator */
   fldthrdtab[fldpartval ^ 1].fldproccomm = MPI_COMM_NULL;
 
-#ifdef SCOTCH_PTHREAD
+#ifdef SCOTCH_PTHREAD_MPI
   if ((contextThreadNbr (actgrafptr->contptr) > 1) &&
       ((indflagtab[0] & indflagtab[1]) != 0)) {   /* If both subjobs have meaningful things to do in parallel */
     Dgraph              orggrafdat;               /* Structure for copying graph fields except communicator   */
@@ -325,7 +325,7 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
          (fldthrdtab[1].orggrafptr == NULL));
   }
   else
-#endif /* SCOTCH_PTHREAD */
+#endif /* SCOTCH_PTHREAD_MPI */
     o = kdgraphMapRbPartFold2 (&fldthrdtab[0]) || /* Perform inductions in sequence */
         kdgraphMapRbPartFold2 (&fldthrdtab[1]);
 

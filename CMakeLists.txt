@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -31,53 +31,59 @@
 ##
 ############################################################
 ##                                                        ##
-##   AUTHORS    : Cedric LACHAT                           ##
-##                Amaury JACQUES                          ##
+##   AUTHORS    : Marc FUENTES                            ##
 ##                Florent PRUVOST                         ##
-##                Marc FUENTES                            ##
 ##                                                        ##
-##   FUNCTION   : Secondary configuration file for CMake  ##
+##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
-##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
-##                                 to     01 sep 2021     ##
-##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     30 dec 2021     ##
+##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
+##                                 to     04 feb 2022     ##
 ##                                                        ##
 ############################################################
 
-set(SCOTCH_VERSION @SCOTCH_VERSION_LONG@)
+project(SCOTCH)
+cmake_minimum_required(VERSION 3.10)
+enable_language(C Fortran)
 
-# relocatable package
-@PACKAGE_INIT@
+# Add module directory
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
-set_and_check(SCOTCH_INC_DIR "@PACKAGE_INC_INSTALL_DIR@")
-set_and_check(SCOTCH_LIB_DIR "@PACKAGE_LIB_INSTALL_DIR@")
+set(SCOTCH_VERSION 7)
+set(SCOTCH_RELEASE 0)
+set(SCOTCH_PATCHLEVEL 1)
+set(SCOTCH_CODENAME "Sankara")
 
-check_required_components(SCOTCH)
+add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}
+  -DSCOTCH_RELEASE_NUM=${SCOTCH_RELEASE}
+  -DSCOTCH_PATCHLEVEL_NUM=${SCOTCH_PATCHLEVEL})
 
-# dependencies of SCOTCH
-include(CMakeFindDependencyMacro)
-find_dependency(Threads)
-if(@PTSCOTCH@)
-  find_dependency(MPI REQUIRED)
-endif()
+set(SCOTCH_VERSION_LONG "${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL}")
 
-if(@ESMUMPS@)
-#
-endif()
+# Set integer size: by default, use compiler int size
+set(INTSIZE "" CACHE STRING "Integer size: empty string stands for C compiler int type size")
 
-# add the targets file
-include("${CMAKE_CURRENT_LIST_DIR}/scotcherrexitTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/scotcherrTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/scotchTargets.cmake")
-if(@PTSCOTCH@)
-  include("${CMAKE_CURRENT_LIST_DIR}/ptscotcherrexitTargets.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/ptscotcherrTargets.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/ptscotchTargets.cmake")
-endif()
-if(@ESMUMPS@)
-  include("${CMAKE_CURRENT_LIST_DIR}/esmumpsTargets.cmake")
-endif()
-if(@SCOTCHMETIS@)
-  include("${CMAKE_CURRENT_LIST_DIR}/scotchmetisTargets.cmake")
-endif()
+# Thread support
+option(THREADS "Use multi-threading in Scotch and PT-Scotch" ON)
+
+# Use MPI with threads
+option(MPI_THREAD_MULTIPLE "Use multi-threading with MPI in PT-Scotch" ON)
+
+# Build PT-Scotch
+option(BUILD_PTSCOTCH "Build PT-Scotch" ON)
+
+# Build libESMUMPS
+option(BUILD_LIBESMUMPS "Build EsMUMPS library" ON)
+
+# Build libScotchMeTiS
+option(BUILD_LIBSCOTCHMETIS "Build ScotchMeTiS library" ON)
+
+# Install our MeTiS header stubs
+option(INSTALL_METIS_HEADERS "Install libScotchMeTiS headers in destination directory" ON)
+
+# Allow for testing
+enable_testing()
+
+add_subdirectory(src)
+
+# Install man pages
+install(DIRECTORY man/man1 DESTINATION man FILES_MATCHING PATTERN "*.1")

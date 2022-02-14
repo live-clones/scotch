@@ -227,7 +227,7 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
       cblktax[cblknum].bloknum = bloknum;
 
       degrsum = 0;
-      for ( ; colnum < colmax; colnum ++) /* For all columns                                  */
+      for ( ; colnum < colmax; colnum ++)         /* For all columns                          */
         degrsum += SYMBOL_FAX_VERTEX_DEGREE (ngbdptr, peritax[colnum]); /* Add column degrees */
 
       for (hashmax = 256; hashmax < degrsum; hashmax *= 2) ; /* Get upper bound on hash table size */

@@ -72,14 +72,9 @@ ptscotch			:
 					CC="$(CCP)"					\
 					CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH"		\
 					SCOTCH_METIS_VERSION=3				\
+					SCOTCH_PARMETIS_VERSION=3			\
 					parmetis.h					\
 					libptscotchparmetisv3$(LIB)
-					$(MAKE)						\
-					CC="$(CCP)"					\
-					CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH"		\
-					SCOTCH_METIS_VERSION=5				\
-					parmetis.h					\
-					libptscotchparmetisv5$(LIB)
 
 install				:	scotch
 					-$(CP) metis.h metisf.h $(includedir)
@@ -87,7 +82,7 @@ install				:	scotch
 
 ptinstall			:	ptscotch
 					-$(CP) parmetis.h $(includedir)
-					-$(CP) libptscotchparmetisv3$(LIB) libptscotchparmetisv5$(LIB) $(libdir)
+					-$(CP) libptscotchparmetisv3$(LIB) $(libdir)
 
 clean				:
 					-$(RM) *~ *$(OBJ) lib*$(LIB) metis.h metisf.h parmetis.h

@@ -1,4 +1,4 @@
-/* Copyright 2012-2015,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012-2015,2018,2019,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 04 jul 2012     **/
 /**                                 to   : 27 apr 2015     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 31 aug 2021     **/
+/**                                 to   : 13 jan 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,13 +81,18 @@
 int
 threadContextInit (
 ThreadContext * const       contptr,
-const int                   thrdnbr,
+int                         thrdnbr,
 const int * const           coretab)
 {
   ThreadDescriptor *  desctab;
   int                 corenbr;
   int                 corenum;
   int                 thrdnum;
+
+  threadProcessStateSave (contptr);               /* Save state of main thread        */
+  corenbr = threadProcessCoreNbr (contptr);       /* Get number of assigned cores     */
+  if (thrdnbr < 0)                                /* If unspecified number of threads */
+    thrdnbr = corenbr;                            /* Take as many as available        */
 
   contptr->barrnbr = 0;
   contptr->bainnum = 0;
@@ -102,19 +107,17 @@ const int * const           coretab)
 
   if ((desctab = memAlloc (thrdnbr * sizeof (ThreadDescriptor))) == NULL) {
     errorPrint ("threadContextInit: out of memory");
-    return     (1);
+    return (1);
   }
 
   pthread_mutex_init (&contptr->lockdat, NULL);
   pthread_cond_init  (&contptr->conddat, NULL);
   contptr->statval = THREADCONTEXTSTATUSRDY;
 
-  corenbr = threadProcessCoreNbr ();
-
   for (thrdnum = 1; thrdnum < thrdnbr; thrdnum ++) { /* Launch threads from 1 to (thrdnbr - 1) */
     desctab[thrdnum].contptr = contptr;
     desctab[thrdnum].thrdnum = thrdnum;
-    corenum = (coretab != NULL) ? (coretab[thrdnum]  % corenbr) : threadProcessCoreNum (thrdnum);
+    corenum = (coretab != NULL) ? (coretab[thrdnum] % corenbr) : threadProcessCoreNum (contptr, thrdnum);
 
     if (threadCreate (&desctab[thrdnum], thrdnum, corenum) != 0) {
       errorPrint ("threadContextInit: cannot create thread (%d)", thrdnum);
@@ -125,8 +128,8 @@ const int * const           coretab)
   }
   desctab[0].contptr = contptr;
   desctab[0].thrdnum = 0;
-  corenum = (coretab != NULL) ? (coretab[0] % corenbr) : threadProcessCoreNum (0);
-  threadCreate (&desctab[0], 0, corenum);         /* Set affinity of local thread after the slaves, so that masks are ok */
+  corenum = (coretab != NULL) ? (coretab[0] % corenbr) : threadProcessCoreNum (contptr, 0);
+  threadCreate (&desctab[0], 0, corenum);         /* Set affinity of local thread (slaves use saved main thread mask) */
 
   threadContextBarrier (contptr);                 /* Ensure all slave threads have started before cleaning-up resources */
 
@@ -165,6 +168,8 @@ ThreadContext * const       contptr)
 
   pthread_cond_destroy  (&contptr->conddat);      /* Destroy critical section features */
   pthread_mutex_destroy (&contptr->lockdat);
+
+  threadProcessStateRestore (contptr);            /* Restore state of main thread */
 }
 
 /* This routine performs a barrier on the given
@@ -757,7 +762,7 @@ const int                   corenum)
 
   if (thrdnum > 0) {                              /* Do not create master thread */
     if (pthread_create (&thidval, NULL, (void * (*) (void *)) threadWait, (void *) descptr) != 0) {
-      errorPrint ("threadAffinityCreate: cannot launch thread (%d)", thrdnum);
+      errorPrint ("threadCreate: cannot launch thread (%d)", thrdnum);
       return (1);
     }
     pthread_detach (thidval);                     /* Nobody will wait for us to join */
@@ -788,14 +793,12 @@ const int                   corenum)
 
 static
 int
-threadProcessCoreNbr ()
+threadProcessCoreNbr (
+ThreadContext * const       contptr)
 {
   int                 corenbr;
 #ifdef COMMON_PTHREAD_AFFINITY_LINUX
-  cpu_set_t           cpusdat;
-
-  pthread_getaffinity_np (pthread_self (), sizeof (cpu_set_t), &cpusdat);
-  corenbr = CPU_COUNT (&cpusdat);
+  corenbr = CPU_COUNT (&contptr->savedat.cpusdat);
 #else /* COMMON_PTHREAD_AFFINITY_LINUX */
   corenbr = threadSystemCoreNbr ();
 #endif /* COMMON_PTHREAD_AFFINITY_LINUX */
@@ -812,19 +815,18 @@ threadProcessCoreNbr ()
 static
 int
 threadProcessCoreNum (
+ThreadContext * const       contptr,
 int                         thrdnum)
 {
   int                 corenum;
 #ifdef COMMON_PTHREAD_AFFINITY_LINUX
   int                 corenbr;
-  cpu_set_t           cpusdat;
 
-  pthread_getaffinity_np (pthread_self (), sizeof (cpu_set_t), &cpusdat);
-  corenbr  = CPU_COUNT (&cpusdat);
+  corenbr  = CPU_COUNT (&contptr->savedat.cpusdat);
   thrdnum %= corenbr;                             /* Round-robin on thread allocation */
 
   for (corenum = 0; thrdnum >= 0; corenum ++) {   /* For all potential cores       */
-    if (CPU_ISSET (corenum, &cpusdat)) {          /* If core is available          */
+    if (CPU_ISSET (corenum, &contptr->savedat.cpusdat)) { /* If core is available  */
       if (thrdnum <= 0)                           /* And it is the one we want     */
 	break;                                    /* We have found our core number */
       thrdnum --;                                 /* One less available core       */
@@ -835,4 +837,36 @@ int                         thrdnum)
 #endif /* COMMON_PTHREAD_AFFINITY_LINUX */
 
   return (corenum);
+}
+
+/* This routine saves the thread context of
+** the master thread.
+** It returns:
+** - void  : in all cases.
+*/
+
+static
+void
+threadProcessStateSave (
+ThreadContext * const       contptr)
+{
+#ifdef COMMON_PTHREAD_AFFINITY_LINUX
+  pthread_getaffinity_np (pthread_self (), sizeof (cpu_set_t), &contptr->savedat.cpusdat);
+#endif /* COMMON_PTHREAD_AFFINITY_LINUX */
+}
+
+/* This routine restores the thread context
+** of the master thread.
+** It returns:
+** - void  : in all cases.
+*/
+
+static
+void
+threadProcessStateRestore (
+ThreadContext * const       contptr)
+{
+#ifdef COMMON_PTHREAD_AFFINITY_LINUX
+  pthread_setaffinity_np (pthread_self (), sizeof (cpu_set_t), &contptr->savedat.cpusdat);
+#endif /* COMMON_PTHREAD_AFFINITY_LINUX */
 }

@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -31,35 +31,30 @@
 ##
 ############################################################
 ##                                                        ##
-##   AUTHORS    : Cedric LACHAT                           ##
-##                Amaury JACQUES                          ##
+##   AUTHORS    : Marc FUENTES                            ##
 ##                Florent PRUVOST                         ##
-##                Marc FUENTES                            ##
+##                Cedric LACHAT                           ##
+##                Amaury JACQUES                          ##
 ##                                                        ##
 ##   FUNCTION   : Secondary configuration file for CMake  ##
 ##                                                        ##
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     30 dec 2021     ##
+##                                 to     08 feb 2022     ##
 ##                                                        ##
 ############################################################
 
-project(Scotch)
-cmake_minimum_required(VERSION 3.10)
-enable_language(C Fortran)
-
-set(SCOTCH_VERSION 7)
-set(SCOTCH_RELEASE 0)
-set(SCOTCH_PATCHLEVEL 0)
-add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}
-  -DSCOTCH_RELEASE_NUM=${SCOTCH_RELEASE}
-  -DSCOTCH_PATCHLEVEL_NUM=${SCOTCH_PATCHLEVEL})
-
-set(SCOTCH_VERSION_LONG "${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL}")
-
-# Old style cmake: TODO: use some preload.cmake for old configs
+# Add general compiler options
 add_definitions(-Drestrict=__restrict -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME)
+
+# Add OS-specific compiler options
+if(APPLE)
+  add_definitions(-DCOMMON_OS_MACOS -D_DARWIN_C_SOURCE)
+endif(APPLE)
+if(WIN32)
+  add_definitions(-DCOMMON_OS_WINDOWS)
+endif(WIN32)
 
 ###################
 #  Prerequisites  #
@@ -85,63 +80,102 @@ endif()
 #  Options  #
 #############
 
-# Thread support in scotch
-option(THREADS "Activate multi-threading for Scotch and PT-Scotch" ON)
+# Set integer size
+if(NOT INTSIZE STREQUAL "")
+  if(INTSIZE STREQUAL "32")
+    message(STATUS "Integer size is 32 bits")
+    add_definitions(-DINTSIZE32)
+  elseif(INTSIZE STREQUAL "64")
+    message(STATUS "Integer size is 64 bits")
+    add_definitions(-DINTSIZE64)
+  else()
+    message(FATAL_ERROR "Invalid integer size value")
+  endif()
+endif()
+
+# Thread support in Scotch
 if(THREADS)
   find_package(Threads)
-  if (Threads_FOUND)
-    add_definitions(-DSCOTCH_PTHREAD -DCOMMON_PTHREAD)
+  if(Threads_FOUND)
+    add_definitions(-DCOMMON_PTHREAD -DSCOTCH_PTHREAD)
   endif()
-endif(THREADS)
-
-add_subdirectory(libscotch)
-add_subdirectory(scotch)
+  include(CheckPthreadAffinity)
+  if(PTHREAD_AFFINITY_LINUX_OK)
+    add_definitions(-DCOMMON_PTHREAD_AFFINITY_LINUX)
+  endif()
+endif()
 
 # MPI
-option(PTSCOTCH "Activate building of PT-Scotch" ON)
-option(THREADS_MPI "Activate multi-threading with MPI for PT-Scotch" ON)
-if (PTSCOTCH)
+if(BUILD_PTSCOTCH)
+  set(MPI_DETERMINE_LIBRARY_VERSION ON)
   find_package(MPI COMPONENTS C)
-  if (NOT MPI_C_FOUND)
+  if(NOT MPI_C_FOUND)
     message(FATAL_ERROR "MPI required to compile PT-Scotch")
+  else()
+    string(REGEX MATCHALL "\( Open MPI \)+" found_suite ${MPI_C_LIBRARY_VERSION_STRING})
+    if(NOT ${found_suite} STREQUAL "")
+      message(STATUS "Found OpenMPI: using '--oversubscribe' policy for testing")
+      set(MPIEXEC_PREFLAGS ${MPIEXEC_PREFLAGS} --oversubscribe)
+    endif()
   endif()
-endif(PTSCOTCH)
-if(THREADS_MPI)
-  if (Threads_FOUND)
-    add_definitions(-DSCOTCH_PTHREAD_MPI) # TODO: write a cmake function to check that MPI_THREAD_MULTIPLE is ON
+
+  if(MPI_THREAD_MULTIPLE)
+    if(Threads_FOUND)
+      include(CheckMpiThreadMultiple)
+      if(MPI_THREAD_MULTIPLE_OK)
+        add_definitions(-DSCOTCH_PTHREAD_MPI)
+      else()
+        message(STATUS "MPI implementation does not support MPI_THREAD_MULTIPLE")
+      endif()
+    endif()
   endif()
-endif(THREADS_MPI)
+endif(BUILD_PTSCOTCH)
 
-# ScotchMetis
-option(SCOTCHMETIS "Activate building of ScotchMeTiS library" ON)
-if(SCOTCHMETIS)
-  add_subdirectory(libscotchmetis)
-endif(SCOTCHMETIS)
+# Put libraries in the lib subdirectory
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# Esmumps
-option(ESMUMPS "Activate building of EsMumps library" ON)
-if(ESMUMPS)
+# Put executables in the bin subdirectory
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# Set variables for include directories
+set(GENERATED_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
+set(LIBSCOTCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libscotch)
+file(MAKE_DIRECTORY ${GENERATED_INCLUDE_DIR})
+
+# Build Scotch and PT-Scotch libraries
+add_subdirectory(libscotch)
+
+# Build Scotch executables
+add_subdirectory(scotch)
+
+# Build EsMUMPS library
+if(BUILD_LIBESMUMPS)
   add_subdirectory(esmumps)
-endif(ESMUMPS)
+endif(BUILD_LIBESMUMPS)
+
+# Build ScotchMeTiS library
+if(BUILD_LIBSCOTCHMETIS)
+  add_subdirectory(libscotchmetis)
+endif(BUILD_LIBSCOTCHMETIS)
 
 # Testing
-enable_testing()
 add_subdirectory(check)
 
 ####################
 #  Export targets  #
 ####################
 
-# see https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html
+# See https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html
 include(CMakePackageConfigHelpers)
 
-set(INC_INSTALL_DIR "include/" CACHE STRING "Where to install headers relative to prefix")
-set(LIB_INSTALL_DIR "lib/" CACHE STRING "Where to install libraries relative to prefix")
+set(INCLUDE_INSTALL_DIR "include/" CACHE STRING "Where to install headers relative to prefix")
+set(LIBRARY_INSTALL_DIR "lib/" CACHE STRING "Where to install libraries relative to prefix")
 
-configure_package_config_file(cmake/SCOTCHConfig.cmake.in
+configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/SCOTCHConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfig.cmake
-  INSTALL_DESTINATION ${LIB_INSTALL_DIR}/cmake/scotch
-  PATH_VARS INC_INSTALL_DIR LIB_INSTALL_DIR)
+  INSTALL_DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/scotch
+  PATH_VARS INCLUDE_INSTALL_DIR LIBRARY_INSTALL_DIR)
 
 write_basic_package_version_file(SCOTCHConfigVersion.cmake
   VERSION ${SCOTCH_VERSION_LONG}
@@ -150,4 +184,4 @@ write_basic_package_version_file(SCOTCHConfigVersion.cmake
 # Install config files
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfigVersion.cmake
-  DESTINATION ${LIB_INSTALL_DIR}/cmake/scotch)
+  DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/scotch)
