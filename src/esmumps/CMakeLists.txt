@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     08 jan 2022     ##
+##                                 to     23 feb 2022     ##
 ##                                                        ##
 ############################################################
 
@@ -90,6 +90,8 @@ set(esmumps_headers
   ${GENERATED_INCLUDE_DIR}/esmumps.h)
 
 add_library(esmumps ${esmumps_src} ${esmumps_headers})
+set_target_properties(esmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/esmumps.h")
+
 
 target_include_directories(esmumps PRIVATE
   $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
@@ -98,7 +100,7 @@ target_include_directories(esmumps PRIVATE
 
 target_link_libraries(esmumps PRIVATE scotch)
 add_dependencies(esmumps scotch_h)
-add_executable(main_esmumps main_esmumps.c ${esmumps_header})
+add_executable(main_esmumps main_esmumps.c)
 set_target_properties(main_esmumps PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(main_esmumps PRIVATE ${GENERATED_INCLUDE_DIR}/)
 target_link_libraries(main_esmumps PRIVATE esmumps scotch scotcherrexit)
@@ -112,6 +114,31 @@ install(EXPORT esmumpsTargets
 
 install(TARGETS esmumps
   EXPORT esmumpsTargets
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  PUBLIC_HEADER DESTINATION include)
+
+# Dummy PTEsMUMPS library file
+add_library(ptesmumps ${esmumps_src} ${esmumps_headers})
+
+set_target_properties(ptesmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/esmumps.h")
+
+target_include_directories(ptesmumps PRIVATE
+  $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
+  $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
+  $<INSTALL_INTERFACE:include>)
+
+target_link_libraries(ptesmumps PRIVATE scotch)
+add_dependencies(ptesmumps scotch_h)
+
+# libptesmumps targets install
+install(EXPORT ptesmumpsTargets
+  FILE ptesmumpsTargets.cmake
+  NAMESPACE SCOTCH::
+  DESTINATION lib/cmake/scotch)
+
+install(TARGETS ptesmumps
+  EXPORT ptesmumpsTargets
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   PUBLIC_HEADER DESTINATION include)
