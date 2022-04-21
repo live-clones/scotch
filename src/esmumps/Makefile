@@ -87,6 +87,7 @@ LIBESMUMPSDEPS =			dof$(OBJ)				\
 					library_esmumps_strats$(OBJ)		\
 					order$(OBJ)				\
 					order_check$(OBJ)			\
+					order_io$(OBJ)				\
 					order_scotch_graph$(OBJ)		\
 					symbol$(OBJ)				\
 					symbol_check$(OBJ)			\
@@ -158,6 +159,12 @@ order_scotch_graph$(OBJ)	:	order_scotch_graph.c			\
 					module.h				\
 					$(srclibscotchdir)/common.h		\
 					$(includedir)/scotch.h			\
+					graph.h					\
+					order.h
+
+order_io$(OBJ)			:	order_io.c				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
 					graph.h					\
 					order.h
 

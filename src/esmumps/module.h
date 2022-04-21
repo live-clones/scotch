@@ -1,4 +1,4 @@
-/* Copyright 2009,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009,2018,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 21 may 2018     **/
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 05 sep 2020     **/
+/**                # Version 7.0  : from : 21 apr 2022     **/
+/**                                 to   : 21 apr 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -159,6 +161,9 @@
 #define graphBuild                  ESMUMPS_NAME_INTERN (graphBuild)
 #define graphBuildGraph             ESMUMPS_NAME_INTERN (graphBuildGraph)
 #define graphBuildGraph2            ESMUMPS_NAME_INTERN (graphBuildGraph2)
+
+#define intLoad                     SCOTCH_NAME_INTERN (intLoad)
+#define intSave                     SCOTCH_NAME_INTERN (intSave)
 
 #define orderBase                   ESMUMPS_NAME_INTERN (orderBase)
 #define orderCheck                  ESMUMPS_NAME_INTERN (orderCheck)

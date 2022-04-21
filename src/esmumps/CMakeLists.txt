@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     23 feb 2022     ##
+##                                 to     21 apr 2022     ##
 ##                                                        ##
 ############################################################
 
@@ -70,6 +70,7 @@ set(esmumps_src
   library_esmumps_strats.c
   order.c
   order_check.c
+  order_io.c
   order_scotch_graph.c
   symbol.c
   symbol_check.c
