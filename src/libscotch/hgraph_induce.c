@@ -111,7 +111,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
                      &indgrafptr->s.velotax, (size_t) ( indvelosiz      * sizeof (Gnum)),
                      &indgrafptr->s.vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hgraphInduceList: out of memory (1)"); /* Allocate induced graph structure */
-    return     (1);
+    return (1);
   }
   memCpy (indgrafptr->s.vnumtax, indvnumtab, indvnumnbr * sizeof (Gnum)); /* Copy vertex number array from list */
   indgrafptr->s.velotax  = (orggrafptr->s.velotax != NULL) ? (indgrafptr->s.velotax - indgrafptr->s.baseval) : NULL;
@@ -138,7 +138,7 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
                         &orgindxtax, (size_t) (orggrafptr->s.vertnbr * sizeof (Gnum)), NULL) == NULL)) {
       errorPrint ("hgraphInduceList: out of memory (2)");
       hgraphExit (indgrafptr);
-      return     (1);
+      return (1);
     }
   }
   memSet (orgindxtax, ~0, orggrafptr->s.vertnbr * sizeof (Gnum)); /* Preset index array */
@@ -177,7 +177,7 @@ Gnum * restrict const           indedgetab)       /* Pointer to pre-allocated sp
   if (indedgetnd > (void *) (orgindxtax + orggrafptr->s.baseval)) {
     errorPrint ("hgraphInduce2: invalid edge array size (1)");
     hgraphExit (indgrafptr);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_HGRAPH2 */
   if (orggrafptr->s.edlotax != NULL) {
@@ -189,13 +189,13 @@ Gnum * restrict const           indedgetab)       /* Pointer to pre-allocated sp
     if (indedgetnd > (void *) (orgindxtax + orggrafptr->s.baseval)) {
       errorPrint ("hgraphInduce2: invalid edge array size (2)");
       hgraphExit (indgrafptr);                    /* Indedgetab is now freed as part of indgrafptr */
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_HGRAPH2 */
     hgraphInduce2L (orggrafptr, orgindxtax, indgrafptr);
 
     indedlooftval = indgrafptr->s.edlotax - indgrafptr->s.edgetax;
-    memReallocGroup ((void *) indedgetab,         /* Implicitely free orgindxtab */
+    memReallocGroup ((void *) indedgetab,         /* Implicitly free orgindxtab */
                      &indgrafptr->s.edgetax, (size_t) (indedgenbr            * sizeof (Gnum)), /* Keep first offset as estimated number of edges */
                      &indgrafptr->s.edlotax, (size_t) (indgrafptr->s.edgenbr * sizeof (Gnum)), /* Use real number of edges for second array      */
                      NULL);
@@ -224,7 +224,7 @@ Gnum * restrict const           indedgetab)       /* Pointer to pre-allocated sp
   if (hgraphCheck (indgrafptr) != 0) {            /* Check graph consistency */
     errorPrint ("hgraphInduce2: inconsistent graph data");
     hgraphExit (indgrafptr);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_HGRAPH2 */
 
