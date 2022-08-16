@@ -105,12 +105,12 @@ Hgraph * restrict const           indgrafptr)     /* Pointer to induced subgraph
 
   indvertnbr = indvnumnbr + indhalonbr;           /* Compute upper bound on number of vertices */
   indvelosiz = (orggrafptr->s.velotax != NULL) ? indvertnbr : 0;
-  if (memAllocGroup ((void **) (void *)
+  if (memAllocGroup ((void **) (void *)           /* Allocate induced graph structure */
                      &indgrafptr->s.verttax, (size_t) ((indvertnbr + 1) * sizeof (Gnum)),
                      &indgrafptr->vnhdtax,   (size_t) ( indvnumnbr      * sizeof (Gnum)), /* Put closest to beginning of array because no padding after */
                      &indgrafptr->s.velotax, (size_t) ( indvelosiz      * sizeof (Gnum)),
                      &indgrafptr->s.vnumtax, (size_t) ( indvertnbr      * sizeof (Gnum)), NULL) == NULL) {
-    errorPrint ("hgraphInduceList: out of memory (1)"); /* Allocate induced graph structure */
+    errorPrint ("hgraphInduceList: out of memory (1)");
     return (1);
   }
   memCpy (indgrafptr->s.vnumtax, indvnumtab, indvnumnbr * sizeof (Gnum)); /* Copy vertex number array from list */
