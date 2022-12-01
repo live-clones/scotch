@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2020,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,6 +51,8 @@
 /**                                 to   : 22 jan 2020     **/
 /**                # Version 6.1  : from : 28 aug 2020     **/
 /**                                 to   : 05 sep 2020     **/
+/**                # Version 7.0  : from : 01 dec 2022     **/
+/**                                 to   : 01 dec 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -141,6 +143,26 @@ INT * restrict const        lasttab)              /*+ Permutations computed for 
 
   orderInit  (&ordedat);
   orderGraph (&ordedat, &grafdat);                /* Compute ordering with Scotch */
+
+#ifdef ESMUMPS_ORDER_DUMP
+  {
+    const char *      filestr;
+    FILE *            fileptr;
+
+    filestr = envGetStr ("ESMUMPS_ORDER_DUMP_FILE", "/tmp/esmumps_ordering.ord");
+
+    if (filestr[0] != '\0') {                     /* If environment variable is not empty, perform dump of block ordering */
+      if ((fileptr = fopen (filestr, "w+")) == NULL) {
+        errorPrint ("esmumps2: cannot open ordering dump file");
+        return (1);
+      }
+
+      orderSave (&ordedat, fileptr);
+
+      fclose (fileptr);
+    }
+  }
+#endif /* ESMUMPS_ORDER_DUMP */
 
 #ifdef ESMUMPS_DEBUG                              /* Permutations are output for debugging only */
   memCpy (elentab, ordedat.permtab, n * sizeof (INT)); /* Copy permutations                     */

@@ -45,7 +45,7 @@
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 05 sep 2020     **/
 /**                # Version 7.0  : from : 21 apr 2022     **/
-/**                                 to   : 21 apr 2022     **/
+/**                                 to   : 02 dec 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -155,6 +155,8 @@
 #define dofInit                     ESMUMPS_NAME_INTERN (dofInit)
 #define dofLoad                     ESMUMPS_NAME_INTERN (dofLoad)
 #define dofSave                     ESMUMPS_NAME_INTERN (dofSave)
+
+#define envGetStr                   SCOTCH_NAME_INTERN (envGetStr)
 
 #define esmumps2                    ESMUMPS_NAME_INTERN (esmumps2)
 
