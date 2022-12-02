@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 08 jan 2022     **/
+/**                                 to   : 02 dec 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -313,6 +313,7 @@
 #define contextValuesSetInt         SCOTCH_NAME_INTERN (contextValuesSetInt)
 
 #define envGetInt                   SCOTCH_NAME_INTERN (envGetInt)
+#define envGetStr                   SCOTCH_NAME_INTERN (envGetStr)
 
 #define fileBlockInit               SCOTCH_NAME_INTERN (fileBlockInit)
 #define fileBlockClose              SCOTCH_NAME_INTERN (fileBlockClose)
