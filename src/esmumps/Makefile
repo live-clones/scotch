@@ -53,7 +53,7 @@ include ../Makefile.inc
 
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
-scotch				:	clean
+scotch				:
 					$(MAKE) CC="$(CCS)" CCD="$(CCS)"	\
 					libesmumps$(LIB)			\
 					main_esmumps$(EXE)
