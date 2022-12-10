@@ -45,7 +45,7 @@ include ../Makefile.inc
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(srclibscotchdir) -I$(includedir) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -I$(srclibscotchdir) -I$(includedir) $(<) -o $(@) -L. -lesmumps -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
+				$(CC) $(CFLAGS) -I$(srclibscotchdir) -I$(includedir) $(<) -o $(@) -L. -lesmumps -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
 
 ##
 ##  Project rules.
