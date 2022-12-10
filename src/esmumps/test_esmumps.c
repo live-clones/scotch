@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2012,2015,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2012,2015,2018,2020,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 22 jan 2009     **/
 /**                # Version 6.0  : from : 01 dec 2012     **/
 /**                                 to   : 22 jan 2020     **/
+/**                # Version 7.0  : from : 10 dec 2022     **/
+/**                                 to   : 10 dec 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,18 +89,18 @@ char *              argv[];
   FILE *              stream;
 
   if (argc != 2) {
-    errorPrint ("main_esmumps: usage: main_esmumps graph_file");
+    errorPrint ("test_esmumps: usage: test_esmumps graph_file");
     exit       (EXIT_FAILURE);
   }
 
   graphInit (&grafdat);
   if ((stream = fopen (argv[1], "r")) == NULL) {
-    errorPrint ("main_esmumps: cannot open graph file");
+    errorPrint ("test_esmumps: cannot open graph file");
     graphExit  (&grafdat);
     exit       (EXIT_FAILURE);
   }
   if (graphLoad (&grafdat, stream, 1, 3) != 0) {  /* Base graph with base value 1, no loads */
-    errorPrint ("main_esmumps: cannot open graph file");
+    errorPrint ("test_esmumps: cannot open graph file");
     graphExit  (&grafdat);
     exit       (EXIT_FAILURE);
   }
@@ -113,7 +115,7 @@ char *              argv[];
       ((nvtab   = malloc (vertnbr * sizeof (INT))) == NULL) ||
       ((elentab = malloc (vertnbr * sizeof (INT))) == NULL) ||
       ((lasttab = malloc (vertnbr * sizeof (INT))) == NULL)) {
-    errorPrint ("main_esmumps: out of memory");
+    errorPrint ("test_esmumps: out of memory");
     free       (lentab);
     free       (nvtab);
     free       (elentab);
@@ -142,7 +144,7 @@ char *              argv[];
   graphExit (&grafdat);
 
   if (ncmpa < 0) {
-    errorPrint ("main_esmumps: error in ESMUMPSF (%d)", ncmpa);
+    errorPrint ("test_esmumps: error in ESMUMPSF (%d)", ncmpa);
     exit       (EXIT_FAILURE);
   }
 

@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2010,2012,2015,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2010,2012,2015,2020,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@ include ../Makefile.inc
 scotch				:
 					$(MAKE) CC="$(CCS)" CCD="$(CCS)"	\
 					libesmumps$(LIB)			\
-					main_esmumps$(EXE)
+					test_esmumps$(EXE)
 
 ptscotch			:	scotch
 
@@ -71,7 +71,7 @@ ptinstall			:	scotch					\
 					-$(CP) libesmumps$(LIB) $(libdir)/libptesmumps$(LIB)
 
 clean				:
-					-$(RM) *~ common.h *$(OBJ) lib*$(LIB) main_esmumps$(EXE)
+					-$(RM) *~ common.h *$(OBJ) lib*$(LIB) test_esmumps$(EXE)
 
 realclean			:	clean
 
@@ -206,7 +206,7 @@ libesmumps$(LIB)		:	$(LIBESMUMPSDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)
 					-$(RANLIB) $(@)
 
-main_esmumps$(EXE)		:	main_esmumps.c				\
+test_esmumps$(EXE)		:	test_esmumps.c				\
 					$(srclibscotchdir)/common.h		\
 					module.h				\
 					graph.h					\

@@ -35,6 +35,7 @@
 ##                Amaury JACQUES                          ##
 ##                Florent PRUVOST                         ##
 ##                Marc FUENTES                            ##
+##                Francois PELLEGRINI                     ##
 ##                                                        ##
 ##   FUNCTION   : Secondary configuration file for CMake  ##
 ##                                                        ##
@@ -42,6 +43,8 @@
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
 ##                                 to     21 apr 2022     ##
+##                # Version 7.1  : from : 11 dec 2022     ##
+##                                 to     11 dec 2022     ##
 ##                                                        ##
 ############################################################
 
@@ -101,11 +104,11 @@ target_include_directories(esmumps PRIVATE
 
 target_link_libraries(esmumps PRIVATE scotch)
 add_dependencies(esmumps scotch_h)
-add_executable(main_esmumps main_esmumps.c)
-set_target_properties(main_esmumps PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(main_esmumps PRIVATE ${GENERATED_INCLUDE_DIR}/)
-target_link_libraries(main_esmumps PRIVATE esmumps scotch scotcherrexit)
-add_dependencies(main_esmumps scotch_h)
+add_executable(test_esmumps test_esmumps.c)
+set_target_properties(test_esmumps PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(test_esmumps PRIVATE ${GENERATED_INCLUDE_DIR}/)
+target_link_libraries(test_esmumps PRIVATE esmumps scotch scotcherrexit)
+add_dependencies(test_esmumps scotch_h)
 
 # libEsMUMPS targets install
 install(EXPORT esmumpsTargets
