@@ -56,7 +56,8 @@ include ../Makefile.inc
 scotch				:
 					$(MAKE) CC="$(CCS)" CCD="$(CCS)"	\
 					libesmumps$(LIB)			\
-					test_esmumps$(EXE)
+					test_esmumps$(EXE)			\
+					test_fax$(EXE)
 
 ptscotch			:	scotch
 
@@ -71,7 +72,7 @@ ptinstall			:	scotch					\
 					-$(CP) libesmumps$(LIB) $(libdir)/libptesmumps$(LIB)
 
 clean				:
-					-$(RM) *~ common.h *$(OBJ) lib*$(LIB) test_esmumps$(EXE)
+					-$(RM) *~ common.h *$(OBJ) lib*$(LIB) test_esmumps$(EXE) test_fax$(EXE)
 
 realclean			:	clean
 
@@ -212,6 +213,19 @@ test_esmumps$(EXE)		:	test_esmumps.c				\
 					graph.h					\
 					order.h					\
 					symbol.h				\
+					esmumps.h				\
+					libesmumps$(LIB)			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)
+
+test_fax$(EXE)			:	test_fax.c				\
+					$(srclibscotchdir)/common.h		\
+					module.h				\
+					graph.h					\
+					order.h					\
+					dof.h					\
+					symbol.h				\
+					fax.h					\
 					esmumps.h				\
 					libesmumps$(LIB)			\
 					$(libdir)/libscotch$(LIB)		\

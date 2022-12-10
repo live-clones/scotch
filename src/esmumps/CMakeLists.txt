@@ -104,11 +104,18 @@ target_include_directories(esmumps PRIVATE
 
 target_link_libraries(esmumps PRIVATE scotch)
 add_dependencies(esmumps scotch_h)
+
 add_executable(test_esmumps test_esmumps.c)
 set_target_properties(test_esmumps PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(test_esmumps PRIVATE ${GENERATED_INCLUDE_DIR}/)
 target_link_libraries(test_esmumps PRIVATE esmumps scotch scotcherrexit)
 add_dependencies(test_esmumps scotch_h)
+
+add_executable(test_fax test_fax.c)
+set_target_properties(test_fax PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(test_fax PRIVATE ${GENERATED_INCLUDE_DIR}/)
+target_link_libraries(test_fax PRIVATE esmumps scotch scotcherrexit)
+add_dependencies(test_fax scotch_h)
 
 # libEsMUMPS targets install
 install(EXPORT esmumpsTargets
