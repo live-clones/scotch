@@ -271,7 +271,7 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
           memFree    (bloktax + baseval);
           memFree    (cblktax + baseval);
           memFree    (ctrbtax + baseval);
-          return     (1);
+          return (1);
         }
         bloktax = bloktmp - baseval;
       }
@@ -431,10 +431,10 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
 #ifdef FAX_DEBUG
               if (tlokfrm >= tlokmax) {
                 errorPrint ("symbolFax: internal error (1)");
-                return     (1);
+                return (1);
               }
 #endif /* FAX_DEBUG */
-	      tlokfre = tlokfrm ++;               /* New free block is first unchained block */
+              tlokfre = tlokfrm ++;               /* New free block is first unchained block */
               tloktab[tlokfre].nextnum = ~0;      /* Make it the end of its own pseudo-chain */
             }
             tloktmp                  =
@@ -505,7 +505,7 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
   if (symbolCheck (symbptr) != 0) {
     errorPrint ("symbolFax: internal error (2)");
     symbolExit (symbptr);
-    return     (1);
+    return (1);
   }
 #endif /* FAX_DEBUG */
 
