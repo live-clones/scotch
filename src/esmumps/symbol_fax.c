@@ -212,7 +212,7 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
     INT                 colmax;                   /* Maximum column index for current column block     */
 
     {                                             /* Compute offsets and check for array size */
-      INT                 degrsum;
+      INT                 degrmax;                /* Maximum number of local blocks in array  */
       INT                 hashsiz;
       INT                 hashmax;
       INT                 ctrbtmp;
@@ -228,11 +228,13 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
       cblktax[cblknum].lcolnum = colmax - 1;
       cblktax[cblknum].bloknum = bloknum;
 
-      degrsum = 0;
-      for ( ; colnum < colmax; colnum ++)         /* For all columns                          */
-        degrsum += SYMBOL_FAX_VERTEX_DEGREE (ngbdptr, peritax[colnum]); /* Add column degrees */
+      degrmax = 0;
+      for ( ; colnum < colmax; colnum ++)         /* For all columns                              */
+        degrmax += SYMBOL_FAX_VERTEX_DEGREE (ngbdptr, peritax[colnum]); /* Add column degrees     */
+      if (degrmax > vertnbr)                      /* There cannot be more neighbors than vertices */
+        degrmax = vertnbr;
 
-      for (hashmax = 256; hashmax < degrsum; hashmax *= 2) ; /* Get upper bound on hash table size */
+      for (hashmax = 256; hashmax < degrmax; hashmax *= 2) ; /* Get upper bound on hash table size */
       hashsiz = hashmax << 2;                     /* Fill hash table at 1/4 of capacity            */
       hashmsk = hashsiz - 1;
 
@@ -240,11 +242,11 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
            ctrbtmp != ~0; ctrbtmp = ctrbtax[ctrbtmp])
         ctrbsum += cblktax[ctrbtmp + 1].bloknum - cblktax[ctrbtmp].bloknum - 2; /* Sum contributing column blocks */
 
-      tlokmax = degrsum + ctrbsum;                /* Maximum possible number of blocks in temporary area */
+      tlokmax = degrmax + ctrbsum;                /* Maximum possible number of blocks in temporary area */
       sortoft = ((ptrdiff_t) tlokmax) * sizeof (SymbolBlok);
       if ((((ptrdiff_t) hashsiz) * sizeof (INT)) > sortoft) /* Compute offset of sort area */
         sortoft = (((ptrdiff_t) hashsiz) * sizeof (INT));
-      tlokoft = sortoft + ((ptrdiff_t) degrsum) * sizeof (INT); /* Compute offset of temporary block area */
+      tlokoft = sortoft + ((ptrdiff_t) degrmax) * sizeof (INT); /* Compute offset of temporary block area */
       tlndoft = tlokoft + ((ptrdiff_t) tlokmax) * sizeof (SymbolFaxTlok); /* Compute end of area          */
 
       if (((byte *) (bloktax + bloknum) + tlndoft) > /* If not enough room */
