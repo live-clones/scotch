@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2020,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,6 +56,8 @@
 /**                                 to   : 06 feb 2020     **/
 /**                # Version 6.1  : from : 24 feb 2020     **/
 /**                                 to   : 24 feb 2020     **/
+/**                # Version 7.1  : from : 11 dec 2022     **/
+/**                                 to   : 11 dec 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -214,9 +216,9 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
       INT                 hashsiz;
       INT                 hashmax;
       INT                 ctrbtmp;
-      INT                 sortoft;                /* Offset of sort array                   */
-      INT                 tlokoft;                /* Offset of temporary block array        */
-      INT                 tlndoft;                /* Offset of end of temporary block array */
+      ptrdiff_t           sortoft;                /* Offset of sort array                   */
+      ptrdiff_t           tlokoft;                /* Offset of temporary block array        */
+      ptrdiff_t           tlndoft;                /* Offset of end of temporary block array */
       INT                 tlokmax;
 
       colnum = rangtax[cblknum];
@@ -239,11 +241,11 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
         ctrbsum += cblktax[ctrbtmp + 1].bloknum - cblktax[ctrbtmp].bloknum - 2; /* Sum contributing column blocks */
 
       tlokmax = degrsum + ctrbsum;                /* Maximum possible number of blocks in temporary area */
-      sortoft = tlokmax * sizeof (SymbolBlok);
-      if ((hashsiz * sizeof (INT)) > sortoft)     /* Compute offset of sort area */
-        sortoft = (hashsiz * sizeof (INT));
-      tlokoft = sortoft + degrsum * sizeof (INT); /* Compute offset of temporary block area */
-      tlndoft = tlokoft + tlokmax * sizeof (SymbolFaxTlok); /* Compute end of area          */
+      sortoft = ((ptrdiff_t) tlokmax) * sizeof (SymbolBlok);
+      if ((((ptrdiff_t) hashsiz) * sizeof (INT)) > sortoft) /* Compute offset of sort area */
+        sortoft = (((ptrdiff_t) hashsiz) * sizeof (INT));
+      tlokoft = sortoft + ((ptrdiff_t) degrsum) * sizeof (INT); /* Compute offset of temporary block area */
+      tlndoft = tlokoft + ((ptrdiff_t) tlokmax) * sizeof (SymbolFaxTlok); /* Compute end of area          */
 
       if (((byte *) (bloktax + bloknum) + tlndoft) > /* If not enough room */
           ((byte *) (bloktax + blokmax))) {
