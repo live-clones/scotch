@@ -80,6 +80,11 @@ option(BUILD_LIBSCOTCHMETIS "Build ScotchMeTiS library" ON)
 # Install our MeTiS header stubs
 option(INSTALL_METIS_HEADERS "Install libScotchMeTiS headers in destination directory" ON)
 
+# compress format options
+option(USE_ZLIB "link against ZLIB for compress format if found" ON)
+option(USE_LZMA "link against LZMA for compress format if found" ON)
+option(USE_BZ2 "link against BZ2 for compress format if found" ON)
+
 # Allow for testing
 enable_testing()
 
