@@ -106,6 +106,10 @@ foreach(version 3 5)
     set_target_properties(scotchmetisv${version} PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/metis.h;${GENERATED_INCLUDE_DIR}/metisf.h")
   endif()
 
+  if(APPLE)
+    set_target_properties(scotchmetisv${version} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  endif(APPLE)
+
   # libScotchMeTiS targets install
   install(EXPORT scotchmetisTargets
     FILE scotchmetisTargets.cmake
@@ -169,6 +173,10 @@ if(BUILD_PTSCOTCH)
     if(INSTALL_METIS_HEADERS)
       set_target_properties(ptscotchparmetisv${version} PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/parmetis.h")
     endif()
+
+    if(APPLE)
+      set_target_properties(ptscotchparmetisv${version} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    endif(APPLE)
 
     # libPTScotchParMeTiS targets install
     install(EXPORT ptscotchparmetisTargets

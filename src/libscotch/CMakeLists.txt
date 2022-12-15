@@ -515,6 +515,10 @@ target_include_directories(scotch PUBLIC
         $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include> )
 
+if(APPLE)
+  set_target_properties(scotch PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+endif(APPLE)
+
 # Add (de)compression libraries
 if(USE_ZLIB)
   find_package(ZLIB)
@@ -751,16 +755,25 @@ set(PTSCOTCH_C_SOURCES
 if(BUILD_PTSCOTCH)
   add_library(ptscotch
     ${PTSCOTCH_C_SOURCES})
+
   set_target_properties(ptscotch PROPERTIES
     VERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL}
     COMPILE_FLAGS -DSCOTCH_PTSCOTCH)
+
   target_link_libraries(ptscotch PUBLIC scotch MPI::MPI_C)
+
   target_include_directories(ptscotch PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:include> )
+
   add_dependencies(ptscotch ptscotch_h scotch_h)
+
+  if(APPLE)
+    set_target_properties(ptscotch PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  endif(APPLE)
+
   if(Threads_FOUND)
     target_compile_definitions(ptscotch PUBLIC SCOTCH_PTHREAD COMMON_PTHREAD)
     target_link_libraries(ptscotch PUBLIC Threads::Threads)

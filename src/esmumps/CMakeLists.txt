@@ -96,6 +96,9 @@ set(esmumps_headers
 add_library(esmumps ${esmumps_src} ${esmumps_headers})
 set_target_properties(esmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/esmumps.h")
 
+if(APPLE)
+  set_target_properties(esmumps PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+endif(APPLE)
 
 target_include_directories(esmumps PRIVATE
   $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
@@ -103,6 +106,7 @@ target_include_directories(esmumps PRIVATE
   $<INSTALL_INTERFACE:include>)
 
 target_link_libraries(esmumps PRIVATE scotch)
+
 add_dependencies(esmumps scotch_h)
 
 add_executable(test_esmumps test_esmumps.c)
