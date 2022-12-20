@@ -247,10 +247,10 @@ GraphCoarsenData * restrict const coarptr)
     coargrafptr->vertnnd = coarvertnbr + baseval;
     coargrafptr->velosum = finegrafptr->velosum;  /* Keep load of finer graph         */
     if ((memAllocGroup ((void **) (void *)        /* Allocate coarser graph structure */
-                        &coargrafptr->verttax, (size_t) (coarvertnbr          * sizeof (Gnum)),
-                        &coargrafptr->vendtax, (size_t) (coarvendsiz          * sizeof (Gnum)),
-                        &coargrafptr->velotax, (size_t) (coarvertnbr          * sizeof (Gnum)),
-                        &coarmulttab,          (size_t) (coarmultsiz          * sizeof (GraphCoarsenMulti)), NULL) == NULL) ||
+                        &coargrafptr->verttax, (size_t) (coarvertnbr * sizeof (Gnum)),
+                        &coargrafptr->vendtax, (size_t) (coarvendsiz * sizeof (Gnum)),
+                        &coargrafptr->velotax, (size_t) (coarvertnbr * sizeof (Gnum)),
+                        &coarmulttab,          (size_t) (coarmultsiz * sizeof (GraphCoarsenMulti)), NULL) == NULL) ||
         ((coargrafptr->edgetax = memAlloc (finegrafptr->edgenbr * 2 * sizeof (Gnum))) == NULL)) { /* "* 2" for edlotab */
       errorPrint ("graphCoarsen3: out of memory (1)");
       if (coargrafptr->verttax != NULL)
