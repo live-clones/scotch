@@ -251,10 +251,18 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
           ((byte *) (bloktax + blokmax))) {
         SymbolBlok *        bloktmp;              /* Temporary pointer for array resizing */
 
-        do
+        do {
           blokmax = blokmax + (blokmax >> 2) + 4; /* Increase block array size by 25% as long as it does not fit */
-        while (((byte *) (bloktax + bloknum) + tlndoft) >
-               ((byte *) (bloktax + blokmax)));
+
+          if (blokmax < bloknum) {
+            errorPrint ("symbolFax: integer overflow");
+            memFree    (bloktax + baseval);
+            memFree    (cblktax + baseval);
+            memFree    (ctrbtax + baseval);
+            return (1);
+          }
+        } while (((byte *) (bloktax + bloknum) + tlndoft) >
+                 ((byte *) (bloktax + blokmax)));
 
         if ((bloktmp = (SymbolBlok *) memRealloc (bloktax + baseval, (blokmax * sizeof (SymbolBlok)))) == NULL) {
           errorPrint ("symbolFax: out of memory (2)");
