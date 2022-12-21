@@ -899,7 +899,8 @@ const VmeshSeparateFmParam * restrict const paraptr) /*+ Method parameters    +*
         savenbr  = 0;
         moveflag = 1;
         mswpnum ++;
-      } else if (ncmpload2 == ncmpload2bst) {
+      }
+      else if (ncmpload2 == ncmpload2bst) {
         if (abs (ncmploaddlt) < abs (ncmploaddltbst)) {
           ncmploaddltbst = ncmploaddlt;           /* This move was effective */
           movenbr  =

@@ -661,7 +661,8 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
         movenbr         =
         savenbr         = 0;
         mswpnum ++;
-      } else if (commload == commloadbst) {
+      }
+      else if (commload == commloadbst) {
         if (abs (compload0dlt) < abs (compload0dltbst)) {
           compload0dltbst = compload0dlt;         /* This move was effective */
           commgainextnbst = commgainextn;
