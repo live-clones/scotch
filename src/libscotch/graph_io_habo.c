@@ -112,7 +112,7 @@ const char * const          dataptr)              /* Tag value        */
       ((habmattag = (Gnum) atol (dataptr)) == 0) && /* Get tag value */
       (dataptr[0] != '0')) {
     errorPrint ("graphGeomLoadHabo: invalid parameter");
-    return     (1);
+    return (1);
   }
 
   habmattype[0] =
@@ -125,7 +125,7 @@ const char * const          dataptr)              /* Tag value        */
         (fgets (habmatbuf[2], 83, filesrcptr) == NULL) ||
         (fgets (habmatbuf[3], 83, filesrcptr) == NULL)) {
       errorPrint ("graphGeomLoadHabo: bad input (1)");
-      return     (1);
+      return (1);
     }
     habmatbuf[1][70] = '\0';                      /* Extract header values */
     habrhsnbr = (Gnum) atol (&habmatbuf[1][56]);
@@ -146,19 +146,19 @@ const char * const          dataptr)              /* Tag value        */
     habmatbuf[3][32] = '\0';
     if (graphGeomLoadHaboFormat (&habnzrfmt, &habmatbuf[3][16]) != 0) {
       errorPrint ("graphGeomLoadHabo: bad input (2)");
-      return     (1);
+      return (1);
     }
     habmatbuf[3][16] = '\0';
     if (graphGeomLoadHaboFormat (&habcolfmt, &habmatbuf[3][0]) != 0) {
       errorPrint ("graphGeomLoadHabo: bad input (3)");
-      return     (1);
+      return (1);
     }
 
     if (habrhsnbr != 0) {
       while ((c = getc (filesrcptr)) != '\n'){    /* Skip RHS format line */
         if (c == EOF) {
           errorPrint ("graphGeomLoadHabo: bad input (4)");
-          return     (1);
+          return (1);
         }
       }
     }
@@ -168,7 +168,7 @@ const char * const          dataptr)              /* Tag value        */
         while ((c = getc (filesrcptr)) != '\n') { /* Skip line              */
           if (c == EOF) {
             errorPrint ("graphGeomLoadHabo: bad input (5)");
-            return     (1);
+            return (1);
           }
         }
       }
@@ -177,11 +177,11 @@ const char * const          dataptr)              /* Tag value        */
 
   if (habmattype[2] != 'A') {
     errorPrint ("graphGeomLoadHabo: only assembled matrices supported; for unassembled matrices, use the mesh version of the tools");
-    return     (1);
+    return (1);
   }
   if (habmattype[1] == 'R') {
     errorPrint ("graphGeomLoadHabo: rectangular matrices not supported");
-    return     (1);
+    return (1);
   }
 
   if (((grafptr->verttax = (Gnum *) memAlloc ((habcolnbr + 1) * sizeof (Gnum))) == NULL) ||
@@ -235,14 +235,14 @@ const char * const          dataptr)              /* Tag value        */
     if (c == EOF) {
       errorPrint ("graphGeomLoadHabo: bad input (6)");
       graphFree  (grafptr);
-      return     (1);
+      return (1);
     }
     habcoltab[habcolnum] = habcolval;
   }
   if (habcoltab[habcolnbr] != (Gnum) habnzrnbr + 1) {
     errorPrint ("graphGeomLoadHabo: bad input (7)");
     graphFree  (grafptr);
-    return     (1);
+    return (1);
   }
 
   memSet (grafptr->vendtax, 0, habcolnbr * sizeof (Gnum)); /* Here, vendtax = verttab */
@@ -272,7 +272,7 @@ const char * const          dataptr)              /* Tag value        */
       if (c == EOF) {
         errorPrint ("graphGeomLoadHabo: bad input (8)");
         graphFree  (grafptr);
-        return     (1);
+        return (1);
       }
       habnzrtab[habnzrnum] = habnzrval;
       if (habnzrval != vertnum) {                 /* If not loop edge      */
@@ -312,7 +312,7 @@ const char * const          dataptr)              /* Tag value        */
   if ((hashtab = (GraphGeomHaboHash *) memAlloc ((hashmsk + 1) * sizeof (GraphGeomHaboHash))) == NULL) {
     errorPrint ("graphGeomLoadHabo: out of memory (2)");
     graphFree  (grafptr);
-    return     (1);
+    return (1);
   }
   memSet (hashtab, ~0, (hashmsk + 1) * sizeof (GraphGeomHaboHash)); /* Pre-set hash table */
 
@@ -352,7 +352,7 @@ const char * const          dataptr)              /* Tag value        */
   if (graphCheck (grafptr) != 0) {                /* Check graph consistency */
     errorPrint ("graphGeomLoadHabo: internal error");
     graphFree  (grafptr);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_GRAPH2 */
 
