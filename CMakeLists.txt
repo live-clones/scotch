@@ -37,7 +37,7 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     04 feb 2022     ##
+##                                 to     20 dec 2022     ##
 ##                                                        ##
 ############################################################
 
