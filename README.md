@@ -39,7 +39,7 @@ Obtaining Scotch
 
 **Scotch** is publicly available under the CeCILL-C free software license, as described [here](https://gitlab.inria.fr/scotch/scotch/blob/master/LICENSE_en.txt). The license itself is available [here](https://gitlab.inria.fr/scotch/scotch/-/blob/master/doc/CeCILL-C_V1-en.txt).
 
-To use lastest version of **Scotch**, please clone the master branch:
+To use the lastest version of **Scotch**, please clone the master branch:
 
     git clone git@gitlab.inria.fr:scotch/scotch.git
 
@@ -55,9 +55,27 @@ Installation
 
 Two flavors of installation are available:
 
-* with CMake;
+* With CMake, using version 3.10 or higher:
 
-* with a traditional Makefile.
+```bash
+mkdir build && cd build && cmake .. && make -j5
+```
+
+Many options can be provided from the command line, using the CMmake flag `-D`.
+
+Linux and MacOS-X are fully supported. We plan to support Windows systems soon. MacOS-X users must use recent versions of Flex and Bison that are available from [Brew](https://brew.sh/); older versions from Xcode will fail. To use them, run, e.g.:
+
+``` bash
+cmake -DBUILD_SHARED_LIBS=ON -DBISON_EXECUTABLE=/usr/local/Cellar/bison/3.8.2/bin/bison -DFLEX_EXECUTABLE=/usr/local/Cellar/flex/2.6.4_2/bin/flex
+```
+
+You may also use alternate compilers, by overloading the `CMAKE_*_COMPILER` variables, e.g.:
+
+```bash
+cmake -DCMAKE_Fortran_COMPILER=ifx -DCMAKE_C_COMPILER=icx -DMPI_HOME=/path/to/oneAPI/mpi/latest/
+```
+
+* With a traditional Makefile:
 
 CMake installation is easy and straightforward. It allows one to compile and install **Scotch** and **PT-Scotch**, depending on flags such as the use of POSIX Pthreads and/or MPI. The traditional Makefile installation gives additional freedom to perform (cross-)compilation for non-standard systems and configurations.
 
