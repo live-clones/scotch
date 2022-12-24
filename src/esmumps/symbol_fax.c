@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2020,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,6 +56,8 @@
 /**                                 to   : 06 feb 2020     **/
 /**                # Version 6.1  : from : 24 feb 2020     **/
 /**                                 to   : 24 feb 2020     **/
+/**                # Version 7.1  : from : 11 dec 2022     **/
+/**                                 to   : 11 dec 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -210,13 +212,13 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
     INT                 colmax;                   /* Maximum column index for current column block     */
 
     {                                             /* Compute offsets and check for array size */
-      INT                 degrsum;
+      INT                 degrmax;                /* Maximum number of local blocks in array  */
       INT                 hashsiz;
       INT                 hashmax;
       INT                 ctrbtmp;
-      INT                 sortoft;                /* Offset of sort array                   */
-      INT                 tlokoft;                /* Offset of temporary block array        */
-      INT                 tlndoft;                /* Offset of end of temporary block array */
+      ptrdiff_t           sortoft;                /* Offset of sort array                   */
+      ptrdiff_t           tlokoft;                /* Offset of temporary block array        */
+      ptrdiff_t           tlndoft;                /* Offset of end of temporary block array */
       INT                 tlokmax;
 
       colnum = rangtax[cblknum];
@@ -226,11 +228,13 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
       cblktax[cblknum].lcolnum = colmax - 1;
       cblktax[cblknum].bloknum = bloknum;
 
-      degrsum = 0;
-      for ( ; colnum < colmax; colnum ++)         /* For all columns                          */
-        degrsum += SYMBOL_FAX_VERTEX_DEGREE (ngbdptr, peritax[colnum]); /* Add column degrees */
+      degrmax = 0;
+      for ( ; colnum < colmax; colnum ++)         /* For all columns                              */
+        degrmax += SYMBOL_FAX_VERTEX_DEGREE (ngbdptr, peritax[colnum]); /* Add column degrees     */
+      if (degrmax > vertnbr)                      /* There cannot be more neighbors than vertices */
+        degrmax = vertnbr;
 
-      for (hashmax = 256; hashmax < degrsum; hashmax *= 2) ; /* Get upper bound on hash table size */
+      for (hashmax = 256; hashmax < degrmax; hashmax *= 2) ; /* Get upper bound on hash table size */
       hashsiz = hashmax << 2;                     /* Fill hash table at 1/4 of capacity            */
       hashmsk = hashsiz - 1;
 
@@ -238,28 +242,36 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
            ctrbtmp != ~0; ctrbtmp = ctrbtax[ctrbtmp])
         ctrbsum += cblktax[ctrbtmp + 1].bloknum - cblktax[ctrbtmp].bloknum - 2; /* Sum contributing column blocks */
 
-      tlokmax = degrsum + ctrbsum;                /* Maximum possible number of blocks in temporary area */
-      sortoft = tlokmax * sizeof (SymbolBlok);
-      if ((hashsiz * sizeof (INT)) > sortoft)     /* Compute offset of sort area */
-        sortoft = (hashsiz * sizeof (INT));
-      tlokoft = sortoft + degrsum * sizeof (INT); /* Compute offset of temporary block area */
-      tlndoft = tlokoft + tlokmax * sizeof (SymbolFaxTlok); /* Compute end of area          */
+      tlokmax = degrmax + ctrbsum;                /* Maximum possible number of blocks in temporary area */
+      sortoft = ((ptrdiff_t) tlokmax) * sizeof (SymbolBlok);
+      if ((((ptrdiff_t) hashsiz) * sizeof (INT)) > sortoft) /* Compute offset of sort area */
+        sortoft = (((ptrdiff_t) hashsiz) * sizeof (INT));
+      tlokoft = sortoft + ((ptrdiff_t) degrmax) * sizeof (INT); /* Compute offset of temporary block area */
+      tlndoft = tlokoft + ((ptrdiff_t) tlokmax) * sizeof (SymbolFaxTlok); /* Compute end of area          */
 
       if (((byte *) (bloktax + bloknum) + tlndoft) > /* If not enough room */
           ((byte *) (bloktax + blokmax))) {
         SymbolBlok *        bloktmp;              /* Temporary pointer for array resizing */
 
-        do
+        do {
           blokmax = blokmax + (blokmax >> 2) + 4; /* Increase block array size by 25% as long as it does not fit */
-        while (((byte *) (bloktax + bloknum) + tlndoft) >
-               ((byte *) (bloktax + blokmax)));
+
+          if (blokmax < bloknum) {
+            errorPrint ("symbolFax: integer overflow");
+            memFree    (bloktax + baseval);
+            memFree    (cblktax + baseval);
+            memFree    (ctrbtax + baseval);
+            return (1);
+          }
+        } while (((byte *) (bloktax + bloknum) + tlndoft) >
+                 ((byte *) (bloktax + blokmax)));
 
         if ((bloktmp = (SymbolBlok *) memRealloc (bloktax + baseval, (blokmax * sizeof (SymbolBlok)))) == NULL) {
           errorPrint ("symbolFax: out of memory (2)");
           memFree    (bloktax + baseval);
           memFree    (cblktax + baseval);
           memFree    (ctrbtax + baseval);
-          return     (1);
+          return (1);
         }
         bloktax = bloktmp - baseval;
       }
@@ -419,10 +431,10 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
 #ifdef FAX_DEBUG
               if (tlokfrm >= tlokmax) {
                 errorPrint ("symbolFax: internal error (1)");
-                return     (1);
+                return (1);
               }
 #endif /* FAX_DEBUG */
-	      tlokfre = tlokfrm ++;               /* New free block is first unchained block */
+              tlokfre = tlokfrm ++;               /* New free block is first unchained block */
               tloktab[tlokfre].nextnum = ~0;      /* Make it the end of its own pseudo-chain */
             }
             tloktmp                  =
@@ -493,7 +505,7 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
   if (symbolCheck (symbptr) != 0) {
     errorPrint ("symbolFax: internal error (2)");
     symbolExit (symbptr);
-    return     (1);
+    return (1);
   }
 #endif /* FAX_DEBUG */
 

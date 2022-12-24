@@ -600,7 +600,8 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
           savenbr  = 0;
           moveflag = 1;
           mswpnum ++;
-        } else if (compload2 == compload2bst) {
+        }
+        else if (compload2 == compload2bst) {
           if (comploadabsdlt < comploadabsdltbst) {
             comploaddltbst = comploaddlt;         /* This move was effective */
             movenbr  =

@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2010,2012,2015,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2010,2012,2015,2020,2022 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@ include ../Makefile.inc
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(srclibscotchdir) -I$(includedir) -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
-		 		$(CC) $(CFLAGS) -I$(srclibscotchdir) -I$(includedir) $(<) -o $(@) -L. -lesmumps -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
+				$(CC) $(CFLAGS) -I$(srclibscotchdir) -I$(includedir) $(<) -o $(@) -L. -lesmumps -L$(libdir) -lscotch -lscotcherrexit $(LDFLAGS)
 
 ##
 ##  Project rules.
@@ -53,10 +53,11 @@ include ../Makefile.inc
 
 .PHONY				:	ptscotch	scotch	ptinstall	install	clean	realclean
 
-scotch				:	clean
+scotch				:
 					$(MAKE) CC="$(CCS)" CCD="$(CCS)"	\
 					libesmumps$(LIB)			\
-					main_esmumps$(EXE)
+					test_esmumps$(EXE)			\
+					test_fax$(EXE)
 
 ptscotch			:	scotch
 
@@ -71,7 +72,7 @@ ptinstall			:	scotch					\
 					-$(CP) libesmumps$(LIB) $(libdir)/libptesmumps$(LIB)
 
 clean				:
-					-$(RM) *~ common.h *$(OBJ) lib*$(LIB) main_esmumps$(EXE)
+					-$(RM) *~ common.h *$(OBJ) lib*$(LIB) test_esmumps$(EXE) test_fax$(EXE)
 
 realclean			:	clean
 
@@ -87,6 +88,7 @@ LIBESMUMPSDEPS =			dof$(OBJ)				\
 					library_esmumps_strats$(OBJ)		\
 					order$(OBJ)				\
 					order_check$(OBJ)			\
+					order_io$(OBJ)				\
 					order_scotch_graph$(OBJ)		\
 					symbol$(OBJ)				\
 					symbol_check$(OBJ)			\
@@ -161,6 +163,12 @@ order_scotch_graph$(OBJ)	:	order_scotch_graph.c			\
 					graph.h					\
 					order.h
 
+order_io$(OBJ)			:	order_io.c				\
+					module.h				\
+					$(srclibscotchdir)/common.h		\
+					graph.h					\
+					order.h
+
 symbol$(OBJ)			:	symbol.c				\
 					module.h				\
 					$(srclibscotchdir)/common.h		\
@@ -199,12 +207,25 @@ libesmumps$(LIB)		:	$(LIBESMUMPSDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)
 					-$(RANLIB) $(@)
 
-main_esmumps$(EXE)		:	main_esmumps.c				\
+test_esmumps$(EXE)		:	test_esmumps.c				\
 					$(srclibscotchdir)/common.h		\
 					module.h				\
 					graph.h					\
 					order.h					\
 					symbol.h				\
+					esmumps.h				\
+					libesmumps$(LIB)			\
+					$(libdir)/libscotch$(LIB)		\
+					$(libdir)/libscotcherrexit$(LIB)
+
+test_fax$(EXE)			:	test_fax.c				\
+					$(srclibscotchdir)/common.h		\
+					module.h				\
+					graph.h					\
+					order.h					\
+					dof.h					\
+					symbol.h				\
+					fax.h					\
 					esmumps.h				\
 					libesmumps$(LIB)			\
 					$(libdir)/libscotch$(LIB)		\

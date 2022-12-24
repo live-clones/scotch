@@ -3102,11 +3102,13 @@ vmesh_separate_zr$(OBJ)		:	vmesh_separate_zr.c			\
 					vmesh_separate_zr.h
 
 vmesh_separate_st$(OBJ)		:	vmesh_separate_st.c			\
-					gain.h					\
 					module.h				\
 					common.h				\
+					gain.h					\
 					parser.h				\
 					graph.h					\
+					vgraph.h				\
+					vgraph_separate_st.h			\
 					mesh.h					\
 					mesh_coarsen.h				\
 					vmesh.h					\

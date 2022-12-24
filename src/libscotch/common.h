@@ -387,6 +387,7 @@ typedef struct File_ {
 */
 
 int                         envGetInt           (const char * const, const int);
+const char *                envGetStr           (const char * const, const char *);
 
 void *                      memAllocGroup       (void **, ...);
 void *                      memReallocGroup     (void *, ...);

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2012,2015,2018,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2022 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,21 +31,15 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : main_mumps.c                            **/
+/**   NAME       : test_fax.c                              **/
 /**                                                        **/
 /**   AUTHORS    : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This is the test module for the MUMPS   **/
-/**                interface routine.                      **/
+/**   FUNCTION   : This is the test module for the         **/
+/**                symbolic factorization routine.         **/
 /**                                                        **/
-/**   DATES      : # Version 0.0  : from : 17 may 2001     **/
-/**                                 to   : 17 may 2001     **/
-/**                # Version 1.0  : from : 17 jun 2005     **/
-/**                                 to   : 17 jun 2005     **/
-/**                # Version 5.1  : from : 22 jan 2009     **/
-/**                                 to   : 22 jan 2009     **/
-/**                # Version 6.0  : from : 01 dec 2012     **/
-/**                                 to   : 22 jan 2020     **/
+/**   DATES      : # Version 7.0  : from : 21 apr 2022     **/
+/**                                 to   : 11 dec 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,9 +51,10 @@
 #include "common.h"
 #include "scotch.h"
 #include "graph.h"
-#include "esmumps.h"
-
-void                        ESMUMPSF            (const INT * const, const INT * const, INT * const, const INT * const, INT * const, INT * const, INT * const, INT * const, INT * const, INT * const);
+#include "order.h"
+#include "dof.h"
+#include "symbol.h"
+#include "fax.h"
 
 /******************************/
 /*                            */
@@ -73,78 +68,66 @@ int                 argc;
 char *              argv[];
 {
   Graph               grafdat;                    /* Graph to load */
-  INT                 vertnbr;
-  INT *               verttab;
-  INT                 edgenbr;
-  INT *               edgetab;
-  INT *               lentab;
-  INT *               nvtab;
-  INT *               elentab;
-  INT *               lasttab;
-  INT                 pfree;
-  INT                 ncmpa;
-  INT                 vertnum;
+  Order               ordedat;
+  SymbolMatrix        symbdat;
+  Dof                 deofdat;
   FILE *              stream;
+  double              nonzval;
+  double              opcoval;
 
-  if (argc != 2) {
-    errorPrint ("main_esmumps: usage: main_esmumps graph_file");
+  if (argc != 3) {
+    errorPrint ("test_fax: usage: test_fax graph_file ordering_file");
     exit       (EXIT_FAILURE);
   }
 
   graphInit (&grafdat);
   if ((stream = fopen (argv[1], "r")) == NULL) {
-    errorPrint ("main_esmumps: cannot open graph file");
+    errorPrint ("test_fax: cannot open graph file");
     graphExit  (&grafdat);
     exit       (EXIT_FAILURE);
   }
-  if (graphLoad (&grafdat, stream, 1, 3) != 0) {  /* Base graph with base value 1, no loads */
-    errorPrint ("main_esmumps: cannot open graph file");
+  if (graphLoad (&grafdat, stream, -1, 3) != 0) { /* Graph with untouched base value and loads */
+    errorPrint ("test_fax: cannot open graph file");
     graphExit  (&grafdat);
     exit       (EXIT_FAILURE);
   }
   fclose (stream);
 
-  graphData (&grafdat, NULL, &vertnbr, &verttab, NULL, NULL, NULL, &edgenbr, &edgetab, NULL);
-
-  nvtab   =                                       /* Assume an error */
-  elentab =
-  lasttab = NULL;
-  if (((lentab  = malloc (vertnbr * sizeof (INT))) == NULL) ||
-      ((nvtab   = malloc (vertnbr * sizeof (INT))) == NULL) ||
-      ((elentab = malloc (vertnbr * sizeof (INT))) == NULL) ||
-      ((lasttab = malloc (vertnbr * sizeof (INT))) == NULL)) {
-    errorPrint ("main_esmumps: out of memory");
-    free       (lentab);
-    free       (nvtab);
-    free       (elentab);
-    free       (lasttab);
+  orderInit (&ordedat);
+  if ((stream = fopen (argv[2], "r")) == NULL) {
+    errorPrint ("test_fax: cannot open ordering file");
+    orderExit  (&ordedat);
     graphExit  (&grafdat);
     exit       (EXIT_FAILURE);
   }
-
-  for (vertnum = 0; vertnum < vertnbr; vertnum ++) {
-    if (verttab[vertnum] == verttab[vertnum + 1]) {
-      lentab[vertnum] = 0;
-      verttab[vertnum] = 0;                       /* Graph structure no longer valid in Emilio */
-    }
-    else
-      lentab[vertnum] = verttab[vertnum + 1] - verttab[vertnum];
-  }
-
-  pfree = edgenbr + 1;
-  ESMUMPSF (&vertnbr, &edgenbr, verttab, &pfree,
-            lentab, edgetab, nvtab, elentab, lasttab, &ncmpa);
-
-  free      (lentab);
-  free      (nvtab);
-  free      (elentab);
-  free      (lasttab);
-  graphExit (&grafdat);
-
-  if (ncmpa < 0) {
-    errorPrint ("main_esmumps: error in ESMUMPSF (%d)", ncmpa);
+  if (orderLoad (&ordedat, stream) != 0) {
+    errorPrint ("test_fax: cannot open ordering file");
+    orderExit  (&ordedat);
+    graphExit  (&grafdat);
     exit       (EXIT_FAILURE);
   }
+  fclose (stream);
+
+  symbolInit (&symbdat);
+  if (symbolFaxGraph (&symbdat, &grafdat, &ordedat) != 0) {
+    errorPrint ("test_fax: error in symbolic factorization");
+    exit       (EXIT_FAILURE);
+  }
+
+  dofInit  (&deofdat);
+  dofGraph (&deofdat, &grafdat, 1, ordedat.peritab);
+
+  if (symbolCost (&symbdat, &deofdat, SYMBOLCOSTLDLT, &nonzval, &opcoval) != 0) {
+    errorPrint ("test_fax: error in symbolic cost computation");
+    exit       (EXIT_FAILURE);
+  }
+
+  printf ("NNZ: %le\nOPC: %le\n", nonzval, opcoval);
+
+  dofExit    (&deofdat);
+  symbolExit (&symbdat);
+  orderExit  (&ordedat);
+  graphExit  (&grafdat);
 
   exit (EXIT_SUCCESS);
 }

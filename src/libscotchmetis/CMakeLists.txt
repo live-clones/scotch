@@ -67,7 +67,7 @@ add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/metisf.h
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_metis_f.h ${CMAKE_CURRENT_BINARY_DIR}
   COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_metis_f.h ${GENERATED_INCLUDE_DIR}/metisf.h DEPENDS dummysizes
   DEPENDS library_metis_f.h
-  COMMENT "Generating metis.h")
+  COMMENT "Generating metisf.h")
 
 add_custom_target(metisf_h
   DEPENDS "${GENERATED_INCLUDE_DIR}/metisf.h")
@@ -105,6 +105,10 @@ foreach(version 3 5)
   if(INSTALL_METIS_HEADERS)
     set_target_properties(scotchmetisv${version} PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/metis.h;${GENERATED_INCLUDE_DIR}/metisf.h")
   endif()
+
+  if(APPLE)
+    set_target_properties(scotchmetisv${version} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  endif(APPLE)
 
   # libScotchMeTiS targets install
   install(EXPORT scotchmetisTargets
@@ -163,12 +167,17 @@ if(BUILD_PTSCOTCH)
       $<INSTALL_INTERFACE:include>)
 
     target_link_libraries(ptscotchparmetisv${version} PRIVATE scotch)
+    target_link_libraries(ptscotchparmetisv${version} PRIVATE ptscotch)
     target_link_libraries(ptscotchparmetisv${version} PUBLIC MPI::MPI_C)
 
     add_dependencies(ptscotchparmetisv${version} ptscotch_h)
     if(INSTALL_METIS_HEADERS)
       set_target_properties(ptscotchparmetisv${version} PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/parmetis.h")
     endif()
+
+    if(APPLE)
+      set_target_properties(ptscotchparmetisv${version} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    endif(APPLE)
 
     # libPTScotchParMeTiS targets install
     install(EXPORT ptscotchparmetisTargets
