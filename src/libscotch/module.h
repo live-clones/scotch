@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 02 dec 2022     **/
+/**                                 to   : 24 dec 2022     **/
 /**                                                        **/
 /************************************************************/
 
@@ -725,6 +725,7 @@
 #define dgraphBand2Coll             SCOTCH_NAME_INTERN (dgraphBand2Coll)
 #define dgraphBand2Ptop             SCOTCH_NAME_INTERN (dgraphBand2Ptop)
 #define dgraphCoarsen               SCOTCH_NAME_INTERN (dgraphCoarsen)
+#define dgraphCompact2              SCOTCH_NAME_INTERN (dgraphCompact2)
 #define dgraphExit                  SCOTCH_NAME_INTERN (dgraphExit)
 #define dgraphFold                  SCOTCH_NAME_INTERN (dgraphFold)
 #define dgraphFold2                 SCOTCH_NAME_INTERN (dgraphFold2)
