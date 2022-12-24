@@ -167,6 +167,7 @@ if(BUILD_PTSCOTCH)
       $<INSTALL_INTERFACE:include>)
 
     target_link_libraries(ptscotchparmetisv${version} PRIVATE scotch)
+    target_link_libraries(ptscotchparmetisv${version} PRIVATE ptscotch)
     target_link_libraries(ptscotchparmetisv${version} PUBLIC MPI::MPI_C)
 
     add_dependencies(ptscotchparmetisv${version} ptscotch_h)
