@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     12 jan 2023     ##
+##                                 to     16 jan 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -99,7 +99,6 @@ if(BUILD_PTSCOTCH)
     COMMENT "Generate ptscotch.h")
   add_custom_target(ptscotch_h
     DEPENDS ${GENERATED_INCLUDE_DIR}/ptscotch.h)
-endif(BUILD_PTSCOTCH)
 
 # Generate ptscotchf.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/ptscotchf.h
@@ -109,6 +108,7 @@ add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/ptscotchf.h
   COMMENT "Generate ptscotchf.h")
 add_custom_target(ptscotchf_h
   DEPENDS "${GENERATED_INCLUDE_DIR}/ptscotchf.h")
+endif(BUILD_PTSCOTCH)
 
 #################
 #  parser_yy.c  #
@@ -553,9 +553,13 @@ if(Threads_FOUND)
   target_link_libraries(scotch PUBLIC Threads::Threads)
 endif(Threads_FOUND)
 
-# Error management libraries
-add_dependencies(scotch scotch_h scotchf_h ptscotchf_h)
+# Include files
+add_dependencies(scotch scotch_h scotchf_h)
+if (BUILD_PTSCOTCH)
+  add_dependencies(scotch ptscotch_h ptscotchf_h)
+endif()
 
+# Error management libraries
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
   target_compile_definitions(scotch PRIVATE SCOTCH_DEBUG_LIBRARY1)
 endif()
