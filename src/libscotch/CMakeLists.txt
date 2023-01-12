@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     08 jan 2022     ##
+##                                 to     12 jan 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -104,7 +104,7 @@ endif(BUILD_PTSCOTCH)
 # Generate ptscotchf.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/ptscotchf.h
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_pt_f.h ${CMAKE_CURRENT_BINARY_DIR}
-  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_pt_f.h ${GENERATED_INCLUDE_DIR}/ptscotchf.h DEPENDS dummysizes
+  COMMAND $<TARGET_FILE:ptdummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_pt_f.h ${GENERATED_INCLUDE_DIR}/ptscotchf.h DEPENDS ptdummysizes
   DEPENDS library.h
   COMMENT "Generate ptscotchf.h")
 add_custom_target(ptscotchf_h
