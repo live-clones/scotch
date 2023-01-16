@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,7 +34,7 @@
 /**   NAME       : vdgraph_separate_bd.c                   **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : This module computes a separator of the **/
 /**                given distributed separator graph by    **/
@@ -49,15 +49,13 @@
 /**                # Version 5.1  : from : 11 nov 2007     **/
 /**                                 to   : 01 mar 2008     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 08 oct 2021     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define VDGRAPH_SEPARATE_BD
 
 #include "module.h"
 #include "common.h"

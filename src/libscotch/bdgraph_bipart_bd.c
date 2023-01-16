@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.0  : from : 11 sep 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 08 oct 2021     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -65,8 +65,6 @@
 /*
 **  The defines and includes.
 */
-
-#define BDGRAPH_BIPART_BD
 
 #include "module.h"
 #include "common.h"

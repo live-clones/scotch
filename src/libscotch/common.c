@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2022,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 21 sep 2013     **/
 /**                                 to   : 21 sep 2013     **/
 /**                # Version 7.0  : from : 10 jun 2018     **/
-/**                                 to   : 02 dec 2022     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,11 +60,7 @@
 **  The defines and includes.
 */
 
-#define COMMON
-
-#ifndef COMMON_NOMODULE
 #include "module.h"
-#endif /* COMMON_NOMODULE */
 #include "common.h"
 
 /*********************************/

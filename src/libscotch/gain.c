@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 24 mar 2008     **/
 /**                # Version 6.0  : from : 20 aug 2020     **/
 /**                                 to   : 26 aug 2020     **/
+/**                # Version 7.0  : from : 18 jan 2023     **/
+/**                                 to   : 18 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # Most of the contents of this module   **/
 /**                  comes from "map_b_fm" of the SCOTCH   **/
@@ -59,7 +61,7 @@
 **  The defines and includes.
 */
 
-#define GAIN
+#define SCOTCH_GAIN
 
 #include "module.h"
 #include "common.h"

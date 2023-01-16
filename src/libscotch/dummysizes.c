@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2010,2012,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2010,2012,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,15 +56,13 @@
 /**                # Version 6.1  : from : 09 feb 2021     **/
 /**                                 to   : 22 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 25 aug 2019     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define DUMMYSIZES
 
 #define CHARMAX                     2048          /* Maximum line size */
 

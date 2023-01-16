@@ -1,4 +1,4 @@
-/* Copyright 2009-2011,2013-2016,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2011,2013-2016,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.1  : from : 19 apr 2021     **/
 /**                                 to   : 30 jun 2021     **/
 /**                # Version 7.0  : from : 24 aug 2019     **/
-/**                                 to   : 14 jul 2021     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -56,8 +56,6 @@
 /*
 **  The defines and includes.
 */
-
-#define KGRAPH_BAND
 
 #include "module.h"
 #include "common.h"

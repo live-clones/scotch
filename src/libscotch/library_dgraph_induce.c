@@ -1,4 +1,4 @@
-/* Copyright 2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 30 aug 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 27 aug 2019     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This code is directly derived from    **/
 /**                  the code of dgraphInducePart() and    **/
@@ -55,8 +55,6 @@
 /*
 **  The defines and includes.
 */
-
-#define LIBRARY
 
 #include "module.h"
 #include "common.h"

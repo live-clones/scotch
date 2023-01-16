@@ -1,4 +1,4 @@
-/* Copyright 2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                threads.                                **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 24 aug 2019     **/
-/**                                 to   : 24 aug 2019     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This code mainly derives from that    **/
 /**                  of the Pastix solver.                 **/
@@ -51,11 +51,7 @@
 **  The defines and includes.
 */
 
-#define COMMON_THREAD_SYSTEM
-
-#ifndef COMMON_NOMODULE
 #include "module.h"
-#endif /* COMMON_NOMODULE */
 #include "common.h"
 #include "common_thread_system.h"
 

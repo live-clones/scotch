@@ -1,4 +1,4 @@
-/* Copyright 2010,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 25 nov 2021     **/
 /**                # Version 7.0  : from : 23 aug 2019     **/
-/**                                 to   : 26 nov 2021     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This code originally derived from     **/
 /**                  the code of kgraph_map_rb_part.c,     **/
@@ -57,8 +57,6 @@
 /*
 **  The defines and includes.
 */
-
-#define WGRAPH_PART_RB
 
 #include "module.h"
 #include "common.h"

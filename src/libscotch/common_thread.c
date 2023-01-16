@@ -1,4 +1,4 @@
-/* Copyright 2012-2015,2018,2019,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012-2015,2018,2019,2021,2022,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 04 jul 2012     **/
 /**                                 to   : 27 apr 2015     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 13 jan 2022     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -49,16 +49,14 @@
 **  The defines and includes.
 */
 
+#define SCOTCH_COMMON_THREAD
+
 #ifdef COMMON_PTHREAD_AFFINITY_LINUX
 #define _GNU_SOURCE
 #include <sched.h>
 #endif /* COMMON_PTHREAD_AFFINITY_LINUX */
 
-#define COMMON_THREAD
-
-#ifndef COMMON_NOMODULE
 #include "module.h"
-#endif /* COMMON_NOMODULE */
 #include "common.h"
 #include "common_thread.h"
 #include "common_thread_system.h"

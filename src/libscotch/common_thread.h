@@ -1,4 +1,4 @@
-/* Copyright 2018,2019,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2019,2021,2022,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,11 +40,9 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 05 jun 2018     **/
-/**                                 to   : 13 jan 2022     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define COMMON_THREAD_H
 
 /*
 **  The defines.
@@ -92,7 +90,7 @@ typedef struct ThreadContext_ {
 **  The function prototypes.
 */
 
-#ifdef COMMON_THREAD
+#ifdef SCOTCH_COMMON_THREAD
 #ifdef COMMON_PTHREAD
 static void                 threadWaitBarrier   (ThreadContext * const);
 static void *               threadWait          (ThreadDescriptor * const);
@@ -103,4 +101,4 @@ static int                  threadProcessCoreNum (ThreadContext * const, int);
 static void                 threadProcessStateRestore (ThreadContext * const);
 static void                 threadProcessStateSave (ThreadContext * const);
 #endif /* COMMON_PTHREAD */
-#endif /* COMMON_THREAD */
+#endif /* SCOTCH_COMMON_THREAD */

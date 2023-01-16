@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 12 nov 2008     **/
 /**                # Version 6.1  : from : 05 dec 2021     **/
 /**                                 to   : 05 dec 2021     **/
+/**                # Version 7.0  : from : 20 jan 2023     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,7 +57,7 @@
 **  The defines and includes.
 */
 
-#define VMESH_SEPARATE_FM
+#define SCOTCH_VMESH_SEPARATE_FM
 
 /* #define SCOTCH_DEBUG_VMESH3 */              /* For intensive debugging */
 

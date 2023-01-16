@@ -1,4 +1,4 @@
-/* Copyright 2015-2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015-2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 30 apr 2015     **/
 /**                                 to   : 15 may 2018     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -48,7 +50,7 @@
 **  The defines and includes.
 */
 
-#define ARCH_DECO2
+#define SCOTCH_ARCH_DECO2
 
 #include "module.h"
 #include "common.h"

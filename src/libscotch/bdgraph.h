@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 11 sep 2011     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 27 aug 2019     **/
+/**                                 to   : 18 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -107,20 +107,20 @@ typedef struct BdgraphStore_ {
 **  The function prototypes.
 */
 
-#ifdef DMAPPING_H
+#ifdef SCOTCH_DMAPPING_H
 int                         bdgraphInit         (Bdgraph * const, const Dgraph * const, const Dgraph * const, const Arch * const, const ArchDom[]);
-#endif /* DMAPPING_H */
+#endif /* SCOTCH_DMAPPING_H */
 void                        bdgraphInit2        (Bdgraph * const, const Anum, const Anum, const Anum);
-#ifdef DMAPPING_H
+#ifdef SCOTCH_DMAPPING_H
 int                         bdgraphInit3        (Bdgraph * const, const Dgraph * const, const Dmapping * const, const ArchDom[]);
-#endif /* DMAPPING_H */
+#endif /* SCOTCH_DMAPPING_H */
 void                        bdgraphExit         (Bdgraph * restrict const);
 void                        bdgraphFree         (Bdgraph * restrict const);
 void                        bdgraphZero         (Bdgraph * restrict const);
 int                         bdgraphCheck        (const Bdgraph * restrict const);
-#ifdef BGRAPH_H
+#ifdef SCOTCH_BGRAPH_H
 int                         bdgraphGatherAll    (const Bdgraph * restrict const, Bgraph * restrict);
-#endif /* BGRAPH_H */
+#endif /* SCOTCH_BGRAPH_H */
 
 int                         bdgraphStoreInit    (const Bdgraph * const, BdgraphStore * const);
 void                        bdgraphStoreExit    (BdgraphStore * const);

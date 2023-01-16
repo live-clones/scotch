@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2012,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 29 aug 2012     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 27 aug 2019     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,6 +78,6 @@ int                         kdgraphInit         (Kdgraph * const, const Dgraph *
 void                        kdgraphExit         (Kdgraph * const);
 int                         kdgraphFold         (const Kdgraph *, const int, Kdgraph * const);
 int                         kdgraphFold2        (const Kdgraph *, const int, Kdgraph * const, MPI_Comm);
-#ifdef KGRAPH_H
+#ifdef SCOTCH_KGRAPH_H
 int                         kdgraphGather       (Kdgraph *, Kgraph *);
-#endif /* KGRAPH_H */
+#endif /* SCOTCH_KGRAPH_H */

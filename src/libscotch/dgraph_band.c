@@ -1,4 +1,4 @@
-/* Copyright 2007-2012,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 6.0  : from : 03 apr 2012     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 08 oct 2021     **/
-/**                                 to   : 08 oct 2021     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  vdgraph_separate_bd.c in version      **/
@@ -54,8 +54,6 @@
 /*
 **  The defines and includes.
 */
-
-#define DGRAPH_BAND
 
 #include "module.h"
 #include "common.h"

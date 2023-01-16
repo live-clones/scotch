@@ -1,4 +1,4 @@
-/* Copyright 2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 /**                                 to   : 19 may 1999     **/
 /**                # Version 5.0  : from : 27 apr 2006     **/
 /**                                 to   : 10 sep 2007     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Scatter and    **/
 /**                  MPI_Scatterv indicate that elements   **/
@@ -74,8 +76,6 @@
 /*
 ** The defines and includes.
 */
-
-#define DGRAPH_SCATTER
 
 #include "module.h"
 #include "common.h"

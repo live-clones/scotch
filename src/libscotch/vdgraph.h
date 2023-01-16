@@ -89,9 +89,9 @@ int                         vdgraphInit         (Vdgraph * restrict const, MPI_C
 void                        vdgraphExit         (Vdgraph * const);
 void                        vdgraphZero         (Vdgraph * const);
 int                         vdgraphCheck        (const Vdgraph * const);
-#ifdef VGRAPH_H
+#ifdef SCOTCH_VGRAPH_H
 int                         vdgraphGatherAll    (const Vdgraph * restrict const, Vgraph * restrict);
-#endif /* VGRAPH_H */
+#endif /* SCOTCH_VGRAPH_H */
 
 int                         vdgraphStoreInit    (const Vdgraph * const, VdgraphStore * const);
 void                        vdgraphStoreExit    (VdgraphStore * const);

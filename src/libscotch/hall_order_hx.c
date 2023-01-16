@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2020,2021,2023 Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,15 +47,13 @@
 /**                # Version 6.1  : from : 18 jan 2020     **/
 /**                                 to   : 18 jan 2020     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 26 apr 2021     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define HALL_ORDER_HX
 
 #include "module.h"
 #include "common.h"

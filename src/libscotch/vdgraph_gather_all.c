@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2018-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -33,7 +33,7 @@
 /**                                                        **/
 /**   NAME       : vdgraph_gather_all.c                    **/
 /**                                                        **/
-/**   AUTHORS    : Cedric CHEVALIER                        **/
+/**   AUTHORS    : Cedric CHEVALIER (v5.0)                 **/
 /**                Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module contains the routine which  **/
@@ -50,7 +50,7 @@
 /**                # Version 6.1  : from : 26 nov 2021     **/
 /**                                 to   : 26 nov 2021     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 14 jan 2020     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -67,8 +67,6 @@
 /*
 ** The defines and includes.
 */
-
-#define VDGRAPH
 
 #include "module.h"
 #include "common.h"

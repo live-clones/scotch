@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,7 +34,7 @@
 /**   NAME       : dgraph_build_hcub.c                     **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the distributed source  **/
 /**                graph building routines for hypercube   **/
@@ -50,10 +50,14 @@
 /**                                 to   : 12 nov 2008     **/
 /**                # Version 6.0  : from : 15 may 2018     **/
 /**                                 to   : 15 may 2018     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
-#define DGRAPH
+/*
+** The defines and includes.
+*/
 
 #include "module.h"
 #include "common.h"

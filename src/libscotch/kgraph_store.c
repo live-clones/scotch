@@ -1,4 +1,4 @@
-/* Copyright 2011,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,14 +44,14 @@
 /**                                 to   : 16 aug 2011     **/
 /**                # Version 6.1  : from : 18 jul 2021     **/
 /**                                 to   : 18 jul 2021     **/
+/**                # Version 7.0  : from : 20 jan 2023     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define KGRAPH_STORE
 
 #include "module.h"
 #include "common.h"

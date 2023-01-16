@@ -1,4 +1,4 @@
-/* Copyright 2010,2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2011,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to   : 21 may 2018     **/
 /**                # Version 6.1  : from : 30 jun 2021     **/
 /**                                 to   : 16 jul 2021     **/
+/**                # Version 7.0  : from : 20 jan 2023     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -69,8 +71,6 @@
 /*
 **  The defines and includes.
 */
-
-#define KGRAPH_MAP_BD
 
 #include "module.h"
 #include "common.h"

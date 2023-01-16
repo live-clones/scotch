@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 03 may 2019     **/
-/**                                 to   : 03 may 2019     **/
+/**                                 to   : 18 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -143,8 +143,8 @@ int                         meshInduceSepa      (const Mesh * restrict const, co
 int                         meshCheck           (const Mesh * const);
 int                         meshReorder         (const Mesh * restrict const, Mesh * restrict const);
 
-#ifdef GEOM_H
+#ifdef SCOTCH_GEOM_H
 int                         meshGeomLoadHabo    (Mesh * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         meshGeomLoadScot    (Mesh * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         meshGeomSaveScot    (const Mesh * restrict const, const Geom * restrict const, FILE * const, FILE * const, const char * const);
-#endif /* GEOM_H */
+#endif /* SCOTCH_GEOM_H */

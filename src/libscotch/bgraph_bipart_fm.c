@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014,2016,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2016,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -66,6 +66,8 @@
 /**                                 to   : 14 apr 2011     **/
 /**                # Version 6.0  : from : 23 feb 2011     **/
 /**                                 to   : 20 aug 2019     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,7 +75,7 @@
 **  The defines and includes.
 */
 
-#define BGRAPH_BIPART_FM
+#define SCOTCH_BGRAPH_BIPART_FM
 
 #define SCOTCH_TABLE_GAIN
 

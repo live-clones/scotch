@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2011,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2011,2014,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -65,15 +65,15 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 05 apr 2018     **/
 /**                # Version 7.0  : from : 08 jun 2018     **/
-/**                                 to   : 08 jun 2018     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define BGRAPH_H
 
 /*
 **  The defines.
 */
+
+#define SCOTCH_BGRAPH_H
 
 /*+ Graph option flags. +*/
 

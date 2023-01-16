@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -70,7 +70,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 27 jul 2021     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -82,7 +82,7 @@
 **  The defines and includes.
 */
 
-#define KGRAPH_MAP_RB_MAP
+#define SCOTCH_KGRAPH_MAP_RB_MAP
 
 #include "module.h"
 #include "common.h"

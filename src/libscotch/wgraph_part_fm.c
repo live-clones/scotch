@@ -1,4 +1,4 @@
-/* Copyright 2007-2013,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2013,2018,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,6 +48,8 @@
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 30 jul 2020     **/
 /**                                 to   : 18 dec 2021     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,7 +57,7 @@
 **  The defines and includes.
 */
 
-#define WGRAPH_PART_FM
+#define SCOTCH_WGRAPH_PART_FM
 
 /* #define SCOTCH_DEBUG_WGRAPH3 */
 

@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,10 +43,16 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 18 jan 2023     **/
+/**                                 to   : 18 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
-#define DMAPPING_H
+/*
+**  The defines.
+*/
+
+#define SCOTCH_DMAPPING_H
 
 /*
 **  The type definitions.

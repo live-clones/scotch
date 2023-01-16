@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 08 may 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,22 +165,22 @@ typedef struct Dorder_ {
 int                         dorderInit          (Dorder * const, const Gnum, const Gnum, MPI_Comm);
 void                        dorderExit          (Dorder * const);
 void                        dorderFree          (Dorder * const);
-#ifdef DGRAPH_H
+#ifdef SCOTCH_DGRAPH_H
 int                         dorderPerm          (const Dorder * const, const Dgraph * const, Gnum * const);
 int                         dorderSave          (const Dorder * const, const Dgraph * const, FILE * const);
 int                         dorderSaveBlock     (const Dorder * const, const Dgraph * const, FILE * const);
 int                         dorderSaveMap       (const Dorder * const, const Dgraph * const, FILE * const);
 int                         dorderSaveTree      (const Dorder * const, const Dgraph * const, FILE * const);
-#ifdef ORDER_H
+#ifdef SCOTCH_ORDER_H
 int                         dorderSaveTree2     (const Dorder * restrict const, const Dgraph * restrict const, FILE * restrict const, int (*) (const Order * const, const Gnum * const, FILE * const));
-#endif /* ORDER_H */
-#endif /* DGRAPH_H */
+#endif /* SCOTCH_ORDER_H */
+#endif /* SCOTCH_DGRAPH_H */
 Gnum                        dorderCblkDist      (const Dorder * restrict const);
 int                         dorderTreeDist      (const Dorder * restrict const, const Dgraph * restrict const, Gnum * restrict const, Gnum * restrict const);
-#ifdef ORDER_H
+#ifdef SCOTCH_ORDER_H
 int                         dorderGather        (const Dorder * const, Order * const);
 int                         dorderGatherTree    (const Dorder * const, Order * const, const int);
-#endif /* ORDER_H */
+#endif /* SCOTCH_ORDER_H */
 
 DorderCblk *                dorderFrst          (Dorder * const);
 DorderCblk *                dorderNew           (DorderCblk * const, MPI_Comm);

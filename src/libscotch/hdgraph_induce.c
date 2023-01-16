@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,15 +43,13 @@
 /**                # Version 5.1  : from : 27 jun 2008     **/
 /**                                 to   : 22 oct 2010     **/
 /**                # Version 7.0  : from : 28 aug 2019     **/
-/**                                 to   : 28 aug 2019     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define HDGRAPH
 
 #include "module.h"
 #include "common.h"

@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2014,2019,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014,2019,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 28 sep 2014     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 14 jan 2020     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,7 +54,7 @@
 **  The defines and includes.
 */
 
-#define VDGRAPH_SEPARATE_ML
+#define SCOTCH_VDGRAPH_SEPARATE_ML
 
 #include "module.h"
 #include "common.h"

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,14 +40,14 @@
 /**                                                        **/
 /**   DATES      : # Version 5.0  : from : 18 apr 2006     **/
 /**                                 to   : 28 jul 2006     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define DORDER
 
 #include "module.h"
 #include "common.h"

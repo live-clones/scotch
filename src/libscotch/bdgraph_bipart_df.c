@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2011,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2011,2014,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,14 +45,14 @@
 /**                                 to   : 19 jul 2011     **/
 /**                # Version 6.0  : from : 11 sep 2011     **/
 /**                                 to   : 31 aug 2014     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define BDGRAPH_BIPART_DF
 
 #include "module.h"
 #include "common.h"

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011-2013,2015,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011-2013,2015,2018-2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 6.0  : from : 09 mar 2011     **/
 /**                                 to   : 30 aug 2020     **/
 /**                # Version 7.0  : from : 28 jul 2018     **/
-/**                                 to   : 23 aug 2019     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -167,14 +167,13 @@ typedef struct GraphCoarsenData_ {
 **  The function prototypes.
 */
 
-#ifdef GRAPH_COARSEN
+#ifdef SCOTCH_GRAPH_COARSEN
 #ifndef GRAPHCOARSENNOTHREAD
 static void                 graphCoarsenEdgeCt  (const GraphCoarsenData * restrict const, GraphCoarsenThread * restrict const);
-
 #endif /* GRAPHCOARSENNOTHREAD */
 static void                 graphCoarsenEdgeLl  (const GraphCoarsenData * restrict const, GraphCoarsenThread * restrict const);
 static void                 graphCoarsenEdgeLu  (const GraphCoarsenData * restrict const, GraphCoarsenThread * restrict const);
-#endif /* GRAPH_COARSEN */
+#endif /* SCOTCH_GRAPH_COARSEN */
 
 int                         graphCoarsen        (const Graph * restrict const, Graph * restrict const, Gnum * restrict * restrict const, GraphCoarsenMulti * restrict * restrict const, const Gnum, const double, const Gnum, const Anum * restrict const, const Anum * restrict const, const Gnum, Context * restrict const);
 int                         graphCoarsenMatch   (const Graph * restrict const, Gnum * restrict * restrict const, Gnum * restrict const, const double, const Gnum, const Anum * restrict const, const Anum * restrict const, const Gnum, Context * restrict const);

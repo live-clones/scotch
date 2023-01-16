@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014-2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014-2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,7 +64,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 10 may 2019     **/
 /**                # Version 7.0  : from : 08 jun 2018     **/
-/**                                 to   : 12 sep 2019     **/
+/**                                 to   : 18 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -171,7 +171,7 @@ int                         graphLoad           (Graph * const, FILE * const, co
 int                         graphLoad2          (const Gnum, const Gnum, const Gnum * const, const Gnum * const, Gnum * restrict const, const Gnum, const Gnum * const);
 int                         graphSave           (const Graph * const, FILE * const);
 
-#ifdef GEOM_H
+#ifdef SCOTCH_GEOM_H
 int                         graphGeomLoadChac   (Graph * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         graphGeomSaveChac   (const Graph * restrict const, const Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         graphGeomLoadHabo   (Graph * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
@@ -179,4 +179,4 @@ int                         graphGeomLoadMmkt   (Graph * restrict const, Geom * 
 int                         graphGeomSaveMmkt   (const Graph * restrict const, const Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         graphGeomLoadScot   (Graph * restrict const, Geom * restrict const, FILE * const, FILE * const, const char * const);
 int                         graphGeomSaveScot   (const Graph * restrict const, const Geom * restrict const, FILE * const, FILE * const, const char * const);
-#endif /* GEOM_H */
+#endif /* SCOTCH_GEOM_H */

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2013,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2013,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,6 +52,8 @@
 /**                                 to   : 09 nov 2008     **/
 /**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 01 nov 2021     **/
+/**                # Version 7.0  : from : 16 jan 2023     **/
+/**                                 to   : 16 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This algorithm comes from:            **/
 /**                  "Computing the Block Triangular form  **/
@@ -86,7 +88,7 @@
 **  The defines and includes.
 */
 
-#define VGRAPH_SEPARATE_ES
+#define SCOTCH_VGRAPH_SEPARATE_ES
 
 #include "module.h"
 #include "common.h"

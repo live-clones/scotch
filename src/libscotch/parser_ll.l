@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 5.1  : from : 09 jun 2009     **/
 /**                                 to   : 24 jul 2011     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 06 jul 2021     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # In order for flex to read its input   **/
 /**                  with getc() instead of fread, we set  **/
@@ -62,8 +62,6 @@
 /*
 **  The defines and includes.
 */
-
-#define PARSER_LL
 
 #include "module.h"
 #include "common.h"

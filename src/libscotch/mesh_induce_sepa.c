@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2008,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 11 may 2004     **/
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to   : 03 apr 2008     **/
+/**                # Version 7.0  : from : 20 jan 2023     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This routine differs from the         **/
 /**                  standard mesh induction routine by    **/
@@ -73,9 +75,6 @@
 /*
 **  The defines and includes.
 */
-
-#define MESH
-#define MESH_INDUCE_SEPA
 
 #include "module.h"
 #include "common.h"

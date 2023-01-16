@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,12 +47,15 @@
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 28 sep 2014     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 03 sep 2020     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
-#define DGRAPH
-#define DGRAPH_FOLD_DUP
+/*
+** The defines and includes.
+*/
+
+#define SCOTCH_DGRAPH_FOLD_DUP
 
 #include "module.h"
 #include "common.h"

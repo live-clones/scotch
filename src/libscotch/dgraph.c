@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -38,7 +38,7 @@
 /**                Sebastien FOUCAULT (P0.0)               **/
 /**                Nicolas GICQUEL (P0.1)                  **/
 /**                Jerome LACOSTE (P0.1)                   **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : This module contains the distributed    **/
 /**                graph data structure handling           **/
@@ -56,14 +56,14 @@
 /**                                 to   : 12 sep 2012     **/
 /**                # Version 6.1  : from : 24 sep 2021     **/
 /**                                 to   : 24 sep 2021     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 ** The defines and includes.
 */
-
-#define DGRAPH
 
 #include "module.h"
 #include "common.h"

@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 04 nov 2010     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 19 jan 2023     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,10 +62,10 @@ typedef struct HdgraphOrderSqParam_ {
 **  The function prototypes.
 */
 
-#ifdef HDGRAPH_ORDER_SQ
+#ifdef SCOTCH_HDGRAPH_ORDER_SQ
 static DorderNode *         hdgraphOrderSqTree  (const Order * const);
 static void                 hdgraphOrderSqTree2 (DorderNode * const, Gnum * const, const OrderCblk * const, const Gnum, const Gnum);
-#endif /* HDGRAPH_ORDER_SQ */
+#endif /* SCOTCH_HDGRAPH_ORDER_SQ */
 
 int                         hdgraphOrderSq2     (Hgraph * restrict const, DorderCblk * restrict const, const Strat * restrict const);
 int                         hdgraphOrderSq      (Hdgraph * const, DorderCblk * const, const HdgraphOrderSqParam * const);

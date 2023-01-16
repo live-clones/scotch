@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2012,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2012,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,15 +47,15 @@
 /**                # Version 6.0  : from : 17 oct 2012     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 05 may 2019     **/
-/**                                 to   : 05 may 2019     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define HGRAPH_H
 
 /*
 **  The defines.
 */
+
+#define SCOTCH_HGRAPH_H
 
 /*+ Graph option flags. +*/
 

@@ -1,4 +1,4 @@
-/* Copyright 2012,2015,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2015,2018-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 02 oct 2012     **/
 /**                                 to   : 21 feb 2020     **/
 /**                # Version 7.0  : from : 01 aug 2018     **/
-/**                                 to   : 22 oct 2021     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,12 +70,12 @@
 **  The function prototypes.
 */
 
-#ifdef GRAPH_MATCH
+#ifdef SCOTCH_GRAPH_MATCH
 GRAPHMATCHFUNCDECL (Seq);
 #ifndef GRAPHMATCHNOTHREAD
 GRAPHMATCHFUNCDECL (Thr);
 #endif /* GRAPHMATCHNOTHREAD */
-#endif /* GRAPH_MATCH */
+#endif /* SCOTCH_GRAPH_MATCH */
 
 int                         graphMatchInit      (GraphCoarsenData * restrict, const int);
 void                        graphMatch          (ThreadDescriptor * restrict const, GraphCoarsenData * const);
