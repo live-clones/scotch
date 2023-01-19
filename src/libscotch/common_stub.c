@@ -74,6 +74,6 @@ int
 fork ()
 {
   errorPrint ("fork() not implemented on this system");
-  return     (-1);
+  return (-1);
 }
 #endif /* COMMON_STUB_FORK */
