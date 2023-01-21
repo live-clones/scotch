@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,11 +58,10 @@
 /**                                 to   : 22 may 2018     **/
 /**                # Version 6.1  : from : 24 feb 2020     **/
 /**                                 to   : 24 feb 2020     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define SYMBOL_H
-#define SYMBOL_VERSION              1
 
 /*
 **  The type and structure definitions.
@@ -145,13 +144,13 @@ int                         symbolCheck         (const SymbolMatrix * const symb
 int                         symbolDraw          (const SymbolMatrix * const symbptr, FILE * const stream);
 int                         symbolDrawFunc      (const SymbolMatrix * const symbptr, int (*) (const SymbolMatrix * const, const SymbolBlok * const, void * const, float * const), int (*) (const SymbolMatrix * const, const SymbolBlok * const, void * const, float * const), void * const, FILE * const stream);
 void                        symbolDrawColor     (const INT labl, float * const coloptr);
-#ifdef DOF_H
+#ifdef ESMUMPS_DOF_H
 int                         symbolCost          (const SymbolMatrix * const symbptr, const Dof * const deofptr, const SymbolCostType typeval, double * const nnzptr, double * const opcptr);
 int                         symbolCosti         (const SymbolMatrix * const symbptr, const Dof * const deofptr, const SymbolCostType typeval, const INT levfval, double * const nnzptr, double * const opcptr);
 int                         symbolLevf          (const SymbolMatrix * const symbptr, INT * const levfmax, INT ** const levftab);
 int                         symbolTree          (const SymbolMatrix * const symbptr, const Dof * const deofptr, INT * const leafnbr, INT * const heigmin, INT * const heigmax, double * const heigavg, double * const heigdlt);
 int                         symbolNonzeros      (const SymbolMatrix * const symbptr, FILE * const stream);
-#endif /* DOF_H */
+#endif /* ESMUMPS_DOF_H */
 
 int                         symbolKeepInit      (SymbolKeep * restrict const keepptr, const SymbolMatrix * const symbptr);
 void                        symbolKeepExit      (SymbolKeep * restrict const keepptr);

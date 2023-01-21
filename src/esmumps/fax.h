@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,10 +58,10 @@
 /**                                 to   : 03 mar 2005     **/
 /**                # Version 6.0  : from : 22 may 2018     **/
 /**                                 to   : 22 may 2018     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define FAX_H
 
 /*
 **  The function prototypes.
@@ -69,23 +69,23 @@
 
 int                         symbolCompact       (SymbolMatrix * const symbptr);
 int                         symbolFax           (SymbolMatrix * const symbptr, const INT vertnbr, const INT edgenbr, const INT baseval, void * const ngbdptr, INT ngbfrst (void * const, const INT), INT ngbnext (void * const), INT ngbdegr (void * const, const INT), const Order * const ordeptr);
-#ifdef GRAPH_H
+#ifdef ESMUMPS_GRAPH_H
 int                         symbolFaxGraph      (SymbolMatrix * const symbptr, const Graph * const grafptr, const Order * const ordeptr);
-#endif /* GRAPH_H */
+#endif /* ESMUMPS_GRAPH_H */
 int                         symbolFaxGrid2C     (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT baseval, const Order * const ordeptr);
 int                         symbolFaxGrid2D     (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT baseval, const Order * const ordeptr);
 int                         symbolFaxGrid2E     (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT baseval, const Order * const ordeptr);
 int                         symbolFaxGrid3C     (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT znbr, const INT baseval, const Order * const ordeptr);
 int                         symbolFaxGrid3D     (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT znbr, const INT baseval, const Order * const ordeptr);
 int                         symbolFaxGrid3E     (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT znbr, const INT baseval, const Order * const ordeptr);
-#ifdef MESH_H
+#ifdef ESMUMPS_MESH_H
 int                         symbolFaxMesh       (SymbolMatrix * const symbptr, const Mesh * const meshptr, const Order * const ordeptr);
-#endif /* MESH_H */
+#endif /* ESMUMPS_MESH_H */
 
 int                         symbolFaxi          (SymbolMatrix * const symbptr, const INT vertnbr, const INT edgenbr, const INT baseval, void * const ngbdptr, INT ngbfrst (void * const, const INT), INT ngbnext (void * const), INT ngbdegr (void * const, const INT), const Order * const ordeptr, const INT levfmax);
-#ifdef GRAPH_H
+#ifdef ESMUMPS_GRAPH_H
 int                         symbolFaxiGraph     (SymbolMatrix * const symbptr, const Graph * const grafptr, const Order * const ordeptr, const INT levfmax);
-#endif /* GRAPH_H */
+#endif /* ESMUMPS_GRAPH_H */
 int                         symbolFaxiGrid2D    (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT baseval, const Order * const ordeptr, const INT levfmax);
 int                         symbolFaxiGrid2E    (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT baseval, const Order * const ordeptr, const INT levfmax);
 int                         symbolFaxiGrid3D    (SymbolMatrix * const symbptr, const INT xnbr, const INT ynbr, const INT znbr, const INT baseval, const Order * const ordeptr, const INT levfmax);

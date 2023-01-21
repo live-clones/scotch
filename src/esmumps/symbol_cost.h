@@ -1,4 +1,4 @@
-/* Copyright 1998,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 1998,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,17 +45,17 @@
 /**                                 to   : 16 oct 1998     **/
 /**                # Version 6.1  : from : 28 aug 2020     **/
 /**                                 to   : 28 aug 2020     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define SYMBOL_COST_H
 
 /*
 **  The function prototypes.
 */
 
-#ifdef SYMBOL_COST
+#ifdef ESMUMPS_SYMBOL_COST
 
 static void                 symbolCost2         (const SymbolCblk * const cblktax, const SymbolBlok * const bloktax, const Dof * const deofptr, double * const nnzptr, double * const opcptr, const INT cblkmin, const INT cblknbr);
 
-#endif /* SYMBOL_COST */
+#endif /* ESMUMPS_SYMBOL_COST */

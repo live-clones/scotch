@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,10 +50,10 @@
 /**                                 to   : 26 jun 2002     **/
 /**                # Version 3.0  : from : 03 mar 2004     **/
 /**                                 to   : 03 mar 2004     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define SYMBOL_FAX_H
 
 /*
 **  The defines.

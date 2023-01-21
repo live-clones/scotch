@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,10 +50,12 @@
 /**                                 to   : 29 feb 2004     **/
 /**                # Version 6.0  : from : 22 may 2018     **/
 /**                                 to   : 22 may 2018     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
-#define DOF_H
+#define ESMUMPS_DOF_H
 
 #define DOF_CONSTANT                              /* Constant DOFs for ESMUMPS */
 
@@ -81,9 +83,9 @@ void                        dofExit             (Dof * const deofptr);
 int                         dofLoad             (Dof * const deofptr, FILE * const stream);
 int                         dofSave             (const Dof * const deofptr, FILE * const stream);
 void                        dofConstant         (Dof * const deofptr, const INT baseval, const INT nodenbr, const INT noddval);
-#ifdef GRAPH_H
+#ifdef ESMUMPS_GRAPH_H
 int                         dofGraph            (Dof * const deofptr, const Graph * grafptr, const INT, const INT * const peritab);
-#endif /* GRAPH_H */
+#endif /* ESMUMPS_GRAPH_H */
 
 /*
 **  The macro definitions.
