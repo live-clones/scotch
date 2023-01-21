@@ -6,6 +6,7 @@ doc/src/*/*.bbl
 doc/src/*/*.blg
 doc/src/*/*.dvi
 doc/src/*/*.log
+doc/src/*/*.out
 doc/src/*/*.toc
 doc/src/*/*scotch*.pdf
 doc/src/*/*scotch*.ps.gz
