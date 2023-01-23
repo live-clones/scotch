@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 23 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,7 +66,7 @@
 #define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2022 IPB, Universite de Bordeaux, INRIA & CNRS, France"
 #define SCOTCH_LICENSE_STRING       "This software is libre/free software under CeCILL-C -- see the user's manual for more information"
 #ifdef SCOTCH_CODENAME
-#define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL) " (" SCOTCH_CODENAME ")"
+#define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL) " (" STRINGIFY (SCOTCH_CODENAME) ")"
 #else /* SCOTCH_CODENAME */
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL)
 #endif /* SCOTCH_CODENAME */
