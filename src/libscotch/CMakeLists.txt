@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     16 jan 2023     ##
+##                                 to     26 jan 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -520,32 +520,23 @@ if(APPLE)
 endif(APPLE)
 
 # Add (de)compression libraries
-if(USE_ZLIB)
-  find_package(ZLIB)
-  if(ZLIB_FOUND)
-    target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_GZ)
-    target_include_directories(scotch PUBLIC ${ZLIB_INCLUDE_DIRS})
-    target_link_libraries(scotch PUBLIC ${ZLIB_LIBRARIES})
-  endif(ZLIB_FOUND)
-endif(USE_ZLIB)
+if(ZLIB_FOUND)
+  target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_GZ)
+  target_include_directories(scotch PUBLIC ${ZLIB_INCLUDE_DIRS})
+  target_link_libraries(scotch PUBLIC ${ZLIB_LIBRARIES})
+endif(ZLIB_FOUND)
 
-if (USE_BZ2)
-  find_package(BZip2)
-  if(BZIP2_FOUND)
-    target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_BZ2)
-    target_include_directories(scotch PUBLIC ${BZIP2_INCLUDE_DIRS})
-    target_link_libraries(scotch PUBLIC ${BZIP2_LIBRARIES})
-  endif()
-endif (USE_BZ2)
+if(BZIP2_FOUND)
+  target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_BZ2)
+  target_include_directories(scotch PUBLIC ${BZIP2_INCLUDE_DIRS})
+  target_link_libraries(scotch PUBLIC ${BZIP2_LIBRARIES})
+endif()
 
-if (USE_LZMA)
-  find_package(LibLZMA)
-  if(LIBLZMA_FOUND)
-    target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_LZMA)
-    target_include_directories(scotch PUBLIC ${LIBLZMA_INCLUDE_DIRS})
-    target_link_libraries(scotch PUBLIC ${LIBLZMA_LIBRARIES})
-  endif()
-endif(USE_LZMA)
+if(LIBLZMA_FOUND)
+  target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_LZMA)
+  target_include_directories(scotch PUBLIC ${LIBLZMA_INCLUDE_DIRS})
+  target_link_libraries(scotch PUBLIC ${LIBLZMA_LIBRARIES})
+endif()
 
 # Add thread library
 if(Threads_FOUND)

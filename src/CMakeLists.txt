@@ -105,6 +105,19 @@ if(THREADS)
   endif()
 endif()
 
+# decompression libs
+if(USE_ZLIB)
+  find_package(ZLIB)
+endif(USE_ZLIB)
+
+if (USE_BZ2)
+  find_package(BZip2)
+endif (USE_BZ2)
+
+if (USE_LZMA)
+  find_package(LibLZMA)
+endif(USE_LZMA)
+
 # MPI
 if(BUILD_PTSCOTCH)
   set(MPI_DETERMINE_LIBRARY_VERSION ON)

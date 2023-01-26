@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     08 jan 2022     ##
+##                                 to     26 jan 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -59,21 +59,28 @@ function(add_test_scotch)
   endif()
 endfunction(add_test_scotch)
 
+# Bash needed for running some tests
+include(FindUnixCommands)
+
 #######################################
 #  Tests of the sequential libraries  #
 #######################################
 
 # test_common_file_compress
 add_test_scotch(test_common_file_compress)
-include(FindUnixCommands)
+set(_map_bz2 "BZIP2")
+set(_map_gz "ZLIB")
+set(_map_lzma "LIBLZMA")
 foreach(ext "bz2" "gz" "lzma")
-  set(cur ${CMAKE_CURRENT_BINARY_DIR})
-  set(src_cur ${CMAKE_CURRENT_SOURCE_DIR})
-  add_test(NAME test_common_file_compress_${ext} COMMAND ${BASH} -c
-    "${CMAKE_COMMAND} -E copy ${src_cur}/data/bump_b1.grf ${cur}/bump_b1.grf && \
-     $<TARGET_FILE:test_common_file_compress> ${cur}/bump_b1.grf ${cur}/bump_b1.grf.${ext} && \
-     $<TARGET_FILE:test_common_file_compress> ${cur}/bump_b1.grf.${ext} ${cur}/bump_b1.grf && \
-     ${CMAKE_COMMAND} -E compare_files ${cur}/bump_b1.grf ${src_cur}/data/bump_b1.grf")
+  if(${_map_${ext}}_FOUND)
+    set(cur ${CMAKE_CURRENT_BINARY_DIR})
+    set(src_cur ${CMAKE_CURRENT_SOURCE_DIR})
+    add_test(NAME test_common_file_compress_${ext} COMMAND ${BASH} -c
+      "${CMAKE_COMMAND} -E copy ${src_cur}/data/bump_b1.grf ${cur}/bump_b1.grf && \
+      $<TARGET_FILE:test_common_file_compress> ${cur}/bump_b1.grf ${cur}/bump_b1.grf.${ext} && \
+      $<TARGET_FILE:test_common_file_compress> ${cur}/bump_b1.grf.${ext} ${cur}/bump_b1.grf && \
+      ${CMAKE_COMMAND} -E compare_files ${cur}/bump_b1.grf ${src_cur}/data/bump_b1.grf")
+  endif(${_map_${ext}}_FOUND)
 endforeach()
 
 # test_common_random
