@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 27 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,7 +99,7 @@
 #define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
 #endif /* COMMON_OS_WINDOWS */
 
-#if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
+#if ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
 #include            <unistd.h>
 #endif /* ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
 #include            <ctype.h>

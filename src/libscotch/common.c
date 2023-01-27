@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 21 sep 2013     **/
 /**                                 to   : 21 sep 2013     **/
 /**                # Version 7.0  : from : 10 jun 2018     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 27 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -109,7 +109,7 @@ clockGet (void)
 #ifdef MPI_INT
   return (MPI_Wtime ());
 #else /* MPI_INT */
-#if defined COMMON_WINDOWS
+#if defined COMMON_OS_WINDOWS
   double              res = 0.0;
   LARGE_INTEGER       fq;
   if (QueryPerformanceFrequency (&fq) == 0) {
@@ -149,7 +149,7 @@ clockGet (void)
 
  return ((double) tv.tv_sec + (double) tv.tv_usec * 1.0e-6L);
 #endif /* defined (_POSIX_TIMERS) && (_POSIX_TIMERS >= 200112L) */
-#endif /* COMMON_TIMING_OLD */
+#endif /* COMMON_OS_WINDOWS / COMMON_TIMING_OLD */
 #endif /* MPI_INT */
 }
 
