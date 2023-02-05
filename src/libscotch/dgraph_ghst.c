@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009,2011,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,14 +53,14 @@
 /**                                 to   : 20 feb 2011     **/
 /**                # Version 6.0  : from : 21 nov 2011     **/
 /**                                 to   : 21 nov 2011     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 ** The defines and includes.
 */
-
-#define DGRAPH_GHST
 
 #include "module.h"
 #include "common.h"

@@ -33,15 +33,15 @@
 ##                                                        ##
 ##   AUTHORS    : Marc FUENTES                            ##
 ##                Florent PRUVOST                         ##
-##                Cedric LACHAT                           ##
-##                Amaury JACQUES                          ##
+##                Cedric LACHAT (v6.0)                    ##
+##                Amaury JACQUES (v6.0)                   ##
 ##                                                        ##
 ##   FUNCTION   : Secondary configuration file for CMake  ##
 ##                                                        ##
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     08 feb 2022     ##
+##                                 to     26 jan 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -52,9 +52,9 @@ add_definitions(-Drestrict=__restrict -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME
 if(APPLE)
   add_definitions(-DCOMMON_OS_MACOS -D_DARWIN_C_SOURCE)
 endif(APPLE)
-if(WIN32)
+if(MINGW OR MSYS OR WIN32)
   add_definitions(-DCOMMON_OS_WINDOWS)
-endif(WIN32)
+endif(MINGW OR MSYS OR WIN32)
 
 ###################
 #  Prerequisites  #
@@ -104,6 +104,19 @@ if(THREADS)
     add_definitions(-DCOMMON_PTHREAD_AFFINITY_LINUX)
   endif()
 endif()
+
+# decompression libs
+if(USE_ZLIB)
+  find_package(ZLIB)
+endif(USE_ZLIB)
+
+if (USE_BZ2)
+  find_package(BZip2)
+endif (USE_BZ2)
+
+if (USE_LZMA)
+  find_package(LibLZMA)
+endif(USE_LZMA)
 
 # MPI
 if(BUILD_PTSCOTCH)

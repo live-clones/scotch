@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,10 +45,10 @@
 /**                                 to   : 02 jul 2010     **/
 /**                # Version 6.0  : from : 22 may 2018     **/
 /**                                 to   : 22 may 2018     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define ORDER_H
 
 /*
 **  The type and structure definitions.
@@ -84,16 +84,16 @@ int                         orderGrid2C         (Order * const ordeptr, const IN
 int                         orderGrid3          (Order * const ordeptr, const INT xnbr, const INT ynbr, const INT znbr, const INT baseval, const INT xlim, const INT ylim, const INT zlim);
 int                         orderGrid3C         (Order * const ordeptr, const INT xnbr, const INT ynbr, const INT znbr, const INT baseval, const INT xlim, const INT ylim, const INT zlim);
 
-#ifdef GRAPH_H
+#ifdef ESMUMPS_GRAPH_H
 int                         orderGraph          (Order * restrict const ordeptr, Graph * restrict const grafptr);
 int                         orderGraphList      (Order * restrict const ordeptr, Graph * restrict const grafptr, const INT listnbr, const INT * restrict const listtab);
 int                         orderGraphStrat     (Order * restrict const ordeptr, Graph * restrict const grafptr, const char * restrict const);
 int                         orderGraphListStrat (Order * restrict const ordeptr, Graph * restrict const grafptr, const INT listnbr, const INT * restrict const listtab, const char * const);
-#endif /* GRAPH_H */
+#endif /* ESMUMPS_GRAPH_H */
 
-#ifdef MESH_H
+#ifdef ESMUMPS_MESH_H
 int                         orderMesh           (Order * restrict const ordeptr, Mesh * restrict const meshptr);
 int                         orderMeshList       (Order * restrict const ordeptr, Mesh * restrict const meshptr, const INT listnbr, const INT * restrict const listtab);
 int                         orderMeshStrat      (Order * restrict const ordeptr, Mesh * restrict const meshptr, const char * const);
 int                         orderMeshListStrat  (Order * restrict const ordeptr, Mesh * restrict const meshptr, const INT listnbr, const INT * restrict const listtab, const char * const);
-#endif /* MESH_H */
+#endif /* ESMUMPS_MESH_H */

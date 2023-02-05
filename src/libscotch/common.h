@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2022 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,11 +57,9 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 12 feb 2022     **/
+/**                                 to   : 27 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define COMMON_H
 
 /*
 ** The includes.
@@ -94,14 +92,14 @@
 #ifdef _MSC_VER
 #define HAVE_NOT_STRINGS_H
 #endif /* _MSC_VER */
-#ifdef _WIN32
+#if ((defined _WIN32) && (! defined __MINGW32__))
 #define strncasecmp                 strnicmp
 #define strcasecmp                  stricmp
-#endif /* _WIN32 */
+#endif /* ((defined _WIN32) && (! defined __MINGW32__)) */
 #define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
 #endif /* COMMON_OS_WINDOWS */
 
-#if ((! defined COMMON_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
+#if ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
 #include            <unistd.h>
 #endif /* ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H)) */
 #include            <ctype.h>

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -123,7 +123,7 @@ typedef struct VgraphSeparateFmSave_ {
 **  The function prototypes.
 */
 
-#ifdef VGRAPH_SEPARATE_FM
+#ifdef SCOTCH_VGRAPH_SEPARATE_FM
 
 static int                  vgraphSeparateFmResize (VgraphSeparateFmVertex * restrict * hashtabptr, Gnum * const, Gnum * const, VgraphSeparateFmSave * restrict *, const Gnum, GainTabl * const, GainLink * const);
 static GainLink *           vgraphSeparateFmTablGet (GainTabl * const, const Gnum * const, const Gnum, const Gnum, const int);
@@ -131,6 +131,6 @@ static GainLink *           vgraphSeparateFmTablGet (GainTabl * const, const Gnu
 static int                  vgraphSeparateFmCheck (const Vgraph * const, const VgraphSeparateFmVertex * restrict const, const Gnum, const Gnum, const Gnum);
 #endif /* SCOTCH_DEBUG_VGRAPH3 */
 
-#endif /* VGRAPH_SEPARATE_FM */
+#endif /* SCOTCH_VGRAPH_SEPARATE_FM */
 
 int                         vgraphSeparateFm    (Vgraph * const, const VgraphSeparateFmParam * const);

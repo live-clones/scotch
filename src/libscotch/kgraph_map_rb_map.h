@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,7 +67,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 27 jul 2021     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -129,7 +129,7 @@ typedef struct KgraphMapRbMapPoolData_ {
 **  The function prototypes.
 */
 
-#ifdef KGRAPH_MAP_RB_MAP
+#ifdef SCOTCH_KGRAPH_MAP_RB_MAP
 static int                  kgraphMapRbMapPoolInit (KgraphMapRbMapPoolData * restrict const, const KgraphMapRbData * restrict const, Context * const);
 static void                 kgraphMapRbMapPoolExit (KgraphMapRbMapPoolData * restrict const poolptr);
 static void                 kgraphMapRbMapPoolAdd (KgraphMapRbMapPoolLink * restrict const, KgraphMapRbMapJob * const);
@@ -138,7 +138,7 @@ static void                 kgraphMapRbMapPoolFrst (KgraphMapRbMapPoolData * con
 static void                 kgraphMapRbMapPoolUpdt1 (KgraphMapRbMapPoolData * const, const KgraphMapRbMapJob * const, const GraphPart * const, KgraphMapRbMapJob * const, const GraphPart);
 static void                 kgraphMapRbMapPoolUpdt2 (KgraphMapRbMapPoolData * const, const KgraphMapRbMapJob * const, const GraphPart * const, KgraphMapRbMapJob * const, KgraphMapRbMapJob * const);
 static int                  kgraphMapRbMapPoolResize (KgraphMapRbMapPoolData * restrict const);
-#endif /* KGRAPH_MAP_RB_MAP */
+#endif /* SCOTCH_KGRAPH_MAP_RB_MAP */
 
 int                         kgraphMapRbMap      (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict const, Context * const);
 

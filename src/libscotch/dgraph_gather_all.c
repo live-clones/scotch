@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2012,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2012,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.1  : from : 18 jun 2021     **/
 /**                                 to   : 04 dec 2021     **/
 /**                # Version 7.0  : from : 04 aug 2018     **/
-/**                                 to   : 04 aug 2018     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # The definitions of MPI_Gather and     **/
 /**                  MPI_Gatherv indicate that elements in **/
@@ -66,8 +66,6 @@
 /*
 ** The defines and includes.
 */
-
-#define DGRAPH
 
 #include "module.h"
 #include "common.h"

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,14 +47,14 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 29 sep 2019     **/
 /**                                 to   : 29 sep 2019     **/
+/**                # Version 7.0  : from : 20 jan 2023     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define ORDER_IO
 
 #include "module.h"
 #include "common.h"

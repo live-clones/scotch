@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2012,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 27 jan 2009     **/
 /**                # Version 6.0  : from : 25 aug 2012     **/
 /**                                 to   : 18 nov 2012     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,7 +55,7 @@
 ** The defines and includes.
 */
 
-#define DGRAPH_IO_LOAD
+#define SCOTCH_DGRAPH_IO_LOAD
 
 #include "module.h"
 #include "common.h"

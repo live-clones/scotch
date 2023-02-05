@@ -1,4 +1,4 @@
-/* Copyright 2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,8 +60,8 @@ typedef struct BdgraphBipartSqParam_ {
 **  The function prototypes.
 */
 
-#ifdef BDGRAPH_BIPART_SQ
+#ifdef SCOTCH_BDGRAPH_BIPART_SQ
 static void                 bdgraphBipartSqOpBest (const Gnum * const, Gnum * const, const int * const, const MPI_Datatype * const);
-#endif /* BDGRAPH_BIPART_SQ */
+#endif /* SCOTCH_BDGRAPH_BIPART_SQ */
 
 int                         bdgraphBipartSq     (Bdgraph * const, const BdgraphBipartSqParam * const);

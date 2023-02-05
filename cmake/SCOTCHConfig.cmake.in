@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     23 feb 2022     ##
+##                                 to     26 jan 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -73,8 +73,13 @@ if(@BUILD_PTSCOTCH@)
 endif()
 if(@BUILD_LIBESMUMPS@)
   include("${CMAKE_CURRENT_LIST_DIR}/esmumpsTargets.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/ptesmumpsTargets.cmake")
+  if(@BUILD_PTSCOTCH@)
+    include("${CMAKE_CURRENT_LIST_DIR}/ptesmumpsTargets.cmake")
+  endif()
 endif()
 if(@BUILD_LIBSCOTCHMETIS@)
   include("${CMAKE_CURRENT_LIST_DIR}/scotchmetisTargets.cmake")
+  if(@BUILD_PTSCOTCH@)
+    include("${CMAKE_CURRENT_LIST_DIR}/ptscotchparmetisTargets.cmake")
+  endif()
 endif()

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2014,2015,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2014,2015,2018,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 04 aug 2014     **/
 /**                                 to   : 27 jan 2020     **/
 /**                # Version 7.0  : from : 05 may 2019     **/
-/**                                 to   : 26 apr 2021     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -68,7 +68,7 @@
 **  The defines and includes.
 */
 
-#define HGRAPH_ORDER_CP
+#define SCOTCH_HGRAPH_ORDER_CP
 
 #include "module.h"
 #include "common.h"

@@ -1,4 +1,4 @@
-/* Copyright 2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,11 +40,9 @@
 /**                management routines.                    **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 24 aug 2019     **/
-/**                                 to   : 24 aug 2019     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define COMMON_THREAD_SYSTEM_H
 
 /*
 **  The function prototypes.

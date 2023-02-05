@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2013,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2013,2014,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -38,7 +38,7 @@
 /**                Sebastien FOUCAULT (P0.0)               **/
 /**                Nicolas GICQUEL (P0.1)                  **/
 /**                Jerome LACOSTE (P0.1)                   **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the distributed source  **/
 /**                graph building routines.                **/
@@ -53,10 +53,10 @@
 /**                                 to   : 03 nov 2010     **/
 /**                # Version 6.0  : from : 23 dec 2013     **/
 /**                                 to   : 03 jun 2018     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define DGRAPH
 
 #include "module.h"
 #include "common.h"

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 30 sep 2014     **/
 /**                                 to   : 30 sep 2014     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 06 jul 2021     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -251,9 +251,9 @@ extern Strat                stratdummy;           /*+ Dummy empty strategy node 
 **  The function prototypes.
 */
 
-#ifdef PARSER
+#ifdef SCOTCH_PARSER
 static int                  stratTestEvalCast   (StratTest * const, StratTest * const);
-#endif /* PARSER */
+#endif /* SCOTCH_PARSER */
 
 Strat *                     stratInit           (const StratTab * const , const char * const);
 int                         stratExit           (Strat * const);

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,10 +42,10 @@
 /**                                 to   : 04 feb 2007     **/
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 24 sep 2019     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define LIBRARY_GRAPH_MAP_VIEW_H
 
 /*
 **  The type definitions.

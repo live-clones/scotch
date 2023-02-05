@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012,2015,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2015,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 /**                                 to   : 15 may 2018     **/
 /**                # Version 6.1  : from : 24 jun 2021     **/
 /**                                 to   : 24 jun 2021     **/
+/**                # Version 7.0  : from : 19 jan 2023     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,11 +59,7 @@
 **  The defines and includes.
 */
 
-#define COMMON_MEMORY
-
-#ifndef COMMON_NOMODULE
 #include "module.h"
-#endif /* COMMON_NOMODULE */
 #include "common.h"
 
 #define COMMON_MEMORY_SZSP          (MAX ((sizeof (size_t)), (sizeof (double)))) /* Space for size, properly aligned */

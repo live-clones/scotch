@@ -44,6 +44,7 @@ stages:
     untracked: true
     paths:
       - bin
+      - build_*
       - ci
       - include
       - lib
@@ -106,6 +107,14 @@ stages:
     - find . -name Makefile | xargs sed -i -e "s#-c \$(<)#-c \$\(shell pwd\)/\$\(<\)#g"
     - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build-${JOBNAME}.log
 
+.job_template: &job_build_cmake
+  stage: build
+  script:
+   - mkdir -p build_cmake
+   - cd build_cmake
+   - cmake -DCMAKE_BUILD_TYPE=Release ..
+   - make -j5
+
 scotch_build_32:
   <<: *job_build
   tags:
@@ -126,6 +135,17 @@ scotch_build_64:
     <<: *cache_template
   <<: *matrix_64
 
+scotch_build_cmake:
+  <<: *job_build_cmake
+  tags:
+    - with_cmake
+  cache:
+    key: scotch_cmake $CI_NODE_INDEX
+    policy: push
+    <<: *cache_template
+  before_script:
+   - export CC=gcc && export FC=gfortran
+
 .job_template: &job_test
   stage: test
   <<: *variables_template
@@ -142,6 +162,17 @@ scotch_build_64:
     - cat check/test_scotch_graph_dump.c /tmp/m16x16_b1.c > check/test_scotch_graph_dump2.c
     - cd ..
     - lcov --capture --directory . --output-file scotch-${JOBNAME}.lcov
+
+.job_template: &job_test_cmake
+  stage: test
+  script:
+   - cd build_cmake
+   - ctest -T Test --timeout 20
+   - xsltproc -o report.xml /builds/ctest-to-junit.xsl Testing/**/Test.xml
+  artifacts:
+    untracked: true
+    reports:
+      junit: build_cmake/report.xml
 
 scotch_test_32:
   <<: *job_test
@@ -162,6 +193,17 @@ scotch_test_64:
   tags:
     - 64bits
   <<: *matrix_64
+
+scotch_test_cmake:
+  <<: *job_test_cmake
+  cache:
+    key: scotch_cmake $CI_NODE_INDEX
+    policy: pull
+    <<: *cache_template
+  tags:
+    - with_cmake
+  before_script:
+   - export CC=gcc && export FC=gfortran
 
 scotch_sonar:
   stage: sonar

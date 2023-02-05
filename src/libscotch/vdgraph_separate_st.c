@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2014,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,7 +34,7 @@
 /**   NAME       : vdgraph_separate_st.c                   **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : This module contains the global         **/
 /**                distributed separation strategy and     **/
@@ -46,14 +46,14 @@
 /**                                 to   : 26 may 2009     **/
 /**                # Version 6.0  : from : 01 may 2014     **/
 /**                                 to   : 30 sep 2014     **/
+/**                # Version 7.0  : from : 20 jan 2023     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define VDGRAPH_SEPARATE_ST
 
 #include "module.h"
 #include "common.h"

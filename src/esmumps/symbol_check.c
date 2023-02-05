@@ -1,4 +1,4 @@
-/* Copyright 2004,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,14 +52,14 @@
 /**                                 to   : 06 feb 2020     **/
 /**                # Version 6.1  : from : 24 feb 2020     **/
 /**                                 to   : 24 feb 2020     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define SYMBOL_CHECK
 
 #include "module.h"
 #include "common.h"

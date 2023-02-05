@@ -1,4 +1,4 @@
-/* Copyright 2008,2011,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2011,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 06 may 2021     **/
-/**                                 to   : 27 jul 2021     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,8 +75,8 @@ typedef struct KgraphMapRbPartSplit_ {
 **  The function prototypes.
 */
 
-#ifdef KGRAPH_MAP_RB_PART
+#ifdef SCOTCH_KGRAPH_MAP_RB_PART
 static void                 kgraphMapRbPart2    (Context * restrict const, const int, KgraphMapRbPartSplit * const);
-#endif /* KGRAPH_MAP_RB_PART */
+#endif /* SCOTCH_KGRAPH_MAP_RB_PART */
 
 int                         kgraphMapRbPart     (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict, Context * restrict const);

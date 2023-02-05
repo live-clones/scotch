@@ -70,7 +70,7 @@ install				:	$(MANS)
 					-$(CP) $(UMAN).pdf ../../
 
 clean				:
-					-$(RM) *~ s.aux s.blg s.log s.toc
+					-$(RM) *~ s.aux s.blg s.log s.out s.toc
 
 realclean			:	clean
 					-$(RM) *~ s.bbl *dvi s.ps $(UMAN)*

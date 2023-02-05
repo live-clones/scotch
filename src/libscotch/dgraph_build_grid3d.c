@@ -1,4 +1,4 @@
-/* Copyright 2007,2010 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,10 +44,16 @@
 /**                                 to   : 10 sep 2007     **/
 /**                # Version 5.1  : from : 05 jun 2010     **/
 /**                                 to   : 06 jun 2010     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
-#define DGRAPH_BUILD_GRID3D
+/*
+**  The defines and includes.
+*/
+
+#define SCOTCH_DGRAPH_BUILD_GRID3D
 
 #include "module.h"
 #include "common.h"

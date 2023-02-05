@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -37,7 +37,7 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     20 dec 2022     ##
+##                                 to     16 jan 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -50,7 +50,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 set(SCOTCH_VERSION 7)
 set(SCOTCH_RELEASE 0)
-set(SCOTCH_PATCHLEVEL 2)
+set(SCOTCH_PATCHLEVEL 3)
 set(SCOTCH_CODENAME "Sankara")
 
 add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}
@@ -80,10 +80,13 @@ option(BUILD_LIBSCOTCHMETIS "Build ScotchMeTiS library" ON)
 # Install our MeTiS header stubs
 option(INSTALL_METIS_HEADERS "Install libScotchMeTiS headers in destination directory" ON)
 
-# compress format options
-option(USE_ZLIB "link against ZLIB for compress format if found" ON)
-option(USE_LZMA "link against LZMA for compress format if found" ON)
-option(USE_BZ2 "link against BZ2 for compress format if found" ON)
+# Compression format options
+option(USE_ZLIB "Use ZLIB compression format if found" ON)
+option(USE_LZMA "Use LZMA compression format if found" ON)
+option(USE_BZ2 "Use BZ2 compression format if found" ON)
+
+# Set fPIC flag when building shared libraries
+set(CMAKE_POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS})
 
 # Allow for testing
 enable_testing()

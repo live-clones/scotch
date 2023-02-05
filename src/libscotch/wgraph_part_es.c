@@ -41,15 +41,13 @@
 /**   DATES      : # Version 6.1  : from : 25 aug 2020     **/
 /**                                 to   : 26 aug 2020     **/
 /**                # Version 7.0  : from : 28 aug 2020     **/
-/**                                 to   : 14 jul 2021     **/
+/**                                 to   : 16 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define WGRAPH_PART_ES
 
 #include "module.h"
 #include "common.h"

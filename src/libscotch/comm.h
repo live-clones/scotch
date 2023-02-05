@@ -1,4 +1,4 @@
-/* Copyright 2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,10 +42,10 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 19 jan 2023     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define COMM_H
 
 /*
 **  The type and structure definitions.
@@ -70,10 +70,10 @@ int                         commScatterv        (void * const, const Gnum * cons
 **  The macro definitions.
 */
 
-#ifndef COMM
+#ifndef SCOTCH_COMM
 #ifndef INTSIZE64
 #define commAllgatherv              MPI_Allgatherv
 #define commGatherv                 MPI_Gatherv
 #define commScatterv                MPI_Scatterv
 #endif /* INTSIZE64 */
-#endif /* COMM      */
+#endif /* SCOTCH_COMM */

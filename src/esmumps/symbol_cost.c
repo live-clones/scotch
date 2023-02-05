@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                                 to   : 29 sep 2004     **/
 /**                # Version 6.1  : from : 28 aug 2020     **/
 /**                                 to   : 28 aug 2020     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,7 +63,7 @@
 **  The defines and includes.
 */
 
-#define SYMBOL_COST
+#define ESMUMPS_SYMBOL_COST
 
 #include "module.h"
 #include "common.h"

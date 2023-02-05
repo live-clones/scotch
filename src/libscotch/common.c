@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2022,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 21 sep 2013     **/
 /**                                 to   : 21 sep 2013     **/
 /**                # Version 7.0  : from : 10 jun 2018     **/
-/**                                 to   : 02 dec 2022     **/
+/**                                 to   : 27 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,11 +60,7 @@
 **  The defines and includes.
 */
 
-#define COMMON
-
-#ifndef COMMON_NOMODULE
 #include "module.h"
-#endif /* COMMON_NOMODULE */
 #include "common.h"
 
 /*********************************/
@@ -113,7 +109,7 @@ clockGet (void)
 #ifdef MPI_INT
   return (MPI_Wtime ());
 #else /* MPI_INT */
-#if defined COMMON_WINDOWS
+#if defined COMMON_OS_WINDOWS
   double              res = 0.0;
   LARGE_INTEGER       fq;
   if (QueryPerformanceFrequency (&fq) == 0) {
@@ -153,7 +149,7 @@ clockGet (void)
 
  return ((double) tv.tv_sec + (double) tv.tv_usec * 1.0e-6L);
 #endif /* defined (_POSIX_TIMERS) && (_POSIX_TIMERS >= 200112L) */
-#endif /* COMMON_TIMING_OLD */
+#endif /* COMMON_OS_WINDOWS / COMMON_TIMING_OLD */
 #endif /* MPI_INT */
 }
 

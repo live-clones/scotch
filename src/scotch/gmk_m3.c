@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
 /**                # Version 7.0  : from : 02 apr 2021     **/
-/**                                 to   : 02 apr 2021     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY,dZ) mesh   **/
 /**                  are numbered as terminals so that     **/
@@ -61,8 +61,6 @@
 /*
 **  The defines and includes.
 */
-
-#define GMK_M3
 
 #include "module.h"
 #include "common.h"

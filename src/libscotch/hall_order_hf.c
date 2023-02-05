@@ -5,7 +5,7 @@
 ** Consequently, this file is distributed according to the terms of
 ** the BSD3 licence, see copyright notice below.
 */
-/* Copyright 2004,2007,2010,2012,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS & others
+/* Copyright 2004,2007,2010,2012,2018-2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS & others
 */
 /************************************************************/
 /**                                                        **/
@@ -30,6 +30,8 @@
 /**                                 to   : 30 apr 2018     **/
 /**                # Version 6.1  : from : 29 oct 2019     **/
 /**                                 to   : 10 feb 2020     **/
+/**                # Version 7.0  : from : 19 jan 2023     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This module contains pieces of code   **/
 /**                  that belong to other people; see      **/
@@ -40,8 +42,6 @@
 /*
 **  The defines and includes.
 */
-
-#define HALL_ORDER_HF
 
 #if 1                                             /* Take simplest version; do not care for exact halfway case specification */
 #define anint(x)                    floor ((x) + 0.5)

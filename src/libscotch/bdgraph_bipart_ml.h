@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2014,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 29 oct 2009     **/
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,11 +75,11 @@ typedef struct BdgraphBipartMlSort_ {
 **  The function prototypes.
 */
 
-#ifdef BDGRAPH_BIPART_ML
+#ifdef SCOTCH_BDGRAPH_BIPART_ML
 static int                  bdgraphBipartMlCoarsen (Bdgraph * const, Bdgraph * const, DgraphCoarsenMulti * restrict * const, const BdgraphBipartMlParam * const);
 static int                  bdgraphBipartMlUncoarsen (Bdgraph *, const Bdgraph * const, const DgraphCoarsenMulti * restrict const);
 static void                 bdgraphBipartMlOpBest (const Gnum * const, Gnum * const, const int * const, const MPI_Datatype * const);
 static int                  bdgraphBipartMl2    (Bdgraph * const, const BdgraphBipartMlParam * const);
-#endif /* BDGRAPH_BIPART_ML */
+#endif /* SCOTCH_BDGRAPH_BIPART_ML */
 
 int                         bdgraphBipartMl     (Bdgraph * const, const BdgraphBipartMlParam * const);

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007 ENSEIRB, INRIA & CNRS
+/* Copyright 2004,2007,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,6 +44,8 @@
 /**                                 to   : 13 oct 1998     **/
 /**                # Version 3.4  : from : 01 nov 2001     **/
 /**                                 to   : 01 nov 2001     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,7 +53,6 @@
 **  The defines and includes.
 */
 
-#define LIBRARY_ERRCOM
 #ifndef SCOTCH_COMMON_EXTERNAL
 #define SCOTCH_COMMON_EXTERNAL                    /* Do not redefine errorPrint */
 #endif /* SCOTCH_COMMON_EXTERNAL */

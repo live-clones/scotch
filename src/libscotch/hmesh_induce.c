@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,16 +45,13 @@
 /**                # Version 6.0  : from : 23 jan 2020     **/
 /**                                 to   : 26 jan 2020     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 12 sep 2019     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define HMESH
-#define HMESH_INDUCE
 
 #include "module.h"
 #include "common.h"

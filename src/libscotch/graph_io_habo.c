@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2016,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,14 +51,14 @@
 /**                                 to   : 27 apr 2010     **/
 /**                # Version 6.0  : from : 04 aug 2016     **/
 /**                                 to   : 27 aug 2019     **/
+/**                # Version 7.0  : from : 19 jan 2023     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define GRAPH_IO_HABO
 
 #include "module.h"
 #include "common.h"

@@ -1,4 +1,4 @@
-/* Copyright 2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 05 sep 2020     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from that of the    **/
 /**                  original "esmumps.c" file.            **/
@@ -50,8 +52,6 @@
 /*
 **  The defines and includes.
 */
-
-#define ESMUMPS
 
 #include "module.h"
 #include "common.h"

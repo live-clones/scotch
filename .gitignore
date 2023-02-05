@@ -6,6 +6,7 @@ doc/src/*/*.bbl
 doc/src/*/*.blg
 doc/src/*/*.dvi
 doc/src/*/*.log
+doc/src/*/*.out
 doc/src/*/*.toc
 doc/src/*/*scotch*.pdf
 doc/src/*/*scotch*.ps.gz
@@ -22,7 +23,8 @@ src/check/test_scotch_graph_dump2.c
 !src/check/data
 src/esmumps/*[.][ao]
 src/esmumps/common.h
-src/esmumps/main_esmumps
+src/esmumps/test_esmumps
+src/esmumps/test_fax
 src/libscotch/*[.][ao]
 src/libscotch/dummysizes
 src/libscotch/parser_ll.c

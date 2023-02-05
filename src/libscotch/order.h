@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,15 +50,15 @@
 /**                # Version 6.0  : from : 08 may 2018     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 26 apr 2021     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define ORDER_H
 
 /*
 **  The defines.
 */
+
+#define SCOTCH_ORDER_H
 
 /*+ Ordering option flags. +*/
 
@@ -120,11 +120,11 @@ typedef struct Order_ {
 **  The function prototypes.
 */
 
-#ifdef ORDER
+#ifdef SCOTCH_ORDER
 static void                 orderExit2          (OrderCblk * const, const Gnum);
 static void                 orderRang2          (Gnum ** const, Gnum * const, const OrderCblk * const);
 static void                 orderTree2          (Gnum * restrict const, Gnum * restrict const, const OrderCblk * restrict const, Gnum);
-#endif /* ORDER */
+#endif /* SCOTCH_ORDER */
 
 int                         orderInit           (Order * const, const Gnum, const Gnum, Gnum * const);
 void                        orderExit           (Order * const);

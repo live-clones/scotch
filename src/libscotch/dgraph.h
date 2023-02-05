@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2015,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2015,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,19 +61,21 @@
 /**                # Version 6.1  : from : 19 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
 /**                # Version 7.0  : from : 03 may 2019     **/
-/**                                 to   : 01 oct 2021     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
-
-#define DGRAPH_H
-
-#ifndef SCOTCH_COMM_PTOP_RAT
-#define SCOTCH_COMM_PTOP_RAT        0.25          /* Percentage under which point-to-point is allowed */
-#endif /* SCOTCH_COMM_PTOP_RAT */
 
 /*
 ** The defines.
 */
+
+#define SCOTCH_DGRAPH_H
+
+/* Point-to-point communication ratio. */
+
+#ifndef SCOTCH_COMM_PTOP_RAT
+#define SCOTCH_COMM_PTOP_RAT        0.25          /* Percentage under which point-to-point is allowed */
+#endif /* SCOTCH_COMM_PTOP_RAT */
 
 /* Graph flags. */
 

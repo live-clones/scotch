@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,14 +44,14 @@
 /**                                 to   : 08 jan 2004     **/
 /**                # Version 6.1  : from : 21 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
+/**                # Version 7.0  : from : 16 jan 2023     **/
+/**                                 to   : 16 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 **  The defines and includes.
 */
-
-#define VGRAPH
 
 #include "module.h"
 #include "common.h"

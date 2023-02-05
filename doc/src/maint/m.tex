@@ -11,6 +11,10 @@
 
 \documentclass{article}
 \usepackage{a4}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{breakurl}
+\hypersetup{pdfborder={0 0 0},colorlinks=false}
 \usepackage[dvips]{graphicx}
 %\documentstyle[11pt,a4,fullpage,epsf]{article}
 %\textwidth      16.0cm
@@ -93,17 +97,18 @@
 \newcommand{\eg}{{\it e\@.g\@.\/\ }}             % e.g.
 \newcommand{\ie}{{\it i\@.e\@.\/\ }}             % i.e.
 
-\newcommand{\scotch}{{\sc Scotch}}               % "scotch"
-\newcommand{\libscotch}{{\sc libScotch}}         % "libscotch"
+\newcommand{\scotch}{\textsc{Scotch}}            % "scotch"
+\newcommand{\libscotch}{\textsc{libScotch}}      % "libscotch"
 \newcommand{\ptscotch}{\textsc{PT-Scotch}}       % "PT-Scotch"
-\newcommand{\libptscotch}{{\sc libPTScotch}}     % "libPTScotch"
+\newcommand{\libptscotch}{\textsc{libPTScotch}}  % "libPTScotch"
+\newcommand{\esmumps}{\textsc{esMUMPS}}          % "esMUMPS"
 
 \newcommand{\UB}{{\rm UB}}                       % UB
 
 %% Version du document.
 
 \newcommand{\scotchver}{7.0}
-\newcommand{\scotchversub}{7.0.2}
+\newcommand{\scotchversub}{7.0.3}
 
 %% Page de garde.
 

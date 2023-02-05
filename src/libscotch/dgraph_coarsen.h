@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2012,2014,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2012,2014,2018,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 17 jun 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 29 dec 2021     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -170,10 +170,10 @@ typedef struct DgraphCoarsenData_ {
 ** The function prototypes.
 */
 
-#ifdef DGRAPH_COARSEN
+#ifdef SCOTCH_DGRAPH_COARSEN
 static int                  dgraphCoarsenInit   (DgraphCoarsenData * restrict const, Dgraph * restrict const, Dgraph * restrict const);
 static void                 dgraphCoarsenExit   (DgraphCoarsenData * restrict const);
 static int                  dgraphCoarsenBuild  (DgraphCoarsenData * restrict const);
-#endif /* DGRAPH_COARSEN */
+#endif /* SCOTCH_DGRAPH_COARSEN */
 
 int                         dgraphCoarsen       (Dgraph * restrict const, Dgraph * restrict const, DgraphCoarsenMulti * restrict * const, const Gnum, const Gnum, const double, const int, Context * restrict const);

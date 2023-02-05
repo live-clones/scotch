@@ -46,6 +46,10 @@
 /**                                                        **/
 /************************************************************/
 
+/*
+** The defines and includes.
+*/
+
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"

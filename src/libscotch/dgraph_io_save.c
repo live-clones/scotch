@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2013 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2013,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,7 +34,7 @@
 /**   NAME       : dgraph_io_save.c                        **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
-/**                Cedric CHEVALIER                        **/
+/**                Cedric CHEVALIER (v5.0)                 **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the data declarations   **/
 /**                for the input/output routines for       **/
@@ -48,14 +48,14 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 18 sep 2013     **/
 /**                                 to   : 18 sep 2013     **/
+/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
 ** The defines and includes.
 */
-
-#define DGRAPH_IO
 
 #include "module.h"
 #include "common.h"

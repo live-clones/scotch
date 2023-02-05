@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018-2020 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018-2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,6 +49,8 @@
 /**                                 to   : 24 sep 2019     **/
 /**                # Version 6.1  : from : 01 jun 2020     **/
 /**                                 to   : 14 jun 2020     **/
+/**                # Version 7.0  : from : 21 jan 2023     **/
+/**                                 to   : 21 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # The cost analysis routine leaves the  **/
 /**                  memory management to malloc and free  **/
@@ -61,8 +63,6 @@
 /*
 **  The defines and includes.
 */
-
-#define GOTST
 
 #include "module.h"
 #include "common.h"

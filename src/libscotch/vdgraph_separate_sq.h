@@ -1,4 +1,4 @@
-/* Copyright 2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 01 mar 2006     **/
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 06 jun 2018     **/
+/**                # Version 7.0  : from : 20 jan 2023     **/
+/**                                 to   : 20 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,8 +62,8 @@ typedef struct VdgraphSeparateSqParam_ {
 **  The function prototypes.
 */
 
-#ifdef VDGRAPH_SEPARATE_SQ
+#ifdef SCOTCH_VDGRAPH_SEPARATE_SQ
 static void                 vdgraphSeparateSqOpBest (const Gnum * const, Gnum * const, const int * const, const MPI_Datatype * const);
-#endif /* VDGRAPH_SEPARATE_SQ */
+#endif /* SCOTCH_VDGRAPH_SEPARATE_SQ */
 
 int                         vdgraphSeparateSq   (Vdgraph * const, const VdgraphSeparateSqParam * const);

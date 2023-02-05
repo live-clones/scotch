@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2011-2016,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2011-2016,2018,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,7 +59,7 @@
 /**                # Version 6.0  : from : 09 mar 2011     **/
 /**                                 to   : 29 apr 2019     **/
 /**                # Version 7.0  : from : 28 jul 2018     **/
-/**                                 to   : 31 aug 2021     **/
+/**                                 to   : 19 jan 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,7 +67,7 @@
 **  The defines and includes.
 */
 
-#define GRAPH_COARSEN
+#define SCOTCH_GRAPH_COARSEN
 
 #include "module.h"
 #include "common.h"

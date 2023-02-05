@@ -168,6 +168,39 @@ clearly be an invalid expression, as a vertex array cannot be indexed
 by an edge number. Hence, potential contributors are required to
 follow them strictly.
 
+\subsection{File inclusion markers}
+\label{sec-naming-file-inclusion-markers}
+
+File inclusion markers are \texttt{\#define}'s which indicate that a
+given source file (either a ``\texttt{.c}'' source code file or a
+``\texttt{.h}'' header file) has been already encountered.
+
+To minimize risks of collisions with symbols of external libraries,
+file inclusion markers start with a prefix that represents the name of
+the project, followed by the name of the file in question (without its
+type suffix). While filenames can be long, this is not an issue since
+the length of the significant part of C~preprocessor symbols is at
+least 63~characters\footnote{See e.g.
+\url{https://gcc.gnu.org/onlinedocs/cpp/Implementation-limits.html}},
+thus longer than that of C identifiers, which is 32~characters.
+Header file marker identifiers are suffixed with ``\texttt{\_H}'',
+while C source file markers have no suffix.
+
+In order to further minimize risks of collisions, file inclusion
+markers should be placed in a file only when needed, that is, when
+effectively used as the parameter of a conditional inclusion statement
+within another source file.
+
+The current project prefixes are:
+\begin{itemize}
+\item
+  \texttt{SCOTCH\_}: the \scotch\ project itself;
+\item
+  \texttt{ESMUMPS\_}: the \esmumps\ library, which is treated as a
+  separate project to avoid conflicts with data structures and files
+  that exist in both libraries, such as \texttt{Graph}'s.
+\end{itemize}
+
 \subsection{Variables and fields}
 \label{sec-naming-variables}
 
