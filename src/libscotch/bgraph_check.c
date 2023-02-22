@@ -99,30 +99,30 @@ const Bgraph * restrict const grafptr)
   if (grafptr->compload0avg != (Gnum) (((double) (grafptr->s.velosum + grafptr->vfixload[0] + grafptr->vfixload[1]) * (double) grafptr->domnwght[0]) /
                                        (double) (grafptr->domnwght[0] + grafptr->domnwght[1])) - grafptr->vfixload[0]) {
     errorPrint ("bgraphCheck: invalid average load");
-    return     (1);
+    return (1);
   }
 
   if (grafptr->compload0 != (grafptr->compload0avg + grafptr->compload0dlt)) {
     errorPrint ("bgraphCheck: invalid load balance");
-    return     (1);
+    return (1);
   }
 
   for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) {
     if ((parttax[vertnum] | 1) != 1) {            /* If part is neither 0 nor 1 */
       errorPrint ("bgraphCheck: invalid part array");
-      return     (1);
+      return (1);
     }
   }
 
   if ((grafptr->fronnbr < 0) ||
       (grafptr->fronnbr > grafptr->s.vertnbr)) {
     errorPrint ("bgraphCheck: invalid number of frontier vertices");
-    return     (1);
+    return (1);
   }
 
   if ((flagtax = memAlloc (grafptr->s.vertnbr * sizeof (int))) == NULL) {
     errorPrint ("bgraphCheck: out of memory");
-    return     (1);
+    return (1);
   }
   memSet (flagtax, ~0, grafptr->s.vertnbr * sizeof (int));
   flagtax -= grafptr->s.baseval;

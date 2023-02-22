@@ -131,7 +131,7 @@ const Gnum * restrict const     vflowgttab)       /*+ Array of vertex weight bia
   if (bgraphCheck (actgrafptr) != 0) {
     errorPrint ("bgraphInit: inconsistent graph data");
     bgraphExit (actgrafptr);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
 
