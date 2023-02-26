@@ -104,7 +104,7 @@ const BgraphBipartMlParam * const     paraptr)    /*+ Method parameters         
 
   *coarmultptr = NULL;                            /* Allocate multloctab along with coarse graph */
   if (graphCoarsen (&finegrafptr->s, &coargrafptr->s, NULL, coarmultptr,
-                    paraptr->coarnbr, paraptr->coarrat, GRAPHCOARSENNONE,
+                    paraptr->coarnbr, paraptr->coarrat, GRAPHCOARSENNOCOMPACT,
                     NULL, NULL, 0, finegrafptr->contptr) != 0)
     return (1);                                   /* Return if coarsening failed */
 
