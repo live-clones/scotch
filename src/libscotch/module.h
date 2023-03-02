@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 03 feb 2023     **/
+/**                                 to   : 28 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -685,6 +685,8 @@
 #define bgraphInit5                 SCOTCH_NAME_INTERN (bgraphInit5)
 #define bgraphExit                  SCOTCH_NAME_INTERN (bgraphExit)
 #define bgraphCheck                 SCOTCH_NAME_INTERN (bgraphCheck)
+#define bgraphCost                  SCOTCH_NAME_INTERN (bgraphCost)
+#define bgraphCost2                 SCOTCH_NAME_INTERN (bgraphCost2)
 #define bgraphSwal                  SCOTCH_NAME_INTERN (bgraphSwal)
 #define bgraphZero                  SCOTCH_NAME_INTERN (bgraphZero)
 #define bgraphBipartBd              SCOTCH_NAME_INTERN (bgraphBipartBd)

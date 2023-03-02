@@ -65,7 +65,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 05 apr 2018     **/
 /**                # Version 7.0  : from : 08 jun 2018     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 28 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -133,6 +133,8 @@ void                        bgraphExit          (Bgraph * restrict const);
 void                        bgraphSwal          (Bgraph * restrict const);
 void                        bgraphZero          (Bgraph * restrict const);
 int                         bgraphCheck         (const Bgraph * restrict const);
+void                        bgraphCost          (Bgraph * restrict const);
+void                        bgraphCost2         (const Bgraph * restrict const, const GraphPart * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const, Gnum * restrict const);
 
 int                         bgraphStoreInit     (const Bgraph * const, BgraphStore * const);
 void                        bgraphStoreExit     (BgraphStore * const);

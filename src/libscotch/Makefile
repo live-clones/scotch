@@ -268,6 +268,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			bgraph_bipart_st$(OBJ)			\
 			bgraph_bipart_zr$(OBJ)			\
 			bgraph_check$(OBJ)			\
+			bgraph_cost$(OBJ)			\
 			bgraph_store$(OBJ)			\
 			common$(OBJ)				\
 			common_context$(OBJ)			\
@@ -880,6 +881,13 @@ bgraph_bipart_zr$(OBJ)		:	bgraph_bipart_zr.c			\
 					bgraph_bipart_zr.h
 
 bgraph_check$(OBJ)		:	bgraph_check.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch$(OBJ)				\
+					bgraph.h
+
+bgraph_cost$(OBJ)		:	bgraph_cost.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
