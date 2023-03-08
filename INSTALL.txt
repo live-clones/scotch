@@ -57,6 +57,11 @@ tedious. Please read the next section ("Configuration and
 fine-tuning") to see what options are available, as they may either
 favor or hinder the performance of Scotch on your system.
 
+Since the Scotch source code makes use of some C99 constructs (e.g.,
+format constants for the fprintf family of functions, such as
+"PRIu64"), C compilers must be parametrized so as to accept them
+(e.g., using the "-std=c99" option for gcc).
+
 
 2.1) Compiling with CMake
 -------------------------
