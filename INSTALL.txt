@@ -14,10 +14,11 @@ To check whether Flex and Bison are present, please type:
 %prompt% which flex
 %prompt% which bison
 
-Note: to implement pure parsers, recent versions of the Flex and
-Bison tools are needed (e.g., the 3.4 branch). On MacOs, an older
-version is provided by default; users may get an adequate version from
-the "HomeBrew" repository, using command "brew install bison".
+Because pure parsers are needed to ensure thread safety when handling
+strategy strings, versions of the Flex and Bison tools at least equal
+to 3.4 are required. On MacOs, an older version is provided by
+default; users may get an adequate version from the "HomeBrew"
+repository, using command "brew install bison".
 
 To check whether GNU Make and/or CMake are installed and are found
 first, please type:
