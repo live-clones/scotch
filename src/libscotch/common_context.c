@@ -39,7 +39,7 @@
 /**                context management routines.            **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 12 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -255,16 +255,16 @@ ContextSplit * restrict const     spltptr)        /*+ Data structure for splitti
     threadContextImport2 (spltptr->conttab[0].thrdptr, thrdnum); /* Lock all worker threads */
 
     if (thrdnum == 0) {                           /* If leader thread of sub-context 0 */
-      spltptr->funcptr  (&spltptr->conttab[0], 0, spltptr->paraptr);
-      threadContextExit (spltptr->conttab[0].thrdptr);
+      spltptr->funcptr   (&spltptr->conttab[0], 0, spltptr->paraptr);
+      threadContextExit2 (spltptr->conttab[0].thrdptr);
     }
   }
   else {                                          /* Thread belongs to second sub-context             */
     threadContextImport2 (spltptr->conttab[1].thrdptr, thrdnum - thrdmed); /* Lock all worker threads */
 
     if (thrdnum == thrdmed) {                     /* If leader thread of sub-context 1 */
-      spltptr->funcptr  (&spltptr->conttab[1], 1, spltptr->paraptr);
-      threadContextExit (spltptr->conttab[1].thrdptr);
+      spltptr->funcptr   (&spltptr->conttab[1], 1, spltptr->paraptr);
+      threadContextExit2 (spltptr->conttab[1].thrdptr);
     }
   }
 }

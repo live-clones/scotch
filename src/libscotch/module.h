@@ -362,6 +362,7 @@
 
 #define threadContextBarrier        SCOTCH_NAME_INTERN (threadContextBarrier)
 #define threadContextExit           SCOTCH_NAME_INTERN (threadContextExit)
+#define threadContextExit2          SCOTCH_NAME_INTERN (threadContextExit2)
 #define threadContextImport1        SCOTCH_NAME_INTERN (threadContextImport1)
 #define threadContextImport2        SCOTCH_NAME_INTERN (threadContextImport2)
 #define threadContextInit           SCOTCH_NAME_INTERN (threadContextInit)
