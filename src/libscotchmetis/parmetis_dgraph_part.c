@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 18 may 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 13 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,23 +80,41 @@ const SCOTCH_Num            valunbr,
 const float * const         flottab,
 SCOTCH_Num * const          intetab)
 {
+  SCOTCH_Num          inteold;                    /* Previous value to avoid recomputing things */
+  float               flotold;                    /* Previous value to avoid recomputing things */
   float               flotadj;
   SCOTCH_Num          i;
 
+  flotold = -1.0F;                                /* No previous value yet */
   for (i = 0, flotadj = 1.0; i < valunbr; i ++) {
     float               flotval;
     float               flottmp;
 
-    flotval  = flottab[i];
-    flotval *= flotadj;                         /* See if renormalization factor works        */
+    flotval = flottab[i];
+    if (flotval == flotold)                       /* Skip if same value */
+      continue;
+
+    flotold  = flotval;                           /* Remember old value                       */
+    flotval *= flotadj;                           /* See if renormalization factor works      */
     flottmp  = flotval - floor (flotval + EPSILON); /* Determine its possible fractional part */
-    if (fabs (flottmp) >= EPSILON) {            /* If a residual fractional part exists       */
-      flottmp = flotadj / flottmp;              /* Incorporate it in renormalization factor   */
+    if (fabs (flottmp) >= EPSILON) {              /* If a residual fractional part exists     */
+      flottmp = flotadj / flottmp;                /* Incorporate it in renormalization factor */
       flotadj = (flotadj * flottmp) / (float) intGcd ((SCOTCH_Num) round (flotadj), (SCOTCH_Num) round (flottmp));
     }
   }
-  for (i = 0; i < valunbr; i ++)
-    intetab[i] = (SCOTCH_Num) round (flottab[i] * flotadj);
+
+  flotold = -1.0F;                                /* No previous value yet */
+  inteold = 0;
+  for (i = 0; i < valunbr; i ++) {
+    float               flotval;
+
+    flotval = flottab[i];
+    if (flotval != flotold) {                     /* If not same value  */
+      flotold = flotval;                          /* Remember old value */
+      inteold = (SCOTCH_Num) round (flotval * flotadj);
+    }
+    intetab[i] = inteold;
+  }
 }
 
 int
