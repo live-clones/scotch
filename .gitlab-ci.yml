@@ -208,6 +208,8 @@ scotch_test_cmake:
 scotch_sonar:
   stage: sonar
   allow_failure: true
+  tags:
+    - sonar
   artifacts:
     paths:
       - analyzer_reports
