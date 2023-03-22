@@ -29,30 +29,29 @@
 ** The fact that you are presently reading this means that you have had
 ** knowledge of the CeCILL-C license and that you accept its terms.
 */
-/**********************************************************/
-/*                                                        */
-/*   NAME       : dgraph_ghst.h                           */
-/*                                                        */
-/*   AUTHOR     : Francois PELLEGRINI                     */
-/*                Francois CHATENET (P0.0)                */
-/*                Sebastien FOUCAULT (P0.0)               */
-/*                Nicolas GICQUEL (P0.1)                  */
-/*                Jerome LACOSTE (P0.1)                   */
-/*                                                        */
-/*   FUNCTION   : Part of a parallel static mapper.       */
-/*                These lines are the data declarations   */
-/*                for the halo building routine.          */
-/*                                                        */
-/*                # Version P0.0 : from : 01 apr 1997     */
-/*                                 to   : 20 jun 1997     */
-/*                # Version P0.1 : from : 12 apr 1998     */
-/*                                 to   : 20 jun 1998     */
-/*                # Version 5.0  : from : 28 feb 2006     */
-/*                                 to   : 31 dec 2006     */
-/*                # Version 6.1  : from : 04 dec 2021     */
-/*                                 to   : 04 dec 2021     */
-/*                                                        */
-/**********************************************************/
+/************************************************************/
+/**                                                        **/
+/**   NAME       : dgraph_ghst.h                           **/
+/**                                                        **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Francois CHATENET (P0.0)                **/
+/**                Sebastien FOUCAULT (P0.0)               **/
+/**                Nicolas GICQUEL (P0.1)                  **/
+/**                Jerome LACOSTE (P0.1)                   **/
+/**                                                        **/
+/**   FUNCTION   : These lines are the data declarations   **/
+/**                for the halo building routine.          **/
+/**                                                        **/
+/**                # Version P0.0 : from : 01 apr 1997     **/
+/**                                 to   : 20 jun 1997     **/
+/**                # Version P0.1 : from : 12 apr 1998     **/
+/**                                 to   : 20 jun 1998     **/
+/**                # Version 5.0  : from : 28 feb 2006     **/
+/**                                 to   : 31 dec 2006     **/
+/**                # Version 6.1  : from : 04 dec 2021     **/
+/**                                 to   : 04 dec 2021     **/
+/**                                                        **/
+/************************************************************/
 
 /*
 ** The defines.
