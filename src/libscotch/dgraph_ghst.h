@@ -50,6 +50,8 @@
 /**                                 to   : 31 dec 2006     **/
 /**                # Version 6.1  : from : 04 dec 2021     **/
 /**                                 to   : 04 dec 2021     **/
+/**                # Version 7.0  : from : 22 mar 2023     **/
+/**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,7 +61,7 @@
 
 /* procsidtab-related values. */
 
-#define DGRAPHGHSTSIDMAX            ((int) (1U << (sizeof (unsigned int) * 8 - 1)) - 2U) /* Maximum leap value for procsidtab entries */
+#define DGRAPHGHSTSIDMAX            ((int) ((1U << (sizeof (unsigned int) * 8 - 1)) - 2U)) /* Maximum leap value for procsidtab entries */
 
 /*
 ** The type and structure definitions.
