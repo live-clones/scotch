@@ -353,7 +353,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_BGRAPH2
   if (bgraphCheck (grafptr) != 0) {
     errorPrint ("bgraphBipartGg: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
 
