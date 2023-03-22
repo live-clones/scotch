@@ -62,7 +62,7 @@
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 02 may 2015     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,7 +103,7 @@ FILE * restrict const       stream)
 
   if ((intLoad (stream, &archptr->dimnnbr) != 1) ||
       (archptr->dimnnbr < 1)                     ||
-      (archptr->dimnnbr > (sizeof (archptr->dimnnbr) << 3))) {
+      (archptr->dimnnbr > (Anum) (sizeof (Anum) << 3))) { /* Should have enough bits in ArchHcubDom bitsset field */
     errorPrint ("archHcubArchLoad: bad input");
     return (1);
   }
