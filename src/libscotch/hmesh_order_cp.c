@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 09 feb 2020     **/
 /**                # Version 7.0  : from : 28 aug 2020     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -157,7 +157,7 @@ const HmeshOrderCpParam * restrict const  paraptr)
        finehaspmsk = finehaspmsk * 2 + 1) ;
   finehaspmsk >>= 1;                              /* Ensure masked data will always fit into finecoartab array */
   finehaspmsk = (finehaspmsk * (sizeof (Gnum) / sizeof (int))) + ((sizeof (Gnum) / sizeof (int)) - 1);
-  if (finehaspmsk >= ((sizeof (int) << (3 + 1)) - 1)) /* Only use 1/8 of array for pre-hashing, for increased cache locality */
+  if (finehaspmsk >= (Gnum) ((sizeof (int) << (3 + 1)) - 1)) /* Only use 1/8 of array for pre-hashing, for increased cache locality */
     finehaspmsk >>= 3;
   memSet (finehasptab, 0, (finehaspmsk + 1) * sizeof (int)); /* Initialize pre-hash table */
 
