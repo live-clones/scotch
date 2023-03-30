@@ -47,7 +47,7 @@
 /**                # Version 6.1  : from : 27 dec 2021     **/
 /**                                 to   : 27 dec 2021     **/
 /**                # Version 7.0  : from : 22 oct 2021     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 30 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,7 +79,7 @@
 
 int
 dgraphMatchSyncPtop (
-DgraphMatchData * restrict const  mateptr)
+DgraphMatchData * const     mateptr)              /* [norestrict:async] */
 {
   Gnum                queulocnbr;
   Gnum                queulocnum;
@@ -93,7 +93,7 @@ DgraphMatchData * restrict const  mateptr)
   int                 vrcvreqnbr;
   Gnum                deteval;                    /* Flag set if deterministic behavior */
 
-  Dgraph * restrict const             grafptr    = mateptr->c.finegrafptr;
+  Dgraph * const                      grafptr    = mateptr->c.finegrafptr; /* [norestrict:async] */
   const int * restrict const          procngbtab = grafptr->procngbtab;
   int * restrict const                procgsttax = mateptr->c.procgsttax;
   const Gnum * restrict const         procvgbtab = mateptr->procvgbtab;

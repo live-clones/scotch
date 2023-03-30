@@ -46,6 +46,8 @@
 /**                                 to   : 04 apr 2009     **/
 /**                # Version 6.0  : from : 03 oct 2012     **/
 /**                                 to   : 03 oct 2012     **/
+/**                # Version 7.0  : from : 30 mar 2023     **/
+/**                                 to   : 30 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,8 +74,8 @@ typedef struct DgraphMatchData_ {
 int                         dgraphMatchInit     (DgraphMatchData * restrict const, const float);
 void                        dgraphMatchExit     (DgraphMatchData * restrict const);
 int                         dgraphMatchSync     (DgraphMatchData * restrict const);
-int                         dgraphMatchSyncColl (DgraphMatchData * restrict const);
-int                         dgraphMatchSyncPtop (DgraphMatchData * restrict const);
+int                         dgraphMatchSyncColl (DgraphMatchData * const);
+int                         dgraphMatchSyncPtop (DgraphMatchData * const);
 int                         dgraphMatchCheck    (DgraphMatchData * restrict const);
 
 void                        dgraphMatchHl       (DgraphMatchData * restrict const);
