@@ -203,6 +203,7 @@ set(SCOTCH_C_SOURCES
   bgraph_bipart_st.h
   bgraph_bipart_zr.c
   bgraph_bipart_zr.h
+  bgraph_cost.c
   bgraph_check.c
   bgraph_cost.c
   bgraph_store.c

@@ -1,3 +1,4 @@
+---
 stages:
   - build
   - test
@@ -7,216 +8,208 @@ stages:
 # JOB_THREAD: [ n | c | k | s | m ]
 # JOB_DEBUG: [ n | a | f ]
 # JOB_RENAME: [ n | r ]
-
-.job_template: &matrix_32
+.matrix_32: &matrix_32
   parallel:
     matrix:
-      - JOB_INT: [ 32, 32-64 ]
-        JOB_THREAD: [ n ]
-        JOB_DEBUG: [ n ]
-        JOB_RENAME: [ n ]
-      - JOB_INT: [ 32-64 ]
-        JOB_THREAD: [ n, k ]
-        JOB_DEBUG: [ a ]
-        JOB_RENAME: [ n ]
-      - JOB_INT: [ 32 ]
-        JOB_THREAD: [ n, c, m ]
-        JOB_DEBUG: [ f ]
-        JOB_RENAME: [ n ]
+      - JOB_INT: [32, 32-64]
+        JOB_THREAD: [n]
+        JOB_DEBUG: [n]
+        JOB_RENAME: [n]
+      - JOB_INT: [32-64]
+        JOB_THREAD: [n, k]
+        JOB_DEBUG: [a]
+        JOB_RENAME: [n]
+      - JOB_INT: [32]
+        JOB_THREAD: [n, c, m]
+        JOB_DEBUG: [f]
+        JOB_RENAME: [n]
 
-.job_template: &matrix_64
+.matrix_64: &matrix_64
   parallel:
     matrix:
-      - JOB_INT: [ 64 ]
-        JOB_THREAD: [ n ]
-        JOB_DEBUG: [ n ]
-        JOB_RENAME: [ n ]
-      - JOB_INT: [ 64 ]
-        JOB_THREAD: [ n, c, s, m ]
-        JOB_DEBUG: [ a ]
-        JOB_RENAME: [ n ]
-      - JOB_INT: [ 64 ]
-        JOB_THREAD: [ m ]
-        JOB_DEBUG: [ a ]
-        JOB_RENAME: [ r ]
+      - JOB_INT: [64]
+        JOB_THREAD: [n]
+        JOB_DEBUG: [n]
+        JOB_RENAME: [n]
+      - JOB_INT: [64]
+        JOB_THREAD: [n, c, s, m]
+        JOB_DEBUG: [a]
+        JOB_RENAME: [n]
+      - JOB_INT: [64]
+        JOB_THREAD: [m]
+        JOB_DEBUG: [a]
+        JOB_RENAME: [r]
 
-.job_template: &cache_template
-    untracked: true
-    paths:
-      - bin
-      - build_*
-      - ci
-      - include
-      - lib
-      - src
-      - tgt
-      - analyzer_reports
-      - scotch-build-*.log
 
-.job_template: &variables_template
-  before_script:
-    - . ci/gitlab-ci-env.sh
-    - export JOBNAME="${JOB_INT}${JOB_THREAD}${JOB_DEBUG}${JOB_RENAME}"
-    - echo ${JOBNAME}
-    - export JOBBUILDFLAGS="-O0 -g -fPIC -DCOMMON_FILE_COMPRESS_LZMA"
-    - case "${JOB_INT}" in
-        32 )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
-        32-64 )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DINTSIZE64 -DIDXSIZE64" ;;
-        64 )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
-      esac
-    - case "${JOB_THREAD}" in
-        n )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DSCOTCH_MPI_ASYNC_COLL" ;;
-        c )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD" ;;
-        k )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DCOMMON_PTHREAD_REDUCE_CANONICAL -DCOMMON_PTHREAD_SCAN_CANONICAL -DSCOTCH_MPI_ASYNC_COLL -DSCOTCH_PTHREAD" ;;
-        s )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DCOMMON_PTHREAD_AFFINITY_LINUX -DSCOTCH_MPI_ASYNC_COLL -DSCOTCH_PTHREAD -DSCOTCH_PTHREAD_NUMBER=2" ;;
-        m )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_PTHREAD -DCOMMON_PTHREAD_AFFINITY_LINUX -DSCOTCH_MPI_ASYNC_COLL -DSCOTCH_PTHREAD -DSCOTCH_PTHREAD_MPI" ;;
-      esac
-    - export JOBCHECK=""
-    - case "${JOB_DEBUG}" in
-        n )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
-        a )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_ALL" ;;
-        f )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_DEBUG_FULL"
-          export JOBCHECK=_full ;;
-      esac
-    - case "${JOB_RENAME}" in
-        n )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS}" ;;
-        r )
-          export JOBBUILDFLAGS="${JOBBUILDFLAGS} -DSCOTCH_RENAME" ;;
-      esac
-    - echo ${JOBBUILDFLAGS}
+# default cache
+.cache_default: &cache_default
+  untracked: true
+  when: 'always'
 
-.job_template: &job_build
-  stage: build
-  <<: *variables_template
-  script:
-    - cp ci/Makefile.inc src/Makefile.inc
-    - cd src
-    - sed -i -e "s#^\(CFLAGS.*\)#\1 ${JOBBUILDFLAGS}#1" Makefile.inc
-    - find . -name Makefile | xargs sed -i -e "s#-c \$(<)#-c \$\(shell pwd\)/\$\(<\)#g"
-    - scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build-${JOBNAME}.log
+## GNU Makefile pipeline
 
-.job_template: &job_build_cmake
+# build
+.build_makefile: &build_makefile
   stage: build
   script:
-   - mkdir -p build_cmake
-   - cd build_cmake
-   - cmake -DCMAKE_BUILD_TYPE=Release ..
-   - make -j5
+    - ./ci/build_makefile.sh
 
 scotch_build_32:
-  <<: *job_build
-  tags:
-    - 32bits
+  <<: *build_makefile
+  tags: ['32bits']
   cache:
     key: scotch32 $CI_NODE_INDEX
     policy: push
-    <<: *cache_template
+    <<: *cache_default
   <<: *matrix_32
 
 scotch_build_64:
-  <<: *job_build
-  tags:
-    - 64bits
+  <<: *build_makefile
+  tags: ['64bits']
   cache:
     key: scotch64 $CI_NODE_INDEX
     policy: push
-    <<: *cache_template
+    <<: *cache_default
   <<: *matrix_64
 
-scotch_build_cmake:
-  <<: *job_build_cmake
-  tags:
-    - with_cmake
-  cache:
-    key: scotch_cmake $CI_NODE_INDEX
-    policy: push
-    <<: *cache_template
-  before_script:
-   - export CC=gcc && export FC=gfortran
-
-.job_template: &job_test
+# test
+.test_makefile: &test_makefile
   stage: test
-  <<: *variables_template
   artifacts:
     untracked: true
   script:
-    - cd src
-    - make check${JOBCHECK}
-    - make ptcheck${JOBCHECK}
-    - make escheck
-    - find . -print0 | xargs -0 touch
-    - cp libscotch/parser_ll.c libscotch/lex.yy.c
-    - cp libscotch/parser_yy.c libscotch/y.tab.c
-    - cat check/test_scotch_graph_dump.c /tmp/m16x16_b1.c > check/test_scotch_graph_dump2.c
-    - cd ..
-    - lcov --capture --directory . --output-file scotch-${JOBNAME}.lcov
-
-.job_template: &job_test_cmake
-  stage: test
-  script:
-   - cd build_cmake
-   - ctest -T Test --timeout 20
-   - xsltproc -o report.xml /builds/ctest-to-junit.xsl Testing/**/Test.xml
-  artifacts:
-    untracked: true
-    reports:
-      junit: build_cmake/report.xml
+    - ./ci/test_makefile.sh
 
 scotch_test_32:
-  <<: *job_test
+  <<: *test_makefile
+  tags: ['32bits']
   cache:
     key: scotch32 $CI_NODE_INDEX
     policy: pull
-    <<: *cache_template
-  tags:
-    - 32bits
+    <<: *cache_default
   <<: *matrix_32
 
 scotch_test_64:
-  <<: *job_test
+  <<: *test_makefile
+  tags: ['64bits']
   cache:
     key: scotch64 $CI_NODE_INDEX
     policy: pull
-    <<: *cache_template
-  tags:
-    - 64bits
+    <<: *cache_default
   <<: *matrix_64
 
-scotch_test_cmake:
-  <<: *job_test_cmake
-  cache:
-    key: scotch_cmake $CI_NODE_INDEX
-    policy: pull
-    <<: *cache_template
-  tags:
-    - with_cmake
-  before_script:
-   - export CC=gcc && export FC=gfortran
-
+# sonarqube analysis if schedule job
 scotch_sonar:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
   stage: sonar
+  tags: ['sonar']
+  script:
+    - ci/analysis.sh
+    - sonar-scanner -X > sonar.log
   allow_failure: true
-  tags:
-    - sonar
+  coverage: /^\s*lines:\s*\d+.\d+\%/
   artifacts:
     paths:
       - analyzer_reports
       - sonar-project.properties
       - ./*.log
-      - ./*.lcov
+      - ./*.cov
       - ./*.xml
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
+## CMake pipeline (not done if schedule)
+
+# specific rule: not triggered if schedule pipeline (for cmake jobs for example)
+.rule_noschedule: &rule_noschedule
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule"
+
+# build
+.build_cmake: &build_cmake
+  <<: *rule_noschedule
+  stage: build
+  tags: ['cmake']
   script:
-    - ci/analysis.sh
-    - sonar-scanner -X > sonar.log
+    - ./ci/build_cmake.sh
+
+build_cmake_gcc:
+  <<: *build_cmake
+  variables:
+    CC: "gcc"
+    FC: "gfortran"
+  cache:
+    key: cmake_gcc
+    policy: push
+    <<: *cache_default
+
+build_cmake_clang:
+  <<: *build_cmake
+  variables:
+    CC: "clang"
+    FC: "gfortran"
+  cache:
+    key: cmake_clang
+    policy: push
+    <<: *cache_default
+
+build_cmake_intel:
+  <<: *build_cmake
+  variables:
+    CC: "icx"
+    FC: "gfortran"
+  cache:
+    key: cmake_intel
+    policy: push
+    <<: *cache_default
+
+# test
+.test_cmake: &test_cmake
+  <<: *rule_noschedule
+  stage: test
+  tags: ['cmake']
+  script:
+    - ./ci/test_cmake.sh
+  artifacts:
+    untracked: true
+    reports:
+      junit: report.xml
+
+test_cmake_gcc:
+  <<: *test_cmake
+  needs:
+    - build_cmake_gcc
+  variables:
+    CC: "gcc"
+    FC: "gfortran"
+  cache:
+    key: cmake_gcc
+    policy: pull
+    <<: *cache_default
+
+test_cmake_clang:
+  <<: *test_cmake
+  needs:
+    - build_cmake_clang
+  variables:
+    CC: "clang"
+    FC: "gfortran"
+  cache:
+    key: cmake_clang
+    policy: pull-push
+    <<: *cache_default
+
+test_cmake_intel:
+  <<: *test_cmake
+  needs:
+    - build_cmake_intel
+  variables:
+    CC: "icx"
+    FC: "ifx"
+  cache:
+    key: cmake_intel
+    policy: pull-push
+    <<: *cache_default
