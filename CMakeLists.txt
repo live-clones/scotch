@@ -41,8 +41,8 @@
 ##                                                        ##
 ############################################################
 
-project(SCOTCH)
 cmake_minimum_required(VERSION 3.10)
+project(SCOTCH)
 enable_language(C Fortran)
 
 # Add module directory
