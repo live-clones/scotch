@@ -67,16 +67,16 @@
 
 int
 dgraphFoldComm (
-const Dgraph * restrict const                 grafptr,
-const int                                     partval, /* 0 for first half, 1 for second half                        */
-int * restrict const                          commptr, /* Pointer to maximum number of communications per process    */
-int * restrict const                          commtypval, /* Process will be sender or receiver                      */
-DgraphFoldCommData *restrict * restrict const commdatptr, /* Slots for communication                                 */
-Gnum *restrict * restrict const               commvrtptr, /* Slots of starting global vertex send indices            */
-Gnum * restrict const                         proccnttab, /* Receive count array, for receivers                      */
-int * restrict const                          vertadjnbrptr, /* Number of adjustment ranges, for receivers           */
-Gnum * restrict * restrict const              vertadjptr, /* Pointer to global index adjustment array, for receivers */
-Gnum * restrict * restrict const              vertdltptr) /* Pointer to global delta adjustment array, for receivers */
+const Dgraph * restrict const                   grafptr,
+const int                                       partval, /* 0 for first half, 1 for second half                        */
+int * restrict const                            commptr, /* Pointer to maximum number of communications per process    */
+int * restrict const                            commtypval, /* Process will be sender or receiver                      */
+DgraphFoldCommData * restrict * restrict const  commdatptr, /* Slots for communication                                 */
+Gnum * restrict * restrict const                commvrtptr, /* Slots of starting global vertex send indices            */
+Gnum * restrict const                           proccnttab, /* Receive count array, for receivers                      */
+int * restrict const                            vertadjnbrptr, /* Number of adjustment ranges, for receivers           */
+Gnum * restrict * restrict const                vertadjptr, /* Pointer to global index adjustment array, for receivers */
+Gnum * restrict * restrict const                vertdltptr) /* Pointer to global delta adjustment array, for receivers */
 {
   int                           commmax;          /* Maximum number of communications per process        */
   int                           procnum;
@@ -101,13 +101,13 @@ Gnum * restrict * restrict const              vertdltptr) /* Pointer to global d
 
   if (grafptr->procglbnbr < 2) {
     errorPrint ("dgraphFoldComm: invalid parameters");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   if ((procsrttab = memAlloc (grafptr->procglbnbr * sizeof (DgraphFoldCommData))) == NULL) {
     errorPrint ("dgraphFoldComm: out of memory (1)");
-    return     (1);
+    return (1);
   }
 
   for (procnum = 0; procnum < grafptr->procglbnbr; procnum ++) {
@@ -138,7 +138,7 @@ Gnum * restrict * restrict const              vertdltptr) /* Pointer to global d
       ((proccnttab == NULL) || (vertadjptr == NULL) || (vertdltptr == NULL))) {
     errorPrint ("dgraphFoldComm: internal error (1)");
     memFree    (procsrttab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -168,7 +168,7 @@ Gnum * restrict * restrict const              vertdltptr) /* Pointer to global d
                        &vertprmtab, (size_t) ((commmax + 1) * fldprocnbr * sizeof (int)), NULL) == NULL) {
       errorPrint ("dgraphFoldComm: out of memory (2)");
       memFree    (procsrttab);
-      return     (1);
+      return (1);
     }
 
     for (i = 0; i < commmax; i ++) {              /* Assume we will perform no communication at all */
@@ -256,7 +256,7 @@ Gnum * restrict * restrict const              vertdltptr) /* Pointer to global d
         errorPrint ("dgraphFoldComm: internal error (2)");
         memFree    (commdattab);                  /* Free group leader */
         memFree    (procsrttab);
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -347,13 +347,13 @@ Gnum * restrict * restrict const              vertdltptr) /* Pointer to global d
   if (MPI_Allreduce (chekloctab, chekglbtab, 2, MPI_INT, MPI_MAX, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphFoldComm: communication error");
     memFree    (commdattab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
   if ((chekglbtab[0] != chekloctab[0]) ||
       (chekglbtab[1] != chekloctab[1])) {
     errorPrint ("dgraphFoldComm: internal error (3)");
     memFree    (commdattab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -403,14 +403,14 @@ Gnum * restrict * restrict const              vertdltptr) /* Pointer to global d
     if (vertsndnbr != grafptr->vertlocnbr) {
       errorPrint ("dgraphFoldComm: internal error (4)");
       memFree    (commdattab);                    /* Free group leader */
-      return     (1);
+      return (1);
     }
   }
   if (MPI_Allgather (commdattab, 2 * commmax, GNUM_MPI,
                      procchktab, 2 * commmax, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphFoldComm: communication error");
     memFree    (commdattab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 
   for (procnum = 0; procnum < grafptr->procglbnbr; procnum ++) {
@@ -432,7 +432,7 @@ Gnum * restrict * restrict const              vertdltptr) /* Pointer to global d
       if (commend >= commmax) {
         errorPrint ("dgraphFoldComm: internal error (5)");
         memFree    (commdattab);                  /* Free group leader */
-        return     (1);
+        return (1);
       }
     }
   }
