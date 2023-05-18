@@ -1,0 +1,125 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                  %
+% Title   : m_d.tex                %
+% Subject : Maintenance manual of  %
+%           Scotch                 %
+%           Code explanations      %
+% Author  : Francois Pellegrini    %
+%                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Data structure explanations}
+\label{sec-data}
+
+This section explains some of the most complex data structures
+implemented in \scotch\ and \ptscotch.
+
+\subsection{\texttt{Mapping}}
+\label{sec-data-mapping}
+
+A \texttt{Mapping} defines how individual vertices of a \texttt{Graph}
+are mapped individually onto (parts of) an \texttt{Arch}. A mapping is
+said \textit{complete} if all source graph vertices are assigned to
+terminal target domains, \ie individual vertices of the target
+architecture, or \textit{partial} if at least one of the source graph
+vertices is assigned to a target domain that comprises more than one
+vertex. In the course of the graph mapping process, the destination of
+source vertices are progressively refined, from an initial target
+domain that usually describes the whole of the target architecture, to
+terminal domains.
+
+Since \texttt{ArchDom}, the data structure that describes target
+architecture domains, is big and costly to handle (\eg, to compare if
+two \texttt{ArchDom}s are identical), the handling of domains in
+mapping is indirect: in the part array \texttt{parttax}, each vertex
+is assigned an integer domain index that refers to a domain located in
+the domain array \texttt{domntab}. Hence, when two graph vertices have
+the same index in \texttt{parttax}, they belong to the same domain and
+induce no communication cost. However, the opposite is false: two
+vertices may have a different index in \texttt{parttax} and yet belong
+to the same target domain. This is for instance the case when one of
+the vertices is a fixed vertex that has been set to a specific
+terminal domain at initialization time, and one of its neighbors is
+successively mapped to smaller and smaller subdomains that eventually
+amount to the same terminal domain.
+
+There is no obligation for the \texttt{domntab} array to contain only
+one instance of some target domain. On the contrary, as described
+above, the same domain may appear at least twice: once for fixed
+vertices, and once for non-fixed vertices on which mapping algorithms
+are applied. However, for efficiency reasons (\eg, avoiding to compute
+vertex distances that are equal to zero), it is preferable that
+duplicate domains are avoided in the \texttt{domntab} array. This is
+the case by nature with recursive bipartitioning, as the domains
+associated with branches of the biparitioning tree are all distinct.
+
+Making the distinction between fixed and non-fixed vertices, which is
+relevant to mapping algorithms, is not in the scope of the
+\texttt{Mapping} data structure, which only represents a global
+state. This is why no data related to fixed vertices is explicitly
+present in the mapping itself (it may be found, \eg, in the
+\texttt{Kgraph} data structure).
+However, for handling fixed vertices in an efficient way, the
+semantics of the \texttt{Mapping} data structure is that all domains
+that are associated with fixed vertices must be placed first in the
+\texttt{domntab} array. The purpose of this separation is because,
+when the imbalance of a mapping is computed, the loads of non-fixed
+vertices that belong to some (partial) domain and of fixed vertices
+that belong to domains that are subdomains of this domain have to be
+aggregated. This aggregation procedure is made easier if both types of
+domains are kept separate. For efficiency reasons, fixed domains
+should appear only once in the fixed part of \texttt{domntab}.
+\\
+
+Since a \texttt{Mapping} is a complex structure in terms of memory
+allocation (partial allocation and/or cloning of some arrays are
+possible), flags are set to record which arrays have to be freed.
+
+The main fields of the \texttt{Mapping} data structure are the following:
+\begin{itemize}
+\item
+\texttt{flagval}: set of flags that defines whether the
+\texttt{parttax} and \texttt{domntab} have to be freed on exit.
+\item
+\texttt{grafptr}: pointer to the \texttt{Graph} associated with the
+mapping, that gives access to the base value \texttt{grafptr->\lbt
+baseval} and the number of source vertices \texttt{grafptr->\lbt
+vertnbr}.
+\item
+\texttt{archptr}: pointer to the \texttt{Arch} associated with the
+mapping, that is necessary to perform all distance computations on the
+mapping.
+\item
+\texttt{parttax}: based array of \texttt{Anum}s, of size
+\texttt{grafptr->\lbt vertnbr}, that provides the index of the target
+domains onto which all graph vertices are currently mapped. Indices
+are un-based.
+\item
+\texttt{domntab}: un-based array of \texttt{ArchDom}s, of size
+\texttt{domnmax}, that stores the target domains to which source graph
+vertices are indirectly associated through the \texttt{parttax} array.
+\item
+\texttt{domnnbr}: number of target domain slots currently used in
+\texttt{domntab}. After a mapping is initialized, $1 \leq
+\mbox{\texttt{domnnbr}} < \mbox{\texttt{domnmax}}$, because source
+graph vertices must be associated to some domain, hence
+\texttt{domntab} should at least contain one domain.
+\item
+\texttt{domnnbr}: number of target domain slots currently used in
+\texttt{domntab}.
+\item
+\texttt{domnmax}: size of the \texttt{domntab} array.
+\item
+\texttt{domnorg}: initial domain for the non-fixed vertices of the
+mapping. When a mapping is initialized, all \texttt{parttax} values
+for non-fixed vertices are set to index~$0$, and \texttt{domntab[0]}
+is set to \texttt{domnorg}, the root domain. In the general case for
+centralized mapping, \texttt{domnorg} is equal to
+\texttt{archDomFrst(archptr)}. However, when a centralized mapping
+process is launched as a part of a distributed mapping process, the
+initial domain may be a subset of the whole target architecture, hence
+the presence of \texttt{domnorg} in the mapping structure.
+\item
+\texttt{mutedat}: when multi-threading is activated, allows to create
+critical sections to update the mapping data in a thread-safe manner.
+\end{itemize}
