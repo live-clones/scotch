@@ -1,6 +1,23 @@
 Scotch 7.0 installation instructions
 ====================================
 
+0) Documentation
+================
+
+The "doc/" directory contains several documents that may be useful to
+users, packagers and maintainers of Scotch:
+
+- the "Scotch and PT-Scotch Hands-On Guide", which provides ueful
+  information to installers and users, as well as some troubleshooting
+  instructions in case of unexpected crash;
+
+- The "Scotch User's Guide" and the "PT-Scotch User's Guide", which
+  provide thorough information about the Scotch and PT-Scotch APIs;
+
+- The "Scotch Maintainer's Guide", which gives insights about the
+  internals of Scotch and the Scotch coding style.
+
+
 1) Mandatory tools
 ==================
 
