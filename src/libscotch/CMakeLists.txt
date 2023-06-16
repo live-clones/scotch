@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     19 sep 2024     ##
+##                                 to     22 nov 2024     ##
 ##                                                        ##
 ############################################################
 
@@ -325,6 +325,7 @@ set(SCOTCH_C_SOURCES
   kgraph.h
   kgraph_band.c
   kgraph_check.c
+  kgraph_cost.c
   kgraph_map_bd.c
   kgraph_map_bd.h
   kgraph_map_cp.c

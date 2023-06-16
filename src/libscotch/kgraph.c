@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 27 aug 2020     **/
 /**                # Version 7.0  : from : 22 jun 2021     **/
-/**                                 to   : 16 jul 2024     **/
+/**                                 to   : 22 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -200,128 +200,6 @@ Kgraph * restrict const     grafptr)
   grafptr->comploadavg[0] = grafptr->s.velosum;
   grafptr->commload       = 0;
   grafptr->fronnbr        = 0;                    /* No frontier vertices  */
-}
-
-/* This routine computes the cost of the
-** current partition.
-** It returns:
-** - VOID  : in all cases.
-*/
-
-void
-kgraphCost (
-Kgraph * restrict const     grafptr)
-{
-  Gnum                          vertnum;
-  Gnum * restrict               compload;
-  Gnum                          commload;
-  double                        fdomwgt;
-  Gnum                          fvelsum;
-  Gnum                          velosum;
-  Anum                          domnnum;
-  ArchDom                       domndat;
-  double                        domnrat;
-
-  const Gnum * restrict const     verttax = grafptr->s.verttax;
-  const Gnum * restrict const     velotax = grafptr->s.velotax;
-  const Gnum * restrict const     vendtax = grafptr->s.vendtax;
-  const Gnum * restrict const     edlotax = grafptr->s.edlotax;
-  const Gnum * restrict const     edgetax = grafptr->s.edgetax;
-  const Arch * restrict const     archptr = grafptr->m.archptr;
-  const ArchDom * restrict const  domntab = grafptr->m.domntab;
-  Anum * restrict const           parttax = grafptr->m.parttax;
-  const Anum                      domnnbr = grafptr->m.domnnbr;
-
-  commload = 0;
-  compload = grafptr->comploaddlt;                   /* Use delta array as temporary storage */
-  memSet (compload, 0, domnnbr * sizeof (Gnum));
-  for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) {
-    Gnum                edgenum;
-    Gnum                edgennd;
-    Anum                partval;                  /* Part of current vertex                                */
-    Anum                partlst;                  /* Part of last vertex for which a distance was computed */
-    Anum                distlst;                  /* Last distance computed                                */
-    Gnum                veloval;
-
-    partval = parttax[vertnum];
-    partlst = -1;                                 /* Invalid part to recompute distance */
-    distlst = -1;                                 /* To prevent compiler from yielding  */
-
-#ifdef SCOTCH_DEBUG_KGRAPH2
-    if ((partval < 0) || (partval >= domnnbr)) {
-      errorPrint ("kgraphCost: invalid part number (1)");
-      return;
-    }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-    veloval = (velotax != NULL) ? velotax[vertnum] : 1;
-    compload[partval] += veloval;
-
-    for (edgenum = verttax[vertnum], edgennd = vendtax[vertnum];
-         edgenum < edgennd; edgenum ++) {
-      Gnum                vertend;
-      Anum                partend;
-
-      vertend = edgetax[edgenum];
-      if (vertend > vertnum)                      /* Compute loads only once */
-        continue;
-
-      partend = parttax[vertend];
-#ifdef SCOTCH_DEBUG_KGRAPH2
-      if ((partend < 0) || (partend >= domnnbr)) {
-        errorPrint ("kgraphCost: invalid part number (2)");
-        return;
-      }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-      if (partval != partend) {
-        Anum                distval;
-
-        distval = (partend != partlst) ? archDomDist (archptr, &domntab[partval], &domntab[partend]) : distlst;
-        distlst = distval;
-        partlst = partend;
-         
-        commload += (Gnum) distval * ((edlotax != NULL) ? edlotax[edgenum] : 1);
-      }
-    }
-  }
-  grafptr->commload = commload;
-
-  fdomwgt = 0;
-  fvelsum = 0;
-  if ((grafptr->s.flagval & KGRAPHHASANCHORS) != 0) {
-    const Gnum                  vertancnnd = grafptr->s.vertnnd - domnnbr;
-    Gnum                        veloval;
-
-    for (domnnum = 0; domnnum < domnnbr; domnnum ++)
-      if ((grafptr->s.verttax[vertancnnd + domnnum + 1] - grafptr->s.verttax[vertancnnd + domnnum]) != 0)
-        continue;
-
-    if (domnnum != domnnbr) {
-      for (domnnum = 0; domnnum < domnnbr; domnnum ++) {
-        if ((grafptr->s.verttax[vertancnnd + domnnum + 1] - grafptr->s.verttax[vertancnnd + domnnum]) == 0) {
-          veloval = grafptr->s.velotax[vertancnnd + domnnum];
- 
-          fdomwgt += (double) archDomWght (archptr, &domntab[domnnum]);
-          fvelsum += veloval;
-          compload[domnnum] -=
-          grafptr->comploadavg[domnnum] = veloval;
-#ifdef SCOTCH_DEBUG_KGRAPH2
-          if (compload[domnnum] != 0) {
-            errorPrint ("kgraphCost: invalid load difference");
-            return;
-          }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-        }
-      }
-    }
-  }
-  archDomFrst (archptr, &domndat);
-  domnrat = (double) archDomWght (archptr, &domndat);
-  domnrat -= fdomwgt;
-  velosum = grafptr->s.velosum - fvelsum;
-  for (domnnum = 0; domnnum < domnnbr; domnnum ++) {
-    compload[domnnum]            -=
-    grafptr->comploadavg[domnnum] = (Gnum) ((double) velosum * ((double) archDomWght (archptr, &domntab[domnnum]) / domnrat));
-  }
 }
 
 /* This routine computes the frontier
