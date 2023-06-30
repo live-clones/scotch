@@ -52,7 +52,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 27 dec 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 02 aug 2023     **/
+/**                                 to   : 12 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -127,7 +127,7 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
   if (coarptr->multloctab == NULL) {              /* If no multinode array provided */
     Gnum                multlocsiz;               /* Size of local multinode array  */
 
-    multlocsiz = vertlocnbr;                      /* Size of multinode array of plain coarsened graph, before folding */
+    multlocsiz = vertlocnbr;                      /* Size of multinode array of plain coarsened graph, not taking folding into account */
 #ifdef SCOTCH_DEBUG_DGRAPH2
     coarptr->multlocsiz = multlocsiz;
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -140,8 +140,8 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
     coarptr->multloctmp = coarptr->multloctab;    /* Array will have to be freed on error */
   }
 #ifdef SCOTCH_DEBUG_DGRAPH2
-  else
-    coarptr->multlocsiz = finegrafptr->vertglbnbr; /* Impossible to know */
+  else                                            /* User-provided multinode array */
+    coarptr->multlocsiz = dgraphCoarsenVertLocMax (finegrafptr, DGRAPHCOARSENNONE); /* Impossible to know: use prescribed bound to test it */
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   if (memAllocGroup ((void **) (void *)           /* Data used up to edge exchange phase at coarse graph build time */

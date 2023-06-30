@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 18 jan 2009     **/
 /**                                 to   : 10 sep 2011     **/
 /**                # Version 7.0  : from : 18 jun 2023     **/
-/**                                 to   : 05 aug 2023     **/
+/**                                 to   : 12 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,7 +55,57 @@
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
+#include "dgraph_coarsen.h"
 #include "dgraph_fold_comm.h"
+
+/* This routine computes an upper bound on the size of
+** local vertex arrays that have to be allocated before
+** coarsening (and possibly folding) take place, notably
+** the multinode array.
+** Since this value depends on the folding distribution
+** algorithm, it is placed in the same source file.
+** The extreme case is when vertglbmax receivers have
+** (coarvertlocavg - 1) vertices, and a sender has
+** vertglbmax vertices as well. Only DGRAPHFOLDCOMMNBR
+** vertices will be transferred to achieve balance, and
+** (vertglbmax - DGRAPHFOLDCOMMNBR) vertices will have
+** to be spread across DGRAPHFOLDCOMMNBR processes.
+** It returns:
+** - >= 0  : size of vertex arrays
+*/
+
+Gnum
+dgraphCoarsenVertLocMax (
+const Dgraph * restrict const finegrafptr,        /*+ Graph to coarsen and possibly fold +*/
+const int                     flagval)            /*+ Coarsening type                    +*/
+{
+  Gnum                coarvertlocavg;             /* Average load on all processes if perfect balance achieved */
+  Gnum                coarvertlocmax;             /* Possible Maximum load on a specific process               */
+  int                 foldval;                    /* Type of folding (do not consider merging)                 */
+
+  const int                         procglbnbr = finegrafptr->procglbnbr;
+  const Gnum                        vertlocnbr = finegrafptr->vertlocnbr;
+  const Gnum                        vertglbnbr = finegrafptr->vertglbnbr;
+  const Gnum                        vertglbmax = finegrafptr->vertglbmax;
+
+  foldval = flagval & (DGRAPHCOARSENFOLD | DGRAPHCOARSENFOLDDUP); /* Only consider folding flags */
+
+  if ((foldval == DGRAPHCOARSENNONE) ||           /* If plain coarsening                                                      */
+      (procglbnbr == 1))                          /* Or user called the routine with a mono-process context                   */
+    return (vertlocnbr);                          /* Local number of vertices may not change if all local matchings succeeded */
+
+  if (foldval == DGRAPHCOARSENFOLD)               /* If simple folding, with coarsening ratio 1.0              */
+    coarvertlocavg = ((vertglbnbr * 2) / procglbnbr) + 1; /* Max ratio for FOLD is 2 -> 1                      */
+  else                                            /* Folding with duplication with coarsening ratio 1.0        */
+    coarvertlocavg = ((vertglbnbr * 2) / (procglbnbr - (procglbnbr % 2))) + 1; /* Max ratio FOLD-DUP is 3 -> 1 */
+
+  if (procglbnbr < (2 * DGRAPHFOLDCOMMNBR))       /* If there is always enough communications to spread the load of a single process */
+    coarvertlocmax = coarvertlocavg;              /* No overload is possible in this case                                            */
+  else
+    coarvertlocmax = coarvertlocavg + ((vertglbmax - DGRAPHFOLDCOMMNBR + (DGRAPHFOLDCOMMNBR - 1)) / DGRAPHFOLDCOMMNBR); /* Add possible overload */
+
+  return (coarvertlocmax);
+}
 
 /* This routine computes an optimized communication
 ** scheme for folding the data of a distributed graph.

@@ -958,6 +958,7 @@ dgraph_coarsen$(OBJ)		:	dgraph_coarsen.c			\
 					context.h				\
 					dgraph.h				\
 					dgraph_allreduce.h			\
+					dgraph_fold_comm.h			\
 					dgraph_coarsen.h			\
 					dgraph_match.h
 
@@ -978,6 +979,7 @@ dgraph_fold_comm$(OBJ)		:	dgraph_fold_comm.c			\
 					module.h				\
 					common.h				\
 					dgraph.h				\
+					dgraph_coarsen.h			\
 					dgraph_fold_comm.h
 
 dgraph_fold_dup$(OBJ)		:	dgraph_fold_dup.c			\

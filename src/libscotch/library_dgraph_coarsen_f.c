@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 12 sep 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 27 jul 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,6 +62,20 @@
 /* for the mapping routines.          */
 /*                                    */
 /**************************************/
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                                    \
+DGRAPHCOARSENVERTLOCMAX, dgraphcoarsenvertlocmax, ( \
+SCOTCH_Dgraph * const       finegrafptr,            \
+const SCOTCH_Num * const    flagval,                \
+SCOTCH_Num * const          coarvertlocmax),        \
+(finegrafptr, flagval, coarvertlocmax))
+{
+  *coarvertlocmax = SCOTCH_dgraphCoarsenVertLocMax (finegrafptr, *flagval);
+}
 
 /*
 **

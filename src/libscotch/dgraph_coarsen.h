@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 17 jun 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 12 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -177,3 +177,4 @@ static int                  dgraphCoarsenBuild  (DgraphCoarsenData * restrict co
 #endif /* SCOTCH_DGRAPH_COARSEN */
 
 int                         dgraphCoarsen       (Dgraph * restrict const, Dgraph * restrict const, DgraphCoarsenMulti * restrict * const, const Gnum, const Gnum, const double, const int, Context * restrict const);
+Gnum                        dgraphCoarsenVertLocMax (const Dgraph * restrict const, const int);
