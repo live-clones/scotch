@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 18 may 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 30 jun 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -76,11 +76,14 @@ const SCOTCH_Num * const    numflag,                    \
 const SCOTCH_Num * const    options,                    \
 SCOTCH_Num * const          order,                      \
 SCOTCH_Num * const          sizes,                      \
-MPI_Comm * const            commptr,                    \
+const MPI_Fint * const      commptr,                    \
 int * const                 revaptr),                   \
 (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr, revaptr))
 {
-  *revaptr = SCOTCH_ParMETIS_V3_NodeND (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr);
+  MPI_Comm            commdat;
+
+  commdat = MPI_Comm_f2c (*commptr);
+  *revaptr = SCOTCH_ParMETIS_V3_NodeND (vtxdist, xadj, adjncy, numflag, options, order, sizes, &commdat);
 }
 
 /*******************/
@@ -101,10 +104,13 @@ const SCOTCH_Num * const    numflag,                                \
 const SCOTCH_Num * const    options,                                \
 SCOTCH_Num * const          order,                                  \
 SCOTCH_Num * const          sizes,                                  \
-MPI_Comm * const            commptr),                               \
+const MPI_Fint * const      commptr),                               \
 (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr))
 {
-  METISNAMEU (ParMETIS_V3_NodeND) (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr);
+  MPI_Comm            commdat;
+
+  commdat = MPI_Comm_f2c (*commptr);
+  METISNAMEU (ParMETIS_V3_NodeND) (vtxdist, xadj, adjncy, numflag, options, order, sizes, &commdat);
 }
 
 #endif /* SCOTCH_METIS_PREFIX */
