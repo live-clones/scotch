@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 28 sep 2014     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 03 jul 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -107,7 +107,9 @@ Context * restrict const      contptr)            /*+ Context                   
 {
 #ifdef SCOTCH_PTHREAD_MPI
   Dgraph              orggrafdat;
+  int                 thrdprolvl;
 #endif /* SCOTCH_PTHREAD_MPI */
+  int                 thrdval;                    /* Flag set if multithreaded process is possible */
   int                 fldprocnbr;
   int                 fldprocnum;
   int                 fldproccol;
@@ -140,28 +142,37 @@ Context * restrict const      contptr)            /*+ Context                   
   fldspltdat.datatype   = datatype;
   fldspltdat.revaptr    = &o;
 
-  o = 0;                                          /* Assume splitting will go well */
-#ifdef SCOTCH_PTHREAD_MPI
-  fldspltdat.splttab[1].orggrafptr = &orggrafdat;
-  orggrafdat = *orggrafptr;                       /* Create a separate graph structure to change its communicator */
+  o = 0;                                          /* Assume splitting will go well       */
+  thrdval = 0;                                    /* Assume splitting will be sequential */
 
-  if (MPI_Comm_dup (orggrafptr->proccomm, &orggrafdat.proccomm) != MPI_SUCCESS) { /* Duplicate communicator to avoid interferences in communications */
-    errorPrint ("dgraphFoldDup: communication error (2)");
-    return (1);
-  }
+#ifdef SCOTCH_PTHREAD_MPI
+  MPI_Query_thread (&thrdprolvl);                 /* Get thread level of MPI implementation */
+  if (thrdprolvl >= MPI_THREAD_MULTIPLE) {        /* If multiple threads can be used        */
+    fldspltdat.splttab[1].orggrafptr = &orggrafdat;
+    orggrafdat = *orggrafptr;                     /* Create a separate graph structure to change its communicator */
+
+    if (MPI_Comm_dup (orggrafptr->proccomm, &orggrafdat.proccomm) != MPI_SUCCESS) { /* Duplicate communicator to avoid interferences in communications */
+      errorPrint ("dgraphFoldDup: communication error (2)");
+      return (1);
+    }
+
 #ifndef DGRAPHFOLDDUPNOTHREAD
-  if (contextThreadLaunchSplit (contptr, (ContextSplitFunc) dgraphFoldDup2, &fldspltdat) != 0) /* If counld not split context to run concurrently */
+    if (contextThreadLaunchSplit (contptr, (ContextSplitFunc) dgraphFoldDup2, &fldspltdat) == 0) /* If context could be split to run concurrently */
+      thrdval = 1;                                /* No need to go through sequantial run */
 #endif /* DGRAPHFOLDDUPNOTHREAD */
-#else /* SCOTCH_PTHREAD_MPI */
-  fldspltdat.splttab[1].orggrafptr = orggrafptr;  /* No need for separate graph with separate communicator */
+  }
 #endif /* SCOTCH_PTHREAD_MPI */
-  {
-    dgraphFoldDup2 (contptr, 0, &fldspltdat); /* Run tasks in sequence */
+
+  if (thrdval == 0) {                             /* If need to go through the sequential run               */
+    fldspltdat.splttab[1].orggrafptr = orggrafptr; /* No need for separate graph with separate communicator */
+
+    dgraphFoldDup2 (contptr, 0, &fldspltdat);     /* Run tasks in sequence */
     if (o == 0)
       dgraphFoldDup2 (contptr, 1, &fldspltdat);
   }
 #ifdef SCOTCH_PTHREAD_MPI
-  MPI_Comm_free (&orggrafdat.proccomm);
+  if (thrdprolvl >= MPI_THREAD_MULTIPLE)          /* If duplicated communicator was created, free it */
+    MPI_Comm_free (&orggrafdat.proccomm);
 #endif /* SCOTCH_PTHREAD_MPI */
 
   fldgrafptr->prockeyval = fldproccol;            /* Discriminate between folded communicators at same level */

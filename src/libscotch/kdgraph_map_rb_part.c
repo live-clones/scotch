@@ -49,7 +49,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 03 jul 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -222,6 +222,9 @@ Dmapping * restrict const               mappptr,
 const ArchDom * restrict const          domnsubtab,
 KdgraphMapRbPartGraph * restrict const  fldgrafptr)
 {
+#ifdef SCOTCH_PTHREAD_MPI
+  int                     thrdprolvl;
+#endif /* SCOTCH_PTHREAD_MPI */
   KdgraphMapRbPartThread  fldthrdtab[2];
   int                     fldprocnbr0;            /* Number of processes in first part            */
   int                     fldprocnum;
@@ -308,9 +311,11 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
   fldthrdtab[fldpartval ^ 1].fldproccomm = MPI_COMM_NULL;
 
 #ifdef SCOTCH_PTHREAD_MPI
-  if ((contextThreadNbr (actgrafptr->contptr) > 1) &&
-      ((indflagtab[0] & indflagtab[1]) != 0)) {   /* If both subjobs have meaningful things to do in parallel */
-    Dgraph              orggrafdat;               /* Structure for copying graph fields except communicator   */
+  MPI_Query_thread (&thrdprolvl);                 /* Get thread level of MPI implementation                    */
+  if ((thrdprolvl >= MPI_THREAD_MULTIPLE) &&      /* If we can use multiple threads                            */
+      (contextThreadNbr (actgrafptr->contptr) > 1) && /* And there is a need to                                */
+      ((indflagtab[0] & indflagtab[1]) != 0)) {   /* And both subjobs have meaningful things to do in parallel */
+    Dgraph              orggrafdat;               /* Structure for copying graph fields except communicator    */
 
     orggrafdat = actgrafptr->s;                   /* Create a separate graph structure to change its communicator */
     orggrafdat.flagval = (orggrafdat.flagval & ~DGRAPHFREEALL) | DGRAPHFREECOMM;
