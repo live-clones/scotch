@@ -155,7 +155,7 @@ const Graph * const         grafptr)
         errorPrint ("graphCheck: loops not allowed");
         return (1);
       }
-      for (edgeend = verttax[vertend];   /* Search for matching arc */
+      for (edgeend = verttax[vertend];            /* Search for matching arc */
            (edgeend < vendtax[vertend]) && (edgetax[edgeend] != vertnum);
            edgeend ++) ;
       if ((edgeend >= vendtax[vertend]) ||
