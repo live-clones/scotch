@@ -1595,6 +1595,7 @@ $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_dgraphCoarsen}}
+\label{sec-lib-func-scotchdgraphcoarsen}
 
 \begin{itemize}
 \progsyn
@@ -1643,21 +1644,23 @@ FOLD\lbt DUP}, a second copy is created (duplicated) onto the other
 half. The two copies may not be identical, if the number of processors
 of the finer graph is odd.
 
-The {\tt multloctab} array must be of a size that is big enough to
-store multinode data for the resulting coarsened graph. This array
-will contain pairs of consecutive {\tt SCOTCH\_\lbt Num} values,
-representing the global indices of the two fine vertices that have
-been coarsened into each of the local coarse vertices. In case of
-plain coarsening, the size of the array must be at least twice the
-maximum expected number of local coarse vertices, that is, on each
-processor, twice the value of {\tt vert\lbt loc\lbt nbr} of the finer
-graph, because in the worst case no coarsening may happen on some
-processor. In case of folding, a redistribution of vertices is
-performed. Hence, the maximum number of coarse vertices on some
-processor is upper-bounded by the expected maximum global number of
-coarse vertices, divided by the resulting number of processors, that
-is, the integer floor value of half of the number of processors of the
-finer graph.
+The \texttt{multloctab} multinode array will contain pairs of
+consecutive \texttt{SCOTCH\_\lbt Num} values, representing the global
+indices of the two fine vertices that have been coarsened into each of
+the local coarse vertices. When a fine vertex has not been matched,
+the two indices in the multinode array for the corresponding coarse
+vertex are equal to the index of the single fine vertex.
+The \texttt{multloctab} array must be large enough to store node
+matching local data for the resulting coarsened (and possibly folded)
+graph. The \texttt{SCOTCH\_\lbt dgraph\lbt Coarsen\lbt Vert\lbt
+Loc\lbt Max} routine (see
+Section~\ref{sec-lib-func-scotchdgraphcoarsenvertlocmax}) provides an
+upper bound on the number of coarse (and possibly folded) vertices
+located on the local process, which has to be doubled to obtain an
+upper bound on the number of \texttt{SCOTCH\_\lbt Num}s contained in
+\texttt{multloctab}. Note that, in case of folding, a redistribution
+of vertices is performed, so that the number of local coarse vertices
+may be greater that the number of local fine vertices.
 
 {\tt coargrafptr} must have been initialized with the
 {\tt SCOTCH\_\lbt dgraph\lbt Init} routine before
@@ -1681,6 +1684,49 @@ of its data might be necessary, using the
 structure has been successfully created, $1$ if the coarse graph was
 not created because it did not enforce the threshold parameters, and
 $2$ on error.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_dgraphCoarsenVertLocMax}}
+\label{sec-lib-func-scotchdgraphcoarsenvertlocmax}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+SCOTCH\_Num SCOTCH\_dgraphCoarsenVertLocMax ( & SCOTCH\_Dgraph * const & finegrafptr, \\
+                                              & const SCOTCH\_Num      & flagval) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdgraphcoarsenvertlocmax ( & doubleprecision (*) & finegrafdat, \\
+                                 & integer*{\it num}   & flagval,     \\
+                                 & integer*{\it num}   & coarvertlocmax)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_dgraphCoarsen\lbt Vert\lbt Loc\lbt Max} routine
+computes an upper bound on the number of coarse vertices that will be
+created locally when the given fine graph is coarsened (and possibly
+folded) by way of the \texttt{SCOTCH\_dgraph\lbt Coarsen} routine
+(see Section~\ref{sec-lib-func-scotchdgraphcoarsen}). Its main use is
+to provide an upper bound on the size of the \texttt{mult\lbt loc\lbt
+  tab} multinode array that has to be pre-allocated before calling
+\texttt{SCOTCH\_dgraph\lbt Coarsen}.
+
+Because the number of local vertices of the coarse graph depends on
+the type of coarsening (\eg, in case of folding, the number of local
+vertices of the coarse graph may be higher than that of the fine
+graph), the type of coarsening foreseen must be provided, using
+the \texttt{flagval} value. It must be the same value as the one
+that will be passed to the \texttt{SCOTCH\_dgraph\lbt Coarsen}
+routine.
+
+\progret
+
+\texttt{SCOTCH\_dgraphCoarsen\lbt Vert\lbt Loc\lbt Max} returns an
+upper bound on the local number of coarse vertices, which is
+henceforth always a non-negative number.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_dgraphData}}
