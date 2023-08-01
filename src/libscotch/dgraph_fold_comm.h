@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2011 ENSEIRB, INRIA & CNRS
+/* Copyright 2007,2010,2011,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 19 aug 2006     **/
 /**                # Version 5.1  : from : 30 jul 2010     **/
 /**                                 to   : 03 jan 2011     **/
+/**                # Version 7.0  : from : 29 jul 2023     **/
+/**                                 to   : 29 jul 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,7 +52,7 @@
 **  The defines.
 */
 
-/*+ Starting maximum number of communications per process +*/
+/*+ Starting maximum number of communications per process. +*/
 
 #define DGRAPHFOLDCOMMNBR           4             /* Starting maximum number of communications per process */
 
@@ -60,19 +62,30 @@
 
 /*+ Process communication type. Receivers that have
     more local vertices than needed can also be
-    senders, hence the " = 1" to allow for or-ing
-    both values.                                    +*/
+    senders, hence both values can be "or"-ed.      +*/
 
 typedef enum DgraphFoldCommType_ {
   DGRAPHFOLDCOMMRECV = 1,                         /*+ Process is a receiver +*/
-  DGRAPHFOLDCOMMSEND                              /*+ Process is a sender   +*/
+  DGRAPHFOLDCOMMSEND = 2                          /*+ Process is a sender   +*/
 } DgraphFoldCommType;
 
-/* Sort structure for processors. */
+/*+ Dual-purpose structure: describes both
+    a communication slot and a sorting structure.
+    As a communication slot, the first field is
+    the number of vertices to communicate, and
+    the second field is the origin or target
+    processor index for the communication.
+    As a sort structure for processors, the first
+    field is the amount of vertices that must be
+    disposed of (> 0), or which can be accepted
+    (< 0). For pure senders, it amounts to all
+    the processor vertices, while for (sender-)
+    receivers, it is the difference with respect
+    to the target average number of vertices.     +*/
 
 typedef struct DgraphFoldCommData_ {
-  Gnum             vertnbr;                       /* Number of vertices; TRICK: FIRST   */
-  Gnum             procnum;                       /* Processor index (Gnum for sorting) */
+  Gnum             vertnbr;                       /*+ Number of (extra) vertices; TRICK: FIRST +*/
+  Gnum             procnum;                       /*+ Processor index; TRICK: Gnum for sorting +*/
 } DgraphFoldCommData;
 
 /*

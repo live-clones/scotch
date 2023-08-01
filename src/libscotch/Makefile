@@ -977,7 +977,6 @@ dgraph_fold$(OBJ)		:	dgraph_fold.c				\
 dgraph_fold_comm$(OBJ)		:	dgraph_fold_comm.c			\
 					module.h				\
 					common.h				\
-					comm.h					\
 					dgraph.h				\
 					dgraph_fold_comm.h
 
