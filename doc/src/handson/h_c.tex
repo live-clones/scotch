@@ -221,8 +221,12 @@ algorithms of \scotch\ and \ptscotch\ (which do not require to have
 a thread-safe implementation of MPI);
 \item
 \texttt{SCOTCH\_PTHREAD\_MPI}: activate threads for the
-distributed-memory algorithms of \ptscotch\ (this requires to have
-a thread-safe implementation of MPI).
+distributed-memory algorithms of \ptscotch. Starting from
+\textsc{v7.0.4}, \ptscotch\ dynamically adapts its behavior to the
+thread-safety level of the MPI library against which it is linked. In
+particular, it will take advantage of the capabilities of the
+\texttt{MPI\_\lbt THREAD\_\lbt MULTIPLE} level, if it is enabled, to
+run some threaded algorithms in parallel across compute nodes.
 \item
 \texttt{SCOTCH\_PTHREAD\_NUMBER}: default maximum number of threads to
 be used. A value of \texttt{1} means that no multi-threading will take

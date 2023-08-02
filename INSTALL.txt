@@ -114,9 +114,11 @@ Some structuring options can be set during this phase, by using the
     Pthreads within Scotch and PT-Scotch.
 
   - MPI_THREAD_MULTIPLE:BOOL (default value ON): set this flag to ON
-    to use multi-threaded algorithms in conjunction with MPI, which
-    requires to use a thread-safe MPI implementation. This option is
-    relevant only if BUILD_PTSCOTCH is set to ON.
+    to use multi-threaded algorithms in conjunction with MPI. In case
+    this option is activated and PT-Scotch is linked against a
+    thread-safe MPI library, it will take advantage of it to run some
+    threaded algorithms in parallel across compute nodes. This option
+    is relevant only if BUILD_PTSCOTCH is set to ON.
 
   - BUILD_PTSCOTCH:BOOL (default value ON): set this flag to ON to
     compile PT-Scotch in addition to Scotch (which is always compiled
@@ -532,18 +534,16 @@ available. They are used in several places:
 
   - to create distributed graphs in parallel. Since this task involves
     concurrent MPI communications, the MPI library must support the
-    MPI_THREAD_MULTIPLE level. In order to take advantage of these
-    features, the "-DSCOTCH_PTHREAD_MPI" flag must be set, in addition
-    to the "-DSCOTCH_PTHREAD" flag. These two flags are completely
-    independent from the "-DCOMMON_PTHREAD_FILE" flag, which can be
-    set independently from the others.
+    MPI_THREAD_MULTIPLE level in order for PT-Scotch to run the
+    threaded version of the algorithms. In order to take advantage of
+    these features, the "-DSCOTCH_PTHREAD_MPI" flag must be set, in
+    addition to the "-DSCOTCH_PTHREAD" flag. These two flags are
+    completely independent from the "-DCOMMON_PTHREAD_FILE" flag,
+    which can be set independently from the others.
 
     Note that if you compile Scotch with the "-DSCOTCH_PTHREAD_MPI"
     flag, you will have to initialize your communication subsystem by
-    using the MPI_Init_thread() MPI call instead of MPI_Init(), and
-    the provided thread support level value returned by the routine
-    must be checked carefully to assert it is indeed
-    MPI_THREAD_MULTIPLE.
+    using the MPI_Init_thread() MPI call instead of MPI_Init().
 
     Note also that since PT-Scotch calls Scotch routines when
     operating on a single process, setting "-DSCOTCH_PTHREAD" but not
@@ -904,7 +904,7 @@ run time by default (hence resorting to the sequential algorithms)
 unless explicitly decided by the user by way of the
 SCOTCH_PTHREAD_NUMBER environment variable.
 
-Also, when the MPI implementation supports it, we recommend to compile
-Scotch with the -DMPI_THREAD_MULTIPLE environment variable set, to
-benefit from added performance when several threads are available per
-MPI process.
+Also, we recommend to compile Scotch with the -DMPI_THREAD_MULTIPLE
+environment variable set, to benefit from added performance when
+Scotch is liked against a MPI library that provides the
+MPI_THREAD_MULTIPLE thread support level.

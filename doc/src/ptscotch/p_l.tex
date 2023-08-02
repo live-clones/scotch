@@ -73,23 +73,17 @@ non-threaded asynchronous communication primitives.
 
 Since \ptscotch\ is based on the MPI API, all processes must call some
 flavor of \texttt{MPI\_\lbt Init} before using any routine of the
-library that performs communication. The thread support level of MPI
-has to be set in accordance to the level required by the library.
+library that performs communication.
 
 If \ptscotch\ has been compiled without the ``\texttt{-DSCOTCH\_\lbt
 PTHREAD}'' flag, a call to the simple \texttt{MPI\_\lbt Init} routine
-will suffice, because no concurrent MPI calls will be performed by
-library routines. Else, the extended \texttt{MPI\_\lbt Init\_\lbt
-thread} initialization routine has to be used, to request either
-levels \texttt{MPI\_\lbt THREAD\_\lbt MULTIPLE} or only
-\texttt{MPI\_\lbt THREAD\_\lbt FUNNELED}, depending whether the
-``\texttt{-DSCOTCH\_\lbt PTHREAD\_\lbt MPI}'' flag has been set or
-not. The provided thread support level value returned by the routine
-must be checked carefully. If your MPI implementation does not provide
-the \texttt{MPI\_\lbt THREAD\_\lbt MULTIPLE} level, you will have to
-recompile \ptscotch\ without the ``\texttt{-DSCOTCH\_\lbt
-PTHREAD\_\lbt MPI}'' flag. Else, library calls may cause random bugs
-in the communication subsystem, resulting in program crashes.
+will suffice. Else, the extended \texttt{MPI\_\lbt Init\_\lbt
+thread} initialization routine has to be used. If \ptscotch\ has been
+compiled with the ``\texttt{-DSCOTCH\_\lbt PTHREAD\_\lbt MPI}'' flag
+as well, and the MPI library is launched at the \texttt{MPI\_\lbt
+THREAD\_\lbt MULTIPLE} level, \ptscotch\ will take advantage of this
+to run threaded versions of some of its algorithms across the MPI
+nodes.
 
 Thread binding is essential to achieve good performance of
 multi-threaded programs. In \scotch, the only thread binding mechanism
