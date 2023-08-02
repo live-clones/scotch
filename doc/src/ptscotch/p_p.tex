@@ -388,7 +388,7 @@ Section~\ref{sec-prog-dgmap}, for a description of all of the
 available options.
 \end{itemize}
 
-\subsubsection{{\tt dgscat}}
+\subsubsection{{\tt dgscat} / {\tt gscat}}
 
 \begin{itemize}
 \progsyn
@@ -405,6 +405,10 @@ centralized graph, while {\it output\_graph\_file} must refer to a
 distributed graph, according to the semantics defined in
 Section~\ref{sec-prog-filename}.
 
+{\tt dgscat} has a sequential counterpart, called {\tt gscat}. The
+latter operates by processing the source graph file on the fly, and
+does not perform any consistency checking on the output it produces.
+
 \progopt\\[-1em]
 \begin{itemize}
 \iteme[{\tt -c}]
@@ -412,6 +416,11 @@ Check the consistency of the distributed graph at the end of the
 graph loading phase.
 \iteme[{\tt -h}]
 Display the program synopsis.
+\iteme[{\tt -i}{\it nbr}]
+For gscat only. Create an imbalanced distributed graph, in which the
+distributed graph files for all processes will receive \textit{nbr}
+vertices of the graph, save for the file for the last process, which
+will receive all the remaining vertices.
 \iteme[{\tt -r}{\it num}]
 Set the number of the root process which will be used for centralized
 file accesses. Set to $0$ by default.
