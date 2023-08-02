@@ -11,36 +11,52 @@
 
 \documentclass{article}
 \usepackage{a4}
+\usepackage{courier}
+\usepackage{fancyvrb}
 \usepackage{url}
 \usepackage{hyperref}
 \usepackage{breakurl}
 \hypersetup{pdfborder={0 0 0},colorlinks=false}
-\usepackage{xspace}
 \usepackage[dvips]{graphicx}
-%\documentstyle[11pt,a4,fullpage,epsf]{article}
-%\textwidth      16.0cm
-%\oddsidemargin   -0.5cm
-%\evensidemargin  -0.5cm
-%\marginparwidth  0.0cm
-%\marginparsep    0.0cm
-%\marginparpush   0.0cm
-%\topmargin        0.5cm
-%\headheight      0.0cm
-%\headsep         0.0cm
-%\textheight     25.0cm
-%\footheight      0.0cm
-%\footskip        0.0cm
+\usepackage{xspace}
 
-\sloppy                                          % Gestion des overfull hbox
-\renewcommand{\baselinestretch}{1.05}            % Hauteur lignes x 1.05
+\usepackage{listings}
+% http://mirrors.fe.up.pt/pub/CTAN/macros/latex/contrib/listings/listings.pdf
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  columns=fullflexible,
+  showstringspaces=false,
+% tabsize=1,
+  breaklines=true,
+  breakatwhitespace=false,
+}
+\lstdefinestyle{language-b}
+{
+  language=bash,
+}
+\lstdefinestyle{language-c}
+{
+  language=C,
+}
+\lstdefinestyle{language-f}
+{
+  language=Fortran,
+}
 
-\setcounter{secnumdepth}{3}                      % Sous-sous-sections numerotees
-\setcounter{tocdepth}{3}                         % Sous-sous-sections dans la table
+\sloppy                                          % Get rid of overfull hbox'es
+\renewcommand{\baselinestretch}{1.05}            % Height of linex x 1.05
 
-%% Macros et commandes utiles.
+\setcounter{secnumdepth}{3}                      % Numbered sub-subsections
+\setcounter{tocdepth}{3}                         % Sub-subsections in table of contents
+
+%% Macros and useful commands.
 
 \makeatletter
-\@definecounter{enumv}                           % 8 niveaux d'itemizations
+\@definecounter{enumv}                           % 8 levels of itemization
 \@definecounter{enumvi}
 \@definecounter{enumvii}
 \@definecounter{enumviii}
@@ -92,17 +108,17 @@
 
 \newcommand{\lbo}{\linebreak[0]}
 \newcommand{\lbt}{\linebreak[2]}
-\newcommand{\noi}{{\noindent}}                   % Pas d'indentation
-\newcommand{\spa}{{\protect \vspace{\bigskipamount}}} % Espace vertical
+\newcommand{\noi}{{\noindent}}                   % No indentation
+\newcommand{\spa}{{\protect \vspace{\bigskipamount}}} % Vertical spacing
 
-\newcommand{\eg}{\textit{e\@.g\@.}\xspace}       % e.g.
+\newcommand{\eg}{{e\@.g\@.}\xspace}              % e.g.
 \newcommand{\ie}{\textit{i\@.e\@.}\xspace}       % i.e.
 
-\newcommand{\scotch}{\textsc{Scotch}}            % "scotch"
-\newcommand{\libscotch}{\textsc{libScotch}}      % "libscotch"
-\newcommand{\ptscotch}{\textsc{PT-Scotch}}       % "PT-Scotch"
-\newcommand{\libptscotch}{\textsc{libPTScotch}}  % "libPTScotch"
-\newcommand{\esmumps}{\textsc{esMUMPS}}          % "esMUMPS"
+\newcommand{\scotch}{\textsc{Scotch}\xspace}     % "scotch"
+\newcommand{\libscotch}{\textsc{libScotch}\xspace} % "libscotch"
+\newcommand{\ptscotch}{\textsc{PT-Scotch}\xspace} % "PT-Scotch"
+\newcommand{\libptscotch}{\textsc{libPTScotch}\xspace} % "libPTScotch"
+\newcommand{\esmumps}{\textsc{esMUMPS}\xspace}   % "esMUMPS"
 
 \newcommand{\UB}{{\rm UB}}                       % UB
 

@@ -23,26 +23,31 @@
 \usepackage[dvips]{graphicx}
 \usepackage{xspace}
 \usepackage{courier}
+
 \usepackage{listings}
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  columns=fullflexible,
+  showstringspaces=false,
+% tabsize=1,
+  breaklines=true,
+  breakatwhitespace=false,
+}
+\lstdefinestyle{language-b}
+{
+  language=bash,
+}
 \lstdefinestyle{language-c}
 {
   language=C,
-  basicstyle=\small\sffamily,
-  numbers=left,
-  numberstyle=\tiny,
-  frame=tlrb,
-  columns=fullflexible,
-  showstringspaces=false
 }
 \lstdefinestyle{language-f}
 {
   language=Fortran,
-  basicstyle=\small\sffamily,
-  numbers=left,
-  numberstyle=\tiny,
-  frame=tlrb,
-  columns=fullflexible,
-  showstringspaces=false
 }
 
 \sloppy                                          % Gestion des overfull hbox
