@@ -72,5 +72,5 @@
 
 /*+ Process flags. +*/
 
-#define C_FLAGNONE                  0x0000        /* No flags                   */
-#define C_FLAGPARTOVL               0x0002        /* Partitioning with overlap  */
+#define C_FLAGNONE                  0x0000        /* No flags                  */
+#define C_FLAGPARTOVL               0x0002        /* Partitioning with overlap */
