@@ -52,7 +52,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 27 dec 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 02 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -127,17 +127,7 @@ Dgraph * restrict const             coargrafptr)  /*+ Coarse graph to build     
   if (coarptr->multloctab == NULL) {              /* If no multinode array provided */
     Gnum                multlocsiz;               /* Size of local multinode array  */
 
-    switch ((procglbnbr <= 1) ? 0 : (coarptr->flagval & DGRAPHCOARSENFOLDDUP)) { /* If only a single process, allocate full array */
-      case 0 :                                    /* No folding */
-        multlocsiz = vertlocnbr;
-        break;
-      case DGRAPHCOARSENFOLD :                    /* Simple folding; maximum coarsening ratio is 1         */
-        multlocsiz = ((finegrafptr->vertglbnbr * 2) / procglbnbr) + 1; /* Maximum ratio for FOLD is 2 -> 1 */
-        break;
-      case DGRAPHCOARSENFOLDDUP :                 /* Folding with duplication; maximum coarsening ratio is 1                        */
-        multlocsiz = ((finegrafptr->vertglbnbr * 2) / (procglbnbr - (procglbnbr % 2))) + 1; /* Maximum ratio for FOLD-DUP is 3 -> 1 */
-        break;
-    }
+    multlocsiz = vertlocnbr;                      /* Size of multinode array of plain coarsened graph, before folding */
 #ifdef SCOTCH_DEBUG_DGRAPH2
     coarptr->multlocsiz = multlocsiz;
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
