@@ -107,8 +107,7 @@
 
 %% Version du document.
 
-\newcommand{\scotchver}{7.0}
-\newcommand{\scotchversub}{7.0.3}
+\input{../version.tex}
 
 %% Page de garde.
 
@@ -117,7 +116,9 @@
 \date{\today}
 
 \title{\includegraphics{../misc/scotch_logo_color.ps}\\[1em]
-       {\LARGE\bf \libscotch\ \textsc{\scotchver} Maintainer's Guide}\\[1em]}
+       {\LARGE\bf \scotch\ \textsc{\scotchver} Maintainer's Guide}\\[1em]%
+       {\normalsize (version \scotchversub)}
+}
 
 \author{Fran\c cois Pellegrini\\
 Universit\'e de Bordeaux \& LaBRI, UMR CNRS 5800\\
