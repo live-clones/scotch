@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 11 nov 2008     **/
 /**                                 to   : 11 nov 2008     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,7 +90,7 @@ const HdgraphOrderSqParam * restrict const  paraptr)
   cgrfptr = (grafptr->s.proclocnum == 0) ? &cgrfdat : NULL; /* Set root process */
   if (hdgraphGather (grafptr, cgrfptr) != 0) { /* Gather centralized subgraph   */
     errorPrint ("hdgraphOrderSq: cannot create centralized graph");
-    return     (1);
+    return (1);
   }
 
   o = 0;
@@ -115,7 +115,7 @@ const Strat * restrict const    stratptr)
 
   if (orderInit (&corddat, grafptr->s.baseval, cblkptr->vnodglbnbr, NULL) != 0) {
     errorPrint ("hdgraphOrderSq2: cannot initialize centralized ordering");
-    return     (1);
+    return (1);
   }
 
   vnumtax = grafptr->s.vnumtax;                   /* Save number array of subgraph to order               */
@@ -123,13 +123,13 @@ const Strat * restrict const    stratptr)
 
   if (hgraphOrderSt (grafptr, &corddat, 0, &corddat.cblktre, stratptr) != 0) { /* Compute sequential ordering */
     orderExit (&corddat);
-    return    (1);
+    return (1);
   }
 #ifdef SCOTCH_DEBUG_HDGRAPH2
   if (orderCheck (&corddat) != 0) {
     errorPrint ("hdgraphOrderSq2: invalid centralized ordering");
     orderExit  (&corddat);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
 
@@ -143,7 +143,6 @@ const Strat * restrict const    stratptr)
       peritab[perinum] = vnumtax[peritab[perinum]];
   }
 
-  cblkptr->typeval = DORDERCBLKLEAF;              /* Fill node as leaf */
   cblkptr->data.leaf.ordelocval = cblkptr->ordeglbval;
   cblkptr->data.leaf.vnodlocnbr = cblkptr->vnodglbnbr;
   cblkptr->data.leaf.periloctab = peritab;
@@ -155,11 +154,12 @@ const Strat * restrict const    stratptr)
       errorPrint ("hdgraphOrderSq2: cannot import centralized separation tree");
       o = 1;
     }
-    if (corddat.cblktre.typeval == ORDERCBLKNEDI) /* If root of centralized tree is a nested dissection node */
-      cblkptr->typeval |= DORDERCBLKNEDI;         /* Distributed leaf is also a nested dissection node       */
+    cblkptr->typeval = DORDERCBLKLEAF | corddat.cblktre.typeval; /* Preserve type of root node of centralized ordering */
   }
-  else
+  else {
+    cblkptr->typeval = DORDERCBLKLEAF;            /* Fill node as distributed leaf */
     cblkptr->data.leaf.nodeloctab = NULL;
+  }
 
   corddat.flagval = ORDERNONE;                    /* Do not free permutation array */
   orderExit (&corddat);                           /* Free permutation tree         */

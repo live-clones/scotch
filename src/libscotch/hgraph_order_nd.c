@@ -226,11 +226,11 @@ const HgraphOrderNdParam * restrict const paraptr)
     vgraphExit (&vspgrafdat);
     return (1);
   }
-  cblkptr->cblktab[0].typeval = ORDERCBLKOTHR;    /* Build column blocks */
+  cblkptr->cblktab[0].typeval = ORDERCBLKLEAF;    /* Build column blocks */
   cblkptr->cblktab[0].vnodnbr = vsplisttab[0].vnumnbr;
   cblkptr->cblktab[0].cblknbr = 0;
   cblkptr->cblktab[0].cblktab = NULL;
-  cblkptr->cblktab[1].typeval = ORDERCBLKOTHR;
+  cblkptr->cblktab[1].typeval = ORDERCBLKLEAF;
   cblkptr->cblktab[1].vnodnbr = vsplisttab[1].vnumnbr;
   cblkptr->cblktab[1].cblknbr = 0;
   cblkptr->cblktab[1].cblktab = NULL;
@@ -248,7 +248,7 @@ const HgraphOrderNdParam * restrict const paraptr)
     pthread_mutex_unlock (&ordeptr->mutedat);
 #endif /* SCOTCH_PTHREAD */
 
-    cblkptr->cblktab[2].typeval = ORDERCBLKOTHR;
+    cblkptr->cblktab[2].typeval = ORDERCBLKLEAF;
     cblkptr->cblktab[2].vnodnbr = vsplisttab[2].vnumnbr;
     cblkptr->cblktab[2].cblknbr = 0;
     cblkptr->cblktab[2].cblktab = NULL;

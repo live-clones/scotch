@@ -44,7 +44,7 @@
 /**                # Version 5.0  : from : 25 jul 2007     **/
 /**                                 to   : 25 jul 2007     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,7 +84,7 @@ Gnum * restrict const       peritab)
   ordeptr->vnodnbr         = vnodnbr;
   ordeptr->treenbr         =                      /* Initialize a simple blocking */
   ordeptr->cblknbr         = 1;
-  ordeptr->cblktre.typeval = ORDERCBLKOTHR;
+  ordeptr->cblktre.typeval = ORDERCBLKLEAF;
   ordeptr->cblktre.vnodnbr = vnodnbr;
   ordeptr->cblktre.cblknbr = 0;
   ordeptr->cblktre.cblktab = NULL;
@@ -94,7 +94,7 @@ Gnum * restrict const       peritab)
     ordeptr->flagval |= ORDERFREEPERI;            /* Flag it so it will be freed           */
     if ((ordeptr->peritab = (Gnum *) memAlloc (vnodnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("orderInit: out of memory");
-      return     (1);
+      return (1);
     }
   }
 #ifdef SCOTCH_PTHREAD
@@ -257,27 +257,56 @@ Gnum                              cbfanum)        /* Current number of ancestor 
     errorPrint ("orderTree2: internal error (1)");
 #endif /* SCOTCH_DEBUG_ORDER2 */
 
-  if (cblkptr->cblktab == NULL)                   /* If leaf of column block tree */
-    treetax[(*cblaptr) --] = cbfanum;             /* Set its ancestor             */
-  else {                                          /* Node has sub-nodes           */
-    Gnum                cblknum;
+  if (cblkptr->cblktab == NULL) {                 /* If leaf of column block tree */
+#ifdef SCOTCH_DEBUG_ORDER2
+    if (cblkptr->typeval != ORDERCBLKLEAF)
+      errorPrint ("orderTree2: invalid elimination tree (1)");
+#endif /* SCOTCH_DEBUG_ORDER2 */
+    treetax[(*cblaptr) --] = cbfanum;             /* Set its ancestor */
+  }
+  else {                                          /* Node has sub-nodes                 */
+    Gnum                cblknum;                  /* Index of current sub-block         */
+    Gnum                cblanum;                  /* Number assigned to rightmost block */
 
     cblknum = cblkptr->cblknbr - 1;               /* Assume all column blocks will be scanned */
-    if ((cblkptr->cblknbr == 3) &&                /* If node is a nested dissection node      */
-        (cblkptr->typeval == ORDERCBLKNEDI)) {    /* With a non-empty separator               */
-      Gnum                cblanum;
-
-      cblanum = *cblaptr;                         /* Save number of last column block of separator   */
-      orderTree2 (treetax, cblaptr, &cblkptr->cblktab[cblknum], cbfanum); /* Scan separator apart    */
-      cbfanum = cblanum;                          /* Separator becomes most recent ancestor of parts */
-      cblknum = 1;                                /* Only scan the two parts, not the separator      */
-    }
-
-    for ( ; cblknum >= 0; cblknum --) {
-      orderTree2 (treetax, cblaptr, &cblkptr->cblktab[cblknum], cbfanum);
+    switch (cblkptr->typeval) {
+      case ORDERCBLKNEDI :                        /* Node is a nested dissection node */
 #ifdef SCOTCH_DEBUG_ORDER2
-      if (*cblaptr < -1)
-        errorPrint ("orderTree2: internal error (2)");
+        if ((cblknum < 1) ||                      /* Nested dissection nodes have 2 or 3 sub-blocks */
+            (cblknum > 2))
+          errorPrint ("orderTree2: invalid elimination tree (2)");
+#endif /* SCOTCH_DEBUG_ORDER2 */
+        if (cblknum == 2) {                       /* If it has a non-empty separator (cblknbr == 3)   */
+          cblanum = *cblaptr;                     /* Save number of last column block of separator    */
+          orderTree2 (treetax, cblaptr, &cblkptr->cblktab[cblknum], cbfanum); /* Scan separator apart */
+          cbfanum = cblanum;                      /* Separator becomes most recent ancestor of parts  */
+          cblknum = 1;                            /* Only scan the two parts, not the separator       */
+        }
+        /* FALL THROUGH */
+      case ORDERCBLKDICO :                        /* Node is a set of disconnected components (or a separatorless nested dissection node) */
+        for ( ; cblknum >= 0; cblknum --) {
+          orderTree2 (treetax, cblaptr, &cblkptr->cblktab[cblknum], cbfanum); /* Sub-blocks keep current father as father */
+#ifdef SCOTCH_DEBUG_ORDER2
+          if (*cblaptr < -1)
+            errorPrint ("orderTree2: internal error (2)");
+#endif /* SCOTCH_DEBUG_ORDER2 */
+        }
+        break;
+      case ORDERCBLKSEQU :                        /* Node is a set of dependent sub-blocks */
+        for ( ; cblknum >= 0; cblknum --) {
+          cblanum = *cblaptr;                     /* Save number of current last column block          */
+          orderTree2 (treetax, cblaptr, &cblkptr->cblktab[cblknum], cbfanum); /* Scan current block    */
+          cbfanum = cblanum;                      /* Current last block becomes ancestor of next block */
+#ifdef SCOTCH_DEBUG_ORDER2
+          if (*cblaptr < -1)
+            errorPrint ("orderTree2: internal error (3)");
+#endif /* SCOTCH_DEBUG_ORDER2 */
+        }
+        break;
+#ifdef SCOTCH_DEBUG_ORDER2
+      default:
+        errorPrint ("orderTree2: invalid elimination tree (3)");
+        break;
 #endif /* SCOTCH_DEBUG_ORDER2 */
     }
   }

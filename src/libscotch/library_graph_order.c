@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 08 jan 2012     **/
 /**                                 to   : 29 sep 2019     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -316,16 +316,16 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     }
     libordeptr->o.treenbr = 3;
     libordeptr->o.cblknbr = 2;
-    libordeptr->o.cblktre.typeval = ORDERCBLKNEDI; /* Node becomes a (fake) nested dissection node */
+    libordeptr->o.cblktre.typeval = ORDERCBLKDICO; /* Node is a set of two disconnected components */
     libordeptr->o.cblktre.vnodnbr = srcgrafptr->vertnbr;
     libordeptr->o.cblktre.cblknbr = 2;
     libordeptr->o.cblktre.cblktab = cblkptr;
 
-    cblkptr[0].typeval = ORDERCBLKOTHR;           /* Build column blocks */
+    cblkptr[0].typeval = ORDERCBLKLEAF;           /* Build column blocks */
     cblkptr[0].vnodnbr = listnbr;
     cblkptr[0].cblknbr = 0;
     cblkptr[0].cblktab = NULL;
-    cblkptr[1].typeval = ORDERCBLKOTHR;
+    cblkptr[1].typeval = ORDERCBLKLEAF;
     cblkptr[1].vnodnbr = srcgrafptr->vertnbr - listnbr;
     cblkptr[1].cblknbr = 0;
     cblkptr[1].cblktab = NULL;

@@ -50,7 +50,7 @@
 /**                # Version 6.0  : from : 08 may 2018     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,14 +65,36 @@
 #define ORDERNONE                   0x0000        /* No options set                 */
 #define ORDERFREEPERI               0x0001        /* Free inverse permutation array */
 
-/*+ Column block separation tree cell flags.
-    The ORDERCBLKNEDI value must correspond
+/*+ Column block tree cell flags.
+    These flags must be separate bits, so
+    that values can be or-ed (notably with
+    ORDERCBLKLEAF in hdgraphOrderNd().
+    ORDERCBLKNEDI corresponds to a nested
+    dissection node. Its value must correspond
     to a single bit and be equal to the
-    DORDERCBLKNEDI value.                    +*/
+    DORDERCBLKNEDI value. If it has a
+    separator (3 sub-blocks), the father of
+    the leftmost two blocks is the last one;
+    if is has no separator (2 sub-blocks), the
+    father of the two sub-blocks is the father
+    of the node (like ORDERCBLKDICO).
+    ORDERCBLKDICO corresponds to a set of
+    disconnected components; the father of
+    the two sub-blocks is the father of the
+    node.
+    ORDERCBLKSEQU corresponds to a sequential
+    node: each sub-block is the father of its
+    left neighbor.
+    ORDERCBLKLEAF corresponds to a leaf node
+    in the elimination tree, i.e., the node
+    should not have sub-nodes (save when
+    or-ed with other flags).                   +*/
 
-#define ORDERCBLKOTHR               0x0000        /*+ Other ordering node              +*/
+#define ORDERCBLKNONE               0x0000        /*+ Not yet assigned                 +*/
 #define ORDERCBLKNEDI               0x0001        /*+ Nested dissection separator node +*/
 #define ORDERCBLKDICO               0x0002        /*+ Disconnected components node     +*/
+#define ORDERCBLKSEQU               0x0004        /*+ Sequentially dependent node      +*/
+#define ORDERCBLKLEAF               0x0008        /*+ Leaf node                        +*/
 
 /*
 **  The type and structure definitions.
