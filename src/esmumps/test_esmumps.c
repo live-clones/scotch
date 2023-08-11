@@ -100,7 +100,7 @@ char *              argv[];
     exit       (EXIT_FAILURE);
   }
   if (graphLoad (&grafdat, stream, 1, 3) != 0) {  /* Base graph with base value 1, no loads */
-    errorPrint ("test_esmumps: cannot open graph file");
+    errorPrint ("test_esmumps: cannot load graph file");
     graphExit  (&grafdat);
     exit       (EXIT_FAILURE);
   }
