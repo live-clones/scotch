@@ -66,13 +66,13 @@
 #define ORDERFREEPERI               0x0001        /* Free inverse permutation array */
 
 /*+ Column block tree cell flags.
+    They must be the same as the
+    distributed column block tree flags.
     These flags must be separate bits, so
     that values can be or-ed (notably with
     ORDERCBLKLEAF in hdgraphOrderNd().
     ORDERCBLKNEDI corresponds to a nested
-    dissection node. Its value must correspond
-    to a single bit and be equal to the
-    DORDERCBLKNEDI value. If it has a
+    dissection node. If the node has a
     separator (3 sub-blocks), the father of
     the leftmost two blocks is the last one;
     if is has no separator (2 sub-blocks), the

@@ -52,6 +52,7 @@
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
+#include "order.h"
 #include "dorder.h"
 
 /************************************/

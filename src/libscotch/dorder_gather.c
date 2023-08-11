@@ -101,13 +101,6 @@ Order * restrict const        cordptr)
   int                         cheklocval;
   int                         chekglbval;
 
-#ifdef SCOTCH_DEBUG_DORDER2
-  if ((DORDERCBLKNEDI == 0) || (DORDERCBLKNEDI != ORDERCBLKNEDI)) {
-    errorPrint ("dorderGather: internal error (1)");
-    return (1);
-  }
-#endif /* SCOTCH_DEBUG_DORDER2 */
-
   for (linklocptr = dordptr->linkdat.nextptr, leaflocnbr = vnodlocnbr = 0; /* For all nodes in local ordering structure */
        linklocptr != &dordptr->linkdat; linklocptr = linklocptr->nextptr) {
     const DorderCblk * restrict cblklocptr;

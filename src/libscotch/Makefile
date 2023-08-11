@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2021 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -1097,6 +1097,7 @@ dorder$(OBJ)			:	dorder.c				\
 					module.h				\
 					common.h				\
 					dgraph.h				\
+					order.h					\
 					dorder.h
 
 dorder_gather$(OBJ)		:	dorder_gather.c				\
@@ -1135,6 +1136,7 @@ dorder_perm$(OBJ)		:	dorder_perm.c				\
 					module.h				\
 					common.h				\
 					dgraph.h				\
+					order.h					\
 					dorder.h				\
 					dorder_perm.h
 
@@ -1339,6 +1341,7 @@ hdgraph_order_si$(OBJ)		:	hdgraph_order_si.c			\
 					module.h				\
 					common.h				\
 					dgraph.h				\
+					order.h					\
 					dorder.h				\
 					hdgraph.h				\
 					hdgraph_order_si.h

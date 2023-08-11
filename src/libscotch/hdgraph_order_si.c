@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 15 apr 2006     **/
 /**                                 to   : 25 jul 2007     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +52,7 @@
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
+#include "order.h"
 #include "dorder.h"
 #include "hdgraph.h"
 #include "hdgraph_order_si.h"

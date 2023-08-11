@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 26 sep 2008     **/
 /**                                 to   : 26 sep 2008     **/
 /**                # Version 7.0  : from : 18 jan 2023     **/
-/**                                 to   : 18 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,6 +54,7 @@
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
+#include "order.h"
 #include "dorder.h"
 #include "dorder_perm.h"
 
