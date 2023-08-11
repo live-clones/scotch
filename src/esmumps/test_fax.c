@@ -87,7 +87,7 @@ char *              argv[];
     exit       (EXIT_FAILURE);
   }
   if (graphLoad (&grafdat, stream, -1, 3) != 0) { /* Graph with untouched base value and loads */
-    errorPrint ("test_fax: cannot open graph file");
+    errorPrint ("test_fax: cannot load graph file");
     graphExit  (&grafdat);
     exit       (EXIT_FAILURE);
   }
@@ -101,7 +101,7 @@ char *              argv[];
     exit       (EXIT_FAILURE);
   }
   if (orderLoad (&ordedat, stream) != 0) {
-    errorPrint ("test_fax: cannot open ordering file");
+    errorPrint ("test_fax: cannot load ordering file");
     orderExit  (&ordedat);
     graphExit  (&grafdat);
     exit       (EXIT_FAILURE);
