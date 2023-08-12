@@ -650,6 +650,7 @@ check_prog_gpart_remap		:
 
 check_prog_gscat		:
 					$(EXECS) $(SCOTCHBINDIR)/gscat 4 data/small.grf $(TMPDIR)/small_%r.grf
+					$(EXECS) $(SCOTCHBINDIR)/gscat 4 -i1 data/bump.grf $(TMPDIR)/bump4_%r.grf
 
 check_prog_gtst			:
 					$(EXECS) $(SCOTCHBINDIR)/gtst data/m4x4_b1_ev.grf $(TMPDIR)/gtst_ev.txt
