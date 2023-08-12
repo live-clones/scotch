@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 16 apr 2019     **/
 /**                                 to   : 22 apr 2019     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 03 jul 2023     **/
+/**                                 to   : 12 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -111,9 +111,9 @@ char *              argv[])
   MPI_Comm_size (proccomm, &procglbnbr);          /* Get communicator data */
   MPI_Comm_rank (proccomm, &proclocnum);
 
+#ifdef SCOTCH_CHECK_NOAUTO
   fprintf (stderr, "Proc %2d of %2d, pid %d\n", proclocnum, procglbnbr, getpid ());
 
-#ifdef SCOTCH_CHECK_NOAUTO
   if (proclocnum == 0) {                          /* Synchronize on keybord input */
     char           c;
 
