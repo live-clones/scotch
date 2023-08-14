@@ -330,7 +330,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
     reduloctab[0] = ((coargrafptr->compglbload0 == 0) || /* Empty subdomains are deemed invalid */
                      (coargrafptr->compglbload0 == coargrafptr->s.veloglbsum)) ? 1 : 0;
     reduloctab[1] = (Gnum) finegrafptr->s.proclocnum; /* Set rank according to global order on both sub-communicators */
-    reduloctab[2] = (Gnum) coargrafptr->s.prockeyval; /* Set color key according to coarse graph sub-communicator     */
+    reduloctab[2] = (Gnum) coargrafptr->s.pkeyglbval; /* Set color key according to coarse graph sub-communicator     */
     reduloctab[3] = coargrafptr->commglbload;
     reduloctab[4] = coargrafptr->compglbload0dlt;
   }
@@ -408,7 +408,7 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
 
   finefronlocnbr = 0;
   sortlocnbr     = 0;
-  if (reduglbtab[2] == (Gnum) coargrafptr->s.prockeyval) { /* If we belong to the group of the lead process, we must browse and send local data */
+  if (reduglbtab[2] == (Gnum) coargrafptr->s.pkeyglbval) { /* If we belong to the group of the lead process, we must browse and send local data */
     Gnum                coarfronlocnum;
     Gnum                coarvertlocnum;
 

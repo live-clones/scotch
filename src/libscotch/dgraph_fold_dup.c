@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 28 sep 2014     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 03 jul 2023     **/
+/**                                 to   : 14 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -175,7 +175,7 @@ Context * restrict const      contptr)            /*+ Context                   
     MPI_Comm_free (&orggrafdat.proccomm);
 #endif /* SCOTCH_PTHREAD_MPI */
 
-  fldgrafptr->prockeyval = fldproccol;            /* Discriminate between folded communicators at same level */
+  fldgrafptr->pkeyglbval = fldproccol;            /* Discriminate between folded communicators at same level */
 
   return (o);
 }

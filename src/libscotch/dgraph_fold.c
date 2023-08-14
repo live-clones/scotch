@@ -47,7 +47,7 @@
 /**                # Version 6.1  : from : 18 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
 /**                # Version 7.0  : from : 14 sep 2021     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 14 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -107,7 +107,7 @@ MPI_Datatype                  datatype)
   }
 
   o = dgraphFold2 (orggrafptr, partval, fldgrafptr, fldproccomm, orgdataptr, flddataptr, datatype);
-  fldgrafptr->prockeyval = fldproccol;            /* Key of folded communicator is always zero if no duplication occurs */
+  fldgrafptr->pkeyglbval = fldproccol;            /* Key of folded communicator is always zero if no duplication occurs */
 
   return (o);
 }
