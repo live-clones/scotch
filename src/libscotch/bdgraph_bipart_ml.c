@@ -44,7 +44,7 @@
 /**              : # Version 6.0  : from : 11 sep 2011     **/
 /**                                 to   : 31 aug 2019     **/
 /**              : # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 14 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -329,8 +329,8 @@ const DgraphCoarsenMulti * restrict const coarmulttax) /*+ Multinode array +*/
   else {
     reduloctab[0] = ((coargrafptr->compglbload0 == 0) || /* Empty subdomains are deemed invalid */
                      (coargrafptr->compglbload0 == coargrafptr->s.veloglbsum)) ? 1 : 0;
-    reduloctab[1] = finegrafptr->s.proclocnum;    /* Set rank and color key according to coarse graph (sub)communicator */
-    reduloctab[2] = finegrafptr->s.prockeyval;
+    reduloctab[1] = (Gnum) finegrafptr->s.proclocnum; /* Set rank according to global order on both sub-communicators */
+    reduloctab[2] = (Gnum) coargrafptr->s.prockeyval; /* Set color key according to coarse graph sub-communicator     */
     reduloctab[3] = coargrafptr->commglbload;
     reduloctab[4] = coargrafptr->compglbload0dlt;
   }
