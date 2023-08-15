@@ -136,6 +136,10 @@ install(TARGETS esmumps
 # Dummy PTEsMUMPS library file
 add_library(ptesmumps ${esmumps_src} ${esmumps_headers})
 
+if(APPLE)
+  set_target_properties(ptesmumps PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+endif(APPLE)
+
 set_target_properties(ptesmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/esmumps.h")
 
 target_include_directories(ptesmumps PRIVATE

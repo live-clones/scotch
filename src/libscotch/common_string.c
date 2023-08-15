@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 23 jul 2010     **/
 /**                                 to   : 23 jul 2010     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,10 +71,10 @@ const int                   pattsiz,
 const int                   replsiz)
 {
   char *              pattptr;
-  int                 pattidx;
+  size_t              pattidx;
 
-  pattptr = strstr (bsrcptr, pattstr);            /* Search for the pattern in the remaining source string   */
-  pattidx = (pattptr == NULL) ? (strlen (bsrcptr) + 1): (pattptr - bsrcptr); /* Get length of unchanged part */
+  pattptr = strstr (bsrcptr, pattstr);            /* Search for the pattern in the remaining source string             */
+  pattidx = (pattptr == NULL) ? (strlen (bsrcptr) + 1) : (size_t) (pattptr - bsrcptr); /* Get length of unchanged part */
 
   if (replsiz < pattsiz)                          /* If replacement is smaller, pre-move unchanged part */
     memMov (bdstptr, bsrcptr, pattidx * sizeof (char));
@@ -87,8 +87,6 @@ const int                   replsiz)
 
   if (pattptr != NULL)                            /* If there is something to replace         */
     memCpy (bdstptr + pattidx, replstr, replsiz * sizeof (char)); /* Write replacement string */
-
-  return;
 }
 
 void

@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 12 sep 2012     **/
 /**                                 to   : 01 may 2019     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 03 jul 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -143,13 +143,16 @@ const Gnum                            indlistnbr1, /* Number of vertices in subg
 const Gnum * restrict const           indlisttab1, /* List of vertices in subgraph 1   */
 HdgraphOrderNdGraph * restrict const  fldgrafptr)
 {
-  HdgraphOrderNdData        fldthrdtab[2];
-  MPI_Comm                  fldproccomm;
-  int                       fldprocnbr;
-  int                       fldprocnum;
-  int                       fldproccol;
-  int                       fldpartval;
-  int                       o;
+#ifdef SCOTCH_PTHREAD_MPI
+  int                 thrdprolvl;
+#endif /* SCOTCH_PTHREAD_MPI */
+  HdgraphOrderNdData  fldthrdtab[2];
+  MPI_Comm            fldproccomm;
+  int                 fldprocnbr;
+  int                 fldprocnum;
+  int                 fldproccol;
+  int                 fldpartval;
+  int                 o;
 
 #ifdef SCOTCH_DEBUG_HDGRAPH2
   if ((orggrafptr->s.flagval & DGRAPHHASEDGEGST) == 0) { /* Ghost edge array must have been already computed */
@@ -184,8 +187,8 @@ HdgraphOrderNdGraph * restrict const  fldgrafptr)
   }
 
   if (MPI_Comm_split (orggrafptr->s.proccomm, fldproccol, fldprocnum, &fldproccomm) != MPI_SUCCESS) {
-    errorPrint  ("hdgraphOrderNdFold: communication error");
-    return      (1);
+    errorPrint ("hdgraphOrderNdFold: communication error (1)");
+    return (1);
   }
   fldthrdtab[fldpartval].fldproccomm = fldproccomm; /* Assign folded communicator to proper part */
 
@@ -200,12 +203,18 @@ HdgraphOrderNdGraph * restrict const  fldgrafptr)
   fldthrdtab[1].fldpartval  = 1;
 
 #ifdef SCOTCH_PTHREAD_MPI
-  if (contextThreadNbr (orggrafptr->contptr) > 1) {
+  MPI_Query_thread (&thrdprolvl);                 /* Get thread level of MPI implementation                 */
+  if ((thrdprolvl >= MPI_THREAD_MULTIPLE) &&      /* If we can use multiple threads                         */
+      (contextThreadNbr (orggrafptr->contptr) > 1)) { /* And there is a need to                             */
     Hdgraph             orggrafdat;               /* Structure for copying graph fields except communicator */
 
     orggrafdat = *orggrafptr;                     /* Create a separate graph structure to change its communicator */
     fldthrdtab[1].orggrafptr = &orggrafdat;
-    MPI_Comm_dup (orggrafptr->s.proccomm, &orggrafdat.s.proccomm); /* Duplicate communicator to avoid interferences in communications */
+
+    if (MPI_Comm_dup (orggrafptr->s.proccomm, &orggrafdat.s.proccomm) != MPI_SUCCESS) { /* Duplicate communicator to avoid interferences in communications */
+      errorPrint ("hdgraphOrderNdFold: communication error (2)");
+      return (1);
+    }
 
     contextThreadLaunch (orggrafptr->contptr, (ThreadFunc) hdgraphOrderNdFold3, (void *) fldthrdtab); /* Only threads 0 and 1 will work */
 
@@ -257,7 +266,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
 #ifdef SCOTCH_DEBUG_HDGRAPH2
   if (cblkptr->vnodglbnbr != grafptr->s.vertglbnbr) {
     errorPrint ("hdgraphOrderNd2: inconsistent parameters");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
 
@@ -462,7 +471,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
 
   if (dgraphGhst (&grafptr->s) != 0) {            /* Compute ghost edge array on un-cloned graph */
     errorPrint ("hdgraphOrderNd: cannot compute ghost edge array");
-    return     (1);
+    return (1);
   }
 
   grafdat = *grafptr;                             /* Clone imput graph                             */

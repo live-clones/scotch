@@ -93,6 +93,12 @@ OPTIONS
 
   -h          Display some help.
 
+  -inbr     For gscat only. Create an imbalanced distributed graph,
+              in which the distributed graph files for all processes
+              will receive \textit{nbr} vertices of the graph, save
+              for the file for the last process, which will receive
+              all the remaining vertices.
+
   -rpnum    Set root process for centralized files (default is 0).
 
   -V          Display program version and copyright.

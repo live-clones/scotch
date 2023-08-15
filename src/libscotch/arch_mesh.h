@@ -86,7 +86,7 @@ typedef struct ArchMeshX_ {
 } ArchMeshX;
 
 typedef struct ArchMeshXDom_ {
-  Anum                      c[ARCHMESHDIMNMAX][2]; /*+ Inclusive X and Y coordinates +*/
+  Anum                      c[ARCHMESHDIMNMAX][2]; /*+ Inclusive box coordinates +*/
 } ArchMeshXDom;
 
 typedef struct ArchMeshXMatch_ {

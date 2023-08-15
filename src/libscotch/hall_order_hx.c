@@ -47,7 +47,7 @@
 /**                # Version 6.1  : from : 18 jan 2020     **/
 /**                                 to   : 18 jan 2020     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -145,7 +145,7 @@ const float                 fillrat)
   for (i = baseval; i < vnohnnd; i ++) {
     if ((fathtax[i] > 0) || (fathtax[i] < - vertnbr)) {
       errorPrint ("hallOrderHxBuild: elimination tree out of bounds");
-      return     (1);
+      return (1);
     }
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
@@ -279,7 +279,7 @@ const float                 fillrat)
 #ifdef SCOTCH_DEBUG_ORDER2
   if (ordetmp != vnohnbr) {
     errorPrint ("hallOrderHxBuild: incomplete elimination tree");
-    return     (1);
+    return (1);
   }
 
   memSet (permtax + baseval, ~0, vnohnbr * sizeof (Gnum));
@@ -287,18 +287,18 @@ const float                 fillrat)
   for (i = 0; i < vnohnbr; i ++) {
     if ((peritab[i] < baseval) || (peritab[i] >= vnohnnd)) {
       errorPrint ("hallOrderHxBuild: permutation out of bounds");
-      return     (1);
+      return (1);
     }
     if (permtax[peritab[i]] != ~0) {
       errorPrint ("hallOrderHxBuild: duplicate permutation index");
-      return     (1);
+      return (1);
     }
     permtax[peritab[i]] = i;
   }
   for (i = baseval; i < vnohnnd; i ++) {
     if (permtax[i] == ~0) {
       errorPrint ("hallOrderHxBuild: unused permutation index");
-      return     (1);
+      return (1);
     }
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
@@ -306,8 +306,9 @@ const float                 fillrat)
   if (cblknbr != 1) {                             /* If more than one column block in the end, create subtree */
     if ((cblkptr->cblktab = (OrderCblk *) memAlloc (cblknbr * sizeof (OrderCblk))) == NULL) {
       errorPrint ("hallOrderHxBuild: out of memory");
-      return     (1);
+      return (1);
     }
+    cblkptr->typeval = ORDERCBLKSEQU;             /* Node is a sequence of blocks */
     cblkptr->cblknbr = cblknbr;
 #ifdef SCOTCH_PTHREAD
     pthread_mutex_lock (&ordeptr->mutedat);
@@ -321,7 +322,7 @@ const float                 fillrat)
     for (i = 0, cblknum = 0; i < vnohnbr; i ++) {
       if (nvartax[peritab[i]] == 0)               /* If secondary variable      */
         continue;                                 /* Skip to next vertex        */
-      cblkptr->cblktab[cblknum].typeval = ORDERCBLKOTHR; /* Build column blocks */
+      cblkptr->cblktab[cblknum].typeval = ORDERCBLKLEAF; /* Build column blocks */
       cblkptr->cblktab[cblknum].vnodnbr = sizetax[peritab[i]];
       cblkptr->cblktab[cblknum].cblknbr = 0;
       cblkptr->cblktab[cblknum].cblktab = NULL;

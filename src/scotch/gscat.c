@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 04 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,6 +70,7 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 static const char *         C_usageList[] = {     /* Usage */
   "gscat <nparts> <input source file> <output target file pattern> <options>",
   "  -h  : Display this help",
+  "  -i  : Create an imbalanced distribution",
   "  -V  : Print program version and copyright",
   NULL };
 
@@ -84,7 +85,8 @@ main (
 int                         argc,
 char *                      argv[])
 {
-  SCOTCH_Num          p[1] = { 1 };               /* Number of parts */
+  SCOTCH_Num          p[1] = { 1 };               /* Number of parts                */
+  SCOTCH_Num          vertlocmin;                 /* Value for imbalanced processes */
   int                 i;
 
   errorProg ("gscat");
@@ -95,6 +97,8 @@ char *                      argv[])
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
+
+  vertlocmin = -1;                                /* No imbalanced vertices */
 
   for (i = 1; i < argc; i ++) {                   /* Loop for all option codes                        */
     if ((argv[i][0] != '-') || (argv[i][1] == '\0') || (argv[i][1] == '.')) { /* If found a file name */
@@ -114,6 +118,11 @@ char *                      argv[])
         case 'h' :
           usagePrint (stdout, C_usageList);
           return     (EXIT_SUCCESS);
+        case 'I' :
+        case 'i' :
+          if ((vertlocmin = (SCOTCH_Num) atoll (argv[i] + 2)) < 1)
+            errorPrint ("main: invalid number of vertices in graph parts '%s'", argv[i] + 2);
+          break;
         case 'V' :
           fprintf (stderr, "gscat, version " SCOTCH_VERSION_STRING "\n");
           fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
@@ -127,7 +136,7 @@ char *                      argv[])
 
   fileBlockOpen (C_fileTab, 1);                   /* Open input graph file */
 
-  C_graphScat (C_filepntrsrcinp, p[0], C_filenamesrcout);
+  C_graphScat (C_filepntrsrcinp, p[0], C_filenamesrcout, vertlocmin);
 
   fileBlockClose (C_fileTab, 1);                  /* Always close explicitely to end eventual (un)compression tasks */
 
@@ -137,9 +146,10 @@ char *                      argv[])
 static
 int
 C_graphScat (
-FILE * const                stream,
-SCOTCH_Num                  procnbr,
-char * const                nameptr)
+FILE * const                stream,               /* Stream of input graph to scatter into files        */
+const SCOTCH_Num            procnbr,              /* Number of processes for distributed graph          */
+char * const                nameptr,              /* Name of the files containing the distributed graph */
+const SCOTCH_Num            vertlocmin)           /* Number of vertices for all processes but the last  */
 {
   SCOTCH_Num          versval;
   SCOTCH_Num          propval;
@@ -152,11 +162,11 @@ char * const                nameptr)
 
   if (intLoad (stream, &versval) != 1) {          /* Read version number */
     errorPrint ("C_graphScat: bad input (1)");
-    return     (1);
+    return (1);
   }
   if (versval != 0) {                             /* If version not zero */
     errorPrint ("C_graphScat: only centralized graphs supported");
-    return     (1);
+    return (1);
   }
 
   if ((intLoad (stream, &vertglbnbr) != 1) ||     /* Read rest of header */
@@ -166,12 +176,18 @@ char * const                nameptr)
       (propval < 0)                        ||
       (propval > 111)) {
     errorPrint ("C_graphScat: bad input (2)");
-    return     (1);
+    return (1);
   }
   sprintf (proptab, "%3.3d", (int) propval);      /* Compute file properties */
   flagtab[0] = proptab[0] - '0';                  /* Vertex labels flag      */
   flagtab[1] = proptab[1] - '0';                  /* Edge weights flag       */
   flagtab[2] = proptab[2] - '0';                  /* Vertex loads flag       */
+
+  if ((vertlocmin > 0) &&                         /* If imbalanced graph parts wanted */
+      ((vertlocmin * (procnbr - 1)) > vertglbnbr)) {
+    errorPrint ("C_graphScat: too many vertices in all before last part");
+    return (1);
+  }
 
   for (procnum = 0; procnum < procnbr; procnum ++) {
     char *              naexptr;                  /* Expanded name */
@@ -184,21 +200,24 @@ char * const                nameptr)
     naexptr = fileNameDistExpand (nameptr, procnbr, procnum);
     if (naexptr == nameptr) {
       errorPrint ("C_graphScat: not a distributed file name");
-      return     (1);
+      return (1);
     }
     if (naexptr == NULL) {
       errorPrint ("C_graphScat: cannot create distributed file name");
-      return     (1);
+      return (1);
     }
 
     ostream = fopen (naexptr, "w+");
     memFree (naexptr);                            /* Expanded name no longer needed anyway */
     if (ostream == NULL) {
       errorPrint ("C_graphScat: cannot open file");
-      return     (1);
+      return (1);
     }
 
-    vertlocnbr = DATASIZE (vertglbnbr, procnbr, procnum);
+    if (vertlocmin > 0)                           /* Imbalanced distribution; last process has almost all of the vertices */
+      vertlocnbr = (procnum != (procnbr - 1)) ? vertlocmin : (vertglbnbr - (vertlocmin * (procnbr - 1)));
+    else                                          /* Balanced distribution: distribute evenly the vertices */
+      vertlocnbr = DATASIZE (vertglbnbr, procnbr, procnum);
 
     if (fprintf (ostream, "2\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t" SCOTCH_NUMSTRING "\n" SCOTCH_NUMSTRING "\t%015d\n" SCOTCH_NUMSTRING "\t%3s\n", /* Write file header */
                  (SCOTCH_Num) procnbr,
@@ -211,7 +230,7 @@ char * const                nameptr)
                  proptab) == EOF) {
       errorPrint ("C_graphScat: bad output (1)");
       fclose     (ostream);
-      return     (1);
+      return (1);
     }
 
     for (vertlocnum = edgelocnbr = 0; vertlocnum < vertlocnbr; vertlocnum ++) {
@@ -223,7 +242,7 @@ char * const                nameptr)
         if (intLoad (stream, &vlblval) != 1) {    /* Read label data */
           errorPrint ("C_graphScat: bad input (3)");
           fclose     (ostream);
-          return     (1);
+          return (1);
         }
         intSave (ostream, vlblval);
         putc ('\t', ostream);
@@ -234,7 +253,7 @@ char * const                nameptr)
         if (intLoad (stream, &veloval) != 1) {    /* Read vertex load data    */
           errorPrint ("C_graphScat: bad input (4)");
           fclose     (ostream);
-          return     (1);
+          return (1);
         }
         intSave (ostream, veloval);
         putc ('\t', ostream);
@@ -242,7 +261,7 @@ char * const                nameptr)
       if (intLoad (stream, &degrval) != 1) {      /* Read vertex degree */
         errorPrint ("C_graphScat: bad input (5)");
         fclose     (ostream);
-        return     (1);
+        return (1);
       }
       intSave (ostream, degrval);
 
@@ -257,7 +276,7 @@ char * const                nameptr)
           if (intLoad (stream, &edloval) != 1) {  /* Read edge load data    */
             errorPrint ("C_graphScat: bad input (6)");
             fclose     (ostream);
-            return     (1);
+            return (1);
           }
           putc ('\t', ostream);
           intSave (ostream, edloval);
@@ -266,7 +285,7 @@ char * const                nameptr)
         if (intLoad (stream, &edgeval) != 1) {    /* Read edge data */
           errorPrint ("C_graphScat: bad input (7)");
           fclose     (ostream);
-          return     (1);
+          return (1);
         }
         putc ('\t', ostream);
         intSave (ostream, edgeval);
@@ -286,7 +305,7 @@ char * const                nameptr)
                  (SCOTCH_Num) baseval,
                  proptab) == EOF) {
       errorPrint ("C_graphScat: bad output (2)");
-      return     (1);
+      return (1);
     }
 
     fclose (ostream);

@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 08 may 2018     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,13 +59,14 @@
 #define DORDERTAGPERI               0
 
 /*+ Column block separation tree cell flags.
-    The DORDERCBLKNEDI value must correspond
-    to a single bit and be equal to the
-    ORDERCBLKNEDI value.                     +*/
+    They must be equal to the same values
+    as for the Order flag structure.         +*/
 
-#define DORDERCBLKNONE              0x0000        /*+ Not yet assigned                 +*/
-#define DORDERCBLKNEDI              0x0001        /*+ Nested dissection separator node +*/
-#define DORDERCBLKLEAF              0x0004        /*+ Distributed leaf                 +*/
+#define DORDERCBLKNONE              ORDERCBLKNONE /*+ Not yet assigned                 +*/
+#define DORDERCBLKNEDI              ORDERCBLKNEDI /*+ Nested dissection separator node +*/
+#define DORDERCBLKDICO              ORDERCBLKDICO /*+ Disconnected components node     +*/
+#define DORDERCBLKSEQU              ORDERCBLKSEQU /*+ Sequentially dependent node      +*/
+#define DORDERCBLKLEAF              ORDERCBLKLEAF /*+ Distributed leaf                 +*/
 
 /*
 **  The type and structure definitions.

@@ -58,7 +58,7 @@
 /**                # Version 6.0  : from : 23 feb 2011     **/
 /**                                 to   : 01 may 2016     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -141,7 +141,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
   Gnum                    fronnum;
   Gnum                    compsize1;
   Gnum                    commgainextn;
-  unsigned int            passnum;
+  INT                     passnum;
   Anum                    domndist;
   Anum                    domndist2;              /* Two times domndist */
 
@@ -353,7 +353,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
 #ifdef SCOTCH_DEBUG_BGRAPH2
   if (bgraphCheck (grafptr) != 0) {
     errorPrint ("bgraphBipartGg: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
 

@@ -47,7 +47,7 @@
 /**                # Version 6.1  : from : 27 dec 2021     **/
 /**                                 to   : 27 dec 2021     **/
 /**                # Version 7.0  : from : 22 oct 2021     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 30 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,7 +79,7 @@
 
 int
 dgraphMatchSyncPtop (
-DgraphMatchData * restrict const  mateptr)
+DgraphMatchData * const     mateptr)              /* [norestrict:async] */
 {
   Gnum                queulocnbr;
   Gnum                queulocnum;
@@ -93,7 +93,7 @@ DgraphMatchData * restrict const  mateptr)
   int                 vrcvreqnbr;
   Gnum                deteval;                    /* Flag set if deterministic behavior */
 
-  Dgraph * restrict const             grafptr    = mateptr->c.finegrafptr;
+  Dgraph * const                      grafptr    = mateptr->c.finegrafptr; /* [norestrict:async] */
   const int * restrict const          procngbtab = grafptr->procngbtab;
   int * restrict const                procgsttax = mateptr->c.procgsttax;
   const Gnum * restrict const         procvgbtab = mateptr->procvgbtab;
@@ -112,11 +112,11 @@ DgraphMatchData * restrict const  mateptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (edgeloctax == NULL) {
     errorPrint ("dgraphMatchSyncPtop: not implemented");
-    return     (1);
+    return (1);
   }
   if (MPI_Barrier (grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphMatchSyncPtop: communication error (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -145,7 +145,7 @@ DgraphMatchData * restrict const  mateptr)
         (edgelocnum >= (grafptr->edgelocsiz + grafptr->baseval)) ||
         (mategsttax[edgegsttax[edgelocnum]] != -1)) {
       errorPrint ("dgraphMatchSyncPtop: internal error (1)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
     mateglbnum = edgeloctax[edgelocnum];
@@ -172,7 +172,7 @@ DgraphMatchData * restrict const  mateptr)
     if ((grafptr->procvrttab[procngbtab[procngbnum]]     >  mateglbnum) ||
         (grafptr->procvrttab[procngbtab[procngbnum] + 1] <= mateglbnum)) {
       errorPrint ("dgraphMatchSyncPtop: internal error (2)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -180,7 +180,7 @@ DgraphMatchData * restrict const  mateptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
     if (vsndidxnum >= mateptr->c.vsnddsptab[procngbtab[procngbnum] + 1]) {
       errorPrint ("dgraphMatchSyncPtop: internal error (3)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
     vsnddattab[vsndidxnum].datatab[0] = vertlocnum + vertlocadj;
@@ -197,7 +197,7 @@ DgraphMatchData * restrict const  mateptr)
                    2 * (mateptr->c.vrcvdsptab[procglbnum + 1] - mateptr->c.vrcvdsptab[procglbnum]), GNUM_MPI,
                    procglbnum, TAGMATCH, grafptr->proccomm, &mateptr->c.nrcvreqtab[procngbnum]) != MPI_SUCCESS) {
       errorPrint ("dgraphMatchSyncPtop: communication error (2)");
-      return     (1);
+      return (1);
     }
   }
 
@@ -211,7 +211,7 @@ DgraphMatchData * restrict const  mateptr)
                    2 * (nsndidxtab[procngbnum] - mateptr->c.vsnddsptab[procglbnum]), GNUM_MPI,
                    procglbnum, TAGMATCH, grafptr->proccomm, &mateptr->c.nsndreqtab[procngbnum]) != MPI_SUCCESS) {
       errorPrint ("dgraphMatchSyncPtop: communication error (3)");
-      return     (1);
+      return (1);
     }
   }
 
@@ -241,12 +241,12 @@ DgraphMatchData * restrict const  mateptr)
     if ((o != MPI_SUCCESS) ||
         (MPI_Get_count (&statdat, GNUM_MPI, &statsiz) != MPI_SUCCESS)) {
       errorPrint ("dgraphMatchSyncPtop: communication error (4)");
-      return     (1);
+      return (1);
     }
 #ifdef SCOTCH_DEBUG_DGRAPH2
     if (statdat.MPI_SOURCE != procngbtab[procngbnum]) {
       errorPrint ("dgraphMatchSyncPtop: internal error (4)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -278,7 +278,7 @@ DgraphMatchData * restrict const  mateptr)
         if ((vertlocnum <  grafptr->baseval) ||   /* If matching request is not directed towards our process */
             (vertlocnum >= grafptr->vertlocnnd)) {
           errorPrint ("dgraphMatchSyncPtop: internal error (5)");
-          return     (1);
+          return (1);
         }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -290,7 +290,7 @@ DgraphMatchData * restrict const  mateptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
             if (edgelocnum >= vendloctax[vertlocnum]) {
               errorPrint ("dgraphMatchSyncPtop: internal error (6)");
-              return     (1);
+              return (1);
             }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
           }
@@ -348,13 +348,13 @@ DgraphMatchData * restrict const  mateptr)
 
   if (MPI_Waitall (procngbnbr, mateptr->c.nsndreqtab, MPI_STATUSES_IGNORE) != MPI_SUCCESS) { /* Wait for send requests of mating requests to complete */
     errorPrint ("dgraphMatchSyncPtop: communication error (5)");
-    return     (1);
+    return (1);
   }
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (MPI_Barrier (grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphMatchSyncPtop: communication error (6)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -376,7 +376,7 @@ DgraphMatchData * restrict const  mateptr)
                    2 * (mateptr->c.vsnddsptab[procglbnum + 1] - mateptr->c.vsnddsptab[procglbnum]), GNUM_MPI,
                    procglbnum, TAGMATCH + 1, grafptr->proccomm, &mateptr->c.nrcvreqtab[procngbnum]) != MPI_SUCCESS) {
       errorPrint ("dgraphMatchSyncPtop: communication error (7)");
-      return     (1);
+      return (1);
     }
   }
 
@@ -415,14 +415,14 @@ DgraphMatchData * restrict const  mateptr)
       if (MPI_Isend (vrcvdattab + mateptr->c.vrcvdsptab[procglbnum], 2 * (vsndidxnnd - mateptr->c.vrcvdsptab[procglbnum]), GNUM_MPI,
                      procglbnum, TAGMATCH + 1, grafptr->proccomm, &mateptr->c.nsndreqtab[procngbnum]) != MPI_SUCCESS) {
         errorPrint ("dgraphMatchSyncPtop: communication error (8)");
-        return     (1);
+        return (1);
       }
     }
 #ifdef SCOTCH_DEBUG_DGRAPH2
     else {
       if (mateptr->c.nsndreqtab[procngbnum] != MPI_REQUEST_NULL) { /* Should have been set by previous MPI_Waitall() */
         errorPrint ("dgraphMatchSyncPtop: internal error (7)");
-        return     (1);
+        return (1);
       }
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
@@ -451,7 +451,7 @@ DgraphMatchData * restrict const  mateptr)
     if ((o != MPI_SUCCESS) ||
         (MPI_Get_count (&statdat, GNUM_MPI, &statsiz) != MPI_SUCCESS)) {
       errorPrint ("dgraphMatchSyncPtop: communication error (9)");
-      return     (1);
+      return (1);
     }
 
     for (vrcvidxnum = mateptr->c.vsnddsptab[procngbtab[procngbnum]], vrcvidxnnd = vrcvidxnum + (statsiz / 2); /* TRICK: each message item costs 2 Gnum's */
@@ -469,7 +469,7 @@ DgraphMatchData * restrict const  mateptr)
       if ((vertlocnum <  grafptr->baseval) ||     /* If matching reply is not directed towards our process */
           (vertlocnum >= grafptr->vertlocnnd)) {
         errorPrint ("dgraphMatchSyncPtop: internal error (8)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -481,7 +481,7 @@ DgraphMatchData * restrict const  mateptr)
            (mategsttax[edgegsttax[edgelocnum]] != vertglbnum) && /* And this message is not the positive reply which acknowledges this mating     */
            (mategsttax[edgegsttax[edgelocnum]] != vmatglbnum))) { /* Or an informative negative reply which gives again the mate of the ghost     */
         errorPrint ("dgraphMatchSyncPtop: internal error (9)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
       if (edgeloctax[edgelocnum] == vmatglbnum) { /* If positive answer from the mate we wanted */
@@ -506,13 +506,13 @@ DgraphMatchData * restrict const  mateptr)
 
   if (MPI_Waitall (procngbnbr, mateptr->c.nsndreqtab, MPI_STATUSES_IGNORE) != MPI_SUCCESS) { /* Wait for send requests of mating requests to complete */
     errorPrint ("dgraphMatchSyncPtop: communication error (10)");
-    return     (1);
+    return (1);
   }
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (MPI_Barrier (grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphMatchSyncPtop: communication error (11)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 

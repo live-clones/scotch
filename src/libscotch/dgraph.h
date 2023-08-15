@@ -61,7 +61,7 @@
 /**                # Version 6.1  : from : 19 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
 /**                # Version 7.0  : from : 03 may 2019     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 14 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -175,8 +175,8 @@ typedef struct Dgraph_ {
   Gnum *                    edgeloctax;           /*+ Edge array holding global neighbor numbers [based]        +*/
   Gnum *                    edloloctax;           /*+ Edge load array                                           +*/
   Gnum                      degrglbmax;           /*+ Maximum degree over all processes                         +*/
+  int                       pkeyglbval;           /*+ Communicator key value: folded communicators are distinct +*/
   MPI_Comm                  proccomm;             /*+ Graph communicator                                        +*/
-  int                       prockeyval;           /*+ Communicator key value: folded communicators are distinct +*/
   int                       procglbnbr;           /*+ Number of processes sharing graph data                    +*/
   int                       proclocnum;           /*+ Number of this process                                    +*/
   Gnum *                    procvrttab;           /*+ Global array of vertex number ranges [+1,based]           +*/

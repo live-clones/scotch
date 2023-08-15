@@ -20,6 +20,7 @@
 \usepackage{hyperref}
 \usepackage{breakurl}
 \hypersetup{pdfborder={0 0 0},colorlinks=false}
+\usepackage{xspace}
 \usepackage[dvips]{graphicx}
 %\documentstyle[11pt,a4,fullpage,epsf]{article}
 %\textwidth      16.0cm
@@ -104,8 +105,8 @@
 \newcommand{\noi}{{\noindent}}                   % Pas d'indentation
 \newcommand{\spa}{{\protect \vspace{\bigskipamount}}} % Espace vertical
 
-\newcommand{\eg}{{\it e\@.g\@.\/\ }}             % e.g.
-\newcommand{\ie}{{\it i\@.e\@.\/\ }}             % i.e.
+\newcommand{\eg}{\textit{e\@.g\@.}\xspace}       % e.g.
+\newcommand{\ie}{\textit{i\@.e\@.}\xspace}       % i.e.
 
 \newcommand{\chaco}{{\sc Chaco}}                 % "Chaco"
 \newcommand{\metis}{\mbox{\sc Me$\!$T$\!$iS}}    % "MeTiS"
@@ -164,8 +165,8 @@
 
 %% Version du document.
 
-\newcommand{\scotchver}{7.0}
-\newcommand{\scotchversub}{7.0.3}
+\input{../version.tex}
+
 \newcommand{\scotchcitepuser}{\protect\cite{pell08c}}
 \newcommand{\scotchcitesuser}{\protect\cite{pell08b}}
 
@@ -173,7 +174,6 @@
 
 \begin{document}
 
-%\date{\today}
 \date{\today}
 
 \title{\includegraphics[scale=0.8]{../misc/ptscotch_logo_color.ps}\\[1em]

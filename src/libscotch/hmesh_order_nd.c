@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 15 may 2018     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -137,7 +137,7 @@ const HmeshOrderNdParam * const   paraptr)
 
   if (hmeshMesh (meshptr, &nspmeshdat.m) != 0) {
     errorPrint ("hmeshOrderNd: cannot create node separation mesh");
-    return     (1);
+    return (1);
   }
   nspmeshdat.ecmpsize[0] = nspmeshdat.m.velmnbr;
   nspmeshdat.ecmpsize[1] = 0;
@@ -156,14 +156,14 @@ const HmeshOrderNdParam * const   paraptr)
                       &nspmeshdat.parttax, (size_t) (vertnbr * sizeof (GraphPart)),
                       &nspmeshdat.frontab, (size_t) (vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hmeshOrderNd: out of memory (1)");
-    return     (1);
+    return (1);
   }
   memSet (nspmeshdat.parttax, 0, vertnbr * sizeof (GraphPart)); /* Set all vertices to part 0 */
   nspmeshdat.parttax -= nspmeshdat.m.baseval;
 
   if (vmeshSeparateSt (&nspmeshdat, paraptr->sepstrat) != 0) { /* Separate mesh */
     vmeshExit (&nspmeshdat);
-    return    (1);
+    return (1);
   }
 
   if ((nspmeshdat.ncmpsize[0] == 0) ||            /* If could not separate more */
@@ -177,13 +177,13 @@ const HmeshOrderNdParam * const   paraptr)
   if ((cblkptr->cblktab = (OrderCblk *) memAlloc (3 * sizeof (OrderCblk))) == NULL) {
     errorPrint ("hmeshOrderNd: out of memory (2)");
     vmeshExit  (&nspmeshdat);
-    return     (1);
+    return (1);
   }
-  cblkptr->cblktab[0].typeval = ORDERCBLKOTHR;    /* Build column blocks */
+  cblkptr->cblktab[0].typeval = ORDERCBLKLEAF;    /* Build column blocks */
   cblkptr->cblktab[0].vnodnbr = nspmeshdat.ncmpsize[0];
   cblkptr->cblktab[0].cblknbr = 0;
   cblkptr->cblktab[0].cblktab = NULL;
-  cblkptr->cblktab[1].typeval = ORDERCBLKOTHR;
+  cblkptr->cblktab[1].typeval = ORDERCBLKLEAF;
   cblkptr->cblktab[1].vnodnbr = nspmeshdat.ncmpsize[1];
   cblkptr->cblktab[1].cblknbr = 0;
   cblkptr->cblktab[1].cblktab = NULL;
@@ -191,7 +191,8 @@ const HmeshOrderNdParam * const   paraptr)
   cblkptr->cblktab[2].cblknbr = 0;
   cblkptr->cblktab[2].cblktab = NULL;
 
-  if (nspmeshdat.fronnbr != 0) {                  /* If separator not empty */
+  cblkptr->typeval = ORDERCBLKNEDI;               /* Node becomes a nested dissection node */
+  if (nspmeshdat.fronnbr != 0) {                  /* If separator not empty                */
     Hmesh               indmeshdat;
 
     cblkptr->cblknbr = 3;                         /* It is a three-cell tree node */
@@ -204,7 +205,7 @@ const HmeshOrderNdParam * const   paraptr)
     pthread_mutex_unlock (&ordeptr->mutedat);
 #endif /* SCOTCH_PTHREAD */
 
-    cblkptr->cblktab[2].typeval = ORDERCBLKOTHR;
+    cblkptr->cblktab[2].typeval = ORDERCBLKLEAF;
     cblkptr->cblktab[2].vnodnbr = nspmeshdat.fronnbr;
     cblkptr->cblktab[2].cblknbr = 0;
     cblkptr->cblktab[2].cblktab = NULL;
@@ -212,7 +213,7 @@ const HmeshOrderNdParam * const   paraptr)
     if (meshInduceSepa (&nspmeshdat.m, nspmeshdat.parttax, nspmeshdat.fronnbr, nspmeshdat.frontab, &indmeshdat.m) != 0) {
       errorPrint ("hmeshOrderNd: cannot build induced subgraph (1)");
       memFree    (nspmeshdat.frontab);            /* Free remaining space */
-      return     (1);
+      return (1);
     }
     indmeshdat.vnohnbr = indmeshdat.m.vnodnbr;    /* Fill halo mesh structure of non-halo mesh */
     indmeshdat.vnohnnd = indmeshdat.m.vnodnnd;

@@ -1,4 +1,4 @@
-/* Copyright 2014,2015,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,6 +42,8 @@
 /**                                 to   : 22 may 2018     **/
 /**                # Version 6.1  : from : 28 dec 2021     **/
 /**                                 to   : 28 dec 2021     **/
+/**                # Version 7.0  : from : 03 jul 2023     **/
+/**                                 to   : 12 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,18 +82,16 @@ char *              argv[])
   SCOTCH_Dgraph       grafdat;
   FILE *              file;
 #ifdef SCOTCH_PTHREAD
-  int                 thrdlvlreqval;
-  int                 thrdlvlproval;
+  int                 thrdreqlvl;
+  int                 thrdprolvl;
 #endif /* SCOTCH_PTHREAD */
 
   SCOTCH_errorProg (argv[0]);
 
 #ifdef SCOTCH_PTHREAD
-  thrdlvlreqval = MPI_THREAD_MULTIPLE;
-  if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS)
+  thrdreqlvl = MPI_THREAD_MULTIPLE;
+  if (MPI_Init_thread (&argc, &argv, thrdreqlvl, &thrdprolvl) != MPI_SUCCESS)
     SCOTCH_errorPrint ("main: Cannot initialize (1)");
-  if (thrdlvlreqval > thrdlvlproval)
-    SCOTCH_errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD");
 #else /* SCOTCH_PTHREAD */
   if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
     SCOTCH_errorPrint ("main: Cannot initialize (2)");
@@ -106,9 +106,9 @@ char *              argv[])
   MPI_Comm_size (proccomm, &procglbnbr);          /* Get communicator data */
   MPI_Comm_rank (proccomm, &proclocnum);
 
+#ifdef SCOTCH_CHECK_NOAUTO
   fprintf (stderr, "Proc %2d of %2d, pid %d\n", proclocnum, procglbnbr, getpid ());
 
-#ifdef SCOTCH_CHECK_NOAUTO
   if (proclocnum == 0) {                          /* Synchronize on keybord input */
     char           c;
 

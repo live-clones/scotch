@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2021 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -268,6 +268,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			bgraph_bipart_st$(OBJ)			\
 			bgraph_bipart_zr$(OBJ)			\
 			bgraph_check$(OBJ)			\
+			bgraph_cost$(OBJ)			\
 			bgraph_store$(OBJ)			\
 			common$(OBJ)				\
 			common_context$(OBJ)			\
@@ -886,6 +887,13 @@ bgraph_check$(OBJ)		:	bgraph_check.c				\
 					arch$(OBJ)				\
 					bgraph.h
 
+bgraph_cost$(OBJ)		:	bgraph_cost.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch$(OBJ)				\
+					bgraph.h
+
 bgraph_store$(OBJ)		:	bgraph_store.c				\
 					module.h				\
 					common.h				\
@@ -950,6 +958,7 @@ dgraph_coarsen$(OBJ)		:	dgraph_coarsen.c			\
 					context.h				\
 					dgraph.h				\
 					dgraph_allreduce.h			\
+					dgraph_fold_comm.h			\
 					dgraph_coarsen.h			\
 					dgraph_match.h
 
@@ -969,8 +978,8 @@ dgraph_fold$(OBJ)		:	dgraph_fold.c				\
 dgraph_fold_comm$(OBJ)		:	dgraph_fold_comm.c			\
 					module.h				\
 					common.h				\
-					comm.h					\
 					dgraph.h				\
+					dgraph_coarsen.h			\
 					dgraph_fold_comm.h
 
 dgraph_fold_dup$(OBJ)		:	dgraph_fold_dup.c			\
@@ -1088,6 +1097,7 @@ dorder$(OBJ)			:	dorder.c				\
 					module.h				\
 					common.h				\
 					dgraph.h				\
+					order.h					\
 					dorder.h
 
 dorder_gather$(OBJ)		:	dorder_gather.c				\
@@ -1126,6 +1136,7 @@ dorder_perm$(OBJ)		:	dorder_perm.c				\
 					module.h				\
 					common.h				\
 					dgraph.h				\
+					order.h					\
 					dorder.h				\
 					dorder_perm.h
 
@@ -1330,6 +1341,7 @@ hdgraph_order_si$(OBJ)		:	hdgraph_order_si.c			\
 					module.h				\
 					common.h				\
 					dgraph.h				\
+					order.h					\
 					dorder.h				\
 					hdgraph.h				\
 					hdgraph_order_si.h
@@ -2790,12 +2802,6 @@ order_check$(OBJ)		:	order_check.c				\
 					order.h
 
 order_io$(OBJ)			:	order_io.c				\
-					module.h				\
-					common.h				\
-					graph.h					\
-					order.h
-
-order_tree$(OBJ)		:	order_tree.c				\
 					module.h				\
 					common.h				\
 					graph.h					\

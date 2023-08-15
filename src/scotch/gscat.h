@@ -1,4 +1,4 @@
-/* Copyright 2009,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009,2014,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 26 apr 2009     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
 /**                                 to   : 12 nov 2014     **/
+/**                # Version 7.0  : from : 02 aug 2023     **/
+/**                                 to   : 04 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,4 +67,4 @@
 **  The function prototypes.
 */
 
-static int                  C_graphScat (FILE * const, SCOTCH_Num, char * const);
+static int                  C_graphScat (FILE * const, const SCOTCH_Num, char * const, const SCOTCH_Num);

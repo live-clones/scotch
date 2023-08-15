@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 09 feb 2020     **/
 /**                # Version 7.0  : from : 28 aug 2020     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +121,7 @@ const HmeshOrderCpParam * restrict const  paraptr)
 
   if (finemeshptr->vnohnbr != finemeshptr->m.vnodnbr) {
     errorPrint ("hmeshOrderCp: halo meshes not supported yet");
-    return     (1);
+    return (1);
   }
 
   coarvelmnbr = finemeshptr->m.velmnbr;           /* To date, keep isolated elements */
@@ -146,7 +146,7 @@ const HmeshOrderCpParam * restrict const  paraptr)
                      &coarperitab, (size_t) (coarvnodmax            * sizeof (Gnum)), /* TODO: move after resize */
                      &coarfinetax, (size_t) (coarvnodmax            * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hmeshOrderCp: out of memory (1)");
-    return     (1);
+    return (1);
   }
 /* TODO : resize after success */
 
@@ -157,7 +157,7 @@ const HmeshOrderCpParam * restrict const  paraptr)
        finehaspmsk = finehaspmsk * 2 + 1) ;
   finehaspmsk >>= 1;                              /* Ensure masked data will always fit into finecoartab array */
   finehaspmsk = (finehaspmsk * (sizeof (Gnum) / sizeof (int))) + ((sizeof (Gnum) / sizeof (int)) - 1);
-  if (finehaspmsk >= ((sizeof (int) << (3 + 1)) - 1)) /* Only use 1/8 of array for pre-hashing, for increased cache locality */
+  if (finehaspmsk >= (Gnum) ((sizeof (int) << (3 + 1)) - 1)) /* Only use 1/8 of array for pre-hashing, for increased cache locality */
     finehaspmsk >>= 3;
   memSet (finehasptab, 0, (finehaspmsk + 1) * sizeof (int)); /* Initialize pre-hash table */
 
@@ -228,7 +228,7 @@ const HmeshOrderCpParam * restrict const  paraptr)
 #ifdef SCOTCH_DEBUG_ORDER2
     if (coarvertnum >= coarmeshdat.m.velmnnd) {   /* If too many elements declared   */
       errorPrint ("hmeshOrderCp: internal error (1)"); /* Maybe problem with veisnbr */
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_ORDER2 */
 
@@ -322,7 +322,7 @@ loop_failed: ;
 #ifdef SCOTCH_DEBUG_ORDER2
   if (coarvertnum != coarmeshdat.m.velmnnd) {     /* If too many elements declared */
     errorPrint ("hmeshOrderCp: internal error (2)"); /* Maybe problem with veisnbr */
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
   coarmeshdat.m.vnodnnd = coarvnodnnd;
@@ -333,7 +333,7 @@ loop_failed: ;
        finevnodnum < finemeshptr->m.vnodnnd; finevnodnum ++) {
     if (finecoartax[finevnodnum] == ~0) {
       errorPrint ("hmeshOrderCp: internal error (3)");
-      return     (1);
+      return (1);
     }
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
@@ -378,14 +378,14 @@ loop_failed: ;
   if (hmeshCheck (&coarmeshdat) != 0) {
     errorPrint ("hmeshOrderCp: internal error (4)");
     hmeshExit  (&coarmeshdat);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
 
   orderInit (&coarordedat, coarmeshdat.m.baseval, coarmeshdat.m.vnodnbr, coarperitab); /* Build ordering of compressed submesh */
   if (hmeshOrderSt (&coarmeshdat, &coarordedat, 0, &coarordedat.cblktre, paraptr->stratcpr) != 0) {
     hmeshExit (&coarmeshdat);
-    return    (1);
+    return (1);
   }
 
   coarvsiztax += (coarmeshdat.m.vnodbas - coarmeshdat.m.baseval); /* Adjust array to match permutation bounds */
@@ -401,7 +401,7 @@ loop_failed: ;
   if (finevertnbr != finemeshptr->m.vnodnbr) {
     errorPrint ("hmeshOrderCp: internal error (5)");
     hmeshExit  (&coarmeshdat);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
 #ifdef SCOTCH_PTHREAD

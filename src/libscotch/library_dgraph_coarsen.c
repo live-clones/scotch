@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 11 sep 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 12 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,6 +56,7 @@
 #include "common.h"
 #include "context.h"
 #include "dgraph.h"
+#include "dgraph_fold_comm.h"
 #include "dgraph_coarsen.h"
 #include "ptscotch.h"
 
@@ -67,6 +68,28 @@
 /*                                  */
 /************************************/
 
+/*+ This routine provides an upper bound of the
+*** number of local vertices, on the calling
+*** process, of the coarse graph that would be
+*** created by calling SCOTCH_dgraphCoarsen().
+*** It is notably used to allocate the external
+*** multinode array.
+*** It returns:
+*** - >= 0  : in all cases.
++*/
+
+SCOTCH_Num
+SCOTCH_dgraphCoarsenVertLocMax (
+const SCOTCH_Dgraph * restrict const  flibgrafptr, /* Fine graph structure */
+const SCOTCH_Num                      flagval)    /* Coarsening type       */
+{
+  CONTEXTDECL                  (flibgrafptr);
+
+  Dgraph * restrict const   finegrafptr = (Dgraph *) CONTEXTOBJECT (flibgrafptr);
+
+  return (dgraphCoarsenVertLocMax (finegrafptr, (int) flagval));
+}
+
 /*+ This routine creates a distributed coarse graph
 *** from the given fine graph, unless the coarse graph
 *** is smaller than some threshold size or the
@@ -74,54 +97,69 @@
 *** If the coarse graph is created, a coarse-to-fine
 *** vertex array is created, that contains a pair of
 *** fine indices for each coarse index. It is the
-*** user's responsibility to free this array when it
-*** is no longer needed.
+*** user's responsibility to provide and free this
+*** array whenever it is no longer needed.
 *** It returns:
-*** - 0  : if the graph has been coarsened.
+*** - 0  : if the graph has been coarsened (and folded).
 *** - 1  : if the graph could not be coarsened.
-*** - 2  : if folded graph not present
-*** - 3  : on error.
+*** - 2  : on error.
 +*/
 
 int
 SCOTCH_dgraphCoarsen (
-SCOTCH_Dgraph * restrict const  flibgrafptr,      /* Fine graph structure to fill      */
-const SCOTCH_Num                coarnbr,          /* Minimum number of coarse vertices */
-const double                    coarrat,          /* Maximum contraction ratio         */
-const SCOTCH_Num                flagval,          /* Flag value                        */
-SCOTCH_Dgraph * restrict const  clibgrafptr,      /* Coarse graph                      */
-SCOTCH_Num * restrict const     multloctab)       /* Pointer to multinode array        */
+SCOTCH_Dgraph * const       flibgrafptr,          /* Fine graph structure              */
+const SCOTCH_Num            coarnbr,              /* Minimum number of coarse vertices */
+const double                coarrat,              /* Maximum contraction ratio         */
+const SCOTCH_Num            flagval,              /* Flag for coarsening type          */
+SCOTCH_Dgraph * const       clibgrafptr,          /* Coarse graph structure to fill    */
+SCOTCH_Num * const          multloctab)           /* Pointer to multinode array        */
 {
-  DgraphCoarsenMulti * restrict multlocptr;
-  CONTEXTDECL                  (flibgrafptr);
-  int                           o;
+  DgraphCoarsenMulti *      multlocptr;           /* Pointer to multinode array used by dgraphCoarsen() */
+  int                       foldval;              /* Flag of folding type                               */
+  CONTEXTDECL              (flibgrafptr);
+  int                       o;
 
-  Dgraph * restrict const   coargrafptr = (Dgraph *) CONTEXTOBJECT (clibgrafptr);
+  Dgraph * const            coargrafptr = (Dgraph *) CONTEXTOBJECT (clibgrafptr);
 #ifdef SCOTCH_DEBUG_LIBRARY1
-  Dgraph * restrict const   finegrafptr = (Dgraph *) CONTEXTOBJECT (flibgrafptr);
+  Dgraph * const            finegrafptr = (Dgraph *) CONTEXTOBJECT (flibgrafptr);
 
   MPI_Comm_compare (finegrafptr->proccomm, coargrafptr->proccomm, &o);
   if ((o != MPI_IDENT) && (o != MPI_CONGRUENT)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphCoarsen) ": communicators are not congruent");
-    return     (3);
+    return (2);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   if (CONTEXTINIT (flibgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphCoarsen) ": cannot initialize context");
-    return     (1);
+    return (2);
   }
 
-  multlocptr = (DgraphCoarsenMulti * restrict) multloctab; /* User-provided multinode array */
+  foldval = flagval & (DGRAPHCOARSENFOLD | DGRAPHCOARSENFOLDDUP); /* Only consider folding flags   */
+  multlocptr = (foldval == DGRAPHCOARSENNONE)     /* If plain coarsening                           */
+               ? ((DgraphCoarsenMulti * restrict) multloctab) /* Use user-provided array (or NULL) */
+               : NULL;                            /* Else dgraphCoarsen() will create the array    */
+
   o = dgraphCoarsen (CONTEXTGETOBJECT (flibgrafptr), coargrafptr, &multlocptr,
                      5, coarnbr, coarrat, (int) flagval, CONTEXTGETDATA (flibgrafptr));
-  if (o >= 2)
-    o = 3;
+  if (o > 2)
+    o = 2;
 
-  if (multlocptr != (DgraphCoarsenMulti * restrict) multloctab) { /* If folding occurred */
-    if (multlocptr == NULL)
-      o = 2;
-    else {
+  if (multloctab == NULL) {                       /* If user did not provide a multinode array      */
+    if (multlocptr != NULL)                       /* If coarsening (and folding) went well          */
+      memFree (multlocptr);                       /* Free allocated multinode array (folded or not) */
+  }
+  else {                                          /* User provided a multinode array                */
+    if (foldval != DGRAPHCOARSENNONE) {           /* If folding took place, user array was not used */
+#ifdef SCOTCH_DEBUG_LIBRARY2
+      SCOTCH_Num          multlocsiz;             /* Size that the user may have reserved for the multinode folded array */
+
+      multlocsiz = SCOTCH_dgraphCoarsenVertLocMax (flibgrafptr, flagval);
+      if (multlocsiz < coargrafptr->vertlocnbr) { /* If advised size is smaller than real size */
+        errorPrint (STRINGIFY (SCOTCH_dgraphCoarsen) ": invalid estimated multinode array size");
+        o = 2;
+      }                                           /* Go on copying anyway as the user may have reserved more */
+#endif /* SCOTCH_DEBUG_LIBRARY2 */
       memCpy  (multloctab, multlocptr, coargrafptr->vertlocnbr * sizeof (DgraphCoarsenMulti)); /* Update array with folded multinode data */
       memFree (multlocptr);                       /* Free allocated folded multinode array */
     }

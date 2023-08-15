@@ -41,8 +41,8 @@
 ##                                                        ##
 ############################################################
 
-project(SCOTCH)
 cmake_minimum_required(VERSION 3.10)
+project(SCOTCH)
 enable_language(C Fortran)
 
 # Add module directory
@@ -50,7 +50,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 set(SCOTCH_VERSION 7)
 set(SCOTCH_RELEASE 0)
-set(SCOTCH_PATCHLEVEL 3)
+set(SCOTCH_PATCHLEVEL 4)
 set(SCOTCH_CODENAME "Sankara")
 
 add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}

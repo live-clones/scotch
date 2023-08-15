@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 27 jan 2023     **/
+/**                                 to   : 01 jun 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -446,6 +446,7 @@ void                        stringSubst         (char * const, const char * cons
 
 int                         threadContextInit   (ThreadContext * const, int, const int * const);
 void                        threadContextExit   (ThreadContext * const);
+void                        threadContextExit2  (ThreadContext * const);
 int                         threadContextBarrier (ThreadContext * const);
 void                        threadContextImport1 (ThreadContext * const, const int);
 void                        threadContextImport2 (ThreadContext * const, const int);
@@ -485,6 +486,7 @@ int                         contextValuesSetInt (Context * const, const int, con
 #define threadNum(t)                ((t)->thrdnum)
 
 #define contextIntRandVal(c,n)      intRandVal ((c)->randptr, (n))
+#define contextIntRandVal2(c)       intRandVal2 ((c)->randptr)
 
 #define contextThreadLaunch(c,f,d)  threadLaunch ((c)->thrdptr, (f), (d))
 #define contextThreadNbr(c)         threadContextNbr ((c)->thrdptr)

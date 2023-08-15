@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 04 apr 2018     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,7 +99,7 @@ const HgraphOrderCcParam * restrict const paraptr)
                      &roottab, (size_t) ((grafptr->vnohnbr + 1) * sizeof (Gnum)), /* TRICK: +1 to store end index */
                      &flagtax, (size_t) ( grafptr->vnohnbr      * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("hgraphOrderCc: out of memory");
-    return     (1);
+    return (1);
   }
   memSet (flagtax, ~0, grafptr->vnohnbr * sizeof (Gnum)); /* Initialize flag array */
   flagtax -= grafptr->s.baseval;
@@ -123,7 +123,7 @@ const HgraphOrderCcParam * restrict const paraptr)
 #ifdef SCOTCH_DEBUG_ORDER2
       if ((vertnum < grafptr->s.baseval) || (vertnum >= grafptr->vnohnnd)) {
         errorPrint ("hgraphOrderCc: internal error (1)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_ORDER2 */
 
@@ -139,7 +139,7 @@ const HgraphOrderCcParam * restrict const paraptr)
         else {
           if (flagtax[vertend] != rootnbr) {
             errorPrint ("hgraphOrderCc: internal error (2)");
-            return     (1);
+            return (1);
           }
         }
 #endif /* SCOTCH_DEBUG_ORDER2 */
@@ -158,7 +158,7 @@ const HgraphOrderCcParam * restrict const paraptr)
   if ((cblkptr->cblktab = (OrderCblk *) memAlloc (rootnbr * sizeof (OrderCblk))) == NULL) {
     errorPrint ("hgraphOrderCc: out of memory");
     memFree    (queutab);
-    return     (1);
+    return (1);
   }
 #ifdef SCOTCH_PTHREAD
   pthread_mutex_lock (&ordeptr->mutedat);
@@ -168,10 +168,10 @@ const HgraphOrderCcParam * restrict const paraptr)
 #ifdef SCOTCH_PTHREAD
   pthread_mutex_unlock (&ordeptr->mutedat);
 #endif /* SCOTCH_PTHREAD */
+  cblkptr->typeval = ORDERCBLKDICO;               /* Node becomes a set of disconnected components */
   cblkptr->cblknbr = rootnbr;
-  cblkptr->typeval = ORDERCBLKDICO;               /* Disconnected components node  */
   for (rootnum = 0; rootnum < rootnbr; rootnum ++) { /* Initialize tree node array */
-    cblkptr->cblktab[rootnum].typeval = ORDERCBLKOTHR;
+    cblkptr->cblktab[rootnum].typeval = ORDERCBLKLEAF;
     cblkptr->cblktab[rootnum].vnodnbr = roottab[rootnum + 1] - roottab[rootnum];
     cblkptr->cblktab[rootnum].cblknbr = 0;
     cblkptr->cblktab[rootnum].cblktab = NULL;
@@ -186,7 +186,7 @@ const HgraphOrderCcParam * restrict const paraptr)
     if (hgraphInduceList (grafptr, indvnohnbr, &queutab[roottab[rootnum]], grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat) != 0) {
       errorPrint ("hgraphOrderCc: cannot create induced graph");
       memFree    (queutab);
-      return     (1);
+      return (1);
     }
 
     o = hgraphOrderSt (&indgrafdat, ordeptr, indordenum, &cblkptr->cblktab[rootnum], paraptr->straptr); /* Perform strategy on induced subgraph */
@@ -196,7 +196,7 @@ const HgraphOrderCcParam * restrict const paraptr)
     if (o != 0) {
       errorPrint ("hgraphOrderCc: cannot compute ordering on induced graph");
       memFree    (queutab);
-      return     (1);
+      return (1);
     }
 
     indordenum += indvnohnbr;

@@ -35,12 +35,12 @@ distribution of \scotch\ is licensed and how to install it.
 \subsection{Thread issues}
 
 To enable the use of POSIX threads in some routines, the {\tt
-SCOTCH\_\lbt PTHREAD} flag must be set. If your MPI implementation is
-not thread-safe, make sure this flag is not defined at compile time.
-If the flag is defined, make sure to use the \texttt{MPI\_\lbt
-Init\_\lbt thread} MPI routine to initialize the communication
-subsystem, at the \texttt{MPI\_\lbt THREAD\_\lbt MULTIPLE} level
-(see Section~\ref{sec-lib-thread}).
+SCOTCH\_\lbt PTHREAD} flag must be set. If this flag is defined,
+make sure to use the \texttt{MPI\_\lbt Init\_\lbt thread()}
+routine to initialize the communication subsystem. The
+{\tt SCOTCH\_\lbt PTHREAD\_\lbt MPI} flag can also be set if the
+application software is likely to use the \texttt{MPI\_\lbt
+THREAD\_\lbt MULTIPLE} level (see Section~\ref{sec-lib-thread}).
 
 \subsection{File compression issues}
 

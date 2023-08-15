@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 04 jul 2012     **/
 /**                                 to   : 27 apr 2015     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 13 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -136,13 +136,17 @@ const int * const           coretab)
   return (0);
 }
 
-/* This routine frees the given thread context.
+/* This routine frees the given thread context
+** without restoring the thread affinity mask.
+** It is used to free sub-contexts, such as
+** those created by splitting an existing
+** context.
 ** It returns:
 ** - VOID  : in all cases.
 */
 
 void
-threadContextExit (
+threadContextExit2 (
 ThreadContext * const       contptr)
 {
   int                 thrdnbr;
@@ -166,6 +170,19 @@ ThreadContext * const       contptr)
 
   pthread_cond_destroy  (&contptr->conddat);      /* Destroy critical section features */
   pthread_mutex_destroy (&contptr->lockdat);
+}
+
+/* This routine frees the given thread context
+** and restores the thread affinity mask.
+** It returns:
+** - VOID  : in all cases.
+*/
+
+void
+threadContextExit (
+ThreadContext * const       contptr)
+{
+  threadContextExit2 (contptr);                   /* Exit context and release threads */
 
   threadProcessStateRestore (contptr);            /* Restore state of main thread */
 }
@@ -638,6 +655,16 @@ const int * const           coretab)
   contptr->statval = THREADCONTEXTSTATUSDWN;      /* Thread system is not functional */
 
   return (0);
+}
+
+/*
+**
+*/
+
+void
+threadContextExit2 (
+ThreadContext * restrict const  contptr)
+{
 }
 
 /*

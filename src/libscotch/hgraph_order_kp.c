@@ -43,7 +43,7 @@
 /**                # Version 6.0  : from : 23 aug 2014     **/
 /**                                 to   : 15 aug 2016     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -149,7 +149,7 @@ const HgraphOrderKpParam * restrict const paraptr)
     ordetab[partnum] = ordeadj;
     ordeadj += ordetmp;
     if (ordetmp != 0) {                           /* If part is not empty, one more column block */
-      cblkptr->cblktab[cblknbr].typeval = ORDERCBLKOTHR;
+      cblkptr->cblktab[cblknbr].typeval = ORDERCBLKLEAF;
       cblkptr->cblktab[cblknbr].vnodnbr = ordetmp;
       cblkptr->cblktab[cblknbr].cblknbr = 0;
       cblkptr->cblktab[cblknbr].cblktab = NULL;
@@ -157,6 +157,8 @@ const HgraphOrderKpParam * restrict const paraptr)
     }
   }
 
+  cblkptr->typeval = ORDERCBLKSEQU;               /* Node becomes a sequence of blocks */
+  cblkptr->cblknbr = cblknbr;
 #ifdef SCOTCH_PTHREAD
   pthread_mutex_lock (&ordeptr->mutedat);
 #endif /* SCOTCH_PTHREAD */
@@ -165,7 +167,6 @@ const HgraphOrderKpParam * restrict const paraptr)
 #ifdef SCOTCH_PTHREAD
   pthread_mutex_unlock (&ordeptr->mutedat);
 #endif /* SCOTCH_PTHREAD */
-  cblkptr->cblknbr = cblknbr;
 
   peritab = ordeptr->peritab;
   if (grafptr->s.vnumtax == NULL) {               /* If graph is original graph */

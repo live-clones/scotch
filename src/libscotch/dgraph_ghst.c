@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 21 nov 2011     **/
 /**                                 to   : 21 nov 2011     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -209,8 +209,8 @@ const int                   flagval)              /* Replacement flag */
           vertsidtab[procngbnum] = vertlocnum;    /* Neighbor process will receive vertex     */
           procsndtab[procngbnum] ++;              /* One more vertex to send to this neighbor */
 
-          while ((vertlocnum - vertsidnum) >= DGRAPHGHSTSIDMAX) { /* If Gnum range too long for int */
-            procsidtab[procsidnbr ++] = -DGRAPHGHSTSIDMAX; /* Decrease by maximum int distance      */
+          while ((vertlocnum - vertsidnum) >= (Gnum) DGRAPHGHSTSIDMAX) { /* If Gnum range too long for int */
+            procsidtab[procsidnbr ++] = -DGRAPHGHSTSIDMAX; /* Decrease by maximum int distance             */
             vertsidnum               += DGRAPHGHSTSIDMAX;
           }
           if (vertsidnum != vertlocnum) {         /* If communication concerns new local vertex   */

@@ -48,7 +48,16 @@ Tarballs of the **Scotch** releases are available [here](https://gitlab.inria.fr
 Documentation
 -------------
 
-The most recent version of the user and maintenance manuals are available [here](https://gitlab.inria.fr/scotch/scotch/tree/master/doc).
+The most recent user and maintenance manuals are available [here](https://gitlab.inria.fr/scotch/scotch/tree/master/doc).
+
+The principles and internals of **Scotch** are also described in several papers:
+
+* [Distillating knowledge about SCOTCH](https://drops.dagstuhl.de/opus/volltexte/2009/2091/pdf/09061.PellegriniFrancois.Paper.2091.pdf), in *Combinatorial Scientific Computing*, U. Naumann, O. Schenk, H. D. Simon and S. Toledo, eds., [Dagstuhl Seminar Proceedings vol. 9061](https://drops.dagstuhl.de/opus/volltexte/2009/2091/), Schloss Dagstuhl - Leibniz-Zentrum für Informatik, Dagstuhl, Germany, 2009, ISSN 1862-4405
+
+* [Scotch and PT-Scotch Graph Partitioning Software: An Overview](https://www.taylorfrancis.com/chapters/edit/10.1201/b11644-18/scotch-pt-scotch-graph-partitioning-software-overview-franc%C2%B8ois-pellegrini), in *[Combinatorial Scientific Computing](https://www.taylorfrancis.com/books/mono/10.1201/b11644/combinatorial-scientific-computing)*, U. Naumann, O. Schenk eds., Chapman and Hall/CRC, 2012, ISBN 978-0-429-15217-7
+
+* [Contributions to multilevel parallel graph partitioning](http://tel.archives-ouvertes.fr/docs/00/54/05/81/PDF/hdr.pdf), habilitation thesis, 2009
+
 
 Installation
 ------------

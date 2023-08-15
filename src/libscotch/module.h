@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 03 feb 2023     **/
+/**                                 to   : 03 jul 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -362,6 +362,7 @@
 
 #define threadContextBarrier        SCOTCH_NAME_INTERN (threadContextBarrier)
 #define threadContextExit           SCOTCH_NAME_INTERN (threadContextExit)
+#define threadContextExit2          SCOTCH_NAME_INTERN (threadContextExit2)
 #define threadContextImport1        SCOTCH_NAME_INTERN (threadContextImport1)
 #define threadContextImport2        SCOTCH_NAME_INTERN (threadContextImport2)
 #define threadContextInit           SCOTCH_NAME_INTERN (threadContextInit)
@@ -685,6 +686,8 @@
 #define bgraphInit5                 SCOTCH_NAME_INTERN (bgraphInit5)
 #define bgraphExit                  SCOTCH_NAME_INTERN (bgraphExit)
 #define bgraphCheck                 SCOTCH_NAME_INTERN (bgraphCheck)
+#define bgraphCost                  SCOTCH_NAME_INTERN (bgraphCost)
+#define bgraphCost2                 SCOTCH_NAME_INTERN (bgraphCost2)
 #define bgraphSwal                  SCOTCH_NAME_INTERN (bgraphSwal)
 #define bgraphZero                  SCOTCH_NAME_INTERN (bgraphZero)
 #define bgraphBipartBd              SCOTCH_NAME_INTERN (bgraphBipartBd)
@@ -723,6 +726,7 @@
 #define dgraphBand2Coll             SCOTCH_NAME_INTERN (dgraphBand2Coll)
 #define dgraphBand2Ptop             SCOTCH_NAME_INTERN (dgraphBand2Ptop)
 #define dgraphCoarsen               SCOTCH_NAME_INTERN (dgraphCoarsen)
+#define dgraphCoarsenVertLocMax     SCOTCH_NAME_INTERN (dgraphCoarsenVertLocMax)
 #define dgraphCompact2              SCOTCH_NAME_INTERN (dgraphCompact2)
 #define dgraphExit                  SCOTCH_NAME_INTERN (dgraphExit)
 #define dgraphFold                  SCOTCH_NAME_INTERN (dgraphFold)

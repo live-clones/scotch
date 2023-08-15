@@ -70,7 +70,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -439,11 +439,13 @@ const GraphPart                 partval)
       break;
     case KGRAPHMAPRBPOLILEVEL :
       priolvl = joboldptr->priolvl + 1;
+      /* FALL THROUGH */
     case KGRAPHMAPRBPOLINGLEVEL :
       prioval = joboldptr->prioval - 1;
       break;
     case KGRAPHMAPRBPOLISIZE :
       priolvl = jobnewptr->grafdat.vertnbr;
+      /* FALL THROUGH */
     case KGRAPHMAPRBPOLINGSIZE :
       prioval = jobnewptr->grafdat.vertnbr;
       break;
@@ -603,11 +605,13 @@ KgraphMapRbMapJob * const       jobnewptr1)
         break;
       case KGRAPHMAPRBPOLILEVEL :
         priolvl = joboldptr->priolvl + 1;
+        /* FALL THROUGH */
       case KGRAPHMAPRBPOLINGLEVEL :
         prioval = joboldptr->prioval - 1;
         break;
       case KGRAPHMAPRBPOLISIZE :
         priolvl = jobnewptr->grafdat.vertnbr;
+        /* FALL THROUGH */
       case KGRAPHMAPRBPOLINGSIZE :
         prioval = jobnewptr->grafdat.vertnbr;
         break;

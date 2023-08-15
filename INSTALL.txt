@@ -1,6 +1,23 @@
 Scotch 7.0 installation instructions
 ====================================
 
+0) Documentation
+================
+
+The "doc/" directory contains several documents that may be useful to
+users, packagers and maintainers of Scotch:
+
+- the "Scotch and PT-Scotch Hands-On Guide", which provides ueful
+  information to installers and users, as well as some troubleshooting
+  instructions in case of unexpected crash;
+
+- The "Scotch User's Guide" and the "PT-Scotch User's Guide", which
+  provide thorough information about the Scotch and PT-Scotch APIs;
+
+- The "Scotch Maintainer's Guide", which gives insights about the
+  internals of Scotch and the Scotch coding style.
+
+
 1) Mandatory tools
 ==================
 
@@ -14,10 +31,11 @@ To check whether Flex and Bison are present, please type:
 %prompt% which flex
 %prompt% which bison
 
-Note: to implement pure parsers, recent versions of the Flex and
-Bison tools are needed (e.g., the 3.4 branch). On MacOs, an older
-version is provided by default; users may get an adequate version from
-the "HomeBrew" repository, using command "brew install bison".
+Because pure parsers are needed to ensure thread safety when handling
+strategy strings, versions of the Flex and Bison tools at least equal
+to 3.4 are required. On MacOs, an older version is provided by
+default; users may get an adequate version from the "HomeBrew"
+repository, using command "brew install bison".
 
 To check whether GNU Make and/or CMake are installed and are found
 first, please type:
@@ -56,6 +74,11 @@ tedious. Please read the next section ("Configuration and
 fine-tuning") to see what options are available, as they may either
 favor or hinder the performance of Scotch on your system.
 
+Since the Scotch source code makes use of some C99 constructs (e.g.,
+format constants for the fprintf family of functions, such as
+"PRIu64"), C compilers must be parametrized so as to accept them
+(e.g., using the "-std=c99" option for gcc).
+
 
 2.1) Compiling with CMake
 -------------------------
@@ -91,9 +114,11 @@ Some structuring options can be set during this phase, by using the
     Pthreads within Scotch and PT-Scotch.
 
   - MPI_THREAD_MULTIPLE:BOOL (default value ON): set this flag to ON
-    to use multi-threaded algorithms in conjunction with MPI, which
-    requires to use a thread-safe MPI implementation. This option is
-    relevant only if BUILD_PTSCOTCH is set to ON.
+    to use multi-threaded algorithms in conjunction with MPI. In case
+    this option is activated and PT-Scotch is linked against a
+    thread-safe MPI library, it will take advantage of it to run some
+    threaded algorithms in parallel across compute nodes. This option
+    is relevant only if BUILD_PTSCOTCH is set to ON.
 
   - BUILD_PTSCOTCH:BOOL (default value ON): set this flag to ON to
     compile PT-Scotch in addition to Scotch (which is always compiled
@@ -509,18 +534,16 @@ available. They are used in several places:
 
   - to create distributed graphs in parallel. Since this task involves
     concurrent MPI communications, the MPI library must support the
-    MPI_THREAD_MULTIPLE level. In order to take advantage of these
-    features, the "-DSCOTCH_PTHREAD_MPI" flag must be set, in addition
-    to the "-DSCOTCH_PTHREAD" flag. These two flags are completely
-    independent from the "-DCOMMON_PTHREAD_FILE" flag, which can be
-    set independently from the others.
+    MPI_THREAD_MULTIPLE level in order for PT-Scotch to run the
+    threaded version of the algorithms. In order to take advantage of
+    these features, the "-DSCOTCH_PTHREAD_MPI" flag must be set, in
+    addition to the "-DSCOTCH_PTHREAD" flag. These two flags are
+    completely independent from the "-DCOMMON_PTHREAD_FILE" flag,
+    which can be set independently from the others.
 
     Note that if you compile Scotch with the "-DSCOTCH_PTHREAD_MPI"
     flag, you will have to initialize your communication subsystem by
-    using the MPI_Init_thread() MPI call instead of MPI_Init(), and
-    the provided thread support level value returned by the routine
-    must be checked carefully to assert it is indeed
-    MPI_THREAD_MULTIPLE.
+    using the MPI_Init_thread() MPI call instead of MPI_Init().
 
     Note also that since PT-Scotch calls Scotch routines when
     operating on a single process, setting "-DSCOTCH_PTHREAD" but not
@@ -881,7 +904,7 @@ run time by default (hence resorting to the sequential algorithms)
 unless explicitly decided by the user by way of the
 SCOTCH_PTHREAD_NUMBER environment variable.
 
-Also, when the MPI implementation supports it, we recommend to compile
-Scotch with the -DMPI_THREAD_MULTIPLE environment variable set, to
-benefit from added performance when several threads are available per
-MPI process.
+Also, we recommend to compile Scotch with the -DMPI_THREAD_MULTIPLE
+environment variable set, to benefit from added performance when
+Scotch is liked against a MPI library that provides the
+MPI_THREAD_MULTIPLE thread support level.

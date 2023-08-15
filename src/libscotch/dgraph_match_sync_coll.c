@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 27 dec 2021     **/
 /**                                 to   : 27 dec 2021     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 30 mar 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,7 +75,7 @@
 
 int
 dgraphMatchSyncColl (
-DgraphMatchData * restrict const  mateptr)
+DgraphMatchData * restrict  mateptr)              /* [norestrict:async] */
 {
   Gnum                queulocnbr;
   Gnum                queulocnum;
@@ -91,7 +91,7 @@ DgraphMatchData * restrict const  mateptr)
   int * restrict      vsnddsptab;
   int * restrict      vrcvdsptab;
 
-  Dgraph * restrict const             grafptr    = mateptr->c.finegrafptr;
+  Dgraph * const                      grafptr    = mateptr->c.finegrafptr; /* [norestrict:async] */
   const int * restrict const          procngbtab = grafptr->procngbtab;
   int * restrict const                procgsttax = mateptr->c.procgsttax;
   const Gnum * restrict const         procvgbtab = mateptr->procvgbtab;
@@ -110,17 +110,17 @@ DgraphMatchData * restrict const  mateptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (edgeloctax == NULL) {
     errorPrint ("dgraphMatchSyncColl: not implemented");
-    return     (1);
+    return (1);
   }
   if (MPI_Barrier (grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphMatchSyncColl: communication error (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   if ((vsnddsptab = memAlloc (4 * grafptr->procglbnbr * sizeof (int))) == NULL) {
     errorPrint ("dgraphMatchSyncColl: out of memory");
-    return     (1);
+    return (1);
   }
   vsndcnttab = vsnddsptab + grafptr->procglbnbr;  /* TRICK: put vsnddsptab, vsndcnttab, vrcvdsptab in order for memSet() */
   vrcvdsptab = vsndcnttab + grafptr->procglbnbr;
@@ -151,7 +151,7 @@ DgraphMatchData * restrict const  mateptr)
         (edgelocnum >= (grafptr->edgelocsiz + grafptr->baseval)) ||
         (mategsttax[edgegsttax[edgelocnum]] != -1)) {
       errorPrint ("dgraphMatchSyncColl: internal error (1)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
     mateglbnum = edgeloctax[edgelocnum];
@@ -178,7 +178,7 @@ DgraphMatchData * restrict const  mateptr)
     if ((grafptr->procvrttab[procngbtab[procngbnum]]     >  mateglbnum) ||
         (grafptr->procvrttab[procngbtab[procngbnum] + 1] <= mateglbnum)) {
       errorPrint ("dgraphMatchSyncColl: internal error (2)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -186,7 +186,7 @@ DgraphMatchData * restrict const  mateptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
     if (vsndidxnum >= mateptr->c.vsnddsptab[procngbtab[procngbnum] + 1]) {
       errorPrint ("dgraphMatchSyncColl: internal error (3)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
     vsnddattab[vsndidxnum].datatab[0] = vertlocnum + vertlocadj;
@@ -205,12 +205,12 @@ DgraphMatchData * restrict const  mateptr)
 
   if (MPI_Alltoall (vsndcnttab, 1, MPI_INT, vrcvcnttab, 1, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphMatchSyncColl: communication error (2)");
-    return     (1);
+    return (1);
   }
   if (MPI_Alltoallv (vsnddattab,            vsndcnttab, vsnddsptab, GNUM_MPI,
                      mateptr->c.vrcvdattab, vrcvcnttab, vrcvdsptab, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphMatchSyncColl: communication error (3)");
-    return     (1);
+    return (1);
   }
 
   matelocnbr = mateptr->matelocnbr;
@@ -249,7 +249,7 @@ DgraphMatchData * restrict const  mateptr)
         if ((vertlocnum <  grafptr->baseval) ||   /* If matching request is not directed towards our process */
             (vertlocnum >= grafptr->vertlocnnd)) {
           errorPrint ("dgraphMatchSyncColl: internal error (5)");
-          return     (1);
+          return (1);
         }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -261,7 +261,7 @@ DgraphMatchData * restrict const  mateptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
             if (edgelocnum >= vendloctax[vertlocnum]) {
               errorPrint ("dgraphMatchSyncColl: internal error (6)");
-              return     (1);
+              return (1);
             }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
           }
@@ -357,7 +357,7 @@ DgraphMatchData * restrict const  mateptr)
   if (MPI_Alltoallv (mateptr->c.vrcvdattab, vrcvcnttab, vrcvdsptab, GNUM_MPI,
                      vsnddattab,            vsndcnttab, vsnddsptab, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphMatchSyncColl: communication error (3)");
-    return     (1);
+    return (1);
   }
 
   for (procngbidx = 0; procngbidx < procngbnbr; procngbidx ++) {
@@ -387,7 +387,7 @@ DgraphMatchData * restrict const  mateptr)
       if ((vertlocnum <  grafptr->baseval) ||     /* If matching reply is not directed towards our process */
           (vertlocnum >= grafptr->vertlocnnd)) {
         errorPrint ("dgraphMatchSyncColl: internal error (8)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -399,7 +399,7 @@ DgraphMatchData * restrict const  mateptr)
            (mategsttax[edgegsttax[edgelocnum]] != vertglbnum) && /* And this message is not the positive reply which acknowledges this mating     */
            (mategsttax[edgegsttax[edgelocnum]] != vmatglbnum))) { /* Or an informative negative reply which gives again the mate of the ghost     */
         errorPrint ("dgraphMatchSyncColl: internal error (9)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
       if (edgeloctax[edgelocnum] == vmatglbnum) { /* If positive answer from the mate we wanted */
@@ -425,7 +425,7 @@ DgraphMatchData * restrict const  mateptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (MPI_Barrier (grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphMatchSyncColl: communication error (11)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 

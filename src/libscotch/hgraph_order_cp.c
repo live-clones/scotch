@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 04 aug 2014     **/
 /**                                 to   : 27 jan 2020     **/
 /**                # Version 7.0  : from : 05 may 2019     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 22 mar 2023     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -161,7 +161,7 @@ const HgraphOrderCpParam * const  paraptr)
        finehaspmsk = finehaspmsk * 2 + 1) ;
   finehaspmsk >>= 1;                              /* Ensure masked data will always fit into finecoartab array */
   finehaspmsk = (finehaspmsk * (sizeof (Gnum) / sizeof (int))) + ((sizeof (Gnum) / sizeof (int)) - 1);
-  if (finehaspmsk >= ((sizeof (int) << (3 + 1)) - 1)) /* Only use 1/8 of array for pre-hashing, for increased cache locality */
+  if (finehaspmsk >= (Gnum) ((sizeof (int) << (3 + 1)) - 1)) /* Only use 1/8 of array for pre-hashing, for increased cache locality */
     finehaspmsk >>= 3;
   memSet (finehasptab, 0, (finehaspmsk + 1) * sizeof (int)); /* Initialize pre-hash table */
 
@@ -290,7 +290,7 @@ loop_failed: ;
   if ((double) (coarvertnbr - coargrafdat.s.baseval) > ((double) finegrafptr->vnohnbr * paraptr->comprat)) { /* If graph needs not be compressed */
     memFree (finehashtab);
     memFree (finecoartax + finegrafptr->s.baseval);
-    return (hgraphOrderSt (finegrafptr, fineordeptr, ordenum, cblkptr, paraptr->stratunc));
+    return  (hgraphOrderSt (finegrafptr, fineordeptr, ordenum, cblkptr, paraptr->stratunc));
   }
 
   for ( ; finevertnum < finegrafptr->s.vertnnd; finevertnum ++) /* For all halo vertices */
@@ -319,7 +319,7 @@ loop_failed: ;
     hgraphExit (&coargrafdat);
     memFree    (finehashtab);
     memFree    (finecoartax + finegrafptr->s.baseval);
-    return     (1);
+    return (1);
   }
   coargrafdat.s.verttax -= coargrafdat.s.baseval;
   coargrafdat.s.vendtax  = coargrafdat.s.verttax + 1; /* Use compact representation of arrays */
@@ -378,7 +378,7 @@ loop_failed: ;
 #ifdef SCOTCH_DEBUG_ORDER2
     if (finecoartax[finevertnum] != coarvertnum) {
       errorPrint ("hgraphOrderCp: internal error (1)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_ORDER2 */
 
@@ -394,7 +394,7 @@ loop_failed: ;
 #ifdef SCOTCH_DEBUG_ORDER2
       if (finecoartax[finevertend] == coarvertnum) { /* No neighbor can be merged into us since halo vertices are unique */
         errorPrint ("hgraphOrderCp: internal error (2)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_ORDER2 */
       for (finehashnum = (finecoartax[finevertend] * HGRAPHORDERCPHASHPRIME) & finehashmsk; ; /* Search for end vertex in hash table */
@@ -433,7 +433,7 @@ loop_failed: ;
 #ifdef SCOTCH_DEBUG_ORDER2
   if (hgraphCheck (&coargrafdat) != 0) {
     errorPrint ("hgraphOrderCp: internal error (3)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
 
@@ -441,14 +441,14 @@ loop_failed: ;
     errorPrint ("hgraphOrderCp: out of memory (3)");
     hgraphExit (&coargrafdat);
     memFree    (finecoartax + finegrafptr->s.baseval);
-    return     (1);
+    return (1);
   }
   orderInit (&coarordedat, coargrafdat.s.baseval, coargrafdat.vnohnbr, coarperitab); /* Build ordering of compressed subgraph */
   if (hgraphOrderSt (&coargrafdat, &coarordedat, 0, &coarordedat.cblktre, paraptr->stratcpr) != 0) {
     memFree    (coarperitab);
     hgraphExit (&coargrafdat);
     memFree    (finecoartax + finegrafptr->s.baseval);
-    return     (1);
+    return (1);
   }
 
   *cblkptr = coarordedat.cblktre;                 /* Link sub-tree to ordering         */
@@ -460,7 +460,7 @@ loop_failed: ;
 #ifdef SCOTCH_DEBUG_ORDER2
   if (finevertnbr != finegrafptr->vnohnbr) {
     errorPrint ("hgraphOrderCp: internal error (4)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */
 #ifdef SCOTCH_PTHREAD

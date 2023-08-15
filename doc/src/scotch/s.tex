@@ -21,27 +21,33 @@
 \usepackage{breakurl}
 \hypersetup{pdfborder={0 0 0},colorlinks=false}
 \usepackage[dvips]{graphicx}
+\usepackage{xspace}
 \usepackage{courier}
+
 \usepackage{listings}
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  columns=fullflexible,
+  showstringspaces=false,
+% tabsize=1,
+  breaklines=true,
+  breakatwhitespace=false,
+}
+\lstdefinestyle{language-b}
+{
+  language=bash,
+}
 \lstdefinestyle{language-c}
 {
   language=C,
-  basicstyle=\small\sffamily,
-  numbers=left,
-  numberstyle=\tiny,
-  frame=tlrb,
-  columns=fullflexible,
-  showstringspaces=false
 }
 \lstdefinestyle{language-f}
 {
   language=Fortran,
-  basicstyle=\small\sffamily,
-  numbers=left,
-  numberstyle=\tiny,
-  frame=tlrb,
-  columns=fullflexible,
-  showstringspaces=false
 }
 
 \sloppy                                          % Gestion des overfull hbox
@@ -113,8 +119,8 @@
 \newcommand{\noi}{{\noindent}}                   % Pas d'indentation
 \newcommand{\spa}{{\protect \vspace{\bigskipamount}}} % Espace vertical
 
-\newcommand{\eg}{{\it e\@.g\@.\/\ }}             % e.g.
-\newcommand{\ie}{{\it i\@.e\@.\/\ }}             % i.e.
+\newcommand{\eg}{\textit{e\@.g\@.}\xspace}       % e.g.
+\newcommand{\ie}{\textit{i\@.e\@.}\xspace}       % i.e.
 
 \newcommand{\chaco}{\textsc{Chaco}}                 % "chaco"
 \newcommand{\scotch}{\textsc{Scotch}}               % "scotch"
@@ -171,8 +177,8 @@
 
 %% Version du document.
 
-\newcommand{\scotchver}{7.0}
-\newcommand{\scotchversub}{7.0.3}
+\input{../version.tex}
+
 \newcommand{\scotchcitepuser}{\protect\cite{pell08c}}
 \newcommand{\scotchcitesuser}{\protect\cite{pell08b}}
 
@@ -181,7 +187,6 @@
 \begin{document}
 
 \date{\today}
-%\date{Revision 0.4 $\beta$\\\today}
 
 \title{\includegraphics{../misc/scotch_logo_color.ps}\\[1em]
        {\LARGE\bf \scotch\ and \libscotch\ \textsc{\scotchver} User's Guide}\\[1em]%

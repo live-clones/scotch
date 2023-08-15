@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 18 apr 2006     **/
 /**                                 to   : 28 jul 2006     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 10 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,6 +52,7 @@
 #include "module.h"
 #include "common.h"
 #include "dgraph.h"
+#include "order.h"
 #include "dorder.h"
 
 /************************************/
@@ -103,10 +104,12 @@ dorderFreeCblk (
 DorderCblk * restrict const cblkptr)
 {
 #ifdef SCOTCH_DEBUG_DORDER2
-  if ((cblkptr->typeval !=  DORDERCBLKNONE) &&    /* If sub-ordering has been computed elsewhere by hdgraphOrderSq() */
-      (cblkptr->typeval !=  DORDERCBLKNEDI) &&
-      (cblkptr->typeval !=  DORDERCBLKLEAF) &&
-      (cblkptr->typeval != (DORDERCBLKNEDI | DORDERCBLKLEAF))) /* If distributed leaf of a local sequential nested dissection */
+  if ((cblkptr->typeval !=  DORDERCBLKNONE) && /* If not distributed leaf of a local sequential nested dissection */
+      (cblkptr->typeval !=  DORDERCBLKNEDI) && /* If not distributed leaf of a local sequential nested dissection */
+      (cblkptr->typeval !=  DORDERCBLKLEAF) && /* And if not sub-ordering computed elsewhere by hdgraphOrderSq()  */
+      (cblkptr->typeval != (DORDERCBLKLEAF | DORDERCBLKNEDI)) &&
+      (cblkptr->typeval != (DORDERCBLKLEAF | DORDERCBLKDICO)) &&
+      (cblkptr->typeval != (DORDERCBLKLEAF | DORDERCBLKSEQU)))
     errorPrint ("dorderFreeCblk: invalid column block type");
 #endif /* SCOTCH_DEBUG_DORDER2 */
 

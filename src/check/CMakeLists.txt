@@ -416,7 +416,8 @@ add_test(NAME gpart_overlap_3 COMMAND ${BASH} -c "$<TARGET_FILE:gpart> -o 6 ${da
 add_test(NAME gpart_remap COMMAND $<TARGET_FILE:gpart> 32 ${dat}/bump_imbal_32.grf ${dev_null} -ro${dat}/bump_old.map -vmt)
 
 # check_prog_gscat
-add_test(NAME gscat COMMAND $<TARGET_FILE:gscat> 4 ${dat}/small.grf small_%r.grf)
+add_test(NAME gscat_1 COMMAND $<TARGET_FILE:gscat> 4 ${dat}/small.grf small_%r.grf)
+add_test(NAME gscat_2 COMMAND $<TARGET_FILE:gscat> 4 -i1 ${dat}/bump.grf bump4_%r.grf)
 
 # check_prog_gtst
 add_test(NAME gtst COMMAND ${BASH} -c "$<TARGET_FILE:gtst> ${dat}/m4x4_b1_ev.grf gtst_ev.txt && \

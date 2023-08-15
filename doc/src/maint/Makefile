@@ -1,4 +1,4 @@
-## Copyright 2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -36,7 +36,8 @@ MMAN		= scotch_maint$(VERSION)
 
 FLAGS		= -sPAPERSIZE=a4
 
-DEPS		= $(wildcard *.tex) $(wildcard *.eps)
+DEPS		= $(wildcard *.tex) $(wildcard *.eps) ../version.tex
+
 
 MANS		= $(MMAN).ps.gz $(MMAN).pdf
 

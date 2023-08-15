@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 17 apr 2019     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 03 jul 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,18 +99,16 @@ char *              argv[])
   int                 reduloctab[2];
   int                 reduglbtab[2];
 #ifdef SCOTCH_PTHREAD_MPI
-  int                 thrdlvlreqval;
-  int                 thrdlvlproval;
+  int                 thrdreqlvl;
+  int                 thrdprolvl;
 #endif /* SCOTCH_PTHREAD_MPI */
 
   errorProg ("dggath");
 
 #ifdef SCOTCH_PTHREAD_MPI
-  thrdlvlreqval = MPI_THREAD_MULTIPLE;
-  if (MPI_Init_thread (&argc, &argv, thrdlvlreqval, &thrdlvlproval) != MPI_SUCCESS)
+  thrdreqlvl = MPI_THREAD_MULTIPLE;
+  if (MPI_Init_thread (&argc, &argv, thrdreqlvl, &thrdprolvl) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (1)");
-  if (thrdlvlreqval > thrdlvlproval)
-    errorPrint ("main: MPI implementation is not thread-safe: recompile without SCOTCH_PTHREAD_MPI");
 #else /* SCOTCH_PTHREAD_MPI */
   if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
     errorPrint ("main: Cannot initialize (2)");
