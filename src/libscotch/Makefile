@@ -2804,12 +2804,6 @@ order_io$(OBJ)			:	order_io.c				\
 					graph.h					\
 					order.h
 
-order_tree$(OBJ)		:	order_tree.c				\
-					module.h				\
-					common.h				\
-					graph.h					\
-					order.h
-
 parser$(OBJ)			:	parser.c				\
 					module.h				\
 					common.h				\
