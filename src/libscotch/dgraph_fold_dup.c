@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 28 sep 2014     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 14 aug 2023     **/
+/**                                 to   : 17 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -113,7 +113,6 @@ Context * restrict const      contptr)            /*+ Context                   
   int                 fldprocnbr;
   int                 fldprocnum;
   int                 fldproccol;
-  MPI_Comm            fldproccommtab[2];
   DgraphFoldDupSplit  fldspltdat;
   int                 o;
 
@@ -121,21 +120,18 @@ Context * restrict const      contptr)            /*+ Context                   
   if (orggrafptr->proclocnum < fldprocnbr) {      /* Compute color and rank in two subparts */
     fldproccol = 0;
     fldprocnum = orggrafptr->proclocnum;
-    fldproccommtab[1] = MPI_COMM_NULL;
   }
   else {
     fldproccol = 1;
     fldprocnum = orggrafptr->proclocnum - fldprocnbr;
-    fldproccommtab[0] = MPI_COMM_NULL;
   }
-  if (MPI_Comm_split (orggrafptr->proccomm, fldproccol, fldprocnum, &fldproccommtab[fldproccol]) != MPI_SUCCESS) {
+  if (MPI_Comm_split (orggrafptr->proccomm, fldproccol, fldprocnum, &fldspltdat.splttab[fldproccol].fldproccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphFoldDup: communication error (1)");
     return (1);
   }
+  fldspltdat.splttab[fldproccol ^ 1].fldproccomm = MPI_COMM_NULL;
 
-  fldspltdat.splttab[0].orggrafptr  = orggrafptr;
-  fldspltdat.splttab[0].fldproccomm = fldproccommtab[0];
-  fldspltdat.splttab[1].fldproccomm = fldproccommtab[1];
+  fldspltdat.splttab[0].orggrafptr = orggrafptr;
   fldspltdat.orgdataptr = orgdataptr;
   fldspltdat.flddataptr = flddataptr;
   fldspltdat.fldgrafptr = fldgrafptr;

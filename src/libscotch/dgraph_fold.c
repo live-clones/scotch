@@ -47,7 +47,7 @@
 /**                # Version 6.1  : from : 18 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
 /**                # Version 7.0  : from : 14 sep 2021     **/
-/**                                 to   : 14 aug 2023     **/
+/**                                 to   : 17 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -194,7 +194,7 @@ MPI_Datatype                  datatype)
     fldgrafptr->proccomm   = fldproccomm;
     fldgrafptr->procglbnbr = fldprocglbnbr;
     fldgrafptr->proclocnum = fldproclocnum;
-    fldgrafptr->flagval    = DGRAPHFREEALL | DGRAPHVERTGROUP | DGRAPHEDGEGROUP; /* For premature freeing on error */
+    fldgrafptr->flagval    = DGRAPHFREEALL | DGRAPHVERTGROUP | DGRAPHEDGEGROUP | DGRAPHFREECOMM; /* For premature freeing on error (folded communicator created by caller) */
 
     if (memAllocGroup ((void **) (void *)         /* Allocate distributed graph private data */
                        &fldgrafptr->procdsptab, (size_t) ((fldprocglbnbr + 1) * sizeof (Gnum)),
