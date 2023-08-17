@@ -49,7 +49,7 @@
 /**                # Version 6.1  : from : 20 jun 2021     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 17 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -548,16 +548,18 @@ SCOTCH_Num * const          objval,
 SCOTCH_Num * const          part)
 {
   SCOTCH_Num          baseval;
+  double              kbalval;
 
+  kbalval = 0.01;
   baseval = ((options != NULL) && (options != xadj)) ? options[METIS_OPTION_NUMBERING] : 0;
 
   return ((vsize == NULL)
           ? _SCOTCH_METIS_PartGraph (nvtxs, ncon, xadj, adjncy, vwgt, adjwgt,
                                      &baseval, nparts, tpwgts, options, objval, part,
-                                     SCOTCH_STRATDEFAULT, ubvec)
+                                     SCOTCH_STRATDEFAULT, (ubvec != NULL) ? ubvec : &kbalval)
           : _SCOTCH_METIS_PartGraph_Volume (nvtxs, ncon, xadj, adjncy, vwgt, vsize,
                                             &baseval, nparts, tpwgts, options, objval, part,
-                                            SCOTCH_STRATDEFAULT, ubvec));
+                                            SCOTCH_STRATDEFAULT, (ubvec != NULL) ? ubvec : &kbalval));
 }
 
 /*
