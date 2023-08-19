@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 03 jul 2023     **/
+/**                                 to   : 19 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -337,6 +337,7 @@
 #define intRandProc                 SCOTCH_NAME_INTERN (intRandProc)
 #define intRandReset                SCOTCH_NAME_INTERN (intRandReset)
 #define intRandSeed                 SCOTCH_NAME_INTERN (intRandSeed)
+#define intRandSpawn                SCOTCH_NAME_INTERN (intRandSpawn)
 #define intRandVal                  SCOTCH_NAME_INTERN (intRandVal)
 #define intRandVal2                 SCOTCH_NAME_INTERN (intRandVal2)
 #define intRandVal3                 SCOTCH_NAME_INTERN (intRandVal3)

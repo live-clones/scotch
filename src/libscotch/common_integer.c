@@ -257,6 +257,34 @@ INT                         seedval)
   intRandReset (randptr);                         /* Initialize pseudo-random seed */
 }
 
+/* This routine spawns a new pseudo-random
+** generator from an existing one, so that
+** sub-tasks can easily get a distinct stream
+** of pseudo-random numbers.
+** The building of the new generator does not
+** change the state of the old one, so that
+** spawning can be performed in parallel by
+** the tasks in an asynchronous way.
+** The routine itself is not thread-safe.
+** It returns:
+** - VOID  : in all cases.
+*/
+
+void
+intRandSpawn (
+IntRandContext * const      roldptr,
+const int                   procnum,
+IntRandContext * const      rnewptr)
+{
+  UINT64              seedval;
+
+  rnewptr->procval = procnum;
+
+  seedval = roldptr->statdat.randtab[0];          /* Get value from state of old generator */
+
+  intRandSeed (rnewptr, seedval);                 /* Set seed and initialize state */
+}
+
 /* This routine initializes the pseudo-random
 ** generator if necessary. In order for multi-sequential
 ** programs to have exactly the same behavior on any
