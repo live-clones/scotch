@@ -486,6 +486,7 @@ int                         contextValuesSetInt (Context * const, const int, con
 #define threadNbr(t)                threadContextNbr ((t)->contptr)
 #define threadNum(t)                ((t)->thrdnum)
 
+#define contextRandom(c)            ((c)->randptr)
 #define contextIntRandVal(c,n)      intRandVal ((c)->randptr, (n))
 #define contextIntRandVal2(c)       intRandVal2 ((c)->randptr)
 
