@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 01 jun 2023     **/
+/**                                 to   : 19 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -421,7 +421,7 @@ void                        intAscn             (INT * const, const INT, const I
 void                        intPerm             (INT * const, const INT, Context * const);
 void                        intRandInit         (IntRandContext * const);
 int                         intRandLoad         (IntRandContext * const, FILE * const);
-void                        intRandProc         (IntRandContext * const, int);
+void                        intRandProc         (IntRandContext * const, const int);
 void                        intRandReset        (IntRandContext * const);
 int                         intRandSave         (IntRandContext * const, FILE * const);
 void                        intRandSeed         (IntRandContext * const, INT);

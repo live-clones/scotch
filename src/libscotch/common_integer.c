@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 18 aug 2023     **/
+/**                                 to   : 19 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -208,7 +208,7 @@ IntRandContext              intranddat = { 0, 0 }; /*+ Global context: not initi
 void
 intRandProc (
 IntRandContext * const      randptr,
-int                         procnum)
+const int                   procnum)
 {
   randptr->procval = procnum;                     /* Set process number */
 }
