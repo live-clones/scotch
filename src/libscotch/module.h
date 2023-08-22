@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 19 aug 2023     **/
+/**                                 to   : 22 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -371,6 +371,14 @@
 #define threadContextParam          SCOTCH_NAME_INTERN (threadContextParam)
 
 #define threadSystemCoreNbr         SCOTCH_NAME_INTERN (threadSystemCoreNbr)
+
+#define timerExit                   SCOTCH_NAME_INTERN (timerExit)
+#define timerInit                   SCOTCH_NAME_INTERN (timerInit)
+#define timerNbr                    SCOTCH_NAME_INTERN (timerNbr)
+#define timerStart                  SCOTCH_NAME_INTERN (timerStart)
+#define timerStop                   SCOTCH_NAME_INTERN (timerStop)
+#define timerTab                    SCOTCH_NAME_INTERN (timerTab)
+#define timerVal                    SCOTCH_NAME_INTERN (timerVal)
 
 #define usagePrint                  SCOTCH_NAME_INTERN (usagePrint)
 #endif /* ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) */

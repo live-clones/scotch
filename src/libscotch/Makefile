@@ -281,6 +281,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			common_stub$(OBJ)			\
 			common_thread$(OBJ)			\
 			common_thread_system$(OBJ)		\
+			common_timer$(OBJ)			\
 			common_values$(OBJ)			\
 			context$(OBJ)				\
 			fibo$(OBJ)				\
@@ -538,6 +539,12 @@ common_thread_system$(OBJ)	:	common_thread_system.c			\
 					module.h				\
 					common.h				\
 					common_thread_system.h
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+
+common_timer$(OBJ)		:	common_timer.c				\
+					module.h				\
+					common.h				\
+					common_timer.h
 					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_values$(OBJ)		:	common_values.c				\

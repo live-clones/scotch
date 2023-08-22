@@ -223,6 +223,8 @@ set(SCOTCH_C_SOURCES
   common_thread.c
   common_thread_system.c
   common_thread_system.h
+  common_timer.c
+  common_timer.h
   common_values.c
   common_values.h
   context.c
