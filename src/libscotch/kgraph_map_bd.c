@@ -204,7 +204,7 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
 
     bndpartval = bndparttax[bndvertnum];
     bndpartlst = -1;                              /* Invalid part to recompute distance */
-    bnddistlst = -1;                              /* To prevent compiler from yielding  */
+    bnddistlst = -1;                              /* To prevent compiler from yelling   */
 
     bndflagval = 0;
     for (bndedgenum = bndverttax[bndvertnum], bndedgennd = bndvendtax[bndvertnum];
