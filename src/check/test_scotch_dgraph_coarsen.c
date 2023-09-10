@@ -43,7 +43,7 @@
 /**                # Version 6.1  : from : 16 jun 2021     **/
 /**                                 to   : 28 dec 2021     **/
 /**                # Version 7.0  : from : 03 jul 2023     **/
-/**                                 to   : 12 aug 2023     **/
+/**                                 to   : 10 sep 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,7 +91,6 @@ char *              argv[])
   SCOTCH_Num          coarvertglbnbr;
   SCOTCH_Num          coarvertlocnbr;
   double              coarrat;
-  FILE *              file;
 #ifdef SCOTCH_PTHREAD
   int                 thrdreqlvl;
   int                 thrdprolvl;
