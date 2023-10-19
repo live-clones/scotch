@@ -95,6 +95,8 @@ set(esmumps_headers
 
 add_library(esmumps ${esmumps_src} ${esmumps_headers})
 set_target_properties(esmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/esmumps.h")
+set_target_properties(esmumps PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+  SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 
 if(APPLE)
   set_target_properties(esmumps PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
@@ -143,6 +145,9 @@ if(APPLE)
 endif(APPLE)
 
 set_target_properties(ptesmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/esmumps.h")
+
+set_target_properties(ptesmumps PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+  SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 
 target_include_directories(ptesmumps PRIVATE
   $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>

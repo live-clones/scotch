@@ -91,6 +91,8 @@ foreach(version 3 5)
     ${GENERATED_INCLUDE_DIR}/metis.h
     ${GENERATED_INCLUDE_DIR}/metisf.h)
 
+  set_target_properties(scotchmetisv${version} PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+    SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
   target_compile_definitions(scotchmetisv${version} PUBLIC SCOTCH_METIS_VERSION=${version})
 
   target_include_directories(scotchmetisv${version} PRIVATE
@@ -161,6 +163,8 @@ if(BUILD_PTSCOTCH)
       ${GENERATED_INCLUDE_DIR}/ptscotch.h
       ${GENERATED_INCLUDE_DIR}/parmetis.h)
 
+    set_target_properties(ptscotchparmetisv${version} PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+      SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
     target_compile_definitions(ptscotchparmetisv${version} PUBLIC SCOTCH_PTSCOTCH SCOTCH_METIS_VERSION=${version})
 
     target_include_directories(ptscotchparmetisv${version} PRIVATE

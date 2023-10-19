@@ -509,8 +509,8 @@ set(SCOTCH_C_SOURCES
 
 add_library(scotch
   ${SCOTCH_C_SOURCES})
-set_target_properties(scotch PROPERTIES VERSION
-  ${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL})
+set_target_properties(scotch PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+  SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 add_dependencies(scotch parser_yy_c parser_ll_c)
 if(NOT WIN32)
   target_link_libraries(scotch PUBLIC m)
@@ -566,6 +566,8 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
 endif()
 
 add_library(scotcherr library_error.c)
+set_target_properties(scotcherr PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+  SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 target_include_directories(scotcherr PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
@@ -574,6 +576,8 @@ target_include_directories(scotcherr PUBLIC
 add_dependencies(scotcherr scotch_h)
 
 add_library(scotcherrexit library_error_exit.c)
+set_target_properties(scotcherrexit PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+  SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 target_include_directories(scotcherrexit PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
@@ -762,7 +766,8 @@ if(BUILD_PTSCOTCH)
     ${PTSCOTCH_C_SOURCES})
 
   set_target_properties(ptscotch PROPERTIES
-    VERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL}
+    VERSION ${SCOTCH_VERSION_LONG}
+    SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE}
     COMPILE_FLAGS -DSCOTCH_PTSCOTCH)
 
   target_link_libraries(ptscotch PUBLIC scotch MPI::MPI_C)
@@ -785,6 +790,8 @@ if(BUILD_PTSCOTCH)
   endif(Threads_FOUND)
 
   add_library(ptscotcherr library_error.c)
+  set_target_properties(ptscotcherr PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+    SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
   target_include_directories(ptscotcherr PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
@@ -794,6 +801,8 @@ if(BUILD_PTSCOTCH)
   add_dependencies(ptscotcherr ptscotch_h scotch_h)
 
   add_library(ptscotcherrexit library_error_exit.c)
+  set_target_properties(ptscotcherrexit PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+    SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
   target_include_directories(ptscotcherrexit PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
