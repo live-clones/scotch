@@ -37,7 +37,7 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     16 jan 2023     ##
+##                                 to     26 oct 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -89,7 +89,10 @@ option(USE_BZ2 "Use BZ2 compression format if found" ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS})
 
 # Allow for testing
-enable_testing()
+option(ENABLE_TESTS "Enable testing" ON)
+if(ENABLE_TESTS)
+  enable_testing()
+endif(ENABLE_TESTS)
 
 add_subdirectory(src)
 

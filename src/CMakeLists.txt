@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     26 jan 2023     ##
+##                                 to     26 oct 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -174,7 +174,9 @@ if(BUILD_LIBSCOTCHMETIS)
 endif(BUILD_LIBSCOTCHMETIS)
 
 # Testing
-add_subdirectory(check)
+if(ENABLE_TESTS)
+  add_subdirectory(check)
+endif(ENABLE_TESTS)
 
 ####################
 #  Export targets  #
