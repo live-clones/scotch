@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 05 jun 2018     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 27 oct 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,10 +79,11 @@ typedef struct ThreadContext_ {
   pthread_mutex_t               lockdat;          /*+ Lock for updating status            +*/
   pthread_cond_t                conddat;          /*+ Wakeup condition for slave threads  +*/
   union {                                         /*+ Context save area for main thread   +*/
+    int                         dummval;          /*+ Dummy value if no affinity enabled  +*/
 #ifdef COMMON_PTHREAD_AFFINITY_LINUX
     cpu_set_t                   cpusdat;          /*+ Original thread mask of main thread +*/
 #endif /* COMMON_PTHREAD_AFFINITY_LINUX */
-  }                             savedat;
+  }                             savedat;          /*+ Save area for affinity mask         +*/
 #endif /* COMMON_PTHREAD */
 } ThreadContext;
 
