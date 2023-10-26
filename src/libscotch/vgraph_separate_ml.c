@@ -108,7 +108,7 @@ const VgraphSeparateMlParam * const   paraptr)    /*+ Method parameters         
   coargrafptr->dwgttab[0] = finegrafptr->dwgttab[0]; /* Preserve respective weights          */
   coargrafptr->dwgttab[1] = finegrafptr->dwgttab[1];
   coargrafptr->levlnum    = finegrafptr->levlnum + 1; /* Graph level is coarsening level */
-  coargrafptr->contptr = finegrafptr->contptr;    /* Use same execution context          */
+  coargrafptr->contptr    = finegrafptr->contptr; /* Use same execution context          */
 
   return (0);
 }
