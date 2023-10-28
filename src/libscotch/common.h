@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 19 aug 2023     **/
+/**                                 to   : 28 oct 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,6 +91,11 @@
 #define HAVE_NOT_SYS_WAIT_H
 #ifdef _MSC_VER
 #define HAVE_NOT_STRINGS_H
+#if (INT_WIDTH == 64)
+#define __sync_lock_test_and_set    _InterlockedExchange64
+#else /* (INT_WIDTH == 64) */
+#define __sync_lock_test_and_set    _InterlockedExchange
+#endif /* (INT_WIDTH == 64) */
 #endif /* _MSC_VER */
 #if ((defined _WIN32) && (! defined __MINGW32__))
 #define strncasecmp                 strnicmp
