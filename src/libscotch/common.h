@@ -97,6 +97,7 @@
 #define __sync_lock_test_and_set    _InterlockedExchange
 #endif /* (INT_WIDTH == 64) */
 #endif /* _MSC_VER */
+#define ssize_t                     SSIZE_T
 #if ((defined _WIN32) && (! defined __MINGW32__))
 #define strncasecmp                 strnicmp
 #define strcasecmp                  stricmp
