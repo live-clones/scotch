@@ -57,7 +57,7 @@
 
 static struct ContextValuesData_ {
   INT                       vinttab[CONTEXTOPTIONNUMNBR];
-  double                    vdbltab[CONTEXTOPTIONDBLNBR];
+  double                    vdbltab[CONTEXTOPTIONDBLNBR + 1]; /* TRICK: temporary hack: +1 since ISO C does not accept zero-sized arrays */
 } contextvaluesdat = { {
 #ifdef SCOTCH_DETERMINISTIC
                               1
@@ -70,7 +70,7 @@ static struct ContextValuesData_ {
 #else /* ((defined SCOTCH_DETERMINISTIC) || (defined COMMON_RANDOM_FIXED_SEED)) */
                               0
 #endif /* ((defined SCOTCH_DETERMINISTIC) || (defined COMMON_RANDOM_FIXED_SEED)) */
-  }, { } };
+  }, { -1.0 } };                                  /* Temporary hack: dummy value since ISO C does not accept zero-sized arrays */
 
 /***********************************/
 /*                                 */
