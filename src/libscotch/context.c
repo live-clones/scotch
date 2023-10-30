@@ -39,7 +39,7 @@
 /**                the libScotch routines.                 **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 03 oct 2021     **/
-/**                                 to   : 16 jan 2023     **/
+/**                                 to   : 30 oct 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,6 +89,6 @@ contextOptionsInit (
 Context * const             contptr)
 {
   return (contextValuesInit (contptr, &contextvaluesdat, sizeof (contextvaluesdat),
-                             CONTEXTOPTIONNUMNBR, (void *) &contextvaluesdat.vinttab - (void *) &contextvaluesdat,
-                             CONTEXTOPTIONDBLNBR, (void *) &contextvaluesdat.vdbltab - (void *) &contextvaluesdat));
+                             CONTEXTOPTIONNUMNBR, (byte *) &contextvaluesdat.vinttab - (byte *) &contextvaluesdat,
+                             CONTEXTOPTIONDBLNBR, (byte *) &contextvaluesdat.vdbltab - (byte *) &contextvaluesdat));
 }
