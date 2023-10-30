@@ -523,6 +523,10 @@ if(APPLE)
   set_target_properties(scotch PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
 endif(APPLE)
 
+if(OS_IS_FREEBSD)
+  target_compile_definitions(scotch PUBLIC cpu_set_t=cpuset_t __BSD_VISIBLE)
+endif(OS_IS_FREEBSD)
+
 # Add (de)compression libraries
 if(ZLIB_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_GZ)

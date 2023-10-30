@@ -56,6 +56,12 @@ if(MINGW OR MSYS OR WIN32)
   add_definitions(-DCOMMON_OS_WINDOWS)
 endif(MINGW OR MSYS OR WIN32)
 
+# Detect FreeBSD
+if(${CMAKE_HOST_SYSTEM_NAME}} MATCHES "^.*FreeBSD.*$")
+  set(OS_IS_FREEBSD ON)
+  message(STATUS "OS is FreeBSD")
+endif()
+
 ###################
 #  Prerequisites  #
 ###################
