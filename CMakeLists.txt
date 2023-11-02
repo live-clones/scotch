@@ -37,7 +37,7 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     26 oct 2023     ##
+##                                 to     01 nov 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -93,7 +93,43 @@ if(ENABLE_TESTS)
   enable_testing()
 endif(ENABLE_TESTS)
 
+# use GNU standard for file hierarchy installation system
+include(GNUInstallDirs)
+
 add_subdirectory(src)
 
 # Install man pages
-install(DIRECTORY man/man1 DESTINATION man FILES_MATCHING PATTERN "*.1")
+set(scotch_man_pages
+acpl.1
+amk_ccc.1
+amk_grf.1
+atst.1
+gbase.1
+gcv.1
+gdump.1
+gmap.1
+gmk_hy.1
+gmk_m2.1
+gmk_msh.1
+gmtst.1
+gord.1
+gotst.1
+gout.1
+gtst.1
+mcv.1
+mmk_m2.1
+mord.1
+mtst.1
+)
+foreach(f IN LISTS scotch_man_pages)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/man1/${f}
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1 COMPONENT scotch)
+endforeach()
+
+if (BUILD_PTSCOTCH)
+  set(ptscotch_man_pages dgmap.1 dgord.1 dgscat.1 dgtst.1)
+  foreach(f IN LISTS ptscotch_man_pages)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/man1/${f}
+      DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1 COMPONENT ptscotch)
+  endforeach()
+endif(BUILD_PTSCOTCH)

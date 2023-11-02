@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     26 jan 2023     ##
+##                                 to     01 nov 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -517,7 +517,7 @@ target_include_directories(scotch PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
         $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-        $<INSTALL_INTERFACE:include> )
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 if(APPLE)
   set_target_properties(scotch PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
@@ -567,7 +567,7 @@ add_library(scotcherr library_error.c)
 target_include_directories(scotcherr PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_dependencies(scotcherr scotch_h)
 
@@ -575,7 +575,7 @@ add_library(scotcherrexit library_error_exit.c)
 target_include_directories(scotcherrexit PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_dependencies(scotcherrexit scotch_h)
 
@@ -769,7 +769,7 @@ if(BUILD_PTSCOTCH)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include> )
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   add_dependencies(ptscotch ptscotch_h scotch_h)
 
@@ -787,7 +787,7 @@ if(BUILD_PTSCOTCH)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include> )
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   add_dependencies(ptscotcherr ptscotch_h scotch_h)
 
@@ -796,7 +796,7 @@ if(BUILD_PTSCOTCH)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include> )
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   add_dependencies(ptscotcherrexit ptscotch_h scotch_h)
 endif(BUILD_PTSCOTCH)
@@ -807,19 +807,34 @@ if(BUILD_PTSCOTCH)
 endif(BUILD_PTSCOTCH)
 
 set(TARGETS_LIST "scotch;scotcherr;scotcherrexit")
-if(BUILD_PTSCOTCH)
-  set(TARGETS_LIST ${TARGETS_LIST} "ptscotch;ptscotcherr;ptscotcherrexit")
-endif(BUILD_PTSCOTCH)
 
 foreach(_target ${TARGETS_LIST})
   install(EXPORT ${_target}Targets
+    COMPONENT libscotch
     FILE ${_target}Targets.cmake
     NAMESPACE SCOTCH::
-    DESTINATION lib/cmake/scotch)
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
 
   install(TARGETS ${_target}
+    COMPONENT libscotch
     EXPORT ${_target}Targets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    PUBLIC_HEADER DESTINATION include)
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+  if (BUILD_PTSCOTCH)
+    install(EXPORT pt${_target}Targets
+      COMPONENT libptscotch
+      FILE pt${_target}Targets.cmake
+      NAMESPACE SCOTCH::
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
+
+    install(TARGETS pt${_target}
+      COMPONENT libptscotch
+      EXPORT pt${_target}Targets
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+  endif()
 endforeach()

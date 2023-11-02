@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 ##                # Version 7.0  : from : 01 sep 2021     ##
 ##                                 to     21 apr 2022     ##
 ##                # Version 7.1  : from : 11 dec 2022     ##
-##                                 to     11 dec 2022     ##
+##                                 to     01 nov 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -103,7 +103,7 @@ endif(APPLE)
 target_include_directories(esmumps PRIVATE
   $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
   $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 target_link_libraries(esmumps PRIVATE scotch)
 
@@ -123,15 +123,17 @@ add_dependencies(test_fax scotch_h)
 
 # libEsMUMPS targets install
 install(EXPORT esmumpsTargets
+  COMPONENT libscotch
   FILE esmumpsTargets.cmake
   NAMESPACE SCOTCH::
-  DESTINATION lib/cmake/scotch)
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
 
 install(TARGETS esmumps
+  COMPONENT libscotch
   EXPORT esmumpsTargets
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  PUBLIC_HEADER DESTINATION include)
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Dummy PTEsMUMPS library file
 add_library(ptesmumps ${esmumps_src} ${esmumps_headers})
@@ -145,19 +147,21 @@ set_target_properties(ptesmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DI
 target_include_directories(ptesmumps PRIVATE
   $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
   $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 target_link_libraries(ptesmumps PRIVATE scotch)
 add_dependencies(ptesmumps scotch_h)
 
 # libptesmumps targets install
 install(EXPORT ptesmumpsTargets
+  COMPONENT libptscotch
   FILE ptesmumpsTargets.cmake
   NAMESPACE SCOTCH::
-  DESTINATION lib/cmake/scotch)
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
 
 install(TARGETS ptesmumps
+  COMPONENT libptscotch
   EXPORT ptesmumpsTargets
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  PUBLIC_HEADER DESTINATION include)
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

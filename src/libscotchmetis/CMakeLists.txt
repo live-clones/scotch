@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     08 jan 2022     ##
+##                                 to     01 nov 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -97,7 +97,7 @@ foreach(version 3 5)
     $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include>)
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   target_link_libraries(scotchmetisv${version} PRIVATE scotch)
 
@@ -112,20 +112,23 @@ foreach(version 3 5)
 
   # libScotchMeTiS targets install
   install(EXPORT scotchmetisTargets
+    COMPONENT libscotch
     FILE scotchmetisTargets.cmake
     NAMESPACE SCOTCH::
-    DESTINATION lib/cmake/scotch)
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
   if(INSTALL_METIS_HEADERS)
     install(TARGETS scotchmetisv${version}
+      COMPONENT libscotch
       EXPORT scotchmetisTargets
-      ARCHIVE DESTINATION lib
-      LIBRARY DESTINATION lib
-      PUBLIC_HEADER DESTINATION include)
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
   else()
     install(TARGETS scotchmetisv${version}
+      COMPONENT libscotch
       EXPORT scotchmetisTargets
-      ARCHIVE DESTINATION lib
-      LIBRARY DESTINATION lib)
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
   endif()
 endforeach(version 3 5)
 
@@ -164,7 +167,7 @@ if(BUILD_PTSCOTCH)
       $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
       $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-      $<INSTALL_INTERFACE:include>)
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
     target_link_libraries(ptscotchparmetisv${version} PRIVATE scotch)
     target_link_libraries(ptscotchparmetisv${version} PRIVATE ptscotch)
@@ -181,21 +184,24 @@ if(BUILD_PTSCOTCH)
 
     # libPTScotchParMeTiS targets install
     install(EXPORT ptscotchparmetisTargets
+      COMPONENT libptscotch
       FILE ptscotchparmetisTargets.cmake
       NAMESPACE SCOTCH::
-      DESTINATION lib/cmake/scotch)
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
 
     if(INSTALL_METIS_HEADERS)
       install(TARGETS ptscotchparmetisv${version}
+        COMPONENT libptscotch
         EXPORT ptscotchparmetisTargets
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include)
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     else()
       install(TARGETS ptscotchparmetisv${version}
+        COMPONENT libptscotch
         EXPORT ptscotchparmetisTargets
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib)
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
     endif()
   endforeach(version 3)
 endif(BUILD_PTSCOTCH)

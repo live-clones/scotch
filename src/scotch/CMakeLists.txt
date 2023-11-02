@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     04 feb 2022     ##
+##                                 to     01 nov 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -118,7 +118,7 @@ target_compile_definitions(gpart PRIVATE SCOTCH_COMPILE_PART)
 
 # Install all Scotch executables
 foreach(target ${scotch_exe})
-  install(TARGETS ${target} RUNTIME DESTINATION bin)
+  install(TARGETS ${target} COMPONENT scotch RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endforeach()
 
 # Executables linked against the libPTScotch library
@@ -165,6 +165,6 @@ if(BUILD_PTSCOTCH)
   target_compile_definitions(dgpart PRIVATE SCOTCH_COMPILE_PART)
   # Install all PT-Scotch executables
   foreach(target ${ptscotch_exe})
-     install(TARGETS ${target} RUNTIME DESTINATION bin)
+    install(TARGETS ${target} COMPONENT ptscotch RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
   endforeach()
  endif(BUILD_PTSCOTCH)

@@ -191,13 +191,10 @@ endif(ENABLE_TESTS)
 # See https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html
 include(CMakePackageConfigHelpers)
 
-set(INCLUDE_INSTALL_DIR "include/" CACHE STRING "Where to install headers relative to prefix")
-set(LIBRARY_INSTALL_DIR "lib/" CACHE STRING "Where to install libraries relative to prefix")
-
 configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/SCOTCHConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfig.cmake
-  INSTALL_DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/scotch
-  PATH_VARS INCLUDE_INSTALL_DIR LIBRARY_INSTALL_DIR)
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch
+  PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR)
 
 write_basic_package_version_file(SCOTCHConfigVersion.cmake
   VERSION ${SCOTCH_VERSION_LONG}
@@ -206,4 +203,5 @@ write_basic_package_version_file(SCOTCHConfigVersion.cmake
 # Install config files
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfigVersion.cmake
-  DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/scotch)
+  COMPONENT scotch
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
