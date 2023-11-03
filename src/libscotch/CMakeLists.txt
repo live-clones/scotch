@@ -551,7 +551,7 @@ endif()
 # Add thread library
 if(Threads_FOUND)
   target_compile_definitions(scotch PUBLIC COMMON_PTHREAD SCOTCH_PTHREAD)
-  target_link_libraries(scotch PUBLIC Threads::Threads)
+  target_link_libraries(scotch PUBLIC Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
 endif(Threads_FOUND)
 
 # Include files
@@ -781,7 +781,7 @@ if(BUILD_PTSCOTCH)
 
   if(Threads_FOUND)
     target_compile_definitions(ptscotch PUBLIC SCOTCH_PTHREAD COMMON_PTHREAD)
-    target_link_libraries(ptscotch PUBLIC Threads::Threads)
+    target_link_libraries(ptscotch PUBLIC Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
   endif(Threads_FOUND)
 
   add_library(ptscotcherr library_error.c)
