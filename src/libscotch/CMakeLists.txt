@@ -512,7 +512,9 @@ add_library(scotch
 set_target_properties(scotch PROPERTIES VERSION
   ${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL})
 add_dependencies(scotch parser_yy_c parser_ll_c)
-target_link_libraries(scotch PUBLIC m)
+if(NOT WIN32)
+  target_link_libraries(scotch PUBLIC m)
+endif(NOT WIN32)
 target_include_directories(scotch PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
