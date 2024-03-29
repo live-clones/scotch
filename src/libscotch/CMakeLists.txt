@@ -357,6 +357,7 @@ set(SCOTCH_C_SOURCES
   library_context.c
   library_context_graph.c
   library_context_graph_f.c
+  library_context_f.c
   #library_errcom.c
   #library_error.c
   #library_error_exit.c
