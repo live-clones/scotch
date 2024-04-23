@@ -116,11 +116,11 @@ SCOTCH_Graph * const        grafptr)
 {
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_graphInit) ": internal error (1)");
-    return     (1);
+    return (1);
   }
   if (sizeof (SCOTCH_Graph) < sizeof (Graph)) {
     errorPrint (STRINGIFY (SCOTCH_graphInit) ": internal error (2)");
-    return     (1);
+    return (1);
   }
 
   return (graphInit ((Graph *) grafptr));
@@ -239,7 +239,7 @@ const SCOTCH_Num * const    edlotab)              /* Edge load array            
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Graph) < sizeof (Graph)) {
     errorPrint (STRINGIFY (SCOTCH_graphBuild) ": internal error");
-    return     (1);
+    return (1);
   }
   if ((baseval < 0) || (baseval > 1))
     errorPrintW (STRINGIFY (SCOTCH_graphBuild) ": non-standard base parameter");
