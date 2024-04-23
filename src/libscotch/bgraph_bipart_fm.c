@@ -750,7 +750,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
             commgain = veextax[hashtab[hashnum].vertnum];
             if (commgain != 0) {                  /* If vertex has external cocycle edges                         */
               hashtab[hashnum].commgain += 2 * (1 - 2 * hashtab[hashnum].partval) * commgain; /* Compute new gain */
-              if (bgraphBipartFmIsTabl (&hashtab[hashnum])) {       /* If vertex is linked                        */
+              if (bgraphBipartFmIsTabl (&hashtab[hashnum])) { /* If vertex is linked                              */
                 bgraphBipartFmTablDel (tablptr, &hashtab[hashnum]); /* Remove it from table                       */
                 bgraphBipartFmTablAdd (tablptr, &hashtab[hashnum]); /* Re-link it                                 */
               }
