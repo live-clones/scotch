@@ -2134,7 +2134,7 @@ scotchfarchhcub ( & doubleprecision (*) & archdat, \\
 
 The {\tt SCOTCH\_archHcub} routine fills the {\tt SCOTCH\_\lbt Arch}
 structure pointed to by {\tt archptr} with the description of a
-hypercube graph of dimension {\tt hdimval}.
+hypercube graph architecture of dimension {\tt hdimval}.
 
 \progret
 
@@ -2471,7 +2471,7 @@ successfully built, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_archVmplt ( & SCOTCH\_Arch * & archptr)
+int SCOTCH\_archVcmplt ( & SCOTCH\_Arch * & archptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -5381,7 +5381,7 @@ structures built from C and $1$ for structures built from Fortran.
 {\tt verttab} is the adjacency index array, of size $({\tt velmnbr} +
 {\tt vnodnbr} + 1)$ if the edge array is compact (that is, if
 {\tt vendtab} equals $\mathtt{vendtab}+1$ or {\tt NULL}), or of
-size $({\tt velmnbr} + {\tt vnodnbr}1)$ else.
+size $({\tt velmnbr} + {\tt vnodnbr})$ else.
 {\tt vendtab} is the adjacency end index array, of size $({\tt velmnbr} +
 {\tt vnodnbr})$ if it is disjoint from {\tt verttab}.
 {\tt velotab} is the element vertex load array, of size {\tt velmnbr}
@@ -5873,9 +5873,9 @@ vertex load, and the variance of the node vertex loads, respectively.
 element vertex degree, the average element vertex degree, and the
 variance of the element vertex degrees, respectively.
 {\tt ndegmin}, {\tt ndegmax}, {\tt ndegavg} and
-{\tt ndegdlt} are the minimum element vertex degree, the maximum
-element vertex degree, the average element vertex degree, and the
-variance of the element vertex degrees, respectively.
+{\tt ndegdlt} are the minimum node vertex degree, the maximum
+node vertex degree, the average node vertex degree, and the
+variance of the node vertex degrees, respectively.
 \end{itemize}
 
 \subsection{High-level mesh ordering routines}
@@ -7609,7 +7609,7 @@ scotchfrandomval ( & integer*{\it num} & randmax, \\
 
 The {\tt SCOTCH\_randomVal} routine returns a positive integer random
 value from the global pseudo-random generator, in the range
-$[0;\mbox{textsc{randmax}}[$.
+$[0;\mbox{\texttt{randmax}}[$.
 \end{itemize}
 
 \subsection{Context handling routines}
@@ -7958,7 +7958,7 @@ of the captured threads.}]
     SCOTCH_graphLoad (&graftab[0], ...); /* User places data in graph structure */
     ...
     SCOTCH_contextInit (&contdat);     /* Initialize context */
-    SCOTCH_contextRandomClone (&condtad); /* Set private random generator */
+    SCOTCH_contextRandomClone (&contdat); /* Set private random generator */
     SCOTCH_contextThreadImport1 (&contdat, thrdnbr); /* Give number of threads */
   }
   user_thread_barrier (); /* User makes sure there is synchronization across threads here */
@@ -8254,7 +8254,7 @@ by routines such as {\tt SCOTCH\_\lbt graph\lbt Alloc},
 {\tt SCOTCH\_\lbt mesh\lbt Alloc}, or
 {\tt SCOTCH\_\lbt strat\lbt Alloc}.
 
-The standard {\tt free} routine of the {\textsc libc} must not be
+The standard {\tt free} routine of the \textsc{libc} must not be
 used for this purpose. Else, the allocated memory will not be
 considered as properly released by memory accounting routines
 {\tt SCOTCH\_\lbt mem\lbt Cur} and {\tt SCOTCH\_\lbt mem\lbt Max},
