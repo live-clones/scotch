@@ -2568,70 +2568,6 @@ needed, using the {\tt SCOTCH\_\lbt mem\lbt Free} routine.
 has been successfully allocated, and {\tt NULL} else.
 \end{itemize}
 
-\subsubsection{{\tt SCOTCH\_archDomFrst}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_archDomFrst ( & SCOTCH\_Arch *    & archptr, \\
-                          & SCOTCH\_ArchDom * & domnptr) \\
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfarchdomfrst ( & doubleprecision (*) & archdat, \\
-                     & doubleprecision (*) & domndat, \\
-                     & integer             & ierr)
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_archDomFrst} function initializes the domain
-structure referred to by {\tt domnptr} with the biggest domain
-of the target architecture referred to {\tt archptr}, that is, the
-domain that contains all terminal domains.
-
-\progret
-
-{\tt SCOTCH\_archDomFrst} returns $0$ if the domain could be created,
-and $1$ on error.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_archDomTerm}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_archDomTerm ( & SCOTCH\_Arch *    & archptr, \\
-                          & SCOTCH\_ArchDom * & domnptr, \\
-                          & const SCOTCH\_Num & domnnum) \\
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfarchdomterm ( & doubleprecision (*) & archdat, \\
-                     & doubleprecision (*) & domndat, \\
-                     & integer*{\it num}   & domnnum, \\
-                     & integer             & ierr)
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_archDomTerm} function initializes the domain
-structure referred to by {\tt domnptr} to correspond to the
-terminal domain of index {\tt domnnum} in the target architecture
-referred to {\tt archptr}.
-
-Applying the {\tt arch\lbt Dom\lbt Num} function to this domain
-yields back {\tt domnnum}.
-
-\progret
-
-{\tt SCOTCH\_archDomTerm} returns $0$ if the domain could be created,
-$1$ if {\tt domnnum} does not correspond to a valid terminal number
-for this architecture, and $2$ on error.
-\end{itemize}
-
 \subsubsection{{\tt SCOTCH\_archDomBipart}}
 
 \begin{itemize}
@@ -2664,6 +2600,35 @@ referred to {\tt archptr}.
 {\tt SCOTCH\_archDomBipart} returns $0$ if the domain could be
 bipartitioned, $1$ if bipartitioning could not be performed (because
 the domain is terminal), and $2$ on error.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomFrst}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archDomFrst ( & SCOTCH\_Arch *    & archptr, \\
+                          & SCOTCH\_ArchDom * & domnptr) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomfrst ( & doubleprecision (*) & archdat, \\
+                     & doubleprecision (*) & domndat, \\
+                     & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomFrst} function initializes the domain
+structure referred to by {\tt domnptr} with the biggest domain
+of the target architecture referred to {\tt archptr}, that is, the
+domain that contains all terminal domains.
+
+\progret
+
+{\tt SCOTCH\_archDomFrst} returns $0$ if the domain could be created,
+and $1$ on error.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_archDomSize}}
@@ -2716,6 +2681,41 @@ The {\tt SCOTCH\_archDomSizeof} routine returns the size, in bytes, of
 a {\tt SCOTCH\_\lbt ArchDom} structure. This information is useful to
 export the interface of the {\sc libScotch} to interpreted languages,
 without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomTerm}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archDomTerm ( & SCOTCH\_Arch *    & archptr, \\
+                          & SCOTCH\_ArchDom * & domnptr, \\
+                          & const SCOTCH\_Num & domnnum) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomterm ( & doubleprecision (*) & archdat, \\
+                     & doubleprecision (*) & domndat, \\
+                     & integer*{\it num}   & domnnum, \\
+                     & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomTerm} function initializes the domain
+structure referred to by {\tt domnptr} to correspond to the
+terminal domain of index {\tt domnnum} in the target architecture
+referred to {\tt archptr}.
+
+Applying the {\tt arch\lbt Dom\lbt Num} function to this domain
+yields back {\tt domnnum}.
+
+\progret
+
+{\tt SCOTCH\_archDomTerm} returns $0$ if the domain could be created,
+$1$ if {\tt domnnum} does not correspond to a valid terminal number
+for this architecture, and $2$ on error.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_archDomWght}}
