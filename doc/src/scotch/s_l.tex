@@ -1891,6 +1891,27 @@ of nodes of the target architecture.
 architecture.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_archSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_archSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Arch} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsection{Target architecture creation routines}
 \label{sec-lib-arch-create}
 
@@ -2652,6 +2673,27 @@ type, which is set on return with the domain size.
 {\tt SCOTCH\_archDomSize} yields an integer value of type
 {\tt SCOTCH\_\lbt Num} that ranges between $1$ and the number of
 terminal domains in the architecture.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_archDomSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomSizeof} routine returns the size, in bytes, of
+a {\tt SCOTCH\_\lbt ArchDom} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_archDomWght}}
