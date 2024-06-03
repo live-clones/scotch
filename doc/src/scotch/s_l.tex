@@ -2546,6 +2546,28 @@ target architecture has been successfully built, and $1$ else.
 \subsection{Target domain handling routines}
 \label{sec-lib-arch-dom-handling}
 
+\subsubsection{{\tt SCOTCH\_archDomAlloc}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+SCOTCH\_ArchDom * SCOTCH\_archDomAlloc ( & void)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomAlloc} function allocates a memory area of a
+size sufficient to store a {\tt SCOTCH\_\lbt ArchDom} structure. It is
+the user's responsibility to free this memory when it is no longer
+needed, using the {\tt SCOTCH\_\lbt mem\lbt Free} routine.
+
+\progret
+
+{\tt SCOTCH\_archDomAlloc} returns the pointer to the memory area if it
+has been successfully allocated, and {\tt NULL} else.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_archDomFrst}}
 
 \begin{itemize}
