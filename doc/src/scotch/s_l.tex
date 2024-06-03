@@ -7824,6 +7824,27 @@ page~\pageref{sec-lib-random-seed}, for more information on the
 operations of the pseudo-random generator seed setting routines.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_contextSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_contextSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_contextSizeof} routine returns the size, in bytes, of
+a {\tt SCOTCH\_\lbt Context} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{\texttt{SCOTCH\_contextThreadImport1}}
 
 \begin{itemize}
