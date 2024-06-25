@@ -114,7 +114,7 @@ File * const                fileptr)
     return;
 
 #ifdef COMMON_PTHREAD_FILE
-  pthread_join (fileptr->compptr->thrdval, NULL); /* Wait for (un)compression thread to terminate */
+  pthread_join (fileptr->compptr->thrdval, NULL); /* Wait for (de)compression thread to terminate */
 #else /* COMMON_PTHREAD_FILE */
   waitpid (fileptr->compptr->procval, NULL, 0);
 #endif /* COMMON_PTHREAD_FILE */
