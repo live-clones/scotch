@@ -474,8 +474,8 @@ most issues encountered on Windows platforms.
 when "-DCOMMON_OS_WINDOWS" is not set. Else, either clock_gettime() or
 gettimeofday() are selected, depending on POSIX compilation flags.
 
-"-DCOMMON_STUB_FORK" provides a stub for the fork() system call on
-systems that do not allow process forking.
+"-DCOMMON_STUB_FORK" provides a stub for the fork() and waitpid()
+system calls on systems that do not allow process forking.
 
 
 3.5) Compression libraries
