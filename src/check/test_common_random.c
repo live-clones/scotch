@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 01 oct 2014     **/
 /**                                 to   : 24 aug 2019     **/
 /**                # Version 7.0  : from : 13 sep 2019     **/
-/**                                 to   : 04 jul 2024     **/
+/**                                 to   : 08 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,7 +99,7 @@ char *              argv[])
 
   passnum = (atoi (argv[2]) == 0);                /* First pass to write file; second pass to read it */
 
-  if ((fileptr = fopen (argv[1], (passnum) ? "w+" : "r")) == NULL) {
+  if ((fileptr = fopen (argv[1], (passnum) ? "wb+" : "rb")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file");
     exit (EXIT_FAILURE);
   }
