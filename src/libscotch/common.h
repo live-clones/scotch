@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,6 +39,7 @@
 /**                Pierre RAMET                            **/
 /**                Cedric CHEVALIER (v5.0)                 **/
 /**                Sebastien FOURESTIER (v6.0)             **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel direct block solver. **/
 /**                These lines are the common data         **/
@@ -57,7 +58,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 28 oct 2023     **/
+/**                                 to   : 04 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,8 +94,10 @@
 #define HAVE_NOT_STRINGS_H
 #if (INT_WIDTH == 64)
 #define __sync_lock_test_and_set    _InterlockedExchange64
+#define __sync_lock_release(m)      _InterlockedExchange64 (m, 0L)
 #else /* (INT_WIDTH == 64) */
 #define __sync_lock_test_and_set    _InterlockedExchange
+#define __sync_lock_release(m)      _InterlockedExchange (m, 0L)
 #endif /* (INT_WIDTH == 64) */
 #endif /* _MSC_VER */
 #define ssize_t                     SSIZE_T
@@ -103,6 +106,7 @@
 #define strcasecmp                  stricmp
 #endif /* ((defined _WIN32) && (! defined __MINGW32__)) */
 #define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
+#define sleep(s)                    Sleep (1000 * (s))
 #endif /* COMMON_OS_WINDOWS */
 
 #if ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
