@@ -124,7 +124,7 @@ FILE * restrict const           stream)
 
     if ((domntab = (ArchDom *) memRealloc (mappptr->domntab, (archnbr + 1) * sizeof (ArchDom))) == NULL) { /* If cannot resize domain array */
       errorPrint ("mapLoad: out of memory (1)");
-      return     (1);
+      return (1);
     }
 
     mappptr->domnmax = archnbr + 1;               /* Point to new array */
@@ -138,21 +138,21 @@ FILE * restrict const           stream)
   if ((intLoad (stream, &mappnbr) != 1) ||        /* Read number of mapping entries */
       (mappnbr < 1)) {
     errorPrint ("mapLoad: bad input (1)");
-    return     (1);
+    return (1);
   }
 
   if (memAllocGroup ((void **) (void *)
                      &mapptab, (size_t) (mappnbr          * sizeof (MappingLoadMap)),
                      &permtab, (size_t) (mappptr->grafptr->vertnbr * sizeof (MappingLoadPerm)), NULL) == NULL) {
     errorPrint ("mapLoad: out of memory (2)");
-    return     (1);
+    return (1);
   }
 
   for (mappnum = 0; mappnum < mappnbr; mappnum ++) { /* Load mapping array */
     if ((intLoad (stream, &mapptab[mappnum].slblnum) != 1) ||
         (intLoad (stream, &mapptab[mappnum].tlblnum) != 1)) {
       errorPrint ("mapLoad: bad input (2)");
-      return     (1);
+      return (1);
     }
   }
   intSort2asc1 (mapptab, mappnbr);                /* Sort mapping array by increasing source labels */
@@ -223,7 +223,7 @@ FILE * restrict const           stream)
   if (fprintf (stream, GNUMSTRING "\n",
                (Gnum) vertnnd) == EOF) {
     errorPrint ("mapSave: bad output (1)");
-    return     (1);
+    return (1);
   }
 
   for (vertnnd += vertnum; vertnum < vertnnd; vertnum ++) {
@@ -231,7 +231,7 @@ FILE * restrict const           stream)
                  (Gnum) ((vlbltax != NULL) ? vlbltax[vertnum] : vertnum),
                  (Anum) (parttax != NULL) ? archDomNum (archptr, &domntab[parttax[vertnum]]) : -1) == EOF) {
       errorPrint ("mapSave: bad output (2)");
-      return     (1);
+      return (1);
     }
   }
 
