@@ -117,7 +117,7 @@ FILE * restrict const           stream)
   if (strcmp (archName (mappptr->archptr), "term") == 0) /* If target architecture is variable-sized */
     return (2);
 
-  archDomFrst (mappptr->archptr, &fdomdat);      /* Get architecture size */
+  archDomFrst (mappptr->archptr, &fdomdat);       /* Get architecture size */
   archnbr = archDomSize (mappptr->archptr, &fdomdat);
   if (mappptr->domnmax < (archnbr + 1)) {         /* If mapping array too small to store mapping data */
     ArchDom * restrict    domntab;
@@ -130,9 +130,9 @@ FILE * restrict const           stream)
     mappptr->domnmax = archnbr + 1;               /* Point to new array */
     mappptr->domntab = domntab;
   }
-  mappptr->domnnbr = archnbr + 1;                 /* One more for first domain, for unmapped vertices                 */
+  mappptr->domnnbr = archnbr + 1;                 /* One more for first domain, for unmapped vertices                */
   archDomFrst (mappptr->archptr, &mappptr->domntab[0]); /* Set first domain with root domain data                    */
-  for (mappnum = 0; mappnum < archnbr; mappnum ++) /* For all terminal domain numbers                                 */
+  for (mappnum = 0; mappnum < archnbr; mappnum ++) /* For all terminal domain numbers                                */
     archDomTerm (mappptr->archptr, &mappptr->domntab[mappnum + 1], mappnum); /* Set domain with terminal domain data */
 
   if ((intLoad (stream, &mappnbr) != 1) ||        /* Read number of mapping entries */
