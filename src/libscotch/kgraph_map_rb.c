@@ -587,7 +587,7 @@ Context * const                         contptr)  /*+ Execution context         
 
   if (bgraphInit (actgrafptr, srcgrafptr, srcmappptr->archptr, domnsubtab, vflowgttab) != 0) {
     errorPrint ("kgraphMapRbBgraph: cannot create bipartition graph");
-    return     (1);
+    return (1);
   }
   actgrafptr->contptr = contptr;
 
@@ -738,7 +738,7 @@ fail :
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (bgraphCheck (actgrafptr) != 0) {
     errorPrint ("kgraphMapRbBgraph: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
