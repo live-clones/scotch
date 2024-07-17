@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 25 feb 2018     **/
 /**                # Version 7.0  : from : 03 aug 2018     **/
-/**                                 to   : 16 jul 2024     **/
+/**                                 to   : 17 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -136,7 +136,7 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
       kgraphExit (coargrafptr);
       return (1);
     }
-    coargrafptr->r.m.flagval = MAPPINGFREEPART;   /* Free group leader                    */
+    coargrafptr->r.m.flagval = MAPPINGINCOMPLETE | MAPPINGFREEPART; /* Free group leader  */
     coargrafptr->r.m.parttax = coarparotab - coargrafptr->s.baseval; /* Set coarse arrays */
     coargrafptr->r.vmlotax   = coarvmlotab - coargrafptr->s.baseval;
 
@@ -244,7 +244,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array
 
   if (coargrafptr == NULL) {                      /* If no coarse graph provided             */
     if (mapAlloc (&finegrafptr->m) != 0) {        /* Allocate mapping arrays at lowest level */
-      errorPrint ("kgraphMapMlUncoarsen: cannot allocate mapping arrays");
+      errorPrint ("kgraphMapMlUncoarsen: cannot allocate mapping arrays (1)");
       return (1);
     }
     kgraphFrst (finegrafptr);                     /* Assign all vertices to first subdomain */
@@ -262,7 +262,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array
   finegrafptr->m.domnmax  = coargrafptr->m.domnmax;
   coargrafptr->m.domntab  = NULL;                 /* No need to free coarse graph domain array as it has been transferred */
   if (mapAlloc (&finegrafptr->m) != 0) {          /* Allocate partition array if needed                                   */
-    errorPrint ("kgraphMapMlUncoarsen: cannot allocate mapping arrays");
+    errorPrint ("kgraphMapMlUncoarsen: cannot allocate mapping arrays (2)");
     return (1);
   }
 

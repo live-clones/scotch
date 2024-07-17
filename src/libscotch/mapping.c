@@ -67,7 +67,7 @@
 /**                # Version 6.0  : from : 04 mar 2011     **/
 /**                                 to   : 26 fev 2018     **/
 /**                # Version 7.0  : from : 15 jul 2021     **/
-/**                                 to   : 16 jul 2024     **/
+/**                                 to   : 17 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -147,6 +147,9 @@ Mapping * restrict const    mappptr)              /*+ Mapping structure to fill 
     mappptr->flagval |= MAPPINGFREEPART;
     mappptr->parttax  = parttab - mappptr->grafptr->baseval;
   }
+#ifdef SCOTCH_DEBUG_MAP2
+  memSet (mappptr->parttax + mappptr->grafptr->baseval, ~0, mappptr->grafptr->vertnbr * sizeof (Anum)); /* Pre-set part array anyway */
+#endif /* SCOTCH_DEBUG_MAP2 */
 
   if (mappptr->domntab == NULL) {                 /* If part array not yet allocated */
     if ((mappptr->domntab = (ArchDom *) memAlloc (mappptr->domnmax * sizeof (ArchDom))) == NULL) {
@@ -301,13 +304,14 @@ const Mapping * restrict const mapoptr)           /*+ Old mapping    +*/
   }
   else {
     mappptr->domnmax = domnnbr;
-    if (mapAlloc (mappptr) != 0) {
+    if (mapAlloc (mappptr) != 0) {                /* Do not fill array if incomplete mapping, as it will be copied */
       errorPrint ("mapCopy: cannot allocate mapping arrays");
       return (1);
     }
   }
 
-  mappptr->domnnbr = domnnbr;
+  mappptr->flagval |= mapoptr->flagval & MAPPINGINCOMPLETE; /* Preserve incomplete mapping flag */
+  mappptr->domnnbr  = domnnbr;                    /* Copy domain and mapping data               */
   memCpy (mappptr->domntab, mapoptr->domntab, domnnbr * sizeof (ArchDom));
   memCpy (mappptr->parttax + baseval, mapoptr->parttax + baseval, mapoptr->grafptr->vertnbr * sizeof (Anum));
 

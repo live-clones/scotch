@@ -66,7 +66,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 19 jul 2021     **/
-/**                                 to   : 16 jul 2024     **/
+/**                                 to   : 17 jul 2024     **/
 /**                                                        **/
 /**   NOTES      : # While Anum and Gnum are different     **/
 /**                  types, because architectures are      **/
@@ -94,8 +94,9 @@
 
 #define MAPPINGNONE                 0x0000        /* No options set */
 
-#define MAPPINGFREEPART             0x0001        /* Free partition array */
-#define MAPPINGFREEDOMN             0x0002        /* Free domain array    */
+#define MAPPINGINCOMPLETE           0x0001        /* Incomplete mapping   */
+#define MAPPINGFREEPART             0x0002        /* Free partition array */
+#define MAPPINGFREEDOMN             0x0004        /* Free domain array    */
 
 /*
 **  The type definitions.

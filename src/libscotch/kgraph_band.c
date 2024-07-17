@@ -45,7 +45,7 @@
 /**                # Version 6.1  : from : 19 apr 2021     **/
 /**                                 to   : 30 jun 2021     **/
 /**                # Version 7.0  : from : 24 aug 2019     **/
-/**                                 to   : 16 jul 2024     **/
+/**                                 to   : 17 jul 2024     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -274,7 +274,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
     }
     memSet (bandparotax + bandvertnbr - bandgrafptr->r.m.domnnbr, ~0, bandgrafptr->r.m.domnnbr * sizeof (Gnum)); /* Old parts of anchors are unspecified */
     bandparotax -= bandgrafptr->s.baseval;
-    bandgrafptr->r.m.flagval |= MAPPINGFREEPART;
+    bandgrafptr->r.m.flagval |= MAPPINGINCOMPLETE | MAPPINGFREEPART; /* Remapping may be incomplete */
     bandgrafptr->r.m.parttax  = bandparotax;
     bandgrafptr->r.m.domntab  = grafptr->r.m.domntab; /* Band old mapping domain array is a clone of old mapping (no freeing) */
   }

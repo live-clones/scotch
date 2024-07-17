@@ -69,7 +69,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 jun 2019     **/
 /**                # Version 7.0  : from : 23 aug 2019     **/
-/**                                 to   : 16 jul 2024     **/
+/**                                 to   : 17 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -697,7 +697,8 @@ Context * const                         contptr)  /*+ Execution context         
       }
     }
 
-    if (oldmappptr != NULL) {                     /* If remapping gains have to be computed */
+    if ((oldmappptr != NULL) &&                   /* If remapping gains have to be computed */
+        (oldmappptr->parttax[orgvertnum] != -1)) { /* And if old part is known              */
       ArchDom *           domnptr;
       Gnum                edloval;
 
