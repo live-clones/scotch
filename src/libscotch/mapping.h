@@ -146,6 +146,7 @@ int                         mapAlloc            (Mapping * const);
 void                        mapFree             (Mapping * const);
 int                         mapResize           (Mapping * restrict const, const Anum);
 int                         mapResize2          (Mapping * restrict const, const Anum);
+int                         mapCheck            (const Mapping * const);
 int                         mapCopy             (Mapping * const, const Mapping * const);
 void                        mapFrst             (Mapping * const, const ArchDom * const domnptr);
 int                         mapBuild            (Mapping * restrict const, const Anum * restrict const);

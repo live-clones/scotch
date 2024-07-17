@@ -421,6 +421,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_version$(OBJ)			\
 			library_version_f$(OBJ)			\
 			mapping$(OBJ)				\
+			mapping_check$(OBJ)			\
 			mapping_io$(OBJ)			\
 			mesh$(OBJ)				\
 			mesh_check$(OBJ)			\
@@ -2728,6 +2729,13 @@ library_version_f$(OBJ)		:	library_version_f.c			\
 					scotch.h
 
 mapping$(OBJ)			:	mapping.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch$(OBJ)				\
+					mapping.h
+
+mapping_check$(OBJ)		:	mapping_check.c				\
 					module.h				\
 					common.h				\
 					graph.h					\

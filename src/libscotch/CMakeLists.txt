@@ -422,6 +422,7 @@ set(SCOTCH_C_SOURCES
   library_version_f.c
   mapping.c
   mapping.h
+  mapping_check.c
   mapping_io.c
   mapping_io.h
   mesh.c

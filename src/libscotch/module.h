@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 22 aug 2023     **/
+/**                                 to   : 17 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -975,6 +975,7 @@
 #define mapAlloc                    SCOTCH_NAME_INTERN (mapAlloc)
 #define mapBuild                    SCOTCH_NAME_INTERN (mapBuild)
 #define mapCopy                     SCOTCH_NAME_INTERN (mapCopy)
+#define mapCheck                    SCOTCH_NAME_INTERN (mapCheck)
 #define mapFree                     SCOTCH_NAME_INTERN (mapFree)
 #define mapFrst                     SCOTCH_NAME_INTERN (mapFrst)
 #define mapLoad                     SCOTCH_NAME_INTERN (mapLoad)
