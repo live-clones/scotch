@@ -43,6 +43,14 @@ terminal domain at initialization time, and one of its neighbors is
 successively mapped to smaller and smaller subdomains that eventually
 amount to the same terminal domain.
 
+When a mapping is initialized, all \texttt{parttax} values for
+non-fixed vertices are set to index~$0$, and \texttt{domntab[0]} is
+set to the root domain for the mapping. In the general case for
+centralized mapping, the initial domain is equal to
+\texttt{archDomFrst(archptr)}. However, when a centralized mapping
+process is launched as a part of a distributed mapping process, the
+initial domain may be a subset of the whole target architecture.
+
 There is no obligation for the \texttt{domntab} array to contain only
 one instance of some target domain. On the contrary, as described
 above, the same domain may appear at least twice: once for fixed
@@ -109,16 +117,6 @@ graph vertices must be associated to some domain, hence
 \texttt{domntab}.
 \item
 \texttt{domnmax}: size of the \texttt{domntab} array.
-\item
-\texttt{domnorg}: initial domain for the non-fixed vertices of the
-mapping. When a mapping is initialized, all \texttt{parttax} values
-for non-fixed vertices are set to index~$0$, and \texttt{domntab[0]}
-is set to \texttt{domnorg}, the root domain. In the general case for
-centralized mapping, \texttt{domnorg} is equal to
-\texttt{archDomFrst(archptr)}. However, when a centralized mapping
-process is launched as a part of a distributed mapping process, the
-initial domain may be a subset of the whole target architecture, hence
-the presence of \texttt{domnorg} in the mapping structure.
 \item
 \texttt{mutedat}: when multi-threading is activated, allows to create
 critical sections to update the mapping data in a thread-safe manner.
