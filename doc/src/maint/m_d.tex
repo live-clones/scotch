@@ -17,16 +17,16 @@ implemented in \scotch\ and \ptscotch.
 \subsection{\texttt{Mapping}}
 \label{sec-data-mapping}
 
-A \texttt{Mapping} defines how individual vertices of a \texttt{Graph}
-are mapped individually onto (parts of) an \texttt{Arch}. A mapping is
-said \textit{complete} if all source graph vertices are assigned to
-terminal target domains, \ie individual vertices of the target
-architecture, or \textit{partial} if at least one of the source graph
-vertices is assigned to a target domain that comprises more than one
-vertex. In the course of the graph mapping process, the destination of
-source vertices are progressively refined, from an initial target
-domain that usually describes the whole of the target architecture, to
-terminal domains.
+The \texttt{Mapping} structure defines how individual vertices of a
+\texttt{Graph} are mapped individually onto (parts of) an
+\texttt{Arch}. A mapping is said \textit{complete} if all source graph
+vertices are assigned to terminal target domains, \ie, individual
+vertices of the target architecture, or \textit{partial} if at least
+one of the source graph vertices is assigned to a target domain that
+comprises more than one vertex. In the course of the graph mapping
+process, the destination of source vertices are progressively refined,
+from an initial target domain that usually describes the whole of the
+target architecture, to terminal domains.
 
 Since \texttt{ArchDom}, the data structure that describes target
 architecture domains, is big and costly to handle (\eg, to compare if
@@ -42,6 +42,19 @@ the vertices is a fixed vertex that has been set to a specific
 terminal domain at initialization time, and one of its neighbors is
 successively mapped to smaller and smaller subdomains that eventually
 amount to the same terminal domain.
+
+In the case of a remapping, the mapping information regarding the
+former placement of the vertices may be incomplete, \eg, because the
+vertex did not exist before. Such a mapping is said to be
+\textit{incomplete}. It is characterized by the fact that some cells
+of the \texttt{parttax} array are equal to \texttt{-1}, to indicate an
+unknown terminal domain number. To allow for this, the mapping must
+have the \texttt{MAPPING\lbt INCOMPLETE} flag set. Incomplete mappings
+are only valid when holding remapping information; new mappings being
+computed must have all their \texttt{parttax} cells set with
+non-negative values that point to valid domains in the
+\texttt{domntab} array. New mappings can therefore only be partial or
+complete.
 
 When a mapping is initialized, all \texttt{parttax} values for
 non-fixed vertices are set to index~$0$, and \texttt{domntab[0]} is
