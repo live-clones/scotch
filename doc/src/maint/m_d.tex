@@ -14,6 +14,76 @@
 This section explains some of the most complex data structures
 implemented in \scotch\ and \ptscotch.
 
+\subsection{\texttt{Kgraph}}
+\label{sec-data-kgraph}
+
+The \texttt{Kgraph} structure holds all the information necessary to
+compute a k-way (re)mapping of some graph onto a target architecture.
+Consequently, it contains a \texttt{Graph}, defined as field
+\texttt{s}, and a reference to an \texttt{Arch}, through the field
+\texttt{m.archptr}, as well as two \texttt{Mapping} structures: one
+for the current mapping to compute, and one to store the old mapping
+from which to remap. Additional information comprise data to model the
+cost of remapping, and data associated with the state and cost of the
+current mapping: list of frontier vertices, load of each partition
+domain, plus the execution context for multi-threading execution.
+
+The \texttt{Graph} structure is internal to the \texttt{Kgraph}
+because every new \texttt{Kgraph} contains a different graph topology
+(\eg, a band graph or a coarsened graph). The \texttt{Arch} is
+accessed by reference because it is constant data which can be shared
+by many \texttt{Kgraph}s. For the sake of consistency, the
+\texttt{grafptr} fields of each mapping \texttt{m} and \texttt{r.m}
+must point to \texttt{\&s}, while their two \texttt{archptr} fields
+must point to the same target architecture. This redundency is the
+price to pay for lighter memory management.
+
+\subsubsection{Mappings}
+
+The \texttt{domnorg} field, which must contain a valid domain in the
+architecture \texttt{m.archptr}, is the starting point for the k-way
+mapping. This domain may be smaller than the full architecture when
+parallel partitioning is performed: in this case, each process may
+receive a separate subgraph and sub-architecture to work on.
+
+Each of the two mappings has its own specificities. The current
+mapping, defined as field \texttt{m}, is never incomplete: all the
+cells of its \texttt{m.parttax} array are non-negative values that index
+a valid domain in the domain array \texttt{m.domntab}. These domains
+are all subdomains of the architecture referenced through field
+\texttt{m.archptr}. More restrictively, the domains attached to
+non-fixed vertices must be included in \texttt{domnorg}, which may be
+smaller.
+
+The current mapping evolves with time, according to the various
+algorithms that the user can activate in the strategy string. These
+algorithms will create derived \texttt{Kgraph}s (\eg, band graphs or a
+coarsened graphs), to which mapping methods will be applied, before
+the result is ported back to their parent \texttt{Kgraph}. Depending
+on the kind of the derived graph, the \texttt{m.parttax} array may be
+specific, but the \texttt{m.domntab} array will always be ported back
+as is. Consequently, in order to save memory copying, the policy which
+is implemented is that the derived \texttt{Kgraph} gets the pointer to
+the \texttt{m.domntab} of its parent, while the latter is set to
+\texttt{NULL}. The derived graph can therefore reallocate the array
+whenever needed, without the risk of an old, invalid, pointer being
+kept elsewhere. Then, when the processing of the derived
+\texttt{Kgraph} ends, the most recent pointer is copied back to the
+\texttt{m.domntab} field of the parent graph, and the
+\texttt{m.parttax} array is updated accordingly, after which the
+derived \texttt{Kgraph} can be destroyed without freeing the
+pointer.
+
+The old mapping, defined as field \texttt{r.m},
+may contain incomplete mapping information: some of the cells of its
+\texttt{r.m.parttax} array may be equal to \texttt{-1}, to indicate
+that no prior mapping information is available (\eg, when the vertex
+did not exist in the previous mapping). Since old mappings do not
+change, the \texttt{r.m.domntab} field can be shared among all derived
+\texttt{Kgraph}s. It is protected from double memory freeing by not
+setting the \texttt{MAPPING\lbt FREE\lbt DOMN} flag in field
+\texttt{r.m.flagval}.
+
 \subsection{\texttt{Mapping}}
 \label{sec-data-mapping}
 
