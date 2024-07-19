@@ -1,4 +1,4 @@
-/* Copyright 2014,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2018,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                the SCOTCH_graphMap*() routines.        **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 12 aug 2014     **/
-/**                                 to   : 22 may 2018     **/
+/**                                 to   : 17 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -171,7 +171,7 @@ char *              argv[])
 
       archsiz = SCOTCH_archSize (&archtab[archnum]);
 
-      for (typenum = 0; typenum < 6; typenum ++) {
+      for (typenum = 0; typenum < 7; typenum ++) {
         int                 i;
         int                 o;
 
@@ -209,9 +209,13 @@ char *              argv[])
           case 3 :                                /* Remapping with vertex migration load array */
             o = SCOTCH_graphRemapCompute (&grafdat, &mappdat, &mapodat, 0.2, vmloptr, &stratab[stranum]);
             break;
-          case 4 :                                /* Remapping with fixed vertices and without vertex migration load array */
+          case 4 :                                /* Remapping with vertex migration load array and incomplete old mapping */
+            parotab[0] = -1;
+            o = SCOTCH_graphRemapCompute (&grafdat, &mappdat, &mapodat, 0.2, vmloptr, &stratab[stranum]);
+            break;
+          case 5 :                                /* Remapping with fixed vertices and without vertex migration load array */
             vmloptr = NULL;
-          case 5 :                                /* Remapping with fixed vertices and with vertex migration load array */
+          case 6 :                                /* Remapping with fixed vertices and with vertex migration load array */
             o = SCOTCH_graphRemapFixedCompute (&grafdat, &mappdat, &mapodat, 0.2, vmloptr, &stratab[stranum]);
             break;
         }
