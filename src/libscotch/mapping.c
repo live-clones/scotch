@@ -67,7 +67,7 @@
 /**                # Version 6.0  : from : 04 mar 2011     **/
 /**                                 to   : 26 fev 2018     **/
 /**                # Version 7.0  : from : 15 jul 2021     **/
-/**                                 to   : 17 jul 2024     **/
+/**                                 to   : 19 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -144,14 +144,14 @@ Mapping * restrict const    mappptr)              /*+ Mapping structure to fill 
       errorPrint ("mapAlloc: out of memory (1)");
       return (1);
     }
-    mappptr->flagval |= MAPPINGFREEPART;
+    mappptr->flagval |= MAPPINGFREEPART;          /* Part array is locally owned */
     mappptr->parttax  = parttab - mappptr->grafptr->baseval;
   }
 #ifdef SCOTCH_DEBUG_MAP2
   memSet (mappptr->parttax + mappptr->grafptr->baseval, ~0, mappptr->grafptr->vertnbr * sizeof (Anum)); /* Pre-set part array anyway */
 #endif /* SCOTCH_DEBUG_MAP2 */
 
-  if (mappptr->domntab == NULL) {                 /* If part array not yet allocated */
+  if (mappptr->domntab == NULL) {                 /* If domain array not yet allocated */
     if ((mappptr->domntab = (ArchDom *) memAlloc (mappptr->domnmax * sizeof (ArchDom))) == NULL) {
       errorPrint ("mapAlloc: out of memory (2)");
       return (1);
@@ -174,46 +174,16 @@ mapResize (
 Mapping * restrict const    mappptr,              /*+ Mapping structure to fill +*/
 const Anum                  domnmax)
 {
-  int                       flagval;
-  const ArchDom * restrict  domntab;
-
-  flagval = mappptr->flagval;                     /* Save old flag value              */
-  domntab = mappptr->domntab;                     /* Save pointer to old domain array */
-
-  if (mapResize2 (mappptr, domnmax) != 0)         /* Resize array */
-    return (1);
-
-  if (flagval != mappptr->flagval)                /* If a new private array has been created */
-    memCpy (mappptr->domntab, domntab, mappptr->domnnbr * sizeof (ArchDom));
-
-  return (0);
-}
-
-/* This routine resizes the domain array of a
-** mapping without preserving its existing contents.
-** It returns:
-** - 0   : if mapping successfully allocated.
-** - !0  : on error.
-*/
-
-int
-mapResize2 (
-Mapping * restrict const    mappptr,              /*+ Mapping structure to fill +*/
-const Anum                  domnmax)
-{
   ArchDom *           domntab;
 
-  domntab = ((mappptr->flagval & MAPPINGFREEDOMN) != 0) /* If it was a privately owned array */
-            ? memRealloc (mappptr->domntab, domnmax * sizeof (ArchDom)) /* Reallocate it     */
-            : memAlloc (domnmax * sizeof (ArchDom)); /* Else allocate it privately           */
-  if (domntab == NULL) {
-    errorPrint ("mapResize2: out of memory");
-    return (1);
+  if (mappptr->domntab != NULL) {
+    if ((domntab = memRealloc (mappptr->domntab, domnmax * sizeof (ArchDom))) == NULL) { /* Reallocate domain array */
+      errorPrint ("mapResize: out of memory");
+      return (1);
+    }
+    mappptr->domntab  = domntab;
   }
-
-  mappptr->domntab  = domntab;
   mappptr->domnmax  = domnmax;
-  mappptr->flagval |= MAPPINGFREEDOMN;            /* Array is now private anyway */
 
   return (0);
 }
@@ -296,7 +266,7 @@ const Mapping * restrict const mapoptr)           /*+ Old mapping    +*/
 
   if (mappptr->domntab != NULL) {
     if (domnnbr > mappptr->domnmax) {             /* If we have to resize domain array */
-      if (mapResize2 (mappptr, domnnbr) != 0) {   /* Resize it                         */
+      if (mapResize (mappptr, domnnbr) != 0) {    /* Resize it                         */
         errorPrint ("mapCopy: cannot resize mapping arrays");
         return (1);
       }

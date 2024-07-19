@@ -95,8 +95,8 @@
 #define MAPPINGNONE                 0x0000        /* No options set */
 
 #define MAPPINGINCOMPLETE           0x0001        /* Incomplete mapping   */
-#define MAPPINGFREEPART             0x0002        /* Free partition array */
-#define MAPPINGFREEDOMN             0x0004        /* Free domain array    */
+#define MAPPINGFREEDOMN             0x0002        /* Free domain array    */
+#define MAPPINGFREEPART             0x0004        /* Free partition array */
 
 /*
 **  The type definitions.
@@ -145,7 +145,6 @@ void                        mapExit             (Mapping * const);
 int                         mapAlloc            (Mapping * const);
 void                        mapFree             (Mapping * const);
 int                         mapResize           (Mapping * restrict const, const Anum);
-int                         mapResize2          (Mapping * restrict const, const Anum);
 int                         mapCheck            (const Mapping * const);
 int                         mapCopy             (Mapping * const, const Mapping * const);
 void                        mapFrst             (Mapping * const, const ArchDom * const domnptr);

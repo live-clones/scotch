@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 25 feb 2018     **/
 /**                # Version 7.0  : from : 03 aug 2018     **/
-/**                                 to   : 17 jul 2024     **/
+/**                                 to   : 19 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -108,7 +108,6 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
   coargrafptr->domnorg = finegrafptr->domnorg;    /* Keep initial domain */
   mapInit2 (&coargrafptr->m,   &coargrafptr->s, finegrafptr->m.archptr,   finegrafptr->m.domnmax,   finegrafptr->m.domnnbr);
   mapInit2 (&coargrafptr->r.m, &coargrafptr->s, finegrafptr->r.m.archptr, finegrafptr->r.m.domnmax, finegrafptr->r.m.domnnbr);
-  coargrafptr->m.domntab = finegrafptr->m.domntab; /* Get domain private array, if any */
 
   coargrafptr->comploadavg = finegrafptr->comploadavg; /* By default, use fine target load arrays as coarse load arrays */
   coargrafptr->comploaddlt = finegrafptr->comploaddlt;
@@ -251,17 +250,7 @@ const GraphCoarsenMulti * const coarmulttab)      /*+ Pointer to multinode array
     return (0);
   }
 
-  if (((finegrafptr->m.flagval & MAPPINGFREEDOMN) != 0) && /* If fine domain array already allocated, free it */
-      (finegrafptr->m.domntab != NULL)) {
-    memFree (finegrafptr->m.domntab);
-    finegrafptr->m.flagval &= ~MAPPINGFREEDOMN;
-  }
-  finegrafptr->m.flagval |= (coargrafptr->m.flagval & MAPPINGFREEDOMN); /* Re-use coarse domain array in fine graph */
-  finegrafptr->m.domntab  = coargrafptr->m.domntab;
-  finegrafptr->m.domnnbr  = coargrafptr->m.domnnbr;
-  finegrafptr->m.domnmax  = coargrafptr->m.domnmax;
-  coargrafptr->m.domntab  = NULL;                 /* No need to free coarse graph domain array as it has been transferred */
-  if (mapAlloc (&finegrafptr->m) != 0) {          /* Allocate partition array if needed                                   */
+  if (mapAlloc (&finegrafptr->m) != 0) {          /* Allocate partition array if needed */
     errorPrint ("kgraphMapMlUncoarsen: cannot allocate mapping arrays (2)");
     return (1);
   }
@@ -371,7 +360,19 @@ const KgraphMapMlParam * const    paraptr)        /*+ Method parameters +*/
   int                 o;
 
   if (kgraphMapMlCoarsen (grafptr, &coargrafdat, &coarmulttab, paraptr) == 0) {
-    if (((o = kgraphMapMl2         (&coargrafdat, paraptr))              == 0) &&
+    coargrafdat.m.flagval |= MAPPINGFREEDOMN;     /* Transfer ownership of mapping domain array to coarse graph */
+    coargrafdat.m.domntab  = grafptr->m.domntab;
+    grafptr->m.domntab     = NULL;
+
+    o = kgraphMapMl2 (&coargrafdat, paraptr);     /* Compute mapping on coarsened graph */
+
+    grafptr->m.flagval    = coargrafdat.m.flagval; /* Transfer (back) mapping domain array to fine graph */
+    grafptr->m.domntab    = coargrafdat.m.domntab;
+    grafptr->m.domnnbr    = coargrafdat.m.domnnbr;
+    grafptr->m.domnmax    = coargrafdat.m.domnmax;
+    coargrafdat.m.domntab = NULL;
+
+    if ((o == 0) &&                               /* If coarsened mapping succeeded */
         ((o = kgraphMapMlUncoarsen (grafptr, &coargrafdat, coarmulttab)) == 0) &&
         ((o = kgraphMapSt          (grafptr, paraptr->stratasc))         != 0)) /* Apply ascending strategy */
       errorPrint ("kgraphMapMl2: cannot apply ascending strategy");

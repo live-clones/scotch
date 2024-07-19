@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 17 jul 2024     **/
+/**                                 to   : 19 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -981,7 +981,6 @@
 #define mapLoad                     SCOTCH_NAME_INTERN (mapLoad)
 #define mapMerge                    SCOTCH_NAME_INTERN (mapMerge)
 #define mapResize                   SCOTCH_NAME_INTERN (mapResize)
-#define mapResize2                  SCOTCH_NAME_INTERN (mapResize2)
 #define mapSave                     SCOTCH_NAME_INTERN (mapSave)
 #define mapTerm                     SCOTCH_NAME_INTERN (mapTerm)
 
