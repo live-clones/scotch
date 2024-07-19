@@ -92,9 +92,27 @@ domains are kept separate. For efficiency reasons, fixed domains
 should appear only once in the fixed part of \texttt{domntab}.
 \\
 
-Since a \texttt{Mapping} is a complex structure in terms of memory
-allocation (partial allocation and/or cloning of some arrays are
-possible), flags are set to record which arrays have to be freed.
+The \texttt{Mapping} structure is mainly used within the
+\texttt{Kgraph} structure, which contains two instances of it: one for
+the current mapping to be computed, and one for the old mapping, in
+the case of remapping. The building of a \texttt{Kgraph} from another
+one (\eg, a band graph or a coarsened graph) may lead to situations in
+which some \texttt{Mapping} arrays may be re-used, and thus should not
+be freed when the derived \texttt{Mapping} is freed. This is why the
+\texttt{Mapping} structure contains flags to record whether its arrays
+should be freed or not. These flags are the following:
+\begin{itemize}
+\item
+\texttt{MAPPINGFREEDOMN}: set if the domain array has to be freed when
+the mapping is freed. A common case for sharing the domain array is
+when a coarser \texttt{Kgraph} is computed: the domain array of the
+coarse old mapping can re-use that of the fine old mapping.
+\item
+\texttt{MAPPINGFREEPART}: set if the part array has to be freed when
+the mapping is freed. A common case for sharing the part array is when
+the user part array is kept as the part array for the initial
+\texttt{Kgraph} current mapping structure.
+\end{itemize}
 
 The main fields of the \texttt{Mapping} data structure are the following:
 \begin{itemize}
