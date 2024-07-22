@@ -1736,23 +1736,23 @@ henceforth always a non-negative number.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_dgraphData ( & const SCOTCH\_Graph * & grafptr,    \\
-                          & SCOTCH\_Num *         & baseptr,    \\
-                          & SCOTCH\_Num *         & vertglbptr, \\
-                          & SCOTCH\_Num *         & vertlocptr, \\
-                          & SCOTCH\_Num *         & vertlocptz, \\
-                          & SCOTCH\_Num *         & vertgstptr, \\
-                          & SCOTCH\_Num **        & vertloctab, \\
-                          & SCOTCH\_Num **        & vendloctab, \\
-                          & SCOTCH\_Num **        & veloloctab, \\
-                          & SCOTCH\_Num **        & vlblloctab, \\
-                          & SCOTCH\_Num *         & edgeglbptr, \\
-                          & SCOTCH\_Num *         & edgelocptr, \\
-                          & SCOTCH\_Num *         & edgelocptz, \\
-                          & SCOTCH\_Num **        & edgeloctab, \\
-                          & SCOTCH\_Num **        & edgegsttab, \\
-                          & SCOTCH\_Num **        & edloloctab, \\
-                          & MPI\_Comm *           & comm)
+void SCOTCH\_dgraphData ( & const SCOTCH\_Dgraph * & grafptr,    \\
+                          & SCOTCH\_Num *          & baseptr,    \\
+                          & SCOTCH\_Num *          & vertglbptr, \\
+                          & SCOTCH\_Num *          & vertlocptr, \\
+                          & SCOTCH\_Num *          & vertlocptz, \\
+                          & SCOTCH\_Num *          & vertgstptr, \\
+                          & SCOTCH\_Num **         & vertloctab, \\
+                          & SCOTCH\_Num **         & vendloctab, \\
+                          & SCOTCH\_Num **         & veloloctab, \\
+                          & SCOTCH\_Num **         & vlblloctab, \\
+                          & SCOTCH\_Num *          & edgeglbptr, \\
+                          & SCOTCH\_Num *          & edgelocptr, \\
+                          & SCOTCH\_Num *          & edgelocptz, \\
+                          & SCOTCH\_Num **         & edgeloctab, \\
+                          & SCOTCH\_Num **         & edgegsttab, \\
+                          & SCOTCH\_Num **         & edloloctab, \\
+                          & MPI\_Comm *            & comm)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -3309,7 +3309,7 @@ been successfully initialized, and $1$ else.
 
 {\tt\begin{tabular}{l@{}ll}
 int SCOTCH\_dgraphOrderGather ( & const SCOTCH\_Dgraph * & grafptr, \\
-                                & SCOTCH\_Dordering *    & cordptr, \\
+                                & SCOTCH\_Dordering *    & dordptr, \\
                                 & SCOTCH\_Ordering *     & cordptr)
 \end{tabular}}
 
