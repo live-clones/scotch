@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 12 aug 2023     **/
+/**                                 to   : 22 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -149,6 +149,7 @@ int                         SCOTCH_dgraphGhst   (SCOTCH_Dgraph * const);
 int                         SCOTCH_dgraphHalo   (SCOTCH_Dgraph * const, void * const, const MPI_Datatype);
 int                         SCOTCH_dgraphHaloAsync (SCOTCH_Dgraph * const, void * const, const MPI_Datatype, SCOTCH_DgraphHaloReq * const);
 SCOTCH_DgraphHaloReq *      SCOTCH_dgraphHaloReqAlloc (void);
+int                         SCOTCH_dgraphHaloReqSizeof (void);
 int                         SCOTCH_dgraphHaloWait (SCOTCH_DgraphHaloReq * const);
 int                         SCOTCH_dgraphMapInit (const SCOTCH_Dgraph * const, SCOTCH_Dmapping * const, const SCOTCH_Arch * const, SCOTCH_Num * const);
 void                        SCOTCH_dgraphMapExit (const SCOTCH_Dgraph * const, SCOTCH_Dmapping * const);
