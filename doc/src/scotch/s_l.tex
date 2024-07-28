@@ -4609,11 +4609,11 @@ scotchfgraphmapview ( & doubleprecision (*) & grafdat, \\
 
 \progdes
 
-The {\tt SCOTCH\_mapView} routine summarizes statistical information
-on the mapping pointed to by {\tt mappptr} (load of target processors,
-number of neighboring domains, average dilation and expansion, edge
-cut size, distribution of edge dilations), and prints these results to
-stream {\tt stream}.
+The {\tt SCOTCH\_graphMapView} routine summarizes statistical
+information on the mapping pointed to by {\tt mappptr} (load of target
+processors, number of neighboring domains, average dilation and
+expansion, edge cut size, distribution of edge dilations), and prints
+these results to stream {\tt stream}.
 
 Fortran users must use the {\tt PXFFILENO} or {\tt FNUM} functions to
 obtain the number of the Unix file descriptor {\tt fildes} associated
@@ -4621,8 +4621,8 @@ with the logical unit of the output data file.
 
 \progret
 
-{\tt SCOTCH\_mapView} returns $0$ if the data has been successfully
-written to {\tt stream}, and $1$ else.
+{\tt SCOTCH\_graphMapView} returns $0$ if the data has been
+successfully written to {\tt stream}, and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_graphRemapCompute}}
