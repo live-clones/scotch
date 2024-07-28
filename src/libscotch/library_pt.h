@@ -93,6 +93,17 @@
 #endif /* ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL)) */
 #endif /* SCOTCH_VERSION */
 
+/*+ 3D grid distributed graph building option flags. +*/
+
+#ifndef SCOTCH_DGRAPHBUILDGRID3DGRID
+#define SCOTCH_DGRAPHBUILDGRID3DGRID 0
+#define SCOTCH_DGRAPHBUILDGRID3DTORUS 2
+#define SCOTCH_DGRAPHBUILDGRID3DNGB6 0
+#define SCOTCH_DGRAPHBUILDGRID3DNGB26 1
+#define SCOTCH_DGRAPHBUILDGRID3DVERTLOAD 4
+#define SCOTCH_DGRAPHBUILDGRID3DEDGELOAD 8
+#endif /* SCOTCH_DGRAPHBUILDGRID3DMESH */
+
 /*+ Opaque objects. The dummy sizes of these
 objects, computed at compile-time by program
 "dummysizes", are given as double values for

@@ -1,4 +1,4 @@
-!* Copyright 2004,2007,2009,2010,2012 IPB, Universite de Bordeaux, INRIA & CNRS
+!* Copyright 2004,2007,2009,2010,2012,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 !*
 !* This file is part of the Scotch software package for static mapping,
 !* graph partitioning and sparse matrix ordering.
@@ -50,6 +50,8 @@
 !*                                 to   : 12 feb 2011     **
 !*                # Version 6.0  : from : 22 oct 2011     **
 !*                                 to   : 27 nov 2012     **
+!*                # Version 7.0  : from : 28 jul 2024     **
+!*                                 to   : 28 jul 2024     **
 !*                                                        **
 !***********************************************************
 
@@ -114,3 +116,19 @@
         PARAMETER (SCOTCH_MESHDIM          = DUMMYSIZEMESH)
         PARAMETER (SCOTCH_ORDERDIM         = DUMMYSIZEORDER)
         PARAMETER (SCOTCH_STRATDIM         = DUMMYSIZESTRAT)
+
+!* Flag definitions for the
+!* SCOTCH_dgraphBuildGrid3D() routine.
+
+        INTEGER SCOTCH_DGRAPHBUILDGRID3DGRID
+        INTEGER SCOTCH_DGRAPHBUILDGRID3DTORUS
+        INTEGER SCOTCH_DGRAPHBUILDGRID3DNGB6
+        INTEGER SCOTCH_DGRAPHBUILDGRID3DNGB26
+        INTEGER SCOTCH_DGRAPHBUILDGRID3DVERTLOAD
+        INTEGER SCOTCH_DGRAPHBUILDGRID3DEDGELOAD
+        PARAMETER (SCOTCH_DGRAPHBUILDGRID3DGRID     = 0)
+        PARAMETER (SCOTCH_DGRAPHBUILDGRID3DTORUS    = 2)
+        PARAMETER (SCOTCH_DGRAPHBUILDGRID3DNGB6     = 0)
+        PARAMETER (SCOTCH_DGRAPHBUILDGRID3DNGB26    = 1)
+        PARAMETER (SCOTCH_DGRAPHBUILDGRID3DVERTLOAD = 4)
+        PARAMETER (SCOTCH_DGRAPHBUILDGRID3DEDGELOAD = 8)
