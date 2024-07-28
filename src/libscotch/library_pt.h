@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 22 jul 2024     **/
+/**                                 to   : 28 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -134,7 +134,7 @@ int                         SCOTCH_dgraphSave   (SCOTCH_Dgraph * const, FILE * c
 int                         SCOTCH_dgraphCheck  (const SCOTCH_Dgraph * const);
 int                         SCOTCH_dgraphBand   (SCOTCH_Dgraph * const, const SCOTCH_Num, SCOTCH_Num * const, const SCOTCH_Num, SCOTCH_Dgraph * const);
 int                         SCOTCH_dgraphBuild  (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         SCOTCH_dgraphBuildGrid3D (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const int);
+int                         SCOTCH_dgraphBuildGrid3D (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num);
 int                         SCOTCH_dgraphCoarsen (SCOTCH_Dgraph * const, const SCOTCH_Num, const double, const SCOTCH_Num, SCOTCH_Dgraph * const, SCOTCH_Num * const);
 SCOTCH_Num                  SCOTCH_dgraphCoarsenVertLocMax (const SCOTCH_Dgraph * const, const SCOTCH_Num);
 int                         SCOTCH_dgraphGather (const SCOTCH_Dgraph * const, SCOTCH_Graph * const);
