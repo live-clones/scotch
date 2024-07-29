@@ -263,7 +263,7 @@ const Gnum                                    poszval)
 ** of the given dimensions.
 ** hashval is the increment between two vertex
 ** indices (1 for sliced meshes).
-** flagval is a combilation of:
+** flagval is a combination of:
 ** - 1  : 26-neighbor mesh (default: 6-neighbor mesh).
 ** - 2  : torus (default: mesh)
 ** - 4  : weighted vertices (default: no weights).
