@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -35,13 +35,14 @@
 ##                Florent PRUVOST                         ##
 ##                Cedric LACHAT (v6.0)                    ##
 ##                Amaury JACQUES (v6.0)                   ##
+##                Clement BARTHELEMY                      ##
 ##                                                        ##
 ##   FUNCTION   : Secondary configuration file for CMake  ##
 ##                                                        ##
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     26 oct 2023     ##
+##                                 to     30 jul 2024     ##
 ##                                                        ##
 ############################################################
 
@@ -104,6 +105,9 @@ if(THREADS)
   find_package(Threads)
   if(Threads_FOUND)
     add_definitions(-DCOMMON_PTHREAD -DSCOTCH_PTHREAD)
+  endif()
+  if(CMAKE_USE_WIN32_THREADS_INIT)
+    add_definitions(-DCOMMON_THREAD_WIN32)
   endif()
   include(CheckPthreadAffinity)
   if(PTHREAD_AFFINITY_LINUX_OK)

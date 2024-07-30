@@ -1,4 +1,4 @@
-/* Copyright 2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,12 +34,13 @@
 /**   NAME       : test_scotch_context.c                   **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the thread import     **/
 /**                feature of the library Context object.  **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 26 apr 2021     **/
+/**                                 to   : 30 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,10 +61,6 @@
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
 #include <stdlib.h>
 #include <string.h>
-
-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
-#include <pthread.h>
-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
 
 #include "../libscotch/module.h"
 #include "../libscotch/common.h"

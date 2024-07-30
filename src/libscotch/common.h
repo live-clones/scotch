@@ -149,7 +149,11 @@
 #endif /* COMMON_MPI */
 
 #ifdef COMMON_PTHREAD
+#ifdef COMMON_THREAD_WIN32
+#include            "pthread_win32.h"
+#else /* COMMON_THREAD_WIN32 */
 #include            <pthread.h>
+#endif /* COMMON_THREAD_WIN32 */
 #else /* COMMON_PTHREAD */
 #ifndef HAVE_NOT_SYS_WAIT_H
 #include            <sys/wait.h>                  /* For waitpid () */

@@ -507,13 +507,13 @@ flag is not set (see below).
 3.6) Multi-threading
 --------------------
 
-Scotch can take advantage of Posix threads when they are
+Scotch can take advantage of Posix or Windows threads when they are
 available. They are used in several places:
 
   - To run in a multi-threaded way several key algorithms of the
-    Scotch (no longer really so) sequential library, such as graph
-    coarsening and diffusion-based methods. This choice is controlled
-    by the "-DSCOTCH_PTHREAD" flag (see below). When the
+    Scotch centralized library, such as graph coarsening and
+    diffusion-based methods. This choice is controlled by the
+    "-DSCOTCH_PTHREAD" flag (see below). When the
     "-DSCOTCH_DETERMINISTIC" flag is also set, Scotch will
     automatically prevent itself, by default, from using
     multi-threaded versions of some algorithms if this would yield
@@ -525,12 +525,12 @@ available. They are used in several places:
     by the "-DCOMMON_PTHREAD_FILE" flag: if it is set, threads will be
     used, else fork() calls will be performed. For systems which do
     not support the fork() system call, such as the MinGW32 platform,
-    one can set the "-DCOMMON_STUB_FORK" flag, which creates a stub
-    fork() routine which always returns an error. Therefore, without
-    both fork() and threads, one must set the "-DCOMMON_STUB_FORK"
-    flag without setting "-DCOMMON_PTHREAD_FILE", so that compilation
-    will successfully complete; however, in this case, compressed
-    graphs shall not be handled in practice;
+    one can set the "-DCOMMON_STUB_FORK" flag, which creates stub
+    fork() and waitpid() routines which always return an error.
+    Therefore, without both fork() and threads, one must set the
+    "-DCOMMON_STUB_FORK" flag without setting "-DCOMMON_PTHREAD_FILE",
+    so that compilation will successfully complete; however, in this
+    case, compressed graphs cannot be handled internally by Scotch;
 
   - to create distributed graphs in parallel. Since this task involves
     concurrent MPI communications, the MPI library must support the
@@ -608,12 +608,9 @@ The compilation flags used to manage threads are the following:
     which depends on other flags (see below).
 
 When compiling under mingw32 on Windows systems, it is possible to
-benefit from multi-threading by including the "semaphore.h" and
-"pthread.h" files, included in the "src/misc" subdirectory, at compile
-time. These files have been kindly provided by Samuel Thibault, under
-the BSD 2-Clause License. These files will not work for Cygwin. This
-is not a problem, as Cygwin provides its own implementation of Posix
-threads.
+benefit from multi-threading by setting the "-DCOMMON_THREAD_WIN32"
+flag at compile time. This flag is not needed for Cygwin, which
+provides its own implementation of Posix threads.
 
 When Scotch is compiled with "-DSCOTCH_PTHREAD", it makes use, by
 default, of all threads available to it on the platform it is running
