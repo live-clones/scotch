@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2020,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 28 sep 2014     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 17 aug 2023     **/
+/**                                 to   : 31 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,7 +102,7 @@ const Dgraph * restrict const orggrafptr,
 Dgraph * restrict const       fldgrafptr,
 void * restrict const         orgdataptr,         /*+ Un-based array of data which must be folded, e.g. coarmulttab +*/
 void ** restrict const        flddataptr,         /*+ Un-based array of data which must be folded, e.g. coarmulttab +*/
-MPI_Datatype                  datatype,
+MPI_Datatype                  datatype,           /*+ Data type for array of data which must be folded              +*/
 Context * restrict const      contptr)            /*+ Context                                                       +*/
 {
 #ifdef SCOTCH_PTHREAD_MPI
@@ -114,6 +114,7 @@ Context * restrict const      contptr)            /*+ Context                   
   int                 fldprocnum;
   int                 fldproccol;
   DgraphFoldDupSplit  fldspltdat;
+  int                 thrdglbmin;
   int                 o;
 
   fldprocnbr = (orggrafptr->procglbnbr + 1) / 2;  /* Median cut on number of processors     */
@@ -144,18 +145,28 @@ Context * restrict const      contptr)            /*+ Context                   
 #ifdef SCOTCH_PTHREAD_MPI
   MPI_Query_thread (&thrdprolvl);                 /* Get thread level of MPI implementation */
   if (thrdprolvl >= MPI_THREAD_MULTIPLE) {        /* If multiple threads can be used        */
-    fldspltdat.splttab[1].orggrafptr = &orggrafdat;
-    orggrafdat = *orggrafptr;                     /* Create a separate graph structure to change its communicator */
+    int                 thrdlocmin;
 
-    if (MPI_Comm_dup (orggrafptr->proccomm, &orggrafdat.proccomm) != MPI_SUCCESS) { /* Duplicate communicator to avoid interferences in communications */
+    thrdlocmin = contextThreadNbr (contptr);
+    if (MPI_Allreduce (&thrdlocmin, &thrdglbmin, 1, MPI_INT, MPI_MIN, orggrafptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dgraphFoldDup: communication error (2)");
       return (1);
     }
 
+    if (thrdglbmin > 1) {                         /* If all processes have multiple threads available */
+      fldspltdat.splttab[1].orggrafptr = &orggrafdat;
+      orggrafdat = *orggrafptr;                   /* Create a separate graph structure to change its communicator */
+
+      if (MPI_Comm_dup (orggrafptr->proccomm, &orggrafdat.proccomm) != MPI_SUCCESS) { /* Duplicate communicator to avoid interferences in communications */
+        errorPrint ("dgraphFoldDup: communication error (3)");
+        return (1);
+      }
+
 #ifndef DGRAPHFOLDDUPNOTHREAD
-    if (contextThreadLaunchSplit (contptr, (ContextSplitFunc) dgraphFoldDup2, &fldspltdat) == 0) /* If context could be split to run concurrently */
-      thrdval = 1;                                /* No need to go through sequantial run */
+      if (contextThreadLaunchSplit (contptr, (ContextSplitFunc) dgraphFoldDup2, &fldspltdat) == 0) /* If context could be split to run concurrently */
+        thrdval = 1;                                /* No need to go through sequantial run */
 #endif /* DGRAPHFOLDDUPNOTHREAD */
+    }
   }
 #endif /* SCOTCH_PTHREAD_MPI */
 
@@ -167,8 +178,10 @@ Context * restrict const      contptr)            /*+ Context                   
       dgraphFoldDup2 (contptr, 1, &fldspltdat);
   }
 #ifdef SCOTCH_PTHREAD_MPI
-  if (thrdprolvl >= MPI_THREAD_MULTIPLE)          /* If duplicated communicator was created, free it */
-    MPI_Comm_free (&orggrafdat.proccomm);
+  if (thrdprolvl >= MPI_THREAD_MULTIPLE) {        /* If duplicated communicator was created, free it  */
+    if (thrdglbmin > 1)                           /* If all processes have multiple threads available */
+      MPI_Comm_free (&orggrafdat.proccomm);
+  }
 #endif /* SCOTCH_PTHREAD_MPI */
 
   fldgrafptr->pkeyglbval = fldproccol;            /* Discriminate between folded communicators at same level */
