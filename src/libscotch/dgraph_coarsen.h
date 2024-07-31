@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2012,2014,2018,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2012,2014,2018,2020,2021,2023,2024 Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 17 jun 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 12 aug 2023     **/
+/**                                 to   : 31 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -163,6 +163,7 @@ typedef struct DgraphCoarsenData_ {
   Gnum                      degrlocmax;           /*+ Local maximum degree of coarse graph                         +*/
   Gnum                      coarhashmsk;          /*+ Mask value of adjacency hash table (TRICK: size - 1)         +*/
   DgraphCoarsenThread *     thrdtab;              /*+ Optional array for adjacency splitting across threads        +*/
+  int                       thrdmin;              /*+ Minimum number of threads across all processes               +*/
   Context *                 contptr;              /*+ Execution context                                            +*/
 } DgraphCoarsenData;
 
