@@ -100,8 +100,8 @@ char *              argv[])
     SCOTCH_errorPrint ("main: Cannot initialize (2)");
 #endif /* SCOTCH_PTHREAD */
 
-  if (argc != 2) {
-    SCOTCH_errorPrint ("main: invalid number of parameters");
+  if (argc != 3) {
+    SCOTCH_errorPrint ("usage: %s graph_file mapping_file", argv[0]);
     exit (EXIT_FAILURE);
   }
 
@@ -191,7 +191,7 @@ char *              argv[])
     MPI_Barrier (proccomm);
 
     if (procnum == proclocnum) {
-      if ((file = fopen ("/tmp/test_scotch_dgraph_grow.map", (procnum == 0) ? "w" : "a+")) == NULL) {
+      if ((file = fopen (argv[2], (procnum == 0) ? "w" : "a+")) == NULL) {
         SCOTCH_errorPrint ("main: cannot open mapping file");
         exit (EXIT_FAILURE);
       }

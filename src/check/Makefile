@@ -454,8 +454,8 @@ test_strat_par			:	test_strat_par.c		\
 ##
 
 check_scotch_dgraph_band	:	test_scotch_dgraph_band
-					$(EXECP3) ./test_scotch_dgraph_band data/bump.grf
-					$(EXECP3) ./test_scotch_dgraph_band data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_band data/bump.grf $(TMPDIR)/test_scotch_dgraph_band.map
+					$(EXECP3) ./test_scotch_dgraph_band data/bump_b100000.grf $(TMPDIR)/test_scotch_dgraph_band.map
 
 test_scotch_dgraph_band		:	test_scotch_dgraph_band.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -482,8 +482,8 @@ test_scotch_dgraph_check	:	test_scotch_dgraph_check.c	\
 ##
 
 check_scotch_dgraph_grow	:	test_scotch_dgraph_grow
-					$(EXECP3) ./test_scotch_dgraph_grow data/bump.grf
-					$(EXECP3) ./test_scotch_dgraph_grow data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_grow data/bump.grf $(TMPDIR)/test_scotch_dgraph_grow.map
+					$(EXECP3) ./test_scotch_dgraph_grow data/bump_b100000.grf $(TMPDIR)/test_scotch_dgraph_grow.map
 
 test_scotch_dgraph_grow		:	test_scotch_dgraph_grow.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)

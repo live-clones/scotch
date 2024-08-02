@@ -232,8 +232,8 @@ if(BUILD_PTSCOTCH)
 
   # test_scotch_dgraph_band
   add_exec_ptscotch(test_scotch_dgraph_band)
-  add_test_ptscotch(test_scotch_dgraph_band ${CMAKE_CURRENT_SOURCE_DIR}/data/bump.grf)
-  add_test_ptscotch(test_scotch_dgraph_band ${CMAKE_CURRENT_SOURCE_DIR}/data/bump_b100000.grf)
+  add_test_ptscotch(test_scotch_dgraph_band ${CMAKE_CURRENT_SOURCE_DIR}/data/bump.grf test_scotch_dgraph_band.map)
+  add_test_ptscotch(test_scotch_dgraph_band ${CMAKE_CURRENT_SOURCE_DIR}/data/bump_b100000.grf test_scotch_dgraph_band.map)
 
   # test_scotch_dgraph_coarsen
   add_exec_ptscotch(test_scotch_dgraph_coarsen)
@@ -248,8 +248,8 @@ if(BUILD_PTSCOTCH)
 
   # test_scotch_dgraph_grow
   add_exec_ptscotch(test_scotch_dgraph_grow)
-  add_test_ptscotch(test_scotch_dgraph_grow ${CMAKE_CURRENT_SOURCE_DIR}/data/bump.grf)
-  add_test_ptscotch(test_scotch_dgraph_grow ${CMAKE_CURRENT_SOURCE_DIR}/data/bump_b100000.grf)
+  add_test_ptscotch(test_scotch_dgraph_grow ${CMAKE_CURRENT_SOURCE_DIR}/data/bump.grf test_scotch_dgraph_grow.map)
+  add_test_ptscotch(test_scotch_dgraph_grow ${CMAKE_CURRENT_SOURCE_DIR}/data/bump_b100000.grf test_scotch_dgraph_grow.map)
 
   # test_scotch_dgraph_induce
   add_exec_ptscotch(test_scotch_dgraph_induce)
