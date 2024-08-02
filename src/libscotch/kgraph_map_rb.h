@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2014,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2014,2018,2019,2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,7 +64,7 @@
 /**                # Version 6.0  : from : 07 aug 2014     **/
 /**                                 to   : 03 aug 2018     **/
 /**                # Version 7.0  : from : 23 aug 2019     **/
-/**                                 to   : 27 jul 2021     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,6 +117,7 @@ typedef struct KgraphMapRbParam_ {
 
 typedef struct KgraphMapRbData_ {
   const Graph *             grafptr;              /*+ Pointer to top-level graph, possibly with fixed vertices +*/
+  ArchDom                   domnorg;              /*+ Initial mapping (sub)domain                              +*/
   Mapping *                 mappptr;              /*+ Mapping to compute                                       +*/
   struct {                                        /*+ Remapping structure                                      +*/
     const Mapping *         mappptr;              /*+ Old mapping (for remapping only)                         +*/

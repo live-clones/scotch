@@ -1,4 +1,4 @@
-/* Copyright 2009-2011,2013-2016,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2011,2013-2016,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.1  : from : 19 apr 2021     **/
 /**                                 to   : 30 jun 2021     **/
 /**                # Version 7.0  : from : 24 aug 2019     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -217,8 +217,9 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   bandgrafptr->levlnum     = grafptr->levlnum;
   bandgrafptr->contptr     = grafptr->contptr;
 
-  mapInit2 (&bandgrafptr->m,   &bandgrafptr->s, grafptr->m.archptr,   &grafptr->m.domnorg,   grafptr->m.domnmax,   domnnbr);
-  mapInit2 (&bandgrafptr->r.m, &bandgrafptr->s, grafptr->r.m.archptr, &grafptr->r.m.domnorg, grafptr->r.m.domnmax, grafptr->r.m.domnnbr);
+  bandgrafptr->domnorg = grafptr->domnorg;        /* Keep initial domain */
+  mapInit2 (&bandgrafptr->m,   &bandgrafptr->s, grafptr->m.archptr,   grafptr->m.domnmax,   domnnbr);
+  mapInit2 (&bandgrafptr->r.m, &bandgrafptr->s, grafptr->r.m.archptr, grafptr->r.m.domnmax, grafptr->r.m.domnnbr);
 
   bandgrafptr->m.domntab = grafptr->m.domntab;    /* Band mapping domain array is a clone of mapping (no freeing) */
   if (mapAlloc (&bandgrafptr->m) != 0) {          /* Allocate band mapping part array                             */

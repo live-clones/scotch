@@ -49,7 +49,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 03 may 2021     **/
-/**                                 to   : 11 jul 2023     **/
+/**                                 to   : 16 jul 2023     **/
 /**                                                        **/
 /**   NOTES      : # This is a rewrite of kgraphMapRb()    **/
 /**                  for complete-graph target topologies. **/
@@ -380,7 +380,7 @@ Context * restrict const                contptr)  /*+ Execution context         
   spltdat.splttab[0].vertnbr = grafptr->vertnbr;  /* Start from initial domain */
   spltdat.splttab[0].vflonbr = vflonbr;
   spltdat.splttab[0].vflotab = vflotab;
-  spltdat.splttab[0].domnptr = &mappptr->domnorg; /* Point to initial domain to avoid centralized locking on domain array */
+  spltdat.splttab[0].domnptr = &dataptr->domnorg; /* Point to initial domain to avoid centralized locking on domain array */
   spltdat.dataptr = dataptr;
   spltdat.grafptr = grafptr;
   spltdat.parttax = NULL;

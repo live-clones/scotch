@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 27 aug 2020     **/
 /**                # Version 7.0  : from : 22 jun 2021     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -112,8 +112,9 @@ const Gnum * restrict const     vmlotax)          /*+ Vertex migration cost arra
     domnptr = &domndat;
   }
 
+  actgrafptr->domnorg = *domnptr;                 /* Copy initial domain              */
   mapInit  (&actgrafptr->m,   &actgrafptr->s, archptr, domnptr); /* Compute m.domnmax */
-  mapInit2 (&actgrafptr->r.m, &actgrafptr->s, archptr, domnptr, actgrafptr->m.domnmax, 0);
+  mapInit2 (&actgrafptr->r.m, &actgrafptr->s, archptr, actgrafptr->m.domnmax, 0);
 
   actgrafptr->s.flagval  |= KGRAPHFREECOMP | KGRAPHFREEFRON; /* Load arrays always grouped */
   actgrafptr->comploadavg = NULL;                 /* In case of allocation error           */
@@ -191,7 +192,7 @@ kgraphFrst (
 Kgraph * restrict const     grafptr)
 {
   grafptr->m.domnnbr    = 1;
-  grafptr->m.domntab[0] = grafptr->m.domnorg;     /* Use initial (sub)domain as root */
+  grafptr->m.domntab[0] = grafptr->domnorg;       /* Use initial (sub)domain as root */
 
   memSet (grafptr->m.parttax + grafptr->s.baseval, 0, grafptr->s.vertnbr * sizeof (Anum)); /* Set all vertices to subdomain 0 */
   memSet (grafptr->comploadavg + 1, 0, (2 * grafptr->m.domnmax - 1) * sizeof (Gnum));

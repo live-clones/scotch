@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -69,7 +69,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 jun 2019     **/
 /**                # Version 7.0  : from : 23 aug 2019     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -127,9 +127,9 @@ const KgraphMapRbParam * restrict const paraptr)
 
   grafptr->kbalval = paraptr->kbalval;            /* Store last k-way imbalance ratio */
 
-  datadat.grafptr = &grafptr->s;
-  datadat.mappptr = &grafptr->m;
-
+  datadat.grafptr     = &grafptr->s;
+  datadat.domnorg     = grafptr->domnorg;
+  datadat.mappptr     = &grafptr->m;
   datadat.r.mappptr   = (grafptr->r.m.parttax != NULL) ? &grafptr->r.m : NULL;
   datadat.r.vmlotax   = grafptr->r.vmlotax;
   datadat.r.cmloval   = grafptr->r.cmloval;

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011,2012,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2012,2014,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,7 +67,7 @@
 /**                # Version 6.0  : from : 04 mar 2011     **/
 /**                                 to   : 26 fev 2018     **/
 /**                # Version 7.0  : from : 15 jul 2021     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -107,17 +107,16 @@ const ArchDom * restrict const  domnptr)          /*+ Target architecture initia
             : archDomSize (archptr, domnptr);     /* Else get architecture size                  */
   domnmax ++;                                     /* +1 for empty domain in mapBuild()/mapLoad() */
 
-  mapInit2 (mappptr, grafptr, archptr, domnptr, domnmax, 0);
+  mapInit2 (mappptr, grafptr, archptr, domnmax, 0);
 }
 
 void
 mapInit2 (
-Mapping * restrict const        mappptr,          /*+ Mapping structure                  +*/
-const Graph * restrict const    grafptr,          /*+ Graph data                         +*/
-const Arch * restrict const     archptr,          /*+ Architecture data                  +*/
-const ArchDom * restrict const  domnptr,          /*+ Target architecture initial domain +*/
-const Anum                      domnmax,
-const Anum                      domnnbr)
+Mapping * restrict const        mappptr,          /*+ Mapping structure                         +*/
+const Graph * restrict const    grafptr,          /*+ Graph data                                +*/
+const Arch * restrict const     archptr,          /*+ Architecture data                         +*/
+const Anum                      domnmax,          /*+ Size of domain array                      +*/
+const Anum                      domnnbr)          /*+ Current number of domains in domain array +*/
 {
   mappptr->flagval = MAPPINGNONE;
   mappptr->grafptr = grafptr;
@@ -126,7 +125,6 @@ const Anum                      domnnbr)
   mappptr->domntab = NULL;
   mappptr->domnnbr = domnnbr;
   mappptr->domnmax = domnmax;
-  mappptr->domnorg = *domnptr;                    /* Use provided domain as original domain (e.g. when running a piece of parallel partitioning) */
 }
 
 /* This routine allocates the contents of a mapping.
@@ -224,10 +222,11 @@ const Anum                  domnmax)
 
 void
 mapFrst (
-Mapping * restrict const    mappptr)              /*+ Mapping structure to fill +*/
+Mapping * restrict const        mappptr,          /*+ Mapping structure to fill +*/
+const ArchDom * restrict const  domnptr)          /*+ Initial (sub)domain       +*/
 {
   mappptr->domnnbr = 1;                           /* One domain in mapping to date */
-  mappptr->domntab[0] = mappptr->domnorg;         /* Set first domain              */
+  mappptr->domntab[0] = *domnptr;                 /* Set initial domain            */
   memSet (mappptr->parttax + mappptr->grafptr->baseval, 0, mappptr->grafptr->vertnbr * sizeof (Anum)); /* Set parttax to first domain */
 }
 

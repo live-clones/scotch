@@ -1,4 +1,4 @@
-/* Copyright 2010,2011,2012,2014,2015,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2011,2012,2014,2015,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 25 feb 2018     **/
 /**                # Version 7.0  : from : 03 aug 2018     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -105,8 +105,9 @@ const KgraphMapMlParam * const        paraptr)    /*+ Method parameters         
                     finegrafptr->r.m.parttax, finepfixtax, finegrafptr->vfixnbr, finegrafptr->contptr) != 0)
     return (1);
 
-  mapInit2 (&coargrafptr->m,   &coargrafptr->s, finegrafptr->m.archptr,   &finegrafptr->m.domnorg,   finegrafptr->m.domnmax,   finegrafptr->m.domnnbr);
-  mapInit2 (&coargrafptr->r.m, &coargrafptr->s, finegrafptr->r.m.archptr, &finegrafptr->r.m.domnorg, finegrafptr->r.m.domnmax, finegrafptr->r.m.domnnbr);
+  coargrafptr->domnorg = finegrafptr->domnorg;    /* Keep initial domain */
+  mapInit2 (&coargrafptr->m,   &coargrafptr->s, finegrafptr->m.archptr,   finegrafptr->m.domnmax,   finegrafptr->m.domnnbr);
+  mapInit2 (&coargrafptr->r.m, &coargrafptr->s, finegrafptr->r.m.archptr, finegrafptr->r.m.domnmax, finegrafptr->r.m.domnnbr);
   coargrafptr->m.domntab = finegrafptr->m.domntab; /* Get domain private array, if any */
 
   coargrafptr->comploadavg = finegrafptr->comploadavg; /* By default, use fine target load arrays as coarse load arrays */

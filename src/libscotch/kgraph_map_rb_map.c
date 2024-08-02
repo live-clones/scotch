@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -70,7 +70,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 22 mar 2023     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -883,7 +883,7 @@ Context * const                         contptr)  /*+ Execution context         
 
   Mapping * restrict const  mappptr = dataptr->mappptr;
 
-  mapFrst (mappptr);                              /* Initialize mapping */
+  mapFrst (mappptr, &dataptr->domnorg);           /* Initialize mapping */
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (dataptr->pfixtax != NULL) {                 /* In debug mode, fixed vertex parts are set to ~0 */
     Gnum                vertnnd;
@@ -903,13 +903,13 @@ Context * const                         contptr)  /*+ Execution context         
   if (kgraphMapRbMapPoolInit (&pooldat, dataptr, contptr) != 0) /* Initialize pool data; done first for kgraphMapRbMapPoolExit() to succeed afterwards */
     return (1);
 
-  if ((((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) == 0) && (archDomSize (mappptr->archptr, &mappptr->domnorg) <= 1)) || /* If single-vertex domain   */
+  if ((((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) == 0) && (archDomSize (mappptr->archptr, &dataptr->domnorg) <= 1)) || /* If single-vertex domain   */
       (((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) != 0) && (grafptr->vertnbr <= 1))) { /* Or if variable-sized architecture with single vertex graph */
     kgraphMapRbMapPoolExit (&pooldat);
     return (0);                                   /* Job already done */
   }
 
-  pooldat.jobtab[0].domnorg = mappptr->domnorg;   /* Build first job                         */
+  pooldat.jobtab[0].domnorg = dataptr->domnorg;   /* Build first job                         */
   pooldat.jobtab[0].grafdat = *grafptr;           /* Clone induced graph as first job graph  */
   pooldat.jobtab[0].grafdat.flagval &= ~GRAPHFREETABS; /* Do not free its arrays on exit     */
   pooldat.jobtab[0].vflonbr = vflonbr;            /* Record initial list of fixed load slots */
