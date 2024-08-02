@@ -1,4 +1,4 @@
-/* Copyright 2008,2011,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2011,2014,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,6 +35,7 @@
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Sebastien FOURESTIER (v6.0)             **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the data declaration    **/
 /**                for the Dual Recursive Bipartitioning   **/
@@ -45,7 +46,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 06 may 2021     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 11 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,4 +80,4 @@ typedef struct KgraphMapRbPartSplit_ {
 static void                 kgraphMapRbPart2    (Context * restrict const, const int, KgraphMapRbPartSplit * const);
 #endif /* SCOTCH_KGRAPH_MAP_RB_PART */
 
-int                         kgraphMapRbPart     (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict, Context * restrict const);
+int                         kgraphMapRbPart     (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict const, Context * restrict const);
