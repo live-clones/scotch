@@ -1,4 +1,4 @@
-/* Copyright 2010,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**    DATES     : # Version 5.1  : from : 30 jul 2010     **/
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 02 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,6 +82,11 @@ MPI_Comm                    comm)
   int                 procglbnbr;
   int                 procnum;
   int                 o;
+
+  if (sizeof (Gnum) == sizeof (int))              /* If no integer size issue, directly call the MPI routine */
+    return (MPI_Allgatherv (senddattab, (int) sendcntnbr, sendtypval,
+                            recvdattab, (const int * const) recvcnttab, (const int * const) recvdsptab,
+                            recvtypval, comm));
 
   MPI_Comm_size (comm, &procglbnbr);
   if (memAllocGroup ((void **) (void *)
@@ -130,6 +135,11 @@ MPI_Comm                    comm)
   int * restrict      ircvdsptab;
   int                 proclocnum;
   int                 o;
+
+  if (sizeof (Gnum) == sizeof (int))              /* If no integer size issue, directly call the MPI routine */
+    return (MPI_Gatherv (senddattab, (int) sendcntnbr, sendtypval,
+                         recvdattab, (const int * const) recvcnttab, (const int * const) recvdsptab,
+                         recvtypval, rootnum, comm));
 
   MPI_Comm_rank (comm, &proclocnum);
 
@@ -188,6 +198,11 @@ MPI_Comm                    comm)
   int * restrict      isnddsptab;
   int                 proclocnum;
   int                 o;
+
+  if (sizeof (Gnum) == sizeof (int))              /* If no integer size issue, directly call the MPI routine */
+    return (MPI_Scatterv (senddattab, (const int * const) sendcnttab, (const int * const) senddsptab, sendtypval,
+                          recvdattab, (int) recvcntnbr,
+                          recvtypval, rootnum, comm));
 
   MPI_Comm_rank (comm, &proclocnum);
 

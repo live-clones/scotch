@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 19 jul 2024     **/
+/**                                 to   : 02 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -715,11 +715,9 @@
 #define bgraphStoreSave             SCOTCH_NAME_INTERN (bgraphStoreSave)
 #define bgraphStoreUpdt             SCOTCH_NAME_INTERN (bgraphStoreUpdt)
 
-#if ((defined INTSIZE64) || (defined SCOTCH_COMM))
 #define commAllgatherv              SCOTCH_NAME_INTERN (commAllgatherv)
 #define commGatherv                 SCOTCH_NAME_INTERN (commGatherv)
 #define commScatterv                SCOTCH_NAME_INTERN (commScatterv)
-#endif /* ((defined INTSIZE64) || (defined SCOTCH_COMM)) */
 
 #define contextOptionsInit          SCOTCH_NAME_INTERN (contextOptionsInit)
 
