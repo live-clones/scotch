@@ -222,7 +222,7 @@ if(BUILD_PTSCOTCH)
   function(add_test_ptscotch)
     set(args ${ARGV})
     list(REMOVE_AT args 0) # in place of POP_FRONT which is available only for cmake >3.15
-    string(REGEX REPLACE "^(.+)/data/(.+)\\.grf$" "\\2" arg_ext ${args})
+    string(REGEX REPLACE "^(.+)/data/(.+)\\.grf" "\\2" arg_ext ${args})
     add_test(NAME ${ARGV0}_${arg_ext} COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:${ARGV0}> ${args})
   endfunction(add_test_ptscotch)
 
