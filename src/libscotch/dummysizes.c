@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2010,2012,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2010,2012,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@
 /**                # Version 6.1  : from : 09 feb 2021     **/
 /**                                 to   : 22 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 06 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -319,10 +319,9 @@ char *                      argv[])
   }
 
   while (fgets (chartab, CHARMAX, C_filepntrhedinp) != NULL) { /* Loop on file lines */
-    int                 charnbr;
     int                 subsnum;
 
-    if (((charnbr = strlen (chartab)) >= (CHARMAX - 1)) && /* If line read is at least as long as maximum size     */
+    if ((strlen (chartab)) >= (CHARMAX - 1) &&    /* If line read is at least as long as maximum size              */
         (chartab[CHARMAX - 1] != '\n')) {         /* And last character is not a newline, that is, some is missing */
       fprintf (stderr, "dummysizes: ERROR: line too long\n");
       exit    (EXIT_FAILURE);
