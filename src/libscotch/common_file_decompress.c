@@ -128,7 +128,7 @@ const char * const          nameptr)              /*+ Name string +*/
 }
 
 /* This routine creates a thread to decompress the
-** given stream according to the given (un)compression
+** given stream according to the given (de)compression
 ** algorithm.
 ** If threads are available, decompression will be
 ** performed by an auxiliary thread. Else, a child process
@@ -176,7 +176,7 @@ FileCompress * const        compptr)
 int
 fileDecompress (
 File * const                fileptr,              /*+ Compressed input stream   +*/
-const int                   typeval)              /*+ (Un)compression algorithm +*/
+const int                   typeval)              /*+ (De)compression algorithm +*/
 {
   int                 filetab[2];
   FILE *              readptr;
