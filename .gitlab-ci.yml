@@ -40,15 +40,16 @@ stages:
         JOB_DEBUG: [a]
         JOB_RENAME: [r]
 
+# Default cache
 
-# default cache
 .cache_default: &cache_default
   untracked: true
   when: 'always'
 
-## GNU Makefile pipeline
+# GNU Makefile pipeline
 
-# build
+## Build
+
 .build_makefile: &build_makefile
   stage: build
   script:
@@ -72,7 +73,8 @@ scotch_build_64:
     <<: *cache_default
   <<: *matrix_64
 
-# test
+## Test
+
 .test_makefile: &test_makefile
   stage: test
   artifacts:
@@ -98,7 +100,8 @@ scotch_test_64:
     <<: *cache_default
   <<: *matrix_64
 
-# sonarqube analysis if schedule job
+## Sonarqube analysis if scheduled job
+
 scotch_sonar:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -121,14 +124,16 @@ scotch_sonar:
         coverage_format: cobertura
         path: coverage.xml
 
-## CMake pipeline (not done if schedule)
+# CMake pipeline (not done if scheduled)
 
-# specific rule: not triggered if schedule pipeline (for cmake jobs for example)
+## Specific rule: not triggered if scheduled pipeline (for CMake jobs, for example)
+
 .rule_noschedule: &rule_noschedule
   rules:
     - if: $CI_PIPELINE_SOURCE != "schedule"
 
-# build
+## Build
+
 .build_cmake: &build_cmake
   <<: *rule_noschedule
   stage: build
@@ -166,7 +171,8 @@ build_cmake_intel:
     policy: push
     <<: *cache_default
 
-# test
+## Test
+
 .test_cmake: &test_cmake
   <<: *rule_noschedule
   stage: test
