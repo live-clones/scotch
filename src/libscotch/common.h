@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 04 jul 2024     **/
+/**                                 to   : 06 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -414,11 +414,6 @@ void                        fileBlockInit       (File * const, const int);
 int                         fileBlockOpen       (File * const, const int);
 int                         fileBlockOpenDist   (File * const, const int, const int, const int, const int);
 void                        fileBlockClose      (File * const, const int);
-int                         fileCompress        (File * const, const int);
-void                        fileCompressExit    (File * const);
-int                         fileCompressType    (const char * const);
-int                         fileDecompress      (File * const, const int);
-int                         fileDecompressType  (const char * const);
 char *                      fileNameDistExpand  (char * const, const int, const int);
 
 void                        errorProg           (const char * const);

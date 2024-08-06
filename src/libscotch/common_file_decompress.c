@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2015,2018,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2015,2018,2020,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 27 apr 2015     **/
 /**                                 to   : 30 aug 2020     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 06 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -176,7 +176,7 @@ FileCompress * const        compptr)
 int
 fileDecompress (
 File * const                fileptr,              /*+ Compressed input stream   +*/
-const int                   typeval)              /*+ (De)compression algorithm +*/
+const FileCompressType      typeval)              /*+ (De)compression algorithm +*/
 {
   int                 filetab[2];
   FILE *              readptr;
