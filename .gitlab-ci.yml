@@ -171,6 +171,16 @@ build_cmake_intel:
     policy: push
     <<: *cache_default
 
+build_cmake_pgi:
+  <<: *build_cmake
+  variables:
+    CC: "pgcc"
+    FC: "pgf90"
+  cache:
+    key: cmake_pgi
+    policy: push
+    <<: *cache_default
+
 ## Test
 
 .test_cmake: &test_cmake
@@ -217,5 +227,17 @@ test_cmake_intel:
     FC: "ifx"
   cache:
     key: cmake_intel
+    policy: pull-push
+    <<: *cache_default
+
+test_cmake_pgi:
+  <<: *test_cmake
+  needs:
+    - build_cmake_pgi
+  variables:
+    CC: "pgcc"
+    FC: "pgf90"
+  cache:
+    key: cmake_pgi
     policy: pull-push
     <<: *cache_default
