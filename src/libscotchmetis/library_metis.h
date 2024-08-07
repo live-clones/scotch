@@ -9,7 +9,7 @@
 **  the libScotchMeTiS library.                         **
 **                                                      **
 *********************************************************/
-/* Copyright 2007,2010,2012,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2018,2019,2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,6 +60,8 @@
 /**                                 to   : 17 jun 2019     **/
 /**                # Version 6.1  : from : 09 feb 2021     **/
 /**                                 to   : 30 dec 2021     **/
+/**                # Version 7.0  : from : 07 aug 2024     **/
+/**                                 to   : 07 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -150,9 +152,9 @@ typedef enum {
 **  The type and structure definitions.
 */
 
-#ifndef SCOTCH_H                                  /* In case "scotch.h" not included before */
-typedef DUMMYINT SCOTCH_Num;
-#endif /* SCOTCH_H */
+#ifndef LIB_SCOTCH_H                              /* In case "scotch.h" not included before */
+typedef int SCOTCH_Num;
+#endif /* LIB_SCOTCH_H */
 
 /*
 **  The function prototypes.
