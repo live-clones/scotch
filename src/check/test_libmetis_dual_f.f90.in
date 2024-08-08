@@ -1,4 +1,4 @@
-!* Copyright 2021 IPB, Universite de Bordeaux, INRIA & CNRS
+!* Copyright 2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 !*
 !* This file is part of the Scotch software package for static mapping,
 !* graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 !*   NAME       : test_libmetis_dual_f.f90                **
 !*                                                        **
 !*   AUTHOR     : Marc FUENTES                            **
+!*                Francois PELLEGRINI                     **
 !*                                                        **
 !*   FUNCTION   : This module tests te operation of       **
 !*                libscotchmetis dual graph routines.     **
