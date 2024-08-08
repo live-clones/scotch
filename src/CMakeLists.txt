@@ -56,6 +56,9 @@ endif(APPLE)
 if(MINGW OR MSYS OR WIN32)
   add_definitions(-DCOMMON_OS_WINDOWS)
 endif(MINGW OR MSYS OR WIN32)
+if(MSVC)
+  add_definitions(-D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS)
+endif(MSVC)
 
 # Detect FreeBSD
 if(${CMAKE_HOST_SYSTEM_NAME}} MATCHES "^.*FreeBSD.*$")
