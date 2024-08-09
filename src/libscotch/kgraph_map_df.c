@@ -149,7 +149,7 @@ KgraphMapDfData * restrict const  loopptr)
   const Arch * restrict const         archptr = grafptr->m.archptr;
   const Anum                          domnnbr = grafptr->m.domnnbr;
   Anum * restrict const               parttax = grafptr->m.parttax;
-  const Gnum                          crloval = grafptr->r.crloval;
+  const float                         crloval = (float) grafptr->r.crloval;
   const Anum * restrict const         parotax = grafptr->r.m.parttax;
   const Gnum * restrict const         verttax = grafptr->s.verttax;
   const Gnum * restrict const         vendtax = grafptr->s.vendtax;
@@ -270,7 +270,7 @@ KgraphMapDfData * restrict const  loopptr)
     else {
       comploadbal = grafptr->comploadavg[domnnum];
       vancval = ((float) comploadbal - valotab[domnnum]) / (float) velstax[vancnnd + domnnum]; /* Amount of liquid to be added at each step */
-      vanctab[domnnum] = comploadbal;
+      vanctab[domnnum] = (float) comploadbal;
     }
     difotax[vertnum].diffval = vancval;           /* Load anchor vertices for first pass */
     difotax[vertnum].partval =
@@ -312,7 +312,7 @@ KgraphMapDfData * restrict const  loopptr)
       Gnum                soplval;                /* Load sum of edges going to vertex old part                 */
       Gnum                sfplval;                /* Load sum of edges going to vertex of other parts           */
       Gnum                dfplval;                /* Load sum of edges going to vertex of other parts * distval */
-      Gnum                migrval;
+      float               migrval;
       Anum                partnbr;                /* Number of active parts */
       Anum                partnum;
       float               diffval;
@@ -337,7 +337,7 @@ KgraphMapDfData * restrict const  loopptr)
         Gnum                edloval;
 
         vertend = edgetax[edgenum];
-        edloval = (edlotax != NULL) ? (float) edlotax[edgenum] : 1.0F;
+        edloval = (edlotax != NULL) ? edlotax[edgenum] : 1;
 
         partval = difotax[vertend].partval;
         diffval = difotax[vertend].diffval;       /* Value is not yet scaled with respect to diffusion coefficient */
@@ -348,7 +348,7 @@ KgraphMapDfData * restrict const  loopptr)
         if ((mappflag == 1) && (partval != partcur))
           diffval = fdifval;
 
-        diffval *= edloval * crloval;
+        diffval *= (float) edloval * crloval;
         if (parotax != NULL) {
           if (difotax[vertnum].partval == parotax[vertend])
             diffval += mdisval;
@@ -414,14 +414,14 @@ endloop1 : ;
       diffval -= veloval;                         /* Leak liquid from barrel               */
       if (diffval <= 0.0F)                        /* Amount of liquid cannot be negative   */
         diffval = 0.0F;
-      migrval = ((soplval == 0) || (soplval == velstax[vertnum])) ? 0 : grafptr->r.cmloval * ((grafptr->r.vmlotax != NULL) ? grafptr->r.vmlotax[vertnum] : 1);
+      migrval = ((soplval == 0) || (soplval == velstax[vertnum])) ? 0.0F : (float) grafptr->r.cmloval * ((grafptr->r.vmlotax != NULL) ? (float) grafptr->r.vmlotax[vertnum] : 1.0F);
       if (migrval > diffval) {
         migrval = diffval;
         diffval = 0;
       }
       else
         diffval -= migrval;
-      diffval = diffval / (velstax[vertnum] * crloval);
+      diffval = diffval / ((float) velstax[vertnum] * crloval);
       if (isnan (diffval)) {                      /* If overflow occured */
 #ifdef SCOTCH_DEBUG_KGRAPH2
         errorPrintW ("kgraphMapDfLoop: overflow (1)");
@@ -431,18 +431,18 @@ endloop1 : ;
       }
 
       if (parotax != NULL) {
-        if (migrval == 0) {
+        if (migrval == 0.0F) {
           difntax[vertnum].mdisval =
-          difntax[vertnum].mdidval = 0;
+          difntax[vertnum].mdidval = 0.0F;
         }
         else {
           if (parotax[vertnum] == sorttab[0].partval) {
-            difntax[vertnum].mdisval = migrval / soplval;
-            difntax[vertnum].mdidval = 0;
+            difntax[vertnum].mdisval = migrval / (float) soplval;
+            difntax[vertnum].mdidval = 0.0F;
           }
           else {
-            difntax[vertnum].mdisval = 0;
-            difntax[vertnum].mdidval = migrval / (velstax[vertnum] - soplval);
+            difntax[vertnum].mdisval = 0.0F;
+            difntax[vertnum].mdidval = migrval / (float) (velstax[vertnum] - soplval);
           }
         }
       }
@@ -506,7 +506,7 @@ endloop2 : ;
       else
         diffval += vanctab[domnnum];
 
-      diffval = (diffval - valotab[domnnum]) / (velstax[vertnum] * crloval); /* Add input and leak liquid from barrel */
+      diffval = (diffval - valotab[domnnum]) / ((float) velstax[vertnum] * crloval); /* Add input and leak liquid from barrel */
 
       if (diffval <= 0.0F)                        /* Amount of liquid cannot be negative   */
         diffval = 0.0F;
