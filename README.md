@@ -95,10 +95,13 @@ Contributing to Scotch
 To report a bug or discuss potential improvements, You can contact directly the PI at <francois.pellegrini@u-bordeaux.fr>. However, the GitLab environment provides features that are worth taking advantage of, so we recommend you to take the time to use them. Before reporting a bug or submitting a patch in the Inria GitLab environment, you will need an account on the server.
 **Please dot not hesitate to send an e-mail to <marc.fuentes@inria.fr> so that we create an account for you on the Inria Gitlab repository**. You will then be able to open issues in the bug tracker, request features, or propose patches using the "merge requests" feature.
 
+
 Past and current contributors
 -----------------------------
 
 The following people contribute(d) to the development of **Scotch**:
+
+* Clément BARTHÉLEMY
 
 * Cédric CHEVALIER
 
@@ -114,11 +117,14 @@ The following people contribute(d) to the development of **Scotch**:
 
 * Selmane LEBDAOUI
 
+* Tetsuo MISHIMA
+
 * François PELLEGRINI (PI)
 
 * Florent PRUVOST
 
 * Luca SCARANO
+
 
 Citing Scotch
 -------------
