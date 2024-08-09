@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014-2016,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 19 aug 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -243,8 +243,8 @@ IntRandContext * const      randptr)
 
   randptr->flagval = 1;                           /* Generator has been initialized */
 
-  randval = (((UINT64) randptr->seedval) | 1) * (((UINT64) randptr->procval) + 1); /* Account for process index */
-  intRandSeed2 (&randptr->statdat, randval);      /* Initialize state vector from random seed                   */
+  randval = (INT) ((((UINT64) randptr->seedval) | 1) * (((UINT64) randptr->procval) + 1)); /* Account for process index */
+  intRandSeed2 (&randptr->statdat, randval);      /* Initialize state vector from random seed                           */
 }
 
 void
@@ -282,7 +282,7 @@ IntRandContext * const      rnewptr)
 
   seedval = roldptr->statdat.randtab[0];          /* Get value from state of old generator */
 
-  intRandSeed (rnewptr, seedval);                 /* Set seed and initialize state */
+  intRandSeed (rnewptr, (INT) seedval);           /* Set seed and initialize state */
 }
 
 /* This routine initializes the pseudo-random
