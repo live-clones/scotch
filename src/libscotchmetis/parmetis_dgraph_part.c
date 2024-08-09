@@ -1,4 +1,4 @@
-/* Copyright 2008-2010,2012,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2010,2012,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 18 may 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 13 mar 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,11 +94,11 @@ SCOTCH_Num * const          intetab)
     if (flotval == flotold)                       /* Skip if same value */
       continue;
 
-    flotold  = flotval;                           /* Remember old value                       */
-    flotval *= flotadj;                           /* See if renormalization factor works      */
-    flottmp  = flotval - floor (flotval + EPSILON); /* Determine its possible fractional part */
-    if (fabs (flottmp) >= EPSILON) {              /* If a residual fractional part exists     */
-      flottmp = flotadj / flottmp;                /* Incorporate it in renormalization factor */
+    flotold  = flotval;                           /* Remember old value                        */
+    flotval *= flotadj;                           /* See if renormalization factor works       */
+    flottmp  = flotval - floorf (flotval + EPSILON); /* Determine its possible fractional part */
+    if (fabs (flottmp) >= EPSILON) {              /* If a residual fractional part exists      */
+      flottmp = flotadj / flottmp;                /* Incorporate it in renormalization factor  */
       flotadj = (flotadj * flottmp) / (float) intGcd ((SCOTCH_Num) round (flotadj), (SCOTCH_Num) round (flottmp));
     }
   }
