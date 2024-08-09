@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2020,2022,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2020,2022,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,7 +57,7 @@
 /**                # Version 6.1  : from : 24 feb 2020     **/
 /**                                 to   : 24 feb 2020     **/
 /**                # Version 7.0  : from : 11 dec 2022     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -242,8 +242,8 @@ const Order * const         ordeptr)              /*+ Matrix ordering           
 
       tlokmax = degrmax + ctrbsum;                /* Maximum possible number of blocks in temporary area */
       sortoft = ((ptrdiff_t) tlokmax) * sizeof (SymbolBlok);
-      if ((((ptrdiff_t) hashsiz) * sizeof (INT)) > sortoft) /* Compute offset of sort area */
-        sortoft = (((ptrdiff_t) hashsiz) * sizeof (INT));
+      if ((((ptrdiff_t) hashsiz) * (ptrdiff_t) sizeof (INT)) > sortoft) /* Compute offset of sort area */
+        sortoft = (((ptrdiff_t) hashsiz) * (ptrdiff_t) sizeof (INT));
       tlokoft = sortoft + ((ptrdiff_t) degrmax) * sizeof (INT); /* Compute offset of temporary block area */
       tlndoft = tlokoft + ((ptrdiff_t) tlokmax) * sizeof (SymbolFaxTlok); /* Compute end of area          */
 
