@@ -788,7 +788,9 @@ DgraphCoarsenData * restrict const  coarptr)
   if (thrdnum == (thrdmin - 1))
     coargrafptr->edgelocsiz = coaredgelocnum - finegrafptr->baseval; /* For non-compact edge array, array size is end of last edge sub-array */
 
+#ifdef SCOTCH_DEBUG_DGRAPH2
 abort1:
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
   memFree (coarhashtab);                          /* Free group leader */
 abort2:
   coarptr->thrdtab[thrdnum].retuval = o;
