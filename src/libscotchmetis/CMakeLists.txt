@@ -94,6 +94,9 @@ foreach(version 3 5)
   set_target_properties(scotchmetisv${version} PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
     SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
   target_compile_definitions(scotchmetisv${version} PUBLIC SCOTCH_METIS_VERSION=${version})
+  if(SCOTCH_METIS_PREFIX)
+    target_compile_definitions(scotchmetisv${version} PUBLIC SCOTCH_METIS_PREFIX)
+  endif(SCOTCH_METIS_PREFIX)
 
   target_include_directories(scotchmetisv${version} PRIVATE
     $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
@@ -166,7 +169,9 @@ if(BUILD_PTSCOTCH)
     set_target_properties(ptscotchparmetisv${version} PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
       SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
     target_compile_definitions(ptscotchparmetisv${version} PUBLIC SCOTCH_PTSCOTCH SCOTCH_METIS_VERSION=${version})
-
+    if(SCOTCH_METIS_PREFIX)
+      target_compile_definitions(ptscotchparmetisv${version} PUBLIC SCOTCH_METIS_PREFIX)
+    endif(SCOTCH_METIS_PREFIX)
     target_include_directories(ptscotchparmetisv${version} PRIVATE
       $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
       $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>

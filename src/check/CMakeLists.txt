@@ -114,6 +114,18 @@ endif(BUILD_LIBESMUMPS)
 
 # Test libScotchMeTiS
 if(BUILD_LIBSCOTCHMETIS)
+  # manage prefix
+  if(NOT SCOTCH_METIS_PREFIXFU)
+    if(NOT SCOTCH_METIS_PREFIX)
+      set(SCOTCH_METIS_PREFIXFU "")
+    else()
+      set(SCOTCH_METIS_PREFIXFU "SCOTCHF")
+    endif(NOT SCOTCH_METIS_PREFIX)
+  endif(NOT SCOTCH_METIS_PREFIXFU)
+  file(READ test_libmetis_dual_f.f90.in FILE_CONTENTS)
+  string(REGEX REPLACE "SCOTCHMETISNAMEFU *\\(([^()]*)\\) *" "${SCOTCH_METIS_PREFIXFU}\\1" FILE_CONTENTS ${FILE_CONTENTS})
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test_libmetis_dual_f.f90 ${FILE_CONTENTS})
+
   foreach(version 3 5)
     add_executable(test_libmetisv${version} test_libmetis.c)
     set_target_properties(test_libmetisv${version} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
@@ -131,7 +143,7 @@ if(BUILD_LIBSCOTCHMETIS)
     target_link_libraries(test_libmetis_dualv${version} scotchmetisv${version} scotch scotcherr)
     add_test(NAME test_libmetis_dualv${version} COMMAND test_libmetis_dualv${version})
     if(${CMAKE_Fortran_COMPILER_SUPPORTS_F90}) # Safeguard to avoid x77 compilers
-      add_executable(test_libmetis_dual_f_v${version} test_libmetis_dual_f.f90)
+      add_executable(test_libmetis_dual_f_v${version} ${CMAKE_CURRENT_BINARY_DIR}/test_libmetis_dual_f.f90)
       target_compile_definitions(test_libmetis_dual_f_v${version} PRIVATE SCOTCH_METIS_VERSION=${version})
       target_include_directories(test_libmetis_dual_f_v${version} PRIVATE ${GENERATED_INCLUDE_DIR})
       target_link_libraries(test_libmetis_dual_f_v${version} scotch scotchmetisv${version} scotcherr)

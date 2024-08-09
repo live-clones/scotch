@@ -76,6 +76,9 @@ option(BUILD_LIBESMUMPS "Build EsMUMPS library" ON)
 # Build libScotchMeTiS
 option(BUILD_LIBSCOTCHMETIS "Build ScotchMeTiS library" ON)
 
+# Prefix Scotch version of MeTiS routines
+option(SCOTCH_METIS_PREFIX "Prefix Scotch version of MeTiS routines" OFF)
+
 # Install our MeTiS header stubs
 option(INSTALL_METIS_HEADERS "Install libScotchMeTiS headers in destination directory" ON)
 
