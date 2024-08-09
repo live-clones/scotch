@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2012,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2012,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 6.1  : from : 21 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 16 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -155,7 +155,7 @@ const VgraphSeparateGgParam * const paraptr)      /*+ Method parameters +*/
       vexxptr->gainlink.tabl = NULL;
 #endif /* SCOTCH_DEBUG_GAIN2 */
 
-      vertnum = vexxptr - vexxtax;                /* Get root vertex based number */
+      vertnum = (Gnum) (vexxptr - vexxtax);       /* Get root vertex based number */
       if (velomsk == 0) {                         /* If vertices are not weighted */
         veloval   = 1;
         compgain2 = vendtax[vertnum] - verttax[vertnum] - 1;
@@ -178,7 +178,7 @@ const VgraphSeparateGgParam * const paraptr)      /*+ Method parameters +*/
         Gnum                        edgenum;
         Gnum                        cmpldlt;      /* Temporary delta value */
 
-        vertnum = vexxptr - vexxtax;              /* Get number of selected vertex */
+        vertnum = (Gnum) (vexxptr - vexxtax);     /* Get number of selected vertex */
         veloval = velobax[vertnum & velomsk];
         cmpldlt = comploaddlt - veloval * dwg0val;
 
