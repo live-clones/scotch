@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011,2012,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011,2012,2018,2019,2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 08 nov 2011     **/
 /**                                 to   : 05 apr 2018     **/
 /**                # Version 7.0  : from : 08 jun 2018     **/
-/**                                 to   : 22 apr 2021     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,7 +104,7 @@ typedef struct BgraphBipartDfData_ {
   float *                   difotax;              /*+ Old diffusion value array     +*/
   BgraphBipartDfThread *    thrdtab;              /*+ Array of thread-specific data +*/
   INT                       passnbr;              /*+ Number of passes              +*/
-  Gnum                      vanctab[2];           /*+ Anchor load arrays            +*/
+  float                     vanctab[2];           /*+ Anchor load arrays            +*/
   int                       abrtval;              /*+ Abort value                   +*/
 } BgraphBipartDfData;
 
