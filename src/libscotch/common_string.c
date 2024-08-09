@@ -1,4 +1,4 @@
-/* Copyright 2010,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 5.1  : from : 23 jul 2010     **/
 /**                                 to   : 23 jul 2010     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 22 mar 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,8 +67,8 @@ char * const                bsrcptr,
 char * const                bdstptr,
 const char * const          pattstr,
 const char * const          replstr,
-const int                   pattsiz,
-const int                   replsiz)
+const size_t                pattsiz,
+const size_t                replsiz)
 {
   char *              pattptr;
   size_t              pattidx;
@@ -95,8 +95,8 @@ char * const                buffptr,              /* String to search into */
 const char * const          pattstr,              /* Pattern to search for */
 const char * const          replstr)              /* Replacement string    */
 {
-  int                 pattsiz;
-  int                 replsiz;
+  size_t              pattsiz;
+  size_t              replsiz;
 
   pattsiz = strlen (pattstr);
   replsiz = strlen (replstr);
