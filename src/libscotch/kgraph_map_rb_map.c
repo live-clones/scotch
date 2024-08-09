@@ -70,7 +70,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 16 jul 2024     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -930,8 +930,8 @@ Context * const                         contptr)  /*+ Execution context         
       Gnum                levlnum;
       int                 partval;
 
-      jobsubnum[0] = joborgptr - pooldat.jobtab;  /* Get current (and first son) job slot number before possible move of pointers */
-      joborgdat = *joborgptr;                     /* Save current job data (clone graph)                                          */
+      jobsubnum[0] = (Anum) (joborgptr - pooldat.jobtab);  /* Get current (and first son) job slot number before possible move of pointers */
+      joborgdat = *joborgptr;                     /* Save current job data (clone graph)                                                   */
 
       if (archDomBipart (mappptr->archptr, &joborgdat.domnorg, &domnsubtab[0], &domnsubtab[1]) != 0) {
         errorPrint ("kgraphMapRbMap: cannot bipartition domain");
