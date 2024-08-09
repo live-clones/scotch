@@ -56,7 +56,7 @@
 /**                # Version 6.1  : from : 09 feb 2021     **/
 /**                                 to   : 22 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 06 aug 2024     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -332,7 +332,7 @@ char *                      argv[])
 
       charptr = chartab;                          /* Start from beginning of string                      */
       while ((charptr = strstr (charptr, substab[subsnum][0])) != NULL) { /* As long as a matching found */
-        int                 subslen;
+        size_t              subslen;
 
         subslen = strlen (substab[subsnum][0]);
         if (isalnum (charptr[subslen]) || (charptr[subslen] == '_')) { /* If next character is part of a longer identifier */
