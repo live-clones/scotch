@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 27 apr 2015     **/
 /**                                 to   : 14 jul 2018     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 06 aug 2024     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -135,12 +135,12 @@ int
 fileCompressType (
 const char * const          nameptr)              /*+ Name string +*/
 {
-  int                 namelen;
+  size_t              namelen;
   int                 i;
 
   namelen = strlen (nameptr);
   for (i = 0; filetab[i].name != NULL; i ++) {
-    int                 extnlen;                  /* Name of extension string */
+    size_t              extnlen;                  /* Name of extension string */
 
     extnlen = strlen (filetab[i].name);
     if ((namelen >= extnlen) && (strncmp (filetab[i].name, nameptr + (namelen - extnlen), extnlen) == 0))
