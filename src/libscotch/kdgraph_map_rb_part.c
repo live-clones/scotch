@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2014,2018,2019,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2014,2018,2019,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 17 aug 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -384,7 +384,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
   actgrafdat.levlnum = grafptr->levlnum;          /* Initial level of bipartition graph is DRB recursion level       */
   actgrafdat.contptr = dataptr->contptr;
 
-  comploadavg = (double) actgrafdat.s.veloglbsum / (double) archDomWght (&mappptr->archdat, &grafptr->domnorg);
+  comploadavg = (Gnum) ((double) actgrafdat.s.veloglbsum / (double) archDomWght (&mappptr->archdat, &grafptr->domnorg));
   actgrafdat.compglbload0min = actgrafdat.compglbload0avg -
                                (Gnum) MIN ((dataptr->comploadmax - comploadavg) * actgrafdat.domnwght[0],
                                            (comploadavg - dataptr->comploadmin) * actgrafdat.domnwght[1]);
