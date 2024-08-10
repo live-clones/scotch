@@ -35,7 +35,9 @@ Because pure parsers are needed to ensure thread safety when handling
 strategy strings, versions of the Flex and Bison tools at least equal
 to 3.4 are required. On MacOs, an older version is provided by
 default; users may get an adequate version from the "HomeBrew"
-repository, using command "brew install bison".
+repository, using command "brew install bison". On Windows, a recent
+version is available in the chocolatey package repository, using
+command "choco install winflexbison3".
 
 To check whether GNU Make and/or CMake are installed and are found
 first, please type:
@@ -110,8 +112,9 @@ Some structuring options can be set during this phase, by using the
     integers. Else, the defaut compiler word size will be used
     (recommended).
 
-  - THREADS:BOOL (default value ON): set this flag to ON to use POSIX
-    Pthreads within Scotch and PT-Scotch.
+  - THREADS:BOOL (default value ON): set this flag to ON to use
+    threads within Scotch and PT-Scotch. POSIX Pthreads and native
+    Windows threads are supported.
 
   - MPI_THREAD_MULTIPLE:BOOL (default value ON): set this flag to ON
     to use multi-threaded algorithms in conjunction with MPI. In case
@@ -140,6 +143,11 @@ variable by defining it in the command line, e.g.:
 
 %prompt% CFLAGS="-Drestrict=" cmake ..
 
+On Windows platform where a Unix-like Make is not available, CMake can
+generate Microsoft NMAKE Makefiles:
+
+%prompt% cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+
 
 ### Compilation
 
@@ -150,6 +158,10 @@ phase, by typing:
 
 (The optional "-j" parameter enables multiple compilation jobs to run
 concurrently.)
+
+On Windows platform using NMAKE:
+
+%prompt% nmake
 
 
 ### Testing
@@ -507,7 +519,7 @@ flag is not set (see below).
 3.6) Multi-threading
 --------------------
 
-Scotch can take advantage of Posix or Windows threads when they are
+Scotch can take advantage of POSIX or Windows threads when they are
 available. They are used in several places:
 
   - To run in a multi-threaded way several key algorithms of the
@@ -521,7 +533,7 @@ available. They are used in several places:
 
   - To compress and decompress file data. This can be done either by
     launching a service thread, or else by creating a separate process
-    by means of a Posix fork() system call. This choice is controlled
+    by means of a POSIX fork() system call. This choice is controlled
     by the "-DCOMMON_PTHREAD_FILE" flag: if it is set, threads will be
     used, else fork() calls will be performed. For systems which do
     not support the fork() system call, such as the MinGW32 platform,
@@ -610,7 +622,7 @@ The compilation flags used to manage threads are the following:
 When compiling under mingw32 on Windows systems, it is possible to
 benefit from multi-threading by setting the "-DCOMMON_THREAD_WIN32"
 flag at compile time. This flag is not needed for Cygwin, which
-provides its own implementation of Posix threads.
+provides its own implementation of POSIX threads.
 
 When Scotch is compiled with "-DSCOTCH_PTHREAD", it makes use, by
 default, of all threads available to it on the platform it is running

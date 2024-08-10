@@ -9,7 +9,7 @@ The **Scotch** distribution is a set of programs and libraries which implement t
 
 * It provides algorithms to partition graph structures, as well as mesh structures defined as node-element bipartite graphs and which can also represent hypergraphs.
 
-* The **Scotch** library dynamically takes advantage of POSIX threads to speed-up its computations. **The PT-Scotch** library, used to manage very large graphs distributed across the nodes of a parallel computer, uses the MPI interface as well as POSIX threads.
+* To speed-up its computations, the **Scotch** library dynamically takes advantage of either POSIX threads or native Windows threads. **The PT-Scotch** library, used to manage very large graphs distributed across the nodes of a parallel computer, uses the MPI interface, possibly in combination with multi-threading when the MPI implementation allows for it.
 
 * It can map any weighted source graph onto any weighted target graph. The source and target graphs may have any topology, and their vertices and edges may be weighted. Moreover, both source and target graphs may be disconnected. This feature allows for the mapping of programs onto disconnected subparts of a parallel architecture made up of heterogeneous processors and communication links.
 
@@ -31,7 +31,7 @@ The **Scotch** distribution is a set of programs and libraries which implement t
 
 * It provides many tools to build, check, and display graphs, meshes and matrix patterns.
 
-* It is written in C and uses the POSIX interface, which makes it highly portable. **PT-Scotch** uses the **MPI** interface, and optionally the POSIX **Pthreads**.
+* It is written in C and uses the POSIX interface, which makes it highly portable. Additionally, **PT-Scotch** uses the **MPI** interface.
 
 
 Obtaining Scotch
@@ -72,7 +72,7 @@ mkdir build && cd build && cmake .. && make -j5
 
 Many options can be provided from the command line, using the CMmake flag `-D`.
 
-Linux and MacOS-X are fully supported. Windows is also supported, albeit with partial support of multi-threading (processor affinity is not yet implemented). MacOS-X users must use recent versions of Flex and Bison that are available from [Brew](https://brew.sh/); older versions from Xcode will fail. To use them, run, e.g.:
+Linux and MacOS-X are fully supported. MacOS-X users must use recent versions of Flex and Bison that are available from [Brew](https://brew.sh/); older versions from Xcode will fail. To use them, run, e.g.:
 
 ``` bash
 cmake -DBUILD_SHARED_LIBS=ON -DBISON_EXECUTABLE=/usr/local/Cellar/bison/3.8.2/bin/bison -DFLEX_EXECUTABLE=/usr/local/Cellar/flex/2.6.4_2/bin/flex
@@ -84,9 +84,16 @@ You may also use alternate compilers, by overloading the `CMAKE_*_COMPILER` vari
 cmake -DCMAKE_Fortran_COMPILER=ifx -DCMAKE_C_COMPILER=icx -DMPI_HOME=/path/to/oneAPI/mpi/latest/
 ```
 
+Windows plaftorms are also supported, featuring native multi-threading. Processor affinity is not yet implemented. If a Unix-like version of Make is not available, CMake can generate Microsoft NMAKE Makefiles:
+
+```bash
+cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+nmake
+```
+
 * With a traditional Makefile:
 
-CMake installation is easy and straightforward. It allows one to compile and install **Scotch** and **PT-Scotch**, depending on flags such as the use of POSIX Pthreads and/or MPI. The traditional Makefile installation gives additional freedom to perform (cross-)compilation for non-standard systems and configurations.
+CMake installation is easy and straightforward. It allows one to compile and install **Scotch** and **PT-Scotch**, depending on flags such as the use of multi-threading and/or MPI. The traditional Makefile installation gives additional freedom to perform (cross-)compilation for non-standard systems and configurations.
 
 
 Contributing to Scotch
