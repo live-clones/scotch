@@ -53,7 +53,7 @@ set(tgt ${PROJECT_SOURCE_DIR}/tgt)
 function(add_test_scotch)
   add_executable(${ARGV0} ${ARGV0}.c)
   set_target_properties(${ARGV0} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-  target_link_libraries(${ARGV0} scotch scotcherr)
+  target_link_libraries(${ARGV0} PRIVATE scotch scotcherr)
   if(${ARGC} GREATER_EQUAL 2)
     add_test(NAME ${ARGV0} COMMAND ${ARGV0})
   endif()
@@ -151,6 +151,7 @@ add_test(NAME test_scotch_arch_deco COMMAND test_scotch_arch_deco ${cur_src}/dat
 
 # test_scotch_context
 add_test_scotch(test_scotch_context)
+target_link_libraries(test_scotch_context PRIVATE Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
 add_test(NAME test_scotch_context COMMAND test_scotch_context ${cur_src}/data/bump_b1.grf)
 
 # test_graph_coarsen

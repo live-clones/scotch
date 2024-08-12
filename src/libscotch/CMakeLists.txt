@@ -534,26 +534,26 @@ endif(OS_IS_FREEBSD)
 # Add (de)compression libraries
 if(ZLIB_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_GZ)
-  target_include_directories(scotch PUBLIC ${ZLIB_INCLUDE_DIRS})
-  target_link_libraries(scotch PUBLIC ${ZLIB_LIBRARIES})
+  target_include_directories(scotch PRIVATE ${ZLIB_INCLUDE_DIRS})
+  target_link_libraries(scotch PRIVATE ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
 
 if(BZIP2_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_BZ2)
-  target_include_directories(scotch PUBLIC ${BZIP2_INCLUDE_DIRS})
-  target_link_libraries(scotch PUBLIC ${BZIP2_LIBRARIES})
+  target_include_directories(scotch PRIVATE ${BZIP2_INCLUDE_DIRS})
+  target_link_libraries(scotch PRIVATE ${BZIP2_LIBRARIES})
 endif()
 
 if(LIBLZMA_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_LZMA)
-  target_include_directories(scotch PUBLIC ${LIBLZMA_INCLUDE_DIRS})
-  target_link_libraries(scotch PUBLIC ${LIBLZMA_LIBRARIES})
+  target_include_directories(scotch PRIVATE ${LIBLZMA_INCLUDE_DIRS})
+  target_link_libraries(scotch PRIVATE ${LIBLZMA_LIBRARIES})
 endif()
 
 # Add thread library
 if(Threads_FOUND)
-  target_compile_definitions(scotch PUBLIC COMMON_PTHREAD SCOTCH_PTHREAD)
-  target_link_libraries(scotch PUBLIC Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
+  target_compile_definitions(scotch PRIVATE COMMON_PTHREAD SCOTCH_PTHREAD)
+  target_link_libraries(scotch PRIVATE Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
 endif(Threads_FOUND)
 
 # Include files
@@ -787,8 +787,8 @@ if(BUILD_PTSCOTCH)
   endif(APPLE)
 
   if(Threads_FOUND)
-    target_compile_definitions(ptscotch PUBLIC SCOTCH_PTHREAD COMMON_PTHREAD)
-    target_link_libraries(ptscotch PUBLIC Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
+    target_compile_definitions(ptscotch PRIVATE SCOTCH_PTHREAD COMMON_PTHREAD)
+    target_link_libraries(ptscotch PRIVATE Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
   endif(Threads_FOUND)
 
   add_library(ptscotcherr library_error.c)
