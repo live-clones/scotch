@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2012,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2012,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.1  : from : 20 jun 2021     **/
 /**                                 to   : 20 jun 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,7 +117,7 @@ SCOTCH_Num * const          iperm)
 */
 
 int
-SCOTCH_METIS_V3_EdgeND (
+SCOTCHMETISNAMES (METIS_V3_EdgeND) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -134,7 +134,7 @@ SCOTCH_Num * const          iperm)
 */
 
 int
-SCOTCH_METIS_V3_NodeND (
+SCOTCHMETISNAMES (METIS_V3_NodeND) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -151,7 +151,7 @@ SCOTCH_Num * const          iperm)
 */
 
 int
-SCOTCH_METIS_V3_NodeWND (
+SCOTCHMETISNAMES (METIS_V3_NodeWND) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -169,7 +169,7 @@ SCOTCH_Num * const          iperm)
 */
 
 int
-SCOTCH_METIS_V5_NodeND (
+SCOTCHMETISNAMES (METIS_V5_NodeND) (
 const SCOTCH_Num * const    nvtxs,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -194,7 +194,7 @@ SCOTCH_Num * const          iperm)
 #if (SCOTCH_METIS_VERSION == 3)
 
 int
-METISNAMEU (METIS_EdgeND) (
+SCOTCHMETISNAMEC (METIS_EdgeND) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -203,7 +203,7 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          perm,
 SCOTCH_Num * const          iperm)
 {
-  return (SCOTCH_METIS_V3_EdgeND (n, xadj, adjncy, numflag, options, perm, iperm));
+  return (SCOTCHMETISNAMES (METIS_V3_EdgeND) (n, xadj, adjncy, numflag, options, perm, iperm));
 }
 
 /*
@@ -211,7 +211,7 @@ SCOTCH_Num * const          iperm)
 */
 
 int
-METISNAMEU (METIS_NodeND) (
+SCOTCHMETISNAMEC (METIS_NodeND) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -220,7 +220,7 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          perm,
 SCOTCH_Num * const          iperm)
 {
-  return (SCOTCH_METIS_V3_NodeND (n, xadj, adjncy, numflag, options, perm, iperm));
+  return (SCOTCHMETISNAMES (METIS_V3_NodeND) (n, xadj, adjncy, numflag, options, perm, iperm));
 }
 
 /*
@@ -228,7 +228,7 @@ SCOTCH_Num * const          iperm)
 */
 
 int
-METISNAMEU (METIS_NodeWND) (
+SCOTCHMETISNAMEC (METIS_NodeWND) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -238,7 +238,7 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          perm,
 SCOTCH_Num * const          iperm)
 {
-  return (SCOTCH_METIS_V3_NodeWND (n, xadj, adjncy, vwgt, numflag, options, perm, iperm));
+  return (SCOTCHMETISNAMES (METIS_V3_NodeWND) (n, xadj, adjncy, vwgt, numflag, options, perm, iperm));
 }
 
 #endif /* (SCOTCH_METIS_VERSION == 3) */
@@ -252,7 +252,7 @@ SCOTCH_Num * const          iperm)
 #if (SCOTCH_METIS_VERSION == 5)
 
 int
-METISNAMEU (METIS_NodeND) (
+SCOTCHMETISNAMEC (METIS_NodeND) (
 const SCOTCH_Num * const    nvtxs,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -261,7 +261,7 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          perm,
 SCOTCH_Num * const          iperm)
 {
-  return (SCOTCH_METIS_V5_NodeND (nvtxs, xadj, adjncy, vwgt, options, perm, iperm));
+  return (SCOTCHMETISNAMES (METIS_V5_NodeND) (nvtxs, xadj, adjncy, vwgt, options, perm, iperm));
 }
 
 #endif /* (SCOTCH_METIS_VERSION == 5) */

@@ -40,6 +40,8 @@
 !*                                                        **
 !*   DATES      : # Version 6.1  : from : 10 feb 2021     **
 !*                                 to     22 jun 2021     **
+!*                # Version 7.0  : from : 09 aug 2024     **
+!*                                 to     11 aug 2024     **
 !*                                                        **
 !234567*****************************************************
 
@@ -92,7 +94,7 @@ program test_libmetis_dual
   xadj_c (:)   = xadj_c (:)   + baseval
   adjncy_c (:) = adjncy_c (:) + baseval
 
-  call METIS_MeshToDual (ne, nn, eptr, eind, ncommon, baseval, xadj, adjncy)
+  call SCOTCHMETISNAMEFU (METIS_MeshToDual) (ne, nn, eptr, eind, ncommon, baseval, xadj, adjncy)
   if (.not. c_associated (xadj)) then
     print *, "ERROR: main: error in METIS_MeshToDual"
     call exit_c (1)
@@ -125,10 +127,10 @@ program test_libmetis_dual
 
     nparts  = 3
     ncommon = ncommon + 1
-    call METIS_SetDefaultOptions (options)
+    call SCOTCHMETISNAMEFU (METIS_SetDefaultOptions) (options)
     options (METIS_OPTION_NUMBERING) = baseval
 
-    call METIS_PartMeshDual (ne, nn, eptr, eind, vgwt, vsize, ncommon, nparts, tpwgt, options, objval, epart, npart)
+    call SCOTCHMETISNAMEFU (METIS_PartMeshDual) (ne, nn, eptr, eind, vgwt, vsize, ncommon, nparts, tpwgt, options, objval, epart, npart)
   end block
 
   deallocate (npart)

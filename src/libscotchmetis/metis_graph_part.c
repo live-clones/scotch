@@ -1,4 +1,4 @@
-/* Copyright 2007-2012,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.1  : from : 20 jun 2021     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 17 aug 2023     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -439,7 +439,7 @@ const double * const        kbalval)
 */
 
 int
-SCOTCH_METIS_V3_PartGraphKway (
+SCOTCHMETISNAMES (METIS_V3_PartGraphKway) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -470,7 +470,7 @@ SCOTCH_Num * const          part)
 */
 
 int
-SCOTCH_METIS_V3_PartGraphRecursive (
+SCOTCHMETISNAMES (METIS_V3_PartGraphRecursive) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -501,7 +501,7 @@ SCOTCH_Num * const          part)
 */
 
 int
-SCOTCH_METIS_V3_PartGraphVKway (
+SCOTCHMETISNAMES (METIS_V3_PartGraphVKway) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -532,7 +532,7 @@ SCOTCH_Num * const          part)
 */
 
 int
-SCOTCH_METIS_V5_PartGraphKway (
+SCOTCHMETISNAMES (METIS_V5_PartGraphKway) (
 const SCOTCH_Num * const    nvtxs,
 const SCOTCH_Num * const    ncon,
 const SCOTCH_Num * const    xadj,
@@ -567,7 +567,7 @@ SCOTCH_Num * const          part)
 */
 
 int
-SCOTCH_METIS_V5_PartGraphRecursive (
+SCOTCHMETISNAMES (METIS_V5_PartGraphRecursive) (
 const SCOTCH_Num * const    nvtxs,
 const SCOTCH_Num * const    ncon,
 const SCOTCH_Num * const    xadj,
@@ -604,7 +604,7 @@ SCOTCH_Num * const          part)
 #if (SCOTCH_METIS_VERSION == 3)
 
 int
-METISNAMEU (METIS_PartGraphKway) (
+SCOTCHMETISNAMEC (METIS_PartGraphKway) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -617,7 +617,8 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part)
 {
-  return (SCOTCH_METIS_V3_PartGraphKway (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part));
+  return (SCOTCHMETISNAMES (METIS_V3_PartGraphKway) (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag,
+                                                     nparts, options, edgecut, part));
 }
 
 /*
@@ -625,7 +626,7 @@ SCOTCH_Num * const          part)
 */
 
 int
-METISNAMEU (METIS_PartGraphRecursive) (
+SCOTCHMETISNAMEC (METIS_PartGraphRecursive) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -638,7 +639,8 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part)
 {
-  return (SCOTCH_METIS_V3_PartGraphRecursive (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, nparts, options, edgecut, part));
+  return (SCOTCHMETISNAMES (METIS_V3_PartGraphRecursive) (n, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag,
+                                                          nparts, options, edgecut, part));
 }
 
 /*
@@ -646,7 +648,7 @@ SCOTCH_Num * const          part)
 */
 
 int
-METISNAMEU (METIS_PartGraphVKway) (
+SCOTCHMETISNAMEC (METIS_PartGraphVKway) (
 const SCOTCH_Num * const    n,
 const SCOTCH_Num * const    xadj,
 const SCOTCH_Num * const    adjncy,
@@ -659,7 +661,8 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          volume,
 SCOTCH_Num * const          part)
 {
-  return (SCOTCH_METIS_V3_PartGraphVKway (n, xadj, adjncy, vwgt, vsize, wgtflag, numflag, nparts, options, volume, part));
+  return (SCOTCHMETISNAMES (METIS_V3_PartGraphVKway) (n, xadj, adjncy, vwgt, vsize, wgtflag, numflag,
+                                                      nparts, options, volume, part));
 }
 
 #endif /* (SCOTCH_METIS_VERSION == 3) */
@@ -673,7 +676,7 @@ SCOTCH_Num * const          part)
 #if (SCOTCH_METIS_VERSION == 5)
 
 int
-METISNAMEU (METIS_PartGraphKway) (
+SCOTCHMETISNAMEC (METIS_PartGraphKway) (
 const SCOTCH_Num * const    nvtxs,
 const SCOTCH_Num * const    ncon,
 const SCOTCH_Num * const    xadj,
@@ -688,7 +691,8 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          objval,
 SCOTCH_Num * const          part)
 {
-  return (SCOTCH_METIS_V5_PartGraphKway (nvtxs, ncon, xadj, adjncy, vwgt, vsize, adjwgt, nparts, tpwgts, ubvec, options, objval, part));
+  return (SCOTCHMETISNAMES (METIS_V5_PartGraphKway) (nvtxs, ncon, xadj, adjncy, vwgt, vsize, adjwgt,
+                                                     nparts, tpwgts, ubvec, options, objval, part));
 }
 
 /*
@@ -696,7 +700,7 @@ SCOTCH_Num * const          part)
 */
 
 int
-METISNAMEU (METIS_PartGraphRecursive) (
+SCOTCHMETISNAMEC (METIS_PartGraphRecursive) (
 const SCOTCH_Num * const    nvtxs,
 const SCOTCH_Num * const    ncon,
 const SCOTCH_Num * const    xadj,
@@ -711,7 +715,8 @@ const SCOTCH_Num * const    options,
 SCOTCH_Num * const          objval,
 SCOTCH_Num * const          part)
 {
-  return (SCOTCH_METIS_V5_PartGraphRecursive (nvtxs, ncon, xadj, adjncy, vwgt, vsize, adjwgt, nparts, tpwgts, ubvec, options, objval, part));
+  return (SCOTCHMETISNAMES (METIS_V5_PartGraphRecursive) (nvtxs, ncon, xadj, adjncy, vwgt, vsize, adjwgt,
+                                                          nparts, tpwgts, ubvec, options, objval, part));
 }
 
 #endif /* (SCOTCH_METIS_VERSION == 5) */

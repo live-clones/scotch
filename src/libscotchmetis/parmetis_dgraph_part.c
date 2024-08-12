@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 18 may 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -118,7 +118,7 @@ SCOTCH_Num * const          intetab)
 }
 
 int
-SCOTCH_ParMETIS_V3_PartKway (
+SCOTCHMETISNAMES (ParMETIS_V3_PartKway) (
 const SCOTCH_Num * const    vtxdist,
 SCOTCH_Num * const          xadj,
 SCOTCH_Num * const          adjncy,
@@ -208,7 +208,7 @@ MPI_Comm *                  commptr)
 */
 
 int
-SCOTCH_ParMETIS_V3_PartGeomKway (
+SCOTCHMETISNAMES (ParMETIS_V3_PartGeomKway) (
 const SCOTCH_Num * const    vtxdist,
 SCOTCH_Num * const          xadj,
 SCOTCH_Num * const          adjncy,
@@ -227,7 +227,8 @@ SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part,
 MPI_Comm *                  commptr)
 {
-  return (SCOTCH_ParMETIS_V3_PartKway (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr));
+  return (SCOTCHMETISNAMES (ParMETIS_V3_PartKway) (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag,
+                                                   ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr));
 }
 
 /**********************/
@@ -237,10 +238,9 @@ MPI_Comm *                  commptr)
 /**********************/
 
 #if (SCOTCH_PARMETIS_VERSION == 3)
-#ifndef SCOTCH_METIS_PREFIX                       /* With "SCOTCH_" prefix, names already defined */
 
 int
-METISNAMEU (ParMETIS_V3_PartKway) (
+SCOTCHMETISNAMEC (ParMETIS_V3_PartKway) (
 const SCOTCH_Num * const    vtxdist,
 SCOTCH_Num * const          xadj,
 SCOTCH_Num * const          adjncy,
@@ -257,8 +257,8 @@ SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part,
 MPI_Comm *                  commptr)
 {
-  return (SCOTCH_ParMETIS_V3_PartKway (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag,
-                                       ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr));
+  return (SCOTCHMETISNAMES (ParMETIS_V3_PartKway) (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag,
+                                                   ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr));
 }
 
 /*
@@ -266,7 +266,7 @@ MPI_Comm *                  commptr)
 */
 
 int
-METISNAMEU (ParMETIS_V3_PartGeomKway) (
+SCOTCHMETISNAMEC (ParMETIS_V3_PartGeomKway) (
 const SCOTCH_Num * const    vtxdist,
 SCOTCH_Num * const          xadj,
 SCOTCH_Num * const          adjncy,
@@ -285,9 +285,8 @@ SCOTCH_Num * const          edgecut,
 SCOTCH_Num * const          part,
 MPI_Comm *                  commptr)
 {
-  return (SCOTCH_ParMETIS_V3_PartGeomKway (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag,
-                                           ndims, xyz, ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr));
+  return (SCOTCHMETISNAMES (ParMETIS_V3_PartGeomKway) (vtxdist, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag, ndims, xyz,
+                                                       ncon, nparts, tpwgts, ubvec, options, edgecut, part, commptr));
 }
 
-#endif /* SCOTCH_METIS_PREFIX */
 #endif /* (SCOTCH_PARMETIS_VERSION == 3) */

@@ -1,4 +1,4 @@
-/* Copyright 2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : test_scotch_libmetis.c                  **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
 /**                the libscotchmetis routines.            **/
@@ -42,6 +43,8 @@
 /**                                 to   : 19 may 2019     **/
 /**                # Version 6.1  : from : 22 jun 2021     **/
 /**                                 to   : 30 dec 2021     **/
+/**                # Version 7.0  : from : 08 aug 2024     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -131,58 +134,58 @@ char *              argv[])
   fwgtval = ((velotab != NULL) ? 2 : 0) +
             ((edlotab != NULL) ? 1 : 0);
 
-  if (METIS_PartGraphKway (&vertnbr, verttab, edgetab, velotab, edlotab,
-                           &fwgtval, &baseval, &partnbr, &foptval, &edgecut, parttab) != METIS_OK) {
+  if (SCOTCHMETISNAMEC (METIS_PartGraphKway) (&vertnbr, verttab, edgetab, velotab, edlotab,
+                                              &fwgtval, &baseval, &partnbr, &foptval, &edgecut, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_PartGraphKway");
     exit (EXIT_FAILURE);
   }
 
-  if (METIS_PartGraphRecursive (&vertnbr, verttab, edgetab, velotab, edlotab,
-                                &fwgtval, &baseval, &partnbr, &foptval, &edgecut, parttab) != METIS_OK) {
+  if (SCOTCHMETISNAMEC (METIS_PartGraphRecursive) (&vertnbr, verttab, edgetab, velotab, edlotab,
+                                                   &fwgtval, &baseval, &partnbr, &foptval, &edgecut, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_PartGraphRecursive");
     exit (EXIT_FAILURE);
   }
 
   fwgtval &= ~2;                                  /* Take vertex load array as communication volume array */
-  if (METIS_PartGraphVKway (&vertnbr, verttab, edgetab, NULL, velotab,
-                            &fwgtval, &baseval, &partnbr, &foptval, &edgecut, parttab) != METIS_OK) {
+  if (SCOTCHMETISNAMEC (METIS_PartGraphVKway) (&vertnbr, verttab, edgetab, NULL, velotab,
+                                               &fwgtval, &baseval, &partnbr, &foptval, &edgecut, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_PartGraphKway");
     exit (EXIT_FAILURE);
   }
 
-  if (METIS_EdgeND (&vertnbr, verttab, edgetab, &baseval, &foptval, peritab, parttab) != METIS_OK) {
+  if (SCOTCHMETISNAMEC (METIS_EdgeND) (&vertnbr, verttab, edgetab, &baseval, &foptval, peritab, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_EdgeND");
     exit (EXIT_FAILURE);
   }
 
-  if (METIS_NodeND (&vertnbr, verttab, edgetab, &baseval, &foptval, peritab, parttab) != METIS_OK) {
+  if (SCOTCHMETISNAMEC (METIS_NodeND) (&vertnbr, verttab, edgetab, &baseval, &foptval, peritab, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_NodeND");
     exit (EXIT_FAILURE);
   }
 
-  if (METIS_NodeWND (&vertnbr, verttab, edgetab, velotab, &baseval, &foptval, peritab, parttab) != METIS_OK) {
+  if (SCOTCHMETISNAMEC (METIS_NodeWND) (&vertnbr, verttab, edgetab, velotab, &baseval, &foptval, peritab, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_NodeWND");
     exit (EXIT_FAILURE);
   }
 #endif /* (SCOTCH_METIS_VERSION == 3) */
 
 #if (SCOTCH_METIS_VERSION == 5)
-  METIS_SetDefaultOptions (options);              /* MeTiS v5 handles graph base through the option array */
+  SCOTCHMETISNAMEC (METIS_SetDefaultOptions) (options); /* MeTiS v5 handles graph base through the option array */
   options[METIS_OPTION_NUMBERING] = baseval;
 
-  if (METIS_PartGraphKway (&vertnbr, &nconval, verttab, edgetab, velotab, NULL, edlotab,
-                           &partnbr, awgttab, kbaltab, options, &edgecut, parttab) != METIS_OK) {
+  if (SCOTCHMETISNAMEC (METIS_PartGraphKway) (&vertnbr, &nconval, verttab, edgetab, velotab, NULL, edlotab,
+                                              &partnbr, awgttab, kbaltab, options, &edgecut, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V5_PartGraphKway");
     exit (EXIT_FAILURE);
   }
 
-  if (METIS_PartGraphRecursive (&vertnbr, &nconval, verttab, edgetab, velotab, NULL, edlotab,
-                                &partnbr, awgttab, kbaltab, options, &edgecut, parttab) != METIS_OK) {
+  if (SCOTCHMETISNAMEC (METIS_PartGraphRecursive) (&vertnbr, &nconval, verttab, edgetab, velotab, NULL, edlotab,
+                                                   &partnbr, awgttab, kbaltab, options, &edgecut, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V5_PartGraphRecursive");
     exit (EXIT_FAILURE);
   }
 
-  if (METIS_NodeND (&vertnbr, verttab, edgetab, velotab, options, peritab, parttab) != METIS_OK) {
+  if (SCOTCHMETISNAMEC (METIS_NodeND) (&vertnbr, verttab, edgetab, velotab, options, peritab, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V5_NodeND");
     exit (EXIT_FAILURE);
   }

@@ -1,4 +1,4 @@
-/* Copyright 2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 6.1  : from : 20 jun 2021     **/
 /**                                 to   : 20 jun 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,10 +63,24 @@
 /*                                    */
 /**************************************/
 
-FORTRAN (                                                                     \
-METISNAMEU (METIS_SETDEFAULTOPTIONS), METISNAMEL (metis_setdefaultoptions), ( \
-SCOTCH_Num * const options),                                                  \
+FORTRAN (                                      \
+SCOTCHMETISNAMESU (METIS_SETDEFAULTOPTIONS),   \
+SCOTCHMETISNAMESL (metis_setdefaultoptions), ( \
+SCOTCH_Num * const options),                   \
 (options))
 {
-  METISNAMEU (METIS_SetDefaultOptions) (options);
+  SCOTCHMETISNAMES (METIS_SetDefaultOptions) (options);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                      \
+SCOTCHMETISNAMEFU (METIS_SETDEFAULTOPTIONS),   \
+SCOTCHMETISNAMEFL (metis_setdefaultoptions), ( \
+SCOTCH_Num * const options),                   \
+(options))
+{
+  SCOTCHMETISNAMES (METIS_SetDefaultOptions) (options);
 }

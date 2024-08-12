@@ -1,4 +1,4 @@
-/* Copyright 2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 6.1  : from : 01 sep 2020     **/
 /**                                 to   : 28 may 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -199,8 +199,12 @@ const SCOTCH_Num * const    edgetab)              /*+ Array of elements         
   return (METIS_OK);
 }
 
+/*
+**
+*/
+
 int
-METISNAMEU (METIS_MeshToDual) (
+SCOTCHMETISNAMES (METIS_MeshToDual) (
 const SCOTCH_Num * const    ne,
 const SCOTCH_Num * const    nn,
 const SCOTCH_Num * const    eptr,
@@ -253,4 +257,22 @@ SCOTCH_Num ** const         adjncy)
   SCOTCH_graphExit (&grafdat);
 
   return (METIS_OK);
+}
+
+/*
+**
+*/
+
+int
+SCOTCHMETISNAMEC (METIS_MeshToDual) (
+const SCOTCH_Num * const    ne,
+const SCOTCH_Num * const    nn,
+const SCOTCH_Num * const    eptr,
+const SCOTCH_Num * const    eind,
+const SCOTCH_Num * const    ncommon,
+const SCOTCH_Num * const    nuimflag,
+SCOTCH_Num ** const         xadj,
+SCOTCH_Num ** const         adjncy)
+{
+  return (SCOTCHMETISNAMES (METIS_MeshToDual) (ne, nn, eptr, eind, ncommon, nuimflag, xadj, adjncy));
 }
