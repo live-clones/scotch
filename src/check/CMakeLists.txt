@@ -63,7 +63,7 @@ endfunction(add_test_scotch)
 include(FindUnixCommands)
 
 # Define an alias for /dev/null on Windows-like systems
-if (MINGW OR MSYS OR WIN32)
+if(MINGW OR MSYS OR WIN32)
   set(dev_null NUL)
 else(MINGW OR MSYS OR WIN32)
   set(dev_null /dev/null)
