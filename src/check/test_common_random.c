@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2016,2018,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2016,2018,2019,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : test_common_random.c                    **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the random number     **/
 /**                generator module.                       **/
@@ -41,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 01 oct 2014     **/
 /**                                 to   : 24 aug 2019     **/
 /**                # Version 7.0  : from : 13 sep 2019     **/
-/**                                 to   : 13 sep 2019     **/
+/**                                 to   : 08 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,13 +57,9 @@
 #define __USE_XOPEN2K                             /* For POSIX pthread_barrier_t */
 #endif /* __USE_XOPEN2K */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include "../libscotch/module.h"
 #include "../libscotch/common.h"
+
 #include "scotch.h"
 
 #define RANDNBR                     100
@@ -102,7 +99,7 @@ char *              argv[])
 
   passnum = (atoi (argv[2]) == 0);                /* First pass to write file; second pass to read it */
 
-  if ((fileptr = fopen (argv[1], (passnum) ? "w+" : "r")) == NULL) {
+  if ((fileptr = fopen (argv[1], (passnum) ? "wb+" : "rb")) == NULL) {
     SCOTCH_errorPrint ("main: cannot open file");
     exit (EXIT_FAILURE);
   }

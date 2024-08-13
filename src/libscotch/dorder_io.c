@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 30 jul 2010     **/
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 7.0  : from : 18 jan 2023     **/
-/**                                 to   : 18 jan 2023     **/
+/**                                 to   : 01 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -132,7 +132,7 @@ FILE * restrict const         stream)
 #ifdef SCOTCH_DEBUG_DORDER1                       /* This communication cannot be covered by a useful one */
   if (MPI_Bcast (&reduloctab[0], 1, MPI_INT, protnum, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderSave: communication error (2)");
-    if (permtab != NULL);
+    if (permtab != NULL)
       memFree (permtab);                          /* Free group leader */
     return (1);
   }

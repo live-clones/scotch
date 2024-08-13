@@ -75,11 +75,11 @@ int
 SCOTCH_dgraphBuildGrid3D (
 SCOTCH_Dgraph * const       grafptr,
 const SCOTCH_Num            baseval,              /* Base value       */
-const SCOTCH_Num            dimx,                 /* First dimension  */
-const SCOTCH_Num            dimy,                 /* Second dimension */
-const SCOTCH_Num            dimz,                 /* Third dimension  */
+const SCOTCH_Num            dimxval,              /* First dimension  */
+const SCOTCH_Num            dimyval,              /* Second dimension */
+const SCOTCH_Num            dimzval,              /* Third dimension  */
 const SCOTCH_Num            incrval,              /* Increment value  */
-const int                   flagval)              /* Flag value       */
+const SCOTCH_Num            flagval)              /* Flag value       */
 {
-  return (dgraphBuildGrid3D ((Dgraph *) CONTEXTOBJECT (grafptr), baseval, dimx, dimy, dimz, incrval, flagval));
+  return (dgraphBuildGrid3D ((Dgraph *) CONTEXTOBJECT (grafptr), baseval, dimxval, dimyval, dimzval, incrval, flagval));
 }

@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     26 jan 2023     ##
+##                                 to     01 nov 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -223,6 +223,8 @@ set(SCOTCH_C_SOURCES
   common_thread.c
   common_thread_system.c
   common_thread_system.h
+  common_timer.c
+  common_timer.h
   common_values.c
   common_values.h
   context.c
@@ -355,6 +357,7 @@ set(SCOTCH_C_SOURCES
   library_context.c
   library_context_graph.c
   library_context_graph_f.c
+  library_context_f.c
   #library_errcom.c
   #library_error.c
   #library_error_exit.c
@@ -419,6 +422,7 @@ set(SCOTCH_C_SOURCES
   library_version_f.c
   mapping.c
   mapping.h
+  mapping_check.c
   mapping_io.c
   mapping_io.h
   mesh.c
@@ -507,43 +511,49 @@ set(SCOTCH_C_SOURCES
 
 add_library(scotch
   ${SCOTCH_C_SOURCES})
-set_target_properties(scotch PROPERTIES VERSION
-  ${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL})
+set_target_properties(scotch PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+  SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 add_dependencies(scotch parser_yy_c parser_ll_c)
-target_link_libraries(scotch PUBLIC m)
+if(NOT WIN32)
+  target_link_libraries(scotch PUBLIC m)
+endif(NOT WIN32)
 target_include_directories(scotch PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
         $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-        $<INSTALL_INTERFACE:include> )
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 if(APPLE)
   set_target_properties(scotch PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
 endif(APPLE)
 
+if(OS_IS_FREEBSD)
+  target_compile_definitions(scotch PUBLIC cpu_set_t=cpuset_t __BSD_VISIBLE)
+endif(OS_IS_FREEBSD)
+
 # Add (de)compression libraries
 if(ZLIB_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_GZ)
-  target_include_directories(scotch PUBLIC ${ZLIB_INCLUDE_DIRS})
-  target_link_libraries(scotch PUBLIC ${ZLIB_LIBRARIES})
+  target_include_directories(scotch PRIVATE ${ZLIB_INCLUDE_DIRS})
+  target_link_libraries(scotch PRIVATE ${ZLIB_LIBRARIES})
 endif(ZLIB_FOUND)
 
 if(BZIP2_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_BZ2)
-  target_include_directories(scotch PUBLIC ${BZIP2_INCLUDE_DIRS})
-  target_link_libraries(scotch PUBLIC ${BZIP2_LIBRARIES})
+  target_include_directories(scotch PRIVATE ${BZIP2_INCLUDE_DIRS})
+  target_link_libraries(scotch PRIVATE ${BZIP2_LIBRARIES})
 endif()
 
 if(LIBLZMA_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_LZMA)
-  target_include_directories(scotch PUBLIC ${LIBLZMA_INCLUDE_DIRS})
-  target_link_libraries(scotch PUBLIC ${LIBLZMA_LIBRARIES})
+  target_include_directories(scotch PRIVATE ${LIBLZMA_INCLUDE_DIRS})
+  target_link_libraries(scotch PRIVATE ${LIBLZMA_LIBRARIES})
 endif()
 
 # Add thread library
 if(Threads_FOUND)
-  target_compile_definitions(scotch PUBLIC COMMON_PTHREAD SCOTCH_PTHREAD)
-  target_link_libraries(scotch PUBLIC Threads::Threads)
+  target_compile_definitions(scotch PRIVATE COMMON_PTHREAD SCOTCH_PTHREAD)
+  target_link_libraries(scotch PRIVATE Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
 endif(Threads_FOUND)
 
 # Include files
@@ -558,18 +568,22 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
 endif()
 
 add_library(scotcherr library_error.c)
+set_target_properties(scotcherr PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+  SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 target_include_directories(scotcherr PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_dependencies(scotcherr scotch_h)
 
 add_library(scotcherrexit library_error_exit.c)
+set_target_properties(scotcherrexit PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+  SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 target_include_directories(scotcherrexit PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_dependencies(scotcherrexit scotch_h)
 
@@ -754,7 +768,8 @@ if(BUILD_PTSCOTCH)
     ${PTSCOTCH_C_SOURCES})
 
   set_target_properties(ptscotch PROPERTIES
-    VERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL}
+    VERSION ${SCOTCH_VERSION_LONG}
+    SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE}
     COMPILE_FLAGS -DSCOTCH_PTSCOTCH)
 
   target_link_libraries(ptscotch PUBLIC scotch MPI::MPI_C)
@@ -763,7 +778,7 @@ if(BUILD_PTSCOTCH)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-    $<INSTALL_INTERFACE:include> )
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   add_dependencies(ptscotch ptscotch_h scotch_h)
 
@@ -772,25 +787,29 @@ if(BUILD_PTSCOTCH)
   endif(APPLE)
 
   if(Threads_FOUND)
-    target_compile_definitions(ptscotch PUBLIC SCOTCH_PTHREAD COMMON_PTHREAD)
-    target_link_libraries(ptscotch PUBLIC Threads::Threads)
+    target_compile_definitions(ptscotch PRIVATE SCOTCH_PTHREAD COMMON_PTHREAD)
+    target_link_libraries(ptscotch PRIVATE Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
   endif(Threads_FOUND)
 
   add_library(ptscotcherr library_error.c)
+  set_target_properties(ptscotcherr PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+    SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
   target_include_directories(ptscotcherr PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include> )
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   add_dependencies(ptscotcherr ptscotch_h scotch_h)
 
   add_library(ptscotcherrexit library_error_exit.c)
+  set_target_properties(ptscotcherrexit PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+    SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
   target_include_directories(ptscotcherrexit PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include> )
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   add_dependencies(ptscotcherrexit ptscotch_h scotch_h)
 endif(BUILD_PTSCOTCH)
@@ -801,19 +820,34 @@ if(BUILD_PTSCOTCH)
 endif(BUILD_PTSCOTCH)
 
 set(TARGETS_LIST "scotch;scotcherr;scotcherrexit")
-if(BUILD_PTSCOTCH)
-  set(TARGETS_LIST ${TARGETS_LIST} "ptscotch;ptscotcherr;ptscotcherrexit")
-endif(BUILD_PTSCOTCH)
 
 foreach(_target ${TARGETS_LIST})
   install(EXPORT ${_target}Targets
+    COMPONENT libscotch
     FILE ${_target}Targets.cmake
     NAMESPACE SCOTCH::
-    DESTINATION lib/cmake/scotch)
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
 
   install(TARGETS ${_target}
+    COMPONENT libscotch
     EXPORT ${_target}Targets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    PUBLIC_HEADER DESTINATION include)
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+  if (BUILD_PTSCOTCH)
+    install(EXPORT pt${_target}Targets
+      COMPONENT libptscotch
+      FILE pt${_target}Targets.cmake
+      NAMESPACE SCOTCH::
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
+
+    install(TARGETS pt${_target}
+      COMPONENT libptscotch
+      EXPORT pt${_target}Targets
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+  endif()
 endforeach()

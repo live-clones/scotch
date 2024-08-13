@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014-2016,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016,2018-2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 01 apr 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 10 oct 2021     **/
+/**                                 to   : 03 jun 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -218,6 +218,7 @@ int                         SCOTCH_archDomFrst  (SCOTCH_Arch * const, SCOTCH_Arc
 int                         SCOTCH_archDomBipart (SCOTCH_Arch * const, const SCOTCH_ArchDom * const, SCOTCH_ArchDom * const, SCOTCH_ArchDom * const);
 
 SCOTCH_Context *            SCOTCH_contextAlloc (void);
+int                         SCOTCH_contextSizeof (void);
 int                         SCOTCH_contextInit  (SCOTCH_Context * const);
 void                        SCOTCH_contextExit  (SCOTCH_Context * const);
 int                         SCOTCH_contextOptionGetNum (SCOTCH_Context * const, const int, SCOTCH_Num * const);

@@ -286,7 +286,6 @@ If you want to handle errors by yourself, you should not link with
 library file {\tt libptscotcherr.a}, but rather provide a
 {\tt SCOTCH\_\lbt error\lbt Print()} routine. Please refer to
 Section~\ref{sec-lib-error} for more information on error handling.
-Section~\ref{sec-lib-error} for more information on error handling.
 
 Programs that use both sequential and parallel routines of
 \scotch\ need only be linked against the parallel version of the
@@ -1563,6 +1562,73 @@ least in the development stage of your application code, to call the
 successfully set with all of the input data, and $1$ else.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_dgraphBuildGrid3D}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_dgraphBuildGrid3D ( & SCOTCH\_Dgraph *  & grafptr, \\
+                                & const SCOTCH\_Num & baseval, \\
+                                & const SCOTCH\_Num & dimxval, \\
+                                & const SCOTCH\_Num & dimyval, \\
+                                & const SCOTCH\_Num & dimzval, \\
+                                & const SCOTCH\_Num & incrval, \\
+                                & const SCOTCH\_Num & flagval)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdgraphbuildgrid3d ( & doubleprecision (*) & grafdat, \\
+                           & integer*{\it num}   & baseval, \\
+                           & integer*{\it num}   & dimxval, \\
+                           & integer*{\it num}   & dimyval, \\
+                           & integer*{\it num}   & dimzval, \\
+                           & integer*{\it num}   & incrval, \\
+                           & integer*{\it num}   & flagval, \\
+                           & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_dgraphBuildGrid3D} routine fills the graph
+structure pointed to by \texttt{grafptr} with the description of a 3D
+grid of dimensions \texttt{dimxval}, \texttt{dimyval}, and
+\texttt{dimzval}, using \texttt{baseval} as the base value for vertex
+and edge indices. It is mostly used to build graphs of arbitrary size
+for testing other \ptscotch\ routines.
+
+The \texttt{incrval} value is the increment value for vertex
+indices. It should be a co-prime with \texttt{dimxval},
+\texttt{dimyval}, and \texttt{dimzval}, so that all vertex indices are
+enumerated before looping back to the initial vertex index. When equal
+to~$1$, all vertex indices are enumerated consecutively, and vertex
+labels are not used. When greater than~$1$, vertex indices are
+enumerated using this stride value, and vertex labels are used.
+
+The \texttt{flagval} value allows the user to combine several flags to
+indicate the type of grid that should be produced:
+\begin{itemize}
+\iteme[{\tt SCOTCH\_DGRAPHBUILDGRID3DGRID}]
+Create a plain grid graph (\ie, not a torus).
+\iteme[{\tt SCOTCH\_DGRAPHBUILDGRID3DTORUS}]
+Create a torus graph, in which vertices on the boundaries of the grid
+are connected to the vertices of the opposite side.
+\iteme[{\tt SCOTCH\_DGRAPHBUILDGRID3DNGB6}]
+Create a $6$-neighbor mesh, without diagonal edges.
+\iteme[{\tt SCOTCH\_DGRAPHBUILDGRID3DNGB26}]
+Create a $26$-neighbor mesh, with diagonal edges in all directions.
+\iteme[{\tt SCOTCH\_DGRAPHBUILDGRID3DVERTLOAD}]
+Place arbitrary loads on graph vertices.
+\iteme[{\tt SCOTCH\_DGRAPHBUILDGRID3DEDGELOAD}]
+Place arbitrary loads on graph edges.
+\end{itemize}
+
+\progret
+
+{\tt SCOTCH\_dgraphBuildGrid3D} returns $0$ if the graph structure has
+been successfully created, and $1$ else.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_dgraphCheck}}
 
 \begin{itemize}
@@ -1595,7 +1661,7 @@ $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_dgraphCoarsen}}
-\label{sec-lib-func-scotchdgraphcoarsen}
+\label{sec-lib-func-dgraphcoarsen}
 
 \begin{itemize}
 \progsyn
@@ -1654,7 +1720,7 @@ The \texttt{multloctab} array must be large enough to store node
 matching local data for the resulting coarsened (and possibly folded)
 graph. The \texttt{SCOTCH\_\lbt dgraph\lbt Coarsen\lbt Vert\lbt
 Loc\lbt Max} routine (see
-Section~\ref{sec-lib-func-scotchdgraphcoarsenvertlocmax}) provides an
+Section~\ref{sec-lib-func-dgraphcoarsenvertlocmax}) provides an
 upper bound on the number of coarse (and possibly folded) vertices
 located on the local process, which has to be doubled to obtain an
 upper bound on the number of \texttt{SCOTCH\_\lbt Num}s contained in
@@ -1687,7 +1753,7 @@ $2$ on error.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_dgraphCoarsenVertLocMax}}
-\label{sec-lib-func-scotchdgraphcoarsenvertlocmax}
+\label{sec-lib-func-dgraphcoarsenvertlocmax}
 
 \begin{itemize}
 \progsyn
@@ -1709,7 +1775,7 @@ The \texttt{SCOTCH\_dgraphCoarsen\lbt Vert\lbt Loc\lbt Max} routine
 computes an upper bound on the number of coarse vertices that will be
 created locally when the given fine graph is coarsened (and possibly
 folded) by way of the \texttt{SCOTCH\_dgraph\lbt Coarsen} routine
-(see Section~\ref{sec-lib-func-scotchdgraphcoarsen}). Its main use is
+(see Section~\ref{sec-lib-func-dgraphcoarsen}). Its main use is
 to provide an upper bound on the size of the \texttt{mult\lbt loc\lbt
   tab} multinode array that has to be pre-allocated before calling
 \texttt{SCOTCH\_dgraph\lbt Coarsen}.
@@ -1730,29 +1796,29 @@ henceforth always a non-negative number.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_dgraphData}}
-\label{sec-lib-func-scotchdgraphdata}
+\label{sec-lib-func-dgraphdata}
 
 \begin{itemize}
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-void SCOTCH\_dgraphData ( & const SCOTCH\_Graph * & grafptr,    \\
-                          & SCOTCH\_Num *         & baseptr,    \\
-                          & SCOTCH\_Num *         & vertglbptr, \\
-                          & SCOTCH\_Num *         & vertlocptr, \\
-                          & SCOTCH\_Num *         & vertlocptz, \\
-                          & SCOTCH\_Num *         & vertgstptr, \\
-                          & SCOTCH\_Num **        & vertloctab, \\
-                          & SCOTCH\_Num **        & vendloctab, \\
-                          & SCOTCH\_Num **        & veloloctab, \\
-                          & SCOTCH\_Num **        & vlblloctab, \\
-                          & SCOTCH\_Num *         & edgeglbptr, \\
-                          & SCOTCH\_Num *         & edgelocptr, \\
-                          & SCOTCH\_Num *         & edgelocptz, \\
-                          & SCOTCH\_Num **        & edgeloctab, \\
-                          & SCOTCH\_Num **        & edgegsttab, \\
-                          & SCOTCH\_Num **        & edloloctab, \\
-                          & MPI\_Comm *           & comm)
+void SCOTCH\_dgraphData ( & const SCOTCH\_Dgraph * & grafptr,    \\
+                          & SCOTCH\_Num *          & baseptr,    \\
+                          & SCOTCH\_Num *          & vertglbptr, \\
+                          & SCOTCH\_Num *          & vertlocptr, \\
+                          & SCOTCH\_Num *          & vertlocptz, \\
+                          & SCOTCH\_Num *          & vertgstptr, \\
+                          & SCOTCH\_Num **         & vertloctab, \\
+                          & SCOTCH\_Num **         & vendloctab, \\
+                          & SCOTCH\_Num **         & veloloctab, \\
+                          & SCOTCH\_Num **         & vlblloctab, \\
+                          & SCOTCH\_Num *          & edgeglbptr, \\
+                          & SCOTCH\_Num *          & edgelocptr, \\
+                          & SCOTCH\_Num *          & edgelocptz, \\
+                          & SCOTCH\_Num **         & edgeloctab, \\
+                          & SCOTCH\_Num **         & edgegsttab, \\
+                          & SCOTCH\_Num **         & edloloctab, \\
+                          & MPI\_Comm *            & comm)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -1949,6 +2015,73 @@ the centralized graph.
 
 {\tt SCOTCH\_dgraphGather} returns $0$ if the graph structure has
 been successfully gathered, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_dgraphGrow}}
+\label{sec-lib-func-dgraphgrow}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_dgraphGrow ( & SCOTCH\_Dgraph * const & grafptr,    \\
+                         & const SCOTCH\_Num      & seedlocnbr, \\
+                         & SCOTCH\_Num * const    & seedloctab, \\
+                         & const SCOTCH\_Num      & distmax,    \\
+                         & SCOTCH\_Num * const    & partgsttab) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdgraphgrow ( & doubleprecision (*)   & grafdat,    \\
+                    & integer*{\it num}     & seedlocnbr, \\
+                    & integer*{\it num} (*) & seedloctab, \\
+                    & integer*{\it num}     & distmax,    \\
+                    & integer*{\it num} (*) & partgsttab, \\
+                    & integer               & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_dgraphGrow} routine grows areas in the
+\texttt{SCOTCH\_\lbt Dgraph} structure pointed to by \texttt{grafptr},
+from a set of colored seeds provided on each process. Several seeds
+can have the same color. Starting from the seeds declared in the
+initial local queues \texttt{seedloctab} on each process, at most
+\texttt{distmax} rounds of expansion will be performed, in a
+breadth-first search manner. During each round, all the neighbors of
+the vertices currently in queue are visited, and, if they have not
+already been colored, they receive the color of the current vertex and
+are in turn inserted into the queue.
+
+The \texttt{seedloctab} array, which must be of a size at least equal
+to \texttt{vertlocnbr} as it will serve as the local vertex queue,
+holds the \texttt{seedlocnbr} local vertex indices of the local
+seeds. This represent the initial state of the vertex queue.
+
+Colors are represented as positive or zero integer values. The
+\texttt{partgsttab} array, which must be of a size at least equal to
+\texttt{vertgstnbr} as it will also contain the colors of the ghost
+vertices received from neighboring processes, holds vertex colors.
+Its local part must be initialized with the colors of the seed
+vertices whose indices are contained in \texttt{seedloctab}. All its
+other local cells must be set to $-1$, in order for them to be
+traversed. Vertices not identified as seed vertices, and whose color
+is already set in \texttt{partgsttab}, will not be considered by the
+region growing process.
+
+The values of \texttt{vertlocnbr} and \texttt{vertgstnbr} needed to
+dimension the arrays passed by the user can be queried by calling
+\texttt{SCOTCH\_\lbt dgraph\lbt Data()}, described in
+Section~\ref{sec-lib-func-dgraphdata}. The value of
+\texttt{vertgstnbr} will only be valid after
+\texttt{SCOTCH\_\lbt dgraph\lbt Ghst()} has been called on the given
+distributed graph (else, it will be equal to~$-1$); see
+Section~\ref{sec-lib-func-dgraphghst}.
+
+\progret
+
+{\tt SCOTCH\_dgraphGrow} returns $0$ if the region-growing process has
+succeeded, and $1$ on error.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_dgraphInducePart}}
@@ -2266,6 +2399,72 @@ export the interface of the {\sc libPTScotch} to interpreted languages,
 without access to the ``{\tt scotch.h}'' include file.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_dgraphStat}}
+\label{sec-lib-func-dgraphstat}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_dgraphStat ( & const SCOTCH\_Graph * & grafptr,    \\
+                         & SCOTCH\_Num *         & velominptr, \\
+                         & SCOTCH\_Num *         & velomaxptr, \\
+                         & SCOTCH\_Num *         & velosumptr, \\
+                         & double *              & veloavgptr, \\
+                         & double *              & velodltptr, \\
+                         & SCOTCH\_Num *         & degrminptr, \\
+                         & SCOTCH\_Num *         & degrmaxptr, \\
+                         & double *              & degravgptr, \\
+                         & double *              & degrdltptr, \\
+                         & SCOTCH\_Num *         & edlominptr, \\
+                         & SCOTCH\_Num *         & edlomaxptr, \\
+                         & SCOTCH\_Num *         & edlosumptr, \\
+                         & double *              & edloavgptr, \\
+                         & double *              & edlodltptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdgraphstat ( & doubleprecision (*) & grafdat, \\
+                    & integer*{\it num}   & velomin, \\
+                    & integer*{\it num}   & velomax, \\
+                    & integer*{\it num}   & velosum, \\
+                    & doubleprecision     & veloavg, \\
+                    & doubleprecision     & velodlt, \\
+                    & integer*{\it num}   & degrmin, \\
+                    & integer*{\it num}   & degrmax, \\
+                    & doubleprecision     & degravg, \\
+                    & doubleprecision     & degrdlt, \\
+                    & integer*{\it num}   & edlomin, \\
+                    & integer*{\it num}   & edlomax, \\
+                    & integer*{\it num}   & edlosum, \\
+                    & doubleprecision     & edloavg, \\
+                    & doubleprecision     & edlodlt, \\
+                    & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_dgraphStat} routine produces some statistics regarding
+the distributed graph structure pointed to by {\tt grafptr}.
+{\tt velomin}, {\tt velomax}, {\tt velosum}, {\tt veloavg} and
+{\tt velodlt} are the minimum vertex load, the maximum vertex
+load, the sum of all vertex loads, the average vertex load,
+and the variance of the vertex loads, respectively.
+{\tt degrmin}, {\tt degrmax}, {\tt degravg} and
+{\tt degrdlt} are the minimum vertex degree, the maximum vertex
+degree, the average vertex degree, and the variance of the vertex
+degrees, respectively.
+{\tt edlomin}, {\tt edlomax}, {\tt edlosum}, {\tt edloavg} and
+{\tt edlodlt} are the minimum edge load, the maximum edge
+load, the sum of all edge loads, the average edge load,
+and the variance of the edge loads, respectively.
+
+\progret
+
+{\tt SCOTCH\_dgraphStat} returns $0$ if the statistics have been
+successfully produced, and $1$ else.
+\end{itemize}
+
 \subsection{Distributed graph I/O routines}
 
 \subsubsection{{\tt SCOTCH\_dgraphLoad}}
@@ -2377,7 +2576,7 @@ successfully written to {\tt stream}, and $1$ else.
 \subsection{Data handling and exchange routines}
 
 \subsubsection{{\tt SCOTCH\_dgraphGhst}}
-\label{sec-lib-dgraphghst}
+\label{sec-lib-func-dgraphghst}
 
 \begin{itemize}
 \progsyn
@@ -2786,6 +2985,43 @@ with the logical unit of the mapping file.
 
 {\tt SCOTCH\_dgraphMapSave} returns $0$ if the mapping structure
 has been successfully written to {\tt stream}, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_dgraphMapView}}
+\label{sec-lib-func-dgraphmapview}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_dgraphMapView ( & const SCOTCH\_Dgraph *   & grafptr, \\
+                            & const SCOTCH\_Dmapping * & mappptr, \\
+                            & FILE *                   & stream)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdgraphmapview ( & doubleprecision (*) & grafdat, \\
+                       & doubleprecision (*) & mappdat, \\
+                       & integer             & fildes,  \\
+                       & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_dgraphMapView} routine summarizes statistical
+information on the mapping pointed to by {\tt mappptr} (load of target
+processors, number of neighboring domains, average dilation and
+expansion, edge cut size, distribution of edge dilations), and prints
+these results to stream {\tt stream}.
+
+Fortran users must use the {\tt PXFFILENO} or {\tt FNUM} functions to
+obtain the number of the Unix file descriptor {\tt fildes} associated
+with the logical unit of the output data file.
+
+\progret
+
+{\tt SCOTCH\_dgraphMapView} returns $0$ if the data has been
+successfully written to {\tt stream}, and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_dgraphPart}}
@@ -3309,7 +3545,7 @@ been successfully initialized, and $1$ else.
 
 {\tt\begin{tabular}{l@{}ll}
 int SCOTCH\_dgraphOrderGather ( & const SCOTCH\_Dgraph * & grafptr, \\
-                                & SCOTCH\_Dordering *    & cordptr, \\
+                                & SCOTCH\_Dordering *    & dordptr, \\
                                 & SCOTCH\_Ordering *     & cordptr)
 \end{tabular}}
 
@@ -3450,6 +3686,60 @@ that may have been implemented in a non-reentrant way, no guarantee is
 given on the reentrance of these routines. Consequently, strategy
 creation routines that might be called simultaneously by multiple
 threads should be protected by a mutex.
+
+\subsubsection{{\tt SCOTCH\_stratDgraphClusterBuild}}
+\label{sec-lib-func-stratdgraphclusterbuild}
+\index{Clustering}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_stratDgraphClusterBuild ( & SCOTCH\_Strat *   & straptr, \\
+                                      & const SCOTCH\_Num & flagval, \\
+                                      & const SCOTCH\_Num & procnbr, \\
+                                      & const SCOTCH\_Num & pwgtmax, \\
+                                      & const double      & densmin, \\
+                                      & const double      & bbalval)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfstratdgraphclusterbuild ( & doubleprecision (*) & stradat, \\
+                                 & integer*{\it num}   & flagval, \\
+                                 & integer*{\it num}   & procnbr, \\
+                                 & integer*{\it num}   & pwgtmax, \\
+                                 & doubleprecision     & densmin, \\
+                                 & doubleprecision     & bbalval, \\
+                                 & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_stratDgraphClusterBuild} routine fills the strategy
+structure pointed to by {\tt straptr} with a default clustering
+strategy tuned according to the preference flags passed as
+{\tt flagval}, the maximum cluster vertex weight {\tt pwgtmax},
+the minimum edge density {\tt densmin}, and the bipartition imbalance
+ratio {\tt bbalval}, to be used on {\tt procnbr} processes.
+
+From this point, the strategy structure
+can only be used as a mapping strategy, to be used by a mapping
+function such as {\tt SCOTCH\_\lbt graph\lbt Map}.
+
+Recursive bipartitioning will be applied to the graph, every
+bipartition allowing for an imbalance tolerance of {\tt bbalval}.
+Recursion will stop if either cluster size becomes smaller than
+{\tt pwgtmax}, or cluster edge density becomes higher than
+{\tt densmin}, which represents the fraction of edges internal to the
+cluster with respect to a complete graph. See
+Section~\ref{sec-lib-format-strat-default} for a description of the
+available flags.
+
+\progret
+
+{\tt SCOTCH\_stratDgraphClusterBuild} returns $0$ if the strategy string
+has been successfully set, and $1$ else.
+\end{itemize}
 
 \subsubsection{{\tt SCOTCH\_stratDgraphMap}}
 

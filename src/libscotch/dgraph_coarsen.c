@@ -1,4 +1,4 @@
-/* Copyright 2007-2012,2014,2018-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2014,2018-2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.1  : from : 17 jun 2021     **/
 /**                                 to   : 27 dec 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 12 aug 2023     **/
+/**                                 to   : 31 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -666,6 +666,9 @@ const void * const                    globptr)    /* Unused                     
 ** distributed coarse graph in a multi-threaded way.
 ** The distributed coarse graph is not compact, so
 ** coargrafptr->vendloctab must have been allocated.
+** To manage the case where processes may have
+** different numbers of threads, only thrdmin threads
+** are used per process, instead of thrdnbr.
 ** It returns:
 ** - 0   : if coarse graph was created.
 ** - !0  : on error.
@@ -689,7 +692,7 @@ DgraphCoarsenData * restrict const  coarptr)
   int                           procngbnum;
   int                           o;
 
-  const int                           thrdnbr        = threadNbr (descptr);
+  const int                           thrdmin        = coarptr->thrdmin; /* All processes must have same number of threads */
   const int                           thrdnum        = threadNum (descptr);
   Dgraph * restrict const             finegrafptr    = coarptr->finegrafptr;
   Dgraph * restrict const             coargrafptr    = coarptr->coargrafptr;
@@ -706,6 +709,14 @@ DgraphCoarsenData * restrict const  coarptr)
   Gnum * restrict const               coaredgeloctax = coargrafptr->edgeloctax;
   Gnum * restrict const               coaredloloctax = coargrafptr->edloloctax;
   const Gnum                          coarhashmsk    = coarptr->coarhashmsk;
+
+  if (thrdnum >= thrdmin) {                       /* If extra, idle thread */
+    coarptr->thrdtab[thrdnum].velolocsum = 0;     /* Nothing to do         */
+    coarptr->thrdtab[thrdnum].edgelocnbr = 0;
+    coarptr->thrdtab[thrdnum].degrlocmax = 0;
+    o = 0;                                        /* Everything went well */
+    goto abort2;                                  /* Skip all work        */
+  }
 
   o = 1;                                          /* Assume an error */
 
@@ -726,7 +737,7 @@ DgraphCoarsenData * restrict const  coarptr)
         ercvdsptab[procngbnum] = -1;              /* Set canary value                             */
       else                                        /* In the general case, computation is harmless */
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
-        ercvdsptab[procngbnum] = coarptr->ercvdsptab[procngbnum] + 2 * (thrdnbr - 1); /* Skip thread index sub-array to reach start of array for thread 0 */
+        ercvdsptab[procngbnum] = coarptr->ercvdsptab[procngbnum] + 2 * (thrdmin - 1); /* Skip thread index sub-array to reach start of array for thread 0 */
     }
   }
   else {                                          /* Other threads have a thread adjacency start index */
@@ -748,8 +759,8 @@ DgraphCoarsenData * restrict const  coarptr)
 
   coarvelolocsum = 0;
   coardegrlocmax = 0;
-  coarvertlocnum = finegrafptr->baseval + DATASCAN (coargrafptr->vertlocnbr, thrdnbr, thrdnum);
-  coarvertlocnnd = finegrafptr->baseval + DATASCAN (coargrafptr->vertlocnbr, thrdnbr, thrdnum + 1);
+  coarvertlocnum = finegrafptr->baseval + DATASCAN (coargrafptr->vertlocnbr, thrdmin, thrdnum);
+  coarvertlocnnd = finegrafptr->baseval + DATASCAN (coargrafptr->vertlocnbr, thrdmin, thrdnum + 1);
   for (coaredgelocnum = coaredgelocbas; coarvertlocnum < coarvertlocnnd; coarvertlocnum ++) {
     coarvertloctax[coarvertlocnum] = coaredgelocnum; /* Set start of vertex adjacency sub-array */
 
@@ -774,10 +785,12 @@ DgraphCoarsenData * restrict const  coarptr)
   coarptr->thrdtab[thrdnum].velolocsum = coarvelolocsum;
   coarptr->thrdtab[thrdnum].edgelocnbr = coaredgelocnum - coaredgelocbas;
   coarptr->thrdtab[thrdnum].degrlocmax = coardegrlocmax;
-  if (thrdnum == (thrdnbr - 1))
+  if (thrdnum == (thrdmin - 1))
     coargrafptr->edgelocsiz = coaredgelocnum - finegrafptr->baseval; /* For non-compact edge array, array size is end of last edge sub-array */
 
+#ifdef SCOTCH_DEBUG_DGRAPH2
 abort1:
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
   memFree (coarhashtab);                          /* Free group leader */
 abort2:
   coarptr->thrdtab[thrdnum].retuval = o;
@@ -837,6 +850,7 @@ DgraphCoarsenData * restrict const  coarptr)
 
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
   const int                                 thrdnbr     = contextThreadNbr (coarptr->contptr);
+  const int                                 thrdmin     = coarptr->thrdmin;
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
   MPI_Comm                                  proccomm    = coarptr->finegrafptr->proccomm;
   Dgraph * restrict const                   finegrafptr = coarptr->finegrafptr;
@@ -866,14 +880,14 @@ DgraphCoarsenData * restrict const  coarptr)
     nsndidxtab[procngbnum] = coarptr->vsnddsptab[procngbtab[procngbnum]];
 
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
-  if ((coarptr->thrdtab = memAlloc (thrdnbr * sizeof (DgraphCoarsenThread))) == NULL) {
+  if ((coarptr->thrdtab = memAlloc (thrdnbr * sizeof (DgraphCoarsenThread))) == NULL) { /* TRICK: thrdnbr and not thrdmin for reduction across all threads */
     errorPrint ("dgraphCoarsenBuild: out of memory (1)");
     return (1);                                   /* TODO: cleaner exit */
   }
 
   coarptr->thrdtab[0].edgelocsum = 0;             /* No local edges exist before thread 0 */
   thrdnum = 1;
-  coarlocnnd = DATASCAN (coarptr->multlocnbr, thrdnbr, 1); /* Compute first thread slot boundary */
+  coarlocnnd = DATASCAN (coarptr->multlocnbr, thrdmin, 1); /* Compute first thread slot boundary */
   edgelocsum = 0;
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
   for (multlocnum = 0; multlocnum < coarptr->multlocnbr; multlocnum ++) { /* Loop on local multinode data */
@@ -887,7 +901,7 @@ DgraphCoarsenData * restrict const  coarptr)
     while (multlocnum >= coarlocnnd) {            /* If crossed boundary of current thread    */
       coarptr->thrdtab[thrdnum].edgelocsum = edgelocsum; /* Record sum of local edges to date */
       thrdnum ++;
-      coarlocnnd = DATASCAN (coarptr->multlocnbr, thrdnbr, thrdnum); /* Compute next thread slot boundary */
+      coarlocnnd = DATASCAN (coarptr->multlocnbr, thrdmin, thrdnum); /* Compute next thread slot boundary */
     }
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
 
@@ -965,8 +979,8 @@ DgraphCoarsenData * restrict const  coarptr)
     }
   }
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
-  for ( ; thrdnum < thrdnbr; thrdnum ++)          /* Fill remaining thread slots            */
-    coarptr->thrdtab[thrdnum].edgelocsum = edgelocsum; /* Record sum of local edges to date */
+  for ( ; thrdnum < thrdmin; thrdnum ++)          /* Fill remaining thread slots (excluding idle ones) */
+    coarptr->thrdtab[thrdnum].edgelocsum = edgelocsum; /* Record sum of local edges to date            */
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
 
   if ((((finegrafptr->flagval & DGRAPHCOMMPTOP) != 0) ? dgraphCoarsenBuildPtop : dgraphCoarsenBuildColl) (coarptr) != 0)
@@ -1007,7 +1021,7 @@ DgraphCoarsenData * restrict const  coarptr)
                           coarptr->dcntglbtab[procnum].edgesndnbr * edgemltval;
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
     if (coarptr->dcntglbtab[procnum].vertsndnbr > 0) { /* If process is a neighbor that actually sends data */
-      ercvcnttab[procnum] += 2 * (thrdnbr - 1);   /* Add space for thread index array                       */
+      ercvcnttab[procnum] += 2 * (thrdmin - 1);   /* Add space for thread index array                       */
       procrcvnbr ++;                              /* One more sending neighbor for us to receive            */
     }
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
@@ -1033,8 +1047,8 @@ DgraphCoarsenData * restrict const  coarptr)
   esnddatsiz += coarptr->vertsndnbr;
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
-  ercvdatsiz += 2 * (thrdnbr - 1) * procrcvnbr;   /* Set thread slot space only for neighbors from which we receive */
-  esnddatsiz += 2 * (thrdnbr - 1) * finegrafptr->procngbnbr; /* Cannot compute exactly so take upper bound          */
+  ercvdatsiz += 2 * (thrdmin - 1) * procrcvnbr;   /* Set thread slot space only for neighbors from which we receive */
+  esnddatsiz += 2 * (thrdmin - 1) * finegrafptr->procngbnbr; /* Cannot compute exactly so take upper bound          */
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (ercvdspidx != ercvdatsiz) {
@@ -1048,7 +1062,7 @@ DgraphCoarsenData * restrict const  coarptr)
   coarptr->coarprvptr = NULL;                     /* Transfer ownership of private arrays to coarse graph    */
   esndcnttab = NULL;                              /* In case of memory allocation error                      */
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
-  if (thrdnbr > 1)                                /* If more than one thread    */
+  if (thrdmin > 1)                                /* If more than one thread    */
     vendlocsiz = coarptr->multlocnbr;             /* Create a non-compact graph */
   else
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
@@ -1122,7 +1136,7 @@ DgraphCoarsenData * restrict const  coarptr)
       esndcnttab[procnum] = 0;                    /* Nothing to send back                  */
 #ifdef SCOTCH_DEBUG_DGRAPH2
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
-      esnddatsiz -= 2 * (thrdnbr - 1);            /* Lower boundary by discarding thread slot index space not used by this neighbor */
+      esnddatsiz -= 2 * (thrdmin - 1);            /* Lower boundary by discarding thread slot index space not used by this neighbor */
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
       continue;                                   /* Skip to next neighbor */
@@ -1130,12 +1144,12 @@ DgraphCoarsenData * restrict const  coarptr)
 
     esnddspbas = esnddspidx;
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
-    esnddspidx += 2 * (thrdnbr - 1);              /* Reserve space for thread slot index */
+    esnddspidx += 2 * (thrdmin - 1);              /* Reserve space for thread slot index */
 
     thrdnum = 1;
     coarngbnbr = coargrafptr->proccnttab[procglbnum]; /* Get initial value and number of coarse vertices for this neighbor */
     coarngbadj = coargrafptr->procdsptab[procglbnum];
-    coarngbnnd = coarngbadj + DATASCAN (coarngbnbr, thrdnbr, 1); /* Compute first thread slot boundary */
+    coarngbnnd = coarngbadj + DATASCAN (coarngbnbr, thrdmin, 1); /* Compute first thread slot boundary */
     edgengbsum = 0;
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
     do {                                          /* For all multinode requests received, in order  */
@@ -1151,7 +1165,7 @@ DgraphCoarsenData * restrict const  coarptr)
         esnddattab[esnddspbas + (2 * thrdnum) - 2] = edgengbsum; /* Record number of indices for new slot                  */
         esnddattab[esnddspbas + (2 * thrdnum) - 1] = (Gnum) (esnddspidx - esnddspbas); /* Record start index for new slot  */
         thrdnum ++;
-        coarngbnnd = coarngbadj + DATASCAN (coarngbnbr, thrdnbr, thrdnum); /* Compute next thread slot boundary */
+        coarngbnnd = coarngbadj + DATASCAN (coarngbnbr, thrdmin, thrdnum); /* Compute next thread slot boundary */
       }
       edgengbsum += edgelocnnd - edgelocnum - 1;  /* Account for edges to be sent in this slot; TRICK : "-1" for collapsed ghost edge */
 #endif /* (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD) */
@@ -1178,7 +1192,7 @@ DgraphCoarsenData * restrict const  coarptr)
     } while (++ vrcvidxnum < vrcvidxnnd);
     esndcnttab[procnum] = esnddspidx - esnddspbas; /* Record amount of data to be sent to this process */
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
-    for ( ; thrdnum < thrdnbr; thrdnum ++) {      /* Fill remaining thread slots */
+    for ( ; thrdnum < thrdmin; thrdnum ++) {      /* Fill remaining thread slots */
       esnddattab[esnddspbas + (2 * thrdnum) - 2] = edgengbsum;
       esnddattab[esnddspbas + (2 * thrdnum) - 1] = (Gnum) (esnddspidx - esnddspbas);
     }
@@ -1230,7 +1244,7 @@ DgraphCoarsenData * restrict const  coarptr)
   coarptr->coarhashmsk = coarhashnbr * 4 - 1;     /* TRICK: size is power of two */
 
 #if (defined SCOTCH_PTHREAD) && (! defined DGRAPHCOARSENNOTHREAD)
-  if (thrdnbr > 1) {                              /* If multithreading, coarse graph shall not be compact */
+  if (thrdmin > 1) {                              /* If multithreading, coarse graph shall not be compact */
     contextThreadLaunch (coarptr->contptr, (ThreadFunc) dgraphCoarsenBuildThr, (void *) coarptr);
     if (coarptr->thrdtab[0].retuval != 0) {
       errorPrint ("dgraphCoarsenBuild: could not compute adjacency (1)");
@@ -1315,8 +1329,9 @@ Context * restrict const              contptr)    /*+ Execution context         
   Gnum                      edgercvnbr;           /* Overall number of edges to be received from neighbors    */
   Gnum                      vertsndnbr;           /* Overall number of vertices to be sent to neighbors       */
   Gnum                      edgesndnbr;           /* Overall number of edges to be sent to neighbors          */
+  int                       thrdlocmin;
+  int                       thrdglbmin;
   int                       cheklocval;
-  int                       chekglbval;
   Gnum                      coarvertmax;
   Gnum                      passnum;
   int                       procnum;
@@ -1342,16 +1357,17 @@ Context * restrict const              contptr)    /*+ Execution context         
   cheklocval  = dgraphCoarsenInit (&matedat.c, finegrafptr, coargrafptr);
   cheklocval |= dgraphMatchInit   (&matedat, 0.5F);
 
-#ifdef SCOTCH_DEBUG_DGRAPH1                       /* This communication cannot be covered by a useful one */
-  if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, finegrafptr->proccomm) != MPI_SUCCESS) {
+  thrdlocmin = (cheklocval != 0) ? -1 : contextThreadNbr (contptr); /* TRICK: negative value on error */
+  if (MPI_Allreduce (&thrdlocmin, &thrdglbmin, 1, MPI_INT, MPI_MIN, finegrafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphCoarsen: communication error (1)");
     return (2);
   }
-#else /* SCOTCH_DEBUG_DGRAPH1 */
-  chekglbval = cheklocval;
-#endif /* SCOTCH_DEBUG_DGRAPH1 */
-  if (chekglbval != 0)
+  if (thrdglbmin < 0) {                           /* On error */
+    dgraphMatchExit   (&matedat);
+    dgraphCoarsenExit (&matedat.c);
     return (2);
+  }
+  matedat.c.thrdmin = thrdglbmin;                 /* Minimum number of threads across all processes */
 
   for (passnum = 0; passnum < passnbr; passnum ++) {
     ((passnum == 0) ? dgraphMatchHl : dgraphMatchHy) (&matedat); /* If first pass, process lightest vertices first */

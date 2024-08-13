@@ -1,4 +1,4 @@
-/* Copyright 2008,2011,2014,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2011,2014,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,6 +35,7 @@
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Sebastien FOURESTIER (v6.0)             **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module performs the Dual Recursive **/
 /**                Bipartitioning mapping algorithm for    **/
@@ -48,7 +49,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 03 may 2021     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 16 jul 2023     **/
 /**                                                        **/
 /**   NOTES      : # This is a rewrite of kgraphMapRb()    **/
 /**                  for complete-graph target topologies. **/
@@ -352,7 +353,7 @@ const KgraphMapRbData * restrict const  dataptr,  /*+ Global mapping data       
 const Graph * restrict const            grafptr,  /*+ Graph to map, without fixed vertices +*/
 const Anum                              vflonbr,  /*+ Number of fixed vertex load slots    +*/
 KgraphMapRbVflo * restrict const        vflotab,  /*+ Array of fixed vertex load slots     +*/
-Context * const                         contptr)  /*+ Execution context                    +*/
+Context * restrict const                contptr)  /*+ Execution context                    +*/
 {
   KgraphMapRbPartSplit  spltdat;                  /*+ Data for initial call +*/
   int                   o;
@@ -379,7 +380,7 @@ Context * const                         contptr)  /*+ Execution context         
   spltdat.splttab[0].vertnbr = grafptr->vertnbr;  /* Start from initial domain */
   spltdat.splttab[0].vflonbr = vflonbr;
   spltdat.splttab[0].vflotab = vflotab;
-  spltdat.splttab[0].domnptr = &mappptr->domnorg; /* Point to initial domain to avoid centralized locking on domain array */
+  spltdat.splttab[0].domnptr = &dataptr->domnorg; /* Point to initial domain to avoid centralized locking on domain array */
   spltdat.dataptr = dataptr;
   spltdat.grafptr = grafptr;
   spltdat.parttax = NULL;

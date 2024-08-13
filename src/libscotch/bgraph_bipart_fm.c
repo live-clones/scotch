@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014,2016,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2016,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,7 +67,7 @@
 /**                # Version 6.0  : from : 23 feb 2011     **/
 /**                                 to   : 20 aug 2019     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -530,7 +530,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
 
       if (vexxptr->mswpnum != mswpnum) {          /* If vertex data not yet recorded */
         vexxptr->mswpnum = mswpnum;
-        savetab[savenbr].hashnum  = vexxptr - hashtab;
+        savetab[savenbr].hashnum  = (Gnum) (vexxptr - hashtab);
         savetab[savenbr].partval  = partval;
         savetab[savenbr].compgain = vexxptr->compgain;
         savetab[savenbr].commgain = vexxptr->commgain;
@@ -750,7 +750,7 @@ const BgraphBipartFmParam * const paraptr)        /*+ Method parameters +*/
             commgain = veextax[hashtab[hashnum].vertnum];
             if (commgain != 0) {                  /* If vertex has external cocycle edges                         */
               hashtab[hashnum].commgain += 2 * (1 - 2 * hashtab[hashnum].partval) * commgain; /* Compute new gain */
-              if (bgraphBipartFmIsTabl (&hashtab[hashnum])) {       /* If vertex is linked                        */
+              if (bgraphBipartFmIsTabl (&hashtab[hashnum])) { /* If vertex is linked                              */
                 bgraphBipartFmTablDel (tablptr, &hashtab[hashnum]); /* Remove it from table                       */
                 bgraphBipartFmTablAdd (tablptr, &hashtab[hashnum]); /* Re-link it                                 */
               }

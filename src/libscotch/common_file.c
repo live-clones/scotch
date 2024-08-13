@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 10 nov 2014     **/
 /**                                 to   : 14 jul 2018     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 08 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,6 +56,7 @@
 #include "module.h"
 #include "common.h"
 #include "common_file.h"
+#include "common_file_compress.h"
 
 /*********************************/
 /*                               */
@@ -77,11 +78,11 @@ char * const                nameptr,              /*+ Pointer to name string poi
 const int                   procnbr,              /*+ Number of processes            +*/
 const int                   procnum)              /*+ Number of current process      +*/
 {
-  int                 namemax;
-  int                 namenum;
+  size_t              namemax;
+  size_t              namenum;
   char *              naexptr;
-  int                 naexmax;
-  int                 naexnum;
+  size_t              naexmax;
+  size_t              naexnum;
   int                 flagval;                    /* Flag set if expansion took place */
 
   namemax = strlen (nameptr);
@@ -91,7 +92,7 @@ const int                   procnum)              /*+ Number of current process 
     return (NULL);
 
 #ifdef COMMON_DEBUG
-  sprintf (naexptr, FILENAMEDISTEXPANDSTR, procnbr); /* TRICK: Test if FILENAMEDISTEXPANDNBR is a size large enough */
+  sprintf (naexptr, FILENAMEDISTEXPANDSTR, procnbr); /* TRICK: test if FILENAMEDISTEXPANDNBR is a size large enough */
   if (atoi (naexptr) != procnbr) {
     errorPrint ("fileNameDistExpand: undersized integer string size");
     memFree    (naexptr);
@@ -99,10 +100,10 @@ const int                   procnum)              /*+ Number of current process 
   }
 #endif /* COMMON_DEBUG */
 
-  for (namenum = naexnum = flagval = 0; namenum < namemax; ) {
+  for (namenum = naexnum = 0, flagval = 0; namenum < namemax; ) {
     char                charval;
     int                 dataval = 0;
-    int                 datasiz;
+    size_t              datasiz;
 
     charval = nameptr[namenum ++];                /* Get current character                */
     datasiz = 1;                                  /* Assume individual expanded character */
@@ -146,7 +147,7 @@ const int                   procnum)              /*+ Number of current process 
       else {
         sprintf (&naexptr[naexnum], FILENAMEDISTEXPANDSTR, dataval); /* TRICK: Change format string if FILENAMEDISTEXPANDNBR changes */
         naexptr[naexnum + FILENAMEDISTEXPANDNBR] = ' ';
-        naexnum = strchr (&naexptr[naexnum], ' ') - naexptr;
+        naexnum = (size_t) (strchr (&naexptr[naexnum], ' ') - naexptr);
       }
     }
   }

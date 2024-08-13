@@ -1,4 +1,4 @@
-/* Copyright 2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 6.1  : from : 01 sep 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,7 +71,7 @@
 */
 
 int
-METISNAMEU (METIS_PartMeshDual) (
+SCOTCHMETISNAMES (METIS_PartMeshDual) (
 const SCOTCH_Num * const    ne,                   /*+ Pointer to number of elements                  +*/
 const SCOTCH_Num * const    nn,                   /*+ Pointer to number of nodes                     +*/
 const SCOTCH_Num * const    eptr,                 /*+ Element vertex array                           +*/
@@ -248,4 +248,28 @@ SCOTCH_Num * const          npart)                /*+ Node partition array to be
   SCOTCH_meshExit (&meshdat);
 
   return (METIS_OK);
+}
+
+/*
+**
+*/
+
+int
+SCOTCHMETISNAMEC (METIS_PartMeshDual) (
+const SCOTCH_Num * const    ne,                   /*+ Pointer to number of elements                  +*/
+const SCOTCH_Num * const    nn,                   /*+ Pointer to number of nodes                     +*/
+const SCOTCH_Num * const    eptr,                 /*+ Element vertex array                           +*/
+const SCOTCH_Num * const    eind,                 /*+ Element edge array                             +*/
+const SCOTCH_Num * const    vwgt,                 /*+ Element vertex weight array                    +*/
+const SCOTCH_Num * const    vsize,                /*+ Element communication volume array             +*/
+const SCOTCH_Num * const    ncommon,              /*+ Pointer to number of connectivity common nodes +*/
+const SCOTCH_Num * const    nparts,               /*+ Pointer to number of parts to compute          +*/
+const double * const        tpwgts,               /*+ Pointer to part weight array                   +*/
+const SCOTCH_Num * const    options,              /*+ Optional options array                         +*/
+SCOTCH_Num * const          objval,               /*+ Edege cut or communication volume return value +*/
+SCOTCH_Num * const          epart,                /*+ Element partition array to be filled           +*/
+SCOTCH_Num * const          npart)                /*+ Node partition array to be filled              +*/
+{
+  return (SCOTCHMETISNAMES (METIS_PartMeshDual) (ne, nn, eptr, eind, vwgt, vsize, ncommon,
+                                                 nparts, tpwgts, options, objval, epart, npart));
 }

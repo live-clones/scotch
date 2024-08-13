@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 27 jun 2008     **/
 /**                                 to   : 22 oct 2010     **/
 /**                # Version 7.0  : from : 28 aug 2019     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 30 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -169,7 +169,7 @@ Hdgraph * restrict const    indgrafptr)
 
   if (cheklocval != 0) {                          /* In case of memory error */
     Gnum                procngbnum;
-    int                 dummyval;
+    Gnum                dummyval;
 
     dummyval   = -1;
     chekglbval = 1;

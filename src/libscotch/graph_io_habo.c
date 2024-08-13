@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2016,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2016,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 04 aug 2016     **/
 /**                                 to   : 27 aug 2019     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 31 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -346,7 +346,7 @@ const char * const          dataptr)              /* Tag value        */
 
   memFree (hashtab);
 
-  grafptr->edgetax = ((Gnum *) memRealloc (grafptr->edgetax + 1, grafptr->edgenbr * sizeof (Gnum))) - 1;
+  grafptr->edgetax = ((Gnum *) memRealloc (grafptr->edgetax + grafptr->baseval, grafptr->edgenbr * sizeof (Gnum))) - grafptr->baseval;
 
 #ifdef SCOTCH_DEBUG_GRAPH2
   if (graphCheck (grafptr) != 0) {                /* Check graph consistency */

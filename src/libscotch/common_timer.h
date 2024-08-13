@@ -1,4 +1,4 @@
-/* Copyright 2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2023 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,55 +31,31 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : metis_options.c                         **/
+/**   NAME       : common_timer.h                          **/
 /**                                                        **/
-/**   AUTHOR     : Marc FUENTES                            **/
-/**                Francois PELLEGRINI                     **/
+/**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
-/**   FUNCTION   : This module is the compatibility        **/
-/**                library for the MeTiS parameter         **/
-/**                management routines.                    **/
+/**   FUNCTION   : These lines are the data declarations   **/
+/**                for the timing functions.               **/
 /**                                                        **/
-/**   DATES      : # Version 6.1  : from : 20 jun 2021     **/
-/**                                 to   : 20 jun 2021     **/
-/**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 11 aug 2024     **/
+/**   DATES      : # Version 7.0  : from : 22 aug 2023     **/
+/**                                 to   : 22 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
 /*
-**  The defines and includes.
+**  The global variables.
 */
 
-#include "module.h"
-#include "common.h"
-#include "scotch.h"
-#include "metis.h"                                /* Our "metis.h" file */
-
-/*************************************/
-/*                                   */
-/* This routine is the C API for the */
-/* MeTiS options management routine. */
-/*                                   */
-/*************************************/
-
-int
-SCOTCHMETISNAMES (METIS_SetDefaultOptions) (
-SCOTCH_Num * const          options)
-{
-  memSet (options, 0, METIS_NOPTIONS * sizeof (SCOTCH_Num));
-  options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_CUT;
-
-  return (METIS_OK);
-}
+extern int                  timerNbr;             /* Number of timers */
+extern Clock *              timerTab;             /* Array of timers  */
 
 /*
-**
+**  The function prototypes.
 */
 
-int
-SCOTCHMETISNAMEC (METIS_SetDefaultOptions) (
-SCOTCH_Num * const          options)
-{
-  return (SCOTCHMETISNAMES (METIS_SetDefaultOptions) (options));
-}
+int                         timerInit           (const int);
+void                        timerExit           (void);
+void                        timerStart          (const int);
+void                        timerStop           (const int);
+double                      timerVal            (const int);

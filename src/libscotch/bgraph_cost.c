@@ -1,4 +1,4 @@
-/* Copyright 2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                cost function computation routine.      **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 22 feb 2023     **/
-/**                                 to   : 28 mar 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -141,7 +141,7 @@ Gnum * restrict const             cmgeptr)        /*+ Pointer to external commun
   }
 
   if (fronptr != NULL)                            /* If frontier array wanted      */
-    *fnbrptr = fronptr - frontab;                 /* Record size of frontier array */
+    *fnbrptr = (Gnum) (fronptr - frontab);        /* Record size of frontier array */
   *cpl1ptr = cpl1sum;
   *ver1ptr = ver1nbr;
   *cmliptr = cmlisum / 2;                         /* We counted cut load twice */

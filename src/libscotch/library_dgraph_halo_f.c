@@ -1,4 +1,4 @@
-/* Copyright 2007,2009,2012,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2009,2012,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 22 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -127,4 +127,16 @@ int * const                   revaptr), \
 (requptr, revaptr))
 {
   *revaptr = SCOTCH_dgraphHaloWait (requptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                            \
+DGRAPHHALOREQSIZEOF, dgraphhaloreqsizeof, ( \
+int * const                 sizeptr),       \
+(sizeptr))
+{
+  *sizeptr = SCOTCH_dgraphHaloReqSizeof ();
 }

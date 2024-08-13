@@ -99,7 +99,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
 
   if (srcpartloctax == NULL) {
     errorPrint ("dgraphRedist: part array must be provided");
-    return     (1);
+    return (1);
   }
 
   cheklocval = 0;
@@ -111,7 +111,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
   else {
     if (dgraphGhst (srcgrafptr) != 0) {             /* Compute ghost edge array if not already present */
       errorPrint ("dgraphRedist: cannot compute ghost edge array");
-      return     (1);
+      return (1);
     }
 
     permgstnbr = srcgrafptr->vertgstnbr;
@@ -129,7 +129,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, srcgrafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphRedist: communication error (1)");
-    return     (1);
+    return (1);
   }
 #else /* SCOTCH_DEBUG_DGRAPH2 */
   chekglbval = cheklocval;
@@ -147,7 +147,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
 
   if (MPI_Allreduce (vadjloctab, procdsptab, procglbnbr, GNUM_MPI, MPI_SUM, srcgrafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphRedist: communication error (2)");
-    return     (1);
+    return (1);
   }
 
   for (procnum = 0, procdspval = procvrtval = srcgrafptr->baseval; procnum < procglbnbr; procnum ++) { /* Create vertex range arrays */
@@ -167,7 +167,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
 
     if (MPI_Scan (vadjloctab, vadjglbtab, procglbnbr, GNUM_MPI, MPI_SUM, srcgrafptr->proccomm) != MPI_SUCCESS) { /* Compute permutation start indices */
       errorPrint ("dgraphRedist: communication error (3)");
-      return     (1);
+      return (1);
     }
     for (procnum = 0; procnum < procglbnbr; procnum ++) /* Finalize permutation start indices */
       vadjglbtab[procnum] -= vadjloctab[procnum] - procvrttab[procnum];
@@ -178,7 +178,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
     if (dgraphHaloSync (srcgrafptr, permgsttax + srcgrafptr->baseval, GNUM_MPI) != 0) {
       errorPrint ("dgraphRedist: cannot compute halo");
       memFree    (procvrttab);                      /* Free group leader */
-      return     (1);
+      return (1);
     }
 
     permgsttmp = permgsttax;
@@ -268,14 +268,14 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, srcgrafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphRedist2: communication error (1)");
-    return     (1);
+    return (1);
   }
 #else /* SCOTCH_DEBUG_DGRAPH2 */
   chekglbval = cheklocval;
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
   if (chekglbval != 0) {
     dgraphFree (dstgrafptr);
-    return     (1);
+    return (1);
   }
 
   dsndcnttab = (int *) dstgrafptr->procdsptab;    /* TRICK: use procdsptab and procvrttab as paired send count arrays */
@@ -298,7 +298,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
   if (MPI_Alltoall (dsndcnttab, 2, MPI_INT,       /* Get amounts of vertex and edge data to receive */
                     drcvcnttab, 2, MPI_INT, srcgrafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphRedist2: communication error (2)");
-    return     (1);
+    return (1);
   }
 
   fledval = ((srcgrafptr->edloloctax != NULL) ? 1 : 0) + 1; /* Amount of data to exchange per edge  */
@@ -365,14 +365,14 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, srcgrafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphRedist2: communication error (3)");
-    return     (1);
+    return (1);
   }
 #else /* SCOTCH_DEBUG_DGRAPH2 */
   chekglbval = cheklocval;
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
   if (chekglbval != 0) {
     dgraphFree (dstgrafptr);
-    return     (1);
+    return (1);
   }
 
   srcvertlocadj = srcgrafptr->procvrttab[srcgrafptr->proclocnum] - baseval;
@@ -418,7 +418,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
   if (MPI_Alltoallv (dsnddattab, dsndcnttab, dsnddsptab, GNUM_MPI, /* Exchange graph data */
                      drcvdattab, drcvcnttab, drcvdsptab, GNUM_MPI, srcgrafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphRedist2: communication error (4)");
-    return     (1);
+    return (1);
   }
 
   dstvertlocadj = dstprocvrttab[srcgrafptr->proclocnum] - baseval;
@@ -454,7 +454,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if (abs ((dstedloloctax + dstedgelocnum) - (drcvdattab + drcvdatidx)) < dstdegrval) { /* Memory areas should never overlap */
         errorPrint ("dgraphRedist2: internal error (1)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
       memCpy (dstedloloctax + dstedgelocnum, drcvdattab + drcvdatidx, dstdegrval * sizeof (Gnum));
@@ -463,7 +463,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
 #ifdef SCOTCH_DEBUG_DGRAPH2
     if (abs ((dstedgeloctax + dstedgelocnum) - (drcvdattab + drcvdatidx)) < dstdegrval) { /* TRICK: memory areas should never overlap because of degrmax */
       errorPrint ("dgraphRedist2: internal error (2)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
     memCpy (dstedgeloctax + dstedgelocnum, drcvdattab + drcvdatidx, dstdegrval * sizeof (Gnum)); /* TRICK: will never overlap */
@@ -476,7 +476,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dstedgeloctax == NULL) {                    /* Shrinking should never fail */
     errorPrint ("dgraphRedist2: out of memory (4)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
   dstedgeloctax -= baseval;
@@ -501,7 +501,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
                     dstedgelocnbr, dstedgelocsiz, dstedgeloctax, NULL, dstedloloctax, srcgrafptr->degrglbmax) != 0) {
     errorPrint ("dgraphRedist2: cannot build redistributed graph");
     dgraphFree (dstgrafptr);
-    return     (1);
+    return (1);
   }
 
   dstgrafptr->vlblloctax = dstvlblloctax;         /* Set label array after building so that labels not taken into account at build time */
@@ -510,7 +510,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
   if (dgraphCheck (dstgrafptr) != 0) {            /* Check graph consistency */
     errorPrint ("dgraphRedist2: inconsistent graph data");
     dgraphFree (dstgrafptr);
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
   return (0);

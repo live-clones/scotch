@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     04 feb 2022     ##
+##                                 to     01 nov 2023     ##
 ##                                                        ##
 ############################################################
 
@@ -69,7 +69,7 @@ function(add_scotch_exe)
   target_compile_definitions(${file_we} PUBLIC "SCOTCH_CODENAME=\"${SCOTCH_CODENAME}\"")
   if(Threads_FOUND)
     target_compile_definitions(${file_we} PUBLIC SCOTCH_PTHREAD COMMON_PTHREAD)
-    target_link_libraries(${file_we} PUBLIC Threads::Threads)
+    target_link_libraries(${file_we} PUBLIC Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
   endif(Threads_FOUND)
   target_link_libraries(${file_we} PUBLIC scotch scotcherrexit)
 endfunction(add_scotch_exe)
@@ -110,7 +110,9 @@ endforeach()
 
 # Targets which need special source lists
 add_scotch_exe(gout gout_c.c gout_o.c)
-target_link_libraries(gout PRIVATE m)
+if(NOT WIN32)
+  target_link_libraries(gout PRIVATE m)
+endif(NOT WIN32)
 
 # gpart is a special target (same source as gmap)
 add_scotch_exe(gpart gmap.c gmap.h)
@@ -118,7 +120,7 @@ target_compile_definitions(gpart PRIVATE SCOTCH_COMPILE_PART)
 
 # Install all Scotch executables
 foreach(target ${scotch_exe})
-  install(TARGETS ${target} RUNTIME DESTINATION bin)
+  install(TARGETS ${target} COMPONENT scotch RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endforeach()
 
 # Executables linked against the libPTScotch library
@@ -144,7 +146,7 @@ if(BUILD_PTSCOTCH)
     target_compile_definitions(${file_we} PUBLIC "SCOTCH_CODENAME=\"${SCOTCH_CODENAME}\"")
     if(Threads_FOUND)
       target_compile_definitions(${file_we} PUBLIC SCOTCH_PTHREAD COMMON_PTHREAD)
-      target_link_libraries(${file_we} PUBLIC Threads::Threads)
+      target_link_libraries(${file_we} PUBLIC Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
     endif(Threads_FOUND)
     target_include_directories(${file_we} PRIVATE ${GENERATED_INCLUDE_DIR})
     target_link_libraries(${file_we} PUBLIC scotch ptscotch ptscotcherrexit)
@@ -165,6 +167,6 @@ if(BUILD_PTSCOTCH)
   target_compile_definitions(dgpart PRIVATE SCOTCH_COMPILE_PART)
   # Install all PT-Scotch executables
   foreach(target ${ptscotch_exe})
-     install(TARGETS ${target} RUNTIME DESTINATION bin)
+    install(TARGETS ${target} COMPONENT ptscotch RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
   endforeach()
  endif(BUILD_PTSCOTCH)

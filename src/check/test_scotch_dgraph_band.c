@@ -1,4 +1,4 @@
-/* Copyright 2011,2012,2014,2015,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2012,2014,2015,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : test_scotch_dgraph_band.c               **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
 /**                the SCOTCH_dgraphBand() routine.        **/
@@ -43,7 +44,7 @@
 /**                # Version 6.1  : from : 28 dec 2021     **/
 /**                                 to   : 28 dec 2021     **/
 /**                # Version 7.0  : from : 03 jul 2023     **/
-/**                                 to   : 12 aug 2023     **/
+/**                                 to   : 04 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -52,15 +53,8 @@
 */
 
 #include <mpi.h>
-#include <stdio.h>
-#if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H))
-#include <stdint.h>
-#endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
-#include <stdlib.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <pthread.h>
-#include <unistd.h>
+
+#include "../libscotch/common.h"
 
 #include "ptscotch.h"
 
@@ -106,8 +100,8 @@ char *              argv[])
     SCOTCH_errorPrint ("main: Cannot initialize (2)");
 #endif /* SCOTCH_PTHREAD */
 
-  if (argc != 2) {
-    SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
+  if (argc != 3) {
+    SCOTCH_errorPrint ("usage: %s graph_file mapping_file", argv[0]);
     exit (EXIT_FAILURE);
   }
 
@@ -185,7 +179,7 @@ char *              argv[])
     MPI_Barrier (proccomm);
 
     if (procnum == proclocnum) {
-      if ((file = fopen ("/tmp/test_scotch_dgraph_band.map", (procnum == 0) ? "w" : "a+")) == NULL) {
+      if ((file = fopen (argv[2], (procnum == 0) ? "w" : "a+")) == NULL) {
         SCOTCH_errorPrint ("main: cannot open mapping file");
         exit (EXIT_FAILURE);
       }

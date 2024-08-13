@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -35,13 +35,14 @@
 ##                Florent PRUVOST                         ##
 ##                Cedric LACHAT (v6.0)                    ##
 ##                Amaury JACQUES (v6.0)                   ##
+##                Clement BARTHELEMY                      ##
 ##                                                        ##
 ##   FUNCTION   : Secondary configuration file for CMake  ##
 ##                                                        ##
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     26 jan 2023     ##
+##                                 to     30 jul 2024     ##
 ##                                                        ##
 ############################################################
 
@@ -55,6 +56,15 @@ endif(APPLE)
 if(MINGW OR MSYS OR WIN32)
   add_definitions(-DCOMMON_OS_WINDOWS)
 endif(MINGW OR MSYS OR WIN32)
+if(MSVC)
+  add_definitions(-D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS)
+endif(MSVC)
+
+# Detect FreeBSD
+if(${CMAKE_HOST_SYSTEM_NAME}} MATCHES "^.*FreeBSD.*$")
+  set(OS_IS_FREEBSD ON)
+  message(STATUS "OS is FreeBSD")
+endif()
 
 ###################
 #  Prerequisites  #
@@ -99,6 +109,9 @@ if(THREADS)
   if(Threads_FOUND)
     add_definitions(-DCOMMON_PTHREAD -DSCOTCH_PTHREAD)
   endif()
+  if(CMAKE_USE_WIN32_THREADS_INIT)
+    add_definitions(-DCOMMON_THREAD_WIN32)
+  endif()
   include(CheckPthreadAffinity)
   if(PTHREAD_AFFINITY_LINUX_OK)
     add_definitions(-DCOMMON_PTHREAD_AFFINITY_LINUX)
@@ -123,12 +136,17 @@ if(BUILD_PTSCOTCH)
   set(MPI_DETERMINE_LIBRARY_VERSION ON)
   find_package(MPI COMPONENTS C)
   if(NOT MPI_C_FOUND)
-    message(FATAL_ERROR "MPI required to compile PT-Scotch")
+    message(FATAL_ERROR "MPI required to compile PT-Scotch\n Rerun cmake with -DBUILD_PTSCOTCH=OFF")
   else()
     string(REGEX MATCHALL "\( Open MPI \)+" found_suite ${MPI_C_LIBRARY_VERSION_STRING})
     if(NOT ${found_suite} STREQUAL "")
       message(STATUS "Found OpenMPI: using '--oversubscribe' policy for testing")
       set(MPIEXEC_PREFLAGS ${MPIEXEC_PREFLAGS} --oversubscribe)
+    endif()
+    string(REGEX MATCHALL "\(Intel\)+" found_suite ${MPI_C_LIBRARY_VERSION_STRING})
+    if(NOT ${found_suite} STREQUAL "")
+      message(STATUS "Found Intel MPI: using '-genv=I_MPI_PIN_DOMAIN=core' for testing")
+      set(MPIEXEC_PREFLAGS ${MPIEXEC_PREFLAGS} -genv=I_MPI_PIN_DOMAIN=core)
     endif()
   endif()
 
@@ -174,7 +192,9 @@ if(BUILD_LIBSCOTCHMETIS)
 endif(BUILD_LIBSCOTCHMETIS)
 
 # Testing
-add_subdirectory(check)
+if(ENABLE_TESTS)
+  add_subdirectory(check)
+endif(ENABLE_TESTS)
 
 ####################
 #  Export targets  #
@@ -183,13 +203,10 @@ add_subdirectory(check)
 # See https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html
 include(CMakePackageConfigHelpers)
 
-set(INCLUDE_INSTALL_DIR "include/" CACHE STRING "Where to install headers relative to prefix")
-set(LIBRARY_INSTALL_DIR "lib/" CACHE STRING "Where to install libraries relative to prefix")
-
 configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/SCOTCHConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfig.cmake
-  INSTALL_DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/scotch
-  PATH_VARS INCLUDE_INSTALL_DIR LIBRARY_INSTALL_DIR)
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch
+  PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR)
 
 write_basic_package_version_file(SCOTCHConfigVersion.cmake
   VERSION ${SCOTCH_VERSION_LONG}
@@ -198,4 +215,5 @@ write_basic_package_version_file(SCOTCHConfigVersion.cmake
 # Install config files
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfigVersion.cmake
-  DESTINATION ${LIBRARY_INSTALL_DIR}/cmake/scotch)
+  COMPONENT scotch
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)

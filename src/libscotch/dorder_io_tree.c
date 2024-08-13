@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : dorder_io_tree.c                        **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module handles distributed         **/
 /**                orderings.                              **/
@@ -43,7 +44,7 @@
 /**                # Version 5.1  : from : 30 jul 2010     **/
 /**                                 to   : 30 jul 2010     **/
 /**                # Version 7.0  : from : 18 jan 2023     **/
-/**                                 to   : 18 jan 2023     **/
+/**                                 to   : 11 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,7 +76,7 @@ dorderSaveTree2 (
 const Dorder * restrict const ordeptr,
 const Dgraph * restrict const grafptr,
 FILE * restrict const         stream,
-int                        (* funcptr) (const Order * const, const Gnum * const, FILE * const))
+int                        (* funcptr) (const Order * restrict const, const Gnum * restrict const, FILE * restrict const))
 {
   Order                 corddat;                  /* Centralized ordering for tree structure */
   Gnum * restrict       vlbltab;

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,6 +39,7 @@
 /**                Pierre RAMET                            **/
 /**                Cedric CHEVALIER (v5.0)                 **/
 /**                Sebastien FOURESTIER (v6.0)             **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : Part of a parallel direct block solver. **/
 /**                These lines are the common data         **/
@@ -57,7 +58,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 01 jun 2023     **/
+/**                                 to   : 06 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,12 +92,21 @@
 #define HAVE_NOT_SYS_WAIT_H
 #ifdef _MSC_VER
 #define HAVE_NOT_STRINGS_H
+#if (INT_WIDTH == 64)
+#define __sync_lock_test_and_set    _InterlockedExchange64
+#define __sync_lock_release(m)      _InterlockedExchange64 (m, 0L)
+#else /* (INT_WIDTH == 64) */
+#define __sync_lock_test_and_set    _InterlockedExchange
+#define __sync_lock_release(m)      _InterlockedExchange (m, 0L)
+#endif /* (INT_WIDTH == 64) */
 #endif /* _MSC_VER */
+#define ssize_t                     SSIZE_T
 #if ((defined _WIN32) && (! defined __MINGW32__))
 #define strncasecmp                 strnicmp
 #define strcasecmp                  stricmp
 #endif /* ((defined _WIN32) && (! defined __MINGW32__)) */
 #define pipe(fd)                    _pipe (fd, 32768, O_BINARY)
+#define sleep(s)                    Sleep (1000 * (s))
 #endif /* COMMON_OS_WINDOWS */
 
 #if ((! defined COMMON_OS_WINDOWS) && (! defined HAVE_NOT_UNISTD_H))
@@ -139,7 +149,11 @@
 #endif /* COMMON_MPI */
 
 #ifdef COMMON_PTHREAD
+#ifdef COMMON_THREAD_WIN32
+#include            "pthread_win32.h"
+#else /* COMMON_THREAD_WIN32 */
 #include            <pthread.h>
+#endif /* COMMON_THREAD_WIN32 */
 #else /* COMMON_PTHREAD */
 #ifndef HAVE_NOT_SYS_WAIT_H
 #include            <sys/wait.h>                  /* For waitpid () */
@@ -404,11 +418,6 @@ void                        fileBlockInit       (File * const, const int);
 int                         fileBlockOpen       (File * const, const int);
 int                         fileBlockOpenDist   (File * const, const int, const int, const int, const int);
 void                        fileBlockClose      (File * const, const int);
-int                         fileCompress        (File * const, const int);
-void                        fileCompressExit    (File * const);
-int                         fileCompressType    (const char * const);
-int                         fileDecompress      (File * const, const int);
-int                         fileDecompressType  (const char * const);
 char *                      fileNameDistExpand  (char * const, const int, const int);
 
 void                        errorProg           (const char * const);
@@ -421,12 +430,13 @@ void                        intAscn             (INT * const, const INT, const I
 void                        intPerm             (INT * const, const INT, Context * const);
 void                        intRandInit         (IntRandContext * const);
 int                         intRandLoad         (IntRandContext * const, FILE * const);
-void                        intRandProc         (IntRandContext * const, int);
+void                        intRandProc         (IntRandContext * const, const int);
 void                        intRandReset        (IntRandContext * const);
 int                         intRandSave         (IntRandContext * const, FILE * const);
 void                        intRandSeed         (IntRandContext * const, INT);
 UINT                        intRandVal          (IntRandContext * const, UINT);
 UINT                        intRandVal2         (IntRandContext * const);
+void                        intRandSpawn        (IntRandContext * const, const int, IntRandContext * const);
 void                        intSort1asc1        (void * const, const INT);
 void                        intSort2asc1        (void * const, const INT);
 void                        intSort2asc2        (void * const, const INT);
@@ -485,6 +495,7 @@ int                         contextValuesSetInt (Context * const, const int, con
 #define threadNbr(t)                threadContextNbr ((t)->contptr)
 #define threadNum(t)                ((t)->thrdnum)
 
+#define contextRandom(c)            ((c)->randptr)
 #define contextIntRandVal(c,n)      intRandVal ((c)->randptr, (n))
 #define contextIntRandVal2(c)       intRandVal2 ((c)->randptr)
 

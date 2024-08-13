@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007,2008,2011,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 30 sep 2014     **/
 /**                                 to   : 27 apr 2018     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -277,11 +277,12 @@ STRATMETHOD   : METHODNAME
               {
                 Strat *             straptr;
                 int                 methnum;
-                int                 methlen;
+                size_t              methlen;
                 StratMethodTab *    methtab;
-                int                 i, j;
+                int                 i;
+                size_t              j;
 
-                methnum =
+                methnum = 0;
                 methlen = 0;                      /* No method recognized yet     */
                 methtab = penvptr->stratab->methtab; /* Point to the method table */
                 for (i = 0; methtab[i].name != NULL; i ++) {
@@ -354,11 +355,12 @@ PARAMLIST     : PARAMLIST ',' PARAMPARAM
 PARAMPARAM    : PARAMNAME
               {
                 int               paraidx;
-                int               paralen;
+                size_t            paralen;
                 StratParamTab *   paratab;
-                int               i, j;
+                int               i;
+                size_t            j;
 
-                paraidx =
+                paraidx = 0;
                 paralen = 0;                      /* No parameter recognized yet     */
                 paratab = penvptr->stratab->paratab; /* Point to the parameter table */
                 for (i = 0; paratab[i].name != NULL; i ++) {
@@ -730,10 +732,11 @@ TESTVAR       : PARAMNAME
                 StratTest *       testptr;
                 StratParamTab *   condtab;
                 int               para;
-                int               paralen;
-                int               i, j;
+                size_t            paralen;
+                int               i;
+                size_t            j;
 
-                para    =
+                para    = 0;
                 paralen = 0;                      /* No parameter recognized yet */
                 condtab = penvptr->stratab->condtab; /* Point to parameter table */
                 for (i = 0; condtab[i].name != NULL; i ++) {

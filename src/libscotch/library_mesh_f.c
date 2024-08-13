@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -269,10 +269,10 @@ SCOTCH_Num * const          degrnbr),                  \
   SCOTCH_meshData (meshptr, velmbas, vnodbas, velmnbr, vnodnbr,
                    &verttab, &vendtab, &velotab, &vnlotab, &vlbltab,
                    edgenbr, &edgetab, degrnbr);
-  *vertidx = (verttab - indxptr) + 1;             /* Add 1 since Fortran indices start at 1 */
-  *vendidx = (vendtab - indxptr) + 1;
-  *veloidx = (velotab != NULL) ? (velotab - indxptr) + 1 : *vertidx;
-  *vnloidx = (vnlotab != NULL) ? (vnlotab - indxptr) + 1 : *vertidx;
-  *vlblidx = (vlbltab != NULL) ? (vlbltab - indxptr) + 1 : *vertidx;
-  *edgeidx = (edgetab - indxptr) + 1;
+  *vertidx = (SCOTCH_Idx) (verttab - indxptr) + 1; /* Add 1 since Fortran indices start at 1 */
+  *vendidx = (SCOTCH_Idx) (vendtab - indxptr) + 1;
+  *veloidx = (velotab != NULL) ? (SCOTCH_Idx) (velotab - indxptr) + 1 : *vertidx;
+  *vnloidx = (vnlotab != NULL) ? (SCOTCH_Idx) (vnlotab - indxptr) + 1 : *vertidx;
+  *vlblidx = (vlbltab != NULL) ? (SCOTCH_Idx) (vlbltab - indxptr) + 1 : *vertidx;
+  *edgeidx = (SCOTCH_Idx) (edgetab - indxptr) + 1;
 }

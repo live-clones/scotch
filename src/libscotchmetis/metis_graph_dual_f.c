@@ -1,4 +1,4 @@
-/* Copyright 2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 6.1  : from : 11 may 2021     **/
 /**                                 to   : 24 may 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,18 +63,38 @@
 /*                                    */
 /**************************************/
 
-FORTRAN (                             \
-METISNAMEU (METIS_MESHTODUAL),        \
-METISNAMEL (metis_meshtodual), (      \
-const SCOTCH_Num * const    ne,       \
-const SCOTCH_Num * const    nn,       \
-const SCOTCH_Num * const    eptr,     \
-const SCOTCH_Num * const    eind,     \
-const SCOTCH_Num * const    ncommon,  \
-const SCOTCH_Num * const    nuimflag, \
-SCOTCH_Num ** const         xadj,     \
-SCOTCH_Num ** const         adjncy),  \
+FORTRAN (                               \
+SCOTCHMETISNAMESU (METIS_MESHTODUAL),   \
+SCOTCHMETISNAMESL (metis_meshtodual), ( \
+const SCOTCH_Num * const    ne,         \
+const SCOTCH_Num * const    nn,         \
+const SCOTCH_Num * const    eptr,       \
+const SCOTCH_Num * const    eind,       \
+const SCOTCH_Num * const    ncommon,    \
+const SCOTCH_Num * const    nuimflag,   \
+SCOTCH_Num ** const         xadj,       \
+SCOTCH_Num ** const         adjncy),    \
 (ne, nn, eptr, eind, ncommon, nuimflag, xadj, adjncy))
 {
-  METISNAMEU (METIS_MeshToDual) (ne, nn, eptr, eind, ncommon, nuimflag, xadj, adjncy);
+  SCOTCHMETISNAMES (METIS_MeshToDual) (ne, nn, eptr, eind, ncommon, nuimflag, xadj, adjncy);
+}
+
+/*
+**
+*/
+
+FORTRAN (                               \
+SCOTCHMETISNAMEFU (METIS_MESHTODUAL),   \
+SCOTCHMETISNAMEFL (metis_meshtodual), ( \
+const SCOTCH_Num * const    ne,         \
+const SCOTCH_Num * const    nn,         \
+const SCOTCH_Num * const    eptr,       \
+const SCOTCH_Num * const    eind,       \
+const SCOTCH_Num * const    ncommon,    \
+const SCOTCH_Num * const    nuimflag,   \
+SCOTCH_Num ** const         xadj,       \
+SCOTCH_Num ** const         adjncy),    \
+(ne, nn, eptr, eind, ncommon, nuimflag, xadj, adjncy))
+{
+  SCOTCHMETISNAMES (METIS_MeshToDual) (ne, nn, eptr, eind, ncommon, nuimflag, xadj, adjncy);
 }

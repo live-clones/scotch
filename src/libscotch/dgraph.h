@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2015,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2015,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -61,7 +61,7 @@
 /**                # Version 6.1  : from : 19 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
 /**                # Version 7.0  : from : 03 may 2019     **/
-/**                                 to   : 14 aug 2023     **/
+/**                                 to   : 28 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -206,7 +206,7 @@ int                         dgraphBuild2        (Dgraph * const, const Gnum, con
 int                         dgraphBuild3        (Dgraph * const, const Gnum, const Gnum, Gnum * const, Gnum * const, Gnum * const, const Gnum, Gnum * const, Gnum * const, const Gnum, const Gnum, Gnum * const, Gnum * const, Gnum * const, const Gnum);
 int                         dgraphBuild4        (Dgraph * const);
 int                         dgraphBuildHcub     (Dgraph * const, const Gnum, const Gnum, const Gnum);
-int                         dgraphBuildGrid3D   (Dgraph * const, const Gnum, const Gnum, const Gnum, const Gnum, const Gnum, const int);
+int                         dgraphBuildGrid3D   (Dgraph * const, const Gnum, const Gnum, const Gnum, const Gnum, const Gnum, const Gnum);
 int                         dgraphCheck         (const Dgraph * const);
 int                         dgraphCompact2      (const Dgraph * const, Gnum * restrict * const, Gnum * restrict * const, Gnum * restrict * const);
 int                         dgraphView          (const Dgraph * const, FILE * const);

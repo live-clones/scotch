@@ -36,8 +36,8 @@
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
 /**   FUNCTION   : This module contains the data declara-  **/
-/**                tions for the graph cnnected component  **/
-/**                ordering routine.                       **/
+/**                tions for the graph connected comp-     **/
+/**                onent ordering routine.                 **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 apr 2018     **/
 /**                                 to   : 05 apr 2018     **/

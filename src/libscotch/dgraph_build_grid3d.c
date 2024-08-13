@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 5.1  : from : 05 jun 2010     **/
 /**                                 to   : 06 jun 2010     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 28 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -263,7 +263,7 @@ const Gnum                                    poszval)
 ** of the given dimensions.
 ** hashval is the increment between two vertex
 ** indices (1 for sliced meshes).
-** flagval is a combilation of:
+** flagval is a combination of:
 ** - 1  : 26-neighbor mesh (default: 6-neighbor mesh).
 ** - 2  : torus (default: mesh)
 ** - 4  : weighted vertices (default: no weights).
@@ -281,7 +281,7 @@ const Gnum                  dimxval,              /* First dimension  */
 const Gnum                  dimyval,              /* Second dimension */
 const Gnum                  dimzval,              /* Third dimension  */
 const Gnum                  incrval,              /* Increment step   */
-const int                   flagval)              /* Grid type        */
+const Gnum                  flagval)              /* Grid type        */
 {
   DgraphBuildGrid3DData datadat;                  /* Data structure for creating vertices   */
   Gnum                  proclocadj;               /* Number of processes with most vertices */

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -69,7 +69,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 jun 2019     **/
 /**                # Version 7.0  : from : 23 aug 2019     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 19 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -127,9 +127,9 @@ const KgraphMapRbParam * restrict const paraptr)
 
   grafptr->kbalval = paraptr->kbalval;            /* Store last k-way imbalance ratio */
 
-  datadat.grafptr = &grafptr->s;
-  datadat.mappptr = &grafptr->m;
-
+  datadat.grafptr     = &grafptr->s;
+  datadat.domnorg     = grafptr->domnorg;
+  datadat.mappptr     = &grafptr->m;
   datadat.r.mappptr   = (grafptr->r.m.parttax != NULL) ? &grafptr->r.m : NULL;
   datadat.r.vmlotax   = grafptr->r.vmlotax;
   datadat.r.cmloval   = grafptr->r.cmloval;
@@ -587,7 +587,7 @@ Context * const                         contptr)  /*+ Execution context         
 
   if (bgraphInit (actgrafptr, srcgrafptr, srcmappptr->archptr, domnsubtab, vflowgttab) != 0) {
     errorPrint ("kgraphMapRbBgraph: cannot create bipartition graph");
-    return     (1);
+    return (1);
   }
   actgrafptr->contptr = contptr;
 
@@ -697,7 +697,8 @@ Context * const                         contptr)  /*+ Execution context         
       }
     }
 
-    if (oldmappptr != NULL) {                     /* If remapping gains have to be computed */
+    if ((oldmappptr != NULL) &&                   /* If remapping gains have to be computed */
+        (oldmappptr->parttax[orgvertnum] != -1)) { /* And if old part is known              */
       ArchDom *           domnptr;
       Gnum                edloval;
 
@@ -738,7 +739,7 @@ fail :
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (bgraphCheck (actgrafptr) != 0) {
     errorPrint ("kgraphMapRbBgraph: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 

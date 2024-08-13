@@ -73,18 +73,18 @@ MPI_Comm                    proccomm)             /* Communicator to be used for
       (MPI_Type_commit (&redutypedat)                              != MPI_SUCCESS) ||
       (MPI_Op_create (redufuncptr, 1, &reduoperdat)                != MPI_SUCCESS)) {
     errorPrint ("dgraphAllreduceMaxSum: communication error (1)");
-    return     (1);
+    return (1);
   }
 
   if (MPI_Allreduce (reduloctab, reduglbtab, 1, redutypedat, reduoperdat, proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphAllreduceMaxSum: communication error (2)");
-    return     (1);
+    return (1);
   }
 
   if ((MPI_Op_free   (&reduoperdat) != MPI_SUCCESS) ||
       (MPI_Type_free (&redutypedat) != MPI_SUCCESS)) {
     errorPrint ("dgraphAllreduceMaxSum: communication error (3)");
-    return     (1);
+    return (1);
   }
 
   return (0);

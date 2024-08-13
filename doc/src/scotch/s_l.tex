@@ -1891,6 +1891,27 @@ of nodes of the target architecture.
 architecture.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_archSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_archSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archSizeof} routine returns the size, in bytes, of a
+{\tt SCOTCH\_\lbt Arch} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsection{Target architecture creation routines}
 \label{sec-lib-arch-create}
 
@@ -2113,7 +2134,7 @@ scotchfarchhcub ( & doubleprecision (*) & archdat, \\
 
 The {\tt SCOTCH\_archHcub} routine fills the {\tt SCOTCH\_\lbt Arch}
 structure pointed to by {\tt archptr} with the description of a
-hypercube graph of dimension {\tt hdimval}.
+hypercube graph architecture of dimension {\tt hdimval}.
 
 \progret
 
@@ -2450,7 +2471,7 @@ successfully built, and $1$ else.
 \progsyn
 
 {\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_archVmplt ( & SCOTCH\_Arch * & archptr)
+int SCOTCH\_archVcmplt ( & SCOTCH\_Arch * & archptr)
 \end{tabular}}
 
 {\tt\begin{tabular}{l@{}ll}
@@ -2525,68 +2546,26 @@ target architecture has been successfully built, and $1$ else.
 \subsection{Target domain handling routines}
 \label{sec-lib-arch-dom-handling}
 
-\subsubsection{{\tt SCOTCH\_archDomFrst}}
+\subsubsection{{\tt SCOTCH\_archDomAlloc}}
 
 \begin{itemize}
 \progsyn
 
-{\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_archDomFrst ( & SCOTCH\_Arch *    & archptr, \\
-                          & SCOTCH\_ArchDom * & domnptr) \\
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfarchdomfrst ( & doubleprecision (*) & archdat, \\
-                     & doubleprecision (*) & domndat, \\
-                     & integer             & ierr)
+{\tt\begin{tabular}{l@{}l}
+SCOTCH\_ArchDom * SCOTCH\_archDomAlloc ( & void)
 \end{tabular}}
 
 \progdes
 
-The {\tt SCOTCH\_archDomFrst} function initializes the domain
-structure referred to by {\tt domnptr} with the biggest domain
-of the target architecture referred to {\tt archptr}, that is, the
-domain that contains all terminal domains.
+The {\tt SCOTCH\_archDomAlloc} function allocates a memory area of a
+size sufficient to store a {\tt SCOTCH\_\lbt ArchDom} structure. It is
+the user's responsibility to free this memory when it is no longer
+needed, using the {\tt SCOTCH\_\lbt mem\lbt Free} routine.
 
 \progret
 
-{\tt SCOTCH\_archDomFrst} returns $0$ if the domain could be created,
-and $1$ on error.
-\end{itemize}
-
-\subsubsection{{\tt SCOTCH\_archDomTerm}}
-
-\begin{itemize}
-\progsyn
-
-{\tt\begin{tabular}{l@{}ll}
-int SCOTCH\_archDomTerm ( & SCOTCH\_Arch *    & archptr, \\
-                          & SCOTCH\_ArchDom * & domnptr, \\
-                          & const SCOTCH\_Num & domnnum) \\
-\end{tabular}}
-
-{\tt\begin{tabular}{l@{}ll}
-scotchfarchdomterm ( & doubleprecision (*) & archdat, \\
-                     & doubleprecision (*) & domndat, \\
-                     & integer*{\it num}   & domnnum, \\
-                     & integer             & ierr)
-\end{tabular}}
-
-\progdes
-
-The {\tt SCOTCH\_archDomTerm} function initializes the domain
-structure referred to by {\tt domnptr} to correspond to the
-terminal domain of index {\tt domnnum} in the target architecture
-referred to {\tt archptr}.
-
-Applying the {\tt arch\lbt Dom\lbt Num} function to this domain
-yields back {\tt domnnum}.
-
-\progret
-
-{\tt SCOTCH\_archDomTerm} returns $0$ if the domain could be created,
-$1$ if {\tt domnnum} does not correspond to a valid terminal number
-for this architecture, and $2$ on error.
+{\tt SCOTCH\_archDomAlloc} returns the pointer to the memory area if it
+has been successfully allocated, and {\tt NULL} else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_archDomBipart}}
@@ -2623,6 +2602,35 @@ bipartitioned, $1$ if bipartitioning could not be performed (because
 the domain is terminal), and $2$ on error.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_archDomFrst}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archDomFrst ( & SCOTCH\_Arch *    & archptr, \\
+                          & SCOTCH\_ArchDom * & domnptr) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomfrst ( & doubleprecision (*) & archdat, \\
+                     & doubleprecision (*) & domndat, \\
+                     & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomFrst} function initializes the domain
+structure referred to by {\tt domnptr} with the biggest domain
+of the target architecture referred to {\tt archptr}, that is, the
+domain that contains all terminal domains.
+
+\progret
+
+{\tt SCOTCH\_archDomFrst} returns $0$ if the domain could be created,
+and $1$ on error.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_archDomSize}}
 
 \begin{itemize}
@@ -2652,6 +2660,62 @@ type, which is set on return with the domain size.
 {\tt SCOTCH\_archDomSize} yields an integer value of type
 {\tt SCOTCH\_\lbt Num} that ranges between $1$ and the number of
 terminal domains in the architecture.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_archDomSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomSizeof} routine returns the size, in bytes, of
+a {\tt SCOTCH\_\lbt ArchDom} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_archDomTerm}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_archDomTerm ( & SCOTCH\_Arch *    & archptr, \\
+                          & SCOTCH\_ArchDom * & domnptr, \\
+                          & const SCOTCH\_Num & domnnum) \\
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfarchdomterm ( & doubleprecision (*) & archdat, \\
+                     & doubleprecision (*) & domndat, \\
+                     & integer*{\it num}   & domnnum, \\
+                     & integer             & ierr)
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_archDomTerm} function initializes the domain
+structure referred to by {\tt domnptr} to correspond to the
+terminal domain of index {\tt domnnum} in the target architecture
+referred to {\tt archptr}.
+
+Applying the {\tt arch\lbt Dom\lbt Num} function to this domain
+yields back {\tt domnnum}.
+
+\progret
+
+{\tt SCOTCH\_archDomTerm} returns $0$ if the domain could be created,
+$1$ if {\tt domnnum} does not correspond to a valid terminal number
+for this architecture, and $2$ on error.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_archDomWght}}
@@ -4545,11 +4609,11 @@ scotchfgraphmapview ( & doubleprecision (*) & grafdat, \\
 
 \progdes
 
-The {\tt SCOTCH\_mapView} routine summarizes statistical information
-on the mapping pointed to by {\tt mappptr} (load of target processors,
-number of neighboring domains, average dilation and expansion, edge
-cut size, distribution of edge dilations), and prints these results to
-stream {\tt stream}.
+The {\tt SCOTCH\_graphMapView} routine summarizes statistical
+information on the mapping pointed to by {\tt mappptr} (load of target
+processors, number of neighboring domains, average dilation and
+expansion, edge cut size, distribution of edge dilations), and prints
+these results to stream {\tt stream}.
 
 Fortran users must use the {\tt PXFFILENO} or {\tt FNUM} functions to
 obtain the number of the Unix file descriptor {\tt fildes} associated
@@ -4557,8 +4621,8 @@ with the logical unit of the output data file.
 
 \progret
 
-{\tt SCOTCH\_mapView} returns $0$ if the data has been successfully
-written to {\tt stream}, and $1$ else.
+{\tt SCOTCH\_graphMapView} returns $0$ if the data has been
+successfully written to {\tt stream}, and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_graphRemapCompute}}
@@ -5317,7 +5381,7 @@ structures built from C and $1$ for structures built from Fortran.
 {\tt verttab} is the adjacency index array, of size $({\tt velmnbr} +
 {\tt vnodnbr} + 1)$ if the edge array is compact (that is, if
 {\tt vendtab} equals $\mathtt{vendtab}+1$ or {\tt NULL}), or of
-size $({\tt velmnbr} + {\tt vnodnbr}1)$ else.
+size $({\tt velmnbr} + {\tt vnodnbr})$ else.
 {\tt vendtab} is the adjacency end index array, of size $({\tt velmnbr} +
 {\tt vnodnbr})$ if it is disjoint from {\tt verttab}.
 {\tt velotab} is the element vertex load array, of size {\tt velmnbr}
@@ -5809,9 +5873,9 @@ vertex load, and the variance of the node vertex loads, respectively.
 element vertex degree, the average element vertex degree, and the
 variance of the element vertex degrees, respectively.
 {\tt ndegmin}, {\tt ndegmax}, {\tt ndegavg} and
-{\tt ndegdlt} are the minimum element vertex degree, the maximum
-element vertex degree, the average element vertex degree, and the
-variance of the element vertex degrees, respectively.
+{\tt ndegdlt} are the minimum node vertex degree, the maximum
+node vertex degree, the average node vertex degree, and the
+variance of the node vertex degrees, respectively.
 \end{itemize}
 
 \subsection{High-level mesh ordering routines}
@@ -7545,7 +7609,7 @@ scotchfrandomval ( & integer*{\it num} & randmax, \\
 
 The {\tt SCOTCH\_randomVal} routine returns a positive integer random
 value from the global pseudo-random generator, in the range
-$[0;\mbox{textsc{randmax}}[$.
+$[0;\mbox{\texttt{randmax}}[$.
 \end{itemize}
 
 \subsection{Context handling routines}
@@ -7824,6 +7888,27 @@ page~\pageref{sec-lib-random-seed}, for more information on the
 operations of the pseudo-random generator seed setting routines.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_contextSizeof}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}l}
+int SCOTCH\_contextSizeof ( & void)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfcontextsizeof ( & integer & size )
+\end{tabular}}
+
+\progdes
+
+The {\tt SCOTCH\_contextSizeof} routine returns the size, in bytes, of
+a {\tt SCOTCH\_\lbt Context} structure. This information is useful to
+export the interface of the {\sc libScotch} to interpreted languages,
+without access to the ``{\tt scotch.h}'' include file.
+\end{itemize}
+
 \subsubsection{\texttt{SCOTCH\_contextThreadImport1}}
 
 \begin{itemize}
@@ -7873,7 +7958,7 @@ of the captured threads.}]
     SCOTCH_graphLoad (&graftab[0], ...); /* User places data in graph structure */
     ...
     SCOTCH_contextInit (&contdat);     /* Initialize context */
-    SCOTCH_contextRandomClone (&condtad); /* Set private random generator */
+    SCOTCH_contextRandomClone (&contdat); /* Set private random generator */
     SCOTCH_contextThreadImport1 (&contdat, thrdnbr); /* Give number of threads */
   }
   user_thread_barrier (); /* User makes sure there is synchronization across threads here */
@@ -8169,7 +8254,7 @@ by routines such as {\tt SCOTCH\_\lbt graph\lbt Alloc},
 {\tt SCOTCH\_\lbt mesh\lbt Alloc}, or
 {\tt SCOTCH\_\lbt strat\lbt Alloc}.
 
-The standard {\tt free} routine of the {\textsc libc} must not be
+The standard {\tt free} routine of the \textsc{libc} must not be
 used for this purpose. Else, the allocated memory will not be
 considered as properly released by memory accounting routines
 {\tt SCOTCH\_\lbt mem\lbt Cur} and {\tt SCOTCH\_\lbt mem\lbt Max},

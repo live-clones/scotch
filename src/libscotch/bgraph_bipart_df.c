@@ -506,8 +506,8 @@ const BgraphBipartDfParam * const paraptr)        /*+ Method parameters +*/
               ? grafptr->compload0avg             /* Target is average                */
               : ( (grafptr->compload0 < grafptr->compload0min) ? grafptr->compload0min : /* Else keep load if not off balance */
                  ((grafptr->compload0 > grafptr->compload0max) ? grafptr->compload0max : grafptr->compload0));
-  loopdat.vanctab[0] = (float) - compload0;       /* Values to be injected to anchor vertices at every iteration                */
-  loopdat.vanctab[1] = (float) (grafptr->s.velosum - compload0)- BGRAPHBIPARTDFEPSILON; /* Slightly tilt value to add to part 1 */
+  loopdat.vanctab[0] = (float) - compload0;       /* Values to be injected to anchor vertices at every iteration                 */
+  loopdat.vanctab[1] = (float) (grafptr->s.velosum - compload0) - BGRAPHBIPARTDFEPSILON; /* Slightly tilt value to add to part 1 */
   loopdat.abrtval = 0;                            /* Nobody wants to abort yet */
 
 #ifndef BGRAPHBIPARTDFNOTHREAD

@@ -1,4 +1,4 @@
-/* Copyright 2011,2013,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2013,2014,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 27 may 2011     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 11 jul 2021     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -129,7 +129,7 @@ const KgraphMapExParam * const  paraptr)          /*+ Method parameters +*/
       wghttmp                     +=              /* Accumulate subdomain loads in case of variable-sized architectures */
       doextab[domnnum].domnwght    = archDomWght (archptr, domnptr);
       doextab[domnnum].compload    = 0;
-      doextab[domnnum].comploadmax = ((double) doextab[domnnum].domnwght * velosum * (1.0 + paraptr->kbalval)) / wghtsum;
+      doextab[domnnum].comploadmax = (Gnum) (((double) doextab[domnnum].domnwght * velosum * (1.0 + paraptr->kbalval)) / wghtsum);
 
       termnum = archDomNum (archptr, domnptr);
       termtab[termnbr].termnum = termnum;         /* Record domain in terminal domain array */
@@ -149,7 +149,7 @@ const KgraphMapExParam * const  paraptr)          /*+ Method parameters +*/
       Anum                domnnum;
 
       domnnum = termtab[termnum].domnnum;
-      doextab[domnnum].comploadmax = ((double) doextab[domnnum].domnwght * velosum * (1.0 + paraptr->kbalval)) / wghtsum;
+      doextab[domnnum].comploadmax = (Gnum) (((double) doextab[domnnum].domnwght * velosum * (1.0 + paraptr->kbalval)) / wghtsum);
      
       if ((grafptr->comploadavg[domnnum] + grafptr->comploaddlt[domnnum]) > doextab[domnnum].comploadmax)
         flagval = 0;                              /* Set flag if at least one domain is imbalanced */

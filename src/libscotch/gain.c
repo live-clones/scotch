@@ -126,7 +126,7 @@ GainEntr * const            entrptr)
   if ((entrptr->next == NULL) ||                  /* If problem with link */
       (gainTablCheck2 (entrptr, entrptr->next) != 0)) {
     errorPrint ("gainTablCheck: bad linked list");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -180,8 +180,7 @@ const INT                   subbits)
   tablptr->tmax    = tablptr->tabk;
 
   for (entrptr  = tablptr->tabk;                  /* Initialize gain table entries */
-       entrptr <= tablptr->tend;
-       entrptr ++)
+       entrptr <= tablptr->tend; entrptr ++)
     entrptr->next = &gainLinkDummy;               /* Point to dummy link area */
 
   return (tablptr);
@@ -212,8 +211,7 @@ GainTabl * const            tablptr)
   GainEntr *          entrptr;
 
   for (entrptr  = tablptr->tmin;                  /* Flush only used area */
-       entrptr <= tablptr->tmax;
-       entrptr ++)
+       entrptr <= tablptr->tmax; entrptr ++)
     entrptr->next = &gainLinkDummy;               /* Point to dummy link area */
 
   tablptr->tmin = tablptr->tend;                  /* Entries of extremal gain */
@@ -275,7 +273,7 @@ GainTabl * const            tablptr,              /*+ Pointer to gain table   +*
 GainLink * const            linkptr,              /*+ Pointer to entry to add +*/
 const INT                   gain)                 /*+ Gain value              +*/
 {
-  GainEntr *          entrptr;                    /* Pointer to gain entry   */
+  GainEntr *          entrptr;                    /* Pointer to gain entry */
   INT                 i, j;
 
 #ifdef SCOTCH_DEBUG_GAIN2
@@ -373,7 +371,7 @@ GainTabl * const            tablptr)
 
   for (entrptr ++; entrptr <= tablptr->tend; entrptr ++) {
     if (entrptr->next != &gainLinkDummy) {        /* If found non-empty slot */
-      tablptr->tmin = entrptr;                    /* record its position     */
+      tablptr->tmin = entrptr;                    /* Record its position     */
 #ifdef SCOTCH_DEBUG_GAIN3
       if (gainTablCheck (entrptr) != 0) {
         errorPrint ("gainTablFrst: bad chaining (2)");
@@ -414,8 +412,7 @@ const GainLink * const      linkptr)
   }
 
   for (entrptr = linkptr->tabl + 1;
-       entrptr < tablptr->tend;
-       entrptr ++) {
+       entrptr < tablptr->tend; entrptr ++) {
     if (entrptr->next != &gainLinkDummy) {
 #ifdef SCOTCH_DEBUG_GAIN3
       if (gainTablCheck (entrptr) != 0) {
@@ -445,7 +442,8 @@ const ptrdiff_t             addrdlt)
 {
   GainEntr *          entrptr;
 
-  for (entrptr = tablptr->tmin; entrptr <= tablptr->tmax; entrptr ++) { /* For all active gain table entries */
+  for (entrptr  = tablptr->tmin;                  /* For all active gain table entries */
+       entrptr <= tablptr->tmax; entrptr ++) {
     GainLink *          linkptr;
     GainLink *          prevptr;
 

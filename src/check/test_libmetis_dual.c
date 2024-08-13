@@ -1,4 +1,4 @@
-/* Copyright 2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,12 +35,15 @@
 /**                                                        **/
 /**   AUTHOR     : Marc FUENTES                            **/
 /**                Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operations of     **/
 /**                libscotchmetis dual graph routines.     **/
 /**                                                        **/
 /**   DATES      : # Version 6.1  : from : 10 feb 2021     **/
 /**                                 to   : 17 jul 2021     **/
+/**                # Version 7.0  : from : 08 aug 2024     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -114,7 +117,7 @@ char *              argv[])
       adjncy_c[edgenum] += baseval;
   }
 
-  METIS_MeshToDual (&ne, &nn, eptr, eind, &ncommon, &baseval, &xadj, &adjncy);
+  SCOTCHMETISNAMEC (METIS_MeshToDual) (&ne, &nn, eptr, eind, &ncommon, &baseval, &xadj, &adjncy);
   if (xadj == NULL) {
     SCOTCH_errorPrint ("main: error in METIS_MeshToDual");
     exit (EXIT_FAILURE);
@@ -144,10 +147,10 @@ char *              argv[])
 
   nparts = 3;
   ncommon ++;
-  METIS_SetDefaultOptions (options);
+  SCOTCHMETISNAMEC (METIS_SetDefaultOptions) (options);
   options[METIS_OPTION_NUMBERING] = baseval;
 
-  METIS_PartMeshDual (&ne, &nn, eptr, eind, vgwt, NULL, &ncommon, &nparts, tpwgt, options, &objval, epart, npart);
+  SCOTCHMETISNAMEC (METIS_PartMeshDual) (&ne, &nn, eptr, eind, vgwt, NULL, &ncommon, &nparts, tpwgt, options, &objval, epart, npart);
   if (objval < 0) {
     SCOTCH_errorPrint ("main: error in METIS_PartMeshDual");
     exit (EXIT_FAILURE);

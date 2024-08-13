@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 17 apr 2019     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 03 jul 2023     **/
+/**                                 to   : 28 oct 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,8 +55,6 @@
 */
 
 #define SCOTCH_PTSCOTCH
-
-#include <sys/time.h>
 
 #include "module.h"
 #include "common.h"

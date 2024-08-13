@@ -1,4 +1,4 @@
-/* Copyright 2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,12 +34,15 @@
 /**   NAME       : test_common_file_compress.c             **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the random number     **/
 /**                generator module.                       **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 09 jul 2018     **/
 /**                                 to   : 10 jul 2018     **/
+/**                # Version 7.0  : from : 04 jul 2024     **/
+/**                                 to   : 04 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -54,13 +57,9 @@
 #define __USE_XOPEN2K                             /* For POSIX pthread_barrier_t */
 #endif /* __USE_XOPEN2K */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include "../libscotch/module.h"
 #include "../libscotch/common.h"
+
 #include "scotch.h"
 
 #define C_FILENBR                   2            /* Number of files in list */

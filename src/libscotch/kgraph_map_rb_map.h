@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,6 +35,7 @@
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Sebastien FOURESTIER (v6.0)             **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the data declaration    **/
 /**                for the Dual Recursive Bipartitioning   **/
@@ -67,7 +68,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -122,6 +123,7 @@ typedef struct KgraphMapRbMapPoolData_ {
   ArchDom *                 domntab[2];           /*+ Pointer to domain arrays (same if tied)    +*/
   KgraphMapRbMapJob *       jobtab;               /*+ Job table                                  +*/
   Mapping *                 mappptr;              /*+ Pointer to original mapping: current state +*/
+  ArchDom                   domnorg;              /*+ Original domain to map                     +*/
   Context *                 contptr;
 } KgraphMapRbMapPoolData;
 
@@ -140,7 +142,7 @@ static void                 kgraphMapRbMapPoolUpdt2 (KgraphMapRbMapPoolData * co
 static int                  kgraphMapRbMapPoolResize (KgraphMapRbMapPoolData * restrict const);
 #endif /* SCOTCH_KGRAPH_MAP_RB_MAP */
 
-int                         kgraphMapRbMap      (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict const, Context * const);
+int                         kgraphMapRbMap      (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict const, Context * restrict const);
 
 /*
 **  The macro definitions.

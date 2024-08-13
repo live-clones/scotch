@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2012,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2012,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 25 aug 2012     **/
 /**                                 to   : 18 nov 2012     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -98,8 +98,8 @@ const DgraphFlag            flagval)              /* Graph loading flags        
 
   reduloctab[0] = baseval;                        /* Exchange baseval to check it is the same for all */
   reduloctab[1] = - baseval;
-  reduloctab[2] = flagval;                        /* Exchange flagval to check it is the same for all */
-  reduloctab[3] = - flagval;
+  reduloctab[2] = (Gnum) flagval;                 /* Exchange flagval to check it is the same for all */
+  reduloctab[3] = - (Gnum) flagval;
   reduloctab[4] = 0;                              /* Set uneffective values for versval */
   reduloctab[5] = -2;
   reduloctab[6] =                                 /* Assume everything will be fine */

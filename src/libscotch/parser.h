@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 30 sep 2014     **/
 /**                                 to   : 30 sep 2014     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -148,7 +148,7 @@ typedef union StratTestVal_ {                     /*+ Constant value +*/
 
 typedef struct StratTestVar_ {                    /*+ Condition variable                     +*/
   const StratTab *          datatab;              /*+ Pointer to data parameter table        +*/
-  int                       datadisp;             /*+ Displacement with respect to beginning +*/
+  ptrdiff_t                 datadisp;             /*+ Displacement with respect to beginning +*/
 } StratTestVar;
 
 typedef struct StratTest_ {                       /*+ Test node +*/

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 12 aug 2023     **/
+/**                                 to   : 28 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -92,6 +92,17 @@
 #endif /* SCOTCH_WARNING_RENAME_UNSAFE */
 #endif /* ((SCOTCH_VERSION != DUMMYVERSION) || (SCOTCH_RELEASE != DUMMYRELEASE) || (SCOTCH_PATCHLEVEL != DUMMYPATCHLEVEL)) */
 #endif /* SCOTCH_VERSION */
+
+/*+ 3D grid distributed graph building option flags. +*/
+
+#ifndef SCOTCH_DGRAPHBUILDGRID3DGRID
+#define SCOTCH_DGRAPHBUILDGRID3DGRID 0
+#define SCOTCH_DGRAPHBUILDGRID3DTORUS 2
+#define SCOTCH_DGRAPHBUILDGRID3DNGB6 0
+#define SCOTCH_DGRAPHBUILDGRID3DNGB26 1
+#define SCOTCH_DGRAPHBUILDGRID3DVERTLOAD 4
+#define SCOTCH_DGRAPHBUILDGRID3DEDGELOAD 8
+#endif /* SCOTCH_DGRAPHBUILDGRID3DMESH */
 
 /*+ Opaque objects. The dummy sizes of these
 objects, computed at compile-time by program
@@ -134,7 +145,7 @@ int                         SCOTCH_dgraphSave   (SCOTCH_Dgraph * const, FILE * c
 int                         SCOTCH_dgraphCheck  (const SCOTCH_Dgraph * const);
 int                         SCOTCH_dgraphBand   (SCOTCH_Dgraph * const, const SCOTCH_Num, SCOTCH_Num * const, const SCOTCH_Num, SCOTCH_Dgraph * const);
 int                         SCOTCH_dgraphBuild  (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         SCOTCH_dgraphBuildGrid3D (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const int);
+int                         SCOTCH_dgraphBuildGrid3D (SCOTCH_Dgraph * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num);
 int                         SCOTCH_dgraphCoarsen (SCOTCH_Dgraph * const, const SCOTCH_Num, const double, const SCOTCH_Num, SCOTCH_Dgraph * const, SCOTCH_Num * const);
 SCOTCH_Num                  SCOTCH_dgraphCoarsenVertLocMax (const SCOTCH_Dgraph * const, const SCOTCH_Num);
 int                         SCOTCH_dgraphGather (const SCOTCH_Dgraph * const, SCOTCH_Graph * const);
@@ -149,6 +160,7 @@ int                         SCOTCH_dgraphGhst   (SCOTCH_Dgraph * const);
 int                         SCOTCH_dgraphHalo   (SCOTCH_Dgraph * const, void * const, const MPI_Datatype);
 int                         SCOTCH_dgraphHaloAsync (SCOTCH_Dgraph * const, void * const, const MPI_Datatype, SCOTCH_DgraphHaloReq * const);
 SCOTCH_DgraphHaloReq *      SCOTCH_dgraphHaloReqAlloc (void);
+int                         SCOTCH_dgraphHaloReqSizeof (void);
 int                         SCOTCH_dgraphHaloWait (SCOTCH_DgraphHaloReq * const);
 int                         SCOTCH_dgraphMapInit (const SCOTCH_Dgraph * const, SCOTCH_Dmapping * const, const SCOTCH_Arch * const, SCOTCH_Num * const);
 void                        SCOTCH_dgraphMapExit (const SCOTCH_Dgraph * const, SCOTCH_Dmapping * const);

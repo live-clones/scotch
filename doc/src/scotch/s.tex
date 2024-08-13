@@ -1,9 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                  %
 % Titre  : s.tex                   %
-% Sujet  : Manuel de l'utilisateur %
-%          de Scotch 7.0           %
-%          Corps du document       %
+% Sujet  : Scotch user's guide     %
+%          Document body           %
 % Auteur : Francois Pellegrini     %
 %                                  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11,8 +10,8 @@
 %% Formatage et pagination.
 
 % pdflatex -sPAPERSIZE=a4 s.tex
-% dvips -sPAPERSIZE=a4 s.dvi -o scotch_user7.0.ps
-% ps2pdf -sPAPERSIZE=a4 scotch_user7.0.ps scotch_user7.0.pdf
+% dvips -sPAPERSIZE=a4 s.dvi -o scotch_userX.X.ps
+% ps2pdf -sPAPERSIZE=a4 scotch_userX.X.ps scotch_userX.X.pdf
 
 \documentclass{article}
 \usepackage{a4}
@@ -251,6 +250,9 @@ Halo Approximate Minimum Fill algorithm, available since version
 minimum degree and approximate minimum fill algorithms, which are
 available since version \textsc{4.0};
 \item
+Clément barthélemy improved the Windows compilation system and coded
+the Windows threading module, available since version \textsc{7.0.5};
+\item
 S\'ebastien Fourestier coded the mapping with fixed vertices,
 remapping, and remapping with fixed vertices sequential routines that
 are available since version \textsc{6.0};
@@ -268,6 +270,9 @@ the consistency checking and non-regression testing routines;
 \item
 C\'edric Lachat contributed to the robustness of the software, in
 relation with his development of the \textsc{PaMPA} software;
+\item
+Tetsuya Mishima contributed to the Windows threading module, available
+since version \textsc{7.0.5};
 \item
 Alex Pothen kindly provided a version of his Multiple Minimum Degree
 algorithm, which was embedded into \scotch\ from version \textsc{3.2} to

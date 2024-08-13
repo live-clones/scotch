@@ -9,7 +9,7 @@
 **  the libScotchMeTiS library.                         **
 **                                                      **
 *********************************************************/
-/* Copyright 2007,2010,2012,2018,2019,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2018,2019,2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -60,6 +60,8 @@
 /**                                 to   : 17 jun 2019     **/
 /**                # Version 6.1  : from : 09 feb 2021     **/
 /**                                 to   : 30 dec 2021     **/
+/**                # Version 7.0  : from : 11 aug 2024     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,25 +70,51 @@
 */
 
 #ifdef SCOTCH_METIS_PREFIX
-#define SCOTCH_METIS_PREFIXL        scotch_
-#define SCOTCH_METIS_PREFIXU        SCOTCH_
+#ifndef SCOTCH_METIS_PREFIXC                      /* Prefix for C language interface */
+#define SCOTCH_METIS_PREFIXC        SCOTCH_
+#endif /* SCOTCH_METIS_PREFIXC */
+#ifndef SCOTCH_METIS_PREFIXFL                     /* Prefix for Fortran lowercase interface */
+#define SCOTCH_METIS_PREFIXFL       scotchf
+#endif /* SCOTCH_METIS_PREFIXFL */
+#ifndef SCOTCH_METIS_PREFIXFU                     /* Prefix for Fortran uppercase interface */
+#define SCOTCH_METIS_PREFIXFU       SCOTCHF
+#endif /* SCOTCH_METIS_PREFIXFU */
+#ifndef SCOTCH_METIS_PREFIXS                      /* Make Scotch interface internal */
+#define SCOTCH_METIS_PREFIXS        _SCOTCH
+#define SCOTCH_METIS_PREFIXSL       _scotchf
+#define SCOTCH_METIS_PREFIXSU       _SCOTCHF
+#endif /* SCOTCH_METIS_PREFIXS */
 #endif /* SCOTCH_METIS_PREFIX */
 
-#ifndef SCOTCH_METIS_PREFIXL
-#define SCOTCH_METIS_PREFIXL
-#endif /* SCOTCH_METIS_PREFIXL */
+#ifndef SCOTCH_METIS_PREFIXC
+#define SCOTCH_METIS_PREFIXC
+#endif /* SCOTCH_METIS_PREFIXC */
 
-#ifndef SCOTCH_METIS_PREFIXU
-#define SCOTCH_METIS_PREFIXU
-#endif /* SCOTCH_METIS_PREFIXU */
+#ifndef SCOTCH_METIS_PREFIXFL
+#define SCOTCH_METIS_PREFIXFL
+#endif /* SCOTCH_METIS_PREFIXFL */
 
-#ifndef METISNAMEL
-#define METISNAMEL(s)               METISNAME2(METISNAME3(SCOTCH_METIS_PREFIXL),s)
-#define METISNAMEU(s)               METISNAME2(METISNAME3(SCOTCH_METIS_PREFIXU),s)
-#define METISNAME2(p,s)             METISNAME4(p,s)
-#define METISNAME3(s)               s
-#define METISNAME4(p,s)             p##s
-#endif /* METISNAMEL */
+#ifndef SCOTCH_METIS_PREFIXFU
+#define SCOTCH_METIS_PREFIXFU
+#endif /* SCOTCH_METIS_PREFIXFU */
+
+#ifndef SCOTCH_METIS_PREFIXS                      /* Make Scotch interface external */
+#define SCOTCH_METIS_PREFIXS        SCOTCH_
+#define SCOTCH_METIS_PREFIXSL       scotchf
+#define SCOTCH_METIS_PREFIXSU       SCOTCHF
+#endif /* SCOTCH_METIS_PREFIXS */
+
+#ifndef SCOTCHMETISNAMEC
+#define SCOTCHMETISNAMEC(s)               SCOTCHMETISNAME2(SCOTCHMETISNAME3(SCOTCH_METIS_PREFIXC),s)
+#define SCOTCHMETISNAMEFL(s)              SCOTCHMETISNAME2(SCOTCHMETISNAME3(SCOTCH_METIS_PREFIXFL),s)
+#define SCOTCHMETISNAMEFU(s)              SCOTCHMETISNAME2(SCOTCHMETISNAME3(SCOTCH_METIS_PREFIXFU),s)
+#define SCOTCHMETISNAMES(s)               SCOTCHMETISNAME2(SCOTCHMETISNAME3(SCOTCH_METIS_PREFIXS),s)
+#define SCOTCHMETISNAMESL(s)              SCOTCHMETISNAME2(SCOTCHMETISNAME3(SCOTCH_METIS_PREFIXSL),s)
+#define SCOTCHMETISNAMESU(s)              SCOTCHMETISNAME2(SCOTCHMETISNAME3(SCOTCH_METIS_PREFIXSU),s)
+#define SCOTCHMETISNAME2(p,s)             SCOTCHMETISNAME4(p,s)
+#define SCOTCHMETISNAME3(s)               s
+#define SCOTCHMETISNAME4(p,s)             p##s
+#endif /* SCOTCHMETISNAMEC */
 
 #ifndef SCOTCH_METIS_DATATYPES
 #define SCOTCH_METIS_DATATYPES
@@ -150,9 +178,9 @@ typedef enum {
 **  The type and structure definitions.
 */
 
-#ifndef SCOTCH_H                                  /* In case "scotch.h" not included before */
-typedef DUMMYINT SCOTCH_Num;
-#endif /* SCOTCH_H */
+#ifndef LIB_SCOTCH_H                              /* In case "scotch.h" not included before */
+typedef int SCOTCH_Num;
+#endif /* LIB_SCOTCH_H */
 
 /*
 **  The function prototypes.
@@ -162,41 +190,46 @@ typedef DUMMYINT SCOTCH_Num;
 extern "C" {
 #endif /* __cplusplus */
 
-int                         SCOTCH_METIS_V3_EdgeND (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         SCOTCH_METIS_V3_NodeND (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         SCOTCH_METIS_V3_NodeWND (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         SCOTCH_METIS_V5_NodeND (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMES (METIS_V3_EdgeND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMES (METIS_V3_NodeND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMES (METIS_V3_NodeWND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMES (METIS_V5_NodeND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 
-int                         SCOTCH_METIS_V3_PartGraphKway (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         SCOTCH_METIS_V3_PartGraphRecursive (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         SCOTCH_METIS_V3_PartGraphVKway (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         SCOTCH_METIS_V5_PartGraphKway (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         SCOTCH_METIS_V5_PartGraphRecursive (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMES (METIS_V3_PartGraphKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMES (METIS_V3_PartGraphRecursive) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMES (METIS_V3_PartGraphVKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMES (METIS_V5_PartGraphKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMES (METIS_V5_PartGraphRecursive) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+
+int                         SCOTCHMETISNAMES (METIS_MeshToDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num ** const, SCOTCH_Num ** const);
+int                         SCOTCHMETISNAMES (METIS_PartMeshDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+
+int                         SCOTCHMETISNAMES (METIS_SetDefaultOptions) (SCOTCH_Num * const);
 
 #ifndef SCOTCH_METIS_VERSION
 #define SCOTCH_METIS_VERSION        3             /* MeTiS API version is 3 by default */
 #endif /* SCOTCH_METIS_VERSION */
 
 #if (SCOTCH_METIS_VERSION == 3)
-int                         METISNAMEU (METIS_EdgeND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         METISNAMEU (METIS_NodeND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         METISNAMEU (METIS_NodeWND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_EdgeND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_NodeND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_NodeWND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 
-int                         METISNAMEU (METIS_PartGraphKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         METISNAMEU (METIS_PartGraphRecursive) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         METISNAMEU (METIS_PartGraphVKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_PartGraphKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_PartGraphRecursive) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_PartGraphVKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 #endif /* (SCOTCH_METIS_VERSION == 3) */
 
 #if (SCOTCH_METIS_VERSION == 5)
-int                         METISNAMEU (METIS_NodeND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         METISNAMEU (METIS_PartGraphKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
-int                         METISNAMEU (METIS_PartGraphRecursive) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_NodeND) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_PartGraphKway) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_PartGraphRecursive) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 #endif /* (SCOTCH_METIS_VERSION == 5) */
 
-int                         METISNAMEU (METIS_MeshToDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num ** const, SCOTCH_Num ** const);
-int                         METISNAMEU (METIS_PartMeshDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_MeshToDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, SCOTCH_Num ** const, SCOTCH_Num ** const);
+int                         SCOTCHMETISNAMEC (METIS_PartMeshDual) (const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const double * const, const SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 
-int                         METISNAMEU (METIS_SetDefaultOptions) (SCOTCH_Num * const);
+int                         SCOTCHMETISNAMEC (METIS_SetDefaultOptions) (SCOTCH_Num * const);
 
 #ifdef __cplusplus
 }
