@@ -51,7 +51,7 @@
 !*                # Version 6.0  : from : 22 oct 2011     **
 !*                                 to   : 27 nov 2012     **
 !*                # Version 7.0  : from : 28 jul 2024     **
-!*                                 to   : 28 jul 2024     **
+!*                                 to   : 13 aug 2024     **
 !*                                                        **
 !***********************************************************
 
@@ -99,6 +99,7 @@
         INTEGER SCOTCH_ARCHDIM
         INTEGER SCOTCH_DGRAPHDIM
         INTEGER SCOTCH_DGRAPHHALOREQDIM
+        INTEGER SCOTCH_DMAPDIM
         INTEGER SCOTCH_DORDERDIM
         INTEGER SCOTCH_GEOMDIM
         INTEGER SCOTCH_GRAPHDIM
@@ -109,6 +110,7 @@
         PARAMETER (SCOTCH_ARCHDIM          = DUMMYSIZEARCH)
         PARAMETER (SCOTCH_DGRAPHDIM        = DUMMYSIZEDGRAPH)
         PARAMETER (SCOTCH_DGRAPHHALOREQDIM = DUMMYSIZEDGRAPHHALOREQ)
+        PARAMETER (SCOTCH_DMAPDIM          = DUMMYSIZEDMAP)
         PARAMETER (SCOTCH_DORDERDIM        = DUMMYSIZEDORDER)
         PARAMETER (SCOTCH_GEOMDIM          = DUMMYSIZEGEOM)
         PARAMETER (SCOTCH_GRAPHDIM         = DUMMYSIZEGRAPH)
