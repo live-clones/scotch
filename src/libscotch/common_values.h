@@ -1,4 +1,4 @@
-/* Copyright 2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                management routines.                    **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 03 oct 2021     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 06 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -48,9 +48,9 @@
 **  The type and structure definitions.
 */
 
-/*+ Thread context status. +*/
+/*+ Thread context status. The abstract type is defined in "common.h". +*/
 
-typedef struct ValuesContext_ {
+struct ValuesContext_ {
   const void *              dainptr;              /* Pointer to initial data structure                  */
   void *                    dataptr;              /* Pointer to current data structure                  */
   size_t                    datasiz;              /* Size of data structure, including all value arrays */
@@ -58,4 +58,4 @@ typedef struct ValuesContext_ {
   size_t                    ointval;              /* Offset of INT array in data structure              */
   int                       vdblnbr;              /* Number of double values                            */
   size_t                    odblval;              /* Offset of double array in data structure           */
-} ValuesContext;
+};

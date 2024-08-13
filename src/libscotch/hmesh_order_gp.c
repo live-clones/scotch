@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -109,7 +109,7 @@ const HmeshOrderGpParam * restrict const  paraptr)
     while (rootptr->passnum != 0)                 /* Find first unallocated root */
       rootptr ++;
 
-    vdianum  = rootptr - vexxtax;                 /* Start from found root */
+    vdianum  = (Gnum) (rootptr - vexxtax);        /* Start from found root */
     vdiadist = 0;
     for (passflag = 1; (passflag -- != 0) && (passnum <= paraptr->passnbr); passnum ++) { /* Loop if modifications */
       hmeshOrderGpQueueFlush (&queue);            /* Flush vertex queue         */

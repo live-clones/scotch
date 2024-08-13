@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2019,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2019,2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 6.1  : from : 05 dec 2021     **/
 /**                                 to   : 05 dec 2021     **/
 /**                # Version 7.0  : from : 13 sep 2019     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,7 +87,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
 {
   GainTabl * restrict               tablptr;      /* Pointer to gain table                                              */
   byte * restrict                   vexxtab;      /* Start of auxiliary arrays                                          */
-  Gnum                              vexxsiz;      /* Size of auxiliary arrays to be reset every pass                    */
+  size_t                            vexxsiz;      /* Size of auxiliary arrays to be reset every pass                    */
   VmeshSeparateGgElem * restrict    velxtax;      /* Based auxiliary element array                                      */
   VmeshSeparateGgNode * restrict    vnoxtax;      /* Based auxiliary node array                                         */
   Gnum * restrict                   velitax;      /* Array of sums of weights of isolated neighboring nodes of elements */
@@ -122,8 +122,8 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
     errorPrint ("vmeshSeparateGg: out of memory (1)");
     return (1);
   }
-  vexxsiz  = (byte *) velitax - vexxtab;          /* Size of arrays that must be reset at each pass */
-  velxtax -= meshptr->m.velmbas;                  /* Base access to auxiliary arrays                */
+  vexxsiz  = (size_t) ((byte *) velitax - vexxtab); /* Size of arrays that must be reset at each pass */
+  velxtax -= meshptr->m.velmbas;                  /* Base access to auxiliary arrays                  */
   vnoxtax -= meshptr->m.vnodbas;
   velitax -= meshptr->m.velmbas;
 
@@ -195,7 +195,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
       velxptr->gainlink.next =                    /* TRICK: allow deletion of root vertex */
       velxptr->gainlink.prev = (GainLink *) velxptr;
 
-      velmnum = velxptr - velxtax;                /* Get root element number */
+      velmnum = (Gnum) (velxptr - velxtax);       /* Get root element number */
       {
         Gnum                ncmpgain1;            /* Gain (2->1) */
         Gnum                ncmpgain2;            /* Gain (0->2) */
@@ -212,7 +212,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
       do {                                        /* While element vertices can be retrieved */
         Gnum                eelmnum;              /* Number of current element edge          */
 
-        velmnum = velxptr - velxtax;              /* Get based number of selected element */
+        velmnum = (Gnum) (velxptr - velxtax);     /* Get based number of selected element */
 
         if (ncmploaddlt < abs (ncmploaddlt + velxtax[velmnum].ncmpgaindlt)) { /* If swapping would cause imbalance */
           permptr = permtab + meshptr->m.velmnbr; /* Terminate swapping process                                    */

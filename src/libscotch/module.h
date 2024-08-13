@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 03 jul 2023     **/
+/**                                 to   : 02 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,7 +63,7 @@
 ** Version and copyright strings.
 */
 
-#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2023 IPB, Universite de Bordeaux, INRIA & CNRS, France"
+#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2024 IPB, Universite de Bordeaux, INRIA & CNRS, France"
 #define SCOTCH_LICENSE_STRING       "This software is libre/free software under CeCILL-C -- see the user's manual for more information"
 #ifdef SCOTCH_CODENAME
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL) " (" STRINGIFY (SCOTCH_CODENAME) ")"
@@ -337,6 +337,7 @@
 #define intRandProc                 SCOTCH_NAME_INTERN (intRandProc)
 #define intRandReset                SCOTCH_NAME_INTERN (intRandReset)
 #define intRandSeed                 SCOTCH_NAME_INTERN (intRandSeed)
+#define intRandSpawn                SCOTCH_NAME_INTERN (intRandSpawn)
 #define intRandVal                  SCOTCH_NAME_INTERN (intRandVal)
 #define intRandVal2                 SCOTCH_NAME_INTERN (intRandVal2)
 #define intRandVal3                 SCOTCH_NAME_INTERN (intRandVal3)
@@ -370,6 +371,14 @@
 #define threadContextParam          SCOTCH_NAME_INTERN (threadContextParam)
 
 #define threadSystemCoreNbr         SCOTCH_NAME_INTERN (threadSystemCoreNbr)
+
+#define timerExit                   SCOTCH_NAME_INTERN (timerExit)
+#define timerInit                   SCOTCH_NAME_INTERN (timerInit)
+#define timerNbr                    SCOTCH_NAME_INTERN (timerNbr)
+#define timerStart                  SCOTCH_NAME_INTERN (timerStart)
+#define timerStop                   SCOTCH_NAME_INTERN (timerStop)
+#define timerTab                    SCOTCH_NAME_INTERN (timerTab)
+#define timerVal                    SCOTCH_NAME_INTERN (timerVal)
 
 #define usagePrint                  SCOTCH_NAME_INTERN (usagePrint)
 #endif /* ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) */
@@ -706,11 +715,9 @@
 #define bgraphStoreSave             SCOTCH_NAME_INTERN (bgraphStoreSave)
 #define bgraphStoreUpdt             SCOTCH_NAME_INTERN (bgraphStoreUpdt)
 
-#if ((defined INTSIZE64) || (defined SCOTCH_COMM))
 #define commAllgatherv              SCOTCH_NAME_INTERN (commAllgatherv)
 #define commGatherv                 SCOTCH_NAME_INTERN (commGatherv)
 #define commScatterv                SCOTCH_NAME_INTERN (commScatterv)
-#endif /* ((defined INTSIZE64) || (defined SCOTCH_COMM)) */
 
 #define contextOptionsInit          SCOTCH_NAME_INTERN (contextOptionsInit)
 
@@ -966,12 +973,12 @@
 #define mapAlloc                    SCOTCH_NAME_INTERN (mapAlloc)
 #define mapBuild                    SCOTCH_NAME_INTERN (mapBuild)
 #define mapCopy                     SCOTCH_NAME_INTERN (mapCopy)
+#define mapCheck                    SCOTCH_NAME_INTERN (mapCheck)
 #define mapFree                     SCOTCH_NAME_INTERN (mapFree)
 #define mapFrst                     SCOTCH_NAME_INTERN (mapFrst)
 #define mapLoad                     SCOTCH_NAME_INTERN (mapLoad)
 #define mapMerge                    SCOTCH_NAME_INTERN (mapMerge)
 #define mapResize                   SCOTCH_NAME_INTERN (mapResize)
-#define mapResize2                  SCOTCH_NAME_INTERN (mapResize2)
 #define mapSave                     SCOTCH_NAME_INTERN (mapSave)
 #define mapTerm                     SCOTCH_NAME_INTERN (mapTerm)
 

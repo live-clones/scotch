@@ -1,4 +1,4 @@
-/* Copyright 2009-2011,2013-2016,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009-2011,2013-2016,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.1  : from : 19 apr 2021     **/
 /**                                 to   : 30 jun 2021     **/
 /**                # Version 7.0  : from : 24 aug 2019     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 19 jul 2024     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from the code of    **/
 /**                  kdgraph_band.c in version 5.2 for     **/
@@ -217,29 +217,30 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   bandgrafptr->levlnum     = grafptr->levlnum;
   bandgrafptr->contptr     = grafptr->contptr;
 
-  mapInit2 (&bandgrafptr->m,   &bandgrafptr->s, grafptr->m.archptr,   &grafptr->m.domnorg,   grafptr->m.domnmax,   domnnbr);
-  mapInit2 (&bandgrafptr->r.m, &bandgrafptr->s, grafptr->r.m.archptr, &grafptr->r.m.domnorg, grafptr->r.m.domnmax, grafptr->r.m.domnnbr);
+  bandgrafptr->domnorg   = grafptr->domnorg;      /* Keep initial domain */
+  mapInit2 (&bandgrafptr->m,   &bandgrafptr->s, grafptr->m.archptr,   grafptr->m.domnmax,   domnnbr);
+  mapInit2 (&bandgrafptr->r.m, &bandgrafptr->s, grafptr->r.m.archptr, grafptr->r.m.domnmax, grafptr->r.m.domnnbr);
 
-  bandgrafptr->m.domntab = grafptr->m.domntab;    /* Band mapping domain array is a clone of mapping (no freeing) */
-  if (mapAlloc (&bandgrafptr->m) != 0) {          /* Allocate band mapping part array                             */
+  bandgrafptr->m.domntab = grafptr->m.domntab;    /* TRICK: non-NULL domain array to prevent its allocation */
+  if (mapAlloc (&bandgrafptr->m) != 0) {          /* Allocate band mapping part array                       */
     errorPrint ("kgraphBand: out of memory (2)");
+    bandgrafptr->m.domntab = NULL;                /* TRICK: clean domain array to prevent its freeing on error */
+abort:
     kgraphExit (bandgrafptr);
     if (termhashtab != NULL)
       memFree (termhashtab);
     memFree (vnumotbdtax + grafptr->s.baseval);
     return  (1);
   }
+  bandgrafptr->m.flagval |= MAPPINGFREEDOMN;      /* Mapping will have ownership on array passed to it         */
+  bandgrafptr->m.domntab  = NULL;                 /* TRICK: clean domain array to prevent its freeing on error */
 
   if ((memAllocGroup ((void **) (void *)          /* Allocate graph data */
                       &bandgrafptr->s.verttax, (size_t) ((bandvertnbr + 1) * sizeof (Gnum)), /* Compact vertex array */
                       &bandgrafptr->s.velotax, (size_t) ( bandvertnbr      * sizeof (Gnum)), NULL) == NULL) ||
       ((bandgrafptr->s.edgetax = memAlloc ((bandedgenbr + bandedlonbr) * sizeof (Gnum))) == NULL)) {
     errorPrint ("kgraphBand: out of memory (3)");
-    kgraphExit (bandgrafptr);
-    if (termhashtab != NULL)
-      memFree (termhashtab);
-    memFree (vnumotbdtax + grafptr->s.baseval);
-    return  (1);
+    goto abort;
   }
   bandgrafptr->s.verttax -= bandgrafptr->s.baseval;
   bandgrafptr->s.velotax -= bandgrafptr->s.baseval;
@@ -249,11 +250,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   if (vmlotax != NULL) {
     if ((bandvmlotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("kgraphBand: out of memory (4)");
-      kgraphExit (bandgrafptr);
-      if (termhashtab != NULL)
-        memFree (termhashtab);
-      memFree (vnumotbdtax + grafptr->s.baseval);
-      return  (1);
+      goto abort;
     }
     bandvmlotax -= bandgrafptr->s.baseval;
     bandgrafptr->r.vmlotax  = bandvmlotax;
@@ -265,15 +262,11 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   if (parotax != NULL) {
     if ((bandparotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("kgraphBand: out of memory (5)");
-      kgraphExit (bandgrafptr);
-      if (termhashtab != NULL)
-        memFree (termhashtab);
-      memFree (vnumotbdtax + grafptr->s.baseval);
-      return  (1);
+      goto abort;
     }
     memSet (bandparotax + bandvertnbr - bandgrafptr->r.m.domnnbr, ~0, bandgrafptr->r.m.domnnbr * sizeof (Gnum)); /* Old parts of anchors are unspecified */
     bandparotax -= bandgrafptr->s.baseval;
-    bandgrafptr->r.m.flagval |= MAPPINGFREEPART;
+    bandgrafptr->r.m.flagval |= MAPPINGINCOMPLETE | MAPPINGFREEPART; /* Remapping may be incomplete */
     bandgrafptr->r.m.parttax  = bandparotax;
     bandgrafptr->r.m.domntab  = grafptr->r.m.domntab; /* Band old mapping domain array is a clone of old mapping (no freeing) */
   }
@@ -283,21 +276,13 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
                       &bandgrafptr->comploadavg, (size_t) ((domnnbr + 2) * sizeof (Gnum)), /* TRICK: always keep two slots for collective communication */
                       &bandgrafptr->comploaddlt, (size_t) ((domnnbr + 2) * sizeof (Gnum)), NULL) == NULL)) {
     errorPrint ("kgraphBand: out of memory (6)");
-    kgraphExit (bandgrafptr);                     /* TRICK: will free frontab */
-    if (termhashtab != NULL)
-      memFree (termhashtab);
-    memFree (vnumotbdtax + grafptr->s.baseval);
-    return  (1);
+    goto abort;                                   /* TRICK: kgraphExit() will free frontab */
   }
   bandfrontab = bandgrafptr->frontab;
 
   if ((bandvnumtax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) { /* Allocate alone since it is an output */
     errorPrint ("kgraphBand: out of memory (7)");
-    kgraphExit (bandgrafptr);
-    if (termhashtab != NULL)
-      memFree (termhashtab);
-    memFree (vnumotbdtax + grafptr->s.baseval);
-    return  (1);
+    goto abort;
   }
 #ifdef SCOTCH_DEBUG_KGRAPH2
   memSet (bandvnumtax, ~0, (bandvertnbr * sizeof (Gnum)));
@@ -678,14 +663,17 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   if (pfixtax != NULL)
     kgraphFron (bandgrafptr);
 
+  bandgrafptr->m.domntab = grafptr->m.domntab;    /* Use original domain array for computing costs and checking mapping consistency */
   kgraphCost (bandgrafptr);
 
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (kgraphCheck (bandgrafptr) != 0) {
     errorPrint ("kgraphBand: inconsistent graph data (2)");
+    bandgrafptr->m.domntab = NULL;
     return (1);
   }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
+  bandgrafptr->m.domntab = NULL;                  /* Band graph mapping domain array not available yet */
 
   *bandvnumptr = bandvnumtax;
 

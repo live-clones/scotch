@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2014,2018,2019,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2014,2018,2019,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 03 jul 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -185,7 +185,6 @@ KdgraphMapRbPartThread * const  fldthrdptr)
   if (fldthrdptr->fldprocnbr > 1) {               /* If subpart has several processes, fold a distributed graph */
     o = dgraphFold2 (&indgrafdat, fldthrdptr->fldpartval, /* Fold temporary induced subgraph from all processes */
                      &fldgrafptr->data.dgrfdat, fldthrdptr->fldproccomm, NULL, NULL, MPI_INT);
-    fldgrafptr->data.dgrfdat.flagval |= DGRAPHFREECOMM; /* Split communicator has to be freed */
   }
   else {                                          /* Create a centralized graph */
     Graph * restrict      fldcgrfptr;
@@ -298,13 +297,15 @@ KdgraphMapRbPartGraph * restrict const  fldgrafptr)
 
   fldgrafptr->domnorg = *fldthrdtab[fldpartval].inddomnptr; /* Set data of our folded graph */
   fldgrafptr->procnbr = fldthrdtab[fldpartval].fldprocnbr;
-  fldgrafptr->levlnum = actgrafptr->levlnum + 1;  /* One level down in the DRB process                     */
-  fldproccol = fldpartval;                        /* Split color is the part value                         */
-  if (fldgrafptr->procnbr <= 1)                   /* If our part will have only one processor or will stop */
-    fldproccol = MPI_UNDEFINED;                   /* Do not create any sub-communicator for it             */
-  if (MPI_Comm_split (actgrafptr->s.proccomm, fldproccol, fldprocnum, &fldthrdtab[fldpartval].fldproccomm) != MPI_SUCCESS) { /* Assign folded communicator to proper part */
-    errorPrint  ("kdgraphMapRbPartFold: communication error");
-    return (1);
+  fldgrafptr->levlnum = actgrafptr->levlnum + 1;  /* One level down in the DRB process                      */
+  fldproccol = fldpartval;                        /* Split color is the part value                          */
+  if (fldgrafptr->procnbr <= 1)                   /* If our part will have only one processor or will stop  */
+    fldproccol = MPI_UNDEFINED;                   /* Do not create any sub-communicator for it              */
+  if (actgrafptr->s.procglbnbr > 2) {             /* If both folded graphs are mono-process, no need for it */
+    if (MPI_Comm_split (actgrafptr->s.proccomm, fldproccol, fldprocnum, &fldthrdtab[fldpartval].fldproccomm) != MPI_SUCCESS) { /* Assign folded communicator to proper part */
+      errorPrint ("kdgraphMapRbPartFold: communication error");
+      return (1);
+    }
   }
   fldthrdtab[fldpartval].fldprocnum      = fldprocnum; /* This will be our rank afterwards  */
   fldthrdtab[fldpartval ^ 1].fldprocnum  = -1;    /* Other part will not be in communicator */
@@ -366,7 +367,9 @@ const KdgraphMapRbPartData * restrict const dataptr)
 
   switch (o) {
     case 1 :                                      /* If target domain is terminal */
-      return (kdgraphMapRbAddOne (&grafptr->data.dgrfdat, mappptr, &grafptr->domnorg)); /* Update mapping and return */
+      o = kdgraphMapRbAddOne (&grafptr->data.dgrfdat, mappptr, &grafptr->domnorg); /* Update mapping and return */
+      dgraphExit (&grafptr->data.dgrfdat);        /* Free graph before returning */
+      return (o);
     case 2 :                                      /* On error */
       errorPrint ("kdgraphMapRbPart2: cannot bipartition domain");
       return (1);
@@ -381,7 +384,7 @@ const KdgraphMapRbPartData * restrict const dataptr)
   actgrafdat.levlnum = grafptr->levlnum;          /* Initial level of bipartition graph is DRB recursion level       */
   actgrafdat.contptr = dataptr->contptr;
 
-  comploadavg = (double) actgrafdat.s.veloglbsum / (double) archDomWght (&mappptr->archdat, &grafptr->domnorg);
+  comploadavg = (Gnum) ((double) actgrafdat.s.veloglbsum / (double) archDomWght (&mappptr->archdat, &grafptr->domnorg));
   actgrafdat.compglbload0min = actgrafdat.compglbload0avg -
                                (Gnum) MIN ((dataptr->comploadmax - comploadavg) * actgrafdat.domnwght[0],
                                            (comploadavg - dataptr->comploadmin) * actgrafdat.domnwght[1]);
@@ -436,8 +439,8 @@ const KdgraphMapRbParam * restrict const  paraptr)
     return (kdgraphMapRbPartSequ (&grafdat, mappptr->mappptr, &datadat));
   }
 
-  grafdat.data.dgrfdat = grafptr->s;              /* Create a clone graph that will never be freed */
-  grafdat.data.dgrfdat.flagval &= ~DGRAPHFREEALL;
+  grafdat.data.dgrfdat = grafptr->s;              /* Create a clone graph that will never be freed      */
+  grafdat.data.dgrfdat.flagval &= ~(DGRAPHFREEALL | DGRAPHFREECOMM); /* Do not free communicator either */
 
   return (kdgraphMapRbPart2 (&grafdat, &datadat)); /* Perform DRB */
 }

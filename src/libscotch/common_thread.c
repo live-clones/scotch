@@ -853,7 +853,7 @@ int                         thrdnum)
   for (corenum = 0; thrdnum >= 0; corenum ++) {   /* For all potential cores       */
     if (CPU_ISSET (corenum, &contptr->savedat.cpusdat)) { /* If core is available  */
       if (thrdnum <= 0)                           /* And it is the one we want     */
-	break;                                    /* We have found our core number */
+        break;                                    /* We have found our core number */
       thrdnum --;                                 /* One less available core       */
     }
   }

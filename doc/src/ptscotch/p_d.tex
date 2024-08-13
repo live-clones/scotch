@@ -90,8 +90,8 @@ own code.
 Fortran users also have to take care of another size issue: since
 there are no pointers in Fortran~77, the Fortran interface of some
 routines converts pointers to be returned into integer indices with
-respect to a given array (e.g. see
-Section~\ref{sec-lib-func-scotchdgraphdata}).
+respect to a given array (\eg, see
+Section~\ref{sec-lib-func-dgraphdata}).
 For 32\_64 architectures, such indices can be larger than the size of
 a regular {\tt INTEGER}. This is why the indices to be returned are
 defined by means of a specific integer type, {\tt SCOTCH\_Idx}. To

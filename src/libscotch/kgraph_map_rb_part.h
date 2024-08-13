@@ -1,4 +1,4 @@
-/* Copyright 2008,2011,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2011,2014,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,6 +35,7 @@
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Sebastien FOURESTIER (v6.0)             **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : These lines are the data declaration    **/
 /**                for the Dual Recursive Bipartitioning   **/
@@ -45,7 +46,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 06 may 2021     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -59,14 +60,14 @@ typedef struct KgraphMapRbPartSplit2_ {
   Gnum                        vertnbr;            /*+ Number of vertices in part or in graph         +*/
   Anum                        vflonbr;            /*+ Number of fixed vertex load slots              +*/
   KgraphMapRbVflo * restrict  vflotab;            /*+ Array of fixed vertex load slots               +*/
-  ArchDom *                   domnptr;            /*+ Original domain to bipartition (to avoid lock) +*/
+  ArchDom const *             domnptr;            /*+ Original domain to bipartition (to avoid lock) +*/
 } KgraphMapRbPartSplit2;
 
 typedef struct KgraphMapRbPartSplit_ {
   KgraphMapRbPartSplit2             splttab[2];   /*+ Array of induced subgraph data           +*/
-  const KgraphMapRbData * restrict  dataptr;      /*+ Global mapping data                      +*/
-  const Graph * restrict            grafptr;      /*+ Graph to induce and bipartition          +*/
-  const GraphPart * restrict        parttax;      /*+ Part array of original graph to consider +*/
+  KgraphMapRbData const * restrict  dataptr;      /*+ Global mapping data                      +*/
+  Graph const * restrict            grafptr;      /*+ Graph to induce and bipartition          +*/
+  GraphPart const * restrict        parttax;      /*+ Part array of original graph to consider +*/
   Gnum                              levlnum;      /*+ Recursion level number                   +*/
   int *                             revaptr;      /*+ Pointer to return value                  +*/
 } KgraphMapRbPartSplit;
@@ -79,4 +80,4 @@ typedef struct KgraphMapRbPartSplit_ {
 static void                 kgraphMapRbPart2    (Context * restrict const, const int, KgraphMapRbPartSplit * const);
 #endif /* SCOTCH_KGRAPH_MAP_RB_PART */
 
-int                         kgraphMapRbPart     (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict, Context * restrict const);
+int                         kgraphMapRbPart     (const KgraphMapRbData * restrict const, const Graph * restrict const, const Anum, KgraphMapRbVflo * restrict const, Context * restrict const);

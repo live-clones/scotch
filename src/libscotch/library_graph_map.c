@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 19 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -154,6 +154,7 @@ const SCOTCH_Num *          vmlotab,              /*+ Vertex migration cost arra
 const SCOTCH_Num            vfixnbr,              /*+ Number of fixed vertices in part array +*/
 SCOTCH_Strat * const        straptr)              /*+ Mapping strategy                       +*/
 {
+  ArchDom             domnorg;                    /* Initial domain                       */
   Kgraph              mapgrafdat;                 /* Effective mapping graph              */
   const Strat *       mapstraptr;                 /* Pointer to mapping strategy          */
   CONTEXTDECL        (actgrafptr);
@@ -211,12 +212,10 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
   }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
-  if (*((Strat **) straptr) == NULL) {            /* Set default mapping strategy if necessary */
-    ArchDom             domnorg;
+  archDomFrst (lmapptr->archptr, &domnorg);       /* Compute initial domain to map to */
 
-    archDomFrst (lmapptr->archptr, &domnorg);
+  if (*((Strat **) straptr) == NULL)              /* Set default mapping strategy if necessary */
     SCOTCH_stratGraphMapBuild (straptr, SCOTCH_STRATDEFAULT, archDomSize (lmapptr->archptr, &domnorg), 0.01);
-  }
 
   mapstraptr = *((Strat **) straptr);
 #ifdef SCOTCH_DEBUG_LIBRARY1
@@ -270,13 +269,21 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
     crloval = 1;
   }
 
-  if (kgraphInit (&mapgrafdat, grafptr, lmapptr->archptr, NULL, vfixnbr, pfixtax, crloval, cmloval, vmlotax) != 0)
+  if (kgraphInit (&mapgrafdat, grafptr, lmapptr->archptr, &domnorg, vfixnbr, pfixtax, crloval, cmloval, vmlotax) != 0)
     goto abort;
 
   if (lmaoptr != NULL) {                          /* If we are doing a repartitioning, fill old mapping structure */
-    if ((mapAlloc (&mapgrafdat.r.m)                             != 0) ||
-        (mapBuild (&mapgrafdat.r.m, lmaoptr->parttab - baseval) != 0)) {
-      errorPrint ("kgraphInit: cannot initialize remapping");
+    if (mapAlloc (&mapgrafdat.r.m) != 0) {        /* Allocate part and domain arrays                              */
+      errorPrint ("kgraphInit: cannot initialize remapping (1)");
+      kgraphExit (&mapgrafdat);
+      goto abort;
+    }
+
+    memSet (mapgrafdat.r.m.parttax + baseval, ~0, grafptr->vertnbr * sizeof (Anum)); /* Pre-set unknown vertex domains */
+    mapgrafdat.r.m.flagval |= MAPPINGINCOMPLETE;  /* Mapping may contain incomplete information                        */
+
+    if (mapBuild (&mapgrafdat.r.m, lmaoptr->parttab - baseval) != 0) { /* Merge old part information to incomplete mapping */
+      errorPrint ("kgraphInit: cannot initialize remapping (2)");
       kgraphExit (&mapgrafdat);
       goto abort;
     }

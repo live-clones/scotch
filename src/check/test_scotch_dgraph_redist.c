@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : test_scotch_dgraph_redist.c             **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
 /**                the SCOTCH_dgraphBand() routine.        **/
@@ -41,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 21 feb 2012     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 03 jul 2023     **/
-/**                                 to   : 12 aug 2023     **/
+/**                                 to   : 04 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,16 +51,10 @@
 */
 
 #include <mpi.h>
-#include <stdio.h>
-#if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H))
-#include <stdint.h>
-#endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
-#include <stdlib.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <pthread.h>
-#include <unistd.h>
 
+#include "../libscotch/common.h"
+
+#include "scotch.h"
 #include "ptscotch.h"
 
 /*********************/

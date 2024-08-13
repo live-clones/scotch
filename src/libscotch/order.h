@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : order.h                                 **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module contains the data           **/
 /**                declarations for the generic ordering   **/
@@ -50,7 +51,7 @@
 /**                # Version 6.0  : from : 08 may 2018     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 11 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -152,8 +153,8 @@ int                         orderInit           (Order * const, const Gnum, cons
 void                        orderExit           (Order * const);
 int                         orderLoad           (Order * restrict const, const Gnum * restrict const, FILE * restrict const);
 int                         orderSave           (const Order * restrict const, const Gnum * restrict const, FILE * restrict const);
-int                         orderSaveMap        (const Order * const, const Gnum * restrict const, FILE * restrict const);
-int                         orderSaveTree       (const Order * const, const Gnum * restrict const, FILE * restrict const);
+int                         orderSaveMap        (const Order * restrict const, const Gnum * restrict const, FILE * restrict const);
+int                         orderSaveTree       (const Order * restrict const, const Gnum * restrict const, FILE * restrict const);
 void                        orderPeri           (const Gnum * const, const Gnum, const Gnum, Gnum * const, const Gnum);
 void                        orderRang           (const Order * const, Gnum * const);
 void                        orderTree           (const Order * restrict const, Gnum * restrict const);

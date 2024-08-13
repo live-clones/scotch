@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2014,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2014,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@
 /**                # Version 6.1  : from : 27 nov 2021     **/
 /**                                 to   : 01 dec 2021     **/
 /**                # Version 7.0  : from : 16 jan 2023     **/
-/**                                 to   : 16 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -402,7 +402,7 @@ const VgraphSeparateFmParam * const paraptr)      /*+ Method parameters +*/
 
       if (vexxptr->mswpnum != mswpnum) {          /* If vertex data not yet recorded */
         vexxptr->mswpnum = mswpnum;
-        savetab[savenbr].hashnum     = vexxptr - hashtab;
+        savetab[savenbr].hashnum     = (Gnum) (vexxptr - hashtab);
         savetab[savenbr].partval     = 2;
         savetab[savenbr].compgain[0] = vexxptr->compgain[0];
         savetab[savenbr].compgain[1] = vexxptr->compgain[1];

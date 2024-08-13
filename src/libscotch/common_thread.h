@@ -1,4 +1,4 @@
-/* Copyright 2018,2019,2021,2022,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2019,2021,2022,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                routines.                               **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 05 jun 2018     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 06 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,9 +66,9 @@ typedef enum ThreadContextStatus_ {
   THREADCONTEXTSTATUSDWN                          /*+ Out of order +*/
 } ThreadContextStatus;
 
-/*+ Context in which parallel tasks can be launched. +*/
+/*+ Context in which parallel tasks can be launched. The abstract type is defined in "common.h". +*/
 
-typedef struct ThreadContext_ {
+struct ThreadContext_ {
   int                           thrdnbr;          /*+ Number of threads                   +*/
   volatile ThreadContextStatus  statval;          /*+ Thread group status                 +*/
   volatile void *               paraptr;          /*+ Pointer to function parameter       +*/
@@ -79,12 +79,13 @@ typedef struct ThreadContext_ {
   pthread_mutex_t               lockdat;          /*+ Lock for updating status            +*/
   pthread_cond_t                conddat;          /*+ Wakeup condition for slave threads  +*/
   union {                                         /*+ Context save area for main thread   +*/
+    int                         dummval;          /*+ Dummy value if no affinity enabled  +*/
 #ifdef COMMON_PTHREAD_AFFINITY_LINUX
     cpu_set_t                   cpusdat;          /*+ Original thread mask of main thread +*/
 #endif /* COMMON_PTHREAD_AFFINITY_LINUX */
-  }                             savedat;
+  }                             savedat;          /*+ Save area for affinity mask         +*/
 #endif /* COMMON_PTHREAD */
-} ThreadContext;
+};
 
 /*
 **  The function prototypes.

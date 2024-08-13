@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2012,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 28 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,7 +78,7 @@ const SCOTCH_Num * const    dimxval,    \
 const SCOTCH_Num * const    dimyval,    \
 const SCOTCH_Num * const    dimzval,    \
 const SCOTCH_Num * const    incrval,    \
-const int * const           flagval,    \
+const SCOTCH_Num * const    flagval,    \
 int * const                 revaptr),   \
 (grafptr, baseval, dimxval, dimyval, dimzval, incrval, flagval, revaptr))
 {

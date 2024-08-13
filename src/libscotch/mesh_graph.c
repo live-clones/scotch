@@ -136,7 +136,7 @@ Graph * restrict const        grafptr)            /*+ Graph to build +*/
   if ((grafptr->edgetax = memAlloc (edgemax * sizeof (Gnum))) == NULL) {
     errorPrint ("meshGraph: out of memory (2)");
     graphFree  (grafptr);
-    return     (1);
+    return (1);
   }
   grafptr->edgetax -= grafptr->baseval;
 
@@ -180,7 +180,7 @@ Graph * restrict const        grafptr)            /*+ Graph to build +*/
                 errorPrint ("meshGraph: out of memory (3)");
                 graphFree  (grafptr);
                 memFree    (hashtab);
-                return     (1);
+                return (1);
               }
 
               grafptr->edgetax = edgetmp - grafptr->baseval;
@@ -212,7 +212,7 @@ Graph * restrict const        grafptr)            /*+ Graph to build +*/
 #ifdef SCOTCH_DEBUG_MESH2
   if (graphCheck (grafptr) != 0) {
     errorPrint ("meshGraph: internal error");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
 
@@ -271,7 +271,7 @@ const Gnum                  noconbr)              /*+ number of common points to
   if ((grafptr->edgetax = memAlloc (edgemax * sizeof (Gnum))) == NULL) {
     errorPrint ("meshGraphDual: out of memory (2)");
     graphFree  (grafptr);
-    return     (1);
+    return (1);
   }
   grafptr->edgetax -= grafptr->baseval;
 
@@ -311,7 +311,7 @@ const Gnum                  noconbr)              /*+ number of common points to
           if (hashtab[helmend].vertnum != velmnum) { /* If edge not yet created */
             hashtab[helmend].vertnum = velmnum;   /* Record new edge            */
             hashtab[helmend].vertend = velmend;
-            hashtab[helmend].nghbnbr =             /* One instance recorded to date */
+            hashtab[helmend].nghbnbr =            /* One instance recorded to date */
             nghbnbr = MIN (veconbr, (meshptr->vendtax[velmend] - meshptr->verttax[velmend] - 1)) - 1;
             goto test;                            /* Check if one instance is enough to create edge */
           }
@@ -331,7 +331,7 @@ test:         if (nghbnbr <= 0) {                 /* If new instance allows us t
                     errorPrint ("meshGraphDual: out of memory (3)");
                     graphFree  (grafptr);
                     memFree    (hashtab);
-                    return     (1);
+                    return (1);
                   }
 
                   grafptr->edgetax = edgetmp - grafptr->baseval;
@@ -360,7 +360,7 @@ test:         if (nghbnbr <= 0) {                 /* If new instance allows us t
 #ifdef SCOTCH_DEBUG_MESH2
   if (graphCheck (grafptr) != 0) {
     errorPrint ("meshGraphDual: internal error");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
 

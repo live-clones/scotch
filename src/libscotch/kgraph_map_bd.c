@@ -1,4 +1,4 @@
-/* Copyright 2010,2011,2014,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2011,2014,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 6.1  : from : 30 jun 2021     **/
 /**                                 to   : 16 jul 2021     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 19 jul 2024     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -107,23 +107,25 @@ kgraphMapBd (
 Kgraph * const                      orggrafptr,   /*+ Graph             +*/
 const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
 {
-  Kgraph                bndgrafdat;               /* Partitioning band graph structure                                   */
-  const Gnum * restrict bndverttax;
-  const Gnum * restrict bndvendtax;
-  const Gnum * restrict bndedgetax;
-  const Gnum * restrict bndedlotax;
-  const Gnum * restrict bndparttax;
-  Gnum                  bndvertancnnd;            /* End of local vertex array, without anchors                          */
-  Gnum                  bndvertnum;
-  Gnum                  bndvertlvlnum;            /* Based number of first band vertex in last layer                     */
-  Gnum                  orgfronnum;
-  int * restrict        orgflagtab;
-  Gnum                  commload;
-  Gnum                  commload2;                /* Twice twice (4 times) the internal communication load of last layer */
-  Anum                  domnnum;
-  Gnum * restrict       bndvnumtax;               /* Orignal numbers of vertices in band graph                           */
-  Gnum *                vertnbrtab;
-  Gnum                  vertnum;
+  Kgraph                    bndgrafdat;           /* Partitioning band graph structure                                   */
+  const Gnum * restrict     bndverttax;
+  const Gnum * restrict     bndvendtax;
+  const Gnum * restrict     bndedgetax;
+  const Gnum * restrict     bndedlotax;
+  const Anum * restrict     bndparttax;
+  const ArchDom * restrict  bnddomntab;
+  Gnum                      bndvertancnnd;        /* End of local vertex array, without anchors                          */
+  Gnum                      bndvertnum;
+  Gnum                      bndvertlvlnum;        /* Based number of first band vertex in last layer                     */
+  Gnum                      orgfronnum;
+  int * restrict            orgflagtab;
+  Gnum                      commload;
+  Gnum                      commload2;            /* Twice twice (4 times) the internal communication load of last layer */
+  Anum                      domnnum;
+  Gnum * restrict           bndvnumtax;           /* Orignal numbers of vertices in band graph                           */
+  Gnum *                    vertnbrtab;
+  Gnum                      vertnum;
+  int                       o;
 
   const Gnum * restrict const orgverttax = orggrafptr->s.verttax;
   const Gnum * restrict const orgvendtax = orggrafptr->s.vendtax;
@@ -145,6 +147,7 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
   if ((vertnbrtab = memAlloc (domnnbr * sizeof (Gnum))) == NULL) {
     errorPrint ("kgraphMapBd: out of memory (1)");
     memFree    (bndvnumtax + bndgrafdat.s.baseval);
+    kgraphExit (&bndgrafdat);
     return (1);
   }
   memSet (vertnbrtab, 0, domnnbr * sizeof (Gnum));
@@ -169,7 +172,17 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
     return     (kgraphMapSt (orggrafptr, paraptr->stratorg));
   }
 
-  if (kgraphMapSt (&bndgrafdat, paraptr->stratbnd) != 0) { /* Partition band graph */
+  bndgrafdat.m.domntab  = orggrafptr->m.domntab;  /* Transfer mapping domain array to band graph */
+  orggrafptr->m.domntab = NULL;
+
+  o = kgraphMapSt (&bndgrafdat, paraptr->stratbnd); /* Partition band graph */
+
+  orggrafptr->m.domntab = bndgrafdat.m.domntab;   /* Transfer (potentially updated) mapping domain array back to original graph */
+  orggrafptr->m.domnnbr = bndgrafdat.m.domnnbr;
+  orggrafptr->m.domnmax = bndgrafdat.m.domnmax;
+  bndgrafdat.m.domntab  = NULL;
+
+  if (o != 0) {
     errorPrint  ("kgraphMapBd: cannot partition band graph");
     memFree     (bndvnumtax + bndgrafdat.s.baseval);
     kgraphExit  (&bndgrafdat);
@@ -192,6 +205,7 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
   bndvendtax = bndgrafdat.s.vendtax;
   bndedgetax = bndgrafdat.s.edgetax;
   bndedlotax = bndgrafdat.s.edlotax;
+  bnddomntab = orggrafptr->m.domntab;             /* Mapping domain array is shared between original and band graphs */
 
   commload = 0;
   for (bndvertnum = bndgrafdat.s.baseval; bndvertnum < bndvertlvlnum; bndvertnum ++) { /* For all vertices of band graph save for last layer */
@@ -204,7 +218,7 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
 
     bndpartval = bndparttax[bndvertnum];
     bndpartlst = -1;                              /* Invalid part to recompute distance */
-    bnddistlst = -1;                              /* To prevent compiler from yielding  */
+    bnddistlst = -1;                              /* To prevent compiler from yelling   */
 
     bndflagval = 0;
     for (bndedgenum = bndverttax[bndvertnum], bndedgennd = bndvendtax[bndvertnum];
@@ -217,7 +231,7 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
         Anum                bnddistval;
 
         bndflagval |= 1;
-        bnddistval = (bndpartend != bndpartlst) ? archDomDist (archptr, &bndgrafdat.m.domntab[bndpartval], &bndgrafdat.m.domntab[bndpartend]) : bnddistlst;
+        bnddistval = (bndpartend != bndpartlst) ? archDomDist (archptr, &bnddomntab[bndpartval], &bnddomntab[bndpartend]) : bnddistlst;
         bndpartlst = bndpartend;
         bnddistlst = bnddistval;
 
@@ -249,7 +263,7 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
         Anum                bnddistval;
 
         bndflagval |= 1;
-        bnddistval = (bndpartend != bndpartlst) ? archDomDist (archptr, &bndgrafdat.m.domntab[bndpartval], &bndgrafdat.m.domntab[bndpartend]) : bnddistlst;
+        bnddistval = (bndpartend != bndpartlst) ? archDomDist (archptr, &bnddomntab[bndpartval], &bnddomntab[bndpartend]) : bnddistlst;
         bndpartlst = bndpartend;
         bnddistlst = bnddistval;
 
@@ -287,7 +301,7 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
 
       orgvertend = orgedgetax[orgedgenum];
       orgpartend = orgparttax[orgvertend];
-      orgdistval = archDomDist (archptr, &orggrafptr->m.domntab[orgpartval], &orggrafptr->m.domntab[orgpartend]);
+      orgdistval = archDomDist (archptr, &bnddomntab[orgpartval], &bnddomntab[orgpartend]);
 
       if (orgpartval != orgpartend) {
         orgflagval = 1;

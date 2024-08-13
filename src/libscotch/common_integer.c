@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014-2016,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -208,7 +208,7 @@ IntRandContext              intranddat = { 0, 0 }; /*+ Global context: not initi
 void
 intRandProc (
 IntRandContext * const      randptr,
-int                         procnum)
+const int                   procnum)
 {
   randptr->procval = procnum;                     /* Set process number */
 }
@@ -243,8 +243,8 @@ IntRandContext * const      randptr)
 
   randptr->flagval = 1;                           /* Generator has been initialized */
 
-  randval = (((UINT64) randptr->seedval) | 1) * (((UINT64) randptr->procval) + 1); /* Account for process index */
-  intRandSeed2 (&randptr->statdat, randval);      /* Initialize state vector from random seed                   */
+  randval = (INT) ((((UINT64) randptr->seedval) | 1) * (((UINT64) randptr->procval) + 1)); /* Account for process index */
+  intRandSeed2 (&randptr->statdat, randval);      /* Initialize state vector from random seed                           */
 }
 
 void
@@ -255,6 +255,34 @@ INT                         seedval)
   randptr->seedval = seedval;                     /* Save new seed */
 
   intRandReset (randptr);                         /* Initialize pseudo-random seed */
+}
+
+/* This routine spawns a new pseudo-random
+** generator from an existing one, so that
+** sub-tasks can easily get a distinct stream
+** of pseudo-random numbers.
+** The building of the new generator does not
+** change the state of the old one, so that
+** spawning can be performed in parallel by
+** the tasks in an asynchronous way.
+** The routine itself is not thread-safe.
+** It returns:
+** - VOID  : in all cases.
+*/
+
+void
+intRandSpawn (
+IntRandContext * const      roldptr,
+const int                   procnum,
+IntRandContext * const      rnewptr)
+{
+  UINT64              seedval;
+
+  rnewptr->procval = procnum;
+
+  seedval = roldptr->statdat.randtab[0];          /* Get value from state of old generator */
+
+  intRandSeed (rnewptr, (INT) seedval);           /* Set seed and initialize state */
 }
 
 /* This routine initializes the pseudo-random
@@ -391,7 +419,7 @@ FILE * restrict const           stream)           /*+ Stream to read from  +*/
 
 UINT
 intRandVal3 (
-IntRandState * restrict     statptr)
+IntRandState * restrict const statptr)
 {
   UINT64              x, y;                       /* State variables */
 

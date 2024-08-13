@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.1  : from : 05 dec 2021     **/
 /**                                 to   : 05 dec 2021     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -601,8 +601,8 @@ const VmeshSeparateFmParam * restrict const paraptr) /*+ Method parameters    +*
       velmptr->gainlink.prev = (GainLink *) lockptr; /* Lock it           */
       lockptr                = velmptr;
 
-      if (velmptr->mswpnum != mswpnum) {          /* If element data not yet recorded */
-        movetab[savenbr].hertnum               = velmptr - helmtab; /* Record them    */
+      if (velmptr->mswpnum != mswpnum) {          /* If element data not yet recorded       */
+        movetab[savenbr].hertnum               = (Gnum) (velmptr - helmtab); /* Record them */
         movetab[savenbr].data.elem.vertpart    = velmptr->vertpart;
         movetab[savenbr].data.elem.ncmpcut2    = velmptr->ncmpcut2;
         movetab[savenbr].data.elem.ncmpgain2   = velmptr->ncmpgain2;

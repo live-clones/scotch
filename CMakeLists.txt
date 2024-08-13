@@ -37,20 +37,19 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     16 jan 2023     ##
+##                                 to     01 nov 2023     ##
 ##                                                        ##
 ############################################################
 
 cmake_minimum_required(VERSION 3.10)
-project(SCOTCH)
-enable_language(C Fortran)
+project(SCOTCH LANGUAGES C Fortran)
 
 # Add module directory
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 set(SCOTCH_VERSION 7)
 set(SCOTCH_RELEASE 0)
-set(SCOTCH_PATCHLEVEL 4)
+set(SCOTCH_PATCHLEVEL 5)
 set(SCOTCH_CODENAME "Sankara")
 
 add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}
@@ -77,6 +76,9 @@ option(BUILD_LIBESMUMPS "Build EsMUMPS library" ON)
 # Build libScotchMeTiS
 option(BUILD_LIBSCOTCHMETIS "Build ScotchMeTiS library" ON)
 
+# Prefix Scotch version of MeTiS routines
+option(SCOTCH_METIS_PREFIX "Prefix Scotch version of MeTiS routines" OFF)
+
 # Install our MeTiS header stubs
 option(INSTALL_METIS_HEADERS "Install libScotchMeTiS headers in destination directory" ON)
 
@@ -89,9 +91,48 @@ option(USE_BZ2 "Use BZ2 compression format if found" ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS})
 
 # Allow for testing
-enable_testing()
+option(ENABLE_TESTS "Enable testing" ON)
+if(ENABLE_TESTS)
+  enable_testing()
+endif(ENABLE_TESTS)
+
+# use GNU standard for file hierarchy installation system
+include(GNUInstallDirs)
 
 add_subdirectory(src)
 
 # Install man pages
-install(DIRECTORY man/man1 DESTINATION man FILES_MATCHING PATTERN "*.1")
+set(scotch_man_pages
+acpl.1
+amk_ccc.1
+amk_grf.1
+atst.1
+gbase.1
+gcv.1
+gdump.1
+gmap.1
+gmk_hy.1
+gmk_m2.1
+gmk_msh.1
+gmtst.1
+gord.1
+gotst.1
+gout.1
+gtst.1
+mcv.1
+mmk_m2.1
+mord.1
+mtst.1
+)
+foreach(f IN LISTS scotch_man_pages)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/man1/${f}
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1 COMPONENT scotch)
+endforeach()
+
+if (BUILD_PTSCOTCH)
+  set(ptscotch_man_pages dgmap.1 dgord.1 dgscat.1 dgtst.1)
+  foreach(f IN LISTS ptscotch_man_pages)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/man1/${f}
+      DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1 COMPONENT ptscotch)
+  endforeach()
+endif(BUILD_PTSCOTCH)

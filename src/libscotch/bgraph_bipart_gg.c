@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2011,2013,2014,2016,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2011,2013,2014,2016,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,7 +58,7 @@
 /**                # Version 6.0  : from : 23 feb 2011     **/
 /**                                 to   : 01 may 2016     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 22 mar 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -240,7 +240,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
 #endif /* SCOTCH_TABLE_GAIN */
         bgraphBipartGgTablDel (&tabldat, vexxptr); /* Remove vertex from table */
 
-        vertnum = vexxptr - vexxtax;              /* Get number of selected vertex */
+        vertnum = (Gnum) (vexxptr - vexxtax);     /* Get number of selected vertex */
         veloval = velobax[vertnum & velomsk];
 
         if ((abs (compload0dlt - veloval) >= abs (compload0dlt)) && /* If swapping would cause imbalance */

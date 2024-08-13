@@ -1,5 +1,5 @@
-%{
-/* Copyright 2004,2007,2018-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+%top{
+/* Copyright 2004,2007,2018-2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,6 +35,7 @@
 /**   NAME       : parser_ll.l                             **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module is the lexical parser       **/
 /**                which processes strategy strings.       **/
@@ -50,12 +51,15 @@
 /**                # Version 5.1  : from : 09 jun 2009     **/
 /**                                 to   : 24 jul 2011     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 09 jul 2024     **/
 /**                                                        **/
 /**   NOTES      : # In order for flex to read its input   **/
 /**                  with getc() instead of fread, we set  **/
 /**                  YY_ALWAYS_INTERACTIVE to 1. This may  **/
 /**                  not always work with future releases. **/
+/**                # Following common.h, we stop unistd.h  **/
+/**                  from being included on Windows-like   **/
+/**                  platforms by setting YY_NO_UNISTD_H.  **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,6 +70,12 @@
 #include "module.h"
 #include "common.h"
 
+#if (defined COMMON_OS_WINDOWS || defined HAVE_NOT_UNISTD_H)
+#define YY_NO_UNISTD_H
+#endif /* (defined COMMON_OS_WINDOWS || defined HAVE_NOT_UNISTD_H) */
+}
+
+%{
 #undef INTEGER                                    /* In case someone defined them */
 #undef DOUBLE
 

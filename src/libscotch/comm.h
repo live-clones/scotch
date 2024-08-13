@@ -1,4 +1,4 @@
-/* Copyright 2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 02 aug 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,15 +65,3 @@ typedef UINT                  Gunum;              /* Unsigned type of same width
 int                         commAllgatherv      (void * const, const Gnum, MPI_Datatype, void * const, const Gnum * const, const Gnum * const, MPI_Datatype, MPI_Comm);
 int                         commGatherv         (void * const, const Gnum, MPI_Datatype, void * const, const Gnum * const, const Gnum * const, MPI_Datatype, const int, MPI_Comm);
 int                         commScatterv        (void * const, const Gnum * const, const Gnum * const, MPI_Datatype, void * const, const Gnum, MPI_Datatype, const int, MPI_Comm);
-
-/*
-**  The macro definitions.
-*/
-
-#ifndef SCOTCH_COMM
-#ifndef INTSIZE64
-#define commAllgatherv              MPI_Allgatherv
-#define commGatherv                 MPI_Gatherv
-#define commScatterv                MPI_Scatterv
-#endif /* INTSIZE64 */
-#endif /* SCOTCH_COMM */

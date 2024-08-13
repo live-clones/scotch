@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2015,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2015,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 27 apr 2015     **/
 /**                                 to   : 14 jul 2018     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -114,7 +114,7 @@ File * const                fileptr)
     return;
 
 #ifdef COMMON_PTHREAD_FILE
-  pthread_join (fileptr->compptr->thrdval, NULL); /* Wait for (un)compression thread to terminate */
+  pthread_join (fileptr->compptr->thrdval, NULL); /* Wait for (de)compression thread to terminate */
 #else /* COMMON_PTHREAD_FILE */
   waitpid (fileptr->compptr->procval, NULL, 0);
 #endif /* COMMON_PTHREAD_FILE */
@@ -135,12 +135,12 @@ int
 fileCompressType (
 const char * const          nameptr)              /*+ Name string +*/
 {
-  int                 namelen;
+  size_t              namelen;
   int                 i;
 
   namelen = strlen (nameptr);
   for (i = 0; filetab[i].name != NULL; i ++) {
-    int                 extnlen;                  /* Name of extension string */
+    size_t              extnlen;                  /* Name of extension string */
 
     extnlen = strlen (filetab[i].name);
     if ((namelen >= extnlen) && (strncmp (filetab[i].name, nameptr + (namelen - extnlen), extnlen) == 0))
@@ -199,7 +199,7 @@ FileCompress * const        compptr)
 int
 fileCompress (
 File * const                fileptr,              /*+ Uncompressed stream   +*/
-const int                   typeval)              /*+ Compression algorithm +*/
+const FileCompressType      typeval)              /*+ Compression algorithm +*/
 {
   int                 filetab[2];
   FILE *              writptr;

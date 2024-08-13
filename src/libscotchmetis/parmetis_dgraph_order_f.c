@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2012,2015,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2015,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 18 may 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 30 jun 2023     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -67,23 +67,24 @@
 /*                                    */
 /**************************************/
 
-FORTRAN (                                               \
-SCOTCH_PARMETIS_V3_NODEND, scotch_parmetis_v3_nodend, ( \
-const SCOTCH_Num * const    vtxdist,                    \
-SCOTCH_Num * const          xadj,                       \
-SCOTCH_Num * const          adjncy,                     \
-const SCOTCH_Num * const    numflag,                    \
-const SCOTCH_Num * const    options,                    \
-SCOTCH_Num * const          order,                      \
-SCOTCH_Num * const          sizes,                      \
-const MPI_Fint * const      commptr,                    \
-int * const                 revaptr),                   \
+FORTRAN (                                 \
+SCOTCHMETISNAMESU (PARMETIS_V3_NODEND),   \
+SCOTCHMETISNAMESL (parmetis_v3_nodend), ( \
+const SCOTCH_Num * const    vtxdist,      \
+SCOTCH_Num * const          xadj,         \
+SCOTCH_Num * const          adjncy,       \
+const SCOTCH_Num * const    numflag,      \
+const SCOTCH_Num * const    options,      \
+SCOTCH_Num * const          order,        \
+SCOTCH_Num * const          sizes,        \
+const MPI_Fint * const      commptr,      \
+int * const                 revaptr),     \
 (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr, revaptr))
 {
   MPI_Comm            commdat;
 
   commdat = MPI_Comm_f2c (*commptr);
-  *revaptr = SCOTCH_ParMETIS_V3_NodeND (vtxdist, xadj, adjncy, numflag, options, order, sizes, &commdat);
+  *revaptr = SCOTCHMETISNAMES (ParMETIS_V3_NodeND) (vtxdist, xadj, adjncy, numflag, options, order, sizes, &commdat);
 }
 
 /*******************/
@@ -93,25 +94,24 @@ int * const                 revaptr),                   \
 /*******************/
 
 #if (SCOTCH_PARMETIS_VERSION == 3)
-#ifndef SCOTCH_METIS_PREFIX                       /* With "SCOTCH_" prefix, names already defined */
 
-FORTRAN (                                                           \
-METISNAMEU (PARMETIS_V3_NODEND), METISNAMEL (parmetis_v3_nodend), ( \
-const SCOTCH_Num * const    vtxdist,                                \
-SCOTCH_Num * const          xadj,                                   \
-SCOTCH_Num * const          adjncy,                                 \
-const SCOTCH_Num * const    numflag,                                \
-const SCOTCH_Num * const    options,                                \
-SCOTCH_Num * const          order,                                  \
-SCOTCH_Num * const          sizes,                                  \
-const MPI_Fint * const      commptr),                               \
+FORTRAN (                                 \
+SCOTCHMETISNAMEFU (PARMETIS_V3_NODEND),   \
+SCOTCHMETISNAMEFL (parmetis_v3_nodend), ( \
+const SCOTCH_Num * const    vtxdist,      \
+SCOTCH_Num * const          xadj,         \
+SCOTCH_Num * const          adjncy,       \
+const SCOTCH_Num * const    numflag,      \
+const SCOTCH_Num * const    options,      \
+SCOTCH_Num * const          order,        \
+SCOTCH_Num * const          sizes,        \
+const MPI_Fint * const      commptr),     \
 (vtxdist, xadj, adjncy, numflag, options, order, sizes, commptr))
 {
   MPI_Comm            commdat;
 
   commdat = MPI_Comm_f2c (*commptr);
-  METISNAMEU (ParMETIS_V3_NodeND) (vtxdist, xadj, adjncy, numflag, options, order, sizes, &commdat);
+  SCOTCHMETISNAMES (ParMETIS_V3_NodeND) (vtxdist, xadj, adjncy, numflag, options, order, sizes, &commdat);
 }
 
-#endif /* SCOTCH_METIS_PREFIX */
 #endif /* (SCOTCH_PARMETIS_VERSION == 3) */

@@ -45,6 +45,14 @@ DEPESMUMPS		= $(SCOTCHLIBDIR)/libesmumps$(LIB)
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
 DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)
 
+ifeq ($(origin SCOTCH_METIS_PREFIXFU), undefined)
+  ifeq ($(origin SCOTCH_METIS_PREFIX), undefined)
+    SCOTCH_METIS_PREFIXFU = ""
+  else
+    SCOTCH_METIS_PREFIXFU = SCOTCHF
+  endif
+endif
+
 EXECPPROG		?= mpirun
 EXECPFLAGS		?= $(if $(findstring Open,$(shell $(EXECPPROG) --version)),--oversubscribe)
 # EXECPFLAGS		+= valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
@@ -54,6 +62,7 @@ EXECP3			?= $(EXECPPROG) -n 3 $(EXECPFLAGS)
 EXECP4			?= $(EXECPPROG) -n 4 $(EXECPFLAGS)
 
 PROGDIFF		?= diff -q
+PROGSED			?= sed
 
 ##
 ##  General inference rules.
@@ -72,6 +81,9 @@ include ../Makefile.inc
 
 %$(EXE)	:	%.c
 				$(CC) $(CFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
+
+%.f90	:	%.f90.in
+				$(PROGSED) -e 's/SCOTCHMETISNAMEFU\s*(\([A-Za-z0-8_]*\))/'"$(SCOTCH_METIS_PREFIXFU)"'\1/g' $(<) > $(@)
 
 %_v3$(EXE):	%.f90
 				$(FC) $(FFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv3 $(SCOTCHLIBS) $(LDFLAGS)
@@ -114,6 +126,7 @@ realclean			:	clean
 					test_libmetis_v5		\
 					test_libmetis_dual_v3		\
 					test_libmetis_dual_v5		\
+					test_libmetis_dual_f.f90	\
 					test_libmetis_dual_f_v3		\
 					test_libmetis_dual_f_v5		\
 					test_scotch_arch		\
@@ -454,8 +467,8 @@ test_strat_par			:	test_strat_par.c		\
 ##
 
 check_scotch_dgraph_band	:	test_scotch_dgraph_band
-					$(EXECP3) ./test_scotch_dgraph_band data/bump.grf
-					$(EXECP3) ./test_scotch_dgraph_band data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_band data/bump.grf $(TMPDIR)/test_scotch_dgraph_band.map
+					$(EXECP3) ./test_scotch_dgraph_band data/bump_b100000.grf $(TMPDIR)/test_scotch_dgraph_band.map
 
 test_scotch_dgraph_band		:	test_scotch_dgraph_band.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)
@@ -482,8 +495,8 @@ test_scotch_dgraph_check	:	test_scotch_dgraph_check.c	\
 ##
 
 check_scotch_dgraph_grow	:	test_scotch_dgraph_grow
-					$(EXECP3) ./test_scotch_dgraph_grow data/bump.grf
-					$(EXECP3) ./test_scotch_dgraph_grow data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_grow data/bump.grf $(TMPDIR)/test_scotch_dgraph_grow.map
+					$(EXECP3) ./test_scotch_dgraph_grow data/bump_b100000.grf $(TMPDIR)/test_scotch_dgraph_grow.map
 
 test_scotch_dgraph_grow		:	test_scotch_dgraph_grow.c	\
 					$(SCOTCHLIBDIR)/libptscotch$(LIB)

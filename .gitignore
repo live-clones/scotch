@@ -17,7 +17,7 @@ doc/src/scotch/s.ps
 src/Makefile.inc*
 src/check/*
 !src/check/*[.][ch]
-!src/check/*[.]f90
+!src/check/*[.]f90.in
 src/check/test_scotch_graph_dump2.c
 !src/check/CMakeLists.txt
 !src/check/Makefile

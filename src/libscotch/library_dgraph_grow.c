@@ -100,7 +100,7 @@ SCOTCH_dgraphGrow (
 SCOTCH_Dgraph * const       orggrafptr,
 const SCOTCH_Num            seedlocnbr,
 SCOTCH_Num * const          seedloctab,
-const SCOTCH_Num            distval,
+const SCOTCH_Num            distmax,
 SCOTCH_Num * const          partgsttab)
 {
   Gnum *              bandpartgsttax;
@@ -129,7 +129,7 @@ SCOTCH_Num * const          partgsttab)
   bandpartgsttax = (partgsttab != NULL) ? (Gnum *) partgsttab - grafdat.baseval : NULL;
 
   o = (((grafdat.flagval & DGRAPHCOMMPTOP) != 0) ? dgraphGrow2Ptop : dgraphGrow2Coll)
-        (&grafdat, seedlocnbr, seedloctab, distval, bandpartgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz, CONTEXTGETDATA (orggrafptr));
+        (&grafdat, seedlocnbr, seedloctab, distmax, bandpartgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz, CONTEXTGETDATA (orggrafptr));
 
   dgraphExit (&grafdat);                          /* Free ghost edge arrays if any */
 abort:

@@ -1,4 +1,4 @@
-/* Copyright 2019,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2020,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -35,6 +35,7 @@
 /**                                                        **/
 /**   AUTHOR     : Amaury JACQUES (v6.0)                   **/
 /**                Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operations of     **/
 /**                the SCOTCH_dgraphInducePart() routine.  **/
@@ -42,7 +43,7 @@
 /**   DATES      : # Version 6.0  : from : 16 apr 2019     **/
 /**                                 to   : 22 apr 2019     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 12 aug 2023     **/
+/**                                 to   : 04 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,13 +52,8 @@
 */
 
 #include <mpi.h>
-#include <stdio.h>
-#if (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H))
-#include <stdint.h>
-#endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+
+#include "../libscotch/common.h"
 
 #include "scotch.h"
 #include "ptscotch.h"

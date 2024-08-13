@@ -39,7 +39,7 @@
 /**                the libScotch routines.                 **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 03 oct 2021     **/
-/**                                 to   : 16 jan 2023     **/
+/**                                 to   : 30 oct 2023     **/
 /**                                                        **/
 /************************************************************/
 
@@ -57,7 +57,7 @@
 
 static struct ContextValuesData_ {
   INT                       vinttab[CONTEXTOPTIONNUMNBR];
-  double                    vdbltab[CONTEXTOPTIONDBLNBR];
+  double                    vdbltab[CONTEXTOPTIONDBLNBR + 1]; /* TRICK: temporary hack: +1 since ISO C does not accept zero-sized arrays */
 } contextvaluesdat = { {
 #ifdef SCOTCH_DETERMINISTIC
                               1
@@ -70,7 +70,7 @@ static struct ContextValuesData_ {
 #else /* ((defined SCOTCH_DETERMINISTIC) || (defined COMMON_RANDOM_FIXED_SEED)) */
                               0
 #endif /* ((defined SCOTCH_DETERMINISTIC) || (defined COMMON_RANDOM_FIXED_SEED)) */
-  }, { } };
+  }, { -1.0 } };                                  /* Temporary hack: dummy value since ISO C does not accept zero-sized arrays */
 
 /***********************************/
 /*                                 */
@@ -89,6 +89,6 @@ contextOptionsInit (
 Context * const             contptr)
 {
   return (contextValuesInit (contptr, &contextvaluesdat, sizeof (contextvaluesdat),
-                             CONTEXTOPTIONNUMNBR, (void *) &contextvaluesdat.vinttab - (void *) &contextvaluesdat,
-                             CONTEXTOPTIONDBLNBR, (void *) &contextvaluesdat.vdbltab - (void *) &contextvaluesdat));
+                             CONTEXTOPTIONNUMNBR, (byte *) &contextvaluesdat.vinttab - (byte *) &contextvaluesdat,
+                             CONTEXTOPTIONDBLNBR, (byte *) &contextvaluesdat.vdbltab - (byte *) &contextvaluesdat));
 }

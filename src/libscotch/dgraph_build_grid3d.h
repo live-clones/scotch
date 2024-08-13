@@ -52,9 +52,10 @@
 ** The type and structure definitions.
 */
 
-/*+ The multinode table element, which contains
-    pairs of based indices of collapsed vertices.
-    Both values are equal for uncollapsed vertices. +*/
+/*+ The distributed graph building structure, which
+    contains all the data needed by the various
+    graph building routines for the different kinds
+    of graphs (grids, tori, etc.).                  +*/
 
 typedef struct DgraphBuildGrid3DData_ {
   Gnum                      baseval;

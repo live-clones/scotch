@@ -1,4 +1,4 @@
-/* Copyright 2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.1  : from : 11 may 2021     **/
 /**                                 to   : 24 may 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,7 +63,8 @@
 /**************************************/
 
 FORTRAN (                                 \
-METIS_PARTMESHDUAL, metis_partmeshdual, ( \
+SCOTCHMETISNAMESU (METIS_PARTMESHDUAL),   \
+SCOTCHMETISNAMESL (metis_partmeshdual), ( \
 const SCOTCH_Num * const    ne,           \
 const SCOTCH_Num * const    nn,           \
 const SCOTCH_Num * const    eptr,         \
@@ -79,5 +80,32 @@ SCOTCH_Num * const          epart,        \
 SCOTCH_Num * const          npart),       \
 (ne, nn, eptr, eind, vwgt, vsize, ncommon, nparts, tpwgts, options, objval, epart, npart))
 {
-  METIS_PartMeshDual (ne, nn, eptr, eind, vwgt, vsize, ncommon, nparts, tpwgts, options, objval, epart, npart);
+  SCOTCHMETISNAMES (METIS_PartMeshDual) (ne, nn, eptr, eind, vwgt, vsize, ncommon,
+                                         nparts, tpwgts, options, objval, epart, npart);
+}
+
+/*
+**
+*/
+
+FORTRAN (                                 \
+SCOTCHMETISNAMEFU (METIS_PARTMESHDUAL),   \
+SCOTCHMETISNAMEFL (metis_partmeshdual), ( \
+const SCOTCH_Num * const    ne,           \
+const SCOTCH_Num * const    nn,           \
+const SCOTCH_Num * const    eptr,         \
+const SCOTCH_Num * const    eind,         \
+const SCOTCH_Num * const    vwgt,         \
+const SCOTCH_Num * const    vsize,        \
+const SCOTCH_Num * const    ncommon,      \
+const SCOTCH_Num * const    nparts,       \
+const double * const        tpwgts,       \
+const SCOTCH_Num * const    options,      \
+SCOTCH_Num * const          objval,       \
+SCOTCH_Num * const          epart,        \
+SCOTCH_Num * const          npart),       \
+(ne, nn, eptr, eind, vwgt, vsize, ncommon, nparts, tpwgts, options, objval, epart, npart))
+{
+  SCOTCHMETISNAMES (METIS_PartMeshDual) (ne, nn, eptr, eind, vwgt, vsize, ncommon,
+                                         nparts, tpwgts, options, objval, epart, npart);
 }

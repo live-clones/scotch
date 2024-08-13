@@ -1,4 +1,4 @@
-/* Copyright 2008,2010,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2010,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : common_stub.c                           **/
 /**                                                        **/
 /**   AUTHORS    : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : These lines are common stub routines    **/
 /**                for several systems, used by all        **/
@@ -44,7 +45,7 @@
 /**                # Version 5.1  : from : 27 jun 2010     **/
 /**                                 to   : 01 jul 2010     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 01 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,6 +73,16 @@ int
 fork ()
 {
   errorPrint ("fork() not implemented on this system");
+  return (-1);
+}
+
+int
+waitpid (
+int                         pid,                  /* Not used */
+int *                       wstatus,              /* Not used */
+int                         options)              /* Not used */
+{
+  errorPrint ("waitpid() not implemented on this system");
   return (-1);
 }
 #endif /* COMMON_STUB_FORK */

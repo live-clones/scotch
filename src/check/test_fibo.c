@@ -1,4 +1,4 @@
-/* Copyright 2016,2018,2019,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2016,2018,2019,2022,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -34,6 +34,7 @@
 /**   NAME       : test_fibo.c                             **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the fibonacci heap    **/
 /**                routines.                               **/
@@ -41,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 23 aug 2016     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 13 sep 2019     **/
-/**                                 to   : 12 feb 2022     **/
+/**                                 to   : 04 jul 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -55,11 +56,6 @@
 #ifndef __USE_XOPEN2K
 #define __USE_XOPEN2K                             /* For POSIX pthread_barrier_t */
 #endif /* __USE_XOPEN2K */
-
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include "../libscotch/module.h"
 #include "../libscotch/common.h"

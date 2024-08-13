@@ -1,4 +1,4 @@
-/* Copyright 2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                libSCOTCH library.                      **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 22 aug 2020     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 03 jun 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,6 +82,18 @@ SCOTCH_Context * const      contptr), \
 (contptr))
 {
   SCOTCH_contextExit (contptr);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                      \
+CONTEXTSIZEOF, contextsizeof, (       \
+int * const                 sizeptr), \
+(sizeptr))
+{
+  *sizeptr = SCOTCH_contextSizeof ();
 }
 
 /*

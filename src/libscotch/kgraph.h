@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010-2012,2014,2018,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010-2012,2014,2018,2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@
 /**                # Version 6.1  : from : 18 jul 2021     **/
 /**                                 to   : 18 jul 2021     **/
 /**                # Version 7.0  : from : 03 aug 2018     **/
-/**                                 to   : 13 jul 2021     **/
+/**                                 to   : 16 jul 2024     **/
 /**                                                        **/
 /**   NOTES      : # The comploadavg and comploaddlt       **/
 /**                  should always be allocated together,  **/
@@ -109,6 +109,7 @@
 
 typedef struct Kgraph_ {
   Graph                     s;                    /*+ Current graph                                     +*/
+  ArchDom                   domnorg;              /*+ Initial mapping (sub)domain                       +*/
   Mapping                   m;                    /*+ Current mapping of graph vertices                 +*/
   struct {                                        /*+ Remapping structure                               +*/
     Mapping                 m;                    /*+ Old mapping                                       +*/

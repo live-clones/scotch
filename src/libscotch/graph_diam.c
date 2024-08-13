@@ -1,4 +1,4 @@
-/* Copyright 2017,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2017,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 31 mar 2021     **/
 /**                                 to   : 31 mar 2021     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 09 aug 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -153,7 +153,7 @@ Context * restrict const    contptr)
       distval = vexxptr->distval;                 /* Keep current distance value      */
       vexxptr->distval = -1;                      /* Flag vertex as already processed */
 
-      vertnum = vexxptr - vexxtax;
+      vertnum = (Gnum) (vexxptr - vexxtax);
       if (diammax < distval) {
         diammax = distval;
         rootnum = vertnum;

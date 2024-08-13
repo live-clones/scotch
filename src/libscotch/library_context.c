@@ -1,4 +1,4 @@
-/* Copyright 2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                library.                                **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 03 jun 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,6 +75,18 @@ SCOTCH_Context *
 SCOTCH_contextAlloc ()
 {
   return ((SCOTCH_Context *) memAlloc (sizeof (SCOTCH_Context)));
+}
+
+/*+ This routine returns the size, in bytes,
+*** of a SCOTCH_Context structure.
+*** It returns:
+*** - > 0  : in all cases.
++*/
+
+int
+SCOTCH_contextSizeof ()
+{
+  return (sizeof (SCOTCH_Context));
 }
 
 /*+ This routine initializes the opaque

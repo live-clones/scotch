@@ -281,6 +281,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			common_stub$(OBJ)			\
 			common_thread$(OBJ)			\
 			common_thread_system$(OBJ)		\
+			common_timer$(OBJ)			\
 			common_values$(OBJ)			\
 			context$(OBJ)				\
 			fibo$(OBJ)				\
@@ -420,6 +421,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			library_version$(OBJ)			\
 			library_version_f$(OBJ)			\
 			mapping$(OBJ)				\
+			mapping_check$(OBJ)			\
 			mapping_io$(OBJ)			\
 			mesh$(OBJ)				\
 			mesh_check$(OBJ)			\
@@ -538,6 +540,12 @@ common_thread_system$(OBJ)	:	common_thread_system.c			\
 					module.h				\
 					common.h				\
 					common_thread_system.h
+					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
+
+common_timer$(OBJ)		:	common_timer.c				\
+					module.h				\
+					common.h				\
+					common_timer.h
 					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_values$(OBJ)		:	common_values.c				\
@@ -2721,6 +2729,13 @@ library_version_f$(OBJ)		:	library_version_f.c			\
 					scotch.h
 
 mapping$(OBJ)			:	mapping.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch$(OBJ)				\
+					mapping.h
+
+mapping_check$(OBJ)		:	mapping_check.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
