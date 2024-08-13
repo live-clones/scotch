@@ -72,7 +72,7 @@ mkdir build && cd build && cmake .. && make -j5
 
 Many options can be provided from the command line, using the CMmake flag `-D`.
 
-Linux and MacOS-X are fully supported. We plan to support Windows systems soon. MacOS-X users must use recent versions of Flex and Bison that are available from [Brew](https://brew.sh/); older versions from Xcode will fail. To use them, run, e.g.:
+Linux and MacOS-X are fully supported. Windows is also supported, albeit with partial support of multi-threading (processor affinity is not yet implemented). MacOS-X users must use recent versions of Flex and Bison that are available from [Brew](https://brew.sh/); older versions from Xcode will fail. To use them, run, e.g.:
 
 ``` bash
 cmake -DBUILD_SHARED_LIBS=ON -DBISON_EXECUTABLE=/usr/local/Cellar/bison/3.8.2/bin/bison -DFLEX_EXECUTABLE=/usr/local/Cellar/flex/2.6.4_2/bin/flex
@@ -136,6 +136,7 @@ Feel free to use the following publications to reference **Scotch**:
 
 * "PT-Scotch: A tool for efficient parallel graph ordering"
   https://hal.inria.fr/hal-00402893
+
 
 Licence
 -------
