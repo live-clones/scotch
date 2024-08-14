@@ -78,7 +78,7 @@ bgraphCheck (
 const Bgraph * restrict const grafptr)
 {
   int * restrict      flagtax;                    /* Frontier flag array           */
-  Gnum                cpl1sum;                    /* Sum ov vertex loads in part 1 */
+  Gnum                cpl1sum;                    /* Sum of vertex loads in part 1 */
   Gnum                ver1nbr;                    /* Number of vertices in part 1  */
   Gnum                commloadintn;
   Gnum                commloadextn;
