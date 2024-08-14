@@ -23,10 +23,12 @@ src/check/test_scotch_graph_dump2.c
 !src/check/Makefile
 !src/check/data
 src/esmumps/*[.][ao]
+src/esmumps/*[.]so
 src/esmumps/common.h
 src/esmumps/test_esmumps
 src/esmumps/test_fax
 src/libscotch/*[.][ao]
+src/libscotch/*[.]so
 src/libscotch/dummysizes
 src/libscotch/parser_ll.c
 src/libscotch/parser_ly.h
@@ -38,6 +40,7 @@ src/libscotch/ptscotch.h
 src/libscotch/ptscotchf.h
 src/libscotch/y.output
 src/libscotchmetis/*[.][ao]
+src/libscotchmetis/*[.]so
 src/libscotchmetis/metis.h
 src/libscotchmetis/metisf.h
 src/libscotchmetis/parmetis.h
