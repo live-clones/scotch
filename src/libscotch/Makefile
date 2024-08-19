@@ -789,7 +789,7 @@ bgraph$(OBJ)			:	bgraph.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					mapping.h				\
 					bgraph.h
 
@@ -798,7 +798,7 @@ bgraph_bipart_bd$(OBJ)		:	bgraph_bipart_bd.c			\
 					common.h				\
 					parser.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_bd.h			\
 					bgraph_bipart_st.h
@@ -807,7 +807,7 @@ bgraph_bipart_df$(OBJ)		:	bgraph_bipart_df.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_df.h
 
@@ -816,7 +816,7 @@ bgraph_bipart_ex$(OBJ)		:	bgraph_bipart_ex.c			\
 					common.h				\
 					gain.h					\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_ex.h			\
 					bgraph_bipart_fm.h			\
@@ -828,7 +828,7 @@ bgraph_bipart_fm$(OBJ)		:	bgraph_bipart_fm.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_fm.h
 
@@ -838,7 +838,7 @@ bgraph_bipart_gg$(OBJ)		:	bgraph_bipart_gg.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_gg.h
 
@@ -846,7 +846,7 @@ bgraph_bipart_gp$(OBJ)		:	bgraph_bipart_gp.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_gp.h
 
@@ -856,7 +856,7 @@ bgraph_bipart_ml$(OBJ)		:	bgraph_bipart_ml.c			\
 					parser.h				\
 					graph.h					\
 					graph_coarsen.h				\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_ml.h			\
 					bgraph_bipart_st.h
@@ -868,7 +868,7 @@ bgraph_bipart_st$(OBJ)		:	bgraph_bipart_st.c			\
 					fibo.h					\
 					parser.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_bd.h			\
 					bgraph_bipart_df.h			\
@@ -884,7 +884,7 @@ bgraph_bipart_zr$(OBJ)		:	bgraph_bipart_zr.c			\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h				\
 					bgraph_bipart_zr.h
 
@@ -892,21 +892,21 @@ bgraph_check$(OBJ)		:	bgraph_check.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h
 
 bgraph_cost$(OBJ)		:	bgraph_cost.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h
 
 bgraph_store$(OBJ)		:	bgraph_store.c				\
 					module.h				\
 					common.h				\
 					graph.h					\
-					arch$(OBJ)				\
+					arch.h					\
 					bgraph.h
 
 comm$(OBJ)			:	comm.c					\
