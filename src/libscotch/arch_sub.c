@@ -1,4 +1,4 @@
-/* Copyright 2015,2016,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 13 mar 2015     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 13 aug 2024     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -366,7 +366,7 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
   Anum                    orgtermnbr;             /* Number of terminals in original graph */
   Anum                    orgtermnum;
   ArchDom                 orgdomndat;             /* Domain in original architecture       */
-  ArchMatch               matcdat;                /* Data for successive matchings         */
+  ArchMatchDummy          matcdat;                /* Data for successive matchings         */
   ArchSubTree *           rootptr;
   ArchSubTree * restrict  treetab;
   ArchSubTree * restrict  treetmp;
