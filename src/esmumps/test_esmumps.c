@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2012,2015,2018,2020,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2012,2015,2018,2020,2022,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 01 dec 2012     **/
 /**                                 to   : 22 jan 2020     **/
 /**                # Version 7.0  : from : 10 dec 2022     **/
-/**                                 to   : 10 dec 2022     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,9 +70,9 @@ void                        ESMUMPSF            (const INT * const, const INT * 
 /******************************/
 
 int
-main (argc, argv)
-int                 argc;
-char *              argv[];
+main (
+int                         argc,
+char *                      argv[])
 {
   Graph               grafdat;                    /* Graph to load */
   INT                 vertnbr;
