@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,6 +53,8 @@
 /**                                 to   : 15 mar 2008     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
 /**                                 to   : 12 nov 2014     **/
+/**                # Version 7.0  : from : 10 sep 2024     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -154,7 +156,6 @@ typedef struct C_ParseArg_ {
   int                       code;                 /*+ Code value                                   +*/
   const char *              format;               /*+ scanf-like format; NULL means char, no value +*/
   const void *              ptr;                  /*+ Pointer to the argument location             +*/
-  int                    (* func) ();             /*+ Pointer to the argument test function        +*/
 } C_ParseArg;
 
 /*

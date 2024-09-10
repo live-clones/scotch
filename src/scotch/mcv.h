@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 19 jan 2004     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
 /**                                 to   : 12 nov 2014     **/
+/**                # Version 7.0  : from : 10 sep 2024     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -69,7 +71,16 @@
 
 /*+ This structure defines the method array element. +*/
 
-typedef struct C_Format_ {
+typedef int (* FormatInpFunc) (SCOTCH_Mesh * const, SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
+
+typedef struct C_FormatInp_ {
   char                      code;                /* Format type code */
-  int                    (* func) ();            /* Function to call */
-} C_Format;
+  FormatInpFunc             func;                /* Function to call */
+} C_FormatInp;
+
+typedef int (* FormatOutFunc) (const SCOTCH_Mesh * const, const SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
+
+typedef struct C_FormatOut_ {
+  char                      code;                /* Format type code */
+  FormatOutFunc             func;                /* Function to call */
+} C_FormatOut;

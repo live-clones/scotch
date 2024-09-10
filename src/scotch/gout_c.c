@@ -61,7 +61,7 @@
 /**                # Version 6.1  : from : 04 apr 2021     **/
 /**                                 to   : 28 aug 2021     **/
 /**                # Version 7.0  : from : 31 aug 2021     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -725,9 +725,6 @@ char * const                string)              /* Pointer to the string to par
                     argptr[j].format,
                     argptr[j].ptr) != 1)
           return (2);                            /* Return if error                */
-        if (argptr[j].func != NULL)              /* If there is a control function */
-          if (argptr[j].func (argptr[j].ptr) != 0) /* If the function fails        */
-            return (2);                          /* Return the error value         */
       }
       else {                                     /* If no value needed           */
         if (argequ != NULL)                      /* If there is one however      */
