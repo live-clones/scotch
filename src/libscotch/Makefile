@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -221,6 +221,8 @@ LIBPTSCOTCHDEPS =	arch_mpi$(OBJ)				\
 			library_dgraph_io_save_f$(OBJ)		\
 			library_dgraph_map$(OBJ)		\
 			library_dgraph_map_f$(OBJ)		\
+			library_dgraph_map_stat$(OBJ)		\
+			library_dgraph_map_stat_f$(OBJ)		\
 			library_dgraph_map_view$(OBJ)		\
 			library_dgraph_map_view_f$(OBJ)		\
 			library_dgraph_order$(OBJ)		\
@@ -2294,6 +2296,24 @@ library_dgraph_map$(OBJ)	:	library_dgraph_map.c			\
 					ptscotch.h
 
 library_dgraph_map_f$(OBJ)	:	library_dgraph_map_f.c			\
+					module.h				\
+					common.h				\
+					ptscotch.h
+
+library_dgraph_map_stat$(OBJ)	:	library_dgraph_map_stat.c		\
+					module.h				\
+					common.h				\
+					context.h				\
+					parser.h				\
+					dgraph.h				\
+					dgraph_halo.h				\
+					arch.h					\
+					dmapping.h				\
+					kdgraph.h				\
+					library_dmapping.h			\
+					ptscotch.h
+
+library_dgraph_map_stat_f$(OBJ)	:	library_dgraph_map_stat_f.c		\
 					module.h				\
 					common.h				\
 					ptscotch.h

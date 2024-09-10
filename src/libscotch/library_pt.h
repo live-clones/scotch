@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 28 jul 2024     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -165,6 +165,7 @@ int                         SCOTCH_dgraphHaloWait (SCOTCH_DgraphHaloReq * const)
 int                         SCOTCH_dgraphMapInit (const SCOTCH_Dgraph * const, SCOTCH_Dmapping * const, const SCOTCH_Arch * const, SCOTCH_Num * const);
 void                        SCOTCH_dgraphMapExit (const SCOTCH_Dgraph * const, SCOTCH_Dmapping * const);
 int                         SCOTCH_dgraphMapSave (const SCOTCH_Dgraph * const, const SCOTCH_Dmapping * const, FILE * const);
+int                         SCOTCH_dgraphMapStat (SCOTCH_Dgraph * const, const SCOTCH_Dmapping * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, double * const, double * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num [256], SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 int                         SCOTCH_dgraphMapView (SCOTCH_Dgraph * const, const SCOTCH_Dmapping * const, FILE * const);
 int                         SCOTCH_dgraphMapCompute (SCOTCH_Dgraph * const, SCOTCH_Dmapping * const, SCOTCH_Strat * const);
 int                         SCOTCH_dgraphMap     (SCOTCH_Dgraph * const, const SCOTCH_Arch * const, SCOTCH_Strat * const, SCOTCH_Num * const);

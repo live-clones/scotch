@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     01 nov 2023     ##
+##                                 to     19 sep 2024     ##
 ##                                                        ##
 ############################################################
 
@@ -744,6 +744,8 @@ set(PTSCOTCH_C_SOURCES
   library_dgraph_io_save_f.c
   library_dgraph_map.c
   library_dgraph_map_f.c
+  library_dgraph_map_stat.c
+  library_dgraph_map_stat_f.c
   library_dgraph_map_view.c
   library_dgraph_map_view_f.c
   library_dgraph_order.c

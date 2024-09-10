@@ -1169,6 +1169,7 @@
 #define SCOTCH_dgraphMapExit        SCOTCH_NAME_PUBLIC (SCOTCH_dgraphMapExit)
 #define SCOTCH_dgraphMapInit        SCOTCH_NAME_PUBLIC (SCOTCH_dgraphMapInit)
 #define SCOTCH_dgraphMapSave        SCOTCH_NAME_PUBLIC (SCOTCH_dgraphMapSave)
+#define SCOTCH_dgraphMapStat        SCOTCH_NAME_PUBLIC (SCOTCH_dgraphMapStat)
 #define SCOTCH_dgraphMapView        SCOTCH_NAME_PUBLIC (SCOTCH_dgraphMapView)
 #define SCOTCH_dgraphOrderCblkDist  SCOTCH_NAME_PUBLIC (SCOTCH_dgraphOrderCblkDist)
 #define SCOTCH_dgraphOrderCompute   SCOTCH_NAME_PUBLIC (SCOTCH_dgraphOrderCompute)
