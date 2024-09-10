@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,9 +91,9 @@ static const char *         C_usageList[] = {
 /******************************/
 
 int
-main (argc, argv)
-int                 argc;
-char *              argv[];
+main (
+int                         argc,
+char *                      argv[])
 {
   SCOTCH_Arch               archdat;
   SCOTCH_ArchDom            domndat;
