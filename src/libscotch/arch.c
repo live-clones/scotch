@@ -196,13 +196,13 @@ FILE * const                stream)
 
   if (fscanf (stream, "%255s", name) != 1) {      /* Read architecture name */
     errorPrint ("archLoad: cannot load architecture type");
-    return     (1);
+    return (1);
   }
   name[255] = '\0';                               /* Set end of string */
 
   if ((clasptr = archClass (name)) == NULL) {     /* Get class from its name */
     errorPrint ("archLoad: invalid architecture type");
-    return     (1);
+    return (1);
   }
 
   archptr->clasptr = clasptr;                     /* Set architecture class                                                         */
@@ -430,9 +430,7 @@ const Arch * const          archptr,
 ArchDom * const             domnptr,
 FILE * const                stream)
 {
-  return (archptr->clasptr->domLoad (&archptr->data, /* Call proper routine */
-                                     &domnptr->data,
-                                     stream));
+  return (archptr->clasptr->domLoad (&archptr->data, &domnptr->data, stream)); /* Call proper routine */
 }
 
 /* This routine saves domain information
@@ -448,9 +446,7 @@ const Arch * const          archptr,
 const ArchDom * const       domnptr,
 FILE * const                stream)
 {
-  return (archptr->clasptr->domSave (&archptr->data, /* Call proper routine */
-                                     &domnptr->data,
-                                     stream));
+  return (archptr->clasptr->domSave (&archptr->data, &domnptr->data, stream)); /* Call proper routine */
 }
 
 /* This function tries to split a domain into
