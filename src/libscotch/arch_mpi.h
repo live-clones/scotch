@@ -1,4 +1,4 @@
-/* Copyright 2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -40,7 +40,7 @@
 /**                architecture functions.                 **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 28 may 2018     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -56,8 +56,10 @@
 
 /*+ The architecture class type. +*/
 
+typedef int (* ArchDomMpiFunc) (const ArchDummy * const, MPI_Datatype * const);
+
 typedef struct ArchMpiClass_ {
-  int                    (* domMpiType) ();       /*+ Terminal domain MPI type building function +*/
+  ArchDomMpiFunc            domMpiType;           /*+ Terminal domain MPI type building function +*/
 } ArchMpiClass;
 
 /*
@@ -71,6 +73,6 @@ int                         archDomMpiTypeAnum  (const int, MPI_Datatype * const
 **  The macro definitions.
 */
 
-#define ARCHMPICLASSBLOCK(n)        { arch##n##DomMpiType }
+#define ARCHMPICLASSBLOCK(n)        { (ArchDomMpiFunc) arch##n##DomMpiType }
 
 #define ARCHMPICLASSBLOCKNULL       { NULL }
