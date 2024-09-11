@@ -34,6 +34,7 @@
 /**   NAME       : parmetis_dgraph_part.c                  **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
+/**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module is the compatibility        **/
 /**                library for the ParMeTiS ordering       **/
@@ -44,7 +45,7 @@
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 18 may 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 11 aug 2024     **/
+/**                                 to   : 19 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -167,6 +168,8 @@ MPI_Comm *                  commptr)
   veloloctab = ((vwgt   != NULL) && ((*wgtflag & 2) != 0)) ? vwgt   : NULL;
   edloloctab = ((adjwgt != NULL) && ((*wgtflag & 1) != 0)) ? adjwgt : NULL;
 
+  *edgecut = 0;
+
   if (SCOTCH_dgraphBuild (&grafdat, baseval,
                           vertlocnbr, vertlocnbr, xadj, xadj + 1, veloloctab, NULL,
                           edgelocnbr, edgelocnbr, adjncy, NULL, edloloctab) == 0) {
@@ -179,7 +182,13 @@ MPI_Comm *                  commptr)
 
       if ((SCOTCH_archCmpltw (&archdat, *nparts, twintab) == 0) &&
           (SCOTCH_dgraphMapInit (&grafdat, &mappdat, &archdat, part) == 0)) {
+        SCOTCH_Num          cdsttab[256];         /* Communication load histogram */
+
         SCOTCH_dgraphMapCompute (&grafdat, &mappdat, &stradat);
+
+        SCOTCH_dgraphMapStat (&grafdat, &mappdat, NULL, NULL, NULL, NULL, NULL, NULL,
+                              NULL, NULL, NULL, NULL, cdsttab, NULL, NULL, NULL);
+        *edgecut = cdsttab[1];                    /* For mapping onto complete graphs, distance 1 is the cut */
 
         SCOTCH_dgraphMapExit (&grafdat, &mappdat);
       }
@@ -188,8 +197,6 @@ MPI_Comm *                  commptr)
     SCOTCH_stratExit (&stradat);
   }
   SCOTCH_dgraphExit (&grafdat);
-
-  *edgecut = 0;                                   /* TODO : compute real edge cut for people who might want it */
 
   free (twintab);
 
