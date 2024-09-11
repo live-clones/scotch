@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 04 aug 2014     **/
 /**                                 to   : 27 jan 2020     **/
 /**                # Version 7.0  : from : 05 may 2019     **/
-/**                                 to   : 22 mar 2023     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -93,7 +93,7 @@
 
 int
 hgraphOrderCp (
-const Hgraph * restrict const     finegrafptr,
+Hgraph * restrict const           finegrafptr,
 Order * restrict const            fineordeptr,
 const Gnum                        ordenum,        /*+ Zero-based ordering number +*/
 OrderCblk * restrict const        cblkptr,        /*+ Single column-block        +*/

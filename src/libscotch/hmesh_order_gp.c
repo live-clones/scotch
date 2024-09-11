@@ -48,7 +48,7 @@
 /**                # Version 5.0  : from : 12 sep 2007     **/
 /**                                 to   : 12 sep 2007     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,7 +78,7 @@
 
 int
 hmeshOrderGp (
-const Hmesh * restrict const              meshptr,
+Hmesh * restrict const                    meshptr,
 Order * restrict const                    ordeptr,
 const Gnum                                ordenum,
 OrderCblk * restrict const                cblkptr, /*+ Single column-block +*/
@@ -98,7 +98,7 @@ const HmeshOrderGpParam * restrict const  paraptr)
         &queue.qtab, (size_t) ((meshptr->vnohnnd - meshptr->m.baseval)   * sizeof (Gnum)),
         &vexxtax,    (size_t) ((meshptr->m.velmnbr + meshptr->m.vnodnbr) * sizeof (HmeshOrderGpVertex)), NULL) == NULL) {
     errorPrint ("hmeshOrderGp: out of memory");
-    return     (1);
+    return (1);
   }
   vexxtax -= meshptr->m.baseval;                /* Base vexxtab array */
   memSet (vexxtax + meshptr->m.velmbas, 0, meshptr->m.velmnbr                      * sizeof (HmeshOrderGpVertex)); /* Initialize pass numbers for */
@@ -187,7 +187,7 @@ const HmeshOrderGpParam * restrict const  paraptr)
         if ((ordeptr->peritab[ordeval] <   ordeptr->baseval) ||
             (ordeptr->peritab[ordeval] >= (ordeptr->baseval + ordeptr->vnodnbr))) {
           errorPrint ("hmeshOrderGp: invalid permutation index");
-          return     (1);
+          return (1);
         }
 #endif /* SCOTCH_DEBUG_ORDER2 */
         ordeval ++;
@@ -233,7 +233,7 @@ const HmeshOrderGpParam * restrict const  paraptr)
     if (ordeptr->peritab[ordeval] == ~0) {
       errorPrint ("hmeshOrderGp: internal error");
       memFree    (queue.qtab);                    /* Free group leader */
-      return     (1);
+      return (1);
     }
   }
 #endif /* SCOTCH_DEBUG_ORDER2 */

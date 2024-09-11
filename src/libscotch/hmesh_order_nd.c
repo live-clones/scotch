@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2018-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2018-2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 15 may 2018     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -125,7 +125,7 @@ const HmeshOrderNdSplit * const spltptr)
 
 int
 hmeshOrderNd (
-const Hmesh * restrict const      meshptr,
+Hmesh * restrict const            meshptr,
 Order * restrict const            ordeptr,
 const Gnum                        ordenum,
 OrderCblk * restrict const        cblkptr,

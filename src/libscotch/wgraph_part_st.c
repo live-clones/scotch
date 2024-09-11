@@ -1,4 +1,4 @@
-/* Copyright 2007-2011,2018,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2011,2018,2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 25 aug 2020     **/
 /**                                 to   : 26 nov 2021     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -103,12 +103,12 @@ static union {
 } wgraphpartdefaultrb = { { &stratdummy } };
 
 static StratMethodTab       wgraphpartstmethtab[] = { /* Graph overlap partitioning methods array */
-                              { WGRAPHPARTSTMETHES, "e",  wgraphPartEs, &wgraphpartdefaultes },
-                              { WGRAPHPARTSTMETHFM, "f",  wgraphPartFm, &wgraphpartdefaultfm },
-                              { WGRAPHPARTSTMETHML, "m",  wgraphPartMl, &wgraphpartdefaultml },
-                              { WGRAPHPARTSTMETHRB, "r",  wgraphPartRb, &wgraphpartdefaultrb },
-                              { WGRAPHPARTSTMETHZR, "z",  wgraphPartZr, NULL },
-                              { -1,                 NULL, NULL,         NULL } };
+                              { WGRAPHPARTSTMETHES, "e",  (StratMethodFunc) wgraphPartEs, &wgraphpartdefaultes },
+                              { WGRAPHPARTSTMETHFM, "f",  (StratMethodFunc) wgraphPartFm, &wgraphpartdefaultfm },
+                              { WGRAPHPARTSTMETHML, "m",  (StratMethodFunc) wgraphPartMl, &wgraphpartdefaultml },
+                              { WGRAPHPARTSTMETHRB, "r",  (StratMethodFunc) wgraphPartRb, &wgraphpartdefaultrb },
+                              { WGRAPHPARTSTMETHZR, "z",  (StratMethodFunc) wgraphPartZr, NULL },
+                              { -1,                 NULL, (StratMethodFunc) NULL,         NULL } };
 
 static StratParamTab        wgraphpartstparatab[] = { /* Method parameter list */
                               { WGRAPHPARTSTMETHES,  STRATPARAMSTRAT,  "strat",
@@ -188,7 +188,7 @@ StratTab                    wgraphpartststratab = { /* Strategy tables for overl
 int
 wgraphPartSt (
 Wgraph * restrict const      grafptr,            /*+ Overlap partitioning graph    +*/
-const Strat * restrict const strat)              /*+ Overlap partitioning strategy +*/
+const Strat * restrict const straptr)            /*+ Overlap partitioning strategy +*/
 {
   StratTest           val;                        /* Result of condition evaluation */
   WgraphStore         savetab[2];                 /* Results of the two strategies  */
@@ -198,33 +198,33 @@ const Strat * restrict const strat)              /*+ Overlap partitioning strate
 #ifdef SCOTCH_DEBUG_WGRAPH2
   if (sizeof (Gnum) != sizeof (INT)) {
     errorPrint ("wgraphPartSt: invalid type specification for parser variables");
-    return     (1);
+    return (1);
   }
   if ((sizeof (WgraphPartFmParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (WgraphPartMlParam) > sizeof (StratNodeMethodData)) ||
       (sizeof (WgraphPartRbParam) > sizeof (StratNodeMethodData))) {
     errorPrint ("wgraphPartSt: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
 #ifdef SCOTCH_DEBUG_WGRAPH1
-  if ((strat->tabl != &wgraphpartststratab) &&
-      (strat       != &stratdummy)) {
+  if ((straptr->tabl != &wgraphpartststratab) &&
+      (straptr       != &stratdummy)) {
     errorPrint ("wgraphPartSt: invalid parameter (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_WGRAPH1 */
 
   o = 0;
-  switch (strat->type) {
+  switch (straptr->type) {
     case STRATNODECONCAT :
-      o = wgraphPartSt (grafptr, strat->data.concat.strat[0]); /* Apply the first strategy      */
-      if (o == 0)                                 /* If it worked all right                     */
-        o |= wgraphPartSt (grafptr, strat->data.concat.strat[1]); /* Then apply second strategy */
+      o = wgraphPartSt (grafptr, straptr->data.concat.strat[0]); /* Apply the first strategy      */
+      if (o == 0)                                 /* If it worked all right                       */
+        o |= wgraphPartSt (grafptr, straptr->data.concat.strat[1]); /* Then apply second strategy */
       break;
     case STRATNODECOND :
-      o = stratTestEval (strat->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                  */
+      o = stratTestEval (straptr->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct                    */
 #ifdef SCOTCH_DEBUG_WGRAPH2
         if ((val.typetest != STRATTESTVAL) ||
             (val.typenode != STRATPARAMLOG)) {
@@ -233,11 +233,11 @@ const Strat * restrict const strat)              /*+ Overlap partitioning strate
           break;
         }
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                  */
-          o = wgraphPartSt (grafptr, strat->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false            */
-          if (strat->data.cond.strat[1] != NULL)  /* And if there is an else statement      */
-            o = wgraphPartSt (grafptr, strat->data.cond.strat[1]); /* Apply second strategy */
+        if (val.data.val.vallog == 1)             /* If expression is true                    */
+          o = wgraphPartSt (grafptr, straptr->data.cond.strat[0]); /* Apply first strategy    */
+        else {                                    /* Else if expression is false              */
+          if (straptr->data.cond.strat[1] != NULL)  /* And if there is an else statement      */
+            o = wgraphPartSt (grafptr, straptr->data.cond.strat[1]); /* Apply second strategy */
         }
       }
       break;
@@ -248,14 +248,14 @@ const Strat * restrict const strat)              /*+ Overlap partitioning strate
           ((wgraphStoreInit (grafptr, &savetab[1])) != 0)) {
         errorPrint ("wgraphPartSt: out of memory");
         wgraphStoreExit (&savetab[0]);
-        return          (1);
+        return (1);
       }
 
-      wgraphStoreSave   (grafptr, &savetab[1]);   /* Save initial partition              */
-      o = wgraphPartSt  (grafptr, strat->data.select.strat[0]); /* Apply first strategy  */
-      wgraphStoreSave   (grafptr, &savetab[0]);   /* Save its result                     */
-      wgraphStoreUpdt   (grafptr, &savetab[1]);   /* Restore initial partition           */
-      o2 = wgraphPartSt (grafptr, strat->data.select.strat[1]); /* Apply second strategy */
+      wgraphStoreSave   (grafptr, &savetab[1]);   /* Save initial partition                */
+      o = wgraphPartSt  (grafptr, straptr->data.select.strat[0]); /* Apply first strategy  */
+      wgraphStoreSave   (grafptr, &savetab[0]);   /* Save its result                       */
+      wgraphStoreUpdt   (grafptr, &savetab[1]);   /* Restore initial partition             */
+      o2 = wgraphPartSt (grafptr, straptr->data.select.strat[1]); /* Apply second strategy */
 
       if ((o == 0) || (o2 == 0)) {                /* If at least one method make a k-partition */
         if (savetab[0].fronload < grafptr->fronload) /* If first strategy is better            */
@@ -270,11 +270,11 @@ const Strat * restrict const strat)              /*+ Overlap partitioning strate
 #else /* SCOTCH_DEBUG_WGRAPH2 */
     default :
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
-      return (strat->tabl->methtab[strat->data.method.meth].func (grafptr, (void *) &strat->data.method.data));
+      return (straptr->tabl->methtab[straptr->data.method.meth].funcptr (grafptr, (void *) &straptr->data.method.data));
 #ifdef SCOTCH_DEBUG_WGRAPH2
     default :
       errorPrint ("wgraphPartSt: invalid parameter (2)");
-      return     (1);
+      return (1);
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
   }
   return (o);

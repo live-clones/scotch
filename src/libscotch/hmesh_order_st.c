@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 4.0  : from : 28 sep 2002     **/
 /**                                 to   : 05 jan 2005     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -113,15 +113,15 @@ static union {                                    /* Default parameters for nest
 } hmeshorderstdefaultnd = { { &stratdummy, &stratdummy, &stratdummy } };
 
 static StratMethodTab       hmeshorderstmethtab[] = { /* Mesh ordering methods array */
-                              { HMESHORDERSTMETHBL, "b",  hmeshOrderBl, &hmeshorderstdefaultbl },
-                              { HMESHORDERSTMETHCP, "c",  hmeshOrderCp, &hmeshorderstdefaultcp },
-                              { HMESHORDERSTMETHGP, "g",  hmeshOrderGp, &hmeshorderstdefaultgp },
-                              { HMESHORDERSTMETHGR, "v",  hmeshOrderGr, &hmeshorderstdefaultgr },
-                              { HMESHORDERSTMETHHD, "d",  hmeshOrderHd, &hmeshorderstdefaulthd },
-                              { HMESHORDERSTMETHHF, "f",  hmeshOrderHf, &hmeshorderstdefaulthf },
-                              { HMESHORDERSTMETHND, "n",  hmeshOrderNd, &hmeshorderstdefaultnd },
-                              { HMESHORDERSTMETHSI, "s",  hmeshOrderSi, NULL },
-                              { -1,                 NULL, NULL,         NULL } };
+                              { HMESHORDERSTMETHBL, "b",  (StratMethodFunc) hmeshOrderBl, &hmeshorderstdefaultbl },
+                              { HMESHORDERSTMETHCP, "c",  (StratMethodFunc) hmeshOrderCp, &hmeshorderstdefaultcp },
+                              { HMESHORDERSTMETHGP, "g",  (StratMethodFunc) hmeshOrderGp, &hmeshorderstdefaultgp },
+                              { HMESHORDERSTMETHGR, "v",  (StratMethodFunc) hmeshOrderGr, &hmeshorderstdefaultgr },
+                              { HMESHORDERSTMETHHD, "d",  (StratMethodFunc) hmeshOrderHd, &hmeshorderstdefaulthd },
+                              { HMESHORDERSTMETHHF, "f",  (StratMethodFunc) hmeshOrderHf, &hmeshorderstdefaulthf },
+                              { HMESHORDERSTMETHND, "n",  (StratMethodFunc) hmeshOrderNd, &hmeshorderstdefaultnd },
+                              { HMESHORDERSTMETHSI, "s",  (StratMethodFunc) hmeshOrderSi, NULL },
+                              { -1,                 NULL, (StratMethodFunc) NULL,         NULL } };
 
 static StratParamTab        hmeshorderstparatab[] = { /* The method parameter list */
                               { HMESHORDERSTMETHBL,   STRATPARAMSTRAT,  "strat",
@@ -240,11 +240,11 @@ StratTab                    hmeshorderststratab = { /* Strategy tables for mesh 
 
 int
 hmeshOrderSt (
-const Hmesh * restrict const    meshptr,          /*+ Submesh to which list apply +*/
+Hmesh * restrict const          meshptr,          /*+ Submesh to which list apply +*/
 Order * restrict const          ordeptr,          /*+ Ordering to complete        +*/
 const Gnum                      ordenum,          /*+ Index to start ordering at  +*/
 OrderCblk * restrict const      cblkptr,          /*+ Current column block        +*/
-const Strat * restrict const    strat)            /*+ Mesh ordering strategy      +*/
+const Strat * restrict const    straptr)          /*+ Mesh ordering strategy      +*/
 {
   StratTest           val;
   int                 o;
@@ -253,13 +253,13 @@ const Strat * restrict const    strat)            /*+ Mesh ordering strategy    
     return (0);
 
   o = 0;
-  switch (strat->type) {
+  switch (straptr->type) {
     case STRATNODECONCAT :
       errorPrint ("hmeshOrderSt: concatenation operator not implemented for ordering strategies");
-      return     (1);
+      return (1);
     case STRATNODECOND :
-      o = stratTestEval (strat->data.cond.test, &val, (void *) meshptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                  */
+      o = stratTestEval (straptr->data.cond.test, &val, (void *) meshptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct                    */
 #ifdef SCOTCH_DEBUG_HMESH2
         if ((val.typetest != STRATTESTVAL) &&
             (val.typenode != STRATPARAMLOG)) {
@@ -268,11 +268,11 @@ const Strat * restrict const    strat)            /*+ Mesh ordering strategy    
           break;
         }
 #endif /* SCOTCH_DEBUG_HMESH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                                             */
-          o = hmeshOrderSt (meshptr, ordeptr, ordenum, cblkptr, strat->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false                                       */
-          if (strat->data.cond.strat[1] != NULL)  /* And if there is an else statement                                 */
-            o = hmeshOrderSt (meshptr, ordeptr, ordenum, cblkptr, strat->data.cond.strat[1]); /* Apply second strategy */
+        if (val.data.val.vallog == 1)             /* If expression is true                                               */
+          o = hmeshOrderSt (meshptr, ordeptr, ordenum, cblkptr, straptr->data.cond.strat[0]); /* Apply first strategy    */
+        else {                                    /* Else if expression is false                                         */
+          if (straptr->data.cond.strat[1] != NULL)  /* And if there is an else statement                                 */
+            o = hmeshOrderSt (meshptr, ordeptr, ordenum, cblkptr, straptr->data.cond.strat[1]); /* Apply second strategy */
         }
       }
       break;
@@ -281,17 +281,17 @@ const Strat * restrict const    strat)            /*+ Mesh ordering strategy    
       break;
     case STRATNODESELECT :
       errorPrint ("hmeshOrderSt: selection operator not available for mesh ordering strategies");
-      return     (1);
+      return (1);
 #ifdef SCOTCH_DEBUG_HMESH2
     case STRATNODEMETHOD :
 #else /* SCOTCH_DEBUG_HMESH2 */
     default :
 #endif /* SCOTCH_DEBUG_HMESH2 */
-      return (strat->tabl->methtab[strat->data.method.meth].func (meshptr, ordeptr, ordenum, cblkptr, (void *) &strat->data.method.data));
+      return (straptr->tabl->methtab[straptr->data.method.meth].funcptr (meshptr, ordeptr, ordenum, cblkptr, (void *) &straptr->data.method.data));
 #ifdef SCOTCH_DEBUG_HMESH2
     default :
       errorPrint ("hmeshOrderSt: invalid parameter");
-      return     (1);
+      return (1);
 #endif /* SCOTCH_DEBUG_HMESH2 */
   }
   return (o);

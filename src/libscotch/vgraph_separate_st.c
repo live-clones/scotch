@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011-2014,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011-2014,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 09 mar 2011     **/
 /**                                 to   : 01 may 2014     **/
 /**                # Version 7.0  : from : 16 jan 2023     **/
-/**                                 to   : 16 jan 2023     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -119,15 +119,15 @@ static union {
 } vgraphseparatedefaultml = { { 100, 0.8L, GRAPHCOARHEM, &stratdummy, &stratdummy } };
 
 static StratMethodTab       vgraphseparatestmethtab[] = { /* Graph separation methods array */
-                              { VGRAPHSEPASTMETHBD, "b",  vgraphSeparateBd, &vgraphseparatedefaultbd },
-                              { VGRAPHSEPASTMETHES, "e",  vgraphSeparateEs, &vgraphseparatedefaultes },
-                              { VGRAPHSEPASTMETHFM, "f",  vgraphSeparateFm, &vgraphseparatedefaultfm },
-                              { VGRAPHSEPASTMETHGG, "h",  vgraphSeparateGg, &vgraphseparatedefaultgg },
-                              { VGRAPHSEPASTMETHGP, "g",  vgraphSeparateGp, &vgraphseparatedefaultgp },
-                              { VGRAPHSEPASTMETHML, "m",  vgraphSeparateMl, &vgraphseparatedefaultml },
-                              { VGRAPHSEPASTMETHVW, "v",  vgraphSeparateVw, NULL },
-                              { VGRAPHSEPASTMETHZR, "z",  vgraphSeparateZr, NULL },
-                              { -1,                 NULL, NULL,             NULL } };
+                              { VGRAPHSEPASTMETHBD, "b",  (StratMethodFunc) vgraphSeparateBd, &vgraphseparatedefaultbd },
+                              { VGRAPHSEPASTMETHES, "e",  (StratMethodFunc) vgraphSeparateEs, &vgraphseparatedefaultes },
+                              { VGRAPHSEPASTMETHFM, "f",  (StratMethodFunc) vgraphSeparateFm, &vgraphseparatedefaultfm },
+                              { VGRAPHSEPASTMETHGG, "h",  (StratMethodFunc) vgraphSeparateGg, &vgraphseparatedefaultgg },
+                              { VGRAPHSEPASTMETHGP, "g",  (StratMethodFunc) vgraphSeparateGp, &vgraphseparatedefaultgp },
+                              { VGRAPHSEPASTMETHML, "m",  (StratMethodFunc) vgraphSeparateMl, &vgraphseparatedefaultml },
+                              { VGRAPHSEPASTMETHVW, "v",  (StratMethodFunc) vgraphSeparateVw, NULL },
+                              { VGRAPHSEPASTMETHZR, "z",  (StratMethodFunc) vgraphSeparateZr, NULL },
+                              { -1,                 NULL, (StratMethodFunc) NULL,             NULL } };
 
 static StratParamTab        vgraphseparatestparatab[] = { /* Graph separation method parameter list */
                               { VGRAPHSEPASTMETHBD,  STRATPARAMSTRAT,  "bnd",
@@ -325,7 +325,7 @@ const Strat * restrict const  strat)              /*+ Separation strategy +*/
 #else /* SCOTCH_DEBUG_VGRAPH1 */
     default :
 #endif /* SCOTCH_DEBUG_VGRAPH1 */
-      return (strat->tabl->methtab[strat->data.method.meth].func (grafptr, (void *) &strat->data.method.data));
+      return (strat->tabl->methtab[strat->data.method.meth].funcptr (grafptr, (void *) &strat->data.method.data));
 #ifdef SCOTCH_DEBUG_VGRAPH1
     default :
       errorPrint ("vgraphSeparateSt: invalid parameter (2)");

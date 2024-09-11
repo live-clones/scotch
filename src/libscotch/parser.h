@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 30 sep 2014     **/
 /**                                 to   : 30 sep 2014     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,11 +106,13 @@ typedef enum StratTestType_ {
 
 /*+ Method characteristics. +*/
 
+typedef int (* StratMethodFunc) (void * const, ...);
+
 typedef struct StratMethodTab_ {
-  int                       meth;                 /*+ Method number in method table    +*/
-  char *                    name;                 /*+ Method name                      +*/
-  int                    (* func) ();             /*+ Pointer to bipartitioning method +*/
-  void *                    data;                 /*+ Pointer to default parameters    +*/
+  int                       meth;                 /*+ Method number in method table      +*/
+  char *                    name;                 /*+ Method name                        +*/
+  StratMethodFunc           funcptr;              /*+ Pointer to graph processing method +*/
+  void *                    data;                 /*+ Pointer to default parameters      +*/
 } StratMethodTab;
 
 /*+ Method parameter characteristics. +*/

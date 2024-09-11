@@ -71,8 +71,8 @@
 
 int
 hdgraphOrderSi (
-const Hdgraph * restrict const  grafptr,
-DorderCblk * restrict const     cblkptr)          /*+ Single column-block +*/
+Hdgraph * restrict const    grafptr,
+DorderCblk * restrict const cblkptr)              /*+ Single column-block +*/
 {
   Gnum * restrict     periloctab;
   Gnum * restrict     periloctax;
