@@ -187,10 +187,10 @@ StratTab                    wgraphpartststratab = { /* Strategy tables for overl
 
 int
 wgraphPartSt (
-Wgraph * restrict const      grafptr,            /*+ Overlap partitioning graph    +*/
-const Strat * restrict const straptr)            /*+ Overlap partitioning strategy +*/
+Wgraph * restrict const      grafptr,             /*+ Overlap partitioning graph    +*/
+const Strat * restrict const straptr)             /*+ Overlap partitioning strategy +*/
 {
-  StratTest           val;                        /* Result of condition evaluation */
+  StratTest           testdat;                    /* Result of condition evaluation */
   WgraphStore         savetab[2];                 /* Results of the two strategies  */
   int                 o;
   int                 o2;
@@ -208,36 +208,36 @@ const Strat * restrict const straptr)            /*+ Overlap partitioning strate
   }
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
 #ifdef SCOTCH_DEBUG_WGRAPH1
-  if ((straptr->tabl != &wgraphpartststratab) &&
-      (straptr       != &stratdummy)) {
+  if ((straptr->tablptr != &wgraphpartststratab) &&
+      (straptr          != &stratdummy)) {
     errorPrint ("wgraphPartSt: invalid parameter (1)");
     return (1);
   }
 #endif /* SCOTCH_DEBUG_WGRAPH1 */
 
   o = 0;
-  switch (straptr->type) {
+  switch (straptr->typeval) {
     case STRATNODECONCAT :
-      o = wgraphPartSt (grafptr, straptr->data.concat.strat[0]); /* Apply the first strategy      */
-      if (o == 0)                                 /* If it worked all right                       */
-        o |= wgraphPartSt (grafptr, straptr->data.concat.strat[1]); /* Then apply second strategy */
+      o = wgraphPartSt (grafptr, straptr->data.concdat.stratab[0]); /* Apply the first strategy      */
+      if (o == 0)                                 /* If it worked all right                          */
+        o |= wgraphPartSt (grafptr, straptr->data.concdat.stratab[1]); /* Then apply second strategy */
       break;
     case STRATNODECOND :
-      o = stratTestEval (straptr->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                    */
+      o = stratTestEval (straptr->data.conddat.testptr, &testdat, (void *) grafptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct */
 #ifdef SCOTCH_DEBUG_WGRAPH2
-        if ((val.typetest != STRATTESTVAL) ||
-            (val.typenode != STRATPARAMLOG)) {
+        if ((testdat.testval != STRATTESTVAL) ||
+            (testdat.nodeval != STRATPARAMLOG)) {
           errorPrint ("wgraphPartSt: invalid test result");
           o = 1;
           break;
         }
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                    */
-          o = wgraphPartSt (grafptr, straptr->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false              */
-          if (straptr->data.cond.strat[1] != NULL)  /* And if there is an else statement      */
-            o = wgraphPartSt (grafptr, straptr->data.cond.strat[1]); /* Apply second strategy */
+        if (testdat.data.val.vallog == 1)         /* If expression is true                         */
+          o = wgraphPartSt (grafptr, straptr->data.conddat.stratab[0]); /* Apply first strategy    */
+        else {                                    /* Else if expression is false                   */
+          if (straptr->data.conddat.stratab[1] != NULL)  /* And if there is an else statement      */
+            o = wgraphPartSt (grafptr, straptr->data.conddat.stratab[1]); /* Apply second strategy */
         }
       }
       break;
@@ -246,16 +246,16 @@ const Strat * restrict const straptr)            /*+ Overlap partitioning strate
     case STRATNODESELECT :
       if (((wgraphStoreInit (grafptr, &savetab[0])) != 0) || /* Allocate save areas */
           ((wgraphStoreInit (grafptr, &savetab[1])) != 0)) {
-        errorPrint ("wgraphPartSt: out of memory");
+        errorPrint      ("wgraphPartSt: out of memory");
         wgraphStoreExit (&savetab[0]);
         return (1);
       }
 
-      wgraphStoreSave   (grafptr, &savetab[1]);   /* Save initial partition                */
-      o = wgraphPartSt  (grafptr, straptr->data.select.strat[0]); /* Apply first strategy  */
-      wgraphStoreSave   (grafptr, &savetab[0]);   /* Save its result                       */
-      wgraphStoreUpdt   (grafptr, &savetab[1]);   /* Restore initial partition             */
-      o2 = wgraphPartSt (grafptr, straptr->data.select.strat[1]); /* Apply second strategy */
+      wgraphStoreSave   (grafptr, &savetab[1]);   /* Save initial partition                   */
+      o = wgraphPartSt  (grafptr, straptr->data.seledat.stratab[0]); /* Apply first strategy  */
+      wgraphStoreSave   (grafptr, &savetab[0]);   /* Save its result                          */
+      wgraphStoreUpdt   (grafptr, &savetab[1]);   /* Restore initial partition                */
+      o2 = wgraphPartSt (grafptr, straptr->data.seledat.stratab[1]); /* Apply second strategy */
 
       if ((o == 0) || (o2 == 0)) {                /* If at least one method make a k-partition */
         if (savetab[0].fronload < grafptr->fronload) /* If first strategy is better            */
@@ -270,7 +270,7 @@ const Strat * restrict const straptr)            /*+ Overlap partitioning strate
 #else /* SCOTCH_DEBUG_WGRAPH2 */
     default :
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
-      return (straptr->tabl->methtab[straptr->data.method.meth].funcptr (grafptr, (void *) &straptr->data.method.data));
+      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, (void *) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_WGRAPH2
     default :
       errorPrint ("wgraphPartSt: invalid parameter (2)");

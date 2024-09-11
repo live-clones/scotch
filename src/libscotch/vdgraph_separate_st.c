@@ -234,7 +234,7 @@ vdgraphSeparateSt (
 Vdgraph * restrict const      grafptr,            /*+ Distributed separation graph +*/
 const Strat * restrict const  straptr)            /*+ Separation strategy          +*/
 {
-  StratTest           val;
+  StratTest           testdat;
   VdgraphStore        savetab[2];                 /* Results of the two strategies */
   Gnum                compglbload2;               /* Saved global separator load   */
   int                 o;
@@ -253,42 +253,42 @@ const Strat * restrict const  straptr)            /*+ Separation strategy       
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
 #ifdef SCOTCH_DEBUG_VDGRAPH1
-  if ((straptr->tabl != &vdgraphseparateststratab) &&
-      (straptr       != &stratdummy)) {
+  if ((straptr->tablptr != &vdgraphseparateststratab) &&
+      (straptr          != &stratdummy)) {
     errorPrint ("vdgraphSeparateSt: invalid parameter (1)");
     return (1);
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
 
   o = 0;
-  switch (straptr->type) {
+  switch (straptr->typeval) {
     case STRATNODECONCAT :
-      o = vdgraphSeparateSt (grafptr, straptr->data.concat.strat[0]); /* Apply first strategy          */
-      if (o == 0)                                 /* If it worked all right                            */
-        o |= vdgraphSeparateSt (grafptr, straptr->data.concat.strat[1]); /* Then apply second strategy */
+      o = vdgraphSeparateSt (grafptr, straptr->data.concdat.stratab[0]); /* Apply first strategy          */
+      if (o == 0)                                 /* If it worked all right                               */
+        o |= vdgraphSeparateSt (grafptr, straptr->data.concdat.stratab[1]); /* Then apply second strategy */
       break;
     case STRATNODECOND :
-      o = stratTestEval (straptr->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                    */
+      o = stratTestEval (straptr->data.conddat.testptr, &testdat, (void *) grafptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct */
 #ifdef SCOTCH_DEBUG_VDGRAPH2
-        if ((val.typetest != STRATTESTVAL) ||
-            (val.typenode != STRATPARAMLOG)) {
+        if ((testdat.testval != STRATTESTVAL) ||
+            (testdat.nodeval != STRATPARAMLOG)) {
           errorPrint ("vdgraphSeparateSt: invalid test result");
           o = 1;
           break;
         }
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                         */
-          o = vdgraphSeparateSt (grafptr, straptr->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false                   */
-          if (straptr->data.cond.strat[1] != NULL)  /* And if there is an else statement           */
-            o = vdgraphSeparateSt (grafptr, straptr->data.cond.strat[1]); /* Apply second strategy */
+        if (testdat.data.val.vallog == 1)         /* If expression is true */
+          o = vdgraphSeparateSt (grafptr, straptr->data.conddat.stratab[0]); /* Apply first strategy    */
+        else {                                    /* Else if expression is false                        */
+          if (straptr->data.conddat.stratab[1] != NULL)  /* And if there is an else statement           */
+            o = vdgraphSeparateSt (grafptr, straptr->data.conddat.stratab[1]); /* Apply second strategy */
         }
       }
       break;
     case STRATNODEEMPTY :
       break;
-    case STRATNODESELECT :                        /* TODO: Can be multithreaded!     */
+    case STRATNODESELECT :
       if (((vdgraphStoreInit (grafptr, &savetab[0])) != 0) || /* Allocate save areas */
           ((vdgraphStoreInit (grafptr, &savetab[1])) != 0)) {
         errorPrint       ("vdgraphSeparateSt: out of memory");
@@ -296,17 +296,17 @@ const Strat * restrict const  straptr)            /*+ Separation strategy       
         return (1);
       }
 
-      vdgraphStoreSave (grafptr, &savetab[1]);    /* Save initial bipartition                                 */
-      if (vdgraphSeparateSt (grafptr, straptr->data.select.strat[0]) != 0) { /* If first strategy didn't work */
-        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition                              */
-        vdgraphStoreSave (grafptr, &savetab[0]);  /* Save it as result                                        */
+      vdgraphStoreSave (grafptr, &savetab[1]);    /* Save initial bipartition */
+      if (vdgraphSeparateSt (grafptr, straptr->data.seledat.stratab[0]) != 0) { /* If first strategy didn't work */
+        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition                                 */
+        vdgraphStoreSave (grafptr, &savetab[0]);  /* Save it as result                                           */
       }
       else {                                      /* First strategy worked       */
         vdgraphStoreSave (grafptr, &savetab[0]);  /* Save its result             */
         vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition */
       }
-      if (vdgraphSeparateSt (grafptr, straptr->data.select.strat[1]) != 0) /* If second strategy didn't work */
-        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition as its result               */
+      if (vdgraphSeparateSt (grafptr, straptr->data.seledat.stratab[1]) != 0) /* If second strategy didn't work */
+        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition as its result                  */
 
       compglbload2 = grafptr->s.veloglbsum - savetab[0].compglbload[0] - savetab[0].compglbload[1]; /* Compute saved separator load */
       if ( (compglbload2 <  grafptr->compglbload[2]) || /* If first strategy is better */
@@ -326,7 +326,7 @@ const Strat * restrict const  straptr)            /*+ Separation strategy       
       proccommold = grafptr->s.proccomm;          /* Create new communicator to isolate method communications */
       MPI_Comm_dup (proccommold, &grafptr->s.proccomm);
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
-      o = straptr->tabl->methtab[straptr->data.method.meth].funcptr (grafptr, (void *) &straptr->data.method.data);
+      o = straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, (void *) &straptr->data.methdat.datadat);
 #ifdef SCOTCH_DEBUG_VDGRAPH2
       MPI_Comm_free (&grafptr->s.proccomm);       /* Restore old communicator */
       grafptr->s.proccomm = proccommold;

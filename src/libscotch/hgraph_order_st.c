@@ -266,33 +266,33 @@ const Gnum                      ordenum,          /*+ Index to start ordering at
 OrderCblk * restrict const      cblkptr,          /*+ Current column block       +*/
 const Strat * restrict const    straptr)          /*+ Graph ordering strategy    +*/
 {
-  StratTest           val;
+  StratTest           testdat;
   int                 o;
 
   if (grafptr->vnohnbr == 0)                      /* Return immediately if nothing to do */
     return (0);
 
   o = 0;
-  switch (straptr->type) {
+  switch (straptr->typeval) {
     case STRATNODECONCAT :
       errorPrint ("hgraphOrderSt: concatenation operator not available for graph ordering strategies");
       return (1);
     case STRATNODECOND :
-      o = stratTestEval (straptr->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                    */
+      o = stratTestEval (straptr->data.conddat.testptr, &testdat, (void *) grafptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct */
 #ifdef SCOTCH_DEBUG_HGRAPH2
-        if ((val.typetest != STRATTESTVAL) &&
-            (val.typenode != STRATPARAMLOG)) {
+        if ((testdat.testval != STRATTESTVAL) &&
+            (testdat.nodeval != STRATPARAMLOG)) {
           errorPrint ("hgraphOrderSt: invalid test result");
           o = 1;
           break;
         }
 #endif /* SCOTCH_DEBUG_HGRAPH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                                                */
-          o = hgraphOrderSt (grafptr, ordeptr, ordenum, cblkptr, straptr->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false                                          */
-          if (straptr->data.cond.strat[1] != NULL)  /* And if there is an else statement                                  */
-            o = hgraphOrderSt (grafptr, ordeptr, ordenum, cblkptr, straptr->data.cond.strat[1]); /* Apply second strategy */
+        if (testdat.data.val.vallog == 1)         /* If expression is true */
+          o = hgraphOrderSt (grafptr, ordeptr, ordenum, cblkptr, straptr->data.conddat.stratab[0]); /* Apply first strategy */
+        else {                                    /* Else if expression is false             */
+          if (straptr->data.conddat.stratab[1] != NULL) /* And if there is an else statement */
+            o = hgraphOrderSt (grafptr, ordeptr, ordenum, cblkptr, straptr->data.conddat.stratab[1]); /* Apply second strategy */
         }
       }
       break;
@@ -307,7 +307,7 @@ const Strat * restrict const    straptr)          /*+ Graph ordering strategy   
 #else /* SCOTCH_DEBUG_HGRAPH2 */
     default :
 #endif /* SCOTCH_DEBUG_HGRAPH2 */
-      return (straptr->tabl->methtab[straptr->data.method.meth].funcptr (grafptr, ordeptr, ordenum, cblkptr, (void *) &straptr->data.method.data));
+      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, ordeptr, ordenum, cblkptr, (void *) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_HGRAPH2
     default :
       errorPrint ("hgraphOrderSt: invalid parameter");

@@ -126,7 +126,7 @@ Kdgraph * restrict const      grafptr,            /*+ Mapping graph    +*/
 Kdmapping * restrict const    mappptr,            /*+ Dynamic mapping  +*/
 const Strat * restrict const  straptr)            /*+ Mapping strategy +*/
 {
-  StratTest           val;
+  StratTest           testdat;
   int                 o;
 
 #ifdef SCOTCH_DEBUG_KDGRAPH2
@@ -140,36 +140,36 @@ const Strat * restrict const  straptr)            /*+ Mapping strategy +*/
   }
 #endif /* SCOTCH_DEBUG_KDGRAPH2 */
 #ifdef SCOTCH_DEBUG_KDGRAPH1
-  if ((straptr->tabl != &kdgraphmapststratab) &&
-      (straptr       != &stratdummy)) {
+  if ((straptr->tablptr != &kdgraphmapststratab) &&
+      (straptr          != &stratdummy)) {
     errorPrint ("kdgraphMapSt: invalid parameter (1)");
     return (1);
   }
 #endif /* SCOTCH_DEBUG_KDGRAPH1 */
 
   o = 0;
-  switch (straptr->type) {
+  switch (straptr->typeval) {
     case STRATNODECONCAT :
-      o = kdgraphMapSt (grafptr, mappptr, straptr->data.concat.strat[0]); /* Apply first strategy          */
-      if (o == 0)                                 /* If it worked all right                                */
-        o |= kdgraphMapSt (grafptr, mappptr, straptr->data.concat.strat[1]); /* Then apply second strategy */
+      o = kdgraphMapSt (grafptr, mappptr, straptr->data.concdat.stratab[0]); /* Apply first strategy          */
+      if (o == 0)                                 /* If it worked all right                                   */
+        o |= kdgraphMapSt (grafptr, mappptr, straptr->data.concdat.stratab[1]); /* Then apply second strategy */
       break;
     case STRATNODECOND :
-      o = stratTestEval (straptr->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                    */
+      o = stratTestEval (straptr->data.conddat.testptr, &testdat, (void *) grafptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct */
 #ifdef SCOTCH_DEBUG_KDGRAPH2
-        if ((val.typetest != STRATTESTVAL) ||
-            (val.typenode != STRATPARAMLOG)) {
+        if ((testdat.testval != STRATTESTVAL) ||
+            (testdat.nodeval != STRATPARAMLOG)) {
           errorPrint ("kdgraphMapSt: invalid test result");
           o = 1;
           break;
         }
 #endif /* SCOTCH_DEBUG_KDGRAPH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                             */
-          o = kdgraphMapSt (grafptr, mappptr, straptr->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false                       */
-          if (straptr->data.cond.strat[1] != NULL)  /* And if there is an else statement               */
-            o = kdgraphMapSt (grafptr, mappptr, straptr->data.cond.strat[1]); /* Apply second strategy */
+        if (testdat.data.val.vallog == 1)         /* If expression is true */
+          o = kdgraphMapSt (grafptr, mappptr, straptr->data.conddat.stratab[0]); /* Apply first strategy    */
+        else {                                    /* Else if expression is false                            */
+          if (straptr->data.conddat.stratab[1] != NULL)  /* And if there is an else statement               */
+            o = kdgraphMapSt (grafptr, mappptr, straptr->data.conddat.stratab[1]); /* Apply second strategy */
         }
       }
       break;
@@ -183,7 +183,7 @@ const Strat * restrict const  straptr)            /*+ Mapping strategy +*/
 #else  /* SCOTCH_DEBUG_KDGRAPH1 */
     default :
 #endif /* SCOTCH_DEBUG_KDGRAPH1 */
-      return (straptr->tabl->methtab[straptr->data.method.meth].funcptr (grafptr, mappptr, (void *) &straptr->data.method.data));
+      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, mappptr, (void *) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_KDGRAPH1
     default :
       errorPrint ("kdgraphMapSt: invalid parameter (2)");

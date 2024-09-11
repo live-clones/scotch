@@ -1,4 +1,4 @@
-/* Copyright 2010,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 02 dec 2021     **/
 /**                                 to   : 20 dec 2021     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -100,7 +100,7 @@ SCOTCH_Num * const          parttab)              /*+ Partition array       +*/
     SCOTCH_stratGraphPartOvlBuild (straptr, SCOTCH_STRATQUALITY, (Gnum) partnbr, (double) 0.05);
 
   partstraptr = *((Strat **) straptr);
-  if (partstraptr->tabl != &wgraphpartststratab) {
+  if (partstraptr->tablptr != &wgraphpartststratab) {
     errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": not a graph partitioning with overlap strategy");
     goto abort;
   }

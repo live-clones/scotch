@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2016,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2016,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.0  : from : 16 mar 2016     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 7.0  : from : 21 aug 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -157,7 +157,7 @@ const SCOTCH_Strat * const  stratptr)             /*+ Bipartitoning strategy    
   if (*((Strat **) stratptr) == NULL)             /* Set default mapping strategy if necessary */
     *((Strat **) stratptr) = stratInit (&bgraphbipartststratab, "(m{vert=50,low=h{pass=10},asc=f{move=100,bal=0.1}}f{move=100,bal=0.05})(/((load0=load)|(load0=0))?x;)");
   bipstratptr = *((Strat **) stratptr);
-  if (bipstratptr->tabl != &bgraphbipartststratab) {
+  if (bipstratptr->tablptr != &bgraphbipartststratab) {
     errorPrint (STRINGIFY (SCOTCH_archBuild0) ": not a bipartitioning strategy");
     return (1);
   }

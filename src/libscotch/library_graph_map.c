@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 19 jul 2024     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -219,7 +219,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 
   mapstraptr = *((Strat **) straptr);
 #ifdef SCOTCH_DEBUG_LIBRARY1
-  if (mapstraptr->tabl != &kgraphmapststratab) {
+  if (mapstraptr->tablptr != &kgraphmapststratab) {
     errorPrint ("graphMapCompute2: not a graph mapping strategy");
     goto abort;
   }

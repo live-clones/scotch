@@ -254,7 +254,7 @@ bgraphBipartSt (
 Bgraph * restrict const       grafptr,            /*+ Active graph to bipartition +*/
 const Strat * restrict const  straptr)            /*+ Bipartitioning strategy     +*/
 {
-  StratTest           val;                        /* Result of condition evaluation */
+  StratTest           testdat;                    /* Result of condition evaluation */
   BgraphStore         savetab[2];                 /* Results of the two strategies  */
   int                 o;
   int                 o2;
@@ -272,35 +272,35 @@ const Strat * restrict const  straptr)            /*+ Bipartitioning strategy   
   }
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
 #ifdef SCOTCH_DEBUG_BGRAPH1
-  if (straptr->tabl != &bgraphbipartststratab) {
+  if (straptr->tablptr != &bgraphbipartststratab) {
     errorPrint ("bgraphBipartSt: invalid parameter (1)");
     return (1);
   }
 #endif /* SCOTCH_DEBUG_BGRAPH1 */
 
   o = 0;
-  switch (straptr->type) {
+  switch (straptr->typeval) {
     case STRATNODECONCAT :
-      o = bgraphBipartSt (grafptr, straptr->data.concat.strat[0]); /* Apply the first strategy      */
-      if (o == 0)                                 /* If it worked all right                         */
-        o |= bgraphBipartSt (grafptr, straptr->data.concat.strat[1]); /* Then apply second strategy */
+      o = bgraphBipartSt (grafptr, straptr->data.concdat.stratab[0]); /* Apply the first strategy      */
+      if (o == 0)                                 /* If it worked all right                            */
+        o |= bgraphBipartSt (grafptr, straptr->data.concdat.stratab[1]); /* Then apply second strategy */
       break;
     case STRATNODECOND :
-      o = stratTestEval (straptr->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                    */
+      o = stratTestEval (straptr->data.conddat.testptr, &testdat, (void *) grafptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct */
 #ifdef SCOTCH_DEBUG_VGRAPH2
-        if ((val.typetest != STRATTESTVAL) ||
-            (val.typenode != STRATPARAMLOG)) {
+        if ((testdat.testval != STRATTESTVAL) ||
+            (testdat.nodeval != STRATPARAMLOG)) {
           errorPrint ("bgraphBipartSt: invalid test result");
           o = 1;
           break;
         }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                      */
-          o = bgraphBipartSt (grafptr, straptr->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false                */
-          if (straptr->data.cond.strat[1] != NULL)  /* And if there is an else statement        */
-            o = bgraphBipartSt (grafptr, straptr->data.cond.strat[1]); /* Apply second strategy */
+        if (testdat.data.val.vallog == 1)         /* If expression is true                           */
+          o = bgraphBipartSt (grafptr, straptr->data.conddat.stratab[0]); /* Apply first strategy    */
+        else {                                    /* Else if expression is false                     */
+          if (straptr->data.conddat.stratab[1] != NULL)  /* And if there is an else statement        */
+            o = bgraphBipartSt (grafptr, straptr->data.conddat.stratab[1]); /* Apply second strategy */
         }
       }
       break;
@@ -314,11 +314,11 @@ const Strat * restrict const  straptr)            /*+ Bipartitioning strategy   
         return (1);
       }
 
-      bgraphStoreSave     (grafptr, &savetab[1]); /* Save initial bipartition                */
-      o = bgraphBipartSt  (grafptr, straptr->data.select.strat[0]); /* Apply first strategy  */
-      bgraphStoreSave     (grafptr, &savetab[0]); /* Save its result                         */
-      bgraphStoreUpdt     (grafptr, &savetab[1]); /* Restore initial bipartition             */
-      o2 = bgraphBipartSt (grafptr, straptr->data.select.strat[1]); /* Apply second strategy */
+      bgraphStoreSave     (grafptr, &savetab[1]); /* Save initial bipartition                   */
+      o = bgraphBipartSt  (grafptr, straptr->data.seledat.stratab[0]); /* Apply first strategy  */
+      bgraphStoreSave     (grafptr, &savetab[0]); /* Save its result                            */
+      bgraphStoreUpdt     (grafptr, &savetab[1]); /* Restore initial bipartition                */
+      o2 = bgraphBipartSt (grafptr, straptr->data.seledat.stratab[1]); /* Apply second strategy */
 
       if ((o == 0) || (o2 == 0)) {                /* If at least one method did bipartition */
         Gnum                compload0;
@@ -364,7 +364,7 @@ const Strat * restrict const  straptr)            /*+ Bipartitioning strategy   
 #else /* SCOTCH_DEBUG_BGRAPH2 */
     default :
 #endif /* SCOTCH_DEBUG_BGRAPH2 */
-      return (straptr->tabl->methtab[straptr->data.method.meth].funcptr (grafptr, (void *) &straptr->data.method.data));
+      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, (void *) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_BGRAPH2
     default :
       errorPrint ("bgraphBipartSt: invalid parameter (2)");

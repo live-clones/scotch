@@ -235,9 +235,9 @@ StratTab                    vgraphseparateststratab = { /* Strategy tables for v
 int
 vgraphSeparateSt (
 Vgraph * restrict const       grafptr,            /*+ Separation graph    +*/
-const Strat * restrict const  strat)              /*+ Separation strategy +*/
+const Strat * restrict const  straptr)            /*+ Separation strategy +*/
 {
-  StratTest           val;
+  StratTest           testdat;
   VgraphStore         savetab[2];                 /* Results of the two strategies */
   Gnum                compload2;                  /* Saved separator load          */
   int                 o;
@@ -256,36 +256,36 @@ const Strat * restrict const  strat)              /*+ Separation strategy +*/
   }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
 #ifdef SCOTCH_DEBUG_VGRAPH1
-  if ((strat->tabl != &vgraphseparateststratab) &&
-      (strat       != &stratdummy)) {
+  if ((straptr->tablptr != &vgraphseparateststratab) &&
+      (straptr          != &stratdummy)) {
     errorPrint ("vgraphSeparateSt: invalid parameter (1)");
     return (1);
   }
 #endif /* SCOTCH_DEBUG_VGRAPH1 */
 
   o = 0;
-  switch (strat->type) {
+  switch (straptr->typeval) {
     case STRATNODECONCAT :
-      o = vgraphSeparateSt (grafptr, strat->data.concat.strat[0]); /* Apply first strategy          */
-      if (o == 0)                                 /* If it worked all right                         */
-        o |= vgraphSeparateSt (grafptr, strat->data.concat.strat[1]); /* Then apply second strategy */
+      o = vgraphSeparateSt (grafptr, straptr->data.concdat.stratab[0]); /* Apply first strategy          */
+      if (o == 0)                                 /* If it worked all right                              */
+        o |= vgraphSeparateSt (grafptr, straptr->data.concdat.stratab[1]); /* Then apply second strategy */
       break;
     case STRATNODECOND :
-      o = stratTestEval (strat->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                  */
+      o = stratTestEval (straptr->data.conddat.testptr, &testdat, (void *) grafptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct */
 #ifdef SCOTCH_DEBUG_VGRAPH2
-        if ((val.typetest != STRATTESTVAL) ||
-            (val.typenode != STRATPARAMLOG)) {
+        if ((testdat.testval != STRATTESTVAL) ||
+            (testdat.nodeval != STRATPARAMLOG)) {
           errorPrint ("vgraphSeparateSt: invalid test result");
           o = 1;
           break;
         }
 #endif /* SCOTCH_DEBUG_VGRAPH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                      */
-          o = vgraphSeparateSt (grafptr, strat->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false                */
-          if (strat->data.cond.strat[1] != NULL)  /* And if there is an else statement          */
-            o = vgraphSeparateSt (grafptr, strat->data.cond.strat[1]); /* Apply second strategy */
+        if (testdat.data.val.vallog == 1)         /* If expression is true                             */
+          o = vgraphSeparateSt (grafptr, straptr->data.conddat.stratab[0]); /* Apply first strategy    */
+        else {                                    /* Else if expression is false                       */
+          if (straptr->data.conddat.stratab[1] != NULL)  /* And if there is an else statement          */
+            o = vgraphSeparateSt (grafptr, straptr->data.conddat.stratab[1]); /* Apply second strategy */
         }
       }
       break;
@@ -299,17 +299,17 @@ const Strat * restrict const  strat)              /*+ Separation strategy +*/
         return (1);
       }
 
-      vgraphStoreSave (grafptr, &savetab[1]);     /* Save initial bipartition                              */
-      if (vgraphSeparateSt (grafptr, strat->data.select.strat[0]) != 0) { /* If first strategy didn't work */
-        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition                           */
-        vgraphStoreSave (grafptr, &savetab[0]);   /* Save it as result                                     */
+      vgraphStoreSave (grafptr, &savetab[1]);     /* Save initial bipartition                                   */
+      if (vgraphSeparateSt (grafptr, straptr->data.seledat.stratab[0]) != 0) { /* If first strategy didn't work */
+        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition                                */
+        vgraphStoreSave (grafptr, &savetab[0]);   /* Save it as result                                          */
       }
       else {                                      /* First strategy worked       */
         vgraphStoreSave (grafptr, &savetab[0]);   /* Save its result             */
         vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition */
       }
-      if (vgraphSeparateSt (grafptr, strat->data.select.strat[1]) != 0) /* If second strategy didn't work */
-        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition as its result            */
+      if (vgraphSeparateSt (grafptr, straptr->data.seledat.stratab[1]) != 0) /* If second strategy didn't work */
+        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition as its result                 */
 
       compload2 = grafptr->s.velosum - savetab[0].compload[0] - savetab[0].compload[1]; /* Compute saved separator load */
       if ( (compload2 <  grafptr->compload[2]) || /* If first strategy is better */
@@ -325,7 +325,7 @@ const Strat * restrict const  strat)              /*+ Separation strategy +*/
 #else /* SCOTCH_DEBUG_VGRAPH1 */
     default :
 #endif /* SCOTCH_DEBUG_VGRAPH1 */
-      return (strat->tabl->methtab[strat->data.method.meth].funcptr (grafptr, (void *) &strat->data.method.data));
+      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, (void *) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_VGRAPH1
     default :
       errorPrint ("vgraphSeparateSt: invalid parameter (2)");
