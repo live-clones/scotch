@@ -67,6 +67,33 @@
 /*                           */
 /*****************************/
 
+/* This routine returns the number of threads
+** of the given comtext.
+** It returns:
+** - (int)  : in all cases.
+*/
+
+int
+threadContextNbr (
+ThreadContext * const       contptr)
+{
+  return (contptr->thrdnbr);
+}
+
+/* This routine returns the pointer to the
+** parameter of the parallel routine being
+** currently executed in the given context.
+** It returns:
+** - (void *)  : in all cases.
+*/
+
+void *
+threadContextParam (
+ThreadContext * const       contptr)
+{
+  return ((void *) contptr->paraptr);
+}
+
 #ifdef COMMON_PTHREAD
 
 /* This routine initializes a thread context
@@ -233,37 +260,6 @@ ThreadContext * const       contptr)
 
   return (o);
 }
-
-#endif /* COMMON_PTHREAD */
-
-/* This routine returns the number of threads
-** of the given comtext.
-** It returns:
-** - (int)  : in all cases.
-*/
-
-int
-threadContextNbr (
-ThreadContext * const       contptr)
-{
-  return (contptr->thrdnbr);
-}
-
-/* This routine returns the pointer to the
-** parameter of the parallel routine being
-** currently executed in the given context.
-** It returns:
-** - (void *)  : in all cases.
-*/
-
-void *
-threadContextParam (
-ThreadContext * const       contptr)
-{
-  return ((void *) contptr->paraptr);
-}
-
-#ifdef COMMON_PTHREAD
 
 /* This routine performs a specific barrier on
 ** the given thread context. It is called at the
@@ -806,8 +802,6 @@ const int                   corenum)
   return (0);
 }
 
-#endif /* COMMON_PTHREAD */
-
 /* This routine returns the number of available threads
 ** to run the process: either the number of threads assigned
 ** to the process by the environment (e.g., an MPI launcher)
@@ -895,3 +889,5 @@ ThreadContext * const       contptr)
   pthread_setaffinity_np (pthread_self (), sizeof (cpu_set_t), &contptr->savedat.cpusdat);
 #endif /* COMMON_PTHREAD_AFFINITY_LINUX */
 }
+
+#endif /* COMMON_PTHREAD */
