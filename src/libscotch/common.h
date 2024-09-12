@@ -140,6 +140,9 @@
 #if (defined HAVE_SYS_SYSCTL_H)
 #include            <sys/sysctl.h>
 #endif /* (defined HAVE_SYS_SYSCTL_H) */
+#ifndef HAVE_NOT_SYS_WAIT_H
+#include            <sys/wait.h>                  /* For waitpid () */
+#endif /* HAVE_NOT_SYS_WAIT_H */
 
 #ifdef COMMON_MPI
 #include            <mpi.h>
@@ -151,10 +154,6 @@
 #else /* COMMON_THREAD_WIN32 */
 #include            <pthread.h>
 #endif /* COMMON_THREAD_WIN32 */
-#else /* COMMON_PTHREAD */
-#ifndef HAVE_NOT_SYS_WAIT_H
-#include            <sys/wait.h>                  /* For waitpid () */
-#endif /* HAVE_NOT_SYS_WAIT_H */
 #endif /* COMMON_PTHREAD */
 
 /*
