@@ -610,10 +610,6 @@ The compilation flags used to manage threads are the following:
   - "-DCOMMON_PTHREAD_AFFINITY_LINUX" enables Linux extensions for
     handling thread affinity (see below).
 
-  - "-DCOMMON_PTHREAD_BARRIER" creates a replacement for missing
-    pthread_barrier_t implementations, which unfortunately happens on
-    some systems.
-
   - "-DCOMMON_PTHREAD_FILE" enables threads for handling compressed
     files. This flag does not interfere with the use of threads by
     graph algorithms, e.g. for graph partitioning and/or ordering,

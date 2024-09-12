@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 06 aug 2024     **/
+/**                                 to   : 12 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,9 +75,6 @@
 #define _DARWIN_C_SOURCE
 #endif /* _DARWIN_C_SOURCE */
 #define HAVE_SYS_SYSCTL_H
-#ifndef COMMON_PTHREAD_BARRIER
-#define COMMON_PTHREAD_BARRIER
-#endif /* COMMON_PTHREAD_BARRIER */
 #ifndef COMMON_TIMING_OLD
 #define COMMON_TIMING_OLD
 #endif /* COMMON_TIMING_OLD */
