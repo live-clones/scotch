@@ -1073,8 +1073,8 @@ dgraph_coarsen$(OBJ)		:	dgraph_coarsen.c			\
 					context.h				\
 					dgraph.h				\
 					dgraph_allreduce.h			\
-					dgraph_fold_comm.h			\
 					dgraph_coarsen.h			\
+					dgraph_fold_comm.h			\
 					dgraph_match.h
 
 dgraph_compact$(OBJ)		:	dgraph_compact.c			\
