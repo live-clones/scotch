@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014,2015,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2015,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 12 apr 2015     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 20 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -160,8 +160,9 @@ ArchCmpltw * restrict const archptr,
 const Anum                  vertnbr,
 const Anum * restrict const velotab)
 {
-  Anum                vertnum;
+  ArchCmpltwLoad *    vecwtab;
   Anum                velosum;
+  Anum                vertnum;
 
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
@@ -172,25 +173,32 @@ const Anum * restrict const velotab)
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if (vertnbr <= 0) {
-    errorPrint ("archCmpltwArchBuild: invalid parameters");
+    errorPrint ("archCmpltwArchBuild: invalid parameters (1)");
     return (1);
   }
 
-  archptr->vertnbr = (Anum) vertnbr;
-
-  if ((archptr->velotab = (ArchCmpltwLoad *) memAlloc (archptr->vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
+  if ((vecwtab = (ArchCmpltwLoad *) memAlloc (vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
     errorPrint ("archCmpltwArchBuild: out of memory");
     return (1);
   }
 
-  for (vertnum = 0, velosum = 0; vertnum < archptr->vertnbr; vertnum ++) { /* Fill vertex load array */
+  for (vertnum = 0, velosum = 0; vertnum < vertnbr; vertnum ++) { /* Fill vertex load array */
     Anum                veloval;
 
-    veloval  = velotab[vertnum];
+    veloval = velotab[vertnum];
+    if (veloval <= 0) {                           /* Target weights cannot be negative nor null */
+      errorPrint ("archCmpltwArchBuild: invalid parameters (2)");
+      memFree    (vecwtab);
+      return (1);
+    }
+
     velosum += veloval;
-    archptr->velotab[vertnum].veloval = veloval;
-    archptr->velotab[vertnum].vertnum = vertnum;
+    vecwtab[vertnum].veloval = veloval;
+    vecwtab[vertnum].vertnum = vertnum;
   }
+
+  archptr->vertnbr = (Anum) vertnbr;
+  archptr->velotab = vecwtab;
   archptr->velosum = (Anum) velosum;
 
   return (archCmpltwArchBuild2 (archptr));
@@ -208,9 +216,10 @@ archCmpltwArchLoad (
 ArchCmpltw * restrict const archptr,
 FILE * restrict const       stream)
 {
-  long                vertnbr;
+  ArchCmpltwLoad *    vecwtab;
   Anum                velosum;
-  Anum                vertnum;
+  long                vertnbr;
+  long                vertnum;
 
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
@@ -225,28 +234,35 @@ FILE * restrict const       stream)
     errorPrint ("archCmpltwArchLoad: bad input (1)");
     return (1);
   }
-  archptr->vertnbr = (Anum) vertnbr;
 
-  if ((archptr->velotab = (ArchCmpltwLoad *) memAlloc (archptr->vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
+  if ((vecwtab = (ArchCmpltwLoad *) memAlloc (vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
     errorPrint ("archCmpltwArchLoad: out of memory");
     return (1);
   }
 
-  for (vertnum = 0, velosum = 0; vertnum < archptr->vertnbr; vertnum ++) {
-    long                veloval;
-    Anum                velotmp;
+  for (vertnum = 0, velosum = 0; vertnum < vertnbr; vertnum ++) {
+    long                velotmp;
+    Anum                veloval;
 
-    if ((fscanf (stream, "%ld", &veloval) != 1) ||
-        (veloval < 1)) {
+    if ((fscanf (stream, "%ld", &velotmp) != 1) ||
+        (velotmp < 1)) {
       errorPrint ("archCmpltwArchLoad: bad input (2)");
       return (1);
     }
+    veloval = (Anum) velotmp;
+    if (veloval <= 0) {                           /* Target weights cannot be negative nor null */
+      errorPrint ("archCmpltwArchLoad: bad input (3)");
+      memFree    (vecwtab);
+      return (1);
+    }
 
-    velotmp  = (Anum) veloval;
-    velosum += velotmp;
-    archptr->velotab[vertnum].veloval = velotmp;
-    archptr->velotab[vertnum].vertnum = vertnum;
+    velosum += veloval;
+    vecwtab[vertnum].veloval = veloval;
+    vecwtab[vertnum].vertnum = vertnum;
   }
+
+  archptr->vertnbr = (Anum) vertnbr;
+  archptr->velotab = vecwtab;
   archptr->velosum = (Anum) velosum;
 
   return (archCmpltwArchBuild2 (archptr));
