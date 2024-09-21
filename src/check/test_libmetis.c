@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : test_scotch_libmetis.c                  **/
+/**   NAME       : test_libmetis.c                         **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Clement BARTHELEMY                      **/
