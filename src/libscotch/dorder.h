@@ -144,8 +144,10 @@ typedef struct DorderCblk_ {
     of the participating processes.
     For the sake of consistency between orderings
     that have been produced either from graphs or
-    meshes, whether centralized or distributed, all
-    ordering values are based from baseval.         +*/
+    meshes, whether centralized or distributed,
+    all ordering values are based from baseval.
+    However, distributed column block indices
+    themselves are not based.                     +*/
 
 typedef struct Dorder_ {
   Gnum                      baseval;              /*+ Base value for structures                                                      +*/
