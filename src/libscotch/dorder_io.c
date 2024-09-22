@@ -98,16 +98,16 @@ FILE * restrict const         stream)
   reduloctab[2] = (grafptr->vlblloctax != NULL) ? 1 : 0; /* See if vertex labels provided */
   if (MPI_Allreduce (reduloctab, reduglbtab, 3, MPI_INT, MPI_SUM, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderSave: communication error (1)");
-    return     (1);
+    return (1);
   }
   if (reduglbtab[0] != 1) {
     errorPrint ("dorderSave: should have only one root");
-    return     (1);
+    return (1);
   }
   MPI_Comm_size (ordeptr->proccomm, &procglbnbr);
   if ((reduglbtab[2] != 0) && (reduglbtab[2] != procglbnbr)) {
     errorPrint ("dorderSave: inconsistent parameters");
-    return     (1);
+    return (1);
   }
   protnum = (int) reduglbtab[1];                  /* Get rank of root process */
 
@@ -144,7 +144,7 @@ FILE * restrict const         stream)
     if (commGatherv (grafptr->vlblloctax + grafptr->baseval, grafptr->vertlocnbr, GNUM_MPI,
                      vlbltax, grafptr->proccnttab, grafptr->procdsptab, GNUM_MPI, protnum, grafptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dorderSave: communication error (3)");
-      return     (1);
+      return (1);
     }
   }
 
@@ -173,12 +173,12 @@ FILE * restrict const         stream)
         if (MPI_Bcast (&vertnum, 1, GNUM_MPI, protnum, ordeptr->proccomm) != MPI_SUCCESS) { /* Broadcast missing fragment */
           errorPrint ("dorderSave: communication error (4)");
           memFree    (permtab);                       /* Free group leader */
-          return     (1);
+          return (1);
         }
         if (MPI_Recv (peritab + vertnum, ordeptr->vnodglbnbr - vertnum, GNUM_MPI,
                       MPI_ANY_SOURCE, DORDERTAGPERI, ordeptr->proccomm, &statdat) != MPI_SUCCESS) {
           errorPrint ("dorderSave: communication error (5)");
-          return     (1);
+          return (1);
         }
         MPI_Get_count (&statdat, GNUM_MPI, &recvnbr);
         vertnum += recvnbr;
@@ -188,13 +188,13 @@ FILE * restrict const         stream)
     if (MPI_Bcast (&vertnum, 1, GNUM_MPI, protnum, ordeptr->proccomm) != MPI_SUCCESS) {
       errorPrint ("dorderSave: communication error (6)");
       memFree    (permtab);                       /* Free group leader */
-      return     (1);
+      return (1);
     }
 
     if (fprintf (stream, GNUMSTRING "\n", (Gnum) ordeptr->vnodglbnbr) == EOF) {
       errorPrint ("dorderSave: bad output (1)");
       memFree    (permtab);
-      return     (1);
+      return (1);
     }
 
     orderPeri (peritab, ordeptr->baseval, ordeptr->vnodglbnbr, permtab, ordeptr->baseval); /* Compute direct permutation */
@@ -208,7 +208,7 @@ FILE * restrict const         stream)
                      (Gnum) vlbltax[permtab[vertnum]]) == EOF) {
           errorPrint ("dorderSave: bad output (2)");
           memFree    (permtab);
-          return     (1);
+          return (1);
         }
       }
     }
@@ -219,7 +219,7 @@ FILE * restrict const         stream)
                      (Gnum) permtab[vertnum]) == EOF) {
           errorPrint ("dorderSave: bad output (3)");
           memFree    (permtab);
-          return     (1);
+          return (1);
         }
       }
     }
@@ -233,7 +233,7 @@ FILE * restrict const         stream)
 
       if (MPI_Bcast (&vertnum, 1, GNUM_MPI, protnum, ordeptr->proccomm) != MPI_SUCCESS) {
         errorPrint ("dorderSave: communication error (7)");
-        return     (1);
+        return (1);
       }
       if (vertnum == -1)                          /* If asked to quit */
         break;                                    /* Finish           */
@@ -249,7 +249,7 @@ FILE * restrict const         stream)
           if (MPI_Send (cblkptr->data.leaf.periloctab, cblkptr->data.leaf.vnodlocnbr,
                         GNUM_MPI, protnum, DORDERTAGPERI, ordeptr->proccomm) != MPI_SUCCESS) {
             errorPrint ("dorderSave: communication error (8)");
-            return     (1);
+            return (1);
           }
           break;
         }
@@ -257,5 +257,5 @@ FILE * restrict const         stream)
     }
   }
 
-  return  (0);
+  return (0);
 }
