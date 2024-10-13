@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 3.4  : from : 01 nov 2001     **/
 /**                                 to   : 01 nov 2001     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 13 oct 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -53,19 +53,52 @@
 **  The defines and includes.
 */
 
-#ifndef SCOTCH_COMMON_EXTERNAL
-#define SCOTCH_COMMON_EXTERNAL                    /* Do not redefine errorPrint */
-#endif /* SCOTCH_COMMON_EXTERNAL */
-
 #include "module.h"
 #include "common.h"
 #include "scotch.h"
+
+#ifdef errorPrint
+#undef errorPrint                                 /* No redefinition of routines to be called */
+#undef errorPrintW
+#undef errorProg
+#endif /* errorPrint */
 
 /********************************/
 /*                              */
 /* The error handling routines. */
 /*                              */
 /********************************/
+
+static char                 _SCOTCHerrorProgName[32] = "";
+
+/* This routine sets the program name for
+** error reporting.
+** It returns:
+** - VOID  : in all cases.
+*/
+
+void
+SCOTCH_errorProg (
+const char * const          progstr)              /*+ Program name +*/
+{
+  size_t              charnbr;
+  const char *        nsrcptr;
+  char *              ndstptr;
+
+  nsrcptr = progstr;
+  ndstptr = _SCOTCHerrorProgName;
+  charnbr = strlen (progstr);
+  if (charnbr > 31) {
+    _SCOTCHerrorProgName[0] =
+    _SCOTCHerrorProgName[1] =
+    _SCOTCHerrorProgName[2] = '.';
+    ndstptr += 3;
+    nsrcptr += charnbr - 28;
+    charnbr  = 28;
+  }
+  strncpy (ndstptr, nsrcptr, charnbr);
+  _SCOTCHerrorProgName[31] = '\0';
+}
 
 /* This routine prints an error message with
 ** a variable number of arguments, as printf ()
@@ -82,17 +115,13 @@ const char * const          errstr,               /*+ printf-like variable argum
   va_list             errlist;                    /* Argument list of the call */
   char                errbuf[1024];               /* Error buffer              */
 
-  va_start   (errlist, errstr);                   /* Open variable-argument list  */
-#if ((defined X_ARCHi586_pc_linux2) || (defined X_ARCHi686_pc_linux2))
-  vsnprintf  (errbuf, 1023, errstr, errlist);     /* Write result to buffer       */
-#else
-  vsprintf   (errbuf, errstr, errlist);           /* Write result to buffer       */
-#endif /* X_ARCHi586_pc_linux2 */
-  va_end     (errlist);                           /* Close variable-argument list */
+  va_start  (errlist, errstr);                    /* Open variable-argument list  */
+  vsnprintf (errbuf, 1023, errstr, errlist);      /* Write result to buffer       */
+  va_end    (errlist);                            /* Close variable-argument list */
   errbuf[1023] = '\0';                            /* Set end of string            */
   errorPrint (errbuf);                            /* Print arguments              */
 
-  exit       (1);
+  exit (1);
 }
 
 /* This routine prints a warning message with
@@ -110,13 +139,9 @@ const char * const          errstr,               /*+ printf-like variable argum
   va_list             errlist;                    /* Argument list of the call */
   char                errbuf[1024];               /* Error buffer              */
 
-  va_start    (errlist, errstr);                  /* Open variable-argument list  */
-#if ((defined X_ARCHi586_pc_linux2) || (defined X_ARCHi686_pc_linux2))
-  vsnprintf   (errbuf, 1023, errstr, errlist);    /* Write result to buffer       */
-#else
-  vsprintf    (errbuf, errstr, errlist);          /* Write result to buffer       */
-#endif /* X_ARCHi586_pc_linux2 */
-  va_end      (errlist);                          /* Close variable-argument list */
+  va_start  (errlist, errstr);                    /* Open variable-argument list  */
+  vsnprintf (errbuf, 1023, errstr, errlist);      /* Write result to buffer       */
+  va_end    (errlist);                            /* Close variable-argument list */
   errbuf[1023] = '\0';                            /* Set end of string            */
   errorPrintW (errbuf);                           /* Print arguments              */
 }

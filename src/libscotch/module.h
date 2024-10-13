@@ -239,6 +239,12 @@
 #define SCOTCH_NAME_PREFIX_INTERN   _SCOTCH
 #define SCOTCH_NAME_PREFIX_PUBLICFL scotchf
 #define SCOTCH_NAME_PREFIX_PUBLICFU SCOTCHF
+#ifdef SCOTCH_RENAME
+#ifndef SCOTCH_COMMON_RENAME
+#define SCOTCH_COMMON_RENAME
+#endif /* SCOTCH_COMMON_RENAME */
+#endif /* SCOTCH_RENAME */
+
 
 #define SCOTCH_NAME_GLUE2(n,s)      n##s
 #define SCOTCH_NAME_GLUE3(p,n,s)    p##n##s
@@ -284,15 +290,18 @@
 #define SCOTCH_Strat                SCOTCH_NAME_PUBLIC (SCOTCH_Strat)
 #endif /* SCOTCH_RENAME */
 
-#if ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME))
-#define errorPrint                  SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrint) /* Same name whatever the suffix is since external library */
-#define errorPrintW                 SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrintW)
-#define errorProg                   SCOTCH_NAME_MACRO2 (SCOTCH_, errorProg)
+#ifdef SCOTCH_COMMON_RENAME
+#define SCOTCH_NAME_GLOBAL(n)       SCOTCH_NAME_MACRO2 (SCOTCH_, n) /* Same name whatever the suffix is, since external library */
+#define errorPrint                  SCOTCH_NAME_GLOBAL (errorPrint)
+#define errorPrintW                 SCOTCH_NAME_GLOBAL (errorPrintW)
+#define errorProg                   SCOTCH_NAME_GLOBAL (errorProg)
+#endif /* SCOTCH_COMMON_RENAME */
 
-#define memCur                      SCOTCH_NAME_MACRO2 (SCOTCH_, memCur)
-#define memMax                      SCOTCH_NAME_MACRO2 (SCOTCH_, memMax)
+#if ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL))
+#define memCur                      SCOTCH_NAME_PUBLIC (memCur)
+#define memMax                      SCOTCH_NAME_PUBLIC (memMax)
 
-#define clockGet                    SCOTCH_NAME_INTERN (clockGet)
+#define clockGet                    SCOTCH_NAME_PUBLIC (clockGet)
 
 #define commonStubDummy             SCOTCH_NAME_INTERN (commonStubDummy)
 
@@ -382,7 +391,7 @@
 #define timerVal                    SCOTCH_NAME_INTERN (timerVal)
 
 #define usagePrint                  SCOTCH_NAME_INTERN (usagePrint)
-#endif /* ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) */
+#endif /* ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL)) */
 
 #ifdef SCOTCH_RENAME
 #define archInit                    SCOTCH_NAME_INTERN (archInit)

@@ -491,7 +491,6 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 common$(OBJ)			:	common.c				\
 					module.h				\
 					common.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_context$(OBJ)		:	common_context.c			\
 					module.h				\
@@ -499,74 +498,62 @@ common_context$(OBJ)		:	common_context.c			\
 					common_thread.h				\
 					common_thread_system.h			\
 					common_values.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file$(OBJ)		:	common_file.c				\
 					module.h				\
 					common.h				\
 					common_file.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file_compress$(OBJ)	:	common_file_compress.c			\
 					module.h				\
 					common.h				\
 					common_file.h				\
 					common_file_compress.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_file_decompress$(OBJ)	:	common_file_decompress.c		\
 					module.h				\
 					common.h				\
 					common_file.h				\
 					common_file_compress.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_integer$(OBJ)		:	common_integer.c			\
 					module.h				\
 					common.h				\
 					common_psort.c				\
 					common_sort.c
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_memory$(OBJ)		:	common_memory.c				\
 					module.h				\
 					common.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_string$(OBJ)		:	common_string.c				\
 					module.h				\
 					common.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_stub$(OBJ)		:	common_stub.c				\
 					module.h				\
 					common.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_thread$(OBJ)		:	common_thread.c				\
 					module.h				\
 					common.h				\
 					common_thread_system.h			\
 					common_thread.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_thread_system$(OBJ)	:	common_thread_system.c			\
 					module.h				\
 					common.h				\
 					common_thread_system.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_timer$(OBJ)		:	common_timer.c				\
 					module.h				\
 					common.h				\
 					common_timer.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 common_values$(OBJ)		:	common_values.c				\
 					module.h				\
 					common.h				\
 					common_values.h
-					$(CC) $(CFLAGS) $(CLIBFLAGS) -c $(<) -DSCOTCH_COMMON_RENAME -o $(@)
 
 arch$(OBJ)			:	arch.c					\
 					module.h				\
