@@ -45,7 +45,7 @@ cmake_minimum_required(VERSION 3.10)
 project(SCOTCH LANGUAGES C Fortran)
 
 # Add module directory
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 set(SCOTCH_VERSION 7)
 set(SCOTCH_RELEASE 0)
