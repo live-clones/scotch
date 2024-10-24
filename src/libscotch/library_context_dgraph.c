@@ -1,4 +1,4 @@
-/* Copyright 2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -81,19 +81,23 @@ SCOTCH_Dgraph * restrict const        cntgrafptr)
 
   if (sizeof (SCOTCH_Dgraph) < sizeof (ContextContainer)) {
     errorPrint (STRINGIFY (SCOTCH_contextBindDgraph) ": internal error");
-    return     (1);
+    return (1);
   }
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
+  if (grafptr == NULL) {
+    errorPrint (STRINGIFY (SCOTCH_contextBindDgraph) ": invalid graph");
+    return (1);
+  }
   if ((grafptr->flagval & CONTEXTCONTAINERTYPE) != 0) {
     errorPrint (STRINGIFY (SCOTCH_contextBindDgraph) ": cannot bind to a container");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   if (contextCommit (contptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_contextBindDgraph) ": cannot commit context");
-    return     (1);
+    return (1);
   }
 
   memSet (cocoptr, 0, sizeof (SCOTCH_Dgraph));    /* Bind context to distributed graph */
