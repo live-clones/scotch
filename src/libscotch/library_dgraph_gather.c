@@ -86,7 +86,7 @@ SCOTCH_Graph * const        cgrfptr)
   if ((cgrfptr != NULL) &&                        /* If centralized graph provided */
       (((void *) cgrfptr) != ((void *) dgrfptr)) &&
       (((void *) cgrfptr) != ((void *) srcdgrfptr))) {
-    reduloctab[0] = 1;                            /* Process is a potential root                          */
+    reduloctab[0] = 1;                            /* Process is a potential root */
     reduloctab[1] = (Gnum) srcdgrfptr->proclocnum;
   }
   else {                                          /* Process is not a root */
@@ -115,7 +115,7 @@ SCOTCH_Graph * const        cgrfptr)
 
   if (MPI_Allreduce (reduloctab, reduglbtab, 3, GNUM_MPI, MPI_SUM, srcdgrfptr->proccomm) != MPI_SUCCESS) {
     errorPrint (STRINGIFY (SCOTCH_dgraphGather) ": communication error");
-    return     (1);
+    return (1);
   }
   if (reduglbtab[0] == 1)                         /* If only one single root */
     return (dgraphGatherAll2 (srcdgrfptr, (Graph *) cgrfptr, reduglbtab[2], (int) reduglbtab[1]));
@@ -123,5 +123,5 @@ SCOTCH_Graph * const        cgrfptr)
     return (dgraphGatherAll2 (srcdgrfptr, (Graph *) cgrfptr, reduglbtab[2], -1));
 
   errorPrint (STRINGIFY (SCOTCH_dgraphGather) ": invalid number of roots");
-  return     (1);
+  return (1);
 }
