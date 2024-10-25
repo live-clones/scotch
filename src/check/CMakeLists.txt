@@ -163,8 +163,10 @@ add_test(NAME test_scotch_arch_deco COMMAND test_scotch_arch_deco ${cur_src}/dat
 
 # test_scotch_context
 add_test_scotch(test_scotch_context)
-target_link_libraries(test_scotch_context PRIVATE Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
 add_test(NAME test_scotch_context COMMAND test_scotch_context ${cur_src}/data/bump_b1.grf)
+if(Threads_FOUND)
+  target_link_libraries(test_scotch_context PRIVATE Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
+endif(Threads_FOUND)
 
 # test_graph_coarsen
 add_test_scotch(test_scotch_graph_coarsen)
