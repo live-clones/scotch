@@ -1,4 +1,4 @@
-/* Copyright 2008,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2018,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 16 jun 2008     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 07 nov 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,6 +60,10 @@ typedef enum KdgraphMapStMethodType_ {
   KDGRAPHMAPSTMETHRB = 0,                         /*+ Dual Recursive Bipartitioning +*/
   KDGRAPHMAPSTMETHNBR                             /*+ Number of methods             +*/
 } KdgraphMapStMethodType;
+
+/*+ Method function pointer type. +*/
+
+typedef int (* KdgraphMapFunc) (Kdgraph * restrict const, Kdmapping * restrict const, const void * const);
 
 /*
 **  The external declarations.

@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -281,7 +281,8 @@ const Strat * restrict const  straptr)            /*+ Separation strategy +*/
 #else /* SCOTCH_DEBUG_VMESH1 */
     default :
 #endif /* SCOTCH_DEBUG_VMESH1 */
-      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (meshptr, (void *) &straptr->data.methdat.datadat));
+      return (((VmeshSeparateFunc) straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr)
+              (meshptr, (const void * const) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_VMESH1
     default :
       errorPrint ("vmeshSeparateSt: invalid parameter (2)");

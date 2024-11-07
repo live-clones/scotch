@@ -44,7 +44,7 @@
 /**                # Version 5.1  : from : 11 nov 2008     **/
 /**                                 to   : 11 nov 2008     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -213,7 +213,8 @@ const Strat * restrict const  straptr)            /*+ Graph ordering strategy +*
 #else /* SCOTCH_DEBUG_HDGRAPH2 */
     default :
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
-      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, cblkptr, (void *) &straptr->data.methdat.datadat));
+      return (((HdgraphOrderFunc) (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr))
+              (grafptr, cblkptr, (const void * const) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_HDGRAPH2
     default :
       errorPrint ("hdgraphOrderSt: invalid parameter");

@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 11 sep 2011     **/
 /**                                 to   : 28 sep 2014     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -374,7 +374,8 @@ const Strat * restrict const  straptr)            /*+ Bipartitioning strategy   
       proccommold = grafptr->s.proccomm;          /* Create new communicator to isolate method communications */
       MPI_Comm_dup (proccommold, &grafptr->s.proccomm);
 #endif /* SCOTCH_DEBUG_BDGRAPH2 */
-      o = (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, &straptr->data.methdat.datadat));
+      o = ((BdgraphBipartFunc) (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr))
+          (grafptr, (const void * const) &straptr->data.methdat.datadat);
 #ifdef SCOTCH_DEBUG_BDGRAPH2
       MPI_Comm_free (&grafptr->s.proccomm);       /* Restore old communicator */
       grafptr->s.proccomm = proccommold;

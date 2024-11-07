@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2018,2020,2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2018,2020,2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 31 may 2018     **/
 /**                # Version 6.1  : from : 25 aug 2020     **/
 /**                                 to   : 02 dec 2021     **/
+/**                # Version 7.0  : from : 07 nov 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,6 +65,10 @@ typedef enum WgraphPartStMethodType_ {
   WGRAPHPARTSTMETHZR,                             /*+ Zero method            +*/
   WGRAPHPARTSTMETHNBR                             /*+ Number of methods      +*/
 } WgraphPartStMethodType;
+
+/*+ Method function pointer type. +*/
+
+typedef int (* WgraphPartFunc) (Wgraph * restrict const, const void * const);
 
 /*
 **  The external declarations.

@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 11 sep 2024     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,6 +62,10 @@ typedef enum HdgraphOrderStMethodType_ {
   HDGRAPHORDERSTMETHSQ,                           /*+ Sequential method +*/
   HDGRAPHORDERSTMETHNBR                           /*+ Number of methods +*/
 } HdgraphOrderStMethodType;
+
+/*+ Method function pointer type. +*/
+
+typedef int (* HdgraphOrderFunc) (Hdgraph * restrict const, DorderCblk * restrict const, const void * const);
 
 /*
 **  The external declarations.

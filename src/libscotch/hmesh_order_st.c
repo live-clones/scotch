@@ -42,7 +42,7 @@
 /**   DATES      : # Version 4.0  : from : 28 sep 2002     **/
 /**                                 to   : 05 jan 2005     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -287,7 +287,8 @@ const Strat * restrict const    straptr)          /*+ Mesh ordering strategy    
 #else /* SCOTCH_DEBUG_HMESH2 */
     default :
 #endif /* SCOTCH_DEBUG_HMESH2 */
-      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (meshptr, ordeptr, ordenum, cblkptr, (void *) &straptr->data.methdat.datadat));
+      return (((HmeshOrderFunc) (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr))
+              (meshptr, ordeptr, ordenum, cblkptr, (const void * const) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_HMESH2
     default :
       errorPrint ("hmeshOrderSt: invalid parameter");

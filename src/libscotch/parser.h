@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 30 sep 2014     **/
 /**                                 to   : 30 sep 2014     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,7 +106,7 @@ typedef enum StratTestType_ {
 
 /*+ Method characteristics. +*/
 
-typedef int (* StratMethodFunc) (void * const, ...);
+typedef int (* StratMethodFunc) (void);
 
 typedef struct StratMethodTab_ {
   int                       methnum;              /*+ Method number in method table      +*/

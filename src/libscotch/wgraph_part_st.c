@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 25 aug 2020     **/
 /**                                 to   : 26 nov 2021     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -270,7 +270,8 @@ const Strat * restrict const straptr)             /*+ Overlap partitioning strat
 #else /* SCOTCH_DEBUG_WGRAPH2 */
     default :
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
-      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, (void *) &straptr->data.methdat.datadat));
+      return (((WgraphPartFunc) (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr))
+              (grafptr, (const void * const) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_WGRAPH2
     default :
       errorPrint ("wgraphPartSt: invalid parameter (2)");

@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 11 sep 2024     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,6 +65,10 @@ typedef enum HmeshOrderStMethodType_ {
   HMESHORDERSTMETHSI,                             /*+ Simple                                +*/
   HMESHORDERSTMETHNBR                             /*+ Number of methods                     +*/
 } HmeshOrderStMethodType;
+
+/*+ Method function pointer type. +*/
+
+typedef int (* HmeshOrderFunc) (Hmesh * restrict const, Order * restrict const, const Gnum, OrderCblk * restrict const, const void * const);
 
 /*
 **  The external declarations.

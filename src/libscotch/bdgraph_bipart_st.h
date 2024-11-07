@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2018,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,6 +46,8 @@
 /**                                 to   : 16 jul 2010     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 07 nov 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +66,10 @@ typedef enum BdgraphBipartStMethodType_ {
   BDGRAPHBIPARTSTMETHZR,                          /*+ Move all to part zero  +*/
   BDGRAPHBIPARTSTMETHNBR                          /*+ Number of methods      +*/
 } BdgraphBipartStMethodType;
+
+/*+ Method function pointer type. +*/
+
+typedef int (* BdgraphBipartFunc) (Bdgraph * restrict const, const void * const);
 
 /*
 **  The external declarations.

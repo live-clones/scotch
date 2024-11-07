@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 18 jul 2021     **/
 /**                                 to   : 18 jul 2021     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -390,7 +390,8 @@ const Strat * restrict const  straptr)            /*+ Mapping strategy +*/
 #else /* SCOTCH_DEBUG_KGRAPH1 */
     default :
 #endif /* SCOTCH_DEBUG_KGRAPH1 */
-      return (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, (void *) &straptr->data.methdat.datadat));
+      return (((KgraphMapFunc) (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr))
+              (grafptr, (void *) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_KGRAPH1
     default :
       errorPrint ("kgraphMapSt: invalid parameter (2)");

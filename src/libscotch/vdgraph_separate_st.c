@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 01 may 2014     **/
 /**                                 to   : 30 sep 2014     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -326,7 +326,8 @@ const Strat * restrict const  straptr)            /*+ Separation strategy       
       proccommold = grafptr->s.proccomm;          /* Create new communicator to isolate method communications */
       MPI_Comm_dup (proccommold, &grafptr->s.proccomm);
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
-      o = straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr (grafptr, (void *) &straptr->data.methdat.datadat);
+      o = ((VdgraphSeparateFunc) (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr))
+          (grafptr, (const void * const) &straptr->data.methdat.datadat);
 #ifdef SCOTCH_DEBUG_VDGRAPH2
       MPI_Comm_free (&grafptr->s.proccomm);       /* Restore old communicator */
       grafptr->s.proccomm = proccommold;

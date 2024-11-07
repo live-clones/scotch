@@ -48,7 +48,7 @@
 /**                # Version 6.0  : from : 17 oct 2012     **/
 /**                                 to   : 05 apr 2018     **/
 /**                # Version 7.0  : from : 11 sep 2024     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,6 +70,10 @@ typedef enum HgraphOrderStMethodType_ {
   HGRAPHORDERSTMETHSI,                            /*+ Simple                                +*/
   HGRAPHORDERSTMETHNBR                            /*+ Number of methods                     +*/
 } HgraphOrderStMethodType;
+
+/*+ Method function pointer type. +*/
+
+typedef int (* HgraphOrderFunc) (Hgraph * restrict const, Order * restrict const, const Gnum, OrderCblk * restrict const, const void * const);
 
 /*
 **  The external declarations.
