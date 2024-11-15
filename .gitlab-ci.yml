@@ -163,6 +163,7 @@ build_cmake_clang:
 
 build_cmake_intel:
   <<: *build_cmake
+  tags: ['64bits']
   variables:
     CC: "icx"
     FC: "gfortran"
@@ -173,6 +174,7 @@ build_cmake_intel:
 
 build_cmake_pgi:
   <<: *build_cmake
+  tags: ['64bits']
   variables:
     CC: "pgcc"
     FC: "pgf90"
