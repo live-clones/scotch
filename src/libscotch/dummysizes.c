@@ -56,7 +56,7 @@
 /**                # Version 6.1  : from : 09 feb 2021     **/
 /**                                 to   : 22 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 19 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -239,6 +239,7 @@ char *                      argv[])
   subsFill ("library_pt.h", "ptscotch.h  ");
   subsFill ("library_pt_f.h", "ptscotchf.h   ");
   subsSuffix ("PTSCOTCH_H");
+  subsFill ("DUMMYINTMPI", EXPAND (COMM_INT));
 #else /* SCOTCH_PTSCOTCH */
   subsFill ("library.h", "scotch.h ");
   subsFill ("library_f.h", "scotchf.h  ");

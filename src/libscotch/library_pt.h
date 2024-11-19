@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 10 sep 2024     **/
+/**                                 to   : 09 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -104,10 +104,14 @@
 #define SCOTCH_DGRAPHBUILDGRID3DEDGELOAD 8
 #endif /* SCOTCH_DGRAPHBUILDGRID3DMESH */
 
+/*+ Integer type. +*/
+
+#define SCOTCH_NUM_MPI DUMMYINTMPI
+
 /*+ Opaque objects. The dummy sizes of these
 objects, computed at compile-time by program
 "dummysizes", are given as double values for
-proper padding                               +*/
+proper padding.                              +*/
 
 typedef struct {
   double                    dummy[DUMMYSIZEDGRAPH];
