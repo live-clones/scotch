@@ -75,7 +75,7 @@ static char                 _SCOTCHerrorProgName[32] = "";
 */
 
 void
-SCOTCH_errorProg (
+errorProg (
 const char * const          progstr)              /*+ Program name +*/
 {
   size_t              charnbr;
@@ -105,7 +105,7 @@ const char * const          progstr)              /*+ Program name +*/
 */
 
 void
-SCOTCH_errorPrint (
+errorPrint (
 const char * const          errstr,               /*+ printf-like variable argument list */
 ...)
 {
@@ -142,7 +142,7 @@ const char * const          errstr,               /*+ printf-like variable argum
 */
 
 void
-SCOTCH_errorPrintW (
+errorPrintW (
 const char * const          errstr,               /*+ printf-like variable argument list */
 ...)
 {
