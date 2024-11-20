@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 02 aug 2024     **/
+/**                                 to   : 12 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -299,6 +299,7 @@
 #define contextCommit               SCOTCH_NAME_INTERN (contextCommit)
 #define contextExit                 SCOTCH_NAME_INTERN (contextExit)
 #define contextInit                 SCOTCH_NAME_INTERN (contextInit)
+#define contextOptionsInit          SCOTCH_NAME_INTERN (contextOptionsInit)
 #define contextRandomClone          SCOTCH_NAME_INTERN (contextRandomClone)
 #define contextThreadInit           SCOTCH_NAME_INTERN (contextThreadInit)
 #define contextThreadInit2          SCOTCH_NAME_INTERN (contextThreadInit2)
@@ -720,8 +721,6 @@
 #define commAllgatherv              SCOTCH_NAME_INTERN (commAllgatherv)
 #define commGatherv                 SCOTCH_NAME_INTERN (commGatherv)
 #define commScatterv                SCOTCH_NAME_INTERN (commScatterv)
-
-#define contextOptionsInit          SCOTCH_NAME_INTERN (contextOptionsInit)
 
 #define dgraphAllreduceMaxSum2      SCOTCH_NAME_INTERN (dgraphAllreduceMaxSum2)
 #define dgraphBuild                 SCOTCH_NAME_INTERN (dgraphBuild)
