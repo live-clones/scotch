@@ -84,7 +84,7 @@ WgraphStore * const         storptr)
 
   if ((storptr->datatab = (byte *) memAlloc (savsize)) == NULL) { /* Allocate save structure */
     errorPrint ("wgraphStoreInit: out of memory");
-    return     (1);
+    return (1);
   }
 
   return (0);
