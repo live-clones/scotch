@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 12 sep 2024     **/
+/**                                 to   : 20 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -404,9 +404,9 @@ void *                      memOffset           (void *, ...);
 void *                      memAllocRecord      (size_t);
 void *                      memReallocRecord    (void * const, size_t);
 void                        memFreeRecord       (void * const);
+#endif /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 IDX                         memCur              (); /* What is internally an intptr_t has to be turned into an interface type */
 IDX                         memMax              ();
-#endif /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 
 void                        usagePrint          (FILE * const, const char (* []));
 

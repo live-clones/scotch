@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 12 nov 2024     **/
+/**                                 to   : 20 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -298,9 +298,6 @@
 #endif /* SCOTCH_COMMON_RENAME */
 
 #if ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL))
-#define memCur                      SCOTCH_NAME_PUBLIC (memCur)
-#define memMax                      SCOTCH_NAME_PUBLIC (memMax)
-
 #define clockGet                    SCOTCH_NAME_PUBLIC (clockGet)
 
 #define commonStubDummy             SCOTCH_NAME_INTERN (commonStubDummy)
@@ -364,7 +361,9 @@
 #define memCheckSize                SCOTCH_NAME_INTERN (memCheckSize)
 #define memCheckToggle              SCOTCH_NAME_INTERN (memCheckToggle)
 #define memCheckWatch               SCOTCH_NAME_INTERN (memCheckWatch)
+#define memCur                      SCOTCH_NAME_INTERN (memCur)
 #define memFreeRecord               SCOTCH_NAME_INTERN (memFreeRecord)
+#define memMax                      SCOTCH_NAME_INTERN (memMax)
 #define memReallocGroup             SCOTCH_NAME_INTERN (memReallocGroup)
 #define memReallocRecord            SCOTCH_NAME_INTERN (memReallocRecord)
 #define memOffset                   SCOTCH_NAME_INTERN (memOffset)

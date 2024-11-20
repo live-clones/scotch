@@ -353,6 +353,7 @@ set(SCOTCH_C_SOURCES
   library_arch_dom.c
   library_arch_dom_f.c
   library_arch_f.c
+  library_common.c
   library_common_f.c
   library_context.c
   library_context_graph.c
