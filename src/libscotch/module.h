@@ -1030,6 +1030,7 @@
 #define stratCondEval               SCOTCH_NAME_INTERN (stratCondEval)
 #define stratCondExit               SCOTCH_NAME_INTERN (stratCondExit)
 #define stratCondSave               SCOTCH_NAME_INTERN (stratCondSave)
+#define stratParserBegin            SCOTCH_NAME_INTERN (stratParserBegin)
 #define stratParserInit             SCOTCH_NAME_INTERN (stratParserInit)
 #define stratParserInput            SCOTCH_NAME_INTERN (stratParserInput)
 #define stratParserLex              SCOTCH_NAME_INTERN (stratParserLex)
