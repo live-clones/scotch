@@ -126,6 +126,8 @@ The following people contribute(d) to the development of **Scotch**:
 
 * Tetsuya MISHIMA
 
+* Xavier MULLER
+
 * François PELLEGRINI (PI)
 
 * Florent PRUVOST
