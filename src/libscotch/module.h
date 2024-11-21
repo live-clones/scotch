@@ -245,7 +245,6 @@
 #endif /* SCOTCH_COMMON_RENAME */
 #endif /* SCOTCH_RENAME */
 
-
 #define SCOTCH_NAME_GLUE2(n,s)      n##s
 #define SCOTCH_NAME_GLUE3(p,n,s)    p##n##s
 #define SCOTCH_NAME_MACRO2(n,s)     SCOTCH_NAME_GLUE2 (n,s)
@@ -298,7 +297,7 @@
 #endif /* SCOTCH_COMMON_RENAME */
 
 #if ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL))
-#define clockGet                    SCOTCH_NAME_PUBLIC (clockGet)
+#define clockGet                    SCOTCH_NAME_INTERN (clockGet)
 
 #define commonStubDummy             SCOTCH_NAME_INTERN (commonStubDummy)
 
