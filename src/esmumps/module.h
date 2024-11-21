@@ -125,6 +125,8 @@
 #endif /* SCOTCH_COMMON_RENAME */
 
 #if ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL))
+#define intLoad                     SCOTCH_NAME_INTERN (intLoad)
+#define intSave                     SCOTCH_NAME_INTERN (intSave)
 #define intSort1asc1                SCOTCH_NAME_INTERN (intSort1asc1)
 #endif /* ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL)) */
 
@@ -169,9 +171,6 @@
 #define graphBuild                  ESMUMPS_NAME_INTERN (graphBuild)
 #define graphBuildGraph             ESMUMPS_NAME_INTERN (graphBuildGraph)
 #define graphBuildGraph2            ESMUMPS_NAME_INTERN (graphBuildGraph2)
-
-#define intLoad                     SCOTCH_NAME_INTERN (intLoad)
-#define intSave                     SCOTCH_NAME_INTERN (intSave)
 
 #define orderBase                   ESMUMPS_NAME_INTERN (orderBase)
 #define orderCheck                  ESMUMPS_NAME_INTERN (orderCheck)
