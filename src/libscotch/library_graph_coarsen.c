@@ -97,7 +97,7 @@ SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to multinode array 
 
   if (CONTEXTINIT (finegrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_graphCoarsen) ": cannot initialize context");
-    return     (1);
+    return (1);
   }
 
   coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided */
@@ -135,7 +135,7 @@ SCOTCH_Num * restrict const             finematetab) /* Mating array to fill    
 
   if (CONTEXTINIT (finegrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_graphCoarsenMatch) ": cannot initialize context");
-    return     (1);
+    return (1);
   }
 
   finemateptr = finematetab;                      /* Slot will not be modified but preserve "const" of finematetab */
@@ -169,7 +169,7 @@ SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to user-provided mu
 
   if (CONTEXTINIT (finegrafptr)) {
     errorPrint (STRINGIFY (SCOTCH_graphCoarsenBuild) ": cannot initialize context");
-    return     (1);
+    return (1);
   }
 
   coarmultptr = (GraphCoarsenMulti *) coarmulttab; /* Indicate multinode array is user-provided */

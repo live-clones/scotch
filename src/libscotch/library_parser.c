@@ -82,7 +82,7 @@ SCOTCH_Strat * const        stratptr)
 {
   if (sizeof (SCOTCH_Strat) < sizeof (Strat *)) {
     errorPrint (STRINGIFY (SCOTCH_stratInit) ": internal error (1)");
-    return     (1);
+    return (1);
   }
 
   *((Strat **) stratptr) = NULL;                  /* Initialize pointer to strategy */
