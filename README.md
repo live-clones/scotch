@@ -91,6 +91,11 @@ cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
 nmake
 ```
 
+When creating dynamic libraries, the `-DLIBSCOTCHERR` flag allows one to select at compile time which error library to link against. This flag is set to "" by default, but can be set to any predefined or user-defined error handling library, e.g.,
+```bash
+cmake -DLIBSCOTCHERR=scotcherr
+```
+
 * With a traditional Makefile:
 
 CMake installation is easy and straightforward. It allows one to compile and install **Scotch** and **PT-Scotch**, depending on flags such as the use of multi-threading and/or MPI. The traditional Makefile installation gives additional freedom to perform (cross-)compilation for non-standard systems and configurations.

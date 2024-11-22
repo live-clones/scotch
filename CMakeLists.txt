@@ -37,13 +37,13 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     01 nov 2023     ##
+##                                 to     27 nov 2024     ##
 ##                                                        ##
 ############################################################
 
 cmake_minimum_required(VERSION 3.10)
-project(SCOTCH LANGUAGES C Fortran)
 
+project(SCOTCH LANGUAGES C Fortran)
 # Add module directory
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
@@ -89,6 +89,10 @@ option(USE_BZ2 "Use BZ2 compression format if found" ON)
 
 # Set fPIC flag when building shared libraries
 set(CMAKE_POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS})
+
+# scotcherr option
+set(LIBSCOTCHERR "" CACHE STRING "Which error library is linked by default")
+set(LIBPTSCOTCHERR "" CACHE STRING "Which parallel error library is linked by default")
 
 # Allow for testing
 option(ENABLE_TESTS "Enable testing" ON)
