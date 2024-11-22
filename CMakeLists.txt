@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -43,7 +43,17 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(SCOTCH LANGUAGES C Fortran)
+project(SCOTCH LANGUAGES C)
+
+# Add Fortran support
+option(BUILD_FORTRAN "Enable Fortran" ON)
+if(BUILD_FORTRAN)
+  enable_language(Fortran)
+  if(NOT CMAKE_Fortran_COMPILER)
+    message(ERROR "Fortran enabled but no compiler detected")
+  endif()
+endif()
+
 # Add module directory
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 

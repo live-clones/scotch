@@ -133,6 +133,10 @@ Some structuring options can be set during this phase, by using the
   - BUILD_LIBSCOTCHMETIS:BOOL (default value ON): set this flag to ON
     to compile the libScotchMeTiS compatibility library.
 
+  - BUILD_FORTRAN:BOOL (default value ON): set this flag to ON
+    to compile the Fortran test programs for the libScotch and
+    libScotchMeTiS compatibility library.
+
   - INSTALL_METIS_HEADERS:BOOL (default value ON): set this flag to ON
     to install the libScotchMeTiS header stubs in the
     CMAKE_INSTALL_PREFIX directory. Set it to OFF to avoid clobbering

@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021,2022,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -142,7 +142,7 @@ if(BUILD_LIBSCOTCHMETIS)
     target_include_directories(test_libmetis_dualv${version} PRIVATE ${GENERATED_INCLUDE_DIR})
     target_link_libraries(test_libmetis_dualv${version} scotchmetisv${version} scotch scotcherr)
     add_test(NAME test_libmetis_dualv${version} COMMAND test_libmetis_dualv${version})
-    if(${CMAKE_Fortran_COMPILER_SUPPORTS_F90}) # Safeguard to avoid x77 compilers
+    if(CMAKE_Fortran_COMPILER)
       add_executable(test_libmetis_dual_f_v${version} ${CMAKE_CURRENT_BINARY_DIR}/test_libmetis_dual_f.f90)
       target_compile_definitions(test_libmetis_dual_f_v${version} PRIVATE SCOTCH_METIS_VERSION=${version})
       target_include_directories(test_libmetis_dual_f_v${version} PRIVATE ${GENERATED_INCLUDE_DIR})
