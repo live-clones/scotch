@@ -79,6 +79,7 @@ scotch_build_64:
   stage: test
   artifacts:
     untracked: true
+    expire_in: 15 days
   script:
     - ./ci/test_makefile.sh
 
@@ -123,6 +124,7 @@ scotch_sonar:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+    expire_in: 15 days
 
 # CMake pipeline (not done if scheduled)
 
@@ -195,6 +197,7 @@ build_cmake_pgi:
     untracked: true
     reports:
       junit: report.xml
+    expire_in: 15 days
 
 test_cmake_gcc:
   <<: *test_cmake
