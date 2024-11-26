@@ -215,5 +215,5 @@ write_basic_package_version_file(SCOTCHConfigVersion.cmake
 # Install config files
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/SCOTCHConfigVersion.cmake
-  COMPONENT scotch
+  COMPONENT libscotch
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
