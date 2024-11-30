@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2013,2015,2016,2018-2021 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2013,2015,2016,2018-2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -68,7 +68,7 @@
 /**                # Version 6.1  : from : 05 apr 2021     **/
 /**                                 to   : 05 apr 2021     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 18 feb 2018     **/
+/**                                 to   : 30 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -287,7 +287,7 @@ int
 archClassNum (
 const ArchClass * const     clasptr)
 {
-  return ((clasptr == NULL) ? -1 : (clasptr - archClassTab));
+  return ((clasptr == NULL) ? -1 : (int) (clasptr - archClassTab));
 }
 
 /**************************************/
