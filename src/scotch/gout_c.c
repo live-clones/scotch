@@ -61,7 +61,7 @@
 /**                # Version 6.1  : from : 04 apr 2021     **/
 /**                                 to   : 28 aug 2021     **/
 /**                # Version 7.0  : from : 31 aug 2021     **/
-/**                                 to   : 10 sep 2024     **/
+/**                                 to   : 30 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -669,14 +669,14 @@ char * const                string)              /* Pointer to the string to par
   int                 code;                      /* Code found                       */
   size_t              codelen;                   /* Code name length                 */
   char                argbuf[128];               /* Buffer for argument scanning     */
-  int                 arglen;                    /* Length of the current argument   */
+  size_t              arglen;                    /* Length of the current argument   */
   char *              argbeg;                    /* Pointer to beginning of argument */
   char *              argend;                    /* Pointer to end of argument       */
   char *              argequ;                    /* Position of the '=' character    */
   int                 i;
   size_t              j;
 
-  code    =
+  code    = 0;
   codelen = 0;                                   /* No code recognized yet              */
   for (i = 0; codeptr[i].name != NULL; i ++) {   /* For all the codes                   */
     if ((strncasecmp (string,                    /* Find the longest matching code name */
