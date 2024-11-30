@@ -50,7 +50,7 @@
 /**                # Version 6.1  : from : 30 jun 2021     **/
 /**                                 to   : 16 jul 2021     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 19 jul 2024     **/
+/**                                 to   : 30 nov 2024     **/
 /**                                                        **/
 /**   NOTES      : # Since only edges from local vertices  **/
 /**                  to local anchors are created in       **/
@@ -214,13 +214,11 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
     Anum                bndpartval;
     Anum                bndpartlst;               /* Part of last vertex for which a distance was computed */
     Anum                bnddistlst;               /* Last distance computed                                */
-    int                 bndflagval;
 
     bndpartval = bndparttax[bndvertnum];
     bndpartlst = -1;                              /* Invalid part to recompute distance */
     bnddistlst = -1;                              /* To prevent compiler from yelling   */
 
-    bndflagval = 0;
     for (bndedgenum = bndverttax[bndvertnum], bndedgennd = bndvendtax[bndvertnum];
 	 bndedgenum < bndedgennd; bndedgenum ++) {
       Gnum                bndpartend;
@@ -230,7 +228,6 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
       if (bndpartval != bndpartend) {             /* TODO maybe can be optimized */
         Anum                bnddistval;
 
-        bndflagval |= 1;
         bnddistval = (bndpartend != bndpartlst) ? archDomDist (archptr, &bnddomntab[bndpartval], &bnddomntab[bndpartend]) : bnddistlst;
         bndpartlst = bndpartend;
         bnddistlst = bnddistval;
@@ -245,13 +242,10 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
     Anum                bndpartval;
     Anum                bndpartlst;               /* Part of last vertex for which a distance was computed */
     Anum                bnddistlst;               /* Last distance computed                                */
-    int                 bndflagval;
 
     bndpartval = bndparttax[bndvertnum];
     bndpartlst = -1;                              /* Invalid part to recompute distance */
     bnddistlst = -1;                              /* To prevent compiler from yielding  */
-
-    bndflagval = 0;
 
     for (bndedgenum = bndverttax[bndvertnum], bndedgennd = bndvendtax[bndvertnum] - 1; /* "-1" to avoid anchor edges */
 	 bndedgenum < bndedgennd; bndedgenum ++) {
@@ -262,7 +256,6 @@ const KgraphMapBdParam * const      paraptr)      /*+ Method parameters +*/
       if (bndpartval != bndpartend) {
         Anum                bnddistval;
 
-        bndflagval |= 1;
         bnddistval = (bndpartend != bndpartlst) ? archDomDist (archptr, &bnddomntab[bndpartval], &bnddomntab[bndpartend]) : bnddistlst;
         bndpartlst = bndpartend;
         bnddistlst = bnddistval;
