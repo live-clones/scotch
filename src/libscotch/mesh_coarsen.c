@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 23 jan 2020     **/
 /**                                 to   : 23 jan 2020     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 30 nov 2024     **/
 /**                                                        **/
 /**   NOTES      : # The coarsening process is as follows. **/
 /**                  First, node collapsing is performed,  **/
@@ -73,7 +73,7 @@
 */
 
 static MeshCoarsenFunc      meshCoarsenFuncTab[MESHCOARSENNBR] = { /* Table of matching routines */
-                              meshCoarsenMatchNg };
+                              (MeshCoarsenFunc) meshCoarsenMatchNg };
 
 /***************************/
 /*                         */
