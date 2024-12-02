@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 20 nov 2024     **/
+/**                                 to   : 02 dec 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -89,12 +89,12 @@
 #define HAVE_NOT_SYS_WAIT_H
 #ifdef _MSC_VER
 #define HAVE_NOT_STRINGS_H
-#if (INT_WIDTH == 64)
-#define __sync_lock_test_and_set    _InterlockedExchange64
-#define __sync_lock_release(m)      _InterlockedExchange64 (m, 0L)
+#if (INT_WIDTH == 64)                             /* On WIN32 / MSVC, sizeof (int) == sizeof (long) in all cases, unlike other platforms */
+#define __sync_lock_test_and_set(m,v) _InterlockedExchange64 ((long *) (m), (v))
+#define __sync_lock_release(m)      _InterlockedExchange64 ((long *) (m), 0L)
 #else /* (INT_WIDTH == 64) */
-#define __sync_lock_test_and_set    _InterlockedExchange
-#define __sync_lock_release(m)      _InterlockedExchange (m, 0L)
+#define __sync_lock_test_and_set(m,v) _InterlockedExchange ((long *) (m), (v))
+#define __sync_lock_release(m)      _InterlockedExchange ((long *) (m), 0L)
 #endif /* (INT_WIDTH == 64) */
 #endif /* _MSC_VER */
 #define ssize_t                     SSIZE_T
