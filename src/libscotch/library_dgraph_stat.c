@@ -244,7 +244,7 @@ double *                    edlodltptr)
 
       if (MPI_Allreduce (&edlolocsum, &edloglbsum, 1, GNUM_MPI, MPI_SUM, srcgrafptr->proccomm) != MPI_SUCCESS) {
         errorPrint (STRINGIFY (SCOTCH_dgraphStat) ": communication error (1)");
-        return     (1);
+        return (1);
       }
       edloglbavg = (double) edloglbsum / (double) (2 * srcgrafptr->edgeglbnbr);
 
@@ -298,7 +298,7 @@ double *                    edlodltptr)
   }
   if (o != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphStat) ": communication error (2)");
-    return     (1);
+    return (1);
   }
 
   if (velominptr != NULL)

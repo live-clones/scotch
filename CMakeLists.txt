@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -37,19 +37,29 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     01 nov 2023     ##
+##                                 to     27 nov 2024     ##
 ##                                                        ##
 ############################################################
 
 cmake_minimum_required(VERSION 3.10)
-project(SCOTCH LANGUAGES C Fortran)
+
+project(SCOTCH LANGUAGES C)
+
+# Add Fortran support
+option(BUILD_FORTRAN "Enable Fortran" ON)
+if(BUILD_FORTRAN)
+  enable_language(Fortran)
+  if(NOT CMAKE_Fortran_COMPILER)
+    message(ERROR "Fortran enabled but no compiler detected")
+  endif()
+endif()
 
 # Add module directory
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 set(SCOTCH_VERSION 7)
 set(SCOTCH_RELEASE 0)
-set(SCOTCH_PATCHLEVEL 5)
+set(SCOTCH_PATCHLEVEL 6)
 set(SCOTCH_CODENAME "Sankara")
 
 add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}
@@ -89,6 +99,10 @@ option(USE_BZ2 "Use BZ2 compression format if found" ON)
 
 # Set fPIC flag when building shared libraries
 set(CMAKE_POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS})
+
+# scotcherr option
+set(LIBSCOTCHERR "" CACHE STRING "Which error library is linked by default")
+set(LIBPTSCOTCHERR "" CACHE STRING "Which parallel error library is linked by default")
 
 # Allow for testing
 option(ENABLE_TESTS "Enable testing" ON)

@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 02 apr 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 03 jun 2018     **/
-/**                                 to   : 06 aug 2024     **/
+/**                                 to   : 02 dec 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,9 +75,6 @@
 #define _DARWIN_C_SOURCE
 #endif /* _DARWIN_C_SOURCE */
 #define HAVE_SYS_SYSCTL_H
-#ifndef COMMON_PTHREAD_BARRIER
-#define COMMON_PTHREAD_BARRIER
-#endif /* COMMON_PTHREAD_BARRIER */
 #ifndef COMMON_TIMING_OLD
 #define COMMON_TIMING_OLD
 #endif /* COMMON_TIMING_OLD */
@@ -92,12 +89,12 @@
 #define HAVE_NOT_SYS_WAIT_H
 #ifdef _MSC_VER
 #define HAVE_NOT_STRINGS_H
-#if (INT_WIDTH == 64)
-#define __sync_lock_test_and_set    _InterlockedExchange64
-#define __sync_lock_release(m)      _InterlockedExchange64 (m, 0L)
+#if (INT_WIDTH == 64)                             /* On WIN32 / MSVC, sizeof (int) == sizeof (long) in all cases, unlike other platforms */
+#define __sync_lock_test_and_set(m,v) _InterlockedExchange64 ((long *) (m), (v))
+#define __sync_lock_release(m)      _InterlockedExchange64 ((long *) (m), 0L)
 #else /* (INT_WIDTH == 64) */
-#define __sync_lock_test_and_set    _InterlockedExchange
-#define __sync_lock_release(m)      _InterlockedExchange (m, 0L)
+#define __sync_lock_test_and_set(m,v) _InterlockedExchange ((long *) (m), (v))
+#define __sync_lock_release(m)      _InterlockedExchange ((long *) (m), 0L)
 #endif /* (INT_WIDTH == 64) */
 #endif /* _MSC_VER */
 #define ssize_t                     SSIZE_T
@@ -143,6 +140,9 @@
 #if (defined HAVE_SYS_SYSCTL_H)
 #include            <sys/sysctl.h>
 #endif /* (defined HAVE_SYS_SYSCTL_H) */
+#ifndef HAVE_NOT_SYS_WAIT_H
+#include            <sys/wait.h>                  /* For waitpid () */
+#endif /* HAVE_NOT_SYS_WAIT_H */
 
 #ifdef COMMON_MPI
 #include            <mpi.h>
@@ -154,10 +154,6 @@
 #else /* COMMON_THREAD_WIN32 */
 #include            <pthread.h>
 #endif /* COMMON_THREAD_WIN32 */
-#else /* COMMON_PTHREAD */
-#ifndef HAVE_NOT_SYS_WAIT_H
-#include            <sys/wait.h>                  /* For waitpid () */
-#endif /* HAVE_NOT_SYS_WAIT_H */
 #endif /* COMMON_PTHREAD */
 
 /*
@@ -408,9 +404,9 @@ void *                      memOffset           (void *, ...);
 void *                      memAllocRecord      (size_t);
 void *                      memReallocRecord    (void * const, size_t);
 void                        memFreeRecord       (void * const);
+#endif /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 IDX                         memCur              (); /* What is internally an intptr_t has to be turned into an interface type */
 IDX                         memMax              ();
-#endif /* ((defined COMMON_MEMORY_TRACE) || (defined COMMON_MEMORY_CHECK)) */
 
 void                        usagePrint          (FILE * const, const char (* []));
 

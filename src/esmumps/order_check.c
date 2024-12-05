@@ -86,13 +86,13 @@ const Order * restrict const  ordeptr)
 
   if (ordeptr->cblknbr < 0) {
     errorPrint ("orderCheck: invalid nunber of column blocks");
-    return     (1);
+    return (1);
   }
 
   baseval = ordeptr->rangtab[0];                  /* Get base value */
   if (baseval < 0) {
     errorPrint ("orderCheck: invalid vertex node base number");
-    return     (1);
+    return (1);
   }
 
   peritax = ordeptr->peritab - baseval;           /* Set based accesses */
@@ -103,7 +103,7 @@ const Order * restrict const  ordeptr)
         (ordeptr->rangtab[rangnum] >= vnodnnd) ||
         (ordeptr->rangtab[rangnum] >= ordeptr->rangtab[rangnum + 1])) {
       errorPrint ("orderCheck: invalid range array");
-      return     (1);
+      return (1);
     }
   }
 
@@ -117,7 +117,7 @@ const Order * restrict const  ordeptr)
         (vnodold >= vnodnnd) ||
         (permtax[vnodold] != vnodnum)) {
       errorPrint ("orderCheck: invalid permutation arrays");
-      return     (1);
+      return (1);
     }
   }
 

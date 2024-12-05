@@ -85,7 +85,7 @@ const VmeshSeparateGrParam * restrict const paraptr) /*+ Method parameters    +*
   graphInit (&grafdat.s);
   if (meshGraph (&meshptr->m, &grafdat.s) != 0) {
     errorPrint ("vmeshSeparateGr: cannot build graph");
-    return     (1);
+    return (1);
   }
   grafdat.parttax     = meshptr->parttax + (meshptr->m.vnodbas - grafdat.s.baseval); /* Get node area of part array */
   grafdat.compload[0] = meshptr->ncmpload[0];
@@ -105,13 +105,13 @@ const VmeshSeparateGrParam * restrict const paraptr) /*+ Method parameters    +*
 #ifdef SCOTCH_DEBUG_VMESH2
   if (vgraphCheck (&grafdat) != 0) {
     errorPrint ("vmeshSeparateGr: internal error (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VMESH2 */
 
   if (vgraphSeparateSt (&grafdat, paraptr->stratptr) != 0) {
     errorPrint ("vmeshSeparateGr: cannot separate graph");
-    return     (1);
+    return (1);
   }
 
   for (fronnum = 0; fronnum < grafdat.fronnbr; fronnum ++) /* Restore mesh-based frontier array */
@@ -149,7 +149,7 @@ const VmeshSeparateGrParam * restrict const paraptr) /*+ Method parameters    +*
 #ifdef SCOTCH_DEBUG_VMESH2
   if (vmeshCheck (meshptr) != 0) {
     errorPrint ("vmeshSeparateGr: internal error (2)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VMESH2 */
 

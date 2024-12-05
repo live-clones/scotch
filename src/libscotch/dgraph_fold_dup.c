@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 28 sep 2014     **/
 /**                                 to   : 28 sep 2014     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 31 jul 2024     **/
+/**                                 to   : 12 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -108,13 +108,13 @@ Context * restrict const      contptr)            /*+ Context                   
 #ifdef SCOTCH_PTHREAD_MPI
   Dgraph              orggrafdat;
   int                 thrdprolvl;
+  int                 thrdglbmin;
 #endif /* SCOTCH_PTHREAD_MPI */
   int                 thrdval;                    /* Flag set if multithreaded process is possible */
   int                 fldprocnbr;
   int                 fldprocnum;
   int                 fldproccol;
   DgraphFoldDupSplit  fldspltdat;
-  int                 thrdglbmin;
   int                 o;
 
   fldprocnbr = (orggrafptr->procglbnbr + 1) / 2;  /* Median cut on number of processors     */

@@ -341,58 +341,57 @@ Build2} routines.
 \subsubsection{Graph format}
 \label{sec-lib-format-graph}
 
-Source graphs are described by means of adjacency lists. The
-description of a graph requires several {\tt SCOTCH\_Num} scalars and
-arrays, as shown in Figures~\ref{fig-lib-graf-one}
-and~\ref{fig-lib-graf-two}. They have the following meaning:
+Source graphs are described by means of adjacency lists. These data
+are stored in arrays and scalars of type \texttt{SCOTCH\_Num}, as
+shown in Figures~\ref{fig-lib-graf-one}
+and~\ref{fig-lib-graf-two}. The graph fields have the following
+meaning:
 \begin{itemize}
-\iteme[{\tt baseval}]
-Base value for all array indexings.
-\iteme[{\tt vertnbr}]
+\iteme[\texttt{baseval}]
+Base value for all array indexing.
+\iteme[\texttt{vertnbr}]
 Number of vertices in graph.
-\iteme[{\tt edgenbr}]
+\iteme[\texttt{edgenbr}]
 Number of arcs in graph. Since edges are represented by both of their
 ends, the number of edge data in the graph is twice the number of
 graph edges.
-\iteme[{\tt verttab}]
-Array of start indices in $\mathtt{edgetab}$ of vertex adjacency
-sub-arrays.
-\iteme[{\tt vendtab}]
-Array of after-last indices in {\tt edgetab} of vertex adjacency
-sub-arrays.
+\iteme[\texttt{verttab}]
+Array of start indices in $\mathtt{edgetab}$ of vertex
+adjacency sub-arrays.
+\iteme[\texttt{vendtab}]
+Array of after-last indices in $\mathtt{edgetab}$ of vertex
+adjacency sub-arrays.
 For any vertex $i$, with $\mathtt{baseval} \leq i < (\mathtt{baseval}
-+ \mathtt{vertnbr})$, $\mathtt{vendtab}\mbox{\tt [}\mathit{i}\mbox{\tt
-]} - \mathtt{verttab}\mbox{\tt [}\mathit{i}\mbox{\tt ]}$ is the degree
-of vertex $i$, and the indices of the neighbors of $i$ are stored in
-$\mathtt{edgetab}$ from $\mathtt{edgetab}\lbt \mbox{\tt
-[}\mathtt{verttab}\mbox{\tt [}i\mbox{\tt ]]}$ to
-$\mathtt{edgetab}\lbt \mbox{\tt [}\mathtt{vendtab}\mbox{\tt
-[}i\mbox{\tt ]} - 1\mbox{\tt ]}$, inclusive.
++ \mathtt{vertnbr})$,
+$(\mathtt{vendtab[}i\mathtt{]} - \mathtt{verttab[}i\mathtt{]})$ is the
+degree of vertex $i$, and the indices of the neighbors of $i$ are
+stored in $\mathtt{edgetab}$ from $\mathtt{edgetab[\lbt
+verttab[}i\mathtt{]]}$ to $\mathtt{edgetab[\lbt
+vendtab[}i\mathtt{]} - 1\mathtt{]}$, inclusive.
 
-When all vertex adjacency lists are stored in order in {\tt edgetab},
-it is possible to save memory by not allocating the physical memory
-for {\tt vendtab}. In this case, illustrated in
-Figure~\ref{fig-lib-graf-one}, {\tt verttab} is of size
+When all vertex adjacency lists are stored in order in
+$\mathtt{edgetab}$, it is possible to save memory by not allocating
+the physical memory for $\mathtt{vendtab}$. In this case, illustrated
+in Figure~\ref{fig-lib-graf-one}, $\mathtt{verttab}$ is of size
 $\mathtt{vertnbr} + 1$ and $\mathtt{vendtab}$ points to
 $\mathtt{verttab} + 1$. This case is referred to as the ``compact edge
 array'' case, such that $\mathtt{verttab}$ is sorted in ascending
-order, $\mathtt{verttab}\mbox{\tt [}\lbt\mathtt{baseval}\mbox{\tt ]} =
-\mathtt{baseval}$ and $\mathtt{verttab}\lbt\mbox{\tt
-[}\mathtt{baseval} + \mathtt{vertnbr}\mbox{\tt ]} =
+order, $\mathtt{verttab[\lbt baseval]} = \mathtt{baseval}$ and
+$\mathtt{verttab[\lbt baseval} + \mathtt{vertnbr]} =
 (\mathtt{baseval} + \mathtt{edgenbr})$.
-\iteme[{\tt velotab}]
-Optional array, of size {\tt vertnbr}, holding the integer load
+\iteme[\texttt{velotab}]
+Optional array, of size $\mathtt{vertnbr}$, holding the integer load
 associated with every vertex.
-\iteme[{\tt edgetab}]
+\iteme[\texttt{edgetab}]
 Array, of a size equal at least to
-$\left(\max_{i}(\mathtt{vendtab}\mbox{\tt [}i\mbox{\tt ]}) -
+$\left(\max_{i}(\mathtt{vendtab[}i\mathtt{]}) -
 \mathtt{baseval}\right)$, holding the adjacency array of every
 vertex.
-\iteme[{\tt edlotab}]
-Optional array, of a size equal at least to $\left(\max_{i}(\mbox{\tt
-vendtab[} i \mathtt{]}) - \mathtt{baseval}\right)$, holding the
-integer load associated with every arc. Matching arcs should always
-have identical loads.
+\iteme[\texttt{edlotab}]
+Optional array, of a size equal at least to
+$\left(\max_{i}(\mathtt{vendtab[} i \mathtt{]}) -
+\mathtt{baseval}\right)$, holding the integer load associated with
+every arc. Matching arcs should always have identical loads.
 \end{itemize}
 
 \begin{figure}
@@ -400,8 +399,8 @@ have identical loads.
 \caption{Sample graph and its description by \libscotch\ arrays using
 a compact edge array. Numbers within vertices are vertex indices, bold
 numbers close to vertices are vertex loads, and numbers close to edges
-are edge loads. Since the edge array is compact, {\tt verttab} is of
-size $\mathtt{vertnbr} + 1$ and {\tt vendtab} points to
+are edge loads. Since the edge array is compact, $\mathtt{verttab}$ is
+of size $\mathtt{vertnbr} + 1$ and $\mathtt{vendtab}$ points to
 $\mathtt{verttab} + 1$.}
 \label{fig-lib-graf-one}
 \end{figure}
@@ -410,44 +409,47 @@ $\mathtt{verttab} + 1$.}
 \centering\includegraphics[scale=0.47]{s_f_gr2.eps}
 \caption{Adjacency structure of the sample graph of
 Figure~\protect\ref{fig-lib-graf-one} with disjoint edge and
-edge load arrays. Both {\tt verttab} and {\tt vendtab} are of
-size {\tt vertnbr}. This allows for the handling of dynamic
+edge load arrays. Both $\mathtt{verttab}$ and $\mathtt{vendtab}$ are of
+size $\mathtt{vertnbr}$. This allows for the handling of dynamic
 graphs, the structure of which can evolve with time.}
 \label{fig-lib-graf-two}
 \end{figure}
 
-Dynamic graphs can be handled elegantly by using the {\tt vendtab}
-array. In order to dynamically manage graphs, one just has to allocate
-{\tt verttab}, {\tt vendtab} and {\tt edgetab} arrays that are large
-enough to contain all of the expected new vertex and edge
-data. Original vertices are labeled starting from {\tt baseval},
-leaving free space at the end of the arrays. To remove some vertex
-$i$, one just has to replace ${\tt verttab}\mathtt{[}i\mbox{\tt
-]}$ and ${\tt vendtab}\mathtt{[}i\mathtt{]}$ with the values of
-{\tt verttab\lbt [vertnbr\lbt -1]} and {\tt vendtab\lbt [vertnbr\lbt
--1]}, respectively, and browse the adjacencies of all neighbors of
-former vertex {\tt vertnbr-1} such that all {\tt (vertnbr-1)} indices
-are turned into $i$s. Then, {\tt vertnbr} must be decremented, and
-{\tt SCOTCH\_\lbt graphBuild()} must be called to account for the
-change of topology. If a graph building routine such as {\tt
-SCOTCH\_\lbt graph\lbt Load()} or {\tt SCOTCH\_\lbt graph\lbt Build()}
-had already been called on the {\tt SCOTCH\_\lbt Graph} structure,
-{\tt SCOTCH\_\lbt graph\lbt Free()} has to be called first in order to
-free the internal structures associated with the older version of the
-graph, else these data would be lost, which would result in memory
-leakage.
+Dynamic graphs can be handled elegantly by using the
+$\mathtt{vendtab}$ array. In order to dynamically manage graphs, one
+just has to allocate $\mathtt{verttab}$, $\mathtt{vendtab}$ and
+$\mathtt{edgetab}$ arrays that are large enough to contain all of the
+expected new vertex and edge data. Original vertices are labeled
+starting from $\mathtt{baseval}$, leaving free space at the end of the
+arrays. To remove some vertex $i$, one just has to replace
+$\mathtt{verttab[}i\mathtt{]}$ and
+$\mathtt{vendtab[}i\mathtt{]}$ with the values of
+$\mathtt{verttab[\lbt vertnbr}\lbt -1\mathtt{]}$ and
+$\mathtt{vendtab[\lbt vertnbr}\lbt -1\mathtt{]}$, respectively, and
+browse the adjacencies of all neighbors of former vertex
+$\mathtt{vertnbr}-1$ such that all $(\mathtt{vertnbr}-1)$ indices are
+turned into $i$s. Then, $\mathtt{vertnbr}$ must be decremented, and
+\texttt{SCOTCH\_\lbt graphBuild()} must be called to account for the
+change of topology. If a graph building routine such as
+\texttt{SCOTCH\_\lbt graph\lbt Load()} or
+\texttt{SCOTCH\_\lbt graph\lbt Build()} had 
+already been called on the \texttt{SCOTCH\_\lbt Graph} structure,
+\texttt{SCOTCH\_\lbt graph\lbt Free()} has to be called first in order
+to free the internal structures associated with the older version of
+the graph; else, these data would be lost, which would result in
+memory leakage.
 
-To add a new vertex, one has to fill {\tt verttab\lbt [vertnbr\lbt
--1]} and {\tt vendtab\lbt [vertnbr\lbt -1]} with the starting and end
-indices of the adjacency sub-array of the new vertex. Then, the
-adjacencies of its neighbor vertices must also be updated to account
-for it. If free space had been reserved at the end of each of the
-neighbors, one just has to increment the ${\tt vendtab}\mbox{\tt
-[}i\mathtt{]}$ values of every neighbor $i$, and add the index of
-the new vertex at the end of the adjacency sub-array. If the sub-array
-cannot be extended, then it has to be copied elsewhere in the edge
-array, and both ${\tt verttab}\mathtt{[}i\mathtt{]}$ and ${\tt
-vendtab}\mathtt{[}i\mathtt{]}$ must be updated accordingly. With
+To add a new vertex, one has to fill $\mathtt{verttab[\lbt vertnbr}
+-1\mathtt{]}$ and $\mathtt{vendtab[\lbt vertnbr}\lbt -1\mathtt{]}$
+with the starting and end indices of the adjacency sub-array of the
+new vertex. Then, the adjacencies of its neighbor vertices must also
+be updated to account for it. If free space had been reserved at the
+end of each of the neighbors, one just has to increment the
+$\mathtt{vendtab[}i\mathtt{]}$ values of every neighbor $i$, and add
+the index of the new vertex at the end of the adjacency sub-array. If
+the sub-array cannot be extended, then it has to be copied elsewhere
+in the edge array, and both $\mathtt{verttab[}i\mathtt{]}$ and
+$\mathtt{vendtab[}i\mathtt{]}$ must be updated accordingly. With
 simple housekeeping of free areas of the edge array, dynamic arrays
 can be updated with as little data movement as possible.
 
@@ -456,64 +458,65 @@ can be updated with as little data movement as possible.
 
 Since meshes are basically bipartite graphs, source meshes are also
 described by means of adjacency lists. The description of a mesh
-requires several {\tt SCOTCH\_Num} scalars and arrays, as shown in
+requires several \texttt{SCOTCH\_Num} scalars and arrays, as shown in
 Figure~\ref{fig-lib-mesh-one}. They have the following meaning:
 \begin{itemize}
 \iteme[{\tt velmbas}]
 Base value for element indexings.
 \iteme[{\tt vnodbas}]
 Base value for node indexings. The base value of the underlying graph,
-{\tt baseval}, is set as $\min(\mathtt{velmbas}, \mathtt{vnodbas})$.
+$\mathtt{baseval}$, is set as $\min(\mathtt{velmbas}, \mathtt{vnodbas})$.
 \iteme[{\tt velmnbr}]
 Number of element vertices in mesh.
 \iteme[{\tt vnodnbr}]
 Number of node vertices in mesh.
-The overall number of vertices in the underlying graph, {\tt vertnbr},
-is set as $\mathtt{velmnbr} +\mathtt{vnodnbr}$.
+The overall number of vertices in the underlying graph,
+$\mathtt{vertnbr}$, is set as $\mathtt{velmnbr} +\mathtt{vnodnbr}$.
 \iteme[{\tt edgenbr}]
 Number of arcs in mesh. Since edges are represented by both of their
 ends, the number of edge data in the mesh is twice the number of
 edges.
 \iteme[{\tt verttab}]
-Array of start indices in {\tt edgetab} of vertex (that is, both
+Array of start indices in $\mathtt{edgetab}$ of vertex (that is, both
 elements and nodes) adjacency sub-arrays.
 \iteme[{\tt vendtab}]
-Array of after-last indices in {\tt edgetab} of vertex adjacency
+Array of after-last indices in $\mathtt{edgetab}$ of vertex adjacency
 sub-arrays. For any element or node vertex $i$, with
 $\mathtt{baseval} \leq i <
-(\mathtt{baseval} + \mathtt{vertnbr})$, $\mbox{\tt
-vendtab[}i\mathtt{]} - \mathtt{verttab[}i\mathtt{]}$ is the
+(\mathtt{baseval} + \mathtt{vertnbr})$,
+$\mathtt{vendtab[}i\mathtt{]} - \mathtt{verttab[}i\mathtt{]}$ is the
 degree of vertex $i$, and the indices of the neighbors of $i$ are
-stored in {\tt edgetab} from {\tt edgetab\lbt [verttab[$i$]]} to {\tt
-edgetab\lbt [vendtab[$i$]\lbt $- 1$]}, inclusive.
+stored in $\mathtt{edgetab}$ from
+$\mathtt{edgetab[\lbt verttab[}i\mathtt{]]}$  to
+$\mathtt{edgetab[\lbt vendtab[}i\mathtt{]} - 1\mathtt{]}$, inclusive.
 
-When all vertex adjacency lists are stored in order in {\tt edgetab},
-it is possible to save memory by not allocating the physical memory
-for {\tt vendtab}. In this case, illustrated in
-Figure~\ref{fig-lib-mesh-one}, {\tt verttab} is of size $\mbox{\tt
-vertnbr} + 1$ and {\tt vendtab} points to $\mathtt{verttab} + 1$.
+When all vertex adjacency lists are stored in order in
+$\mathtt{edgetab}$, it is possible to save memory by not allocating
+the physical memory for $\mathtt{vendtab}$. In this case, illustrated
+in Figure~\ref{fig-lib-mesh-one}, $\mathtt{verttab}$ is of size
+$(\mathtt{vertnbr} + 1)$ and $\mathtt{vendtab}$ points to
+$(\mathtt{verttab} + 1)$.
 This case is referred to as the ``compact edge array'' case, such that
-{\tt verttab} is sorted in ascending order,
-$\mathtt{verttab[}\lbt\mathtt{baseval]} = \mathtt{baseval}$
-and $\mathtt{verttab[}\lbt\mathtt{baseval} + \mbox{\tt
-vertnbr]} = (\mathtt{baseval} + \mathtt{edgenbr})$.
+$\mathtt{verttab}$ is sorted in ascending order,
+$\mathtt{verttab[\lbt baseval]} = \mathtt{baseval}$
+and $\mathtt{verttab[\lbt baseval} + \mathtt{vertnbr]} = (\mathtt{baseval} + \mathtt{edgenbr})$.
 \iteme[{\tt velotab}]
-Array, of size {\tt vertnbr}, holding the integer load associated with
-each vertex.
+Array, of size $\mathtt{vertnbr}$, holding the integer load associated
+with each vertex.
 \end{itemize}
 
 \begin{figure}
 \centering\includegraphics[scale=0.47]{s_f_me1.eps}
 \caption{Sample mesh and its description by \libscotch\ arrays using a
 compact edge array. Numbers within vertices are vertex indices. Since the
-edge array is compact, {\tt verttab} is of size $\mathtt{vertnbr} +
-1$ and {\tt vendtab} points to $\mathtt{verttab} + 1$.}
+edge array is compact, $\mathtt{verttab}$ is of size $(\mathtt{vertnbr} +
+1)$ and $\mathtt{vendtab}$ points to $(\mathtt{verttab} + 1)$.}
 \label{fig-lib-mesh-one}
 \end{figure}
 
 As for graphs, it is possible to handle elegantly dynamic meshes by
-means of the {\tt verttab} and {\tt vendtab} arrays. There is,
-however, an additional constraint, which is that mesh nodes and
+means of the $\mathtt{verttab}$ and $\mathtt{vendtab}$ arrays. There
+is, however, an additional constraint, which is that mesh nodes and
 elements must be ordered consecutively. The solution to fulfill this
 constraint in the context of mesh ordering is to keep a set of empty
 elements (that is, elements which have no node adjacency attached to
@@ -521,8 +524,9 @@ them) between the element and node arrays. For instance,
 Figure~\ref{fig-lib-mesh-two} represents a $4$-element mesh with $6$
 nodes, and such that $4$ element vertex slots have been reserved for
 new elements and nodes. These slots are empty elements for which
-{\tt verttab[i]} equals {\tt vendtab[i]}, irrespective of these
-values, since they will not lead to any memory access in {\tt edgetab}.
+$\mathtt{verttab[}i\mathtt{]}$ equals $\mathtt{vendtab[}i\mathtt{]}$,
+irrespective of these values, since they will not lead to any memory
+access in $\mathtt{edgetab}$.
 
 \begin{figure}
 \centering\includegraphics[scale=0.47]{s_f_me2.eps}
@@ -540,9 +544,9 @@ mesh structure, as illustrated in
 Figure~\ref{fig-lib-mesh-three}. Empty elements are transparent to the
 mesh ordering routines, which base their work on node vertices only.
 Users who want to update the arrays of a mesh that has already
-been declared using the {\tt SCOTCH\_\lbt mesh\lbo Build} routine must
-call {\tt SCOTCH\_\lbt mesh\lbo Exit} prior to updating the mesh arrays,
-and then call {\tt SCOTCH\_\lbt mesh\lbo Build} again after the arrays
+been declared using the {\tt SCOTCH\_\lbt mesh\lbo Build()} routine must
+call {\tt SCOTCH\_\lbt mesh\lbo Exit()} prior to updating the mesh arrays,
+and then call {\tt SCOTCH\_\lbt mesh\lbo Build()} again after the arrays
 have been updated, so that the {\tt SCOTCH\_\lbt Mesh} structure remains
 consistent with the new mesh data.
 
@@ -7474,7 +7478,7 @@ while he second one is necessary when \scotch\ is run on several
 threads, because multi-threaded versions of the \libscotch\ routines
 may rely by default on non-deterministic algorithms that are not only
 sensitive to the pseudo-random sequence but also to system artifacts
-(see Section~\ref{sec-lib-thread}).
+(see Section~\ref{sec-lib-multithread}).
 
 In certain cases, it may be interesting, when running the same
 sequential \scotch\ routine on different processors, to explore

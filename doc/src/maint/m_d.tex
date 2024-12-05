@@ -1,18 +1,216 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                  %
-% Title   : m_d.tex                %
-% Subject : Maintenance manual of  %
-%           Scotch                 %
-%           Code explanations      %
-% Author  : Francois Pellegrini    %
-%                                  %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                         %
+% Title   : m_d.tex                       %
+% Subject : Maintenance manual of Scotch  %
+%           Data structure explanations   %
+% Author  : Francois Pellegrini           %
+%                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Data structure explanations}
 \label{sec-data}
 
-This section explains some of the most complex data structures
-implemented in \scotch\ and \ptscotch.
+This section explains some of the data structures implemented in
+\scotch\ and \ptscotch.
+
+\subsection{\texttt{Graph}}
+\label{sec-data-graph}
+
+Graphs are the fundamental underlying data structures of all the
+algorithms implemented in \scotch. The \texttt{Graph} structure is the
+foundational data structure, from which subclasses will be derived,
+according to the specific needs of the \scotch\ modules. It is
+sometimes referred to as the \textit{source graph} structure, with
+respect to the \textit{target architecture} \texttt{Arch} onto which
+source graphs are to be mapped.
+
+The \texttt{Graph} structure, being a foundational data structure,
+does not possess any variable fields related to actual computations,
+\eg, partition state variables or an execution context. Such fields
+will be found in \textit{active} graphs, \eg, \texttt{Bgraph},
+\texttt{Kgraph}, \texttt{Vgraph}.
+
+A \texttt{Graph} is described by means of adjacency lists. These data
+are stored in arrays and scalars of type \texttt{SCOTCH\_Num}, as
+shown in Figures~\ref{fig-lib-graf-one}
+and~\ref{fig-lib-graf-two}. The \texttt{Graph} fields have the
+following meaning:
+\begin{itemize}
+\iteme[\texttt{baseval}]
+Base value for all array indexing.
+\iteme[\texttt{vertnbr}]
+Number of vertices in graph.
+\iteme[\texttt{edgenbr}]
+Number of arcs in graph. Since edges are represented by both of their
+ends, the number of edge data in the graph is twice the number of
+graph edges.
+\iteme[\texttt{verttax}]
+Based array of start indices in $\mathtt{edgetax}$ of vertex
+adjacency sub-arrays.
+\iteme[\texttt{vendtax}]
+Based array of after-last indices in $\mathtt{edgetax}$ of vertex
+adjacency sub-arrays.
+For any vertex $i$, with $\mathtt{baseval} \leq i < (\mathtt{vertnbr}
++ \mathtt{baseval})$, $(\mathtt{vendtax[}i\mathtt{]}
+-\mathtt{verttax[}i\mathtt{]})$ is the degree of vertex $i$, and the
+indices of the neighbors of $i$ are stored in $\mathtt{edgetax}$ from
+$\mathtt{edgetax[\lbt verttax[}i\mathtt{]]}$ to $\mathtt{edgetax[\lbt
+vendtax[}i\mathtt{]} - 1\mathtt{]}$, inclusive.
+
+When all vertex adjacency lists are stored in order in
+$\mathtt{edgetax}$, it is possible to save memory by not allocating
+the physical memory for $\mathtt{vendtax}$. In this case, illustrated
+in Figure~\ref{fig-lib-graf-one}, $\mathtt{verttax}$ is of size
+$\mathtt{vertnbr} + 1$ and $\mathtt{vendtax}$ points to
+$\mathtt{verttax} + 1$. This case is referred to as the ``compact edge
+array'' case, such that $\mathtt{verttax}$ is sorted in ascending
+order, $\mathtt{verttax[\lbt baseval]} = \mathtt{baseval}$ and
+$\mathtt{verttax[\lbt baseval} + \mathtt{vertnbr]} =
+(\mathtt{baseval} + \mathtt{edgenbr})$.
+\iteme[\texttt{velotax}]
+Optional based array, of size $\mathtt{vertnbr}$, holding the integer
+load associated with every vertex.
+\iteme[\texttt{edgetax}]
+Based array, of a size equal at least to
+$\left(\max_{i}(\mathtt{vendtax[}i\mathtt{]}) -
+\mathtt{baseval}\right)$, holding the adjacency array of every
+vertex.
+\iteme[\texttt{edlotax}]
+Optional based array, of a size equal at least to
+$\left(\max_{i}(\mathtt{vendtax[} i \mathtt{]}) -
+\mathtt{baseval}\right)$, holding the integer load associated with
+every arc. Matching arcs should always have identical loads.
+\end{itemize}
+
+\begin{figure}
+\centering\includegraphics[scale=0.47]{s_f_gr1.eps}
+\caption{Sample graph and its description using a compact edge
+array. Numbers within vertices are vertex indices, bold numbers
+close to vertices are vertex loads, and numbers close to edges are
+edge loads. Since the edge array is compact, $\mathtt{verttax}$ is
+of size $\mathtt{vertnbr} + 1$ and $\mathtt{vendtax}$ points to
+$\mathtt{verttax} + 1$.}
+\label{fig-lib-graf-one}
+\end{figure}
+
+\begin{figure}
+\centering\includegraphics[scale=0.47]{s_f_gr2.eps}
+\caption{Adjacency structure of the sample graph of
+Figure~\protect\ref{fig-lib-graf-one} with disjoint edge and
+edge load arrays. Both $\mathtt{verttax}$ and $\mathtt{vendtax}$ are
+of size $\mathtt{vertnbr}$. This allows for the handling of dynamic
+graphs, the structure of which can evolve with time.}
+\label{fig-lib-graf-two}
+\end{figure}
+
+Dynamic graphs can be handled elegantly by using the
+$\mathtt{vendtax}$ array. In order to dynamically manage graphs, one
+just has to allocate $\mathtt{verttax}$, $\mathtt{vendtax}$ and
+$\mathtt{edgetax}$ arrays that are large enough to contain all of the
+expected new vertex and edge data. Original vertices are labeled
+starting from $\mathtt{baseval}$, leaving free space at the end of the
+arrays. To remove some vertex $i$, one just has to replace
+$\mathtt{verttax[}i\mathtt{]}$ and
+$\mathtt{vendtax[}i\mathtt{]}$ with the values of
+$\mathtt{verttax[\lbt vertnbr}\lbt -1\mathtt{]}$ and
+$\mathtt{vendtax[\lbt vertnbr}\lbt -1\mathtt{]}$, respectively, and
+browse the adjacencies of all neighbors of former vertex
+$\mathtt{vertnbr}-1$ such that all $(\mathtt{vertnbr}-1)$ indices are
+turned into $i$s. Then, $\mathtt{vertnbr}$ must be decremented.
+
+To add a new vertex, one has to fill $\mathtt{verttax[\lbt vertnbr}
+-1\mathtt{]}$ and $\mathtt{vendtax[\lbt vertnbr}\lbt -1\mathtt{]}$
+with the starting and end indices of the adjacency sub-array of the
+new vertex. Then, the adjacencies of its neighbor vertices must also
+be updated to account for it. If free space had been reserved at the
+end of each of the neighbors, one just has to increment the
+$\mathtt{vendtax[}i\mathtt{]}$ values of every neighbor $i$, and add
+the index of the new vertex at the end of the adjacency sub-array. If
+the sub-array cannot be extended, then it has to be copied elsewhere
+in the edge array, and both $\mathtt{verttax[}i\mathtt{]}$ and
+$\mathtt{vendtax[}i\mathtt{]}$ must be updated accordingly. With
+simple housekeeping of free areas of the edge array, dynamic arrays
+can be updated with as little data movement as possible.
+
+\subsection{\texttt{Hgraph}}
+\label{sec-data-hgraph}
+
+The \texttt{Hgraph} structure holds all the information necessary to
+represent and perform computations on a \textit{halo} graph. This term
+refers to graphs some vertices of which are kept to preserve accurate
+topological information, but are usually not subject to actual
+computations. These \textit{halo vertices} are collectively referred
+to as the \textit{halo} of the graph. Halo graphs are notably used in
+sparse matrix reordering, where, in the process of nested dissection,
+a graph is cut into three pieces: a vertex separator, and two
+separated parts. Each of these parts must preserve the real degree
+information attached to all their vertices, including those next to
+the separator. If halo graphs were not used, the degrees of these
+vertices would appear smaller than what they really are in the whole
+graph. Preserving accurate degree information is essential for
+algorithms such as the \textit{minimum degree} vertex ordering
+method. Some vertex separation algorithms also aim at balancing halo
+vertices; in this case, separators will be computed on halos, but this
+information will not be preserved once a separator has been computed
+on the regular vertices.
+
+Halo graphs exhibit specific structural and topological properties,
+illustrated in Figure~\ref{fig-lib-hgraf-one}. In order to distinguish
+easily halo vertices from regular vertices and write efficient
+algorithms, halo vertices have the highest vertex indices in the
+graph. Because the degrees of halo vertices need not be preserved, no
+edges connect two halo vertices; the adjacency of halo vertices is
+only made of regular vertices. Also, in the adjacency arrays of
+regular vertices, all non-halo vertices are placed before halo
+vertices. All these properties allow one to easily induce the non-halo
+graph from some halo graph, without having to create new adjacency
+arrays. An additional vertex index array is present just for this
+purpose.
+
+\begin{figure}
+\centering\includegraphics[scale=0.47]{m_f_gr3.eps}
+\caption{Sample halo graph and its description using a compact edge
+array. Numbers within vertices are vertex indices. Greyed values
+are indices of halo vertices. Halo vertices have the highest indices
+in the graph, and are placed last in the adjacency sub-arrays of each
+non-halo vertex.}
+\label{fig-lib-hgraf-one}
+\end{figure}
+
+Halo graph fields have the following meaning:
+\begin{itemize}
+\iteme[\texttt{s}]
+Underlying source graph that contains all regular and halo
+vertices. This is where to search for fields such as
+$\mathtt{baseval}$, $\mathtt{vertnbr}$, $\mathtt{vertnnd}$,
+$\mathtt{verttax}$, $\mathtt{vendtax}$, etc.
+\iteme[\texttt{vnohnbr}]
+Number of non-halo vertices in graph. Hence, $0 \leq \mathtt{vnohnbr}
+\leq \mathtt{s.vertnbr}$.
+\iteme[\texttt{vnhdtax}]
+Array of after-last indices in $\mathtt{s.edgetax}$ of non-halo vertex
+adjacency sub-arrays. Since this information only concerns non-halo
+vertices, $\mathtt{vnhdtax}$ is of size $\mathtt{vnohnbr}$, not
+$\mathtt{vertnbr}$.
+For any non-halo vertex $i$, with $\mathtt{baseval} \leq i <
+(\mathtt{vnohnbr} + \mathtt{baseval})$, the indices of the non-halo
+neighbors of $i$ are stored in $\mathtt{s.edgetax}$ from $\mathtt{s.edgetax}\lbt
+\mbox{\texttt{[}}\mathtt{s.verttax}\mbox{\texttt{[}}i\mbox{\texttt{]]}}$
+to $\mathtt{s.edgetax}\lbt
+\mbox{\texttt{[}}\mathtt{vnhdtax}\mbox{\texttt{[}}i\mbox{\texttt{]}} -
+1\mbox{\texttt{]}}$, inclusive, and its halo neighbors are stored from 
+$\mathtt{s.edgetax}\lbt
+\mbox{\texttt{[}}\mathtt{vnhdtax}\mbox{\texttt{[}}i\mbox{\texttt{]]}}$
+to $\mathtt{s.edgetax}\lbt
+\mbox{\texttt{[}}\mathtt{s.vendtax}\mbox{\texttt{[}}i\mbox{\texttt{]}} -
+1\mbox{\texttt{]}}$, inclusive.
+\iteme[\texttt{vnlosum}]
+Sum of non-halo vertex loads. Hence, $0 \leq \mathtt{vnlosum}
+\leq \mathtt{s.velosum}$.
+\iteme[\texttt{enohnbr}]
+Number of non-halo arcs in graph. Hence, $0 \leq \mathtt{enohnbr}
+\leq \mathtt{s.edgenbr}$.
+\end{itemize}
 
 \subsection{\texttt{Kgraph}}
 \label{sec-data-kgraph}
@@ -57,7 +255,7 @@ smaller.
 
 The current mapping evolves with time, according to the various
 algorithms that the user can activate in the strategy string. These
-algorithms will create derived \texttt{Kgraph}s (\eg, band graphs or a
+algorithms will create derived \texttt{Kgraph}s (\eg, band graphs or
 coarsened graphs), to which mapping methods will be applied, before
 the result is ported back to their parent \texttt{Kgraph}. Depending
 on the kind of the derived graph, the \texttt{m.parttax} array may be
@@ -166,11 +364,12 @@ The \texttt{Mapping} structure is mainly used within the
 \texttt{Kgraph} structure, which contains two instances of it: one for
 the current mapping to be computed, and one for the old mapping, in
 the case of remapping. The building of a \texttt{Kgraph} from another
-one (\eg, a band graph or a coarsened graph) may lead to situations in
-which some \texttt{Mapping} arrays may be re-used, and thus should not
-be freed when the derived \texttt{Mapping} is freed. This is why the
-\texttt{Mapping} structure contains flags to record whether its arrays
-should be freed or not. These flags are the following:
+one (\eg, when creating a band graph or a coarsened graph) may lead to
+situations in which some \texttt{Mapping} arrays may be re-used, and
+thus should not be freed when the derived \texttt{Mapping} is
+freed. This is why the \texttt{Mapping} structure contains flags to
+record whether its arrays should be freed or not. These flags are the
+following:
 \begin{itemize}
 \item
 \texttt{MAPPINGFREEDOMN}: set if the domain array has to be freed when

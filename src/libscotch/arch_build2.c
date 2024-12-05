@@ -41,7 +41,7 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
 /**                                 to   : 22 feb 2018     **/
-/**                # Version 7.0  : from : 22 aug 2019     **/
+/**                # Version 7.0  : from : 03 aug 2016     **/
 /**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /**   NOTES      : # The code of the main routine derives  **/
@@ -557,7 +557,7 @@ Context * const             contptr)              /*+ Execution context         
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   archInit (archptr);                             /* Initialize architecture body  */
-  archptr->class = archClass2 ("deco", 1);        /* Set type-2 architecture class */
+  archptr->clasptr = archClass2 ("deco", 1);      /* Set type-2 architecture class */
 
   domnnbr = 2 * vnumnbr - 1;
   if (memAllocGroup ((void **) (void *)

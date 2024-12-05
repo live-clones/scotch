@@ -1,4 +1,4 @@
-/* Copyright 2022 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2022,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -39,7 +39,7 @@
 /**                symbolic factorization routine.         **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 21 apr 2022     **/
-/**                                 to   : 11 dec 2022     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,9 +63,9 @@
 /******************************/
 
 int
-main (argc, argv)
-int                 argc;
-char *              argv[];
+main (
+int                         argc,
+char *                      argv[])
 {
   Graph               grafdat;                    /* Graph to load */
   Order               ordedat;

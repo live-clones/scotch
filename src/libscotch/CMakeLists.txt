@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2023 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     01 nov 2023     ##
+##                                 to     19 sep 2024     ##
 ##                                                        ##
 ############################################################
 
@@ -62,7 +62,7 @@ if(BUILD_PTSCOTCH)
   add_dependencies(ptdummysizes scotch_h)
   set_target_properties(ptdummysizes PROPERTIES
     COMPILE_FLAGS -DSCOTCH_PTSCOTCH)
-endif(BUILD_PTSCOTCH)
+endif()
 
 ##############
 #  scotch.h  #
@@ -108,7 +108,7 @@ add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/ptscotchf.h
   COMMENT "Generate ptscotchf.h")
 add_custom_target(ptscotchf_h
   DEPENDS "${GENERATED_INCLUDE_DIR}/ptscotchf.h")
-endif(BUILD_PTSCOTCH)
+endif()
 
 #################
 #  parser_yy.c  #
@@ -353,6 +353,7 @@ set(SCOTCH_C_SOURCES
   library_arch_dom.c
   library_arch_dom_f.c
   library_arch_f.c
+  library_common.c
   library_common_f.c
   library_context.c
   library_context_graph.c
@@ -514,29 +515,36 @@ add_library(scotch
 set_target_properties(scotch PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
   SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 add_dependencies(scotch parser_yy_c parser_ll_c)
+
+# scotcherr lib
+if(NOT "${LIBSCOTCHERR}" STREQUAL "")
+  target_link_libraries(scotch PUBLIC ${LIBSCOTCHERR})
+endif()
+
 if(NOT WIN32)
   target_link_libraries(scotch PUBLIC m)
-endif(NOT WIN32)
+endif()
+
 target_include_directories(scotch PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-        $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 if(APPLE)
   set_target_properties(scotch PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-endif(APPLE)
+endif()
 
 if(OS_IS_FREEBSD)
   target_compile_definitions(scotch PUBLIC cpu_set_t=cpuset_t __BSD_VISIBLE)
-endif(OS_IS_FREEBSD)
+endif()
 
 # Add (de)compression libraries
 if(ZLIB_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_GZ)
   target_include_directories(scotch PRIVATE ${ZLIB_INCLUDE_DIRS})
   target_link_libraries(scotch PRIVATE ${ZLIB_LIBRARIES})
-endif(ZLIB_FOUND)
+endif()
 
 if(BZIP2_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_BZ2)
@@ -554,17 +562,17 @@ endif()
 if(Threads_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_PTHREAD SCOTCH_PTHREAD)
   target_link_libraries(scotch PRIVATE Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
-endif(Threads_FOUND)
+endif()
 
 # Include files
 add_dependencies(scotch scotch_h scotchf_h)
-if (BUILD_PTSCOTCH)
+if(BUILD_PTSCOTCH)
   add_dependencies(scotch ptscotch_h ptscotchf_h)
 endif()
 
 # Error management libraries
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
-  target_compile_definitions(scotch PRIVATE SCOTCH_DEBUG_LIBRARY1)
+  target_compile_definitions(scotch PRIVATE SCOTCH_DEBUG_ALL)
 endif()
 
 add_library(scotcherr library_error.c)
@@ -592,6 +600,31 @@ add_dependencies(scotcherrexit scotch_h)
 #################
 
 set(PTSCOTCH_C_SOURCES
+  arch_mpi.c
+  arch_mpi.h
+  arch_cmplt_mpi.c
+  arch_cmplt_mpi.h
+  arch_cmpltw_mpi.c
+  arch_cmpltw_mpi.h
+  arch_deco_mpi.c
+  arch_deco_mpi.h
+  arch_deco2_mpi.c
+  arch_deco2_mpi.h
+  arch_dist_mpi.c
+  arch_dist_mpi.h
+  arch_hcub_mpi.c
+  arch_hcub_mpi.h
+  arch_mesh_mpi.c
+  arch_mesh_mpi.h
+  arch_sub_mpi.c
+  arch_sub_mpi.h
+  arch_tleaf_mpi.c
+  arch_tleaf_mpi.h
+  arch_torus_mpi.h
+  arch_vcmplt_mpi.c
+  arch_vcmplt_mpi.h
+  arch_vhcub_mpi.c
+  arch_vhcub_mpi.h
   bdgraph.c
   bdgraph.h
   bdgraph_bipart_bd.c
@@ -719,6 +752,8 @@ set(PTSCOTCH_C_SOURCES
   library_dgraph_io_save_f.c
   library_dgraph_map.c
   library_dgraph_map_f.c
+  library_dgraph_map_stat.c
+  library_dgraph_map_stat_f.c
   library_dgraph_map_view.c
   library_dgraph_map_view_f.c
   library_dgraph_order.c
@@ -784,12 +819,12 @@ if(BUILD_PTSCOTCH)
 
   if(APPLE)
     set_target_properties(ptscotch PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-  endif(APPLE)
+  endif()
 
   if(Threads_FOUND)
     target_compile_definitions(ptscotch PRIVATE SCOTCH_PTHREAD COMMON_PTHREAD)
     target_link_libraries(ptscotch PRIVATE Threads::Threads ${THREADS_PTHREADS_WIN32_LIBRARY})
-  endif(Threads_FOUND)
+  endif()
 
   add_library(ptscotcherr library_error.c)
   set_target_properties(ptscotcherr PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
@@ -812,12 +847,15 @@ if(BUILD_PTSCOTCH)
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   add_dependencies(ptscotcherrexit ptscotch_h scotch_h)
-endif(BUILD_PTSCOTCH)
+  if(NOT "${LIBPTSCOTCHERR}" STREQUAL "")
+    target_link_libraries(ptscotch PUBLIC ${LIBPTSCOTCHERR})
+  endif()
+endif()
 
 set_target_properties(scotch PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/scotch.h;${GENERATED_INCLUDE_DIR}/scotchf.h")
 if(BUILD_PTSCOTCH)
   set_target_properties(ptscotch PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/ptscotch.h;${GENERATED_INCLUDE_DIR}/ptscotchf.h")
-endif(BUILD_PTSCOTCH)
+endif()
 
 set(TARGETS_LIST "scotch;scotcherr;scotcherrexit")
 
@@ -831,11 +869,12 @@ foreach(_target ${TARGETS_LIST})
   install(TARGETS ${_target}
     COMPONENT libscotch
     EXPORT ${_target}Targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-  if (BUILD_PTSCOTCH)
+  if(BUILD_PTSCOTCH)
     install(EXPORT pt${_target}Targets
       COMPONENT libptscotch
       FILE pt${_target}Targets.cmake
@@ -845,9 +884,9 @@ foreach(_target ${TARGETS_LIST})
     install(TARGETS pt${_target}
       COMPONENT libptscotch
       EXPORT pt${_target}Targets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
       PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
   endif()
 endforeach()

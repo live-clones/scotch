@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 14 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -178,7 +178,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy   +*/
       SCOTCH_stratDgraphMapBuild (straptr, 0, srcgrafptr->procglbnbr, archDomSize (&srcmappptr->m.archdat, &archdomnorg), 0.05);
   }
   mapstraptr = *((Strat **) straptr);
-  if (mapstraptr->tabl != &kdgraphmapststratab) {
+  if (mapstraptr->tablptr != &kdgraphmapststratab) {
     errorPrint (STRINGIFY (SCOTCH_dgraphMapCompute) ": not a parallel graph mapping strategy");
     goto abort;
   }

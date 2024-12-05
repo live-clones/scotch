@@ -1,13 +1,11 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                  %
-% Titre  : m_n.tex                 %
-% Sujet  : Maintenance manual of   %
-%          Scotch                  %
-%          Style and naming        %
-%          conventions             %
-% Auteur : Francois Pellegrini     %
-%                                  %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                         %
+% Title   : m_d.tex                       %
+% Subject : Maintenance manual of Scotch  %
+%           Style and naming conventions  %
+% Author  : Francois Pellegrini           %
+%                                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Coding style}
 
@@ -217,6 +215,9 @@ Common radicals are:
 \item
 \texttt{velo}: vertex load.
 \item
+\texttt{vnoh}: non-halo vertex, as used in the \texttt{Hgraph}
+structure.
+\item
 \texttt{vnum}: vertex number, used as an index to access another vertex
 structure. This radical typically relates to an array that contains
 the vertex indices, in some original graph, corresponding to the
@@ -224,9 +225,11 @@ vertices of a derived graph (e.g., an induced graph).
 \item
 \texttt{vlbl}: user-defined vertex label (at the user API level).
 \item
-\texttt{edge}: edge (\texttt{i.e.}, arcs, in fact).
+\texttt{edge}: edge (\ie., arcs, in fact).
 \item
 \texttt{edlo}: edge (arc) load.
+\item
+\texttt{enoh}: non-halo edge (\ie., arcs, in fact).
 \item
 \texttt{arch}: target architecture.
 \item
@@ -242,9 +245,9 @@ Common suffices are:
 ``\texttt{nnd}'' suffix below. For number basing and array indexing,
 see Section~\ref{sec-basing}.
 \item
-\texttt{end}: vertex end index of an edge (e.g.,
-\texttt{vertend}, wrt. \texttt{vertnum}). The \texttt{end} suffix is
-a sub-category of the \texttt{num} suffix.
+\texttt{end}: vertex end index of an edge (\eg, \texttt{vertend},
+wrt. \texttt{vertnum}). The \texttt{end} suffix is a sub-category of
+the \texttt{num} suffix.
 \item
 \texttt{nbr}: number of instances of objects of a given radical
 type (e.g., \texttt{vertnbr}, \texttt{edgenbr}). They are commonly
@@ -252,11 +255,10 @@ used within ``un-based'' loop constructs, such as:
 ``\texttt{for (vertnum = 0; vertnum < vertnbr; vertnum ++)} \ldots''.
 \item
 \texttt{nnd}: end based value for a number range, commonly used
-for loop boundaries. Usually, $\mbox{*\texttt{nnd}} =
-\mbox{*\texttt{nbr}} + \mbox{\texttt{baseval}}$. For instance,
-$\mbox{\texttt{vertnnd}} = \mbox{\texttt{vertnbr}} +
-\mbox{\texttt{baseval}}$. They are commonly used in based loop
-constructs, such as:
+for loop boundaries. Usually, $\mathtt{*nnd} =
+\mathtt{*nbr} + \mathtt{baseval}$. For instance,
+$\mathtt{vertnnd} = \mathtt{vertnbr} + \mathtt{baseval}$. They are
+commonly used in based loop constructs, such as:
 ``\texttt{for (vertnum = baseval; vertnum < vertnnd; vertnum ++)}
 \ldots''. For local vertex ranges, e.g., within a thread that manages
 only a partial vertex range, the loop construct would be:
@@ -267,11 +269,11 @@ only a partial vertex range, the loop construct would be:
 object of a given radical type. For instance, \texttt{vertnum} is the
 index of some (graph) vertex, that can be used to access adjacency
 (\texttt{verttab}) or vertex load (\texttt{velotab}) arrays.
-$0 \leq \mbox{\texttt{vertnum}} < \mbox{\texttt{vertnbr}}$ if the
-vertex index is un-based, and $\mbox{\texttt{baseval}} \leq
-\mbox{\texttt{vertnum}} < \mbox{\texttt{vertnnd}}$
+$0 \leq \mathtt{vertnum} < \mathtt{vertnbr}$ if the
+vertex index is un-based, and $\mathtt{baseval} \leq
+\mathtt{vertnum} < \mathtt{vertnnd}$
 if the index is based, that it, counted starting from
-\texttt{baseval}.
+$\mathtt{baseval}$.
 \item
 \texttt{ptr}: pointer to an instance of an item of some radical type
 (e.g., \texttt{grafptr}).
@@ -385,12 +387,12 @@ are based as well. The ``table access'' reference, suffixed as
 as the reference to the beginning of an array in memory, minus the
 base value (with respect to pointer arithmetic, that is, in terms of
 bytes, times the size of the array cell data type). Consequently, for
-any array whose beginning is pointed to by \texttt{xxxxtab}, we have
-$\mbox{\texttt{xxxxtax}} = \mbox{\texttt{xxxxtab}} - \mbox{\texttt{baseval}}$.
-Consequently \texttt{xxxxtax[baseval]} always represents the first
+any array whose beginning is pointed to by $\mathtt{*tab}$, we have
+$\mathtt{*tax} = \mathtt{*tab} - \mathtt{baseval}$.
+Consequently $\mathtt{*tax[baseval}$ always represents the first
 cell in the array, whatever the base value is.
 Of course, memory allocation and freeing operations must always
-operate on \texttt{tab} pointers only.
+operate on $\mathtt{*tab}$ pointers only.
 
 In terms of indices, if the size of the array is \texttt{xxxxnbr},
 then

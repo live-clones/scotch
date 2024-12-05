@@ -1,4 +1,4 @@
-/* Copyright 2007,2012,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 29 nov 2012     **/
 /**                # Version 7.0  : from : 20 sep 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 24 oct 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -80,7 +80,10 @@ const SCOTCH_Graph * const  cgrfptr)
 {
   const Graph *       srccgrfptr;
 
-  srccgrfptr = (((void *) cgrfptr) == ((void *) dgrfptr)) ? NULL : (const Graph *) CONTEXTOBJECT (cgrfptr); /* Consider same pointers as flag for non-root process */
+  srccgrfptr = ((cgrfptr == NULL) ||              /* If no centralized graph provided                       */
+                (((void *) cgrfptr) == ((void *) dgrfptr))) /* Or same reference as distributed graph       */
+               ? NULL                             /* Then process does not hold a valid centralized graph   */
+               : (const Graph *) CONTEXTOBJECT (cgrfptr); /* Else get centralized graph without its context */
 
   return (dgraphScatter ((Dgraph *) CONTEXTOBJECT (dgrfptr), srccgrfptr));
 }

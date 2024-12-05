@@ -1,4 +1,4 @@
-/* Copyright 2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,6 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 04 apr 2018     **/
 /**                                 to   : 05 apr 2018     **/
+/**                # Version 7.0  : from : 11 sep 2024     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,4 +60,4 @@ typedef struct HgraphOrderCcParam_ {
 **  The function prototypes.
 */
 
-int                         hgraphOrderCc       (const Hgraph * const, Order * const, const Gnum, OrderCblk * const, const HgraphOrderCcParam * const);
+int                         hgraphOrderCc       (Hgraph * const, Order * const, const Gnum, OrderCblk * const, const HgraphOrderCcParam * const);

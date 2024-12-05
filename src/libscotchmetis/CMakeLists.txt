@@ -96,7 +96,7 @@ foreach(version 3 5)
   target_compile_definitions(scotchmetisv${version} PUBLIC SCOTCH_METIS_VERSION=${version})
   if(SCOTCH_METIS_PREFIX)
     target_compile_definitions(scotchmetisv${version} PUBLIC SCOTCH_METIS_PREFIX)
-  endif(SCOTCH_METIS_PREFIX)
+  endif()
 
   target_include_directories(scotchmetisv${version} PRIVATE
     $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
@@ -105,6 +105,9 @@ foreach(version 3 5)
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
   target_link_libraries(scotchmetisv${version} PRIVATE scotch)
+  if(NOT "${LIBSCOTCHERR}" STREQUAL "")
+    target_link_libraries(scotchmetisv${version} PRIVATE ${LIBSCOTCHERR})
+  endif()
 
   add_dependencies(scotchmetisv${version} scotch_h metisf_h)
   if(INSTALL_METIS_HEADERS)
@@ -113,7 +116,7 @@ foreach(version 3 5)
 
   if(APPLE)
     set_target_properties(scotchmetisv${version} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-  endif(APPLE)
+  endif()
 
   # libScotchMeTiS targets install
   install(EXPORT scotchmetisTargets
@@ -125,6 +128,7 @@ foreach(version 3 5)
     install(TARGETS scotchmetisv${version}
       COMPONENT libscotch
       EXPORT scotchmetisTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
       PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
@@ -132,6 +136,7 @@ foreach(version 3 5)
     install(TARGETS scotchmetisv${version}
       COMPONENT libscotch
       EXPORT scotchmetisTargets
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
   endif()
@@ -171,7 +176,7 @@ if(BUILD_PTSCOTCH)
     target_compile_definitions(ptscotchparmetisv${version} PUBLIC SCOTCH_PTSCOTCH SCOTCH_METIS_VERSION=${version})
     if(SCOTCH_METIS_PREFIX)
       target_compile_definitions(ptscotchparmetisv${version} PUBLIC SCOTCH_METIS_PREFIX)
-    endif(SCOTCH_METIS_PREFIX)
+    endif()
     target_include_directories(ptscotchparmetisv${version} PRIVATE
       $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
       $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
@@ -181,6 +186,9 @@ if(BUILD_PTSCOTCH)
     target_link_libraries(ptscotchparmetisv${version} PRIVATE scotch)
     target_link_libraries(ptscotchparmetisv${version} PRIVATE ptscotch)
     target_link_libraries(ptscotchparmetisv${version} PUBLIC MPI::MPI_C)
+    if(NOT "${LIBPTSCOTCHERR}" STREQUAL "")
+      target_link_libraries(ptscotchparmetisv${version} PRIVATE ${LIBPTSCOTCHERR})
+    endif()
 
     add_dependencies(ptscotchparmetisv${version} ptscotch_h)
     if(INSTALL_METIS_HEADERS)
@@ -189,7 +197,7 @@ if(BUILD_PTSCOTCH)
 
     if(APPLE)
       set_target_properties(ptscotchparmetisv${version} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-    endif(APPLE)
+    endif()
 
     # libPTScotchParMeTiS targets install
     install(EXPORT ptscotchparmetisTargets
@@ -202,6 +210,7 @@ if(BUILD_PTSCOTCH)
       install(TARGETS ptscotchparmetisv${version}
         COMPONENT libptscotch
         EXPORT ptscotchparmetisTargets
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
@@ -209,8 +218,9 @@ if(BUILD_PTSCOTCH)
       install(TARGETS ptscotchparmetisv${version}
         COMPONENT libptscotch
         EXPORT ptscotchparmetisTargets
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
     endif()
   endforeach(version 3)
-endif(BUILD_PTSCOTCH)
+endif()

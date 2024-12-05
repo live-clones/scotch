@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014,2015,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2015,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,8 +43,8 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 12 apr 2015     **/
-/**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                # Version 7.0  : from : 18 feb 2018     **/
+/**                                 to   : 20 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -82,50 +82,50 @@ ArchCmpltwLoad * restrict const vesotab,
 Anum                            vertnbr,
 Anum                            velosum)
 {
-  Anum                velosum0;
-  Anum                velosum1;
-  Anum                vertnbr0;
-  Anum                vertnbr1;
-  Anum                vertnum0;
-  Anum                vertnum1;
+  Anum                vel0sum;
+  Anum                vel1sum;
+  Anum                ver0nbr;
+  Anum                ver1nbr;
+  Anum                ver0num;
+  Anum                ver1num;
   Anum                vertnum;
 
-  vertnum0 =
-  vertnum1 = vertnbr - 1;
-  velosum0 = velotab[vertnum0 --].veloval;
-  velosum1 = 0;
-  for (vertnum = vertnum0; vertnum >= 0; vertnum --) {
-    if (velosum1 < velosum0) {
-      velosum1            += velotab[vertnum].veloval;
-      vesotab[vertnum1 --] = velotab[vertnum];
+  ver0num =
+  ver1num = vertnbr - 1;
+  vel0sum = velotab[ver0num --].veloval;
+  vel1sum = 0;
+  for (vertnum = ver0num; vertnum >= 0; vertnum --) {
+    if (vel1sum < vel0sum) {
+      vel1sum            += velotab[vertnum].veloval;
+      vesotab[ver1num --] = velotab[vertnum];
     }
     else {
-      velosum0            += velotab[vertnum].veloval;
-      velotab[vertnum0 --] = velotab[vertnum];
+      vel0sum            += velotab[vertnum].veloval;
+      velotab[ver0num --] = velotab[vertnum];
     }
   }
 
-  if (velosum0 >= velosum1) {
-    vertnbr0 = vertnbr - vertnum0 - 1;
-    vertnbr1 = vertnbr - vertnbr0;
-    memMov (velotab,            velotab + vertnbr1, vertnbr0 * sizeof (ArchCmpltwLoad));
-    memCpy (velotab + vertnbr0, vesotab + vertnbr0, vertnbr1 * sizeof (ArchCmpltwLoad));
+  if (vel0sum >= vel1sum) {
+    ver0nbr = vertnbr - ver0num - 1;
+    ver1nbr = vertnbr - ver0nbr;
+    memMov (velotab,           velotab + ver1nbr, ver0nbr * sizeof (ArchCmpltwLoad));
+    memCpy (velotab + ver0nbr, vesotab + ver0nbr, ver1nbr * sizeof (ArchCmpltwLoad));
   }
   else {
     Anum                velotmp;
 
-    vertnbr0 = vertnbr - vertnum1 - 1;
-    vertnbr1 = vertnbr - vertnbr0;
-    memCpy (velotab, vesotab + vertnbr1, vertnbr0 * sizeof (ArchCmpltwLoad));
-    velotmp  = velosum0;
-    velosum0 = velosum1;
-    velosum1 = velotmp;
+    ver0nbr = vertnbr - ver1num - 1;
+    ver1nbr = vertnbr - ver0nbr;
+    memCpy (velotab, vesotab + ver1nbr, ver0nbr * sizeof (ArchCmpltwLoad));
+    velotmp = vel0sum;
+    vel0sum = vel1sum;
+    vel1sum = velotmp;
   }
 
-  if (vertnbr0 > 2)
-    archCmpltwArchBuild3 (velotab, vesotab, vertnbr0, velosum0);
-  if (vertnbr1 > 2)
-    archCmpltwArchBuild3 (velotab + vertnbr0, vesotab + vertnbr0, vertnbr1, velosum1);
+  if (ver0nbr > 2)
+    archCmpltwArchBuild3 (velotab, vesotab, ver0nbr, vel0sum);
+  if (ver1nbr > 2)
+    archCmpltwArchBuild3 (velotab + ver0nbr, vesotab + ver0nbr, ver1nbr, vel1sum);
 }
 
 static
@@ -160,37 +160,45 @@ ArchCmpltw * restrict const archptr,
 const Anum                  vertnbr,
 const Anum * restrict const velotab)
 {
-  Anum                vertnum;
+  ArchCmpltwLoad *    vecwtab;
   Anum                velosum;
+  Anum                vertnum;
 
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
       (sizeof (ArchCmpltwDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archCmpltwArchBuild: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if (vertnbr <= 0) {
-    errorPrint ("archCmpltwArchBuild: invalid parameters");
-    return     (1);
+    errorPrint ("archCmpltwArchBuild: invalid parameters (1)");
+    return (1);
+  }
+
+  if ((vecwtab = (ArchCmpltwLoad *) memAlloc (vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
+    errorPrint ("archCmpltwArchBuild: out of memory");
+    return (1);
+  }
+
+  for (vertnum = 0, velosum = 0; vertnum < vertnbr; vertnum ++) { /* Fill vertex load array */
+    Anum                veloval;
+
+    veloval = velotab[vertnum];
+    if (veloval <= 0) {                           /* Target weights cannot be negative nor null */
+      errorPrint ("archCmpltwArchBuild: invalid parameters (2)");
+      memFree    (vecwtab);
+      return (1);
+    }
+
+    velosum += veloval;
+    vecwtab[vertnum].veloval = veloval;
+    vecwtab[vertnum].vertnum = vertnum;
   }
 
   archptr->vertnbr = (Anum) vertnbr;
-
-  if ((archptr->velotab = (ArchCmpltwLoad *) memAlloc (archptr->vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
-    errorPrint ("archCmpltwArchBuild: out of memory");
-    return     (1);
-  }
-
-  for (vertnum = 0, velosum = 0; vertnum < archptr->vertnbr; vertnum ++) { /* Fill vertex load array */
-    Anum                veloval;
-
-    veloval  = velotab[vertnum];
-    velosum += veloval;
-    archptr->velotab[vertnum].veloval = veloval;
-    archptr->velotab[vertnum].vertnum = vertnum;
-  }
+  archptr->velotab = vecwtab;
   archptr->velosum = (Anum) velosum;
 
   return (archCmpltwArchBuild2 (archptr));
@@ -205,48 +213,56 @@ const Anum * restrict const velotab)
 
 int
 archCmpltwArchLoad (
-ArchCmpltw * restrict const  archptr,
+ArchCmpltw * restrict const archptr,
 FILE * restrict const       stream)
 {
-  long                vertnbr;
+  ArchCmpltwLoad *    vecwtab;
   Anum                velosum;
-  Anum                vertnum;
+  long                vertnbr;
+  long                vertnum;
 
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
       (sizeof (ArchCmpltwDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archCmpltwArchLoad: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if ((fscanf (stream, "%ld", &vertnbr) != 1) ||
       (vertnbr < 1)) {
     errorPrint ("archCmpltwArchLoad: bad input (1)");
-    return     (1);
+    return (1);
   }
-  archptr->vertnbr = (Anum) vertnbr;
 
-  if ((archptr->velotab = (ArchCmpltwLoad *) memAlloc (archptr->vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
+  if ((vecwtab = (ArchCmpltwLoad *) memAlloc (vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
     errorPrint ("archCmpltwArchLoad: out of memory");
-    return     (1);
+    return (1);
   }
 
-  for (vertnum = 0, velosum = 0; vertnum < archptr->vertnbr; vertnum ++) {
-    long                veloval;
-    Anum                velotmp;
+  for (vertnum = 0, velosum = 0; vertnum < vertnbr; vertnum ++) {
+    long                velotmp;
+    Anum                veloval;
 
-    if ((fscanf (stream, "%ld", &veloval) != 1) ||
-        (veloval < 1)) {
+    if ((fscanf (stream, "%ld", &velotmp) != 1) ||
+        (velotmp < 1)) {
       errorPrint ("archCmpltwArchLoad: bad input (2)");
-      return     (1);
+      return (1);
+    }
+    veloval = (Anum) velotmp;
+    if (veloval <= 0) {                           /* Target weights cannot be negative nor null */
+      errorPrint ("archCmpltwArchLoad: bad input (3)");
+      memFree    (vecwtab);
+      return (1);
     }
 
-    velotmp  = (Anum) veloval;
-    velosum += velotmp;
-    archptr->velotab[vertnum].veloval = velotmp;
-    archptr->velotab[vertnum].vertnum = vertnum;
+    velosum += veloval;
+    vecwtab[vertnum].veloval = veloval;
+    vecwtab[vertnum].vertnum = vertnum;
   }
+
+  archptr->vertnbr = (Anum) vertnbr;
+  archptr->velotab = vecwtab;
   archptr->velosum = (Anum) velosum;
 
   return (archCmpltwArchBuild2 (archptr));
@@ -270,13 +286,13 @@ FILE * restrict const       stream)
   if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
       (sizeof (ArchCmpltwDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archCmpltwArchSave: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if (fprintf (stream, ANUMSTRING, (Anum) archptr->vertnbr) == EOF) {
     errorPrint ("archCmpltwArchSave: bad output (1)");
-    return     (1);
+    return (1);
   }
 
   for (vertnum = 0; vertnum < archptr->vertnbr; vertnum ++) { /* For all weights to output */
@@ -286,20 +302,20 @@ FILE * restrict const       stream)
       if (archptr->velotab[verttmp].vertnum == vertnum) {
         if (fprintf (stream, " " ANUMSTRING, (Anum) archptr->velotab[verttmp].veloval) == EOF) {
           errorPrint ("archCmpltwArchSave: bad output (2)");
-          return     (1);
+          return (1);
         }
         break;
       }
       if (verttmp == archptr->vertnbr) {
         errorPrint ("archCmpltwArchSave: internal error");
-        return     (1);
+        return (1);
       }
     }
   }
 
   if (fprintf (stream, "\n") == EOF) {
     errorPrint ("archCmpltwArchSave: bad output (3)");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -320,7 +336,7 @@ ArchCmpltw * const          archptr)
   if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
       (sizeof (ArchCmpltwDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archCmpltwArchFree: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -370,7 +386,7 @@ const ArchDomNum            domnnum)
 #ifdef SCOTCH_DEBUG_ARCH2
     if (vertnum == archptr->vertnbr) {            /* If index not found */
       errorPrint ("archCmpltwDomTerm: internal error");
-      return     (2);
+      return (2);
     }
 #endif /* SCOTCH_DEBUG_ARCH2 */
 
@@ -468,7 +484,7 @@ FILE * const                    stream)
       (vertnbr < 1)            ||
       (vertnbr + vertmin > (long) archptr->vertnbr)) {
     errorPrint ("archCmpltwDomLoad: bad input");
-    return     (1);
+    return (1);
   }
   domnptr->vertmin = (Anum) vertmin;
   domnptr->vertnbr = (Anum) vertnbr;
@@ -499,7 +515,7 @@ FILE * const                stream)
                (Anum) domnptr->vertmin,
                (Anum) domnptr->vertnbr) == EOF) {
     errorPrint ("archCmpltwDomSave: bad output");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -569,22 +585,3 @@ const ArchCmpltwDom * const dom1ptr)
 
   return (0);
 }
-
-/* This function creates the MPI_Datatype for
-** weighted complete graph domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archCmpltwDomMpiType (
-const ArchCmpltw * const      archptr,
-MPI_Datatype * const          typeptr)
-{
-  MPI_Type_contiguous (3, ANUM_MPI, typeptr);
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */

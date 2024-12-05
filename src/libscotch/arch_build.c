@@ -53,7 +53,7 @@
 /**                                 to   : 28 jun 2011     **/
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
-/**                # Version 7.0  : from : 21 aug 2019     **/
+/**                # Version 7.0  : from : 18 feb 2018     **/
 /**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
@@ -156,7 +156,7 @@ Context * const             contptr)              /*+ Execution context         
   const Gnum * restrict const tgtedlotax = tgtgrafptr->edlotax;
 
   archInit (tgtarchptr);                          /* Initialize architecture body */
-  tgtarchptr->class = archClass ("deco");         /* Set architecture class       */
+  tgtarchptr->clasptr = archClass ("deco");       /* Set architecture class       */
 
   termdomnbr = (tgtlistptr != NULL) ? tgtlistptr->vnumnbr : tgtgrafptr->vertnbr;
   if (termdomnbr == 0)                            /* If nothing to do */
@@ -187,7 +187,7 @@ Context * const             contptr)              /*+ Execution context         
   mappdat.domnmax  = termdomnbr;
 
   archInit (&archdat);                            /* Initialize terminal architecture */
-  archdat.class = archClass ("varcmplt");         /* Set architecture class           */
+  archdat.clasptr = archClass ("varcmplt");       /* Set architecture class           */
   archDomFrst (&archdat, &mappdat.domntab[0]);    /* Get initial domain               */
   mappdat.domnnbr = 1;
 

@@ -58,6 +58,8 @@
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
 /**                                 to   : 21 jan 2023     **/
+/**                # Version 8.0  : from : 18 feb 2018     **/
+/**                                 to   : 18 feb 2018     **/
 /**                                                        **/
 /************************************************************/
 
@@ -153,11 +155,11 @@ SCOTCH_Arch * const         archptr)
 {
   if (sizeof (SCOTCH_Num) != sizeof (Anum)) {
     errorPrint (STRINGIFY (SCOTCH_archInit) ": internal error (1)");
-    return     (1);
+    return (1);
   }
   if (sizeof (SCOTCH_Arch) < sizeof (Arch)) {
     errorPrint (STRINGIFY (SCOTCH_archInit) ": internal error (2)");
-    return     (1);
+    return (1);
   }
 
   return (archInit ((Arch *) archptr));
@@ -270,14 +272,14 @@ const SCOTCH_Num            termnbr)
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archCmplt) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchCmplt *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("cmplt");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("cmplt");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->termnbr = (Anum) termnbr;
 
   return (0);
@@ -297,12 +299,12 @@ const SCOTCH_Num * const    velotab)
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archCmpltw) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr          = (Arch *) archptr;
-  tgtarchptr->class   = archClass ("cmpltw");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("cmpltw");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   return (archCmpltwArchBuild ((ArchCmpltw *) (void *) (&tgtarchptr->data), vertnbr, velotab));
 }
@@ -321,14 +323,14 @@ const SCOTCH_Num            dimnnbr)              /*+ Number of dimensions +*/
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archHcub) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchHcub *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("hcub");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("hcub");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = (Anum) dimnnbr;
 
   return (0);
@@ -349,14 +351,14 @@ const SCOTCH_Num            dimyval)
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archMesh2) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchMesh2 *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class   = archClass ("mesh2D");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("mesh2D");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = 2;
   tgtarchdatptr->c[0]    = (Anum) dimxval;
   tgtarchdatptr->c[1]    = (Anum) dimyval;
@@ -380,14 +382,14 @@ const SCOTCH_Num            dimzval)
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archMesh3) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchMesh3 *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class   = archClass ("mesh3D");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("mesh3D");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = 3;
   tgtarchdatptr->c[0]    = (Anum) dimxval;
   tgtarchdatptr->c[1]    = (Anum) dimyval;
@@ -411,18 +413,18 @@ const SCOTCH_Num * const    dimntab)              /*+ Array of dimensions       
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archMeshX) ": internal error");
-    return     (1);
+    return (1);
   }
   if (dimnnbr > ARCHMESHDIMNMAX) {
     errorPrint (STRINGIFY (SCOTCH_archMeshX) ": too many dimensions");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchMeshX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("meshXD");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("meshXD");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = dimnnbr;
   memCpy (tgtarchdatptr->c, dimntab, dimnnbr * sizeof (SCOTCH_Num)); /* Copy dimension array */
 
@@ -445,14 +447,14 @@ const SCOTCH_Num * const    vnumtab)
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archSub) ": internal error");
-    return     (2);
+    return (2);
   }
 
   tgtarchptr    = (Arch *) subarchptr;
   tgtarchdatptr = (ArchSub *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class   = archClass ("sub");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("sub");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   return (archSubArchBuild (tgtarchdatptr, (Arch *) orgarchptr, (Gnum) vnumnbr, (Gnum *) vnumtab));
 }
@@ -475,17 +477,17 @@ const SCOTCH_Num * const    linktab)              /*+ Link cost array, by increa
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archTleaf) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr          = (Arch *) archptr;
   tgtarchdatptr       = (ArchTleaf *) (void *) (&tgtarchptr->data);
-  tgtarchptr->class   = archClass ("tleaf");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("tleaf");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   if ((tgtarchdatptr->sizetab = memAlloc ((levlnbr * 2 + 1) * sizeof (Anum))) == NULL) { /* TRICK: One more slot for linktab[-1] */
     errorPrint (STRINGIFY (SCOTCH_archTleaf) ": out of memory");
-    return     (1);
+    return (1);
   }
   tgtarchdatptr->levlnbr     = (Anum) levlnbr;
   tgtarchdatptr->linktab     = tgtarchdatptr->sizetab + tgtarchdatptr->levlnbr + 1;
@@ -521,13 +523,13 @@ const SCOTCH_Num * const    permtab)              /*+ Permutation array         
 
   if (SCOTCH_archTleaf (archptr, levlnbr, sizetab, linktab) != 0) /* Build tree part */
     return (1);
-  tgtarchptr        = (Arch *) archptr;
-  tgtarchdatptr     = (ArchTleaf *) (void *) (&tgtarchptr->data);
-  tgtarchptr->class = archClass ("ltleaf");       /* Override class */
+  tgtarchptr          = (Arch *) archptr;
+  tgtarchdatptr       = (ArchTleaf *) (void *) (&tgtarchptr->data);
+  tgtarchptr->clasptr = archClass ("ltleaf");     /* Override class */
 
   if ((tgtarchdatptr->permtab = memAlloc (permnbr * 2 * sizeof (Anum))) == NULL) { /* TRICK: space for peritab too */
     errorPrint (STRINGIFY (SCOTCH_archLtleaf) ": out of memory");
-    return     (1);
+    return (1);
   }
   tgtarchdatptr->permnbr = (Anum) permnbr;
   tgtarchdatptr->peritab = tgtarchdatptr->permtab + permnbr;
@@ -555,14 +557,14 @@ const SCOTCH_Num            dimyval)
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archTorus2) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("torus2D");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("torus2D");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = 2;
   tgtarchdatptr->c[0]    = (Anum) dimxval;
   tgtarchdatptr->c[1]    = (Anum) dimyval;
@@ -586,14 +588,14 @@ const SCOTCH_Num            dimzval)
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archTorus3) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("torus3D");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("torus3D");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = 3;
   tgtarchdatptr->c[0]    = (Anum) dimxval;
   tgtarchdatptr->c[1]    = (Anum) dimyval;
@@ -617,18 +619,18 @@ const SCOTCH_Num * const    dimntab)              /*+ Array of dimensions       
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archTorusX) ": internal error");
-    return     (1);
+    return (1);
   }
   if (dimnnbr > ARCHMESHDIMNMAX) {
     errorPrint (STRINGIFY (SCOTCH_archTorusX) ": too many dimensions");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr    = (Arch *) archptr;
   tgtarchdatptr = (ArchTorusX *) (void *) (&tgtarchptr->data);
 
-  tgtarchptr->class      = archClass ("torusXD");
-  tgtarchptr->flagval    = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr    = archClass ("torusXD");
+  tgtarchptr->flagval    = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
   tgtarchdatptr->dimnnbr = dimnnbr;
   memCpy (tgtarchdatptr->c, dimntab, dimnnbr * sizeof (SCOTCH_Num)); /* Copy dimension array */
 
@@ -647,13 +649,13 @@ SCOTCH_Arch * const         archptr)
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archVcmplt) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr = (Arch *) archptr;
 
-  tgtarchptr->class   = archClass ("varcmplt");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("varcmplt");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   return (0);
 }
@@ -670,13 +672,13 @@ SCOTCH_Arch * const         archptr)
 
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_archVhcub) ": internal error");
-    return     (1);
+    return (1);
   }
 
   tgtarchptr = (Arch *) archptr;
 
-  tgtarchptr->class   = archClass ("varhcub");
-  tgtarchptr->flagval = tgtarchptr->class->flagval; /* Copy architecture flag */
+  tgtarchptr->clasptr = archClass ("varhcub");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   return (0);
 }

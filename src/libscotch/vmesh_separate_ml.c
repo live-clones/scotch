@@ -126,7 +126,7 @@ const Gnum * restrict const   finecoartax)        /*+ Multinode array +*/
   if (finemeshptr->parttax == NULL) {             /* If partition array not yet allocated */
     if ((finemeshptr->parttax = (GraphPart *) memAlloc ((finemeshptr->m.velmnbr + finemeshptr->m.vnodnbr) * sizeof (GraphPart))) == NULL) {
       errorPrint ("vmeshSeparateMlUncoarsen: out of memory");
-      return     (1);                             /* Allocated data will be freed along with mesh structure */
+      return (1);                                 /* Allocated data will be freed along with mesh structure */
     }
     finemeshptr->parttax -= finemeshptr->m.baseval;
   }
@@ -147,7 +147,7 @@ const Gnum * restrict const   finecoartax)        /*+ Multinode array +*/
       if ((finecoartax[finevelmnum] < coarmeshptr->m.baseval) ||
           (finecoartax[finevelmnum] >= (coarmeshptr->m.velmnbr + coarmeshptr->m.vnodnbr + coarmeshptr->m.baseval))) {
         errorPrint ("vmeshSeparateMlUncoarsen: internal error (1)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_VMESH2 */
       partval = (Gnum) coarmeshptr->parttax[finecoartax[finevelmnum]];
@@ -167,7 +167,7 @@ const Gnum * restrict const   finecoartax)        /*+ Multinode array +*/
       if ((finecoartax[finevnodnum] <  coarmeshptr->m.vnodbas) || /* Sons of nodes are always nodes */
           (finecoartax[finevnodnum] >= coarmeshptr->m.vnodnnd)) {
         errorPrint ("vmeshSeparateMlUncoarsen: internal error (2)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_VMESH2 */
       partval = coarmeshptr->parttax[finecoartax[finevnodnum]];

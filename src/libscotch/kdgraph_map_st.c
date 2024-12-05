@@ -1,4 +1,4 @@
-/* Copyright 2008-2011,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2011,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 16 jun 2008     **/
 /**                                 to   : 14 apr 2011     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,8 +78,8 @@ static union {
 } kdgraphmapstdefaultrb = { { &stratdummy, &stratdummy, 0.05 } };
 
 static StratMethodTab       kdgraphmapstmethtab[] = { /* Mapping methods array */
-                              { KDGRAPHMAPSTMETHRB, "r",  kdgraphMapRb, &kdgraphmapstdefaultrb },
-                              { -1,                 NULL, NULL,         NULL } };
+                              { KDGRAPHMAPSTMETHRB, "r",  (StratMethodFunc) kdgraphMapRb, &kdgraphmapstdefaultrb },
+                              { -1,                 NULL, (StratMethodFunc) NULL,         NULL } };
 
 static StratParamTab        kdgraphmapstparatab[] = { /* Method parameter list */
                               { KDGRAPHMAPSTMETHRB,  STRATPARAMSTRAT,  "sep",
@@ -124,52 +124,52 @@ int
 kdgraphMapSt (
 Kdgraph * restrict const      grafptr,            /*+ Mapping graph    +*/
 Kdmapping * restrict const    mappptr,            /*+ Dynamic mapping  +*/
-const Strat * restrict const  strat)              /*+ Mapping strategy +*/
+const Strat * restrict const  straptr)            /*+ Mapping strategy +*/
 {
-  StratTest           val;
+  StratTest           testdat;
   int                 o;
 
 #ifdef SCOTCH_DEBUG_KDGRAPH2
   if (sizeof (Gnum) != sizeof (INT)) {
     errorPrint ("kdgraphMapSt: invalid type specification for parser variables");
-    return     (1);
+    return (1);
   }
   if ((sizeof (KdgraphMapRbParam) > sizeof (StratNodeMethodData))) {
     errorPrint ("kdgraphMapSt: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KDGRAPH2 */
 #ifdef SCOTCH_DEBUG_KDGRAPH1
-  if ((strat->tabl != &kdgraphmapststratab) &&
-      (strat       != &stratdummy)) {
+  if ((straptr->tablptr != &kdgraphmapststratab) &&
+      (straptr          != &stratdummy)) {
     errorPrint ("kdgraphMapSt: invalid parameter (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_KDGRAPH1 */
 
   o = 0;
-  switch (strat->type) {
+  switch (straptr->typeval) {
     case STRATNODECONCAT :
-      o = kdgraphMapSt (grafptr, mappptr, strat->data.concat.strat[0]); /* Apply first strategy          */
-      if (o == 0)                                 /* If it worked all right                              */
-        o |= kdgraphMapSt (grafptr, mappptr, strat->data.concat.strat[1]); /* Then apply second strategy */
+      o = kdgraphMapSt (grafptr, mappptr, straptr->data.concdat.stratab[0]); /* Apply first strategy          */
+      if (o == 0)                                 /* If it worked all right                                   */
+        o |= kdgraphMapSt (grafptr, mappptr, straptr->data.concdat.stratab[1]); /* Then apply second strategy */
       break;
     case STRATNODECOND :
-      o = stratTestEval (strat->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                  */
+      o = stratTestEval (straptr->data.conddat.testptr, &testdat, (void *) grafptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct */
 #ifdef SCOTCH_DEBUG_KDGRAPH2
-        if ((val.typetest != STRATTESTVAL) ||
-            (val.typenode != STRATPARAMLOG)) {
+        if ((testdat.testval != STRATTESTVAL) ||
+            (testdat.nodeval != STRATPARAMLOG)) {
           errorPrint ("kdgraphMapSt: invalid test result");
           o = 1;
           break;
         }
 #endif /* SCOTCH_DEBUG_KDGRAPH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                           */
-          o = kdgraphMapSt (grafptr, mappptr, strat->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false                     */
-          if (strat->data.cond.strat[1] != NULL)  /* And if there is an else statement               */
-            o = kdgraphMapSt (grafptr, mappptr, strat->data.cond.strat[1]); /* Apply second strategy */
+        if (testdat.data.val.vallog == 1)         /* If expression is true */
+          o = kdgraphMapSt (grafptr, mappptr, straptr->data.conddat.stratab[0]); /* Apply first strategy    */
+        else {                                    /* Else if expression is false                            */
+          if (straptr->data.conddat.stratab[1] != NULL)  /* And if there is an else statement               */
+            o = kdgraphMapSt (grafptr, mappptr, straptr->data.conddat.stratab[1]); /* Apply second strategy */
         }
       }
       break;
@@ -177,17 +177,18 @@ const Strat * restrict const  strat)              /*+ Mapping strategy +*/
       break;
     case STRATNODESELECT :
       errorPrint ("kdgraphMapSt: selection operator not implemented for k-way strategies");
-      return      (1);
+      return (1);
 #ifdef SCOTCH_DEBUG_KDGRAPH1
     case STRATNODEMETHOD :
 #else  /* SCOTCH_DEBUG_KDGRAPH1 */
     default :
 #endif /* SCOTCH_DEBUG_KDGRAPH1 */
-      return (strat->tabl->methtab[strat->data.method.meth].func (grafptr, mappptr, (void *) &strat->data.method.data));
+      return (((KdgraphMapFunc) straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr)
+              (grafptr, mappptr, (const void * const) &straptr->data.methdat.datadat));
 #ifdef SCOTCH_DEBUG_KDGRAPH1
     default :
       errorPrint ("kdgraphMapSt: invalid parameter (2)");
-      return     (1);
+      return (1);
 #endif /* SCOTCH_DEBUG_KDGRAPH1 */
   }
   return (o);

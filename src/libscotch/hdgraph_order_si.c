@@ -1,4 +1,4 @@
-/* Copyright 2007,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 15 apr 2006     **/
 /**                                 to   : 25 jul 2007     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 22 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -71,8 +71,8 @@
 
 int
 hdgraphOrderSi (
-const Hdgraph * restrict const  grafptr,
-DorderCblk * restrict const     cblkptr)          /*+ Single column-block +*/
+Hdgraph * restrict const    grafptr,
+DorderCblk * restrict const cblkptr)              /*+ Single column-block +*/
 {
   Gnum * restrict     periloctab;
   Gnum * restrict     periloctax;
@@ -84,17 +84,18 @@ DorderCblk * restrict const     cblkptr)          /*+ Single column-block +*/
 
   cheklocval = 0;
 #endif /* SCOTCH_DEBUG_HDGRAPH1 */
-  vnohlocnbr = grafptr->s.vertlocnbr;             /* Get number of local non-halo vertices */
+  vnohlocnbr = grafptr->s.vertlocnbr;             /* Get number of local non-halo vertices                */
   if ((periloctab = (Gnum *) memAlloc (vnohlocnbr * sizeof (Gnum))) == NULL) { /* Allocate local fragment */
     errorPrint ("hdgraphOrderSi: out of memory");
 #ifndef SCOTCH_DEBUG_HDGRAPH1
     return (1);
   }
 #else /* SCOTCH_DEBUG_HDGRAPH1 */
+    cheklocval = 1;                               /* Indicate a error */
   }
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, grafptr->s.proccomm) != MPI_SUCCESS) { /* Communication cannot be merged with a useful one */
     errorPrint ("hdgraphOrderSi: communication error (1)");
-    return     (1);
+    return (1);
   }
   if (chekglbval != 0) {
     if (periloctab != NULL)

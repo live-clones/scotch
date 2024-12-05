@@ -80,7 +80,7 @@ VmeshStore * const          storptr)
 
   if ((storptr->datatab = (byte *) memAlloc (savsize)) == NULL) { /* Allocate save structure */
     errorPrint ("vmeshStoreInit: out of memory");
-    return     (1);
+    return (1);
   }
 
   return (0);

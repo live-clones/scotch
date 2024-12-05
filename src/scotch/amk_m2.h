@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2014,2019 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2014,2019,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,6 +54,8 @@
 /**                                 to   : 09 feb 2004     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
 /**                                 to   : 16 apr 2019     **/
+/**                # Version 7.0  : from : 10 sep 2024     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,12 +83,16 @@ typedef enum C_MethType_ {
   C_METHONEWAY                                    /*+ One-way decomposition +*/
 } C_MethType;
 
+/** The bipartitioning routine type. **/
+
+typedef int (* DomnBipartFunc) (const ArchMesh2 * const, const ArchMesh2Dom * const, ArchMesh2Dom * const, ArchMesh2Dom * const);
+
 /*
 **  The function prototypes.
 */
 
-void                        C_termBipart        (ArchMesh2 *, ArchMesh2Dom *, Anum, Anum *, Anum *, int (*) ());
-int                         C_methBipartOne     (const ArchMesh2 * const, const ArchMesh2Dom * const, ArchMesh2Dom * restrict const, ArchMesh2Dom * restrict const);
+void                        C_domnBipart        (ArchMesh2 *, ArchMesh2Dom *, Anum, Anum *, Anum *, int (*) ());
+int                         C_domnBipartOne     (const ArchMesh2 * const, const ArchMesh2Dom * const, ArchMesh2Dom * restrict const, ArchMesh2Dom * restrict const);
 
 /*
 **  The macro definitions.
@@ -96,4 +102,4 @@ int                         C_methBipartOne     (const ArchMesh2 * const, const 
 #define abs(a)                      (((a) >= 0) ? (a) : -(a))
 #endif /* abs */
 
-#define C_termDist(x0,y0,x1,y1)     (abs ((x0) - (x1)) + abs ((y0) - (y1)))
+#define C_domnDist(x0,y0,x1,y1)     (abs ((x0) - (x1)) + abs ((y0) - (y1)))

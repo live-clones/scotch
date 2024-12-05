@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,7 +59,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /**   NOTES      : # The vertices of the (dX,dY) mesh are  **/
 /**                  numbered as terminals so that         **/
@@ -119,7 +119,7 @@ char *                      argv[])
 {
   ArchMesh2        arch;                          /* Mesh dimensions            */
   ArchMesh2Dom     dom;                           /* Initial domain             */
-  C_MethType       methtype;                      /* Bipartitioning method      */
+  C_MethType       typeval;                       /* Bipartitioning method      */
   Anum             termnbr;                       /* Number of terminal domains */
   Anum             termnum;
   Anum             termmax;                       /* Maximum terminal number    */
@@ -134,7 +134,7 @@ char *                      argv[])
     return     (EXIT_SUCCESS);
   }
 
-  methtype  = C_METHNESTED;
+  typeval   = C_METHNESTED;
   arch.c[0] =                                     /* Preset mesh dimensions */
   arch.c[1] = 1;
 
@@ -159,11 +159,11 @@ char *                      argv[])
           switch (argv[i][2]) {
             case 'N' :                            /* Nested dissection */
             case 'n' :
-              methtype = C_METHNESTED;
+              typeval = C_METHNESTED;
               break;
             case 'O' :                            /* One-way dissection */
             case 'o' :
-              methtype = C_METHONEWAY;
+              typeval = C_METHONEWAY;
               break;
             default :
               errorPrint ("main: unprocessed option '%s'", argv[i]);
@@ -198,8 +198,8 @@ char *                      argv[])
 
   memset (termtab, -1, termnbr * sizeof (unsigned int)); /* Initilize mapping table */
 
-  C_termBipart (&arch, &dom, 1, termtab, &termmax, /* Compute terminal numbers */
-                (methtype == C_METHNESTED) ? archMesh2DomBipart : archMesh2DomBipartO);
+  C_domnBipart (&arch, &dom, 1, termtab, &termmax, /* Compute terminal numbers */
+                (typeval == C_METHNESTED) ? archMesh2DomBipart : archMesh2DomBipartO);
 
   fprintf (C_filepntrarcout, "deco\n0\n" ANUMSTRING "\t" ANUMSTRING "\n", /* Print file header */
            termnbr,
@@ -214,7 +214,7 @@ char *                      argv[])
         for (x1 = 0; (x1 < arch.c[0]) && ((y1 < y0) || (x1 < x0)); x1 ++)
           fprintf (C_filepntrarcout,
                    ((x1 == 0) && (y1 == 0)) ? ANUMSTRING : " " ANUMSTRING,
-                   C_termDist (x0, y0, x1, y1));
+                   C_domnDist (x0, y0, x1, y1));
       }
       fprintf (C_filepntrarcout, "\n");
     }
@@ -233,20 +233,20 @@ char *                      argv[])
 */
 
 void
-C_termBipart (
+C_domnBipart (
 ArchMesh2 *                 archptr,
 ArchMesh2Dom *              domptr,
 Anum                        num,
 Anum *                      termtab,
 Anum *                      termmax,
-int                     (*  methfunc) ())
+DomnBipartFunc              funcptr)
 {
   ArchMesh2Dom        dom0;
   ArchMesh2Dom        dom1;
 
-  if (methfunc (archptr, domptr, &dom0, &dom1) == 0) { /* If we can bipartition                          */
-    C_termBipart (archptr, &dom0, num + num,     termtab, termmax, methfunc); /* Bipartition recursively */
-    C_termBipart (archptr, &dom1, num + num + 1, termtab, termmax, methfunc);
+  if (funcptr (archptr, domptr, &dom0, &dom1) == 0) { /* If we can bipartition                          */
+    C_domnBipart (archptr, &dom0, num + num,     termtab, termmax, funcptr); /* Bipartition recursively */
+    C_domnBipart (archptr, &dom1, num + num + 1, termtab, termmax, funcptr);
   }
   else {                                          /* If we have reached the end */
     termtab[domptr->c[1][0] * archptr->c[0] +     /* Set the terminal number    */

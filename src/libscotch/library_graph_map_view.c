@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2015,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2015,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@
 /**                # Version 6.1  : from : 01 jul 2021     **/
 /**                                 to   : 01 jul 2021     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 30 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -692,7 +692,6 @@ FILE * const                        stream)
   Gnum                        partnum;
   GraphMapViewList * restrict listtab;
   Gnum                        vertnum;
-  Gnum                        fronnbr;
   Gnum                        fronload;
   Gnum * restrict             compload;
   Gnum * restrict             compsize;
@@ -720,7 +719,6 @@ FILE * const                        stream)
 
   parttax = ((Gnum *) parttab) - grafptr->baseval;
 
-  fronnbr  =
   fronload = 0;
   for (vertnum = grafptr->baseval; vertnum < grafptr->vertnnd; vertnum ++) {
     Gnum          partval;
@@ -737,8 +735,7 @@ FILE * const                        stream)
 
       veloval = (velotax != NULL) ? velotax[vertnum] : 1;
 
-      fronnbr  ++;                                /* Add vertex to frontier */
-      fronload += veloval;
+      fronload += veloval;                        /* Add vertex to frontier */
 
       listidx = -1;                               /* No neighboring parts recorded yet          */
       listtab[-1].vertnum = vertnum;              /* Separator neighbors will not be considered */

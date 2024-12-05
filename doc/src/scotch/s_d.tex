@@ -49,8 +49,9 @@ for {\tt lzma} decompression. Note that the corresponding
 development libraries must be installed on your system before compile
 time, and that compressed file handling can take place only on systems
 which support multi-threading or multi-processing. In the first case,
-you must set the {\tt SCOTCH\_\lbt PTHREAD} flag in order to take
-advantage of these features.
+you must set the {\tt COMMON\_\lbt PTHREAD} and
+{\tt COMMON\_\lbt PTHREAD\_\lbt FILE} flags in order to take advantage
+of these features.
 
 On Linux systems, the development libraries to install are {\tt
 libbzip2\_1-\lbt devel} for the {\tt bzip2} format, {\tt zlib1-\lbt

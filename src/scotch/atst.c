@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 24 sep 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 20 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,9 +91,9 @@ static const char *         C_usageList[] = {
 /******************************/
 
 int
-main (argc, argv)
-int                 argc;
-char *              argv[];
+main (
+int                         argc,
+char *                      argv[])
 {
   SCOTCH_Arch               archdat;
   SCOTCH_ArchDom            domndat;
@@ -146,17 +146,17 @@ char *              argv[];
 
   SCOTCH_archInit (&archdat);                     /* Initialize architecture structure */
   if (SCOTCH_archLoad (&archdat, C_filepntrtgtinp) != 0) /* Load architecture          */
-    SCOTCH_errorPrint ("main: cannot load architecture");
+    errorPrint ("main: cannot load architecture");
 
   SCOTCH_archDomFrst (&archdat, &domndat);
   termnbr = SCOTCH_archDomSize (&archdat, &domndat);
   if ((termtab = (SCOTCH_ArchDom *) malloc (termnbr * sizeof (SCOTCH_ArchDom))) == NULL)
-    SCOTCH_errorPrint ("main: out of memory");
+    errorPrint ("main: out of memory");
 
   termnum = 0;
   if ((C_termList (&archdat, termtab, termnbr, &termnum, &domndat) != 0) ||
       (termnum != termnbr))
-    SCOTCH_errorPrint ("main: cannot enumerate terminal domains");
+    errorPrint ("main: cannot enumerate terminal domains");
 
   distmin = (SCOTCH_Num) (((unsigned long) ((SCOTCH_Num) -1)) >> 1); /* Set to maximum number in Anum */
   distmax = 0;

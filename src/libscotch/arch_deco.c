@@ -243,7 +243,7 @@ FILE * restrict const       stream)
   }
 
   if (typeval == 2) {                             /* If type-2 decomposition                      */
-    archArch (archptr)->class = archClass2 ("deco", 1); /* Switch class for future routines       */
+    archArch (archptr)->clasptr = archClass2 ("deco", 1); /* Switch class for future routines     */
     return (archDeco2ArchLoad2 ((ArchDeco2 *) archptr, stream)); /* Call subclass loading routine */
   }
 
@@ -621,22 +621,3 @@ const ArchDecoDom * const   dom1ptr)
 
   return (0);
 }
-
-/* This function creates the MPI_Datatype for
-** decomposition-described domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archDecoDomMpiType (
-const ArchDeco * const        archptr,
-MPI_Datatype * const          typeptr)
-{
-  *typeptr = ANUM_MPI;
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */

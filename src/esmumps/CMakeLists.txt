@@ -100,7 +100,7 @@ set_target_properties(esmumps PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
 
 if(APPLE)
   set_target_properties(esmumps PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-endif(APPLE)
+endif()
 
 target_include_directories(esmumps PRIVATE
   $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
@@ -108,6 +108,9 @@ target_include_directories(esmumps PRIVATE
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 target_link_libraries(esmumps PRIVATE scotch)
+if(NOT "${LIBSCOTCHERR}" STREQUAL "")
+  target_link_libraries(esmumps PRIVATE ${LIBSCOTCHERR})
+endif()
 
 add_dependencies(esmumps scotch_h)
 
@@ -133,40 +136,47 @@ install(EXPORT esmumpsTargets
 install(TARGETS esmumps
   COMPONENT libscotch
   EXPORT esmumpsTargets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Dummy PTEsMUMPS library file
-add_library(ptesmumps ${esmumps_src} ${esmumps_headers})
+if(BUILD_PTSCOTCH)
+  add_library(ptesmumps ${esmumps_src} ${esmumps_headers})
 
-if(APPLE)
-  set_target_properties(ptesmumps PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-endif(APPLE)
+  if(APPLE)
+    set_target_properties(ptesmumps PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  endif()
 
-set_target_properties(ptesmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/esmumps.h")
+  set_target_properties(ptesmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/esmumps.h")
 
-set_target_properties(ptesmumps PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
-  SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
+  set_target_properties(ptesmumps PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
+    SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})
 
-target_include_directories(ptesmumps PRIVATE
-  $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
-  $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+  target_include_directories(ptesmumps PRIVATE
+    $<BUILD_INTERFACE:${LIBSCOTCH_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${GENERATED_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-target_link_libraries(ptesmumps PRIVATE scotch)
-add_dependencies(ptesmumps scotch_h)
+  target_link_libraries(ptesmumps PRIVATE scotch)
+  if(NOT "${LIBSCOTCHERR}" STREQUAL "")
+    target_link_libraries(ptesmumps PRIVATE ${LIBSCOTCHERR})
+  endif()
+  add_dependencies(ptesmumps scotch_h)
 
-# libptesmumps targets install
-install(EXPORT ptesmumpsTargets
-  COMPONENT libptscotch
-  FILE ptesmumpsTargets.cmake
-  NAMESPACE SCOTCH::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
+  # libptesmumps targets install
+  install(EXPORT ptesmumpsTargets
+    COMPONENT libptscotch
+    FILE ptesmumpsTargets.cmake
+    NAMESPACE SCOTCH::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/scotch)
 
-install(TARGETS ptesmumps
-  COMPONENT libptscotch
-  EXPORT ptesmumpsTargets
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  install(TARGETS ptesmumps
+    COMPONENT libptscotch
+    EXPORT ptesmumpsTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+endif()

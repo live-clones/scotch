@@ -65,7 +65,7 @@
 /**                                 to   : 11 aug 2010     **/
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 26 aug 2014     **/
-/**                # Version 7.0  : from : 17 jan 2023     **/
+/**                # Version 7.0  : from : 19 feb 2018     **/
 /**                                 to   : 17 jan 2023     **/
 /**                                                        **/
 /************************************************************/
@@ -266,22 +266,3 @@ const ArchVcmpltDom * const dom1ptr)
 
   return (0);
 }
-
-/* This function creates the MPI_Datatype for
-** variable-sized complete graph domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archVcmpltDomMpiType (
-const ArchVcmplt * const      archptr,
-MPI_Datatype * const          typeptr)
-{
-  MPI_Type_contiguous (2, ANUM_MPI, typeptr);
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */

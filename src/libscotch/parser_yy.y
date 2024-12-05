@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 30 sep 2014     **/
 /**                                 to   : 27 apr 2018     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -176,10 +176,10 @@ STRATSELECT   : STRATSELECT '|' STRATEMPTY
                   YYABORT;
                 }
 
-                straptr->tabl                 = penvptr->stratab;
-                straptr->type                 = STRATNODESELECT;
-                straptr->data.select.strat[0] = ($1);
-                straptr->data.select.strat[1] = ($3);
+                straptr->tablptr                 = penvptr->stratab;
+                straptr->typeval                 = STRATNODESELECT;
+                straptr->data.seledat.stratab[0] = ($1);
+                straptr->data.seledat.stratab[1] = ($3);
 
                 ($$) = straptr;
               }
@@ -196,8 +196,8 @@ STRATEMPTY    : STRATCONCAT
                   YYABORT;
                 }
 
-                straptr->tabl = penvptr->stratab;
-                straptr->type = STRATNODEEMPTY;
+                straptr->tablptr = penvptr->stratab;
+                straptr->typeval = STRATNODEEMPTY;
 
                 ($$) = straptr;
               }
@@ -214,10 +214,10 @@ STRATCONCAT   : STRATCONCAT STRATTEST
                   YYABORT;
                 }
 
-                straptr->tabl                 = penvptr->stratab;
-                straptr->type                 = STRATNODECONCAT;
-                straptr->data.concat.strat[0] = ($1);
-                straptr->data.concat.strat[1] = ($2);
+                straptr->tablptr                 = penvptr->stratab;
+                straptr->typeval                 = STRATNODECONCAT;
+                straptr->data.concdat.stratab[0] = ($1);
+                straptr->data.concdat.stratab[1] = ($2);
 
                 ($$) = straptr;
               }
@@ -245,11 +245,11 @@ STRATTEST     :
                   YYABORT;
                 }
 
-                straptr->tabl               = penvptr->stratab;
-                straptr->type               = STRATNODECOND;
-                straptr->data.cond.test     = ($3);
-                straptr->data.cond.strat[0] = ($6);
-                straptr->data.cond.strat[1] = ($7);
+                straptr->tablptr                 = penvptr->stratab;
+                straptr->typeval                 = STRATNODECOND;
+                straptr->data.conddat.testptr    = ($3);
+                straptr->data.conddat.stratab[0] = ($6);
+                straptr->data.conddat.stratab[1] = ($7);
 
                 ($$) = straptr;
               }
@@ -285,12 +285,12 @@ STRATMETHOD   : METHODNAME
                 methnum = 0;
                 methlen = 0;                      /* No method recognized yet     */
                 methtab = penvptr->stratab->methtab; /* Point to the method table */
-                for (i = 0; methtab[i].name != NULL; i ++) {
+                for (i = 0; methtab[i].nameptr != NULL; i ++) {
                   if ((strncasecmp (($1),         /* Find longest matching code name */
-                       methtab[i].name,
-                       j = strlen (methtab[i].name)) == 0) &&
+                       methtab[i].nameptr,
+                       j = strlen (methtab[i].nameptr)) == 0) &&
                       (j > methlen)) {
-                    methnum = methtab[i].meth;
+                    methnum = methtab[i].methnum;
                     methlen = j;
                   }
                 }
@@ -304,12 +304,12 @@ STRATMETHOD   : METHODNAME
                   YYABORT;
                 }
 
-                straptr->tabl             = penvptr->stratab;
-                straptr->type             = STRATNODEMETHOD;
-                straptr->data.method.meth = methnum; /* Set method type        */
-                if (methtab[methnum].data != NULL) /* If default values exist  */
-                  memcpy (&straptr->data.method.data, /* Set values to default */
-                          methtab[methnum].data,
+                straptr->tablptr              = penvptr->stratab;
+                straptr->typeval              = STRATNODEMETHOD;
+                straptr->data.methdat.methnum = methnum; /* Set method type        */
+                if (methtab[methnum].dataptr != NULL) /* If default values exist   */
+                  memcpy (&straptr->data.methdat.datadat, /* Set values to default */
+                          methtab[methnum].dataptr,
                           sizeof (StratNodeMethodData));
 
                 penvptr->straptr = straptr;       /* Structure available for parameter processing */
@@ -320,13 +320,13 @@ STRATMETHOD   : METHODNAME
                 int                 paraidx;
 
                 paratab = penvptr->stratab->paratab; /* Point to the parameter table */
-                for (paraidx = 0; paratab[paraidx].name != NULL; paraidx ++) {
-                  if ((paratab[paraidx].meth == penvptr->straptr->data.method.meth) && /* If a strategy parameter found for this method */
-                      (paratab[paraidx].type == STRATPARAMSTRAT)) {
-                    if (*((Strat **) ((byte *) &penvptr->straptr->data.method.data + /* And this parameter has not been set */
-                        (paratab[paraidx].dataofft - paratab[paraidx].database))) == NULL)
+                for (paraidx = 0; paratab[paraidx].nameptr != NULL; paraidx ++) {
+                  if ((paratab[paraidx].methnum == penvptr->straptr->data.methdat.methnum) && /* If a strategy parameter found for this method */
+                      (paratab[paraidx].typeval == STRATPARAMSTRAT)) {
+                    if (*((Strat **) ((byte *) &penvptr->straptr->data.methdat.datadat + /* And this parameter has not been set */
+                        (paratab[paraidx].doffptr - paratab[paraidx].dbasptr))) == NULL)
                       errorPrintW ("stratParserParse: strategy parameter \"%s\" of method \"%s\" not set, line %d, column %d, before \"%s\"",
-                                   paratab[paraidx].name, penvptr->stratab->methtab[penvptr->straptr->data.method.meth].name,
+                                   paratab[paraidx].nameptr, penvptr->stratab->methtab[penvptr->straptr->data.methdat.methnum].nameptr,
                                    (@2).libenum, (@2).cobenum, (@2).tebeptr);
                   }
                 }
@@ -363,11 +363,11 @@ PARAMPARAM    : PARAMNAME
                 paraidx = 0;
                 paralen = 0;                      /* No parameter recognized yet     */
                 paratab = penvptr->stratab->paratab; /* Point to the parameter table */
-                for (i = 0; paratab[i].name != NULL; i ++) {
-                  if ((paratab[i].meth == penvptr->straptr->data.method.meth) &&
+                for (i = 0; paratab[i].nameptr != NULL; i ++) {
+                  if ((paratab[i].methnum == penvptr->straptr->data.methdat.methnum) &&
                       (strncasecmp (($1),         /* Find longest matching parameter name */
-                                    paratab[i].name,
-                                    j = strlen (paratab[i].name)) == 0) &&
+                                    paratab[i].nameptr,
+                                    j = strlen (paratab[i].nameptr)) == 0) &&
                       (j > paralen)) {
                     paraidx = i;
                     paralen = j;
@@ -381,9 +381,9 @@ PARAMPARAM    : PARAMNAME
 
                 ($<SAVE>$).tabl = penvptr->stratab; /* Save current strategy tables   */
                 penvptr->paraptr = &paratab[paraidx]; /* Save current parameter value */
-                PARSERLLBEGIN (stratmethtokentab[penvptr->paraptr->type & ~STRATPARAMDEPRECATED]); /* Get non-deprecated type */
-                if (penvptr->paraptr->type == STRATPARAMSTRAT) /* If parameter is a strategy                                  */
-                  penvptr->stratab = (StratTab *) penvptr->paraptr->datasltr; /* Use new strategy tables                      */
+                PARSERLLBEGIN (stratmethtokentab[penvptr->paraptr->typeval & ~STRATPARAMDEPRECATED]); /* Get non-deprecated type */
+                if (penvptr->paraptr->typeval == STRATPARAMSTRAT) /* If parameter is a strategy                                  */
+                  penvptr->stratab = (StratTab *) penvptr->paraptr->dselptr; /* Use new strategy tables                          */
               }
                 '=' PARAMVAL
               {
@@ -398,78 +398,74 @@ PARAMVAL      : VALCASE
                 char *            p;              /* Pointer to selector string */
                 int               i;              /* Index in selector string   */
 
-                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                if ((penvptr->paraptr->typeval & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
                   c = ($1);                       /* First, use char as is */
-                  for (p = (char *) penvptr->paraptr->datasltr, i = 0;
+                  for (p = (char *) penvptr->paraptr->dselptr, i = 0;
                        (*p != '\0') && (*p != c);
                        p ++, i ++) ;
                   if (*p == '\0') {               /* Char was not found         */
                     c = tolower (c);              /* Convert char to lower case */
-                    for (p = (char *) penvptr->paraptr->datasltr, i = 0;
+                    for (p = (char *) penvptr->paraptr->dselptr, i = 0;
                          (*p != '\0') && (*p != c);
                          p ++, i ++) ;
                     if (*p == '\0') {
                       errorPrint ("stratParserParse: invalid method parameter switch \"%s=%c\", line %d, column %d, before \"%s\"",
-                                  penvptr->paraptr->name, ($1), (@1).libenum, (@1).cobenum, (@1).tebeptr);
+                                  penvptr->paraptr->nameptr, ($1), (@1).libenum, (@1).cobenum, (@1).tebeptr);
                       YYABORT;
                     }
                   }
 
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + sizeof (int)) > sizeof (StratNodeMethodData)) {
+                  if (((penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr) + sizeof (int)) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (1)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  *((int *) ((byte *) &penvptr->straptr->data.method.data +
-                             (penvptr->paraptr->dataofft -
-                              penvptr->paraptr->database))) = i;
+                  *((int *) ((byte *) &penvptr->straptr->data.methdat.datadat +
+                             (penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr))) = i;
                 }
               }
               | VALSDOUBLE
               {
-                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                if ((penvptr->paraptr->typeval & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + sizeof (double)) > sizeof (StratNodeMethodData)) {
+                  if (((penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr) + sizeof (double)) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (2)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  *((double *) ((byte *) penvptr->straptr->data.method.data +
-                                (penvptr->paraptr->dataofft -
-                                 penvptr->paraptr->database))) = ($1);
+                  *((double *) ((byte *) &penvptr->straptr->data.methdat.datadat +
+                                (penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr))) = ($1);
                 }
               }
               | VALSINT
               {
-                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                if ((penvptr->paraptr->typeval & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + sizeof (INT)) > sizeof (StratNodeMethodData)) {
+                  if (((penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr) + sizeof (INT)) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (3)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  *((INT *) ((byte *) &penvptr->straptr->data.method.data +
-                             (penvptr->paraptr->dataofft -
-                              penvptr->paraptr->database))) = (INT) ($1);
+                  *((INT *) ((byte *) &penvptr->straptr->data.methdat.datadat +
+                             (penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr))) = (INT) ($1);
                 }
               }
               | VALSTRING
               {
-                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                if ((penvptr->paraptr->typeval & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + strlen ($1) + 1) > sizeof (StratNodeMethodData)) {
+                  if (((penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr) + strlen ($1) + 1) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (4)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  strcpy ((char *) ((byte *) &penvptr->straptr->data.method.data +
-                                    (penvptr->paraptr->dataofft -
-                                     penvptr->paraptr->database)),
+                  strcpy ((char *) ((byte *) &penvptr->straptr->data.methdat.datadat +
+                                    (penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr)),
                           ($1));
                 }
               }
@@ -485,23 +481,22 @@ PARAMVAL      : VALCASE
                 penvptr->straptr = ($<SAVE>1).strat; /* Restore current method    */
                 penvptr->paraptr = ($<SAVE>1).param; /* Restore current parameter */
 
-                if ((penvptr->paraptr->type & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
+                if ((penvptr->paraptr->typeval & STRATPARAMDEPRECATED) == 0) { /* If parameter is not deprecated */
 #ifdef SCOTCH_DEBUG_PARSER2
-                  if ((penvptr->paraptr->dataofft - penvptr->paraptr->database + sizeof (Strat *)) > sizeof (StratNodeMethodData)) {
+                  if (((penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr) + sizeof (Strat *)) > sizeof (StratNodeMethodData)) {
                     errorPrint ("stratParserParse: internal error (5)");
                     YYABORT;
                   }
 #endif /* SCOTCH_DEBUG_PARSER2 */
 
-                  *((Strat **) ((byte *) &penvptr->straptr->data.method.data +
-                                (penvptr->paraptr->dataofft -
-                                 penvptr->paraptr->database))) = ($2);
+                  *((Strat **) ((byte *) &penvptr->straptr->data.methdat.datadat +
+                                (penvptr->paraptr->doffptr - penvptr->paraptr->dbasptr))) = ($2);
                 }
               }
               | error
               {
                 errorPrint ("stratParserParse: invalid value for parameter \"%s\" of method \"%s\", line %d, column %d, before \"%s\"",
-                            penvptr->paraptr->name, penvptr->straptr->tabl->methtab[penvptr->straptr->data.method.meth].name,
+                            penvptr->paraptr->nameptr, penvptr->straptr->tablptr->methtab[penvptr->straptr->data.methdat.methnum].nameptr,
                             (@1).libenum, (@1).cobenum, (@1).tebeptr);
                 YYABORT;
               }
@@ -521,10 +516,10 @@ TESTOR        : TESTOR '|' TESTAND
                   YYABORT;
                 }
 
-                testptr->typetest     = STRATTESTOR;
-                testptr->typenode     = STRATPARAMLOG;
-                testptr->data.test[0] = ($1);
-                testptr->data.test[1] = ($3);
+                testptr->testval         = STRATTESTOR;
+                testptr->nodeval         = STRATPARAMLOG;
+                testptr->data.testtab[0] = ($1);
+                testptr->data.testtab[1] = ($3);
 
                 ($$) = testptr;
               }
@@ -542,10 +537,10 @@ TESTAND       : TESTAND '&' TESTNOT
                   YYABORT;
                 }
 
-                testptr->typetest     = STRATTESTAND;
-                testptr->typenode     = STRATPARAMLOG;
-                testptr->data.test[0] = ($1);
-                testptr->data.test[1] = ($3);
+                testptr->testval         = STRATTESTAND;
+                testptr->nodeval         = STRATPARAMLOG;
+                testptr->data.testtab[0] = ($1);
+                testptr->data.testtab[1] = ($3);
 
                 ($$) = testptr;
               }
@@ -562,9 +557,9 @@ TESTNOT       : '!' TESTNOT
                   YYABORT;
                 }
 
-                testptr->typetest     = STRATTESTNOT;
-                testptr->typenode     = STRATPARAMLOG;
-                testptr->data.test[0] = ($2);
+                testptr->testval         = STRATTESTNOT;
+                testptr->nodeval         = STRATPARAMLOG;
+                testptr->data.testtab[0] = ($2);
 
                 ($$) = testptr;
               }
@@ -585,10 +580,10 @@ TESTREL       : TESTEXPR1 TESTRELOP TESTEXPR1
                   stratTestExit ($3);
                   YYABORT;
                 }
-                testptr->typetest     = ($2);
-                testptr->typenode     = STRATPARAMLOG;
-                testptr->data.test[0] = ($1);
-                testptr->data.test[1] = ($3);
+                testptr->testval         = ($2);
+                testptr->nodeval         = STRATPARAMLOG;
+                testptr->data.testtab[0] = ($1);
+                testptr->data.testtab[1] = ($3);
 
                 ($$) = testptr;
               }
@@ -618,9 +613,9 @@ TESTEXPR1     : TESTEXPR1 TESTEXPR1OP TESTEXPR2
                   stratTestExit ($3);
                   YYABORT;
                 }
-                testptr->typetest     = ($2);
-                testptr->data.test[0] = ($1);
-                testptr->data.test[1] = ($3);
+                testptr->testval         = ($2);
+                testptr->data.testtab[0] = ($1);
+                testptr->data.testtab[1] = ($3);
 
                 ($$) = testptr;
               }
@@ -647,9 +642,9 @@ TESTEXPR2     : TESTEXPR2 TESTEXPR2OP TESTEXPR3
                   errorPrint    ("stratParserParse: out of memory (11)");
                   YYABORT;
                 }
-                testptr->typetest     = ($2);
-                testptr->data.test[0] = ($1);
-                testptr->data.test[1] = ($3);
+                testptr->testval         = ($2);
+                testptr->data.testtab[0] = ($1);
+                testptr->data.testtab[1] = ($3);
 
                 ($$) = testptr;
               }
@@ -672,9 +667,9 @@ TESTEXPR3     : TESTEXPR3 TESTEXPR3OP TESTEXPR4
                   stratTestExit ($3);
                   YYABORT;
                 }
-                testptr->typetest     = ($2);
-                testptr->data.test[0] = ($1);
-                testptr->data.test[1] = ($3);
+                testptr->testval         = ($2);
+                testptr->data.testtab[0] = ($1);
+                testptr->data.testtab[1] = ($3);
 
                 ($$) = testptr;
               }
@@ -704,8 +699,8 @@ TESTVAL       : VALSDOUBLE
                   YYABORT;
                 }
 
-                testptr->typetest        = STRATTESTVAL;
-                testptr->typenode        = STRATPARAMDOUBLE;
+                testptr->testval         = STRATTESTVAL;
+                testptr->nodeval         = STRATPARAMDOUBLE;
                 testptr->data.val.valdbl = ($1);
 
                 ($$) = testptr;
@@ -719,8 +714,8 @@ TESTVAL       : VALSDOUBLE
                   YYABORT;
                 }
 
-                testptr->typetest        = STRATTESTVAL;
-                testptr->typenode        = STRATPARAMINT;
+                testptr->testval         = STRATTESTVAL;
+                testptr->nodeval         = STRATPARAMINT;
                 testptr->data.val.valint = ($1);
 
                 ($$) = testptr;
@@ -739,10 +734,10 @@ TESTVAR       : PARAMNAME
                 para    = 0;
                 paralen = 0;                      /* No parameter recognized yet */
                 condtab = penvptr->stratab->condtab; /* Point to parameter table */
-                for (i = 0; condtab[i].name != NULL; i ++) {
+                for (i = 0; condtab[i].nameptr != NULL; i ++) {
                   if ((strncasecmp (($1),         /* Find longest matching parameter name */
-                                    condtab[i].name,
-                                    j = strlen (condtab[i].name)) == 0) &&
+                                    condtab[i].nameptr,
+                                    j = strlen (condtab[i].nameptr)) == 0) &&
                       (j > paralen)) {
                     para    = i;
                     paralen = j;
@@ -759,11 +754,10 @@ TESTVAR       : PARAMNAME
                   YYABORT;
                 }
 
-                testptr->typetest          = STRATTESTVAR;
-                testptr->typenode          = condtab[para].type;
-                testptr->data.var.datatab  = penvptr->stratab;
-                testptr->data.var.datadisp = condtab[para].dataofft -
-                                             condtab[para].database;
+                testptr->testval          = STRATTESTVAR;
+                testptr->nodeval          = condtab[para].typeval;
+                testptr->data.var.datatab = penvptr->stratab;
+                testptr->data.var.dataoft = condtab[para].doffptr - condtab[para].dbasptr;
 
                 ($$) = testptr;
               }

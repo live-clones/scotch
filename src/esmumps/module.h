@@ -1,4 +1,4 @@
-/* Copyright 2009,2018,2022,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009,2018,2022-2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 05 sep 2020     **/
 /**                # Version 7.0  : from : 21 apr 2022     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 20 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -74,7 +74,6 @@
 ** Function renaming.
 */
 
-#if ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) /* Taken from src/libscotch/module.h */
 #ifndef SCOTCH_NAME_SUFFIX
 #define SCOTCH_NAME_SUFFIXC
 #else /* SCOTCH_NAME_SUFFIX */
@@ -102,6 +101,11 @@
 #define SCOTCH_NAME_PREFIX_INTERN   _SCOTCH
 #define SCOTCH_NAME_PREFIX_PUBLICFL scotchf
 #define SCOTCH_NAME_PREFIX_PUBLICFU SCOTCHF
+#ifdef SCOTCH_RENAME
+#ifndef SCOTCH_COMMON_RENAME
+#define SCOTCH_COMMON_RENAME
+#endif /* SCOTCH_COMMON_RENAME */
+#endif /* SCOTCH_RENAME */
 
 #define SCOTCH_NAME_GLUE2(n,s)      n##s
 #define SCOTCH_NAME_GLUE3(p,n,s)    p##n##s
@@ -113,12 +117,18 @@
 #define SCOTCH_NAME_PUBLICFU(f)     SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_PUBLICFU,f,SCOTCH_NAME_SUFFIXFU)
 #define SCOTCH_FORTRAN(nu,nl,pl,pc) FORTRAN (SCOTCH_NAME_PUBLICFU(nu),SCOTCH_NAME_PUBLICFL(nl),pl,pc)
 
-#define errorPrint                  SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrint) /* Same name whatever the suffix is since external library */
-#define errorPrintW                 SCOTCH_NAME_MACRO2 (SCOTCH_, errorPrintW)
-#define errorProg                   SCOTCH_NAME_MACRO2 (SCOTCH_, errorProg)
+#ifdef SCOTCH_COMMON_RENAME
+#define SCOTCH_NAME_GLOBAL(n)       SCOTCH_NAME_MACRO2 (SCOTCH_, n) /* Same name whatever the suffix is, since external library */
+#define errorPrint                  SCOTCH_NAME_GLOBAL (errorPrint)
+#define errorPrintW                 SCOTCH_NAME_GLOBAL (errorPrintW)
+#define errorProg                   SCOTCH_NAME_GLOBAL (errorProg)
+#endif /* SCOTCH_COMMON_RENAME */
 
+#if ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL))
+#define intLoad                     SCOTCH_NAME_INTERN (intLoad)
+#define intSave                     SCOTCH_NAME_INTERN (intSave)
 #define intSort1asc1                SCOTCH_NAME_INTERN (intSort1asc1)
-#endif /* ((! defined SCOTCH_COMMON_EXTERNAL) || (defined SCOTCH_COMMON_RENAME)) */
+#endif /* ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL)) */
 
 #ifndef ESMUMPS_NAME_PREFIX_INTERN
 #define ESMUMPS_NAME_PREFIX_INTERN  _ESMUMPS
@@ -161,9 +171,6 @@
 #define graphBuild                  ESMUMPS_NAME_INTERN (graphBuild)
 #define graphBuildGraph             ESMUMPS_NAME_INTERN (graphBuildGraph)
 #define graphBuildGraph2            ESMUMPS_NAME_INTERN (graphBuildGraph2)
-
-#define intLoad                     SCOTCH_NAME_INTERN (intLoad)
-#define intSave                     SCOTCH_NAME_INTERN (intSave)
 
 #define orderBase                   ESMUMPS_NAME_INTERN (orderBase)
 #define orderCheck                  ESMUMPS_NAME_INTERN (orderCheck)

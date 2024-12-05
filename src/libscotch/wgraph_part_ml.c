@@ -151,12 +151,12 @@ const GraphCoarsenMulti * restrict const  coarmulttab) /*+ Un-based multinode ar
   if ((finegrafptr->levlnum > 0) &&               /* If partition data not yet allocated */
       (wgraphAlloc (finegrafptr) != 0)) {         /* Allocate tables before processing   */
     errorPrint ("wgraphPartMlUncoarsen: out of memory (1)");
-    return     (1);
+    return (1);
   }
 
   if (coargrafptr == NULL) {                      /* If no coarse graph provided */
     wgraphZero (finegrafptr);
-    return     (0);
+    return (0);
   }
 
   finecompload = finegrafptr->compload;
@@ -164,7 +164,7 @@ const GraphCoarsenMulti * restrict const  coarmulttab) /*+ Un-based multinode ar
 
   if ((finelisttab = (WgraphPartList *) memAlloc ((finegrafptr->partnbr + 1) * sizeof (WgraphPartList))) == NULL) { /* TRICK: "+1" to create slot for a "-1" index */
     errorPrint ("wgraphPartMlUncoarsen: out of memory (2)");
-    return     (1);
+    return (1);
   }
   finelisttab ++;                                 /* TRICK: trim array so that finelisttab[-1] is valid */
   memSet (finelisttab, ~0, finegrafptr->partnbr * sizeof (WgraphPartList)); /* Set vertex indices to ~0 */
@@ -255,7 +255,7 @@ const GraphCoarsenMulti * restrict const  coarmulttab) /*+ Un-based multinode ar
 #ifdef SCOTCH_DEBUG_WGRAPH2
   if (wgraphCheck (finegrafptr) != 0) {
     errorPrint ("wgraphPartMlUncoarsen: inconsistent graph data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_WGRAPH2 */
 

@@ -1,4 +1,4 @@
-/* Copyright 2007,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2018,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 05 nov 2007     **/
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 06 jun 2018     **/
+/**                # Version 7.0  : from : 07 nov 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,6 +64,10 @@ typedef enum VdgraphSeparateStMethodType_ {
   VDGRAPHSEPASTMETHZR,                            /*+ Zero method         +*/
   VDGRAPHSEPASTMETHNBR                            /*+ Number of methods   +*/
 } VdgraphSeparateStMethodType;
+
+/*+ Method function pointer type. +*/
+
+typedef int (* VdgraphSeparateFunc) (Vdgraph * restrict const, const void * const);
 
 /*
 **  The external declarations.

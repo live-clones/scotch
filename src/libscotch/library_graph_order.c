@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012-2014,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012-2014,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 08 jan 2012     **/
 /**                                 to   : 29 sep 2019     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 11 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -283,7 +283,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     SCOTCH_stratGraphOrderBuild (stratptr, SCOTCH_STRATQUALITY, 0, 0.2);
 
   ordstratptr = *((Strat **) stratptr);
-  if (ordstratptr->tabl != &hgraphorderststratab) {
+  if (ordstratptr->tablptr != &hgraphorderststratab) {
     errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": not an ordering strategy");
     goto abort;
   }

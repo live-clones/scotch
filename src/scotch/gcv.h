@@ -57,6 +57,8 @@
 /**                                 to   : 29 nov 2003     **/
 /**                # Version 6.0  : from : 12 nov 2014     **/
 /**                                 to   : 12 nov 2014     **/
+/**                # Version 7.0  : from : 10 sep 2024     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -83,7 +85,16 @@
 
 /*+ This structure defines the method array element. +*/
 
-typedef struct C_Format_ {
+typedef int (* FormatInpFunc) (SCOTCH_Graph * const, SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
+
+typedef struct C_FormatInp_ {
   char                      code;                /* Format type code */
-  int                    (* func) ();            /* Function to call */
-} C_Format;
+  FormatInpFunc             func;                /* Function to call */
+} C_FormatInp;
+
+typedef int (* FormatOutFunc) (const SCOTCH_Graph * const, const SCOTCH_Geom * const, FILE * const, FILE * const, const char * const);
+
+typedef struct C_FormatOut_ {
+  char                      code;                /* Format type code */
+  FormatOutFunc             func;                /* Function to call */
+} C_FormatOut;

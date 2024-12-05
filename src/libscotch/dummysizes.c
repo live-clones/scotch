@@ -56,7 +56,7 @@
 /**                # Version 6.1  : from : 09 feb 2021     **/
 /**                                 to   : 22 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 02 dec 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -214,7 +214,7 @@ char *                      argv[])
           break;
         case 'V' :
           fprintf (stderr, "dummysizes, version " SCOTCH_VERSION_STRING "\n");
-          fprintf (stderr, "Copyright 2004,2007-2010,2018 IPB, Universite de Bordeaux, INRIA & CNRS, France\n");
+          fprintf (stderr, SCOTCH_COPYRIGHT_STRING "\n");
           fprintf (stderr, "This software is libre/free software under CeCILL-C -- see the user's manual for more information\n");
           return  (0);
         default :
@@ -239,6 +239,7 @@ char *                      argv[])
   subsFill ("library_pt.h", "ptscotch.h  ");
   subsFill ("library_pt_f.h", "ptscotchf.h   ");
   subsSuffix ("PTSCOTCH_H");
+  subsFill ("DUMMYINTMPI", EXPAND (COMM_INT));
 #else /* SCOTCH_PTSCOTCH */
   subsFill ("library.h", "scotch.h ");
   subsFill ("library_f.h", "scotchf.h  ");

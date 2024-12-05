@@ -1,4 +1,4 @@
-/* Copyright 2015,2016,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,8 +41,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 13 mar 2015     **/
 /**                                 to   : 15 may 2018     **/
-/**                # Version 7.0  : from : 13 sep 2019     **/
-/**                                 to   : 13 aug 2024     **/
+/**                # Version 7.0  : from : 18 feb 2018     **/
+/**                                 to   : 10 sep 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -366,7 +366,7 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
   Anum                    orgtermnbr;             /* Number of terminals in original graph */
   Anum                    orgtermnum;
   ArchDom                 orgdomndat;             /* Domain in original architecture       */
-  ArchMatch               matcdat;                /* Data for successive matchings         */
+  ArchMatchDummy          matcdat;                /* Data for successive matchings         */
   ArchSubTree *           rootptr;
   ArchSubTree * restrict  treetab;
   ArchSubTree * restrict  treetmp;
@@ -378,11 +378,11 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
   const char *            messptr;                /* Pointer to error message              */
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if ((orgarchptr->class->flagval & ARCHVAR) != 0) {
+  if ((orgarchptr->clasptr->flagval & ARCHVAR) != 0) {
     errorPrint ("archSubArchBuild: variable-sized architectures not supported");
     return (1);
   }
-  if (orgarchptr->class->matchInit == NULL) {
+  if (orgarchptr->clasptr->matchInit == NULL) {
     errorPrint ("archSubArchBuild: architecture not supported");
     return (1);
   }
@@ -411,7 +411,7 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
     return (2);
   }
 
-  if (orgarchptr->class->matchInit (&matcdat, &orgarchptr->data) != 0) { /* Initialize matching structure with original architecture data */
+  if (orgarchptr->clasptr->matchInit (&matcdat, &orgarchptr->data) != 0) { /* Initialize matching structure with original architecture data */
     errorPrint ("archSubArchBuild: cannot initialize matching structure");
     memFree    (treetab);
     memFree    (termtab);
@@ -449,7 +449,7 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
       messptr = "archSubArchBuild: duplicate vertex number in vertex list";
     if (messptr != NULL) {
       errorPrint (messptr);
-      orgarchptr->class->matchExit (&matcdat);    /* Free matching structure */
+      orgarchptr->clasptr->matchExit (&matcdat);  /* Free matching structure */
       memFree (treetab - 1);
       memFree (termtab);
       return  (2);
@@ -475,9 +475,9 @@ const Anum * const          vnumtab)              /* Ordered list of remaining t
     treetab[orgtermnum].vertnum = orgtermnum;     /* Vertex number in original architecture                    */
   }
 
-  rootptr = archSubArchBuild2 (&matcdat, (Anum (*) (void *, ArchCoarsenMulti * restrict *)) orgarchptr->class->matchMate, treetab, vnumnbr);
+  rootptr = archSubArchBuild2 (&matcdat, (Anum (*) (void *, ArchCoarsenMulti * restrict *)) orgarchptr->clasptr->matchMate, treetab, vnumnbr);
 
-  orgarchptr->class->matchExit (&matcdat);        /* Free matching structure */
+  orgarchptr->clasptr->matchExit (&matcdat);      /* Free matching structure */
 
   if (rootptr == NULL) {
     errorPrint ("archSubArchBuild: cannot create sub-architecture (1)");
@@ -839,22 +839,3 @@ const ArchSubDom * const    dom1ptr)
 
   return (0);
 }
-
-/* This function creates the MPI_Datatype for
-** distance graph domains.
-** It returns:
-** - 0  : if type could be created.
-** - 1  : on error.
-*/
-
-#ifdef SCOTCH_PTSCOTCH
-int
-archSubDomMpiType (
-const ArchSub * const         archptr,
-MPI_Datatype * const          typeptr)
-{
-  *typeptr = ANUM_MPI;
-
-  return (0);
-}
-#endif /* SCOTCH_PTSCOTCH */

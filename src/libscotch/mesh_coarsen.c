@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2019,2020,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2019,2020,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 23 jan 2020     **/
 /**                                 to   : 23 jan 2020     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 30 nov 2024     **/
 /**                                                        **/
 /**   NOTES      : # The coarsening process is as follows. **/
 /**                  First, node collapsing is performed,  **/
@@ -72,8 +72,8 @@
 **  The static variables.
 */
 
-static void              (* meshCoarFuncTab[MESHCOARSENNBR]) () = { /* Tables of matching routines */
-                             meshCoarsenMatchNg };
+static MeshCoarsenFunc      meshCoarsenFuncTab[MESHCOARSENNBR] = { /* Table of matching routines */
+                              (MeshCoarsenFunc) meshCoarsenMatchNg };
 
 /***************************/
 /*                         */
@@ -128,7 +128,7 @@ Context * restrict const      contptr)            /*+ Execution context         
 #ifdef SCOTCH_DEBUG_MESH2
   if (coartype >= MESHCOARSENNBR) {
     errorPrint ("meshCoarsen: invalid parameter");
-    return     (2);
+    return (2);
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
 
@@ -139,7 +139,7 @@ Context * restrict const      contptr)            /*+ Execution context         
   finevertnbr = finemeshptr->velmnbr + finemeshptr->vnodnbr;
   if ((finecoartax = (Gnum *) memAlloc (finevertnbr * sizeof (Gnum))) == NULL) {
     errorPrint ("meshCoarsen: out of memory (1)"); /* Allocate coarse mesh uncoarsening array */
-    return     (2);
+    return (2);
   }
   memSet (finecoartax, ~0, finevertnbr * sizeof (Gnum));
   finecoartax -= finemeshptr->baseval;            /* Set based access to finecoartax */
@@ -157,13 +157,13 @@ Context * restrict const      contptr)            /*+ Execution context         
         &finemulttax, (size_t) ( finemeshptr->velmnbr * sizeof (MeshCoarsenMult)), NULL) == NULL) {
     errorPrint ("meshCoarsen: out of memory (2)"); /* Allocate coarser mesh structure */
     memFree    (finecoartax + finemeshptr->baseval);
-    return     (2);
+    return (2);
   }
   memSet (coarhngbtab, ~0, coarhashsiz * sizeof (MeshCoarsenHngb));
   memSet (coarhbdgtab, ~0, coarhashsiz * sizeof (MeshCoarsenHbdg));
   finemulttax -= coarmeshptr->baseval;
 
-  meshCoarFuncTab[coartype] (finemeshptr, finemulttax, finecoartax, &coarvelmnbr, &coarvnodnbr, &coaredgenbr, contptr); /* Call proper matching function */
+  meshCoarsenFuncTab[coartype] (finemeshptr, finemulttax, finecoartax, &coarvelmnbr, &coarvnodnbr, &coaredgenbr, contptr); /* Call proper matching function */
 
 #ifndef DEAD_CODE
   coarvnodnbr = finemeshptr->vnodnbr;             /* TODO : coarvnodnbr estimator is wrong : too tight */
@@ -341,7 +341,7 @@ Context * restrict const      contptr)            /*+ Execution context         
 #ifdef SCOTCH_DEBUG_MESH2
   if (meshCheck (coarmeshptr) != 0) {             /* Check mesh consistency */
     errorPrint ("meshCoarsen: internal error (7)");
-    return     (2);
+    return (2);
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
 
@@ -380,7 +380,7 @@ Gnum * restrict const             finecoartax,    /* Fine to coarse vertex array
 Gnum * restrict const             coarvelmptr,    /* Pointer to number of coarse element vertices               */
 Gnum * restrict const             coarvnodptr,    /* Pointer to (upper bound on) number of coarse node vertices */
 Gnum * restrict const             coaredgeptr,    /* Pointer to (upper bound on) number of edges                */
-Context * restrict                contptr)
+Context * restrict const          contptr)
 {
   Gnum                          coarvelmnum;      /* Number of current coarse element vertex */
   Gnum                          finepertbas;      /* Index of base of perturbation area      */

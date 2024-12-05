@@ -312,7 +312,7 @@ routines in a parallel program, both options can be used.
 
 Graph indices are represented in \scotch\ as integer values of type
 {\tt SCOTCH\_\lbt Num}. By default, this type equates to the {\tt int}
-C type, that is, an integer type of size equal to the one of 
+C type, that is, an integer type of size equal to the one of
 the machine word. However, it can represent any other integer
 type. Indeed, the size of the {\tt SCOTCH\_\lbt Num} integer type can
 be coerced to 32 or 64 bits by using the ``{\tt -DINTSIZE32}'' or
@@ -2985,6 +2985,106 @@ with the logical unit of the mapping file.
 
 {\tt SCOTCH\_dgraphMapSave} returns $0$ if the mapping structure
 has been successfully written to {\tt stream}, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_dgraphMapStat}}
+\label{sec-lib-func-dgraphmapstat}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_dgraphMapStat ( & SCOTCH\_Dgraph * const         & grafptr,      \\
+                            & const SCOTCH\_Dmapping * const & mappptr,      \\
+                            & SCOTCH\_Num * const            & tgtnbrptr,    \\
+                            & SCOTCH\_Num * const            & mapnbrptr,    \\
+                            & SCOTCH\_Num * const            & mapminptr,    \\
+                            & SCOTCH\_Num * const            & mapmaxptr,    \\
+                            & double * const                 & mapavgptr,    \\
+                            & double * const                 & mapdltptr,    \\
+                            & SCOTCH\_Num * const            & ngbsumptr,    \\
+                            & SCOTCH\_Num * const            & ngbminptr,    \\
+                            & SCOTCH\_Num * const            & ngbmaxptr,    \\
+                            & SCOTCH\_Num * const            & cdstmaxptr,   \\
+                            & SCOTCH\_Num                    & cdsttab[256], \\
+                            & SCOTCH\_Num * const            & cmlosumptr,   \\
+                            & SCOTCH\_Num * const            & cmdisumptr,   \\
+                            & SCOTCH\_Num * const            & cmexsumptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdgraphmapstat ( & doubleprecision (*)   & grafdat, \\
+                       & doubleprecision (*)   & mappdat, \\
+                       & integer*{\it num}     & tgtnbr,  \\
+                       & integer*{\it num}     & mapnbr,  \\
+                       & integer*{\it num}     & mapmax,  \\
+                       & integer*{\it num}     & mapmin,  \\
+                       & doubleprecision       & mapavg,  \\
+                       & doubleprecision       & mapdlt,  \\
+                       & integer*{\it num}     & ngbsum,  \\
+                       & integer*{\it num}     & ngbmin,  \\
+                       & integer*{\it num}     & ngbmax,  \\
+                       & integer*{\it num}     & cdstmax, \\
+                       & integer*{\it num} (*) & cdsttab, \\
+                       & integer*{\it num}     & cmlosum, \\
+                       & integer*{\it num}     & cmdisum, \\
+                       & integer*{\it num}     & cmexsum, \\
+                       & integer               & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_dgraphMapStat} routine computes a set of
+statistics on the distributed mapping structure pointed to by
+\texttt{mappptr}, resuting from the mapping of the distributed graph
+pointed to by \texttt{grafdat}.
+
+A subdomain of a mapping is the set of all the source graph vertices
+mapped onto the same target vertex. Source graph vertices that are not
+associated with any target vertex are said to be unmapped.
+
+Upon successful return, all variables passed as references will
+contain the relevant statistics values. When a value is not needed,
+the user may pass a \texttt{NULL} pointer instead.
+
+\texttt{tgtnbrptr} will hold the number of vertices in the target
+architecture used for mapping, and \texttt{mapnbrptr} will hold the
+number of target vertices actually used by the mapping, which may be
+smaller. \texttt{mapminptr} and \texttt{mapmaxptr} will hold the
+minimum and maximum loads mapped onto the target vertices used, with
+respect to their weights, and \texttt{mapavgptr} and
+\texttt{mapdltptr} will hold the average and standard deviation of the
+loads assigned to the target vertices used, also with respect to their
+weights.
+
+\texttt{ngbsumptr} will hold the sum of the number of neighboring
+subdomains, computed over all subdomains of the mapping, while
+\texttt{ngbminptr} and \texttt{ngbmaxptr} will hold the minimum and
+maximum numbers of neighboring subdomains, respectively.
+
+\texttt{cmlosumptr} will hold the overall communication load in the
+considered mapping, \ie, the sum of the weights of all edges in the
+source graph whose two ends are mapped. Consequently, this number may
+be smaller than the sum of all the weights of the source graph
+edges. \texttt{cmdisumptr} will hold the total communication dilation,
+\ie, the sum of the distances, in the target architecture, between the
+two ends of all the mapped edges. \texttt{cmexsumptr} will hold the
+total communication expansion, \ie, the sum of the distances, in the
+target architecture, between the two ends of all the mapped edges,
+multiplied by their edge weight. See Section~\ref{sec-algo-cost} for
+an explanation on these values.
+
+Finally, the \texttt{cdsttab} array will hold the breakdown, by
+communication distance (capped to 255), of the communication loads of
+mapped edges. Hence, \texttt{cdsttab[0]} will contain the sum of uncut
+edge loads, \ie, local communication. \texttt{cdstmaxptr} will
+hold the maximum edge dilation in the target graph (capped to 255),
+\ie, the highest index of non-zero cells in \texttt{cdsttab}.
+
+\progret
+
+\texttt{SCOTCH\_dgraphMapStat} returns $0$ if the statistics
+have been successfully computed, and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_dgraphMapView}}

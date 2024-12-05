@@ -40,6 +40,8 @@
 /**                                                        **/
 /**   DATES      : # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 05 sep 2020     **/
+/**                # Version 7.0  : from : 26 aug 2024     **/
+/**                                 to   : 26 aug 2024     **/
 /**                                                        **/
 /**   NOTES      : # This code derives from that of the    **/
 /**                  internal "esmumps.h" header file.     **/
@@ -48,10 +50,6 @@
 
 #ifndef LIB_ESMUMPS_H
 #define LIB_ESMUMPS_H
-
-#ifndef ESMUMPS_HAS_ESMUMPSV
-#define ESMUMPS_HAS_ESMUMPSV
-#endif /* ESMUMPS_HAS_ESMUMPSV */
 
 /*
 **  The function prototypes.

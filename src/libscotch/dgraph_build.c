@@ -168,7 +168,7 @@ const Gnum                  degrlocmax)
   if ((vertlocmax < vertlocnbr) ||
       (edgelocsiz < edgelocnbr)) {
     errorPrint ("dgraphBuild2: invalid parameters");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -204,7 +204,7 @@ const Gnum                  degrlocmax)
   if (MPI_Allgather (reduloctab,          2, MPI_INT, /* Use procngbtab and procrcvtab as a joint allreduce receive array */
                      grafptr->procngbtab, 2, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphBuild2: communication error (2)");
-    return     (1);
+    return (1);
   }
 
   grafptr->procdsptab[0] =                        /* Build vertex-to-process array */
@@ -310,7 +310,7 @@ const Gnum                  degrlocmax)
 
   if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 17, 3, grafptr->proccomm) != 0) {
     errorPrint ("dgraphBuild3: cannot compute reductions");
-    return     (1);
+    return (1);
   }
   if (reduglbtab[16] != 0) {
     errorPrint ("dgraphBuild3: no private data");
@@ -323,7 +323,7 @@ const Gnum                  degrlocmax)
       (reduglbtab[9]  != - reduglbtab[8]) ||
       (reduglbtab[11] != - reduglbtab[10])) {
     errorPrint ("dgraphBuild3: inconsistent parameters");
-    return     (1);
+    return (1);
   }
 
   grafptr->vertglbmax = reduglbtab[12];           /* Set maximum number of local vertices  */
@@ -351,7 +351,7 @@ const Gnum                  degrlocmax)
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if ((grafptr->procdsptab[grafptr->procglbnbr] - baseval) < grafptr->vertglbnbr) {
     errorPrint ("dgraphBuild3: invalid process vertex array");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -364,7 +364,7 @@ const Gnum                  degrlocmax)
                        &edsoloctab,    (size_t) (grafptr->edgeglbmax * sizeof (DgraphLablSortEdge)),
                        NULL) == NULL) {
       errorPrint ("dgraphBuild3: out of memory");
-      return     (1);
+      return (1);
     }
 
     for (vertlocnum = 0, vesongbptr = vesongbtab[0], vlbllocptr = vlblloctax + baseval;
@@ -393,7 +393,7 @@ const Gnum                  degrlocmax)
     if (chekglbval != 0) {
       errorPrint ("dgraphBuild3: duplicate vertex label (1)");
       memFree    (vesongbtab[0]);
-      return     (1);
+      return (1);
     }
 
     for (edsolocptr = edsoloctab, edsoloctnd = edsoloctab + edgelocnbr, edgelocnum = baseval;
@@ -460,7 +460,7 @@ const Gnum                  degrlocmax)
 #endif /* SCOTCH_DEBUG_DGRAPH1 */
     if (chekglbval != 0) {
       errorPrint ("dgraphBuild3: duplicate vertex label (2)");
-      return     (1);
+      return (1);
     }
   }
 
@@ -496,7 +496,7 @@ Dgraph * restrict const     grafptr)              /* Distributed graph */
 
   if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 4, 3, grafptr->proccomm) != 0) {
     errorPrint ("dgraphBuild4: cannot compute reductions");
-    return     (1);
+    return (1);
   }
 
   grafptr->vertglbmax = reduglbtab[0];            /* Set maximum number of local vertices  */
@@ -511,7 +511,7 @@ Dgraph * restrict const     grafptr)              /* Distributed graph */
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if ((grafptr->procdsptab[grafptr->procglbnbr] - grafptr->baseval) < grafptr->vertglbnbr) {
     errorPrint ("dgraphBuild4: invalid process vertex array");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 

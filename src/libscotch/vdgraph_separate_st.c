@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2014,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2014,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 01 may 2014     **/
 /**                                 to   : 30 sep 2014     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,12 +99,12 @@ static union {
 
 
 static StratMethodTab       vdgraphseparatestmethtab[] = { /* Distributed graph separation methods array */
-                             { VDGRAPHSEPASTMETHBD, "b",  vdgraphSeparateBd, &vdgraphseparatedefaultbd },
-                             { VDGRAPHSEPASTMETHDF, "d",  vdgraphSeparateDf, &vdgraphseparatedefaultdf },
-                             { VDGRAPHSEPASTMETHML, "m",  vdgraphSeparateMl, &vdgraphseparatedefaultml },
-                             { VDGRAPHSEPASTMETHSQ, "q",  vdgraphSeparateSq, &vdgraphseparatedefaultsq },
-                             { VDGRAPHSEPASTMETHZR, "z",  vdgraphSeparateZr, NULL },
-                             { -1,                  NULL, NULL,              NULL } };
+                             { VDGRAPHSEPASTMETHBD, "b",  (StratMethodFunc) vdgraphSeparateBd, &vdgraphseparatedefaultbd },
+                             { VDGRAPHSEPASTMETHDF, "d",  (StratMethodFunc) vdgraphSeparateDf, &vdgraphseparatedefaultdf },
+                             { VDGRAPHSEPASTMETHML, "m",  (StratMethodFunc) vdgraphSeparateMl, &vdgraphseparatedefaultml },
+                             { VDGRAPHSEPASTMETHSQ, "q",  (StratMethodFunc) vdgraphSeparateSq, &vdgraphseparatedefaultsq },
+                             { VDGRAPHSEPASTMETHZR, "z",  (StratMethodFunc) vdgraphSeparateZr, NULL },
+                             { -1,                  NULL, (StratMethodFunc) NULL,              NULL } };
 
 
 static StratParamTab        vdgraphseparatestparatab[] = { /* Distributed graph separation method parameter list */
@@ -232,9 +232,9 @@ StratTab                    vdgraphseparateststratab = { /* Strategy tables for 
 int
 vdgraphSeparateSt (
 Vdgraph * restrict const      grafptr,            /*+ Distributed separation graph +*/
-const Strat * restrict const  strat)              /*+ Separation strategy          +*/
+const Strat * restrict const  straptr)            /*+ Separation strategy          +*/
 {
-  StratTest           val;
+  StratTest           testdat;
   VdgraphStore        savetab[2];                 /* Results of the two strategies */
   Gnum                compglbload2;               /* Saved global separator load   */
   int                 o;
@@ -245,68 +245,68 @@ const Strat * restrict const  strat)              /*+ Separation strategy       
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   if (sizeof (Gnum) != sizeof (INT)) {
     errorPrint ("vdgraphSeparateSt: invalid type specification for parser variables");
-    return     (1);
+    return (1);
   }
   if (sizeof (VdgraphSeparateSqParam) > sizeof (StratNodeMethodData)) {
     errorPrint ("vdgraphSeparateSt: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
 #ifdef SCOTCH_DEBUG_VDGRAPH1
-  if ((strat->tabl != &vdgraphseparateststratab) &&
-      (strat       != &stratdummy)) {
+  if ((straptr->tablptr != &vdgraphseparateststratab) &&
+      (straptr          != &stratdummy)) {
     errorPrint ("vdgraphSeparateSt: invalid parameter (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
 
   o = 0;
-  switch (strat->type) {
+  switch (straptr->typeval) {
     case STRATNODECONCAT :
-      o = vdgraphSeparateSt (grafptr, strat->data.concat.strat[0]); /* Apply first strategy          */
-      if (o == 0)                                 /* If it worked all right                          */
-        o |= vdgraphSeparateSt (grafptr, strat->data.concat.strat[1]); /* Then apply second strategy */
+      o = vdgraphSeparateSt (grafptr, straptr->data.concdat.stratab[0]); /* Apply first strategy          */
+      if (o == 0)                                 /* If it worked all right                               */
+        o |= vdgraphSeparateSt (grafptr, straptr->data.concdat.stratab[1]); /* Then apply second strategy */
       break;
     case STRATNODECOND :
-      o = stratTestEval (strat->data.cond.test, &val, (void *) grafptr); /* Evaluate expression */
-      if (o == 0) {                               /* If evaluation was correct                  */
+      o = stratTestEval (straptr->data.conddat.testptr, &testdat, (void *) grafptr); /* Evaluate expression */
+      if (o == 0) {                               /* If evaluation was correct */
 #ifdef SCOTCH_DEBUG_VDGRAPH2
-        if ((val.typetest != STRATTESTVAL) ||
-            (val.typenode != STRATPARAMLOG)) {
+        if ((testdat.testval != STRATTESTVAL) ||
+            (testdat.nodeval != STRATPARAMLOG)) {
           errorPrint ("vdgraphSeparateSt: invalid test result");
           o = 1;
           break;
         }
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
-        if (val.data.val.vallog == 1)             /* If expression is true                       */
-          o = vdgraphSeparateSt (grafptr, strat->data.cond.strat[0]); /* Apply first strategy    */
-        else {                                    /* Else if expression is false                 */
-          if (strat->data.cond.strat[1] != NULL)  /* And if there is an else statement           */
-            o = vdgraphSeparateSt (grafptr, strat->data.cond.strat[1]); /* Apply second strategy */
+        if (testdat.data.val.vallog == 1)         /* If expression is true */
+          o = vdgraphSeparateSt (grafptr, straptr->data.conddat.stratab[0]); /* Apply first strategy    */
+        else {                                    /* Else if expression is false                        */
+          if (straptr->data.conddat.stratab[1] != NULL)  /* And if there is an else statement           */
+            o = vdgraphSeparateSt (grafptr, straptr->data.conddat.stratab[1]); /* Apply second strategy */
         }
       }
       break;
     case STRATNODEEMPTY :
       break;
-    case STRATNODESELECT :                        /* TODO: Can be multithreaded!     */
+    case STRATNODESELECT :
       if (((vdgraphStoreInit (grafptr, &savetab[0])) != 0) || /* Allocate save areas */
           ((vdgraphStoreInit (grafptr, &savetab[1])) != 0)) {
         errorPrint       ("vdgraphSeparateSt: out of memory");
         vdgraphStoreExit (&savetab[0]);
-        return           (1);
+        return (1);
       }
 
-      vdgraphStoreSave (grafptr, &savetab[1]);    /* Save initial bipartition                               */
-      if (vdgraphSeparateSt (grafptr, strat->data.select.strat[0]) != 0) { /* If first strategy didn't work */
-        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition                            */
-        vdgraphStoreSave (grafptr, &savetab[0]);  /* Save it as result                                      */
+      vdgraphStoreSave (grafptr, &savetab[1]);    /* Save initial bipartition */
+      if (vdgraphSeparateSt (grafptr, straptr->data.seledat.stratab[0]) != 0) { /* If first strategy didn't work */
+        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition                                 */
+        vdgraphStoreSave (grafptr, &savetab[0]);  /* Save it as result                                           */
       }
       else {                                      /* First strategy worked       */
         vdgraphStoreSave (grafptr, &savetab[0]);  /* Save its result             */
         vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition */
       }
-      if (vdgraphSeparateSt (grafptr, strat->data.select.strat[1]) != 0) /* If second strategy didn't work */
-        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition as its result             */
+      if (vdgraphSeparateSt (grafptr, straptr->data.seledat.stratab[1]) != 0) /* If second strategy didn't work */
+        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition as its result                  */
 
       compglbload2 = grafptr->s.veloglbsum - savetab[0].compglbload[0] - savetab[0].compglbload[1]; /* Compute saved separator load */
       if ( (compglbload2 <  grafptr->compglbload[2]) || /* If first strategy is better */
@@ -326,7 +326,8 @@ const Strat * restrict const  strat)              /*+ Separation strategy       
       proccommold = grafptr->s.proccomm;          /* Create new communicator to isolate method communications */
       MPI_Comm_dup (proccommold, &grafptr->s.proccomm);
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
-      o = strat->tabl->methtab[strat->data.method.meth].func (grafptr, (void *) &strat->data.method.data);
+      o = ((VdgraphSeparateFunc) (straptr->tablptr->methtab[straptr->data.methdat.methnum].funcptr))
+          (grafptr, (const void * const) &straptr->data.methdat.datadat);
 #ifdef SCOTCH_DEBUG_VDGRAPH2
       MPI_Comm_free (&grafptr->s.proccomm);       /* Restore old communicator */
       grafptr->s.proccomm = proccommold;
@@ -335,7 +336,7 @@ const Strat * restrict const  strat)              /*+ Separation strategy       
       break;
     default :
       errorPrint ("vdgraphSeparateSt: invalid parameter (2)");
-      return     (1);
+      return (1);
 #endif /* SCOTCH_DEBUG_VDGRAPH1 */
   }
   return (o);

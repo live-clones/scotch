@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2018,2024 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,6 +45,8 @@
 /**                                 to   : 11 nov 2008     **/
 /**                # Version 6.0  : from : 07 jun 2018     **/
 /**                                 to   : 07 jun 2018     **/
+/**                # Version 7.0  : from : 11 sep 2024     **/
+/**                                 to   : 07 nov 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,6 +63,10 @@ typedef enum HdgraphOrderStMethodType_ {
   HDGRAPHORDERSTMETHNBR                           /*+ Number of methods +*/
 } HdgraphOrderStMethodType;
 
+/*+ Method function pointer type. +*/
+
+typedef int (* HdgraphOrderFunc) (Hdgraph * restrict const, DorderCblk * restrict const, const void * const);
+
 /*
 **  The external declarations.
 */
@@ -71,4 +77,4 @@ extern StratTab             hdgraphorderststratab;
 **  The function prototypes.
 */
 
-int                         hdgraphOrderSt      (const Hdgraph * restrict const, DorderCblk * restrict const, const Strat * const);
+int                         hdgraphOrderSt      (Hdgraph * restrict const, DorderCblk * restrict const, const Strat * const);
