@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 05 dec 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -202,7 +202,7 @@ int * const                 revaptr),         \
  verttab, vendtab, velotab, vnlotab, vlbltab, \
  edgenbr, edgetab, revaptr))
 {
-  *revaptr = SCOTCH_meshBuild (meshptr, *velmnbr, *vnodnbr, *velmbas, *vnodbas,
+  *revaptr = SCOTCH_meshBuild (meshptr, *velmbas, *vnodbas, *velmnbr, *vnodnbr,
                                verttab, vendtab, velotab, vnlotab, vlbltab,
                                *edgenbr, edgetab);
 }
