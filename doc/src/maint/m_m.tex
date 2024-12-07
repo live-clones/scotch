@@ -3,12 +3,12 @@
 % Title   : m_m.tex                %
 % Subject : Maintenance manual of  %
 %           Scotch                 %
-%           How to add a method    %
+%           Procedures             %
 % Author  : Francois Pellegrini    %
 %                                  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Procedures for new developments}
+\section{Procedures for new developments and release}
 
 \subsection{Adding methods to the \libscotch\ library}
 \label{sec-method}
@@ -224,3 +224,143 @@ suffixed;
 Create the relevant manual pages in the \scotch\ or \ptscotch\ user's
 manual.
 \end{itemize}
+
+\subsection{Release procedure}
+\label{sec-data}
+
+This section describes the procedure for releasing a new version of
+\scotch\ on the Inria GitLab repository:
+\url{https://gitlab.inria.fr/scotch/scotch}~.
+All commands are relative to the ``\texttt{./src}'' directory of the
+\scotch\ distribution.
+
+\subsubsection{Removal of debugging flags}
+
+Verification of the absence of level-3 debugging flags (such definitions
+should contain the keyword ``\texttt{BROL}'' in the associated
+comment, as an alternate search keyword):
+
+\begin{lstlisting}
+grep 'DEBUG_.\+3' *c | grep define
+\end{lstlisting}
+
+\subsubsection{Symbol renaming}
+
+After compiling with ``\texttt{SCOTCH\_\lbt RENAME}'', verification of
+the absence of unprotected names:
+
+\begin{lstlisting}
+make scotch ptscotch esmumps ptesmumps
+nm ../lib/libscotch.a | grep -v -e SCOTCH -e ESMUMPS -e " b " -e " d " -e " t " -e " U " -e "scotchf" -e "fprintf" -e "fscanf" -e "malloc" -e "realloc" -e "free" -e "memset" -e "random" -e "get_pc_thunk." -e " r .LC" | (sed -z 's/\n/#/g' ; echo -n '#') | sed 's/[a-zA-Z0-9_]\+[.]o[:]##//g' | sed 's/#/\n/g' > /tmp/brol.txt
+nm ../lib/libptscotch.a | grep -v -e SCOTCH -e ESMUMPS -e " b " -e " d " -e " t " -e " U " -e "scotchf" -e "fprintf" -e "fscanf" -e "malloc" -e "realloc" -e "free" -e "memset" -e "random" -e "get_pc_thunk." -e " r .LC"  | (sed -z 's/\n/#/g' ; echo -n '#') | sed 's/[a-zA-Z0-9_]\+[.]o[:]##//g' | sed 's/#/\n/g' >> /tmp/brol.txt
+nm ../lib/libesmumps.a | grep -v -e SCOTCH -e ESMUMPS -e " b " -e " d " -e " t " -e " U " -e "scotchf" -e "fprintf" -e "fscanf" -e "malloc" -e "realloc" -e "free" -e "memset" -e "random" -e "get_pc_thunk." -e " r .LC"  | (sed -z 's/\n/#/g' ; echo -n '#') | sed 's/[a-zA-Z0-9_]\+[.]o[:]##//g' | sed 's/#/\n/g' >> /tmp/brol.txt
+nm ../lib/libptesmumps.a | grep -v -e SCOTCH -e ESMUMPS -e " b " -e " d " -e " t " -e " U " -e "scotchf" -e "fprintf" -e "fscanf" -e "malloc" -e "realloc" -e "free" -e "memset" -e "random" -e "get_pc_thunk." -e " r .LC"  | (sed -z 's/\n/#/g' ; echo -n '#') | sed 's/[a-zA-Z0-9_]\+[.]o[:]##//g' | sed 's/#/\n/g' >> /tmp/brol.txt
+more /tmp/brol.txt
+\end{lstlisting}
+
+\subsubsection{Update of copyright year}
+
+Verification and possible modification of the copyright year, defined
+in the ``\texttt{SCOTCH\_\lbt COPYRIGHT\_\lbt STRING}'' macro:
+
+\begin{lstlisting}
+emacs libscotch/module.h
+\end{lstlisting}
+
+\noi
+In case the year is updated, create a commit with the message:
+\begin{quote}
+Set year to 20XX in copyright string
+\end{quote}
+
+\subsubsection{Update of version number}
+
+For minor revisions:
+\begin{lstlisting}
+emacs Makefile ../doc/src/version.tex ../CMakeLists.txt
+\end{lstlisting}
+
+\noi
+Then, for major releases:
+\begin{lstlisting}
+emacs ../doc/src/scotch/Makefile ../doc/src/ptscotch/Makefile ../doc/src/maint/Makefile ../INSTALL.txt ../README.txt
+\end{lstlisting}
+
+\noi
+Create a commit with the message:
+\begin{quote}
+Set revision marks to vX.Y.Z
+\end{quote}
+
+\subsubsection{Generation of documentation}
+
+Once the version number is changed in relevant files, generate the
+documentation:
+\begin{lstlisting}
+cd ../doc/src/maint
+make
+make install
+cd ../ptscotch
+make
+make install
+cd ../scotch
+make
+make install
+cd ../../../src
+\end{lstlisting}
+
+\noi
+In case of change of major or minor version, remove the old
+documentation files and add the new ones:
+\begin{lstlisting}
+cd ../doc/
+git rm -f *X.Y*
+git add *X'.Y'*
+git commit *X.Y* *X'.Y'*
+cd ../src
+\end{lstlisting}
+
+Create a commit with the message:
+\begin{quote}
+Generate documentation for vX.Y.Z
+\end{quote}
+
+\subsubsection{Creation of the local tag}
+
+On the local master branch:
+\begin{lstlisting}
+git tag vX.Y.Z
+git push --tags origin
+\end{lstlisting}
+
+\subsubsection{Merging}
+
+Check that the continuous integration went well.
+
+\noi
+In \texttt{fpellegr/scotch}, on the left, in tab ``Merge request'',
+clich on ``New merge request'', to \texttt{scotch/scotch}. Put version
+number as title (e.g.: ``v7.0.7''), and, in the message, a summary and
+itemized list of the improvements brought by the release. Then, click
+to generate the merge request.
+
+\noi
+In \texttt{scotch/scotch}, on the left, in tab ``Merge request'',
+click on the new merge request. Click on ``Approve'', then on
+``Merge''. A new (short) pipe-line is launched, this time in
+\texttt{scotch/scotch}.
+
+\noi
+If the pipe-line succeeds, click to finalize the merging.
+
+\subsubsection{Creation of the public tag}
+
+In the \texttt{scotch/scotch} home page, click on the icon with a
+label (``Tag''), then on ``New tag''. Put the version number as the
+tag name (\eg, ``v7.0.7'').
+
+\subsubsection{Generation of the asset}
+
+In the \texttt{scotch/scotch} home page, click on the icon with a
+rocket (``Releases''), then on ``New release''. Select the newly
+created tag. Put as comment the text of the merge request.
