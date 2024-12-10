@@ -37,13 +37,16 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     27 nov 2024     ##
+##                                 to     10 dec 2024     ##
 ##                                                        ##
 ############################################################
 
 cmake_minimum_required(VERSION 3.10)
 
 project(SCOTCH LANGUAGES C)
+
+# Use C99 as C standard
+set(CMAKE_C_STANDARD 99)
 
 # Add Fortran support
 option(BUILD_FORTRAN "Enable Fortran" ON)
