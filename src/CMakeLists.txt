@@ -118,7 +118,7 @@ if(THREADS)
   endif()
 endif()
 
-# decompression libs
+# Decompression libs
 if(USE_ZLIB)
   find_package(ZLIB)
 endif(USE_ZLIB)
