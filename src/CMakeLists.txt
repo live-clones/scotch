@@ -86,6 +86,12 @@ else()
   message(STATUS "Flex found here: ${FLEX_EXECUTABLE}")
 endif()
 
+if(WIN32)
+  set(FLEX_FLAG "--wincompat")
+else()
+  set(FLEX_FLAG "")
+endif()
+
 #############
 #  Options  #
 #############
