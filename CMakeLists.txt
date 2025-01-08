@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -94,6 +94,10 @@ option(SCOTCH_METIS_PREFIX "Prefix Scotch version of MeTiS routines" OFF)
 
 # Install our MeTiS header stubs
 option(INSTALL_METIS_HEADERS "Install libScotchMeTiS headers in destination directory" ON)
+
+# Level of deterministic behavior
+set(SCOTCH_DETERMINISTIC "FIXED_SEED" CACHE STRING "Level of determinism in Scotch")
+set_property(CACHE SCOTCH_DETERMINISTIC PROPERTY STRINGS NONE FIXED_SEED FULL)
 
 # Compression format options
 option(USE_ZLIB "Use ZLIB compression format if found" ON)

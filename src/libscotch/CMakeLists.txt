@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     22 nov 2024     ##
+##                                 to     10 jan 2025     ##
 ##                                                        ##
 ############################################################
 
@@ -518,6 +518,17 @@ endif()
 
 if(OS_IS_FREEBSD)
   target_compile_definitions(scotch PUBLIC cpu_set_t=cpuset_t __BSD_VISIBLE)
+endif()
+
+if(SCOTCH_DETERMINISTIC STREQUAL FULL)
+  target_compile_definitions(scotch PUBLIC COMMON_RANDOM_FIXED_SEED)
+  target_compile_definitions(scotch PUBLIC SCOTCH_DETERMINISTIC)
+  message(STATUS "Determinism: full")
+elseif(SCOTCH_RANDOM STREQUAL FIXED_SEED)
+  target_compile_definitions(scotch PUBLIC COMMON_RANDOM_FIXED_SEED)
+  message(STATUS "Determinism: fixed random seed")
+else()
+  message(STATUS "Determinism: none")
 endif()
 
 # Add (de)compression libraries

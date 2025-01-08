@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -42,12 +42,12 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     30 jul 2024     ##
+##                                 to     09 jan 2025     ##
 ##                                                        ##
 ############################################################
 
 # Add general compiler options
-add_definitions(-Drestrict=__restrict -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME)
+add_definitions(-Drestrict=__restrict -DSCOTCH_RENAME)
 
 # Add OS-specific compiler options
 if(APPLE)
