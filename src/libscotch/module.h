@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 20 nov 2024     **/
+/**                                 to   : 09 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,7 +63,7 @@
 ** Version and copyright strings.
 */
 
-#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2024 IPB, Universite de Bordeaux, INRIA & CNRS, France"
+#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2025 IPB, Universite de Bordeaux, INRIA & CNRS, France"
 #define SCOTCH_LICENSE_STRING       "This software is libre/free software under CeCILL-C -- see the user's manual for more information"
 #ifdef SCOTCH_CODENAME
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL) " (" STRINGIFY (SCOTCH_CODENAME) ")"
