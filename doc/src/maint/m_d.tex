@@ -13,6 +13,275 @@
 This section explains some of the data structures implemented in
 \scotch\ and \ptscotch.
 
+\subsection{\texttt{Dorder}}
+\label{sec-data-dorder}
+
+Distributed orderings are data structures used in \ptscotch\ to
+represent orderings distributed on a set of processing elements. Like
+for the centralized ordering of type \texttt{Order} (see
+Section~\ref{sec-data-order}), a distributed ordering consists of an
+inverse permutation, which provides the old indices of the reordered
+vertices, and a column block decomposition of the reordered matrix, to
+help perform more efficient block computations at the solve stage. The
+column block decomposition is defined as a tree structure, the nodes
+of which, of type \texttt{Dorder\lbt Cblk}, represent column blocks
+tree nodes containing consecutive, reordered vertices. A tree node may
+have children nodes, which represent the decomposition of a column
+block into sub-column blocks, \eg, when a subdomain is decomposed into
+two separated subdomains and a separator.
+
+Because its column blocks are distributed across multiple processing
+elements, the \texttt{Dorder} data type is much more complex than
+the \texttt{Order} data type. Hence, it is important to fully
+understand the \texttt{Order} data type before delving into the
+meanders of the \texttt{Dorder} data type and its ancillary data
+types. The main difference between the two is that, since graphs are
+distributed across multiple processing elements, column block
+information has to be duplicated on all the processing elements
+which contain a piece of a given graph. In order to reconciliate this
+information, to provide a centralized block column ordering, all
+distributed column block tree node structures are identified by a
+\texttt{Dorder\lbt Index} data structure.
+
+The distributed column block tree data structure, created by way of
+parallel graph separation algorithms, always ends up in leaves, when
+nested dissection no longer succeeds or when the distributed subgraphs
+are folded onto single processing elements. As soon as the latter
+happens, a purely sequential graph ordering process can take place on
+each of them. This leads to the creation of a leaf
+\texttt{Dorder\lbt Cblk} node, into which the resulting
+locally-computed, centralized column block sub-tree is compacted as an
+array of \texttt{Dorder\lbt Node} data structures. From the above, at
+the time being, the distributed column block tree structure contains
+only either nested dissection nodes, of type
+\texttt{DORDER\lbt CBLK\lbt NEDI}, and leaf nodes, of type 
+\texttt{DORDER\lbt CBLK\lbt LEAF}. In order to facilitate the
+integration of centralized column block sub-trees into a global
+distributed column block tree, the values of the type flags are the
+same for the \texttt{Dorder} and \texttt{Order} data types.
+
+The fields of the \texttt{Dorder} data structure are the following:
+\begin{itemize}
+\iteme[\texttt{baseval}]
+  Base value for the inverse permutation.
+\iteme[\texttt{vnodglbnbr}]
+  Overall number of node vertices to order across all processing
+  elements. For graph orderings, this number is equal to the number of
+  non-halo vertices in the initial graph.
+\iteme[\texttt{cblklocnbr}]
+  Local number of locally-rooted column blocks. This number is the sum
+  of the number of centralized column blocks, of type
+  \texttt{Dorder\lbt Node}, held by the current processing element,
+  plus the number of distributed column block tree nodes, of type
+  \texttt{Dorder\lbt Cblk}, the \texttt{proc\lbt loc\lbt num} index of
+  which is equal to the rank of the processing element. This allows
+  one to count only once each distributed column block tree node, when
+  summing the \texttt{cblk\lbt loc\lbt nbr} fields over all
+  processing elements.
+\iteme[\texttt{linkdat}]
+  Start of the doubly-linked list of distributed column block tree
+  nodes, of type \texttt{Dorder\lbt Cblk}, on the given processing
+  element. This list is circular, to allow for the insertion of new
+  nodes at the end of the list in constant time.
+\iteme[\texttt{proccomm}]
+  MPI communicator for managing the distributed ordering. It should be
+  the same as that of the initial distributed graph to be ordered.
+\iteme[\texttt{proclocnum}]
+  Rank of the given processing element within the communicator.
+\iteme[\texttt{mutelocdat}]
+  When multi-threading is activated, allows one to create critical
+  sections to update the ordering data in a thread-safe manner.
+\end{itemize}
+
+\subsubsection{\texttt{DorderIndex}}
+\label{sec-data-dorder-index}
+
+Since the ordering data structure is distributed, pointers cannot be
+used to refer to parent or children column block tree node data
+structures across processing elements. The \texttt{Dorder\lbt Index}
+data type defines an identifier for column block tree nodes. These
+identifiers are unique, in the sense that, on each processing element,
+no two \texttt{Dorder\lbt Cblk} structures will have the same
+identifier. However, several \texttt{Dorder\lbt Cblk} structures may
+bear the same \texttt{Dorder\lbt Index} values on different processing
+elements, in the case when they are siblings which maintain the local
+information about the same distributed column block tree node.
+
+The fields of the \texttt{DorderIndex} data type are the following:
+\begin{itemize}
+\iteme[\texttt{proclocnum}]
+  Smallest rank among the processing elements on which a copy of the
+  column block tree node resides.
+\iteme[\texttt{cblklocnum}]
+  Local number of the column block tree node data structure on the
+  processing element of aforementioned rank.
+\end{itemize}
+
+\subsubsection{\texttt{DorderLink}}
+\label{sec-data-dorder-link}
+
+Since distributed column block tree nodes, of type
+\texttt{Dorder\lbt Cblk}, are created on the fly on each processing
+element, are in small numbers, and are heavy structures, they are not
+stored in a single resizable array, but as individual cells which are
+allocated when needed. Consequently, these structures have to be
+linked together, for proper management.
+
+The \texttt{DorderLink} data type aims at chaining all
+\texttt{Dorder\lbt Cblk} structures in a circular, doubly-linked
+list. New nodes are inserted at the end of the list, such that a simple
+traversal yields nodes in ascending creation order, which is essential
+for locally-rooted nodes when gathering them to create a centralized
+ordering. The \texttt{Dorder\lbt Link} structure is the first field of
+the \texttt{Dorder\lbt Cblk} structure, so that a simple pointer cast
+allows one to retrieve the tree node structure from the current link.
+
+The fields of the \texttt{DorderLink} data structure are the following:
+\begin{itemize}
+\iteme[\texttt{nextptr}]
+  Pointer to the next distributed column block tree node created on
+  the given processing element.
+\iteme[\texttt{prevptr}]
+  Pointer to the previous distributed column block tree node created
+  on the given processing element.
+\end{itemize}
+
+\subsubsection{\texttt{DorderNode}}
+\label{sec-data-dorder-node}
+
+The distributed column block tree data structure ends up in leaves,
+when either the parallel nested dissection stops, or when distributed
+subgraphs are located on single processing elements. In the first
+case, the distributed subgraph is centralized, after which, in both
+cases, a centralized ordering strategy is applied to the centralized
+subgraph, and a centralized block ordering is computed. This
+centralized block ordering is represented as an \texttt{Order}
+data structure, containing an inverse permutation and a tree of
+\texttt{Order\lbt Cblk} nodes. Since the distributed ordering will
+eventually have to be centralized, the local, centralized orderings
+will have to be compacted and sent to the root processing
+element. In order to anticipate this and to save space, once a
+centralized ordering is computed on some processing element, the
+resulting column block tree is compacted into a single array of
+\texttt{Dorder\lbt Node} cells.
+
+The fields of the \texttt{DorderNode} data type are the following:
+\begin{itemize}
+\iteme[\texttt{fathnum}]
+  Un-based index of the father node of the given node in the node
+  array, or $-1$ if the given node is a local root and has to be
+  connected to the father of the local leaf of the distributed column
+  block tree.
+\iteme[\texttt{typeval}]
+  Type of centralized column block tree node. The admissible values
+  are constants of the kind \texttt{ORDERCBLK*}.
+\iteme[\texttt{vnodnbr}]
+  Number of node vertices in the column block.
+\iteme[\texttt{cblknum}]
+  Rank of the tree node among the children of its father, starting
+  from zero.
+\end{itemize}
+
+Like for the \texttt{Dorder\lbt Cblk} data type, there are no
+references from a node to its children, but a reference from each node
+to its father, with all information needed to rebuild a global
+centralized column block tree when all node information is centralized
+on a single processing element.
+
+\subsubsection{\texttt{DorderCblk}}
+\label{sec-data-dorder-cblk}
+
+The \texttt{DorderCblk} data type represents distributed column block
+tree nodes within distributed orderings. A tree node may be a leaf
+node, or have children nodes which describe the decomposition of a
+column block into sub-column blocks, \eg, when a graph is decomposed
+into two separated subgraphs and a separator.
+
+Since, by nature, every distributed column block tree node concerns a
+set of vertices distributed across a set of processing elements, each
+of the latter holds a copy of the tree node, the identifier of which,
+of type \texttt{Dorder\lbt Index}, contains identical information: the
+smallest rank among the involved processing elements within the
+communicator used to manage the distributed ordering, and an index
+incrementally generated on this processing element. Unlike for the
+\texttt{Order} data type, there are no pointers from a tree node to
+its child nodes; on the opposite, the \texttt{Dorder\lbt Cblk} node
+contains a \texttt{Dorder\lbt Index} referring to its father node. The
+only information a tree node will hold about its children is their
+number.
+
+The fields of the \texttt{DorderCblk} data type are the following:
+\begin{itemize}
+\iteme[\texttt{linkdat}]
+  Doubly-linked list structure to chain together all
+  the \texttt{Dorder\lbt Cblk} structures on a given processing
+  element.
+\iteme[\texttt{ordelocptr}]
+  Pointer to the distributed ordering to which the given distributed
+  column block tree node belongs.
+\iteme[\texttt{typeval}]
+  Type of tree node; at the time being, it is either
+  \texttt{DORDER\lbt CBLK\lbt NEDI} for a nested dissection node, or
+  \texttt{DORDER\lbt CBLK\lbt LEAF} for a leaf node.
+\iteme[\texttt{fathnum}]
+  Identifier of the father of the given column block tree node. If the
+  given tree node is a root, the value of the father index is
+  \texttt{\{~0, -1~\}}.
+\iteme[\texttt{cblknum}]
+  Identifier of the given column block tree node. The process number
+  is the smallest rank among all the processing elements sharing node
+  vertices, and the local number is provided incrementally on this
+  processing element.
+\iteme[\texttt{ordeglbval}]
+  Un-based global start index of the node vertices in the distributed
+  column block tree node.
+\iteme[\texttt{vnodglbnbr}]
+  Number of node vertices contained in the distributed column block
+  tree node, over all the involved processing elements. If the
+  column block has sub-column blocks, the sum of all the
+  \texttt{vnodglbnbr} values of the sub-column blocks must be equal to
+  the \texttt{vnodglbnbr} of the column block.
+\iteme[\texttt{cblkfthnum}]
+  Index of the given column block tree node among its siblings,
+  starting from zero.
+\iteme[\texttt{data}]
+  Union field holding the information concerning either the leaf node
+  or the nested dissection node. This field has two sub-fields:
+  \begin{itemize}
+  \iteme[\texttt{leaf}]
+    Leaf field, which has the following sub-fields:
+    \begin{itemize}
+    \iteme[\texttt{ordelocval}]
+      Un-based start index in the global inverse permutation array for
+      the local vertices.
+    \iteme[\texttt{vnodlocnbr}]
+      Number of node vertices in the given permutation fragment.
+    \iteme[\texttt{periloctab}]
+      Pointer to the local, un-based, inverse permutation fragment
+      array, of size \texttt{vnod\lbt loc\lbt nbr}. The values of the
+      \texttt{peri\lbt loc\lbt tab} array are based according to the
+      \texttt{baseval} field of the \texttt{Dorder} data type.
+    \iteme[\texttt{nodelocnbr}]
+      Number of local column block tree nodes associated with the
+      permutation fragment.
+    \iteme[\texttt{nodeloctab}]
+      Pointer to the local, un-based, array of local column block tree
+      nodes, of size \texttt{node\lbt loc\lbt nbr}.
+    \iteme[\texttt{cblklocnum}]
+      Un-based index, in \texttt{node\lbt loc\lbt tab}, of the root
+      local column block tree node.
+    \end{itemize}
+  \iteme[\texttt{nedi}]
+    Nested dissection field. This field has a single sub-field:
+    \begin{itemize}
+    \iteme[\texttt{cblkglbnbr}]
+      Number of sub-column blocks within this column block. For nested
+      dissection, this number is either $2$ (two separated parts and
+      no separator) or $3$ (two separated parts and a separator).
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
 \subsection{\texttt{Graph}}
 \label{sec-data-graph}
 
