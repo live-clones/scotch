@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2021,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 5.0  : from : 25 jul 2007     **/
 /**                                 to   : 25 jul 2007     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 17 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -84,10 +84,10 @@ Gnum * restrict const       peritab)
   ordeptr->vnodnbr         = vnodnbr;
   ordeptr->treenbr         =                      /* Initialize a simple blocking */
   ordeptr->cblknbr         = 1;
-  ordeptr->cblktre.typeval = ORDERCBLKLEAF;
-  ordeptr->cblktre.vnodnbr = vnodnbr;
-  ordeptr->cblktre.cblknbr = 0;
-  ordeptr->cblktre.cblktab = NULL;
+  ordeptr->rootdat.typeval = ORDERCBLKLEAF;
+  ordeptr->rootdat.vnodnbr = vnodnbr;
+  ordeptr->rootdat.cblknbr = 0;
+  ordeptr->rootdat.cblktab = NULL;
   ordeptr->peritab         = peritab;
 
   if (ordeptr->peritab == NULL) {                 /* Inverse permutation must be allocated */
@@ -119,8 +119,8 @@ void
 orderExit (
 Order * restrict const      ordeptr)
 {
-  if (ordeptr->cblktre.cblktab != NULL)           /* Free column block tree */
-    orderExit2 (ordeptr->cblktre.cblktab, ordeptr->cblktre.cblknbr);
+  if (ordeptr->rootdat.cblktab != NULL)           /* Free column block tree */
+    orderExit2 (ordeptr->rootdat.cblktab, ordeptr->rootdat.cblknbr);
 
   if ((ordeptr->peritab != NULL) && ((ordeptr->flagval & ORDERFREEPERI) != 0)) /* If peritab is group leader */
     memFree (ordeptr->peritab);                   /* Free group leader */
@@ -186,7 +186,7 @@ Gnum * restrict const         rangtab)            /* Column block range array [+
 
   rangptr = rangtab;                              /* Set beginning of range array */
   ordenum = ordeptr->baseval;                     /* Set initial number           */
-  orderRang2 (&rangptr, &ordenum, &ordeptr->cblktre);
+  orderRang2 (&rangptr, &ordenum, &ordeptr->rootdat);
   *rangptr = ordenum;                             /* Set end of range array */
 }
 
@@ -236,7 +236,7 @@ Gnum * restrict const         treetab)            /* Column block separator tree
   Gnum                cblanum;
 
   cblanum = ordeptr->cblknbr + ordeptr->baseval - 1; /* Set number of last column block */
-  orderTree2 (treetab - ordeptr->baseval, &cblanum, &ordeptr->cblktre, -1);
+  orderTree2 (treetab - ordeptr->baseval, &cblanum, &ordeptr->rootdat, -1);
 
 #ifdef SCOTCH_DEBUG_ORDER2
   if (cblanum != ordeptr->baseval - 1)

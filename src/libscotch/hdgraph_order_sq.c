@@ -1,4 +1,4 @@
-/* Copyright 2008,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 5.1  : from : 11 nov 2008     **/
 /**                                 to   : 11 nov 2008     **/
 /**                # Version 7.0  : from : 19 jan 2023     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 17 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -121,7 +121,7 @@ const Strat * restrict const    stratptr)
   vnumtax = grafptr->s.vnumtax;                   /* Save number array of subgraph to order               */
   grafptr->s.vnumtax = NULL;                      /* Assume graph does not have one (fake original graph) */
 
-  if (hgraphOrderSt (grafptr, &corddat, 0, &corddat.cblktre, stratptr) != 0) { /* Compute sequential ordering */
+  if (hgraphOrderSt (grafptr, &corddat, 0, &corddat.rootdat, stratptr) != 0) { /* Compute sequential ordering */
     orderExit (&corddat);
     return (1);
   }
@@ -154,7 +154,7 @@ const Strat * restrict const    stratptr)
       errorPrint ("hdgraphOrderSq2: cannot import centralized separation tree");
       o = 1;
     }
-    cblkptr->typeval = DORDERCBLKLEAF | corddat.cblktre.typeval; /* Preserve type of root node of centralized ordering */
+    cblkptr->typeval = DORDERCBLKLEAF | corddat.rootdat.typeval; /* Preserve type of root node of centralized ordering */
   }
   else {
     cblkptr->typeval = DORDERCBLKLEAF;            /* Fill node as distributed leaf */
@@ -187,8 +187,8 @@ const Order * const             cordptr)
   }
 
   nodenum = 0;                                    /* Start labeling nodes from 0 */
-  for (cblknum = 0; cblknum < cordptr->cblktre.cblknbr; cblknum ++)
-    hdgraphOrderSqTree2 (nodetab, &nodenum, &cordptr->cblktre.cblktab[cblknum], -1, cblknum); /* Root of tree is labeled "-1" */
+  for (cblknum = 0; cblknum < cordptr->rootdat.cblknbr; cblknum ++)
+    hdgraphOrderSqTree2 (nodetab, &nodenum, &cordptr->rootdat.cblktab[cblknum], -1, cblknum); /* Root of tree is labeled "-1" */
 
 #ifdef SCOTCH_DEBUG_HDGRAPH2
   if (nodenum != (cordptr->treenbr - 1)) {

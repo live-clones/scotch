@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2018,2019,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 14 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 17 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -269,7 +269,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     goto abort;
   }
 
-  if ((o = hmeshOrderSt (&srcmeshdat, &libordeptr->o, 0, &libordeptr->o.cblktre, ordstratptr)) != 0)
+  if ((o = hmeshOrderSt (&srcmeshdat, &libordeptr->o, 0, &libordeptr->o.rootdat, ordstratptr)) != 0)
     goto abort;
 
 #ifdef SCOTCH_DEBUG_LIBRARY2

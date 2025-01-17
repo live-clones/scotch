@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2013,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2013,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 10 oct 2013     **/
 /**                                 to   : 10 oct 2013     **/
 /**                # Version 7.0  : from : 18 jan 2023     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 17 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -508,10 +508,10 @@ const int                     protnum)
     }
     cordptr->cblknbr = cblkglbnbr;
 
-    cordptr->cblktre.typeval = (int) treercvtab[0].typeval; /* Process root node of separator tree */
-    cordptr->cblktre.vnodnbr = treercvtab[0].vnodnbr;
-    cordptr->cblktre.cblknbr = cblkglbtab[0].cblknbr;
-    cordptr->cblktre.cblktab = cblkglbtab[0].cblktab; /* Link its sons array */
+    cordptr->rootdat.typeval = (int) treercvtab[0].typeval; /* Process root node of separator tree */
+    cordptr->rootdat.vnodnbr = treercvtab[0].vnodnbr;
+    cordptr->rootdat.cblknbr = cblkglbtab[0].cblknbr;
+    cordptr->rootdat.cblktab = cblkglbtab[0].cblktab; /* Link its sons array */
 
     for (treeglbnum = 1; treeglbnum < treeglbnbr; treeglbnum ++) { /* For all nodes except the root */
       Gnum                  cblkfthnum;
