@@ -424,3 +424,143 @@ The main fields of the \texttt{Mapping} data structure are the following:
   When multi-threading is activated, allows to create critical
   sections to update the mapping data in a thread-safe manner.
 \end{itemize}
+
+\subsection{\texttt{Order}}
+\label{sec-data-order}
+
+Orderings are data structures used in \scotch\ to represent
+fill-minimizing block orderings of adjacency matrices represented as
+graphs. A block ordering, contained in the \texttt{Order} data
+structure, is defined by an inverse permutation, which provides the
+old indices of the reordered vertices, and a column block
+decomposition of the reordered matrix, to help performing more
+efficient block computations at the solving stage.
+
+Inverse permutations are used, instead of direct permutations, because
+their processing is more local: when ordering some subgraph, the only
+ordering information to provide is the un-based start index, usually
+called \texttt{ordenum}, in the inverse permutation vector, usually
+called \texttt{peritab}, while the \texttt{vnumtax} array of the
+\texttt{Graph} structure holds the values of the vertex indices to
+write in the sub-array of \texttt{peritab} starting at index
+\texttt{ordenum}, of a size equal to the number of concerned vertices
+in the \texttt{Graph}. Once an ordering is computed, it is
+straightforward to compute the direct permutation \texttt{permtab}
+from the inverse permutation \texttt{peritab}, in case it is needed.
+
+The column block decomposition is defined as a tree structure, whose
+nodes, of type \texttt{Order\lbt Cblk}, represent column blocks
+containing consecutive, reordered vertices. A tree node may have
+ordered children nodes, which represent the decomposition of a column
+block into sub-column blocks, \eg, when a subdomain is decomposed into
+two separated subdomains and a separator.
+
+The main fields of the \texttt{Order} data structure are the
+following:
+\begin{itemize}
+\iteme[\texttt{flagval}]
+Flag that indicates whether the \texttt{peritab} inverse permutation
+array has to be freed on exit.
+\iteme[\texttt{baseval}]
+Base value for inverse permutation values.
+\iteme[\texttt{vnodnbr}]
+Number of vertex nodes in the ordering. When the associated graph
+structure is a \texttt{Graph}, this number is equal to its
+\texttt{vertnbr} field; when it is a \texttt{Mesh}, it is equal to
+its \texttt{vnodnbr} field.
+\iteme[\texttt{treenbr}]
+Number of tree nodes in the ordering. This number is equal to $1$ when
+only the root tree node is present, and is incremented each time a new
+tree node is added to the tree structure.
+\iteme[\texttt{cblknbr}]
+Number of column blocks in the ordering. This number is equal to $1$
+when only the root tree node is present. When some column block
+is decomposed into $c$ sub-column blocks, it is increased by $(c-1)$,
+since this represents the number of additional column blocks in the
+structure.
+\iteme[\texttt{rootdat}]
+Root column block of the ordering. This structure, of type
+\texttt{Order\lbt Cblk}, is initialized to contain all \texttt{Graph}
+vertices, or \texttt{Mesh} vertex nodes, in a single column block,
+after which reordering algorithms are applied and lead to the creation
+of sub-column blocks, \eg, in the case of nested dissection.
+\iteme[\texttt{peritab}]
+Pointer to the inverse permutation array.
+\iteme[\texttt{mutedat}]
+Mutual exclusion lock. When multi-threading is activated, it allows to
+create critical sections to update the ordering data in a thread-safe
+manner.
+\end{itemize}
+
+\subsubsection{\texttt{OrderCblk}}
+\label{sec-data-order-cblk}
+
+Column blocks are sets of reordered unknowns which are likely to be
+processed efficiently together when solving the linear system, \eg,
+using BLAS block computation routines. The column block decomposition
+of the reordered matrix is represented as a tree whose nodes are
+instances of the \texttt{OrderCblk} data structure. The column block
+decomposition tree will be used to create the block elimination tree
+of the unknowns of the linear system, which amounts to linking each
+column block to a father block. This building is performed by the
+\texttt{order\lbt Tree()} routine.
+
+A column block tree node \texttt{OrderCblk} is defined by its type
+(\ie, whether it is a leaf, a nested dissection node, etc.), its width
+(\ie, the number of node vertices it contains), and, if it is not a
+leaf, the description of the sub-column blocks it contains.
+The main fields of the \texttt{OrderCblk} data structure are the
+following:
+\begin{itemize}
+\iteme[\texttt{typeval}]
+  Set of flags that define the nature of the column block tree
+  node. They must be the same as the distributed column block tree
+  node flags of the \texttt{Dorder\lbt Cblk} distributed column block
+  data structure. Consequently, these flags must be separate bits, so
+  that values can be or-ed (especially, concerning \texttt{ORDER\lbt
+  CBLK\lbt LEAF} in \texttt{hdgraph\lbt Order\lbt Nd()}).
+  These flags are the following:
+  \begin{itemize}
+  \iteme[\texttt{ORDERCBLKLEAF}]
+    Leaf column block (before it is subdivided into sub-column blocks,
+    or definitely). In this case, the other fields of the column block
+    tree node are such that $\texttt{cblknbr} = 0$ and
+    $\texttt{cblktab} = \texttt{NULL}$.
+  \iteme[\texttt{ORDERCBLKNEDI}]
+    Nested-dissection separator tree node. The separator is always
+    the last sub-column block. Hence, if the separator is not empty,
+    the node has three sub-column blocks (hence $\texttt{cblknbr} =
+    3$), while, if the separator is empty, the column block tree node
+    has only two sub-column blocks (hence $\texttt{cblknbr} = 2$).
+    None of the separated parts can be empty (else, the tree node
+    would be of type \texttt{ORDER\lbt CBLK\lbt SEQU}).
+  \iteme[\texttt{ORDERCBLKDICO}]
+    Disconnected components tree node. It contains an arbitrary number
+    (always strictly greater than~$1$) of sub-column blocks, which
+    represent disconnected components to be ordered
+    independently. Since the sub-column blocks are not connected,
+    their father in the elimination tree will not be the column block
+    tree node itself, but its father (or none if the column block is
+    the root column block, \ie, the \texttt{rootdat} field of the
+    \texttt{Order} data structure).
+  \iteme[\texttt{ORDERCBLKSEQU}]
+    Sequential tree node. It contains an arbitrary number
+    (always strictly greater than~$1$) of sub-column blocks, which
+    represent mutually dependent blocks. Consequently, the father of
+    each sub-column block in the elimination tree will be the next
+    sub-column block, except for the last sub-column block, whose
+    father will be the column block itself.
+  \end{itemize}
+\iteme[\texttt{vnodnbr}]
+  Number of nodes (\ie, vertices) contained in the column block. If
+  the column block has sub-column blocks, the sum of all the
+  \texttt{vnodnbr} values of the sub-column blocks must be equal to
+  the \texttt{vnodnbr} of the column block.
+\iteme[\texttt{cblknbr}]
+  Number of sub-column blocks. If the column block is a leaf,
+  $\texttt{cblknbr} = 0$ and $\texttt{cblktab} = \texttt{NULL}$.
+\iteme[\texttt{cblktab}]
+  Array of \texttt{cblknbr} structures of type \texttt{DorderCblk},
+  which hold the data about the sub-column blocks if the column block
+  is not a leaf. \texttt{cblktab} has to be freed on exit.
+\end{itemize}
