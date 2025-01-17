@@ -21,21 +21,20 @@ graph from a fine distributed graph, using the result of a distributed
 matching. The result of the matching is available on all MPI processes
 as follows:
 \begin{itemize}
-\item
-  \texttt{coardat.\lbt multlocnbr}: the number of local coarse
-  vertices to be created;
-\item
-  \texttt{coardat.\lbt multloctab}: the local multinode array. For each
-  local coarse vertex to be created, it contains two values. The first
-  one is always positive, and represents the global number of the first
-  local fine vertex to be mated. The second number can be either
-  positive or negative. If it is positive, it represents the global
-  number of the second local fine vertex to be mated. If it is
-  negative, its opposite, minus two, represents the local edge number
-  pointing to the remote vertex to be mated;
-  \texttt{coardat.\lbt procgsttax}: array (restricted to ghost
-  vertices only) that records on which process is located each ghost
-  fine vertex.
+\iteme[\texttt{coardat.\lbt multlocnbr}]
+  The number of local coarse vertices to be created.
+\iteme[\texttt{coardat.\lbt multloctab}]
+  The local multinode array. For each local coarse vertex to be
+  created, it contains two values. The first one is always positive,
+  and represents the global number of the first local fine vertex to
+  be mated. The second number can be either positive or negative. If
+  it is positive, it represents the global number of the second local
+  fine vertex to be mated. If it is negative, its opposite, minus two,
+  represents the local edge number pointing to the remote vertex to be
+  mated.
+\iteme[\texttt{coardat.\lbt procgsttax}]
+  Array (restricted to ghost vertices only) that records on which
+  process is located each ghost fine vertex.
 \end{itemize}
 
 \subsubsection{Creating the fine-to-coarse vertex array}
@@ -195,65 +194,63 @@ send it to an underloaded peer.
 The essential data that is produced by the \texttt{dgraph\lbt Fold\lbt
 Comm()} routine for the calling processing element is the following:
 \begin{itemize}
-\item
-\texttt{commmax}: the maximum number of point-to-point communications
-that can be performed by any processing element. The higher this
-value, the higher the probability to spread the load of a highly
-overloaded processing element to (underloaded) receivers. In the
-extreme case where all the vertices are located on a single processing
-element, $(\mbox{\texttt{procglbnbr}} - 1)$ communications would be
-necessary. To prevent such a situation, the number of communications
-is bounded by a small number, and receiver processing elements can be
-overloaded by an incoming communication. The algorithm strives to
-provide a \textit{feasible} communication scheme, where the current
-maximum number of communications per processing element suffices to
-send the load of all sender processing elements. When the number of
-receivers is smaller than the number of senders (in practice, only by
-one, in case of folding from an odd number of processing elements), at
-least two communications have to take place on some receiver, to
-absorb the vertices sent. The initial maximum number of communications
-is defined by \texttt{DGRAPH\lbt FOLD\lbt COMM\lbt NBR};
-\item
-\texttt{commtypval}: the type of communication and processing that
-the processing element will have to perform: either as a sender, a
-receiver, or a sender receiver. Sender receivers will keep some of
-their vertex data, but have to send the rest to other
-receivers. Sender receivers do send operations only, and never receive
-data from a sender;
-\item
-\texttt{commdattab}: a set of slots, of type \texttt{Dgraph\lbt
-Fold\lbt Comm\lbt Data}, that describe the point-to-point
-communications that the processing element will initiate on its
-side. Each slot contains the number of vertices to send or receive,
-and the target or source process index, respectively;
-\item
-\texttt{commvrttab}: a set of values associated to each slot in
-\texttt{comm\lbt dat\lbt tab}, each of which contains the global index
-number of the first vertex of the graph chunk that will be
-transmitted;
-\item
-\texttt{proccnttab}: for receiver processes only, the count array of
-same name of the folded distributed graph structure;
-\item
-\texttt{vertadjnbr}: for receiver processes only, the number of
-elements in the dichotomy array \texttt{vert\lbt adj\lbt tab};
-\item
-\texttt{vertadjtab}: a sorted array of global vertex indices. Each
-value represent the global start index of a graph chunk that will
-been exchanged (or which will remain in place on a receiver processing
-element);
-\item
-\texttt{vertdlttab}: the value which has to be added to the indices
-of the vertices in the corresponding chunk represented in
-\texttt{vert\lbt adj\lbt tab}. This array and the latter serve to find,
-by dichotomy, to which chunk an end vertex belongs, and modify its
-global vertex index in the edge array in the receiver processing
-element. Although \texttt{vert\lbt adj\lbt tab} and \texttt{vert\lbt
-dlt\lbt tab} contain strongly related information, they are separate
-arrays, for the sake of memory locality. Indeed, \texttt{vert\lbt
-adj\lbt tab} will be subject to a dichotomy search, involving many
-memory reads, before the proper index is found and a single value is
-retrieved from the \texttt{vert\lbt dlt\lbt tab} array.
+\iteme[\texttt{commmax}]
+  The maximum number of point-to-point communications that can be
+  performed by any processing element. The higher this value, the
+  higher the probability to spread the load of a highly overloaded
+  processing element to (underloaded) receivers. In the extreme case
+  where all the vertices are located on a single processing element,
+  $(\mbox{\texttt{procglbnbr}} - 1)$ communications would be
+  necessary. To prevent such a situation, the number of communications
+  is bounded by a small number, and receiver processing elements can
+  be overloaded by an incoming communication. The algorithm strives to
+  provide a \textit{feasible} communication scheme, where the current
+  maximum number of communications per processing element suffices to
+  send the load of all sender processing elements. When the number of
+  receivers is smaller than the number of senders (in practice, only
+  by one, in case of folding from an odd number of processing
+  elements), at least two communications have to take place on some
+  receiver, to absorb the vertices sent. The initial maximum number of
+  communications is defined by \texttt{DGRAPH\lbt FOLD\lbt COMM\lbt
+  NBR};
+\iteme[\texttt{commtypval}]
+  The type of communication and processing that the processing element
+  will have to perform: either as a sender, a receiver, or a sender
+  receiver. Sender receivers will keep some of their vertex data, but
+  have to send the rest to other receivers. Sender receivers do send
+  operations only, and never receive data from a sender;
+\iteme[\texttt{commdattab}]
+  A set of slots, of type \texttt{Dgraph\lbt Fold\lbt Comm\lbt Data},
+  that describe the point-to-point communications that the processing
+  element will initiate on its side. Each slot contains the number of
+  vertices to send or receive, and the target or source process index,
+  respectively;
+\iteme[\texttt{commvrttab}]
+  A set of values associated to each slot in \texttt{comm\lbt dat\lbt
+  tab}, each of which contains the global index number of the first
+  vertex of the graph chunk that will be transmitted;
+\iteme[\texttt{proccnttab}]
+  For receiver processes only, the count array of same name of the
+  folded distributed graph structure;
+\iteme[\texttt{vertadjnbr}]
+  For receiver processes only, the number of elements in the dichotomy
+  array \texttt{vert\lbt adj\lbt tab};
+\iteme[\texttt{vertadjtab}]
+  A sorted array of global vertex indices. Each value represent the
+  global start index of a graph chunk that will been exchanged (or
+  which will remain in place on a receiver processing element);
+\iteme[\texttt{vertdlttab}]
+  The value which has to be added to the indices of the vertices in
+  the corresponding chunk represented in \texttt{vert\lbt adj\lbt
+  tab}. This array and the latter serve to find, by dichotomy, to
+  which chunk an end vertex belongs, and modify its global vertex
+  index in the edge array in the receiver processing element. Although
+  \texttt{vert\lbt adj\lbt tab} and \texttt{vert\lbt dlt\lbt tab}
+  contain strongly related information, they are separate arrays, for
+  the sake of memory locality. Indeed, \texttt{vert\lbt adj\lbt tab}
+  will be subject to a dichotomy search, involving many memory reads,
+  before the proper index is found and a single value is retrieved
+  from the \texttt{vert\lbt dlt\lbt tab} array.
 \end{itemize}
 
 The first stage of the algorithm consists in sorting a global process
@@ -313,35 +310,34 @@ remove empty slots and to form the final \texttt{vertadjtab} and
 The data structures that are used during the computation of
 vertex global index update arrays are the following:
 \begin{itemize}
-\item
-\texttt{vertadjtab} and \texttt{vertdlttab}: these two arrays have
-been presented above. They are created only for receiver processes,
-and will be filled concurrently. They are of size
-$((\mbox{\texttt{commmax}} + 1) * \mbox{\texttt{orgprocnbr}})$,
-because in case a process is a sender receiver, it has to use a first
-slot to record the vertices it will keep locally, plus
-\texttt{commmax} for outbound communications.
-During the second stage of the algorithm, for some slot \texttt{i},
-\texttt{vertadjtab[i]} holds the start global index of the
-chunk of vertices that will be kept, sent or received, and
-\texttt{vertdlttab[i]} holds the number of vertices that
-will be sent or received.
-During the third stage of the algorithm, all this data will be
-compacted, to remove empty slots. After this, \texttt{vertadjtab} will
-be an array of global indices used for dichotomy search in
-\texttt{dgraph\lbt Fold()}, and \texttt{vertdlttab[i]} will hold
-the adjustment value to apply to vertices whose global indices are
-comprised between \texttt{vertadjtab[i]} and \texttt{vertadjtab[i+1]}.
-\item
-\texttt{slotsndtab}: this array only has cells for receiver-slide
-slots, hence a size of $((\mbox{\texttt{commmax}} + 1) *
-\mbox{\texttt{procfldnbr}})$ items. During the second stage of the
-algorithm, it is filled so that, for any non-empty communication slot
-\texttt{i} in \texttt{vertadjtab} and \texttt{vertdlttab},
-representing a receive operation, \texttt{slotsndtab[i]} is the slot
-index of the corresponding send operation. During the third stage of
-the algorithm, it is used to compute the accumulated vertex indices
-across processes.
+\iteme[\texttt{vertadjtab} and \texttt{vertdlttab}]
+  These two arrays have been presented above. They are created only
+  for receiver processes, and will be filled concurrently. They are of
+  size $((\mbox{\texttt{commmax}} + 1) * \mbox{\texttt{orgprocnbr}})$,
+  because in case a process is a sender receiver, it has to use a
+  first slot to record the vertices it will keep locally, plus
+  \texttt{commmax} for outbound communications.  During the second
+  stage of the algorithm, for some slot \texttt{i},
+  \texttt{vertadjtab[i]} holds the start global index of the chunk of
+  vertices that will be kept, sent or received, and
+  \texttt{vertdlttab[i]} holds the number of vertices that will be
+  sent or received.  During the third stage of the algorithm, all this
+  data will be compacted, to remove empty slots. After this,
+  \texttt{vertadjtab} will be an array of global indices used for
+  dichotomy search in \texttt{dgraph\lbt Fold()}, and
+  \texttt{vertdlttab[i]} will hold the adjustment value to apply to
+  vertices whose global indices are comprised between
+  \texttt{vertadjtab[i]} and \texttt{vertadjtab[i+1]}.
+\iteme[\texttt{slotsndtab}]
+  This array only has cells for receiver-slide slots, hence a size of
+  $((\mbox{\texttt{commmax}} + 1) * \mbox{\texttt{procfldnbr}})$
+  items. During the second stage of the algorithm, it is filled so
+  that, for any non-empty communication slot \texttt{i} in
+  \texttt{vertadjtab} and \texttt{vertdlttab}, representing a receive
+  operation, \texttt{slotsndtab[i]} is the slot index of the
+  corresponding send operation. During the third stage of the
+  algorithm, it is used to compute the accumulated vertex indices
+  across processes.
 \end{itemize}
 
 Here are some examples of redistributions that are computed by the

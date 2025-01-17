@@ -198,7 +198,7 @@ neighbors of $i$ are stored in $\mathtt{s.edgetax}$ from $\mathtt{s.edgetax}\lbt
 \mbox{\texttt{[}}\mathtt{s.verttax}\mbox{\texttt{[}}i\mbox{\texttt{]]}}$
 to $\mathtt{s.edgetax}\lbt
 \mbox{\texttt{[}}\mathtt{vnhdtax}\mbox{\texttt{[}}i\mbox{\texttt{]}} -
-1\mbox{\texttt{]}}$, inclusive, and its halo neighbors are stored from 
+1\mbox{\texttt{]}}$, inclusive, and its halo neighbors are stored from
 $\mathtt{s.edgetax}\lbt
 \mbox{\texttt{[}}\mathtt{vnhdtax}\mbox{\texttt{[}}i\mbox{\texttt{]]}}$
 to $\mathtt{s.edgetax}\lbt
@@ -371,53 +371,50 @@ freed. This is why the \texttt{Mapping} structure contains flags to
 record whether its arrays should be freed or not. These flags are the
 following:
 \begin{itemize}
-\item
-\texttt{MAPPINGFREEDOMN}: set if the domain array has to be freed when
-the mapping is freed. A common case for sharing the domain array is
-when a coarser \texttt{Kgraph} is computed: the domain array of the
-coarse old mapping can re-use that of the fine old mapping.
-\item
-\texttt{MAPPINGFREEPART}: set if the part array has to be freed when
-the mapping is freed. A common case for sharing the part array is when
-the user part array is kept as the part array for the initial
-\texttt{Kgraph} current mapping structure.
+\iteme[\texttt{MAPPINGFREEDOMN}]
+  Set if the domain array has to be freed when the mapping is freed. A
+  common case for sharing the domain array is when a coarser
+  \texttt{Kgraph} is computed: the domain array of the coarse old
+  mapping can re-use that of the fine old mapping.
+\iteme[\texttt{MAPPINGFREEPART}]
+  Set if the part array has to be freed when the mapping is freed. A
+  common case for sharing the part array is when the user part array
+  is kept as the part array for the initial \texttt{Kgraph} current
+  mapping structure.
 \end{itemize}
 
 The main fields of the \texttt{Mapping} data structure are the following:
 \begin{itemize}
-\item
-\texttt{flagval}: set of flags that defines whether the
-\texttt{parttax} and \texttt{domntab} have to be freed on exit.
-\item
-\texttt{grafptr}: pointer to the \texttt{Graph} associated with the
-mapping, that gives access to the base value \texttt{grafptr->\lbt
-baseval} and the number of source vertices \texttt{grafptr->\lbt
-vertnbr}.
-\item
-\texttt{archptr}: pointer to the \texttt{Arch} associated with the
-mapping, that is necessary to perform all distance computations on the
-mapping.
-\item
-\texttt{parttax}: based array of \texttt{Anum}s, of size
-\texttt{grafptr->\lbt vertnbr}, that provides the index of the target
-domains onto which all graph vertices are currently mapped. Indices
-are un-based.
-\item
-\texttt{domntab}: un-based array of \texttt{ArchDom}s, of size
-\texttt{domnmax}, that stores the target domains to which source graph
-vertices are indirectly associated through the \texttt{parttax} array.
-\item
-\texttt{domnnbr}: number of target domain slots currently used in
-\texttt{domntab}. After a mapping is initialized, $1 \leq
-\mbox{\texttt{domnnbr}} < \mbox{\texttt{domnmax}}$, because source
-graph vertices must be associated to some domain, hence
-\texttt{domntab} should at least contain one domain.
-\item
-\texttt{domnnbr}: number of target domain slots currently used in
-\texttt{domntab}.
-\item
-\texttt{domnmax}: size of the \texttt{domntab} array.
-\item
-\texttt{mutedat}: when multi-threading is activated, allows to create
-critical sections to update the mapping data in a thread-safe manner.
+\iteme[\texttt{flagval}]
+  Set of flags indicating whether the \texttt{parttax} and
+  \texttt{domntab} have to be freed on exit.
+\iteme[\texttt{grafptr}]
+  Pointer to the \texttt{Graph} associated with the mapping, that
+  gives access to the base value \texttt{grafptr->\lbt baseval} and
+  the number of source vertices \texttt{grafptr->\lbt vertnbr}.
+\iteme[\texttt{archptr}]
+  Pointer to the \texttt{Arch} associated with the mapping, that is
+  necessary to perform all distance computations on the mapping.
+\iteme[\texttt{parttax}]
+  Based array of \texttt{Anum}s, of size \texttt{grafptr->\lbt
+  vertnbr}, that provides the index of the target domains onto which
+  all graph vertices are currently mapped. Indices are un-based.
+\iteme[\texttt{domntab}]
+  Un-based array of \texttt{ArchDom}s, of size \texttt{domnmax}, that
+  stores the target domains to which source graph vertices are
+  indirectly associated through the \texttt{parttax} array.
+\iteme[\texttt{domnnbr}]
+  Number of target domain slots currently used in
+  \texttt{domntab}. After a mapping is initialized, $1 \leq
+  \mbox{\texttt{domnnbr}} < \mbox{\texttt{domnmax}}$, because source
+  graph vertices must be associated to some domain, hence
+  \texttt{domntab} should at least contain one domain.
+\iteme[\texttt{domnnbr}]
+  Number of target domain slots currently used in
+  \texttt{domntab}.
+\iteme[\texttt{domnmax}]
+  Size of the \texttt{domntab} array.
+\iteme[\texttt{mutedat}]
+  When multi-threading is activated, allows to create critical
+  sections to update the mapping data in a thread-safe manner.
 \end{itemize}
