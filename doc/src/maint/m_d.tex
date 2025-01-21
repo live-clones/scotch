@@ -70,6 +70,12 @@ $\mathtt{verttax[\lbt baseval} + \mathtt{vertnbr]} =
 \iteme[\texttt{velotax}]
 Optional based array, of size $\mathtt{vertnbr}$, holding the integer
 load associated with every vertex.
+\iteme[\texttt{vnumtax}]
+When the current graph is a subgraph of some initial graph, this
+based array, of size $\mathtt{vertnbr}$, holds the initial vertex
+indices of the subgraph vertices. This array is not defined (\ie,
+$\mathtt{vnumtax} = \mathtt{NULL}$) when the graph is the initial
+graph.
 \iteme[\texttt{edgetax}]
 Based array, of a size equal at least to
 $\left(\max_{i}(\mathtt{vendtax[}i\mathtt{]}) -
