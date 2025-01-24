@@ -861,6 +861,23 @@ number. This prevents all naming conflicts, such as those which
 appeared between MeTiS v3 and MeTiS v5.
 
 
+3.13) Source fortification
+--------------------------
+
+Recent developments in applied software engineering for code
+robustness have resulted in the implementation, in some compilers, of
+features which generate extra code for checking at run time the
+compliance of the parameters of relevant library function calls. The
+activation and intrusiveness of these checks is conditioned by a
+specific compiler macro, called "_FORTIFY_SOURCE", the value of which
+ranges from 0 (no checks) to 3 (most intrusive checks).
+
+In the case of Scotch, while values from 0 to 2 have proven innocuous
+to date, setting "_FORTIFY_SOURCE" to 3 leads to false positives that
+abort the program. Consequently, packagers and installers are
+requested not to use this latter level.
+
+
 4) Using the libScotch and libPTScotch
 ======================================
 
