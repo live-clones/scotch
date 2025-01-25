@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2014,2016,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2016,2019,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,7 +67,7 @@
 /**                # Version 6.0  : from : 23 feb 2011     **/
 /**                                 to   : 20 aug 2019     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 25 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -879,8 +879,8 @@ BgraphBipartFmVertex ** const     lockptr)        /*+ Pointer to locked list    
   Gnum                            hashsiz;
   Gnum                            hashmax;
   Gnum                            hashmsk;
-  Gnum                            hashsta;        /* Start index of range of hash indices to move */
-  Gnum                            hashend;        /* End index of range of hash indices to move   */
+  Gnum                            hashbas;        /* Start index of range of hash indices to move */
+  Gnum                            hashnnd;        /* End index of range of hash indices to move   */
   Gnum                            hashnum;
 
   hashmax = *hashmaxptr << 1;                     /* Compute new sizes */
@@ -921,10 +921,10 @@ BgraphBipartFmVertex ** const     lockptr)        /*+ Pointer to locked list    
   bgraphBipartFmTablFree (tablptr);               /* Reset gain table  */
   *lockptr = NULL;                                /* Rebuild lock list */
 
-  for (hashsta = hashold - 1; hashtab[hashsta].vertnum != ~0; hashsta --) ; /* Start index of first segment to reconsider is last empty slot */
-  hashend = hashold;                              /* First segment to reconsider ends at the end of the old array                            */
-  while (hashend != hashsta) {                    /* For each of the two segments to consider                                                */
-    for (hashnum = hashsta; hashnum < hashend; hashnum ++) { /* Re-compute position of vertices in new table                                 */
+  for (hashbas = hashold - 1; hashtab[hashbas].vertnum != ~0; hashbas --) ; /* Start index of first segment to reconsider is last empty slot */
+  hashnnd = hashold;                              /* First segment to reconsider ends at the end of the old array                            */
+  while (hashnnd != hashbas) {                    /* For each of the two segments to consider                                                */
+    for (hashnum = hashbas; hashnum < hashnnd; hashnum ++) { /* Re-compute position of vertices in new table                                 */
       Gnum                        vertnum;
 
       vertnum = hashtab[hashnum].vertnum;
@@ -936,7 +936,7 @@ BgraphBipartFmVertex ** const     lockptr)        /*+ Pointer to locked list    
             break;                                /* There is nothing to do   */
           if (hashtab[hashnew].vertnum == ~0) {   /* If new slot is empty     */
 #ifdef SCOTCH_DEBUG_BGRAPH2
-            if ((hashnew > hashnum) && (hashnew < hashend)) { /* If vertex is not moved either before its old position or after the end of the segment */
+            if ((hashnew > hashnum) && (hashnew < hashnnd)) { /* If vertex is not moved either before its old position or after the end of the segment */
               errorPrint ("bgraphBipartFmResize: internal error (2)");
               return     (1);
             }
@@ -955,9 +955,9 @@ BgraphBipartFmVertex ** const     lockptr)        /*+ Pointer to locked list    
       }
     }
 
-    hashend = hashsta;                            /* End of second segment to consider is start of first one    */
-    hashsta = 0;                                  /* Start of second segment is beginning of array              */
-  }                                               /* After second segment, hashsta = hashend = 0 and loop stops */
+    hashnnd = hashbas;                            /* End of second segment to consider is start of first one    */
+    hashbas = 0;                                  /* Start of second segment is beginning of array              */
+  }                                               /* After second segment, hashbas = hashnnd = 0 and loop stops */
 
   for (savenum = 0; savenum < savenbr; savenum ++) {
     Gnum                  vertnum;
