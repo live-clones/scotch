@@ -157,7 +157,7 @@ graphCoarsen3 (
 ThreadDescriptor * restrict const descptr,
 GraphCoarsenData * restrict const coarptr)
 {
-  GraphCoarsenMulti * restrict  coarmulttax;      /* [norestrict] */
+  GraphCoarsenMulti * restrict  coarmulttax;      /* Work pointer to multinode array    */
   Gnum                          coarvertnbr;
   Gnum                          coarhashnbr;      /* Size of neighbor vertex hash table */
   Gnum                          coaredgebas;      /* Start of local edge sub-array      */
