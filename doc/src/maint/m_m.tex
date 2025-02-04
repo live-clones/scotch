@@ -17,7 +17,7 @@ to use \scotch\ as a testbed for them.
 
 \subsection{What to add}
 
-There are currently six types of methods which can be added:
+There are currently seven types of methods which can be added:
 \begin{itemize}
 \item
 k-way graph mapping methods, in module \texttt{kgraph};
@@ -36,9 +36,12 @@ mesh ordering methods, in module \texttt{hmesh};
 \item
 mesh separation methods with vertex separators, in module
 \texttt{vmesh}, used by the nested dissection ordering method
-implemented in \texttt{hmesh\_\lbt order\_\lbt nd.[ch]}.
+implemented in \texttt{hmesh\_\lbt order\_\lbt nd.[ch]};
+\item
+graph partitioning methods with separator overlap, in module
+\texttt{wgraph}.
 \end{itemize}
-Every method of these six types operates on instances of augmented
+Every method of these seven types operates on instances of augmented
 graph structures that contain, in addition to the graph topology,
 data related to the current state of the partition or of the
 ordering. For instance, all of the graph bipartitioning methods
