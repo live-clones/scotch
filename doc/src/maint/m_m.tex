@@ -8,14 +8,16 @@
 %                                  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Adding a method to the \libscotch\ library}
+\section{Procedures for new developments}
+
+\subsection{Adding methods to the \libscotch\ library}
 \label{sec-method}
 
-The \libscotch\ has been carefully designed so as to allow external
+The \libscotch\ has been carefully designed to allow external
 contributors to add their new partitioning or ordering methods, and
 to use \scotch\ as a testbed for them.
 
-\subsection{What to add}
+\subsubsection{What to add}
 
 There are currently seven types of methods which can be added:
 \begin{itemize}
@@ -59,7 +61,7 @@ execution of the debug version of \scotch\ to ease bug tracking. They
 are time-consuming but proved very helpful in the development and
 testing of new methods.
 
-\subsection{Where to add}
+\subsubsection{Where to add}
 
 Let us assume that you want to code a new graph separation
 routine. Your routine will operate on a \texttt{Vgraph} structure, and
@@ -98,7 +100,7 @@ of the proper type. For instance, the nested dissection method in
 strategy to compute its vertex separators.
 \end{itemize}
 
-\subsection{Declaring the new method to the parser}
+\subsubsection{Declaring the new method to the parser}
 
 Once the new method has been coded, its interface must be known to the
 parser, so that it can be used in strategy strings. All of this is
@@ -162,11 +164,12 @@ character flags (for an enumerated type), this pointer being set to
 \texttt{NULL} for all of the other parameter types (integer and floating
 point).
 
-\subsection{Adding the new method to the makefile}
+\subsubsection{Adding the new method to the \textsc{Make} compilation environment}
 
-Of course, in order to be compiled, the new method must be added to
-the \texttt{makefile} of the \texttt{libscotch} source directory. There are
-several places to update.
+In order to be compiled with the \textsc{Make} environment, the new
+method must files be added to the \texttt{Makefile} of the
+\texttt{src/\lbt libscotch} source directory. There are several places
+to update.
 
 First, you have to create the entry for the new method source files
 themselves. The best way to proceed is to search for the one of an
@@ -183,5 +186,41 @@ it is done.
 Finally, add the new object file to the component list of the
 \texttt{libscotch} library file.
 
-Once all of this is done, you can recompile \scotch\ and be able to
-use your new method in strategy strings.
+\subsubsection{Adding the new method to the \textsc{CMake} compilation environment}
+
+In order to be compiled with the \textsc{Make} environment, the new
+method files must be added to the \texttt{CMakeLists.txt} of the
+\texttt{src/\lbt libscotch} source directory.
+\\
+
+Once all of the above is done, you can recompile \scotch\ and be able
+to use your new method in strategy strings.
+
+\subsection{Adding routines to the public API}
+\label{sec-routine}
+
+The public API of \scotch\ exposes a set of routines which can be
+called by user programs. These public symbols are subject to specific
+procedures, in particular to rename them according to the users'
+needs.
+\begin{itemize}
+\item
+Implement the C interface of the routine in a
+\texttt{src/\lbt libscotch/\lbt library\_*.c} source file. This source
+file must include \texttt{src/\lbt libscotch/\lbt module.h}\enspace,
+so that function renaming can take place whenever necessary;
+\item
+Whether appropriate, implement the Fortran interface of the routine
+within a \texttt{src/\lbt libscotch/\lbt library\_*\_f.c} source
+file. The routines in this file will call the former ones. This source
+file must include \texttt{src/\lbt libscotch/\lbt module.h} as well,
+so that function renaming can take place whenever necessary;
+\item
+Create a \texttt{SCOTCH\_\lbt NAME\_\lbt PUBLIC} macro in
+\texttt{src/\lbt libscotch/\lbt module.h}\enspace, so that function
+renaming can take place, for instance when symbols have to be
+suffixed;
+\item
+Create the relevant manual pages in the \scotch\ or \ptscotch\ user's
+manual.
+\end{itemize}
