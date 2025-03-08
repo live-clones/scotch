@@ -441,7 +441,13 @@ a "_64" suffix can be appended to routines and data types of a
 64-bit version of the library.
 
 To activate this feature, the variable "SCOTCH_NAME_SUFFIX" must be
-defined in Makefile.inc (e.g., "SCOTCH_NAME_SUFFIX=_64").
+defined in Makefile.inc (e.g., "SCOTCH_NAME_SUFFIX=_64"). At the time
+being, this variable must also be exposed as an environment variable,
+by setting, e.g. in bash:
+
+%prompt% export SCOTCH_NAME_SUFFIX=_64
+
+or any appropriate suffix.
 
 Note that, when libScotch data types are renamed, the programs of the
 Scotch package can no longer be compiled. Hence, users can only
