@@ -394,7 +394,7 @@ GraphCoarsenData * restrict const coarptr)
       const Gnum * restrict const fineverttax = finegrafptr->verttax;
       const Gnum * restrict const finevendtax = finegrafptr->vendtax;
 
-      for (coarvertnum = thrdptr->coarvertbas, /* For all local coarse vertices */
+      for (coarvertnum = thrdptr->coarvertbas,    /* For all local coarse vertices */
            coarvertnnd = thrdptr->coarvertnnd, coaredgenbr = 0;
            coarvertnum < coarvertnnd; coarvertnum ++) {
         Gnum                finevertnum;
