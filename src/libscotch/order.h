@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 6.0  : from : 08 may 2018     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 11 jul 2024     **/
+/**                                 to   : 17 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -132,7 +132,7 @@ typedef struct Order_ {
   Gnum                      vnodnbr;              /*+ Number of node vertices                  +*/
   Gnum                      treenbr;              /*+ Number of column block tree nodes        +*/
   Gnum                      cblknbr;              /*+ Number of column blocks                  +*/
-  OrderCblk                 cblktre;              /*+ Root of column block tree                +*/
+  OrderCblk                 rootdat;              /*+ Root of column block tree                +*/
   Gnum *                    peritab;              /*+ Inverse permutation array [vnodnbr]      +*/
 #ifdef SCOTCH_PTHREAD
   pthread_mutex_t           mutedat;              /*+ Local mutex for counter and link updates +*/

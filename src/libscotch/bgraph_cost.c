@@ -61,7 +61,7 @@
 /*************************/
 
 /* This routine computes the cost of the
-** current partition.
+** provided partition for the given graph.
 ** It returns:
 ** - VOID  : in all cases.
 */
@@ -150,7 +150,7 @@ Gnum * restrict const             cmgeptr)        /*+ Pointer to external commun
 }
 
 /* This routine computes the cost of the
-** given graph, from its part array.
+** current partition of the given graph.
 ** It returns:
 ** - VOID  : in all cases.
 */

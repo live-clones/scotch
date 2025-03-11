@@ -128,7 +128,7 @@ const Dgraph * restrict const grafptr)
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize */
     errorPrint ("dgraphCheck: communication error (1)");
-    return     (1);
+    return (1);
   }
 
   cheklocval =                                    /* Assume everything is all right */
@@ -145,20 +145,20 @@ const Dgraph * restrict const grafptr)
 
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphCheck: communication error (2)");
-    return     (1);
+    return (1);
   }
   if (chekglbval != 0)
     return (1);
   reduloctab[0] = (grafptr->procdsptab == NULL) ? 0 : 1; /* If private data not initialized */
   if (MPI_Allreduce (reduloctab, reduglbtab, 1, GNUM_MPI, MPI_SUM, proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphCheck: communication error (3)");
-    return     (1);
+    return (1);
   }
   if (reduglbtab[0] == 0)                         /* If distributed graph is empty         */
     return (0);                                   /* Do not go any further                 */
   if (reduglbtab[0] != procglbnbr) {              /* If private data not consistently here */
     errorPrint ("dgraphCheck: inconsistent communication data (2)");
-    return     (1);
+    return (1);
   }
 
   for (procrcvnum = 0; procrcvnum < grafptr->procglbnbr; procrcvnum ++) {
@@ -183,7 +183,7 @@ const Dgraph * restrict const grafptr)
   }
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphCheck: communication error (4)");
-    return     (1);
+    return(1);
   }
   if (chekglbval != 0) {
     if (procngbtab != NULL)
@@ -248,11 +248,11 @@ const Dgraph * restrict const grafptr)
   reduloctab[19] = (Gnum) cheklocval;
   if (MPI_Allreduce (reduloctab, reduglbtab, 20, GNUM_MPI, MPI_MAX, proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphCheck: communication error (5)");
-    return     (1);
+    return (1);
   }
   if (reduglbtab[19] != 0)
     return (1);
-  if ((reduglbtab[ 1] != - reduglbtab[ 0]) ||       /* Check if global graph data match */
+  if ((reduglbtab[ 1] != - reduglbtab[ 0]) ||     /* Check if global graph data match */
       (reduglbtab[ 3] != - reduglbtab[ 2]) ||
       (reduglbtab[ 5] != - reduglbtab[ 4]) ||
       (reduglbtab[ 7] != - reduloctab[ 6]) ||
@@ -275,7 +275,7 @@ const Dgraph * restrict const grafptr)
   reduloctab[6] = (Gnum) cheklocval;
   if (MPI_Allreduce (reduloctab, reduglbtab, 7, GNUM_MPI, MPI_SUM, proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphCheck: communication error (6)");
-    return     (1);
+    return (1);
   }
   if (reduglbtab[6] != 0)
     return (1);
@@ -330,7 +330,7 @@ const Dgraph * restrict const grafptr)
 
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphCheck: communication error (7)");
-    return     (1);
+    return (1);
   }
   if (chekglbval != 0)
     return (1);
@@ -391,7 +391,7 @@ const Dgraph * restrict const grafptr)
   }
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphCheck: communication error (8)");
-    return     (1);
+    return (1);
   }
   if (chekglbval != 0) {
     if (cheklocval == 0)
@@ -419,7 +419,7 @@ const Dgraph * restrict const grafptr)
     if ((vertngbnbr[procngbsel] != grafptr->proccnttab[procngbnum]) ||
         (vertngbnbr[procngbsel]  > (vertngbmax - vertngbmin))) {
       errorPrint ("dgraphCheck: internal error (1)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 

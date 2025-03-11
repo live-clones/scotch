@@ -62,13 +62,6 @@ endfunction(add_test_scotch)
 # Bash needed for running some tests
 include(FindUnixCommands)
 
-# Define an alias for /dev/null on Windows-like systems
-if(MINGW OR MSYS OR WIN32)
-  set(dev_null NUL)
-else(MINGW OR MSYS OR WIN32)
-  set(dev_null /dev/null)
-endif(MINGW OR MSYS OR WIN32)
-
 #######################################
 #  Tests of the sequential libraries  #
 #######################################

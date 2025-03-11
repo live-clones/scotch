@@ -123,6 +123,17 @@ Some structuring options can be set during this phase, by using the
     threaded algorithms in parallel across compute nodes. This option
     is relevant only if BUILD_PTSCOTCH is set to ON.
 
+  - SCOTCH_DETERMINISTIC:STRING (default value FIXED_SEED): set this
+    flag to NONE to use faster, non-deterministic algorithms in
+    Scotch, and a variable random seed; FIXED_SEED to use these
+    algorithms with a fixed random seed; FULL, to use fully
+    deterministic algorithms with a fixed random string, enabling
+    fully deterministic behavior with any number of threads and the
+    same number of MPI processes. These three levels are obtained by a
+    combination of the Make compilation flags
+    "-DCOMMON_RANDOM_FIXED_SEED" and "-DSCOTCH_DETERMINISTIC"; see
+    sections 3.9) and 3.10) of this document.
+
   - BUILD_PTSCOTCH:BOOL (default value ON): set this flag to ON to
     compile PT-Scotch in addition to Scotch (which is always compiled
     by default, as PT-Scotch uses Scotch).
@@ -430,7 +441,13 @@ a "_64" suffix can be appended to routines and data types of a
 64-bit version of the library.
 
 To activate this feature, the variable "SCOTCH_NAME_SUFFIX" must be
-defined in Makefile.inc (e.g., "SCOTCH_NAME_SUFFIX=_64").
+defined in Makefile.inc (e.g., "SCOTCH_NAME_SUFFIX=_64"). At the time
+being, this variable must also be exposed as an environment variable,
+by setting, e.g. in bash:
+
+%prompt% export SCOTCH_NAME_SUFFIX=_64
+
+or any appropriate suffix.
 
 Note that, when libScotch data types are renamed, the programs of the
 Scotch package can no longer be compiled. Hence, users can only
@@ -848,6 +865,23 @@ code insensitive to changes in the MeTiS API, because matching Scotch
 routines are prefixed by "SCOTCH_" and by the MeTiS API version
 number. This prevents all naming conflicts, such as those which
 appeared between MeTiS v3 and MeTiS v5.
+
+
+3.13) Source fortification
+--------------------------
+
+Recent developments in applied software engineering for code
+robustness have resulted in the implementation, in some compilers, of
+features which generate extra code for checking at run time the
+compliance of the parameters of relevant library function calls. The
+activation and intrusiveness of these checks is conditioned by a
+specific compiler macro, called "_FORTIFY_SOURCE", the value of which
+ranges from 0 (no checks) to 3 (most intrusive checks).
+
+In the case of Scotch, while values from 0 to 2 have proven innocuous
+to date, setting "_FORTIFY_SOURCE" to 3 leads to false positives that
+abort the program. Consequently, packagers and installers are
+requested not to use this latter level.
 
 
 4) Using the libScotch and libPTScotch

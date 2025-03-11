@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     19 sep 2024     ##
+##                                 to     10 jan 2025     ##
 ##                                                        ##
 ############################################################
 
@@ -70,8 +70,7 @@ endif()
 
 # Generate scotch.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/scotch.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library.h ${CMAKE_CURRENT_BINARY_DIR}
-  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library.h ${GENERATED_INCLUDE_DIR}/scotch.h DEPENDS dummysizes
+  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library.h ${GENERATED_INCLUDE_DIR}/scotch.h DEPENDS dummysizes
   DEPENDS library.h
   COMMENT "Generate scotch.h")
 add_custom_target(scotch_h
@@ -79,8 +78,7 @@ add_custom_target(scotch_h
 
 # Generate scotchf.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/scotchf.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_f.h ${CMAKE_CURRENT_BINARY_DIR}
-  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_f.h ${GENERATED_INCLUDE_DIR}/scotchf.h DEPENDS dummysizes
+  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library_f.h ${GENERATED_INCLUDE_DIR}/scotchf.h DEPENDS dummysizes
   DEPENDS library.h
   COMMENT "Generate scotchf.h")
 add_custom_target(scotchf_h
@@ -93,8 +91,7 @@ add_custom_target(scotchf_h
 # Generate ptscotch.h
 if(BUILD_PTSCOTCH)
   add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/ptscotch.h
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_pt.h ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND $<TARGET_FILE:ptdummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_pt.h ${GENERATED_INCLUDE_DIR}/ptscotch.h DEPENDS ptdummysizes
+    COMMAND $<TARGET_FILE:ptdummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library_pt.h ${GENERATED_INCLUDE_DIR}/ptscotch.h DEPENDS ptdummysizes
     DEPENDS library_pt.h scotch_h
     COMMENT "Generate ptscotch.h")
   add_custom_target(ptscotch_h
@@ -102,8 +99,7 @@ if(BUILD_PTSCOTCH)
 
 # Generate ptscotchf.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/ptscotchf.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_pt_f.h ${CMAKE_CURRENT_BINARY_DIR}
-  COMMAND $<TARGET_FILE:ptdummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_pt_f.h ${GENERATED_INCLUDE_DIR}/ptscotchf.h DEPENDS ptdummysizes
+  COMMAND $<TARGET_FILE:ptdummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library_pt_f.h ${GENERATED_INCLUDE_DIR}/ptscotchf.h DEPENDS ptdummysizes
   DEPENDS library.h
   COMMENT "Generate ptscotchf.h")
 add_custom_target(ptscotchf_h
@@ -114,39 +110,23 @@ endif()
 #  parser_yy.c  #
 #################
 
-# Copy parser_yy.y to binary dir
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parser_yy.y
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/parser_yy.y ${CMAKE_CURRENT_BINARY_DIR}
-  DEPENDS parser_yy.y
-  COMMENT "Copy parser_yy.y to CMake binary directory")
-add_custom_target(parser_yy_y DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/parser_yy.y)
-
 # Generate parser_yy.c using Bison
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parser_yy.c ${CMAKE_CURRENT_BINARY_DIR}/parser_ly.h
-  COMMAND ${BISON_EXECUTABLE} "-pscotchyy${SCOTCH_NAME_SUFFIX}" --defines="parser_ly.h" --output="parser_yy.c" parser_yy.y
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parser_yy.y module.h common.h parser.h parser_yy.h
+  COMMAND ${BISON_EXECUTABLE} "-pscotchyy${SCOTCH_NAME_SUFFIX}" --defines="parser_ly.h" --output="parser_yy.c" ${CMAKE_CURRENT_SOURCE_DIR}/parser_yy.y
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/parser_yy.y module.h common.h parser.h parser_yy.h
   COMMENT "Generate parser_yy.c and parser_ly.h using Bison")
 add_custom_target(parser_yy_c DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parser_yy.c ${CMAKE_CURRENT_BINARY_DIR}/parser_ly.h)
-add_dependencies(parser_yy_c parser_yy_y)
 
 #################
 #  parser_ll.c  #
 #################
 
-# Copy parser_ll.l to binary dir
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parser_ll.l
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/parser_ll.l ${CMAKE_CURRENT_BINARY_DIR}
-  DEPENDS parser_ll.l
-  COMMENT "Copy parser_ll.l to CMake binary directory")
-add_custom_target(parser_ll_l DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parser_ll.l)
-
 # Generate parser_ll.c using Flex
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parser_ll.c
-  COMMAND ${FLEX_EXECUTABLE} "-Pscotchyy${SCOTCH_NAME_SUFFIX}"  "-oparser_ll.c" parser_ll.l
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parser_ll.l module.h common.h parser.h parser_ll.h parser_ly.h
+  COMMAND ${FLEX_EXECUTABLE} "-Pscotchyy${SCOTCH_NAME_SUFFIX}"  "-oparser_ll.c" ${CMAKE_CURRENT_SOURCE_DIR}/parser_ll.l
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/parser_ll.l module.h common.h parser.h parser_ll.h parser_ly.h
   COMMENT "Generate parser_ll.c using Flex")
 add_custom_target(parser_ll_c DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parser_ll.c)
-add_dependencies(parser_ll_c parser_ll_l)
 
 ###############
 #  libScotch  #
@@ -325,6 +305,7 @@ set(SCOTCH_C_SOURCES
   kgraph.h
   kgraph_band.c
   kgraph_check.c
+  kgraph_cost.c
   kgraph_map_bd.c
   kgraph_map_bd.h
   kgraph_map_cp.c
@@ -537,6 +518,17 @@ endif()
 
 if(OS_IS_FREEBSD)
   target_compile_definitions(scotch PUBLIC cpu_set_t=cpuset_t __BSD_VISIBLE)
+endif()
+
+if(SCOTCH_DETERMINISTIC STREQUAL FULL)
+  target_compile_definitions(scotch PUBLIC COMMON_RANDOM_FIXED_SEED)
+  target_compile_definitions(scotch PUBLIC SCOTCH_DETERMINISTIC)
+  message(STATUS "Determinism: full")
+elseif(SCOTCH_RANDOM STREQUAL FIXED_SEED)
+  target_compile_definitions(scotch PUBLIC COMMON_RANDOM_FIXED_SEED)
+  message(STATUS "Determinism: fixed random seed")
+else()
+  message(STATUS "Determinism: none")
 endif()
 
 # Add (de)compression libraries

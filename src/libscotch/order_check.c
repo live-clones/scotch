@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.0  : from : 26 jul 2007     **/
 /**                                 to   : 26 jul 2007     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 17 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -135,7 +135,7 @@ const Order * restrict const  ordeptr)
   Gnum                vertnnd;
   Gnum                vertnum;
 
-  if (ordeptr->vnodnbr != ordeptr->cblktre.vnodnbr) {
+  if (ordeptr->vnodnbr != ordeptr->rootdat.vnodnbr) {
     errorPrint ("orderCheck: invalid vertex count");
     return (1);
   }
@@ -148,7 +148,7 @@ const Order * restrict const  ordeptr)
     errorPrint ("orderCheck: out of memory");
     return (1);
   }
-  memSet (permtab, ~0, ordeptr->cblktre.vnodnbr * sizeof (Gnum));
+  memSet (permtab, ~0, ordeptr->rootdat.vnodnbr * sizeof (Gnum));
   permtax = permtab - ordeptr->baseval;
   vertnnd = ordeptr->baseval + ordeptr->vnodnbr;
 
@@ -178,7 +178,7 @@ const Order * restrict const  ordeptr)
 
   treenbr =                                       /* Assume there is just a root node */
   cblknbr = 1;
-  if (orderCheck2 (&ordeptr->cblktre, &cblknbr, &treenbr) != 0)
+  if (orderCheck2 (&ordeptr->rootdat, &cblknbr, &treenbr) != 0)
     return (1);
   if (cblknbr != ordeptr->cblknbr) {
     errorPrint ("orderCheck: invalid number of column blocks");

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012-2014,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012-2014,2018,2019,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 08 jan 2012     **/
 /**                                 to   : 29 sep 2019     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 17 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -302,7 +302,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 
   if (listnbr == srcgrafptr->vertnbr) {           /* If work on full graph */
     halgrafptr = &halgrafdat;
-    cblkptr    = &libordeptr->o.cblktre;
+    cblkptr    = &libordeptr->o.rootdat;
   }
   else {
     Gnum * restrict       peritax;
@@ -316,10 +316,10 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     }
     libordeptr->o.treenbr = 3;
     libordeptr->o.cblknbr = 2;
-    libordeptr->o.cblktre.typeval = ORDERCBLKDICO; /* Node is a set of two disconnected components */
-    libordeptr->o.cblktre.vnodnbr = srcgrafptr->vertnbr;
-    libordeptr->o.cblktre.cblknbr = 2;
-    libordeptr->o.cblktre.cblktab = cblkptr;
+    libordeptr->o.rootdat.typeval = ORDERCBLKDICO; /* Node is a set of two disconnected components */
+    libordeptr->o.rootdat.vnodnbr = srcgrafptr->vertnbr;
+    libordeptr->o.rootdat.cblknbr = 2;
+    libordeptr->o.rootdat.cblktab = cblkptr;
 
     cblkptr[0].typeval = ORDERCBLKLEAF;           /* Build column blocks */
     cblkptr[0].vnodnbr = listnbr;

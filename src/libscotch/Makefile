@@ -354,6 +354,7 @@ LIBSCOTCHDEPS	=	arch$(OBJ)				\
 			kgraph$(OBJ)				\
 			kgraph_band$(OBJ)			\
 			kgraph_check$(OBJ)			\
+			kgraph_cost$(OBJ)			\
 			kgraph_map_bd$(OBJ)			\
 			kgraph_map_cp$(OBJ)			\
 			kgraph_map_df$(OBJ)			\
@@ -1893,6 +1894,14 @@ kgraph_check$(OBJ)		:	kgraph_check.c				\
 					common.h				\
 					graph.h					\
 					arch.h					\
+					mapping.h				\
+					kgraph.h
+
+kgraph_cost$(OBJ)		:	kgraph_cost.c				\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch$(OBJ)				\
 					mapping.h				\
 					kgraph.h
 

@@ -94,6 +94,7 @@ set(esmumps_headers
   ${GENERATED_INCLUDE_DIR}/esmumps.h)
 
 add_library(esmumps ${esmumps_src} ${esmumps_headers})
+add_dependencies(esmumps esmumps_h)
 set_target_properties(esmumps PROPERTIES PUBLIC_HEADER "${GENERATED_INCLUDE_DIR}/esmumps.h")
 set_target_properties(esmumps PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
   SOVERSION ${SCOTCH_VERSION}.${SCOTCH_RELEASE})

@@ -119,7 +119,7 @@ add_scotch_exe(gpart gmap.c gmap.h)
 target_compile_definitions(gpart PRIVATE SCOTCH_COMPILE_PART)
 
 # Install all Scotch executables
-foreach(target ${scotch_exe})
+foreach(target ${scotch_exe} gpart)
   install(TARGETS ${target} COMPONENT scotch RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endforeach()
 
@@ -166,7 +166,7 @@ if(BUILD_PTSCOTCH)
   add_ptscotch_exe(dgpart dgmap.c dgmap.h)
   target_compile_definitions(dgpart PRIVATE SCOTCH_COMPILE_PART)
   # Install all PT-Scotch executables
-  foreach(target ${ptscotch_exe})
+  foreach(target ${ptscotch_exe} dgpart)
     install(TARGETS ${target} COMPONENT ptscotch RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
   endforeach()
  endif(BUILD_PTSCOTCH)

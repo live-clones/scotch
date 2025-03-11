@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2018,2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018,2020,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 06 jun 2018     **/
 /**                                 to   : 09 feb 2020     **/
 /**                # Version 7.0  : from : 28 aug 2020     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 17 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -383,15 +383,15 @@ loop_failed: ;
 #endif /* SCOTCH_DEBUG_ORDER2 */
 
   orderInit (&coarordedat, coarmeshdat.m.baseval, coarmeshdat.m.vnodnbr, coarperitab); /* Build ordering of compressed submesh */
-  if (hmeshOrderSt (&coarmeshdat, &coarordedat, 0, &coarordedat.cblktre, paraptr->stratcpr) != 0) {
+  if (hmeshOrderSt (&coarmeshdat, &coarordedat, 0, &coarordedat.rootdat, paraptr->stratcpr) != 0) {
     hmeshExit (&coarmeshdat);
     return (1);
   }
 
   coarvsiztax += (coarmeshdat.m.vnodbas - coarmeshdat.m.baseval); /* Adjust array to match permutation bounds */
 
-  *cblkptr = coarordedat.cblktre;                 /* Link sub-tree to ordering         */
-  coarordedat.cblktre.cblktab = NULL;             /* Unlink sub-tree from sub-ordering */
+  *cblkptr = coarordedat.rootdat;                 /* Link sub-tree to ordering         */
+  coarordedat.rootdat.cblktab = NULL;             /* Unlink sub-tree from sub-ordering */
 
 #ifdef SCOTCH_DEBUG_ORDER2
   finevertnbr =

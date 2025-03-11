@@ -1381,7 +1381,7 @@ WgraphPartFmHashData * restrict const hdatptr)    /*+ Pointer to hash data struc
 
   hashmsk = hashsiz - 1;                          /* New hash mask                */
   lockptr = &wgraphpartfmvertexdummy;             /* No vertex in locked list yet */
-  for (hasoptr = hdatptr->hashtab; hasoptr < hdatptr->hashtab + hdatptr->hashsiz; hasoptr ++) { /* For all old hash slots  */
+  for (hasoptr = hdatptr->hashtab; hasoptr < hdatptr->hashtab + hdatptr->hashsiz; hasoptr ++) { /* For all old hash slots */
     WgraphPartFmVertex *  hasnptr;                /* Pointer to new hash slot */
     Gnum                  vertnum;
 

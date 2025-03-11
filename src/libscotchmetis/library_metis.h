@@ -61,7 +61,7 @@
 /**                # Version 6.1  : from : 09 feb 2021     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 11 aug 2024     **/
-/**                                 to   : 11 aug 2024     **/
+/**                                 to   : 12 dec 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -115,12 +115,6 @@
 #define SCOTCHMETISNAME3(s)               s
 #define SCOTCHMETISNAME4(p,s)             p##s
 #endif /* SCOTCHMETISNAMEC */
-
-#ifndef SCOTCH_METIS_DATATYPES
-#define SCOTCH_METIS_DATATYPES
-typedef SCOTCH_Num          idx_t;
-typedef double              real_t;
-#endif /* SCOTCH_METIS_DATATYPES */
 
 #ifndef SCOTCH_METIS_OPTIONS
 #define SCOTCH_METIS_OPTIONS
@@ -179,8 +173,16 @@ typedef enum {
 */
 
 #ifndef LIB_SCOTCH_H                              /* In case "scotch.h" not included before */
-typedef int SCOTCH_Num;
+typedef DUMMYINT SCOTCH_Num;
 #endif /* LIB_SCOTCH_H */
+
+#ifndef SCOTCH_METIS_DATATYPES
+#define SCOTCH_METIS_DATATYPES
+typedef SCOTCH_Num          idx_t;
+typedef double              real_t;
+
+#define IDXTYPEWIDTH                      (sizeof (idx_t) * 8)
+#endif /* SCOTCH_METIS_DATATYPES */
 
 /*
 **  The function prototypes.

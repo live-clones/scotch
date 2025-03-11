@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 13 sep 2012     **/
 /**                                 to   : 18 may 2019     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 19 sep 2024     **/
+/**                                 to   : 13 dec 2024     **/
 /**                                                        **/
 /************************************************************/
 
@@ -149,6 +149,7 @@ MPI_Comm *                  commptr)
   SCOTCH_Num          edgelocnbr;
   SCOTCH_Num *        edloloctab;
   SCOTCH_Num *        twintab;                    /* Integer array of target weights                               */
+  int                 o;
 
   if ((twintab = malloc (*nparts * sizeof (SCOTCH_Num))) == NULL)
     return (METIS_ERROR_MEMORY);
@@ -169,6 +170,7 @@ MPI_Comm *                  commptr)
   edloloctab = ((adjwgt != NULL) && ((*wgtflag & 1) != 0)) ? adjwgt : NULL;
 
   *edgecut = 0;
+  o = METIS_ERROR;                                /* Assume an error */
 
   if (SCOTCH_dgraphBuild (&grafdat, baseval,
                           vertlocnbr, vertlocnbr, xadj, xadj + 1, veloloctab, NULL,
@@ -184,12 +186,12 @@ MPI_Comm *                  commptr)
           (SCOTCH_dgraphMapInit (&grafdat, &mappdat, &archdat, part) == 0)) {
         SCOTCH_Num          cdsttab[256];         /* Communication load histogram */
 
-        SCOTCH_dgraphMapCompute (&grafdat, &mappdat, &stradat);
-
-        SCOTCH_dgraphMapStat (&grafdat, &mappdat, NULL, NULL, NULL, NULL, NULL, NULL,
-                              NULL, NULL, NULL, NULL, cdsttab, NULL, NULL, NULL);
-        *edgecut = cdsttab[1];                    /* For mapping onto complete graphs, distance 1 is the cut */
-
+        if (SCOTCH_dgraphMapCompute (&grafdat, &mappdat, &stradat) == 0) {
+          SCOTCH_dgraphMapStat (&grafdat, &mappdat, NULL, NULL, NULL, NULL, NULL, NULL,
+                                NULL, NULL, NULL, NULL, cdsttab, NULL, NULL, NULL);
+          *edgecut = cdsttab[1];                  /* For mapping onto complete graphs, distance 1 is the cut */
+          o = METIS_OK;
+        }
         SCOTCH_dgraphMapExit (&grafdat, &mappdat);
       }
       SCOTCH_archExit (&archdat);
@@ -200,14 +202,15 @@ MPI_Comm *                  commptr)
 
   free (twintab);
 
-  if (baseval != 0) {                             /* MeTiS part array is based, Scotch is not */
+  if ((baseval != 0) &&                           /* MeTiS part array is based, unlike for Scotch */
+      (o == METIS_OK)) {                          /* If partition successfully computed           */
     SCOTCH_Num          vertlocnum;
 
     for (vertlocnum = 0; vertlocnum < vertlocnbr; vertlocnum ++)
       part[vertlocnum] += baseval;
   }
 
-  return (METIS_OK);
+  return (o);
 }
 
 /*

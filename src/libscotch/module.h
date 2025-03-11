@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 20 nov 2024     **/
+/**                                 to   : 31 jan 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,7 +63,7 @@
 ** Version and copyright strings.
 */
 
-#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2024 IPB, Universite de Bordeaux, INRIA & CNRS, France"
+#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2025 IPB, Universite de Bordeaux, INRIA & CNRS, France"
 #define SCOTCH_LICENSE_STRING       "This software is libre/free software under CeCILL-C -- see the user's manual for more information"
 #ifdef SCOTCH_CODENAME
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL) " (" STRINGIFY (SCOTCH_CODENAME) ")"
@@ -1128,7 +1128,14 @@
 #define SCOTCH_archCmplt            SCOTCH_NAME_PUBLIC (SCOTCH_archCmplt)
 #define SCOTCH_archCmpltw           SCOTCH_NAME_PUBLIC (SCOTCH_archCmpltw)
 #define SCOTCH_archDomAlloc         SCOTCH_NAME_PUBLIC (SCOTCH_archDomAlloc)
+#define SCOTCH_archDomBipart        SCOTCH_NAME_PUBLIC (SCOTCH_archDomBipart)
+#define SCOTCH_archDomDist          SCOTCH_NAME_PUBLIC (SCOTCH_archDomDist)
+#define SCOTCH_archDomFrst          SCOTCH_NAME_PUBLIC (SCOTCH_archDomFrst)
+#define SCOTCH_archDomNum           SCOTCH_NAME_PUBLIC (SCOTCH_archDomNum)
 #define SCOTCH_archDomSizeof        SCOTCH_NAME_PUBLIC (SCOTCH_archDomSizeof)
+#define SCOTCH_archDomSize          SCOTCH_NAME_PUBLIC (SCOTCH_archDomSize)
+#define SCOTCH_archDomTerm          SCOTCH_NAME_PUBLIC (SCOTCH_archDomTerm)
+#define SCOTCH_archDomWght          SCOTCH_NAME_PUBLIC (SCOTCH_archDomWght)
 #define SCOTCH_archExit             SCOTCH_NAME_PUBLIC (SCOTCH_archExit)
 #define SCOTCH_archHcub             SCOTCH_NAME_PUBLIC (SCOTCH_archHcub)
 #define SCOTCH_archInit             SCOTCH_NAME_PUBLIC (SCOTCH_archInit)
@@ -1149,6 +1156,19 @@
 #define SCOTCH_archVar              SCOTCH_NAME_PUBLIC (SCOTCH_archVar)
 #define SCOTCH_archVcmplt           SCOTCH_NAME_PUBLIC (SCOTCH_archVcmplt)
 #define SCOTCH_archVhcub            SCOTCH_NAME_PUBLIC (SCOTCH_archVhcub)
+#define SCOTCH_contextBindGraph     SCOTCH_NAME_PUBLIC (SCOTCH_contextBindGraph)
+#define SCOTCH_contextBindMesh      SCOTCH_NAME_PUBLIC (SCOTCH_contextBindMesh)
+#define SCOTCH_contextExit          SCOTCH_NAME_PUBLIC (SCOTCH_contextExit)
+#define SCOTCH_contextInit          SCOTCH_NAME_PUBLIC (SCOTCH_contextInit)
+#define SCOTCH_contextOptionGetNum  SCOTCH_NAME_PUBLIC (SCOTCH_contextOptionGetNum)
+#define SCOTCH_contextOptionSetNum  SCOTCH_NAME_PUBLIC (SCOTCH_contextOptionSetNum)
+#define SCOTCH_contextRandomClone   SCOTCH_NAME_PUBLIC (SCOTCH_contextRandomClone)
+#define SCOTCH_contextRandomReset   SCOTCH_NAME_PUBLIC (SCOTCH_contextRandomReset)
+#define SCOTCH_contextRandomSeed    SCOTCH_NAME_PUBLIC (SCOTCH_contextRandomSeed)
+#define SCOTCH_contextThreadImport1 SCOTCH_NAME_PUBLIC (SCOTCH_contextThreadImport1)
+#define SCOTCH_contextThreadImport2 SCOTCH_NAME_PUBLIC (SCOTCH_contextThreadImport2)
+#define SCOTCH_contextThreadSpawn   SCOTCH_NAME_PUBLIC (SCOTCH_contextThreadSpawn)
+#define SCOTCH_contextSizeof        SCOTCH_NAME_PUBLIC (SCOTCH_contextSizeof)
 #define SCOTCH_dgraphAlloc          SCOTCH_NAME_PUBLIC (SCOTCH_dgraphAlloc)
 #define SCOTCH_dgraphBand           SCOTCH_NAME_PUBLIC (SCOTCH_dgraphBand)
 #define SCOTCH_dgraphBuild          SCOTCH_NAME_PUBLIC (SCOTCH_dgraphBuild)
@@ -1262,11 +1282,15 @@
 #define SCOTCH_graphRepart          SCOTCH_NAME_PUBLIC (SCOTCH_graphRepart)
 #define SCOTCH_graphRepartFixed     SCOTCH_NAME_PUBLIC (SCOTCH_graphRepartFixed)
 #define SCOTCH_graphSave            SCOTCH_NAME_PUBLIC (SCOTCH_graphSave)
+#define SCOTCH_graphSize            SCOTCH_NAME_PUBLIC (SCOTCH_graphSize)
 #define SCOTCH_graphSizeof          SCOTCH_NAME_PUBLIC (SCOTCH_graphSizeof)
 #define SCOTCH_graphStat            SCOTCH_NAME_PUBLIC (SCOTCH_graphStat)
 #define SCOTCH_graphTabLoad         SCOTCH_NAME_PUBLIC (SCOTCH_graphTabLoad)
+#define SCOTCH_graphTabSave         SCOTCH_NAME_PUBLIC (SCOTCH_graphTabSave)
 #define SCOTCH_mapAlloc             SCOTCH_NAME_PUBLIC (SCOTCH_mapAlloc)
 #define SCOTCH_mapSizeof            SCOTCH_NAME_PUBLIC (SCOTCH_mapSizeof)
+#define SCOTCH_memCur               SCOTCH_NAME_PUBLIC (SCOTCH_memCur)
+#define SCOTCH_memMax               SCOTCH_NAME_PUBLIC (SCOTCH_memMax)
 #define SCOTCH_meshAlloc            SCOTCH_NAME_PUBLIC (SCOTCH_meshAlloc)
 #define SCOTCH_meshBuild            SCOTCH_NAME_PUBLIC (SCOTCH_meshBuild)
 #define SCOTCH_meshCheck            SCOTCH_NAME_PUBLIC (SCOTCH_meshCheck)
@@ -1301,6 +1325,7 @@
 #define SCOTCH_randomReset          SCOTCH_NAME_PUBLIC (SCOTCH_randomReset)
 #define SCOTCH_randomSave           SCOTCH_NAME_PUBLIC (SCOTCH_randomSave)
 #define SCOTCH_randomSeed           SCOTCH_NAME_PUBLIC (SCOTCH_randomSeed)
+#define SCOTCH_randomVal            SCOTCH_NAME_PUBLIC (SCOTCH_randomVal)
 #define SCOTCH_stratAlloc           SCOTCH_NAME_PUBLIC (SCOTCH_stratAlloc)
 #define SCOTCH_stratArchBuild       SCOTCH_NAME_PUBLIC (SCOTCH_stratArchBuild)
 #define SCOTCH_stratDgraphClusterBuild SCOTCH_NAME_PUBLIC (SCOTCH_stratDgraphClusterBuild)

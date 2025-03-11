@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -42,12 +42,14 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     30 jul 2024     ##
+##                                 to     28 jan 2025     ##
 ##                                                        ##
 ############################################################
 
 # Add general compiler options
-add_definitions(-Drestrict=__restrict -DCOMMON_RANDOM_FIXED_SEED -DSCOTCH_RENAME)
+add_definitions(-Drestrict=__restrict -DSCOTCH_RENAME)
+
+set(dev_null /dev/null)
 
 # Add OS-specific compiler options
 if(APPLE)
@@ -55,6 +57,7 @@ if(APPLE)
 endif(APPLE)
 if(MINGW OR MSYS OR WIN32)
   add_definitions(-DCOMMON_OS_WINDOWS)
+  set(dev_null NUL)
 endif(MINGW OR MSYS OR WIN32)
 if(MSVC)
   add_definitions(-D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS)
@@ -84,6 +87,12 @@ if(NOT FLEX_FOUND)
   message(FATAL_ERROR "Flex required to compile Scotch and PT-Scotch")
 else()
   message(STATUS "Flex found here: ${FLEX_EXECUTABLE}")
+endif()
+
+if(WIN32)
+  set(FLEX_FLAG "--wincompat")
+else()
+  set(FLEX_FLAG "")
 endif()
 
 #############
@@ -118,7 +127,17 @@ if(THREADS)
   endif()
 endif()
 
-# decompression libs
+# Detect and remove GCC _FORTIFY_SOURCE
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_C_FLAGS} -E -Og -dM -x c ${dev_null} OUTPUT_VARIABLE gcc_macros)
+  string(FIND ${gcc_macros} "_FORTIFY_SOURCE" fortify)
+  if(fortify GREATER -1)
+    message(WARNING "GCC _FORTIFY_SOURCE is known to cause problem with Scotch and has been disabled")
+    set(CMAKE_C_FLAGS "-U_FORTIFY_SOURCE ${CMAKE_C_FLAGS}")
+  endif()
+endif()
+
+# Decompression libs
 if(USE_ZLIB)
   find_package(ZLIB)
 endif(USE_ZLIB)

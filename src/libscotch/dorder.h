@@ -89,17 +89,17 @@ typedef struct DorderIndex_ {
     ordering.                                        +*/
 
 typedef struct DorderLink_ {
-  struct DorderLink_ *              nextptr;      /*+ Pointer to previous column block +*/
-  struct DorderLink_ *              prevptr;      /*+ Pointer to next column block     +*/
+  struct DorderLink_ *      nextptr;              /*+ Pointer to previous column block +*/
+  struct DorderLink_ *      prevptr;              /*+ Pointer to next column block     +*/
 } DorderLink;
 
 /*+ Centralized column block node. +*/
 
 typedef struct DorderNode_ {
-  Gnum                              fathnum;      /*+ Number of father in centralized node array        +*/
-  int                               typeval;      /*+ Centralized type of tree node                     +*/
-  Gnum                              vnodnbr;      /*+ Number of nodes in this column block              +*/
-  Gnum                              cblknum;      /*+ Rank of column block in father column block array +*/
+  Gnum                      fathnum;              /*+ Number of father in centralized node array        +*/
+  int                       typeval;              /*+ Centralized type of tree node                     +*/
+  Gnum                      vnodnbr;              /*+ Number of nodes in this column block              +*/
+  Gnum                      cblknum;              /*+ Rank of column block in father column block array +*/
 } DorderNode;
 
 /*+ Distributed column-block tree cell. Each
@@ -115,25 +115,25 @@ typedef struct DorderNode_ {
     traversal.                                 +*/
 
 typedef struct DorderCblk_ {
-  DorderLink                        linkdat;      /*+ Link to other blocks. TRICK: FIRST             +*/
-  struct Dorder_ *                  ordelocptr;   /*+ Pointer to local distributed ordering          +*/
-  int                               typeval;      /*+ Distributed type of tree node                  +*/
-  DorderIndex                       fathnum;      /*+ Master index of parent column block            +*/
-  DorderIndex                       cblknum;      /*+ Master index of this column block              +*/
-  Gnum                              ordeglbval;   /*+ Un-based starting index of inverse permutation +*/
-  Gnum                              vnodglbnbr;   /*+ Number of node vertices in subtree             +*/
-  Gnum                              cblkfthnum;   /*+ Rank of node in father column block array      +*/
+  DorderLink                linkdat;              /*+ Link to other blocks. TRICK: FIRST             +*/
+  struct Dorder_ *          ordelocptr;           /*+ Pointer to local distributed ordering          +*/
+  int                       typeval;              /*+ Distributed type of tree node                  +*/
+  DorderIndex               fathnum;              /*+ Master index of parent column block            +*/
+  DorderIndex               cblknum;              /*+ Master index of this column block              +*/
+  Gnum                      ordeglbval;           /*+ Un-based starting index of inverse permutation +*/
+  Gnum                      vnodglbnbr;           /*+ Number of node vertices in subtree             +*/
+  Gnum                      cblkfthnum;           /*+ Rank of node in father column block array      +*/
   union {
     struct {                                      /*+ Fragment of inverse permutation                +*/
-      Gnum                          ordelocval;   /*+ Starting index of inverse permutation          +*/
-      Gnum                          vnodlocnbr;   /*+ Number of node vertices in fragment            +*/
-      Gnum *                        periloctab;   /*+ Pointer to inverse permutation fragment        +*/
-      Gnum                          nodelocnbr;   /*+ Number of local column blocks                  +*/
-      DorderNode *                  nodeloctab;   /*+ Array of local column blocks                   +*/
-      Gnum                          cblklocnum;   /*+ Local number of first local column block       +*/
+      Gnum                  ordelocval;           /*+ Starting index of inverse permutation          +*/
+      Gnum                  vnodlocnbr;           /*+ Number of node vertices in fragment            +*/
+      Gnum *                periloctab;           /*+ Pointer to inverse permutation fragment        +*/
+      Gnum                  nodelocnbr;           /*+ Number of local column blocks                  +*/
+      DorderNode *          nodeloctab;           /*+ Array of local column blocks                   +*/
+      Gnum                  cblklocnum;           /*+ Local number of first local column block       +*/
     } leaf;
     struct {                                      /*+ Fragment of inverse permutation                +*/
-      Gnum                          cblkglbnbr;   /*+ Number of descendent nodes (2 or 3)            +*/
+      Gnum                  cblkglbnbr;           /*+ Number of descendent nodes (2 or 3)            +*/
     } nedi;
   } data;
 } DorderCblk;

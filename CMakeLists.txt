@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2024 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -37,13 +37,16 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     27 nov 2024     ##
+##                                 to     11 mar 2025     ##
 ##                                                        ##
 ############################################################
 
 cmake_minimum_required(VERSION 3.10)
 
 project(SCOTCH LANGUAGES C)
+
+# Use C99 as C standard
+set(CMAKE_C_STANDARD 99)
 
 # Add Fortran support
 option(BUILD_FORTRAN "Enable Fortran" ON)
@@ -59,7 +62,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 set(SCOTCH_VERSION 7)
 set(SCOTCH_RELEASE 0)
-set(SCOTCH_PATCHLEVEL 6)
+set(SCOTCH_PATCHLEVEL 7)
 set(SCOTCH_CODENAME "Sankara")
 
 add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}
@@ -91,6 +94,10 @@ option(SCOTCH_METIS_PREFIX "Prefix Scotch version of MeTiS routines" OFF)
 
 # Install our MeTiS header stubs
 option(INSTALL_METIS_HEADERS "Install libScotchMeTiS headers in destination directory" ON)
+
+# Level of deterministic behavior
+set(SCOTCH_DETERMINISTIC "FIXED_SEED" CACHE STRING "Level of determinism in Scotch")
+set_property(CACHE SCOTCH_DETERMINISTIC PROPERTY STRINGS NONE FIXED_SEED FULL)
 
 # Compression format options
 option(USE_ZLIB "Use ZLIB compression format if found" ON)

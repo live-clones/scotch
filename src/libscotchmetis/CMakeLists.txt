@@ -54,8 +54,7 @@ set_source_files_properties(${GENERATED_INCLUDE_DIR}/metis.h PROPERTIES GENERATE
 
 # metis.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/metis.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_metis.h ${CMAKE_CURRENT_BINARY_DIR}
-  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_metis.h ${GENERATED_INCLUDE_DIR}/metis.h DEPENDS dummysizes
+  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library_metis.h ${GENERATED_INCLUDE_DIR}/metis.h DEPENDS dummysizes
   DEPENDS library_metis.h
   COMMENT "Generating metis.h")
 
@@ -64,8 +63,7 @@ add_custom_target(metis_h
 
 # metisf.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/metisf.h
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_metis_f.h ${CMAKE_CURRENT_BINARY_DIR}
-  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_metis_f.h ${GENERATED_INCLUDE_DIR}/metisf.h DEPENDS dummysizes
+  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library_metis_f.h ${GENERATED_INCLUDE_DIR}/metisf.h DEPENDS dummysizes
   DEPENDS library_metis_f.h
   COMMENT "Generating metisf.h")
 
@@ -151,8 +149,7 @@ if(BUILD_PTSCOTCH)
 
   # parmetis.h
   add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/parmetis.h
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/library_parmetis.h ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_BINARY_DIR}/library_parmetis.h ${GENERATED_INCLUDE_DIR}/parmetis.h DEPENDS dummysizes
+    COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library_parmetis.h ${GENERATED_INCLUDE_DIR}/parmetis.h DEPENDS dummysizes
     DEPENDS library_parmetis.h
     COMMENT "Generating parmetis.h")
 
