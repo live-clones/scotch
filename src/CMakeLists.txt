@@ -129,12 +129,8 @@ endif()
 
 # Detect and remove GCC _FORTIFY_SOURCE
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_C_FLAGS} -E -Og -dM -x c ${dev_null} OUTPUT_VARIABLE gcc_macros)
-  string(FIND ${gcc_macros} "_FORTIFY_SOURCE" fortify)
-  if(fortify GREATER -1)
-    message(WARNING "GCC _FORTIFY_SOURCE is known to cause problem with Scotch and has been disabled")
-    set(CMAKE_C_FLAGS "-U_FORTIFY_SOURCE ${CMAKE_C_FLAGS}")
-  endif()
+  message(WARNING "GCC _FORTIFY_SOURCE is known to cause problem with Scotch and is disabled by default")
+  set(CMAKE_C_FLAGS "-U_FORTIFY_SOURCE ${CMAKE_C_FLAGS}")
 endif()
 
 # Decompression libs
