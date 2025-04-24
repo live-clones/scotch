@@ -42,7 +42,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     28 jan 2025     ##
+##                                 to     24 apr 2025     ##
 ##                                                        ##
 ############################################################
 
@@ -107,6 +107,19 @@ if(NOT INTSIZE STREQUAL "")
   elseif(INTSIZE STREQUAL "64")
     message(STATUS "Integer size is 64 bits")
     add_definitions(-DINTSIZE64)
+  else()
+    message(FATAL_ERROR "Invalid integer size value")
+  endif()
+endif()
+
+# Set index size
+if(NOT IDXSIZE STREQUAL "")
+  if(IDXSIZE STREQUAL "32")
+    message(STATUS "Index size is 32 bits")
+    add_definitions(-DIDXSIZE32)
+  elseif(IDXSIZE STREQUAL "64")
+    message(STATUS "Index size is 64 bits")
+    add_definitions(-DIDXSIZE64)
   else()
     message(FATAL_ERROR "Invalid integer size value")
   endif()

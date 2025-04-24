@@ -37,7 +37,7 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     11 mar 2025     ##
+##                                 to     24 apr 2025     ##
 ##                                                        ##
 ############################################################
 
@@ -73,6 +73,9 @@ set(SCOTCH_VERSION_LONG "${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL
 
 # Set integer size: by default, use compiler int size
 set(INTSIZE "" CACHE STRING "Integer size: empty string stands for C compiler int type size")
+
+# Set index size: by default, use compiler int size
+set(IDXSIZE "" CACHE STRING "Index size: empty string stands for C compiler int type size")
 
 # Thread support
 option(THREADS "Use multi-threading in Scotch and PT-Scotch" ON)

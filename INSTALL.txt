@@ -108,9 +108,16 @@ Some structuring options can be set during this phase, by using the
 "-DOPTION:TYPE=VALUE" syntax. The available options are:
 
   - INTSIZE:STRING (default value ""): set this variable to "32" or
-    "64" to set a prescribed integer size for SCOTCH_Num
-    integers. Else, the defaut compiler word size will be used
-    (recommended).
+    "64" to set a prescribed integer size for SCOTCH_Num integers.
+    Else, the defaut compiler word size will be used (recommended).
+
+  - IDXSIZE:STRING (default value ""): set this variable to "32" or
+    "64" to set a prescribed integer size for SCOTCH_Idx integers.
+    Indeed, this index data type should be able to index any byte in
+    the virtual memory of the computer. Consequently, on modern
+    architectures, this variable should always refer to 64-bit
+    integers. If it is not set, the defaut compiler word size will be
+    used (recommended for 64-bit platforms).
 
   - THREADS:BOOL (default value ON): set this flag to ON to use
     threads within Scotch and PT-Scotch. POSIX Pthreads and native
