@@ -153,7 +153,7 @@ foreach(f IN LISTS scotch_man_pages)
     DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1 COMPONENT scotch)
 endforeach()
 
-if (BUILD_PTSCOTCH)
+if(BUILD_PTSCOTCH)
   set(ptscotch_man_pages dgmap.1 dgord.1 dgscat.1 dgtst.1)
   foreach(f IN LISTS ptscotch_man_pages)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/man1/${f}
