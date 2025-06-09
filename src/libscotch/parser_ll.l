@@ -1,5 +1,5 @@
 %top{
-/* Copyright 2004,2007,2018-2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018-2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 09 jun 2009     **/
 /**                                 to   : 24 jul 2011     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 09 jul 2024     **/
+/**                                 to   : 07 jun 2025     **/
 /**                                                        **/
 /**   NOTES      : # In order for flex to read its input   **/
 /**                  with getc() instead of fread, we set  **/
@@ -63,6 +63,10 @@
 /**                                                        **/
 /************************************************************/
 
+#define YY_DECL                     int yylex (YYSTYPE * yylval_param, YYLTYPE * yylloc, yyscan_t yyscanner)
+}
+
+%{
 /*
 **  The defines and includes.
 */
@@ -73,18 +77,13 @@
 #if (defined COMMON_OS_WINDOWS || defined HAVE_NOT_UNISTD_H)
 #define YY_NO_UNISTD_H
 #endif /* (defined COMMON_OS_WINDOWS || defined HAVE_NOT_UNISTD_H) */
-}
 
-%{
 #undef INTEGER                                    /* In case someone defined them */
 #undef DOUBLE
 
 #include "parser.h"
 #include "parser_yy.h"
 #include "parser_ly.h"                            /*+ Definitions produced by yacc +*/
-#include "parser_ll.h"
-
-#define YY_DECL                     int yylex (YYSTYPE * yylval_param, YYLTYPE * yylloc, yyscan_t yyscanner)
 
 #define YY_USER_ACTION              parserLocationUpdate (yylloc, yytext);
 %}
@@ -166,6 +165,7 @@ STRING                      \"[^\"]*\"
 .                           return (yytext[0]);
 
 %%
+#include "parser_ll.h"
 
 /*******************************************/
 /*                                         */
@@ -181,7 +181,7 @@ STRING                      \"[^\"]*\"
 */
 
 void
-stratParserBegin (
+stratParserLexBegin (
 yyscan_t          yyscanner,
 unsigned int      type)
 {
@@ -210,4 +210,48 @@ unsigned int      type)
       BEGIN ltest;
       break;
   }
+}
+
+/* These routines are hooks for internal lexer
+** routines which are called by the parser and
+** cannot be properly accessed when Scotch suffixes
+** are used.
+*/
+
+void
+stratParserLexBufDelete (
+YY_BUFFER_STATE             b,
+yyscan_t                    yyscanner)
+{
+  yy_delete_buffer (b, yyscanner);
+}
+
+void
+stratParserLexBufSwitch (
+YY_BUFFER_STATE             new_buffer,
+yyscan_t                    yyscanner)
+{
+  yy_switch_to_buffer (new_buffer, yyscanner);
+}
+
+int
+stratParserLexDestroy (
+yyscan_t                    yyscanner)
+{
+  return (yylex_destroy (yyscanner));
+}
+
+int
+stratParserLexInit (
+yyscan_t *                  ptr_yy_globals)
+{
+  return (yylex_init (ptr_yy_globals));
+}
+
+YY_BUFFER_STATE
+stratParserLexScanString (
+const char *                yystr,
+yyscan_t                    yyscanner)
+{
+  return (yy_scan_string (yystr, yyscanner));
 }

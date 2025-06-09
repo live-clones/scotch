@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007,2008,2011,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2018,2019,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,26 +64,10 @@
 
 #include "module.h"
 #include "common.h"
-
-#undef INTEGER                                    /* In case someone defined them */
-#undef DOUBLE
-
-/*
-**  The type and structure definitions.
-*/
-
-/* Helpful definitions */
-
-typedef void * yyscan_t;                          /* Should have been exported by Flex in y.tab.h */
-typedef void * YY_BUFFER_STATE;                   /* The same; Flex and Bison design is just crap */
-
-/*
-**  The defines and includes (bis).
-*/
-
 #include "parser.h"
 #include "parser_yy.h"
 #include "parser_ly.h"
+#include "parser_lh.h"
 #include "parser_ll.h"
 
 #ifdef SCOTCH_DEBUG_PARSER3
@@ -99,10 +83,11 @@ typedef void * YY_BUFFER_STATE;                   /* The same; Flex and Bison de
 
 extern unsigned int         parsermethtokentab[];  /* Pre-definition */
 
-/*+ Function prototypes that should have been exported by Flex. +*/
+/*
+**  The function prototypes.
+*/
 
-YY_BUFFER_STATE scotchyy_scan_string (const char *, yyscan_t);
-
+YY_DECL;                                          /* Definition of yylex(); Flex and Bison interaction is crap */
 %}
 
 %define api.pure full
@@ -823,17 +808,17 @@ const char * const          textptr)              /*+ Strategy string to parse  
   penvdat.straptr = NULL;                         /* Clear up the temporary strategy pointer */
   penvdat.textptr = textptr;                      /* Initialize the lexical parser           */
 
-  if (scotchyylex_init (&scandat) != 0) {
+  if (stratParserLexInit (&scandat) != 0) {
     errorPrint ("stratParserParse: cannot initialize reentrant parser");
     return     (NULL);
   }
-  buffdat = scotchyy_scan_string (textptr, scandat); /* Let's hope nothing breaks; error management in flex is just crap */
-  scotchyy_switch_to_buffer (buffdat, scandat);
+  buffdat = stratParserLexScanString (textptr, scandat); /* Let's hope nothing breaks; error management in flex is just crap */
+  stratParserLexBufSwitch (buffdat, scandat);
 
   o = yyparse (scandat, &penvdat);                /* Parse the strategy string */
 
-  scotchyy_delete_buffer (buffdat, scandat);
-  scotchyylex_destroy (scandat);
+  stratParserLexBufDelete (buffdat, scandat);
+  stratParserLexDestroy   (scandat);
 
   if (o != 0) {
     if (penvdat.straptr != NULL)

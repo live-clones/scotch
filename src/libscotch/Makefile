@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -89,7 +89,7 @@ ptinstall			:	install						\
 					$(libdir)/libptscotch$(LIB)
 
 clean				:
-					-$(RM) *~ *$(OBJ) lib*$(LIB) parser_yy.c parser_ly.h parser_ll.c *scotch.h *scotchf.h y.output *dummysizes$(EXE)
+					-$(RM) *~ *$(OBJ) lib*$(LIB) parser_yy.c parser_lh.h parser_ly.h parser_ll.c parser_yy.c *scotch.h *scotchf.h y.output *dummysizes$(EXE)
 
 realclean			:	clean
 
@@ -2955,8 +2955,11 @@ parser$(OBJ)			:	parser.c				\
 					module.h				\
 					common.h				\
 					parser.h				\
+					parser_lh.h				\
 					parser_ly.h				\
 					parser_yy.h
+
+parser_lh.h			:	parser_ll.c
 
 parser_ll.c			:	parser_ll.l				\
 					module.h				\
@@ -2964,9 +2967,10 @@ parser_ll.c			:	parser_ll.l				\
 					parser.h				\
 					parser_ll.h				\
 					parser_ly.h
-					$(FLEX) "-Pscotchyy$(SCOTCH_NAME_SUFFIX)" "-oparser_ll.c" parser_ll.l
+					$(FLEX) "-Pscotchyy$(SCOTCH_NAME_SUFFIX)" "-oparser_ll.c" "--header-file=parser_lh.h" parser_ll.l
 
 parser_ll$(OBJ)			:	parser_ll.c				\
+					parser_lh.h				\
 					parser_ly.h
 
 parser_ly.h			:	parser_yy.c
@@ -2978,7 +2982,10 @@ parser_yy.c			:	parser_yy.y				\
 					parser_yy.h
 					$(BISON) "-pscotchyy$(SCOTCH_NAME_SUFFIX)" --defines="parser_ly.h" --output="parser_yy.c" parser_yy.y
 
-parser_yy$(OBJ)			:	parser_yy.c
+parser_yy$(OBJ)			:	parser_yy.c				\
+					parser_lh.h				\
+					parser_ll.h				\
+					parser_yy.h
 
 vdgraph$(OBJ)			:	vdgraph.c				\
 					module.h				\

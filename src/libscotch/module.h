@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 07 jun 2025     **/
+/**                                 to   : 08 jun 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -1038,10 +1038,15 @@
 #define stratCondEval               SCOTCH_NAME_INTERN (stratCondEval)
 #define stratCondExit               SCOTCH_NAME_INTERN (stratCondExit)
 #define stratCondSave               SCOTCH_NAME_INTERN (stratCondSave)
-#define stratParserBegin            SCOTCH_NAME_INTERN (stratParserBegin)
 #define stratParserInit             SCOTCH_NAME_INTERN (stratParserInit)
 #define stratParserInput            SCOTCH_NAME_INTERN (stratParserInput)
 #define stratParserLex              SCOTCH_NAME_INTERN (stratParserLex)
+#define stratParserLexBegin         SCOTCH_NAME_INTERN (stratParserLexBegin)
+#define stratParserLexBufDestroy    SCOTCH_NAME_INTERN (stratParserLexBufDestroy)
+#define stratParserLexBufSwitch     SCOTCH_NAME_INTERN (stratParserLexBufSwitch)
+#define stratParserLexDestroy       SCOTCH_NAME_INTERN (stratParserLexDestroy)
+#define stratParserLexInit          SCOTCH_NAME_INTERN (stratParserLexInit)
+#define stratParserLexScanString    SCOTCH_NAME_INTERN (stratParserLexScanString)
 #define stratParserRemain           SCOTCH_NAME_INTERN (stratParserRemain)
 #define stratParserSelect           SCOTCH_NAME_INTERN (stratParserSelect)
 #define stratParserParse            SCOTCH_NAME_INTERN (stratParserParse)
