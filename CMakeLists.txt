@@ -37,7 +37,7 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     24 apr 2025     ##
+##                                 to     10 jun 2025     ##
 ##                                                        ##
 ############################################################
 
@@ -77,6 +77,11 @@ set(INTSIZE "" CACHE STRING "Integer size: empty string stands for C compiler in
 # Set index size: by default, use compiler int size
 set(IDXSIZE "" CACHE STRING "Index size: empty string stands for C compiler int type size")
 
+# Manage suffixes
+set(SCOTCH_NAME_SUFFIX "" CACHE STRING "Suffix to add to every symbol in the Scotch/PT-Scotch libraries")
+if(NOT "${SCOTCH_NAME_SUFFIX}" STREQUAL "")
+  set(USE_SUFFIX ON)
+endif()
 # Thread support
 option(THREADS "Use multi-threading in Scotch and PT-Scotch" ON)
 

@@ -42,7 +42,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     24 apr 2025     ##
+##                                 to     10 jun 2025     ##
 ##                                                        ##
 ############################################################
 
@@ -67,6 +67,11 @@ endif(MSVC)
 if(${CMAKE_HOST_SYSTEM_NAME}} MATCHES "^.*FreeBSD.*$")
   set(OS_IS_FREEBSD ON)
   message(STATUS "OS is FreeBSD")
+endif()
+
+# Manage suffixes
+if (USE_SUFFIX)
+  add_definitions(-DSCOTCH_RENAME_ALL -DSCOTCH_NAME_SUFFIX=${SCOTCH_NAME_SUFFIX})
 endif()
 
 ###################
@@ -205,14 +210,13 @@ file(MAKE_DIRECTORY ${GENERATED_INCLUDE_DIR})
 
 # Build Scotch and PT-Scotch libraries
 add_subdirectory(libscotch)
-
 # Build Scotch executables
 add_subdirectory(scotch)
 
 # Build EsMUMPS library
-if(BUILD_LIBESMUMPS)
+if(BUILD_LIBESMUMPS AND NOT USE_SUFFIX)
   add_subdirectory(esmumps)
-endif(BUILD_LIBESMUMPS)
+endif(BUILD_LIBESMUMPS AND NOT USE_SUFFIX)
 
 # Build ScotchMeTiS library
 if(BUILD_LIBSCOTCHMETIS)

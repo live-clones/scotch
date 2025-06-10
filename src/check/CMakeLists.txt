@@ -62,6 +62,46 @@ function(add_test_scotch)
   endif()
 endfunction(add_test_scotch)
 
+# Macro to suffix a fortran test file
+function(suffix_fortran_file src)
+  get_filename_component(file_we ${src} NAME_WLE)
+  add_custom_command(OUTPUT
+    ${CMAKE_CURRENT_BINARY_DIR}/${file_we}.tmp
+    COMMAND
+    $<TARGET_FILE:dummysizes> "-s${SCOTCH_NAME_SUFFIX}"
+    ${CMAKE_CURRENT_SOURCE_DIR}/${file_we}.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${file_we}.tmp
+    DEPENDS
+    dummysizes
+    DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/${file}
+    COMMENT "Generate ${file}.f90")
+
+  add_custom_target(${file_we}_tmp ALL
+    DEPENDS
+    "${CMAKE_CURRENT_BINARY_DIR}/${file_we}.tmp")
+
+  file(WRITE
+    ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/cmake_sed_${file_we}.cmake
+"
+file(READ ${file_we}.tmp FILE_CONTENTS)
+string(REGEX REPLACE \"SCOTCHMETISNAMEFU *\\\\(([^()]*)\\\\) *\" "${SCOTCH_METIS_PREFIXFU}\\\\1" FILE_CONTENTS \${FILE_CONTENTS})
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${file_we} \${FILE_CONTENTS})
+"
+)
+
+  add_custom_command(
+    OUTPUT
+      ${CMAKE_CURRENT_BINARY_DIR}/${file_we}
+    COMMAND
+      ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/cmake_sed_${file_we}.cmake
+    DEPENDS
+      ${file_we}_tmp
+  )
+  add_custom_target(${file_we}_src ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${file_we})
+endfunction(suffix_fortran_file)
+
+
 # Bash needed for running some tests
 include(FindUnixCommands)
 
@@ -98,7 +138,7 @@ add_test_scotch(test_common_thread 1)
 add_test_scotch(test_fibo 1)
 
 # Test EsMumps
-if(BUILD_LIBESMUMPS)
+if(BUILD_LIBESMUMPS AND NOT USE_SUFFIX)
   add_executable(test_libesmumps test_libesmumps.c)
   add_dependencies(test_libesmumps esmumps_h)
   set_target_properties(test_libesmumps PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
@@ -106,7 +146,7 @@ if(BUILD_LIBESMUMPS)
   target_link_libraries(test_libesmumps scotch esmumps scotcherr)
   add_test(NAME test_libesmumps_1 COMMAND $<TARGET_FILE:test_libesmumps> ${dat}/bump.grf)
   add_test(NAME test_libesmumps_2 COMMAND $<TARGET_FILE:test_libesmumps> ${dat}/bump_imbal_32.grf)
-endif(BUILD_LIBESMUMPS)
+endif(BUILD_LIBESMUMPS AND NOT USE_SUFFIX)
 
 # Test libScotchMeTiS
 if(BUILD_LIBSCOTCHMETIS)
@@ -118,10 +158,8 @@ if(BUILD_LIBSCOTCHMETIS)
       set(SCOTCH_METIS_PREFIXFU "SCOTCHF")
     endif(NOT SCOTCH_METIS_PREFIX)
   endif(NOT SCOTCH_METIS_PREFIXFU)
-  file(READ test_libmetis_dual_f.f90.in FILE_CONTENTS)
-  string(REGEX REPLACE "SCOTCHMETISNAMEFU *\\(([^()]*)\\) *" "${SCOTCH_METIS_PREFIXFU}\\1" FILE_CONTENTS ${FILE_CONTENTS})
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test_libmetis_dual_f.f90 ${FILE_CONTENTS})
 
+  suffix_fortran_file(test_libmetis_dual_f.f90.in)
   foreach(version 3 5)
     add_executable(test_libmetisv${version} test_libmetis.c)
     set_target_properties(test_libmetisv${version} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
