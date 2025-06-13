@@ -55,6 +55,23 @@
 !*                                                        **
 !***********************************************************
 
+!* Size definitions for the SCOTCH integer
+!* and index types.
+
+        INTEGER SCOTCH_IDXSIZE
+        INTEGER SCOTCH_NUMSIZE
+        PARAMETER (SCOTCH_IDXSIZE = DUMMYSIZEBYTEIDX)
+        PARAMETER (SCOTCH_NUMSIZE = DUMMYSIZEBYTENUM)
+
+!* Flag definitions for the context options
+
+        INTEGER SCOTCH_OPTIONNUMDETERMINISTIC
+        INTEGER SCOTCH_OPTIONNUMRANDOMFIXEDSEED
+        INTEGER SCOTCH_OPTIONNUMNBR
+        PARAMETER (SCOTCH_OPTIONNUMDETERMINISTIC   = 0)
+        PARAMETER (SCOTCH_OPTIONNUMRANDOMFIXEDSEED = 1)
+        PARAMETER (SCOTCH_OPTIONNUMNBR             = 2)
+
 !* Flag definitions for the coarsening
 !* routines.
 
