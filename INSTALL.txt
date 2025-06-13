@@ -444,27 +444,13 @@ naming conventions have been defined:
 It is possible to make several Scotch versions coexist in the same
 application. To do so, libraries must be compiled with adequate
 function renaming, by adding an appropriate suffix. For instance,
-a "_64" suffix can be appended to routines and data types of a
-64-bit version of the library.
+a "_64" suffix can be appended to routines, data types and symbols of
+a 64-bit version of the library.
 
 To activate this feature, the variable "SCOTCH_NAME_SUFFIX" must be
-defined in Makefile.inc (e.g., "SCOTCH_NAME_SUFFIX=_64"). At the time
-being, this variable must also be exposed as an environment variable,
-by setting, e.g. in bash:
-
-%prompt% export SCOTCH_NAME_SUFFIX=_64
-
-or any appropriate suffix.
-
-Note that, when libScotch data types are renamed, the programs of the
-Scotch package can no longer be compiled. Hence, users can only
-compile the libraries of the Scotch package, by running:
-
-%prompt% make libscotch
-
-and/or:
-
-%prompt% make libptscotch
+defined in Makefile.inc, either as an environment variable (e.g.,
+"export SCOTCH_NAME_SUFFIX=_64"), or as a definition in the CFLAGS
+variable (e.g., "-DSCOTCH_NAME_SUFFIX=_64").
 
 Since error handling routines are generic and belong to a separate
 library, suffix transformation is never applied to them. Hence,

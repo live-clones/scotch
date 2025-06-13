@@ -35,11 +35,29 @@ libdir		= ../../lib
 
 include ../Makefile.inc
 
-CCDFLAGS	?= $(CFLAGS)
+CCDFLAGS ?= $(CFLAGS)
 
+ifeq ($(strip $(SCOTCH_NAME_SUFFIX)),)
+  ifneq ($(findstring -DSCOTCH_NAME_SUFFIX=,$(CFLAGS)),)
+    scotch_name_suffix_defs = $(filter -DSCOTCH_NAME_SUFFIX=%,$(CFLAGS))
+    scotch_name_suffix_def = $(lastword $(scotch_name_suffix_defs))
+    export SCOTCH_NAME_SUFFIX = $(subst -DSCOTCH_NAME_SUFFIX=,,$(scotch_name_suffix_def))
+  endif
+endif
 ifneq ($(strip $(SCOTCH_NAME_SUFFIX)),)
-CFLAGS		+= -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
-CCDFLAGS	+= -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+  $(info Using suffix "$(SCOTCH_NAME_SUFFIX)")
+  ifeq ($(findstring -DSCOTCH_NAME_SUFFIX=,$(CFLAGS)),)
+    CFLAGS += -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+  endif
+  ifeq ($(findstring -DSCOTCH_RENAME_ALL=,$(CFLAGS)),)
+    CFLAGS += -DSCOTCH_RENAME_ALL
+  endif
+  ifeq ($(findstring -DSCOTCH_NAME_SUFFIX=,$(CCDFLAGS)),)
+    CCDFLAGS += -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+  endif
+  ifeq ($(findstring -DSCOTCH_RENAME_ALL=,$(CCDFLAGS)),)
+    CCDFLAGS += -DSCOTCH_RENAME_ALL
+  endif
 endif
 
 ##
@@ -3404,19 +3422,19 @@ ptdummysizes$(EXE)		:	dummysizes.c				\
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
-					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library.h scotch.h
+					./dummysizes$(EXE) -s$(SCOTCH_NAME_SUFFIX) library.h scotch.h
 
 scotchf.h			:	dummysizes$(EXE) 			\
 					library_f.h
-					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_f.h scotchf.h
+					./dummysizes$(EXE) -s$(SCOTCH_NAME_SUFFIX) library_f.h scotchf.h
 
 ptscotch.h			:	ptdummysizes$(EXE)			\
 					library_pt.h
-					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt.h ptscotch.h
+					./ptdummysizes$(EXE) -s$(SCOTCH_NAME_SUFFIX) library_pt.h ptscotch.h
 
 ptscotchf.h			:	ptdummysizes$(EXE)			\
 					library_pt_f.h
-					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt_f.h ptscotchf.h
+					./ptdummysizes$(EXE) -s$(SCOTCH_NAME_SUFFIX) library_pt_f.h ptscotchf.h
 
 libscotch$(LIB)			:	$(LIBSCOTCHDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)
