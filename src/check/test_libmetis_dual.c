@@ -1,4 +1,4 @@
-/* Copyright 2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2021,2024,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**   DATES      : # Version 6.1  : from : 10 feb 2021     **/
 /**                                 to   : 17 jul 2021     **/
 /**                # Version 7.0  : from : 08 aug 2024     **/
-/**                                 to   : 11 aug 2024     **/
+/**                                 to   : 04 jul 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,6 +58,9 @@
 #endif /* (((defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || (defined HAVE_STDINT_H)) */
 #include <stdlib.h>
 #include <string.h>
+
+#include "../libscotch/module.h"
+#include "../libscotch/common.h"
 
 #include "scotch.h"
 #include "metis.h"                                /* Our "metis.h" file */
