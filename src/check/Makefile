@@ -64,12 +64,22 @@ ifneq ($(strip $(SCOTCH_NAME_SUFFIX)),)
   endif
 endif
 
-ifeq ($(origin SCOTCH_METIS_PREFIXFU), undefined)
-  ifeq ($(origin SCOTCH_METIS_PREFIX), undefined)
-    SCOTCH_METIS_PREFIXFU = ""
-  else
-    SCOTCH_METIS_PREFIXFU = SCOTCHF
+ifeq ($(strip $(SCOTCH_METIS_PREFIXFU)),)
+  ifneq ($(findstring -DSCOTCH_METIS_PREFIXFU=,$(CFLAGS)),)
+    scotch_metis_prefixfu_defs = $(filter -DSCOTCH_METIS_PREFIXFU=%,$(CFLAGS))
+    scotch_metis_prefixfu_def = $(lastword $(scotch_metis_prefixfu_defs))
+    export SCOTCH_METIS_PREFIXFU = $(subst -DSCOTCH_METIS_PREFIXFU=,,$(scotch_metis_prefixfu_def))
   endif
+endif
+ifeq ($(strip $(SCOTCH_METIS_PREFIXFU)),)
+  ifeq ($(findstring -DSCOTCH_METIS_PREFIX,$(CFLAGS)),)
+    export SCOTCH_METIS_PREFIXFU =
+  else
+    export SCOTCH_METIS_PREFIXFU = SCOTCHF
+  endif
+endif
+ifneq ($(strip $(SCOTCH_METIS_PREFIXFU)),)
+  $(info Using MeTiS uppercase Fortran prefix "$(SCOTCH_METIS_PREFIXFU)")
 endif
 
 EXECPPROG		?= mpirun
