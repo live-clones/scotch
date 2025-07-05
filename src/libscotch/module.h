@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 08 jun 2025     **/
+/**                                 to   : 05 jul 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -297,12 +297,10 @@
 #define SCOTCH_Strat                SCOTCH_NAME_PUBLIC (SCOTCH_Strat)
 #endif /* SCOTCH_RENAME_ALL */
 
-#ifdef SCOTCH_COMMON_RENAME
-#define SCOTCH_NAME_GLOBAL(n)       SCOTCH_NAME_MACRO2 (SCOTCH_, n) /* Same name whatever the suffix is, since external library */
+#define SCOTCH_NAME_GLOBAL(n)       SCOTCH_NAME_MACRO2 (SCOTCH_, n) /* Always renamed, since exposed in Scotch user's manual */
 #define errorPrint                  SCOTCH_NAME_GLOBAL (errorPrint)
 #define errorPrintW                 SCOTCH_NAME_GLOBAL (errorPrintW)
 #define errorProg                   SCOTCH_NAME_GLOBAL (errorProg)
-#endif /* SCOTCH_COMMON_RENAME */
 
 #if ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL))
 #define clockGet                    SCOTCH_NAME_INTERN (clockGet)
