@@ -846,9 +846,11 @@ error, as some symbols are multiply defined.
 
 Alternately, the names of the compatibility routines can be changed so
 as to avoid conflicts. When the "-DSCOTCH_METIS_PREFIX" flag is set at
-compile time, all Scotch versions of the MeTiS routines are prefixed
-with "SCOTCH_". Of course, this will require an equivalent change in
-the user's application code.
+compile time, all Scotch versions of the MeTiS routines are prefixed:
+C routines are prefixed with "SCOTCH_", and Fortran routines with
+"scotchf" (lowercase form) or "SCOTCHF" (uppercase form), with no
+following separating underscore. Of course, this will require an
+equivalent change in the user's application code.
 
 In this case, an improved solution can be to call directly the Scotch
 versions of these routines. Of course, this will require a change in
