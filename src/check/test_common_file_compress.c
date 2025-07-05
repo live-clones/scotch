@@ -1,4 +1,4 @@
-/* Copyright 2018,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2024,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 09 jul 2018     **/
 /**                                 to   : 10 jul 2018     **/
 /**                # Version 7.0  : from : 04 jul 2024     **/
-/**                                 to   : 04 jul 2024     **/
+/**                                 to   : 05 jul 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -90,14 +90,16 @@ char *              argv[])
 {
   byte *              bufftab;
 
+  errorProg (argv[0]);
+
   if (argc != 3) {
-    SCOTCH_errorPrint ("usage: %s infile outfile", argv[0]);
-    exit (EXIT_FAILURE);
+    errorPrint ("usage: %s infile outfile", argv[0]);
+    exit       (EXIT_FAILURE);
   }
 
   if ((bufftab = malloc (C_BUFFSIZ * sizeof (byte))) == NULL) {
-    SCOTCH_errorPrint ("main: out of memory");
-    exit (EXIT_FAILURE);
+    errorPrint ("main: out of memory");
+    exit       (EXIT_FAILURE);
   }
 
   fileBlockInit (C_fileTab, C_FILENBR);           /* Set default stream pointers */
@@ -106,26 +108,28 @@ char *              argv[])
 
   switch (fileBlockOpen (C_fileTab, C_FILENBR)) { /* Open all files */
     case 2 :
-      SCOTCH_errorPrint ("main: (de)compression method not implemented");
-      free (bufftab);
-      exit (EXIT_SUCCESS);
+      errorPrint ("main: (de)compression method not implemented");
+      free       (bufftab);
+      exit       (EXIT_SUCCESS);
     case 1 :
-      SCOTCH_errorPrint ("main: cannot open files");
-      free (bufftab);
-      exit (EXIT_FAILURE);
+      errorPrint ("main: cannot open files");
+      free       (bufftab);
+      exit       (EXIT_FAILURE);
   }
 
   while (1) {
     size_t              bytenbr;
 
     if ((bytenbr = fread (bufftab, 1, C_BUFFSIZ, C_filepntrinp)) == 0) {
-      if (ferror (C_filepntrinp))
-        SCOTCH_errorPrint ("main: read error");
+      if (ferror (C_filepntrinp)) {
+        errorPrint ("main: read error");
+        exit       (EXIT_FAILURE);
+      }
       break;
     }
     if (fwrite (bufftab, 1, bytenbr, C_filepntrout) != bytenbr) {
-      SCOTCH_errorPrint ("main: write error");
-      break;
+      errorPrint ("main: write error");
+      exit       (EXIT_FAILURE);
     }
   }
 
