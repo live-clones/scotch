@@ -1,4 +1,4 @@
-/* Copyright 2007-2013,2018,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2013,2018,2020,2021,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.1  : from : 30 jul 2020     **/
 /**                                 to   : 18 dec 2021     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 09 jul 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -259,6 +259,7 @@ const Gnum                    cplomax)            /*+ Maximum with respect to av
 
   linkbst = NULL;                                 /* Assume no candidate vertex found yet */
   tablbst = tablptr->tend;
+  cdltbst =                                       /* Prevent compiler from yelling */
   gainbst = GAINMAX;
 
   for (linkptr = (WgraphPartFmLink *) gainTablFrst (tablptr); /* Select candidate vertices */
