@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2019,2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2019,2020,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 6.1  : from : 05 dec 2021     **/
 /**                                 to   : 05 dec 2021     **/
 /**                # Version 7.0  : from : 13 sep 2019     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 09 jul 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -184,10 +184,9 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
     ncmploaddlt = meshptr->m.vnlosum;
 
     velmnum = meshptr->m.velmbas + contextIntRandVal (meshptr->contptr, meshptr->m.velmnbr); /* Randomly select first root element vertex */
-    if (meshptr->m.verttax[velmnum] == meshptr->m.vendtax[velmnum]) /* If picked an isolated element, search for another root      */
+    velxptr = velxtax + velmnum;                  /* Set root pointer to root element                                                     */
+    if (meshptr->m.verttax[velmnum] == meshptr->m.vendtax[velmnum]) /* If picked an isolated element, search for another root             */
       goto next;
-
-    velxptr = velxtax + velmnum;                  /* Set root pointer to root element */
 
     do {                                          /* Loop on root element vertices        */
       Gnum                velmnum;                /* Number of current element to process */
