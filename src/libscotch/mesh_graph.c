@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2016,2018,2020,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2016,2018,2020,2021,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 20 nov 2020     **/
 /**                                 to   : 07 jun 2021     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 04 jul 2025     **/
 /**                                                        **/
 /**   NOTES      : # From a given mesh is created a graph, **/
 /**                  such that all vertices of the graph   **/
@@ -127,6 +127,8 @@ Graph * restrict const        grafptr)            /*+ Graph to build +*/
                      : NULL;
 
   grafptr->velosum = meshptr->vnlosum;
+  grafptr->vnumtax =
+  grafptr->vlbltax = NULL;
 
   edgemax = 2 * meshptr->edgenbr;                 /* Compute lower bound on number of edges in graph */
 #ifdef SCOTCH_DEBUG_MESH2
@@ -139,6 +141,7 @@ Graph * restrict const        grafptr)            /*+ Graph to build +*/
     return (1);
   }
   grafptr->edgetax -= grafptr->baseval;
+  grafptr->edlotax  = NULL;
 
   memSet (hashtab, ~0, hashsiz * sizeof (MeshGraphHash)); /* Initialize hash table */
 
@@ -265,6 +268,8 @@ const Gnum                  noconbr)              /*+ number of common points to
   grafptr->vendtax  = grafptr->verttax + 1;
   grafptr->velotax  = NULL;                       /* TODO: not implemented */
   grafptr->velosum  = meshptr->velosum;
+  grafptr->vnumtax  =
+  grafptr->vlbltax  = NULL;
 
   edgemax = 2 * meshptr->edgenbr;                 /* Compute lower bound on number of edges in graph */
 
@@ -274,6 +279,7 @@ const Gnum                  noconbr)              /*+ number of common points to
     return (1);
   }
   grafptr->edgetax -= grafptr->baseval;
+  grafptr->edlotax  = NULL;
 
   memSet (hashtab, ~0, hashsiz * sizeof (MeshGraphDualHash)); /* Initialize hash table */
 

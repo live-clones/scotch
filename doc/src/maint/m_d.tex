@@ -833,3 +833,256 @@ following:
   which hold the data about the sub-column blocks if the column block
   is not a leaf. \texttt{cblktab} has to be freed on exit.
 \end{itemize}
+
+\subsection{Hash tables}
+
+Hash tables are used quite often in \scotch. However, since their use
+is problem-dependent, and the code that implements them is small, no
+generic data structure has been created to handle them. Each instance
+is created \textit{ad hoc}, at the expense of a slight duplication of
+code. This provides better readability, as macros would hide their
+meaning.
+
+These hash tables use \textit{open addressing} and \textit{linear
+lookup}. Because of open addressing, removal of individual items is
+not possible, which is not a concern for our use cases. Since linear
+lookup can prove very expensive when tables get full, implementations
+in \scotch\ make sure that tables are not filled-in at more than
+$25$\% capacity. Our experiments showed that this maximum load factor
+guarantees that simple collisions happen in only about $1$\% of the
+cases, and that more-than-double collisions are almost
+nonexistent. When the maximum number of items cannot be known,
+resizing is implemented, to enforce this maximum load factor.
+
+A typical use of these hash tables is to process the (common)
+neighbors of several vertices. For instance, when coarsening a graph,
+the adjacencies of two mated vertices have to be merged into a single
+adjacency, taking care of duplicate edges. In this case, edge merging
+must be performed when one of the vertices is connected to two
+neighbors that will be merged together, or when the two vertices are
+connected to the same neighbor vertex or to two vertex neighbors to
+be merged together. The edge connecting the two mated vertices must
+also be removed, if it exists.
+
+\subsubsection{Data structure}
+
+The underlying data structure of a \scotch\ hash table is an array of
+a size which is always a power of two. This constraint aims at
+providing cheap ways for array index bounding, by turning expensive
+integer modulus operations into cheap bitwise `and' operations using
+a dedicated bit mask variable.
+
+In each use case, the semantics of cell data must allow one to
+indicate unambiguously whether a cell is empty or full. Since hash
+indices are most often vertex or edge indices, and these indices are
+always positive or null (\ie, \texttt{baseval} is always positive or
+null), `$-1$' is commonly used as a marker value in cell fields to
+indicate an empty cell. To fill-in the hash table array at
+initialization time with `$-1$' values in one sweep, one can use a
+\texttt{memset()} routine with the '\texttt{\~{}0}' byte value (all
+1's), assuming negative integer numbers are coded in two's complement.
+
+When a hash table is used repeatedly (\eg, for all vertices of a
+graph), re-initializing the whole hash table memory area when only a
+few of its cells have been touched may prove expensive. The solution
+is to embed in each cell a pass number (\eg, the vertex number), so
+that a cell is considered empty when its pass number is not equal to
+the number of the current pass. This is consistent with initializing
+the table array with `$-1$'s, since pass numbers will always be
+greater than this value. Adding this extra field increases the size of
+each cell, hence of the whole array, but reduces the overall number of
+memory writes while preserving cache locality.
+
+For instance, in the case of graph coarsening discussed above, a hash
+table cell may have the structure described below: \texttt{vertnum} is
+the pass number (\ie,the index of the current coarse vertex the
+adjacency of which is being built), \texttt{vertend} is the hash index
+(the number of the coarse vertex neighbor for which an edge must be
+maintained), and \texttt{edgenum} is the index of the edge to be
+created in the coarse graph edge array.
+
+\begin{lstlisting}[style=language-c]
+typedef struct HashCell_ {
+  Gnum                      vertnum;              /*+ Origin vertex (i.e. pass) number +*/
+  Gnum                      vertend;              /*+ Other end vertex number          +*/
+  Gnum                      edgenum;              /*+ Number of corresponding edge     +*/
+} HashCell;
+\end{lstlisting}
+
+\subsubsection{Operation}
+
+As said, the size of the hash table array must be a
+power-of-two size at least greater than four times the expected
+maximum number of items, and its contents must be initialized with
+`$-1$' values. All of this can be performed with the following code.
+
+\begin{lstlisting}[style=language-c]
+  itemmax = ...;                                  /* Plausible maximum number of items     */
+  for (hashmax = 2; hashmax > itemmax; hashmax *= 2) ; /* Find upper power of two          */
+  hashsiz = hashmax * 4;                          /* Array size guarantees 25% load factor */
+  hashmsk = hashsiz - 1;                          /* Bit mask is range of 1's              */
+
+  hashtab = (Hash *) memAlloc (hashsiz * sizeof (HashCell)); /* Allocate hash table array */
+  memSet (hashtab, ~0, hashsiz * sizeof (HashCell)); /* Fill-in array with `-1' values    */
+\end{lstlisting}
+
+In the above, \texttt{hashtab} is the pointer to the hash table array,
+\texttt{itemmax} is the maximum number of items, \texttt{hashmax} is
+the maximum number of elements to be inserted in the hash table,
+\texttt{hashsiz} is the size of the array (in number of cells), and
+\texttt{hashmsk} is the bit mask for index bounding. In a real code,
+not all of these variables are explicitly named and computed, because
+there exist simple relationships between them. For instance, with
+respect to \texttt{hashmsk}, which is always present because it must
+be easily available in hash loops, we have
+$\mbox{\texttt{hashsiz}} = \mbox{\texttt{hashmsk}} + 1$ and
+$\mbox{\texttt{hashmax}} = (\mbox{\texttt{hashmsk}} - 3)/4$.
+Multiplications and divisions by powers of two can be cheaply
+performed by way of bit shift operators (\ie, `\texttt{<<}' and
+`\texttt{>>}'). Hence,
+$\mbox{\texttt{hashmax}} = \mbox{\texttt{hashmsk}} > > 2$, which also
+discards the unwanted low-order bits.
+
+Once the hash table is set-up, it can be used efficiently with only a
+few lines of code. To prevent data clustering in the array, the
+initial index is computed by way of a multiplication by a number which
+is prime with the size (hence, an odd number). For instance, from a
+vertex number \texttt{vertnum}: $\mbox{\texttt{hashnum}} =
+\mbox{\texttt{vertnum}} \times \mbox{HASHPRIME}$. Typically, the prime
+number is $17$ or $31$, that is, a number such that multiplying by it
+amounts to a one-bit shift and an addition/subtraction only (\eg,
+$v\times 17 = v < < 4 + v$ and $v\times 31 = v < < 5 - v$).
+
+As said, lookup is linear: once a hash index \texttt{hashnum} is
+computed, if the corresponding cell is already full, the next index
+will be computed by incrementing \texttt{hashnum} and performing
+a modulus operation using the bit mask, as
+$(\mbox{\texttt{hashnum}} + 1) \% \mbox{\texttt{hashsiz}} =
+(\mbox{\texttt{hashnum}} + 1) \& \mbox{\texttt{hashmsk}}$.
+
+In the case of graph coarsening taken as an example, the hash table
+can be used in the following way.
+
+\begin{lstlisting}[style=language-c]
+  for (coarvertnum = ...) {                       /* For each coarse vertex to consider         */
+    for (finevertnum = ...) {                     /* Enumerate fine vertices to merge in it     */
+      for (fineedgenum = fineverttax[finevertnum]; /* For all fine edges of current fine vertex */
+           fineedgenum < finevendtax[finevertnum]; fineedgenum ++) {
+        coarvertend = finecoartax[fineedgetax[fineedgenum]]; /* Get coarse number of end fine vertex */
+
+        if (coarvertend != coarvertnum) {         /* If not end of collapsed edge */
+          for (hashnum = (coarvertend * HASHPRIME) & hashmsk; ;
+               hashnum = (hashnum + 1) & coarhashmsk) { /* For all possible hash slots */
+            if (coarhashtab[hashnum].vertnum != coarvertnum) { /* If slot is empty     */
+              hashtab[hashnum].vertnum = coarvertnum; /* Create hash slot in table     */
+              hashtab[hashnum].vertend = coarvertend;
+              hashtab[hashnum].edgenum = ...;     /* Set edge number in coarse graph */
+              break;                              /* Give up hashing as it succeeded */
+            }
+            if (hashtab[hashnum].vertend == coarvertend) { /* If coarse edge already exists    */
+              ...                                 /* Manage merging of fine edge in coarse one */
+              break;                              /* Give up hashing as it succeeded           */
+            }
+          }
+        }
+      }                                           /* Go on searching for an empty cell */
+    }
+  }   
+\end{lstlisting}
+
+\subsubsection{Resizing}
+
+When the number of items inserted in the table becomes greater than
+\texttt{hashmax} (\ie, above the $25$\% load factor), resizing takes
+place. This may be a complex procedure, depending on the semantics of
+the data types (\eg, when hash slot indices are referenced in other
+data structures which must then also be updated). However, the process
+is quite straightforward.
+
+First, the size of the array is doubled, by way of a
+\mbox{\texttt{realloc()}} call, and the second half of the enlarged
+array is initialized, by way of a \mbox{\texttt{memset(,\~{}0,)}} call.
+Then, cell locations must be updated, according to their new hash
+indices and the linear lookup policy.
+
+This process is performed in two phases. The first phase concerns the
+block of all the non-empty cells contiguous to the end of the old hash
+table (\ie, the end of the first half of the resized hash table). If
+the last cell of the old table is empty, this last block does not
+exist. If it does, then all its cells are processed in ascending
+order: their new hash index is computed and, if it differs from the
+current one, the cell is moved to its new slot, possibly in the new
+half of the array. Then, in the second phase, all the cells from the
+beginning of the array to the last cell before those possibly
+processed in the first phase are processed similarly, also in
+ascending order. Together, these two segments cover all the cells of
+the old hash table.
+
+This two-phase approach is necessary to allow for moving all the cells
+of the hash array without causing bugs. Assume the old hash table
+contains only two cells: a first cell at the very end of the array,
+placed here because its hash index is indeed the last index of the
+array, and a second cell at the very beginning of the array, which was
+placed here because its hash index was also the index of the last cell
+but has been subsequently set to zero in the lookup phase since the
+last cell was already full. If only the second phase would take place,
+the first cell of the array would have its index recomputed first, and
+may still be the end of the first half of the new array, but, since
+this slot is still busy, the cell would be moved just after it, that
+is, now that the table is resized, at the very beginning of the second
+half of the resized array, which is empty. Then, the last cell would
+have its index recomputed and, if its new index would differ from its
+former one, because of the different modulus, it would be moved
+elsewhere. Hence, the first cell would no longer be accessible.
+
+These two phases can be combined into the same factored code, by way
+of the outer loop exemplified below.
+
+\begin{lstlisting}[style=language-c]
+  hashtab = memRealloc (hashtab, 2 * hashold * sizeof (HashCell)); /* Resize hash table  */
+  memSet (hashtab + hashold, ~0, hashold * sizeof (HashCell)); /* Initialize second half */
+
+  for (hashbas = hashold - 1; hashtab[hashbas].vertnum != ~0; hashbas --) ; /* Find start index of last block     */
+  hashnnd = hashold;                              /* First segment to reconsider ends at the end of the old array */
+
+  while (hashnnd != hashbas) {                    /* For each of the two segments to consider    */
+    for (hashnum = hashbas; hashnum < hashnnd; hashnum ++) { /* Re-compute position in new table */
+      if (hashtab[hashnum].vertnum == vertnum) {  /* If hash slot used in this pass              */
+        vertend = hashtab[hashnum].vertend;       /* Get hash key value                          */
+        for (hashnew = (vertend * HASHPRIME) & hashmsk; ; hashnew = (hashnew + 1) & hashmsk) {
+          if (hashnew == hashnum)                 /* If hash slot is the same */
+            break;                                /* There is nothing to do   */
+          if (hashtab[hashnew].vertnum != vertnum) { /* If new slot is empty  */
+            hashtab[hashnew] = hashtab[hashnum];  /* Copy data to new slot    */
+            hashtab[hashnum].vertnum = ~0;        /* Mark old slot as empty   */
+            break;
+          }
+        }                                         /* Go on searching */
+      }
+    }
+
+    hashnnd = hashbas;                            /* End of second segment to consider is start of first one    */
+    hashbas = 0;                                  /* Start of second segment is beginning of array              */
+  }                                               /* After second segment, hashbas = hashnnd = 0 and loop stops */
+\end{lstlisting}
+
+In the above, \texttt{hashold} is the size of the old hash table,
+\texttt{hashbas} is the start index of the current segment, and
+\texttt{hashnnd} is the end index of the current segment. For the
+first segment, the loop always starts on an empty cell; this allows
+one to handle smoothly the case when there is no last block. Since
+there always exists at least one empty cell in the array, because of
+the load factor, the loop on the first segment will never start off
+the bounds of the array. Like before, the \texttt{vertnum} field of
+hash cells is the current pass number, acting as an occupation flag,
+and \texttt{vertend}, the hash key value of the cell, is used to
+compute the new hash index. The emptiness test ``\texttt{if
+(hashtab[hashnew].vertnum != vertnum)}'' can also be written:
+``\texttt{if (hashtab[hashnew].vertnum == \~{}0)}'', since the two
+cases in which an empty cell is found consist in the new hash value
+indexing either the new part of the hash table, or a cell that has been
+cleared after moving. In both cases, the value of the pass number has
+been explicitly set to `\texttt{\~{}0}'.
+
+Depending on the use case, in each concerned \scotch\ routine,
+relevant variables and fields may have different names and semantics.

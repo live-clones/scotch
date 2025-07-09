@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 27 apr 2018     **/
 /**                                 to   : 26 oct 2019     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 05 feb 2025     **/
+/**                                 to   : 08 jun 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -70,7 +70,7 @@ extern unsigned int         stratmethtokentab[];
 
 /* Backward compatibility with un-pure Flex or Bison. */
 
-#define PARSERLLBEGIN(s)            stratParserBegin (scanptr, s)
+#define PARSERLLBEGIN(s)            stratParserLexBegin (scanptr, s)
 #define PARSERYYLVAL(s)             yylval_param->s
 
 /*

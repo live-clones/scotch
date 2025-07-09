@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2012,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2012,2018,2021,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -59,7 +59,7 @@
 /**                # Version 6.1  : from : 04 apr 2021     **/
 /**                                 to   : 28 aug 2021     **/
 /**                # Version 7.0  : from : 31 aug 2021     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 09 jul 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -1018,13 +1018,15 @@ FILE * const                stream)               /* Output stream              
       SCOTCH_Num          edgenum;
       SCOTCH_Num          vertend;
 
-      for (edgenum = pathtab[verttmp].idx; edgenum < grafptr->vendtab[verttmp]; edgenum ++) { /* Search for first output */
+      edgenum = pathtab[verttmp].idx;             /* Start searching from last unsearched edge */
+      do {                                        /* Search for first valid output edge        */
         vertend = grafptr->edgetab[edgenum];
         if ((vertend > verttmp) &&                /* If it can be an output edge */
             ((O_outParam.VtkMesh.edge != 'r') ||  /* And this edge can be drawn  */
              (mapptr->labltab[verttmp] == mapptr->labltab[vertend])))
           break;
-      }
+      } while (++ edgenum < grafptr->vendtab[verttmp]);
+
       pathtab[verttmp].nbr --;                    /* One less output path remaining */
       pathtab[verttmp].idx = edgenum + 1;         /* Search from the next position  */
       verttmp = vertend;                          /* Get the path end vertex number */

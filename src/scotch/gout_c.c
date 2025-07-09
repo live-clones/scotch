@@ -347,7 +347,7 @@ FILE * const                stream)
   if ((geomptr->verttab == NULL) &&               /* Allocate geometry if necessary */
       ((geomptr->verttab = (C_GeoVert *) memAlloc (geomptr->grafptr->vertnbr * sizeof (C_GeoVert))) == NULL)) {
     errorPrint ("C_geoLoad: out of memory (1)");
-    return     (1);
+    return (1);
   }
 
   if ((fscanf (stream, "%d" SCOTCH_NUMSTRING,     /* Read type and number of geometry items */
@@ -357,7 +357,7 @@ FILE * const                stream)
       (geomfiletype > 3)           ||
       (geomfileval  < 1)) {
     errorPrint ("C_geoLoad: bad input (1)");
-    return     (1);
+    return (1);
   }
   geomfilenbr = (SCOTCH_Num) geomfileval;
 
@@ -366,7 +366,7 @@ FILE * const                stream)
                      &geomsorttab, (size_t) (geomfilenbr               * sizeof (C_VertSort)),
                      &vertsorttab, (size_t) (geomptr->grafptr->vertnbr * sizeof (C_VertSort)), NULL) == NULL) {
     errorPrint ("C_geoLoad: out of memory (2)");
-    return     (1);
+    return (1);
   }
 
   o = 0;
@@ -446,12 +446,12 @@ FILE * const                stream)
     default :
       errorPrint ("C_geoLoad: invalid geometry type (%d)", geomfiletype);
       memFree    (geomfiletab);                   /* Free group leader */
-      return     (1);
+      return (1);
   }
   if (o != 0) {
     errorPrint ("C_geoLoad: bad input (2)");
     memFree    (geomfiletab);                     /* Free group leader */
-    return     (1);
+    return (1);
   }
 
   if (geomsortflag != 1)                          /* If geometry data not sorted        */
@@ -461,7 +461,7 @@ FILE * const                stream)
     if (geomsorttab[i].labl == geomsorttab[i - 1].labl) {
       errorPrint ("C_geoLoad: duplicate vertex label");
       memFree    (geomfiletab);                   /* Free group leader */
-      return     (1);
+      return (1);
     }
   }
 
@@ -492,7 +492,7 @@ FILE * const                stream)
       errorPrint ("C_geoLoad: vertex geometry data not found for label '" SCOTCH_NUMSTRING "'",
                   vertsorttab[i].labl);
       memFree    (geomfiletab);                   /* Free group leader */
-      return     (1);
+      return (1);
     }
     geomptr->verttab[vertsorttab[i].num] = geomfiletab[geomsorttab[j ++].num];
   }
@@ -560,7 +560,7 @@ FILE * const                stream)
   if ((mapptr->labltab == NULL) &&                /* Allocate array if necessary */
       ((mapptr->labltab = (SCOTCH_Num *) memAlloc (mapptr->grafptr->vertnbr * sizeof (SCOTCH_Num))) == NULL)) {
     errorPrint ("C_mapLoad: out of memory (1)");
-    return     (1);
+    return (1);
   }
 
   memset (mapptr->labltab, ~0, mapptr->grafptr->vertnbr * sizeof (SCOTCH_Num)); /* Pre-initialize mapping */
@@ -572,7 +572,7 @@ FILE * const                stream)
                &mapfileval) != 1) ||
       (mapfileval < 1)) {
     errorPrint ("C_mapLoad: bad input (1)");
-    return     (1);
+    return (1);
   }
   mapfilenbr = (SCOTCH_Num) mapfileval;
 
@@ -581,7 +581,7 @@ FILE * const                stream)
                      &mapsorttab,  (size_t) (mapfilenbr               * sizeof (C_VertSort)),
                      &vertsorttab, (size_t) (mapptr->grafptr->vertnbr * sizeof (C_VertSort)), NULL) == NULL) {
     errorPrint ("C_mapLoad: out of memory (2)");
-    return     (1);
+    return (1);
   }
 
   mapsortflag = 1;                                /* Assume mapping data sorted */
@@ -591,7 +591,7 @@ FILE * const                stream)
                 &mapfileval) != 2) {
       errorPrint ("C_mapLoad: bad input (2)");
       memFree    (mapfiletab);                    /* Free group leader */
-      return     (1);
+      return (1);
     }
     mapsorttab[i].labl = mapsortval;
     mapsorttab[i].num  = i;
@@ -608,7 +608,7 @@ FILE * const                stream)
     if (mapsorttab[i].labl == mapsorttab[i - 1].labl) {
       errorPrint ("C_mapLoad: duplicate vertex label");
       memFree    (mapfiletab);                    /* Free group leader */
-      return     (1);
+      return (1);
     }
   }
 

@@ -145,7 +145,7 @@ volatile TestGroup * restrict     grouptr)
 
   if ((thrdnum == 0) &&                           /* Test reduction result on thread 0 */
       (dataptr->reduval != grouptr->redusum)) {
-    SCOTCH_errorPrint ("0: invalid reduction operator\n");
+    errorPrint ("testThreads: invalid reduction operator (0)");
     C_erroval = 1;
   }
 
@@ -158,7 +158,7 @@ volatile TestGroup * restrict     grouptr)
   threadScan (descptr, (void *) dataptr, sizeof (TestData), (ThreadScanFunc) testScan, &C_erroval);
 
   if (dataptr->scanval[0] != COMPVAL (thrdnum + 1)) {
-    SCOTCH_errorPrint ("%d: invalid scan operator\n", thrdnum);
+    errorPrint ("testThreads: invalid scan operator (%d)", thrdnum);
     C_erroval = 1;
   }
 
@@ -180,7 +180,7 @@ char *              argv[])
   TestGroup           groudat;
   int                 thrdnbr;
 
-  SCOTCH_errorProg (argv[0]);
+  errorProg (argv[0]);
 
 #ifdef SCOTCH_PTHREAD_NUMBER
   thrdnbr = SCOTCH_PTHREAD_NUMBER;                /* If prescribed number defined at compile time, use it as default */
@@ -192,16 +192,16 @@ char *              argv[])
     thrdnbr = threadSystemCoreNbr ();
 
   if (threadContextInit (&contdat, thrdnbr, NULL) != 0) {
-    SCOTCH_errorPrint ("main: cannot initialize thread context");
-    exit              (EXIT_FAILURE);
+    errorPrint ("main: cannot initialize thread context");
+    exit       (EXIT_FAILURE);
   }
 
   thrdnbr = threadContextNbr (&contdat);
   printf ("%d threads in context\n", thrdnbr);
 
   if ((groudat.datatab = malloc (thrdnbr * sizeof (TestData))) == NULL) {
-    SCOTCH_errorPrint ("main: out of memory");
-    exit              (EXIT_FAILURE);
+    errorPrint ("main: out of memory");
+    exit       (EXIT_FAILURE);
   }
   groudat.redusum = COMPVAL (thrdnbr);
 

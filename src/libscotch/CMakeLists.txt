@@ -41,7 +41,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     10 jan 2025     ##
+##                                 to     10 jun 2025     ##
 ##                                                        ##
 ############################################################
 
@@ -70,7 +70,8 @@ endif()
 
 # Generate scotch.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/scotch.h
-  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library.h ${GENERATED_INCLUDE_DIR}/scotch.h DEPENDS dummysizes
+  COMMAND $<TARGET_FILE:dummysizes> "-s${SCOTCH_NAME_SUFFIX}"
+  ${CMAKE_CURRENT_SOURCE_DIR}/library.h ${GENERATED_INCLUDE_DIR}/scotch.h DEPENDS dummysizes
   DEPENDS library.h
   COMMENT "Generate scotch.h")
 add_custom_target(scotch_h
@@ -78,7 +79,8 @@ add_custom_target(scotch_h
 
 # Generate scotchf.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/scotchf.h
-  COMMAND $<TARGET_FILE:dummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library_f.h ${GENERATED_INCLUDE_DIR}/scotchf.h DEPENDS dummysizes
+  COMMAND $<TARGET_FILE:dummysizes>  "-s${SCOTCH_NAME_SUFFIX}"
+  ${CMAKE_CURRENT_SOURCE_DIR}/library_f.h ${GENERATED_INCLUDE_DIR}/scotchf.h DEPENDS dummysizes
   DEPENDS library.h
   COMMENT "Generate scotchf.h")
 add_custom_target(scotchf_h
@@ -91,7 +93,8 @@ add_custom_target(scotchf_h
 # Generate ptscotch.h
 if(BUILD_PTSCOTCH)
   add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/ptscotch.h
-    COMMAND $<TARGET_FILE:ptdummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library_pt.h ${GENERATED_INCLUDE_DIR}/ptscotch.h DEPENDS ptdummysizes
+    COMMAND $<TARGET_FILE:ptdummysizes> "-s${SCOTCH_NAME_SUFFIX}"
+    ${CMAKE_CURRENT_SOURCE_DIR}/library_pt.h ${GENERATED_INCLUDE_DIR}/ptscotch.h DEPENDS ptdummysizes
     DEPENDS library_pt.h scotch_h
     COMMENT "Generate ptscotch.h")
   add_custom_target(ptscotch_h
@@ -99,7 +102,8 @@ if(BUILD_PTSCOTCH)
 
 # Generate ptscotchf.h
 add_custom_command(OUTPUT ${GENERATED_INCLUDE_DIR}/ptscotchf.h
-  COMMAND $<TARGET_FILE:ptdummysizes> ${CMAKE_CURRENT_SOURCE_DIR}/library_pt_f.h ${GENERATED_INCLUDE_DIR}/ptscotchf.h DEPENDS ptdummysizes
+  COMMAND $<TARGET_FILE:ptdummysizes> "-s${SCOTCH_NAME_SUFFIX}"
+  ${CMAKE_CURRENT_SOURCE_DIR}/library_pt_f.h ${GENERATED_INCLUDE_DIR}/ptscotchf.h DEPENDS ptdummysizes
   DEPENDS library.h
   COMMENT "Generate ptscotchf.h")
 add_custom_target(ptscotchf_h
@@ -123,8 +127,12 @@ add_custom_target(parser_yy_c DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parser_yy.c ${
 
 # Generate parser_ll.c using Flex
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parser_ll.c
-  COMMAND ${FLEX_EXECUTABLE} "-Pscotchyy${SCOTCH_NAME_SUFFIX}"  "-oparser_ll.c" ${CMAKE_CURRENT_SOURCE_DIR}/parser_ll.l
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/parser_ll.l module.h common.h parser.h parser_ll.h parser_ly.h
+  ${CMAKE_CURRENT_BINARY_DIR}/parser_lh.h
+  COMMAND ${FLEX_EXECUTABLE} "-Pscotchyy${SCOTCH_NAME_SUFFIX}"  "-oparser_ll.c"
+  "--header-file=parser_lh.h"
+  ${CMAKE_CURRENT_SOURCE_DIR}/parser_ll.l
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/parser_ll.l
+  ${CMAKE_CURRENT_BINARY_DIR}/parser_lh.h module.h common.h parser.h parser_ll.h parser_ly.h
   COMMENT "Generate parser_ll.c using Flex")
 add_custom_target(parser_ll_c DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parser_ll.c)
 
@@ -524,7 +532,7 @@ if(SCOTCH_DETERMINISTIC STREQUAL FULL)
   target_compile_definitions(scotch PUBLIC COMMON_RANDOM_FIXED_SEED)
   target_compile_definitions(scotch PUBLIC SCOTCH_DETERMINISTIC)
   message(STATUS "Determinism: full")
-elseif(SCOTCH_RANDOM STREQUAL FIXED_SEED)
+elseif(SCOTCH_DETERMINISTIC STREQUAL FIXED_SEED)
   target_compile_definitions(scotch PUBLIC COMMON_RANDOM_FIXED_SEED)
   message(STATUS "Determinism: fixed random seed")
 else()

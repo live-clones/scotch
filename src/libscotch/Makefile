@@ -1,4 +1,4 @@
-## Copyright 2004,2007-2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007-2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -35,11 +35,29 @@ libdir		= ../../lib
 
 include ../Makefile.inc
 
-CCDFLAGS	?= $(CFLAGS)
+CCDFLAGS ?= $(CFLAGS)
 
+ifeq ($(strip $(SCOTCH_NAME_SUFFIX)),)
+  ifneq ($(findstring -DSCOTCH_NAME_SUFFIX=,$(CFLAGS)),)
+    scotch_name_suffix_defs = $(filter -DSCOTCH_NAME_SUFFIX=%,$(CFLAGS))
+    scotch_name_suffix_def = $(lastword $(scotch_name_suffix_defs))
+    export SCOTCH_NAME_SUFFIX = $(subst -DSCOTCH_NAME_SUFFIX=,,$(scotch_name_suffix_def))
+  endif
+endif
 ifneq ($(strip $(SCOTCH_NAME_SUFFIX)),)
-CFLAGS		+= -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
-CCDFLAGS	+= -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+  $(info Using suffix "$(SCOTCH_NAME_SUFFIX)")
+  ifeq ($(findstring -DSCOTCH_NAME_SUFFIX=,$(CFLAGS)),)
+    CFLAGS += -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+  endif
+  ifeq ($(findstring -DSCOTCH_RENAME_ALL=,$(CFLAGS)),)
+    CFLAGS += -DSCOTCH_RENAME_ALL
+  endif
+  ifeq ($(findstring -DSCOTCH_NAME_SUFFIX=,$(CCDFLAGS)),)
+    CCDFLAGS += -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+  endif
+  ifeq ($(findstring -DSCOTCH_RENAME_ALL=,$(CCDFLAGS)),)
+    CCDFLAGS += -DSCOTCH_RENAME_ALL
+  endif
 endif
 
 ##
@@ -89,7 +107,7 @@ ptinstall			:	install						\
 					$(libdir)/libptscotch$(LIB)
 
 clean				:
-					-$(RM) *~ *$(OBJ) lib*$(LIB) parser_yy.c parser_ly.h parser_ll.c *scotch.h *scotchf.h y.output *dummysizes$(EXE)
+					-$(RM) *~ *$(OBJ) lib*$(LIB) parser_yy.c parser_lh.h parser_ly.h parser_ll.c parser_yy.c *scotch.h *scotchf.h y.output *dummysizes$(EXE)
 
 realclean			:	clean
 
@@ -2955,8 +2973,11 @@ parser$(OBJ)			:	parser.c				\
 					module.h				\
 					common.h				\
 					parser.h				\
+					parser_lh.h				\
 					parser_ly.h				\
 					parser_yy.h
+
+parser_lh.h			:	parser_ll.c
 
 parser_ll.c			:	parser_ll.l				\
 					module.h				\
@@ -2964,9 +2985,10 @@ parser_ll.c			:	parser_ll.l				\
 					parser.h				\
 					parser_ll.h				\
 					parser_ly.h
-					$(FLEX) "-Pscotchyy$(SCOTCH_NAME_SUFFIX)" "-oparser_ll.c" parser_ll.l
+					$(FLEX) "-Pscotchyy$(SCOTCH_NAME_SUFFIX)" "-oparser_ll.c" "--header-file=parser_lh.h" parser_ll.l
 
 parser_ll$(OBJ)			:	parser_ll.c				\
+					parser_lh.h				\
 					parser_ly.h
 
 parser_ly.h			:	parser_yy.c
@@ -2978,7 +3000,10 @@ parser_yy.c			:	parser_yy.y				\
 					parser_yy.h
 					$(BISON) "-pscotchyy$(SCOTCH_NAME_SUFFIX)" --defines="parser_ly.h" --output="parser_yy.c" parser_yy.y
 
-parser_yy$(OBJ)			:	parser_yy.c
+parser_yy$(OBJ)			:	parser_yy.c				\
+					parser_lh.h				\
+					parser_ll.h				\
+					parser_yy.h
 
 vdgraph$(OBJ)			:	vdgraph.c				\
 					module.h				\
@@ -3397,19 +3422,19 @@ ptdummysizes$(EXE)		:	dummysizes.c				\
 
 scotch.h			:	dummysizes$(EXE)			\
 					library.h
-					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library.h scotch.h
+					./dummysizes$(EXE) -s$(SCOTCH_NAME_SUFFIX) library.h scotch.h
 
 scotchf.h			:	dummysizes$(EXE) 			\
 					library_f.h
-					./dummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_f.h scotchf.h
+					./dummysizes$(EXE) -s$(SCOTCH_NAME_SUFFIX) library_f.h scotchf.h
 
 ptscotch.h			:	ptdummysizes$(EXE)			\
 					library_pt.h
-					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt.h ptscotch.h
+					./ptdummysizes$(EXE) -s$(SCOTCH_NAME_SUFFIX) library_pt.h ptscotch.h
 
 ptscotchf.h			:	ptdummysizes$(EXE)			\
 					library_pt_f.h
-					./ptdummysizes$(EXE) "-s$(SCOTCH_NAME_SUFFIX)" library_pt_f.h ptscotchf.h
+					./ptdummysizes$(EXE) -s$(SCOTCH_NAME_SUFFIX) library_pt_f.h ptscotchf.h
 
 libscotch$(LIB)			:	$(LIBSCOTCHDEPS)
 					$(AR) $(ARFLAGS) $(@) $(?)

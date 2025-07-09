@@ -45,12 +45,41 @@ DEPESMUMPS		= $(SCOTCHLIBDIR)/libesmumps$(LIB)
 DEPPTSCOTCH		= $(SCOTCHLIBDIR)/libptscotch$(LIB)
 DEPSCOTCH		= $(SCOTCHLIBDIR)/libscotch$(LIB)
 
-ifeq ($(origin SCOTCH_METIS_PREFIXFU), undefined)
-  ifeq ($(origin SCOTCH_METIS_PREFIX), undefined)
-    SCOTCH_METIS_PREFIXFU = ""
-  else
-    SCOTCH_METIS_PREFIXFU = SCOTCHF
+include ../Makefile.inc
+
+ifeq ($(strip $(SCOTCH_NAME_SUFFIX)),)
+  ifneq ($(findstring -DSCOTCH_NAME_SUFFIX=,$(CFLAGS)),)
+    scotch_name_suffix_defs = $(filter -DSCOTCH_NAME_SUFFIX=%,$(CFLAGS))
+    scotch_name_suffix_def = $(lastword $(scotch_name_suffix_defs))
+    export SCOTCH_NAME_SUFFIX = $(subst -DSCOTCH_NAME_SUFFIX=,,$(scotch_name_suffix_def))
   endif
+endif
+ifneq ($(strip $(SCOTCH_NAME_SUFFIX)),)
+  $(info Using suffix "$(SCOTCH_NAME_SUFFIX)")
+  ifeq ($(findstring -DSCOTCH_NAME_SUFFIX=,$(CFLAGS)),)
+    CFLAGS += -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+  endif
+  ifeq ($(findstring -DSCOTCH_NAME_SUFFIX=,$(CCDFLAGS)),)
+    CCDFLAGS += -DSCOTCH_NAME_SUFFIX=$(SCOTCH_NAME_SUFFIX)
+  endif
+endif
+
+ifeq ($(strip $(SCOTCH_METIS_PREFIXFU)),)
+  ifneq ($(findstring -DSCOTCH_METIS_PREFIXFU=,$(CFLAGS)),)
+    scotch_metis_prefixfu_defs = $(filter -DSCOTCH_METIS_PREFIXFU=%,$(CFLAGS))
+    scotch_metis_prefixfu_def = $(lastword $(scotch_metis_prefixfu_defs))
+    export SCOTCH_METIS_PREFIXFU = $(subst -DSCOTCH_METIS_PREFIXFU=,,$(scotch_metis_prefixfu_def))
+  endif
+endif
+ifeq ($(strip $(SCOTCH_METIS_PREFIXFU)),)
+  ifeq ($(findstring -DSCOTCH_METIS_PREFIX,$(CFLAGS)),)
+    export SCOTCH_METIS_PREFIXFU =
+  else
+    export SCOTCH_METIS_PREFIXFU = SCOTCHF
+  endif
+endif
+ifneq ($(strip $(SCOTCH_METIS_PREFIXFU)),)
+  $(info Using MeTiS uppercase Fortran prefix "$(SCOTCH_METIS_PREFIXFU)")
 endif
 
 EXECPPROG		?= mpirun
@@ -68,8 +97,6 @@ PROGSED			?= sed
 ##  General inference rules.
 ##
 
-include ../Makefile.inc
-
 %$(OBJ)	:	%.c
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(SCOTCHINCDIR) -c $(<) -o $(@)
 
@@ -83,7 +110,8 @@ include ../Makefile.inc
 				$(CC) $(CFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
 
 %.f90	:	%.f90.in
-				$(PROGSED) -e 's/SCOTCHMETISNAMEFU\s*(\([A-Za-z0-8_]*\))/'"$(SCOTCH_METIS_PREFIXFU)"'\1/g' $(<) > $(@)
+				../libscotch/dummysizes$(EXE) -s$(SCOTCH_NAME_SUFFIX) $(<) $(@).tmp
+				$(PROGSED) -e 's/SCOTCHMETISNAMEFU\s*(\([A-Za-z0-8_]*\))/'"$(SCOTCH_METIS_PREFIXFU)"'\1/g' $(@).tmp > $(@)
 
 %_v3$(EXE):	%.f90
 				$(FC) $(FFLAGS) -I$(SCOTCHINCDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv3 $(SCOTCHLIBS) $(LDFLAGS)
@@ -127,6 +155,7 @@ realclean			:	clean
 					test_libmetis_dual_v3		\
 					test_libmetis_dual_v5		\
 					test_libmetis_dual_f.f90	\
+					test_libmetis_dual_f.f90.tmp	\
 					test_libmetis_dual_f_v3		\
 					test_libmetis_dual_f_v5		\
 					test_scotch_arch		\

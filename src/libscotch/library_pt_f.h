@@ -1,4 +1,4 @@
-!* Copyright 2004,2007,2009,2010,2012,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+!* Copyright 2004,2007,2009,2010,2012,2024,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 !*
 !* This file is part of the Scotch software package for static mapping,
 !* graph partitioning and sparse matrix ordering.
@@ -51,9 +51,26 @@
 !*                # Version 6.0  : from : 22 oct 2011     **
 !*                                 to   : 27 nov 2012     **
 !*                # Version 7.0  : from : 28 jul 2024     **
-!*                                 to   : 13 aug 2024     **
+!*                                 to   : 13 jun 2025     **
 !*                                                        **
 !***********************************************************
+
+!* Size definitions for the SCOTCH integer
+!* and index types.
+
+        INTEGER SCOTCH_IDXSIZE
+        INTEGER SCOTCH_NUMSIZE
+        PARAMETER (SCOTCH_IDXSIZE = DUMMYSIZEBYTEIDX)
+        PARAMETER (SCOTCH_NUMSIZE = DUMMYSIZEBYTENUM)
+
+!* Flag definitions for the context options
+
+        INTEGER SCOTCH_OPTIONNUMDETERMINISTIC
+        INTEGER SCOTCH_OPTIONNUMRANDOMFIXEDSEED
+        INTEGER SCOTCH_OPTIONNUMNBR
+        PARAMETER (SCOTCH_OPTIONNUMDETERMINISTIC   = 0)
+        PARAMETER (SCOTCH_OPTIONNUMRANDOMFIXEDSEED = 1)
+        PARAMETER (SCOTCH_OPTIONNUMNBR             = 2)
 
 !* Flag definitions for the coarsening
 !* routines.
@@ -76,18 +93,20 @@
         INTEGER SCOTCH_STRATLEVELMIN
         INTEGER SCOTCH_STRATLEAFSIMPLE
         INTEGER SCOTCH_STRATSEPASIMPLE
-        PARAMETER (SCOTCH_STRATDEFAULT     = 0)
-        PARAMETER (SCOTCH_STRATQUALITY     = 1)
-        PARAMETER (SCOTCH_STRATSPEED       = 2)
-        PARAMETER (SCOTCH_STRATBALANCE     = 4)
-        PARAMETER (SCOTCH_STRATSAFETY      = 8)
-        PARAMETER (SCOTCH_STRATSCALABILITY = 16)
-        PARAMETER (SCOTCH_STRATRECURSIVE   = 256)
-        PARAMETER (SCOTCH_STRATREMAP       = 512)
-        PARAMETER (SCOTCH_STRATLEVELMAX    = 4096)
-        PARAMETER (SCOTCH_STRATLEVELMIN    = 8192)
-        PARAMETER (SCOTCH_STRATLEAFSIMPLE  = 16384)
-        PARAMETER (SCOTCH_STRATSEPASIMPLE  = 32768)
+        INTEGER SCOTCH_STRATDISCONNECTED
+        PARAMETER (SCOTCH_STRATDEFAULT      = 0)
+        PARAMETER (SCOTCH_STRATQUALITY      = 1)
+        PARAMETER (SCOTCH_STRATSPEED        = 2)
+        PARAMETER (SCOTCH_STRATBALANCE      = 4)
+        PARAMETER (SCOTCH_STRATSAFETY       = 8)
+        PARAMETER (SCOTCH_STRATSCALABILITY  = 16)
+        PARAMETER (SCOTCH_STRATRECURSIVE    = 256)
+        PARAMETER (SCOTCH_STRATREMAP        = 512)
+        PARAMETER (SCOTCH_STRATLEVELMAX     = 4096)
+        PARAMETER (SCOTCH_STRATLEVELMIN     = 8192)
+        PARAMETER (SCOTCH_STRATLEAFSIMPLE   = 16384)
+        PARAMETER (SCOTCH_STRATSEPASIMPLE   = 32768)
+        PARAMETER (SCOTCH_STRATDISCONNECTED = 65536)
 
 !* Size definitions for the SCOTCH opaque
 !* structures. These structures must be

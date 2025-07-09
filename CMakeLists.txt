@@ -37,7 +37,7 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     11 mar 2025     ##
+##                                 to     10 jun 2025     ##
 ##                                                        ##
 ############################################################
 
@@ -62,7 +62,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 set(SCOTCH_VERSION 7)
 set(SCOTCH_RELEASE 0)
-set(SCOTCH_PATCHLEVEL 7)
+set(SCOTCH_PATCHLEVEL 8)
 set(SCOTCH_CODENAME "Sankara")
 
 add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}
@@ -74,6 +74,14 @@ set(SCOTCH_VERSION_LONG "${SCOTCH_VERSION}.${SCOTCH_RELEASE}.${SCOTCH_PATCHLEVEL
 # Set integer size: by default, use compiler int size
 set(INTSIZE "" CACHE STRING "Integer size: empty string stands for C compiler int type size")
 
+# Set index size: by default, use compiler int size
+set(IDXSIZE "" CACHE STRING "Index size: empty string stands for C compiler int type size")
+
+# Manage suffixes
+set(SCOTCH_NAME_SUFFIX "" CACHE STRING "Suffix to add to every symbol in the Scotch/PT-Scotch libraries")
+if(NOT "${SCOTCH_NAME_SUFFIX}" STREQUAL "")
+  set(USE_SUFFIX ON)
+endif()
 # Thread support
 option(THREADS "Use multi-threading in Scotch and PT-Scotch" ON)
 
@@ -150,7 +158,7 @@ foreach(f IN LISTS scotch_man_pages)
     DESTINATION ${CMAKE_INSTALL_DATADIR}/man/man1 COMPONENT scotch)
 endforeach()
 
-if (BUILD_PTSCOTCH)
+if(BUILD_PTSCOTCH)
   set(ptscotch_man_pages dgmap.1 dgord.1 dgscat.1 dgtst.1)
   foreach(f IN LISTS ptscotch_man_pages)
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/man1/${f}

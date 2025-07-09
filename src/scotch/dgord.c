@@ -1,4 +1,4 @@
-/* Copyright 2007-2012,2014,2018-2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2012,2014,2018-2021,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 17 apr 2019     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 28 oct 2023     **/
+/**                                 to   : 10 jun 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -290,7 +290,8 @@ char *              argv[])
       char           c;
 
       printf ("Waiting for key press...\n");
-      scanf ("%c", &c);
+      if (scanf ("%c", &c) < 0)
+        fprintf (stderr, "Invalid wait input");
     }
     MPI_Barrier (MPI_COMM_WORLD);
   }

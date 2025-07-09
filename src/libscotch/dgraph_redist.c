@@ -109,7 +109,7 @@ Dgraph * restrict const     dstgrafptr)           /* Destination distributed gra
     vadjglbnbr = 0;
   }
   else {
-    if (dgraphGhst (srcgrafptr) != 0) {             /* Compute ghost edge array if not already present */
+    if (dgraphGhst (srcgrafptr) != 0) {           /* Compute ghost edge array if not already present */
       errorPrint ("dgraphRedist: cannot compute ghost edge array");
       return (1);
     }

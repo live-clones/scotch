@@ -34,12 +34,23 @@ debugging level for assessing issues is obtained by compiling
 \scotch\ with the flag \texttt{-DSCOTCH\_\lbt DEBUG\_\lbt ALL}.
 \\
 
-Here is a quick troubleshooting check-list:
+\subsection{Troubleshooting check-list}
+
 \begin{enumerate}
 \item
-Check whether the \scotch\ test programs perform without errors.
+Check whether the \scotch\ test programs run without errors.
 \item
-Check integer sizes between your code and the \libscotch.
+Check integer size match between your code and the \libscotch, using
+the library function \texttt{SCOTCH\_\lbt numSizeof()}. This general
+sanity check may be beneficially included in all software linked
+against the \libscotch\ library.
+\item
+In case \scotch\ works for small cases, yet produces ``out of memory''
+errors for bigger cases when the number of vertices and/or edges
+nears the billion, \scotch\ must be recompiled in 64-bit integer mode,
+by setting the \texttt{INTSIZE64} flag (see
+Section~\ref{sec-c-integer}); the \texttt{IDXSIZE64} flag should
+always be set on current architectures.
 \item
 Apply the \scotch\ input data consistency checking routines (\eg,
 \texttt{SCOTCH\_\lbt graph\lbt Check()}, \texttt{SCOTCH\_\lbt
