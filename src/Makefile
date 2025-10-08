@@ -32,7 +32,7 @@
 
 VERSION = 7
 RELEASE = 0
-PATCHLEVEL = 10
+PATCHLEVEL = 11
 CODENAME = "Sankara"
 
 .PHONY				:	clean	default	install	ptscotch	realclean	required	scotch
