@@ -109,11 +109,11 @@ SCOTCH_Mesh * const         meshptr)
 {
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_meshInit) ": internal error (1)");
-    return     (1);
+    return (1);
   }
   if (sizeof (SCOTCH_Mesh) < sizeof (Mesh)) {
     errorPrint (STRINGIFY (SCOTCH_meshInit) ": internal error (2)");
-    return     (1);
+    return (1);
   }
 
   return (meshInit ((Mesh *) meshptr));
@@ -151,7 +151,7 @@ const SCOTCH_Num            baseval)
 {
   if ((baseval < -1) || (baseval > 1)) {
     errorPrint (STRINGIFY (SCOTCH_meshLoad) ": invalid base parameter");
-    return     (1);
+    return (1);
   }
 
   return (meshLoad ((Mesh * const) meshptr, stream, (Gnum) baseval));
@@ -204,19 +204,19 @@ const SCOTCH_Num * const    edgetab)              /* Edge array [edgenbr]       
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Mesh) < sizeof (Mesh)) {
     errorPrint (STRINGIFY (SCOTCH_meshBuild) ": internal error (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
   if ((velmbas < 0) ||
       (vnodbas < 0) ||
       ((velmbas > 1) && (vnodbas > 1))) {
     errorPrint (STRINGIFY (SCOTCH_meshBuild) ": invalid base parameters");
-    return     (1);
+    return (1);
   }
   if (((velmbas + velmnbr) != vnodbas) &&
       ((vnodbas + vnodnbr) != velmbas)) {
     errorPrint (STRINGIFY (SCOTCH_meshBuild) ": invalid element or node range");
-    return     (1);
+    return (1);
   }
 
   srcmeshptr = (Mesh *) meshptr;                  /* Use structure as source mesh */
@@ -286,7 +286,7 @@ const SCOTCH_Num * const    edgetab)              /* Edge array [edgenbr]       
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (meshCheck (srcmeshptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_meshBuild) ": internal error (2)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
