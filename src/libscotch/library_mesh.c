@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2021,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 24 jan 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -208,8 +208,7 @@ const SCOTCH_Num * const    edgetab)              /* Edge array [edgenbr]       
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
   if ((velmbas < 0) ||
-      (vnodbas < 0) ||
-      ((velmbas > 1) && (vnodbas > 1))) {
+      (vnodbas < 0)) {
     errorPrint (STRINGIFY (SCOTCH_meshBuild) ": invalid base parameters");
     return (1);
   }
@@ -282,13 +281,6 @@ const SCOTCH_Num * const    edgetab)              /* Edge array [edgenbr]       
       degrmax = degrval;
   }
   srcmeshptr->degrmax = degrmax;
-
-#ifdef SCOTCH_DEBUG_LIBRARY1
-  if (meshCheck (srcmeshptr) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_meshBuild) ": internal error (2)");
-    return (1);
-  }
-#endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   return (0);
 }
