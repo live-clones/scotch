@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021,2022,2024,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021,2022,2024-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     18 jul 2025     ##
+##                                 to     11 feb 2026     ##
 ##                                                        ##
 ############################################################
 
@@ -158,10 +158,20 @@ if(BUILD_LIBESMUMPS AND NOT USE_SUFFIX)
   add_test(NAME test_libesmumps_2 COMMAND $<TARGET_FILE:test_libesmumps> ${dat}/bump_imbal_32.grf)
 endif(BUILD_LIBESMUMPS AND NOT USE_SUFFIX)
 
-# Test libScotchMeTiS
+# Test Scotch Fortran API
 
+if (BUILD_FORTRAN)
+  foreach(tst_ftn scotch_mesh_build)
+    suffix_fortran_file(test_${tst_ftn}_f.f90.in)
+    add_executable(test_${tst_ftn}_f ${CMAKE_CURRENT_BINARY_DIR}/test_${tst_ftn}_f.f90)
+    target_link_libraries(test_${tst_ftn}_f scotch scotcherr)
+    add_test(NAME test_${tst_ftn}_f COMMAND test_${tst_ftn}_f)
+  endforeach()
+endif(BUILD_FORTRAN)
+
+# Test libScotchMeTiS
 if(BUILD_LIBSCOTCHMETIS)
-  # manage prefix
+  # Manage prefix
   if(NOT SCOTCH_METIS_PREFIXFU)
     if(NOT SCOTCH_METIS_PREFIX)
       set(SCOTCH_METIS_PREFIXFU "")
@@ -169,8 +179,11 @@ if(BUILD_LIBSCOTCHMETIS)
       set(SCOTCH_METIS_PREFIXFU "SCOTCHF")
     endif(NOT SCOTCH_METIS_PREFIX)
   endif(NOT SCOTCH_METIS_PREFIXFU)
-
-  suffix_fortran_file(test_libmetis_dual_f.f90.in)
+  if (BUILD_FORTRAN)
+    foreach(tst_ftn libmetis_dual)
+      suffix_fortran_file(test_${tst_ftn}_f.f90.in)
+    endforeach()
+  endif(BUILD_FORTRAN)
   foreach(version 3 5)
     add_executable(test_libmetisv${version} test_libmetis.c)
     set_target_properties(test_libmetisv${version} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
@@ -194,12 +207,13 @@ if(BUILD_LIBSCOTCHMETIS)
     add_test(NAME test_libmetis_dualv${version}_2 COMMAND test_libmetis_dualv${version} 1)
 
     if(BUILD_FORTRAN)
-      add_executable(test_libmetis_dual_f_v${version} ${CMAKE_CURRENT_BINARY_DIR}/test_libmetis_dual_f.f90)
-      target_compile_definitions(test_libmetis_dual_f_v${version} PRIVATE SCOTCH_METIS_VERSION=${version})
-      target_include_directories(test_libmetis_dual_f_v${version} PRIVATE ${GENERATED_INCLUDE_DIR})
-      target_link_libraries(test_libmetis_dual_f_v${version} scotch scotchmetisv${version} scotcherr)
-
-      add_test(NAME test_libmetis_dual_f_v${version} COMMAND test_libmetis_dual_f_v${version})
+      foreach(tst_ftn libmetis_dual)
+        add_executable(test_${tst_ftn}_f_v${version} ${CMAKE_CURRENT_BINARY_DIR}/test_${tst_ftn}_f.f90)
+        target_compile_definitions(test_${tst_ftn}_f_v${version} PRIVATE SCOTCH_METIS_VERSION=${version})
+        target_include_directories(test_${tst_ftn}_f_v${version} PRIVATE ${GENERATED_INCLUDE_DIR})
+        target_link_libraries(test_${tst_ftn}_f_v${version} scotchmetisv${version} scotch scotcherr)
+        add_test(NAME test_${tst_ftn}_f_v${version} COMMAND test_${tst_ftn}_f_v${version})
+      endforeach()
     endif()
   endforeach(version 3 5)
 endif(BUILD_LIBSCOTCHMETIS)
