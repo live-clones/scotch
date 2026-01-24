@@ -1,4 +1,4 @@
-## Copyright 2011,2012,2014-2016,2018-2021,2024,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2011,2012,2014-2016,2018-2021,2024-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -115,6 +115,9 @@ PROGSED			?= sed
 %_v5$(EXE):	%.f90
 				$(FC) $(FFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv5 $(SCOTCHLIBS) $(LDFLAGS)
 
+%$(EXE):	%.f90
+				$(FC) $(FFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
+
 ##
 ##  Project rules.
 ##
@@ -143,42 +146,44 @@ clean				:
 					-$(RM) *~ *$(OBJ)
 
 realclean			:	clean
-					-$(RM) 				\
-					test_common_file_compress	\
-					test_common_random		\
-					test_common_thread		\
-					test_fibo			\
-					test_libesmumps			\
-					test_libmetis_v3		\
-					test_libmetis_v5		\
-					test_libmetis_dual_v3		\
-					test_libmetis_dual_v5		\
-					test_libmetis_dual_f.f90	\
-					test_libmetis_dual_f.f90.tmp	\
-					test_libmetis_dual_f_v3		\
-					test_libmetis_dual_f_v5		\
-					test_scotch_arch		\
-					test_scotch_arch_deco		\
-					test_scotch_context		\
-					test_scotch_graph_coarsen	\
-					test_scotch_graph_color		\
-					test_scotch_graph_diam		\
-					test_scotch_graph_dump2		\
-					test_scotch_graph_dump2.c	\
-					test_scotch_graph_induce	\
-					test_scotch_graph_map		\
-					test_scotch_graph_map_copy	\
-					test_scotch_graph_order		\
-					test_scotch_graph_part_ovl	\
-					test_scotch_dgraph_band		\
-					test_scotch_dgraph_check	\
-					test_scotch_dgraph_coarsen	\
-					test_scotch_dgraph_order	\
-					test_scotch_dgraph_grow		\
-					test_scotch_dgraph_induce	\
-					test_scotch_dgraph_redist	\
-					test_scotch_mesh_graph		\
-					test_strat_par			\
+					-$(RM) 					\
+					test_common_file_compress		\
+					test_common_random			\
+					test_common_thread			\
+					test_fibo				\
+					test_libesmumps				\
+					test_libmetis_v3			\
+					test_libmetis_v5			\
+					test_libmetis_dual_v3			\
+					test_libmetis_dual_v5			\
+					test_libmetis_dual_f.f90		\
+					test_libmetis_dual_f.f90.tmp		\
+					test_libmetis_dual_f_v3			\
+					test_libmetis_dual_f_v5			\
+					test_scotch_arch			\
+					test_scotch_arch_deco			\
+					test_scotch_context			\
+					test_scotch_graph_coarsen		\
+					test_scotch_graph_color			\
+					test_scotch_graph_diam			\
+					test_scotch_graph_dump2			\
+					test_scotch_graph_dump2.c		\
+					test_scotch_graph_induce		\
+					test_scotch_graph_map			\
+					test_scotch_graph_map_copy		\
+					test_scotch_graph_order			\
+					test_scotch_graph_part_ovl		\
+					test_scotch_dgraph_band			\
+					test_scotch_dgraph_check		\
+					test_scotch_dgraph_coarsen		\
+					test_scotch_dgraph_order		\
+					test_scotch_dgraph_grow			\
+					test_scotch_dgraph_induce		\
+					test_scotch_dgraph_redist		\
+					test_scotch_mesh_build_f.f90		\
+					test_scotch_mesh_build_f.f90.tmp	\
+					test_scotch_mesh_graph			\
+					test_strat_par				\
 					test_strat_seq
 
 ##
@@ -202,6 +207,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_scotch_graph_map_copy		\
 			check_scotch_graph_order		\
 			check_scotch_graph_part_ovl		\
+			check_scotch_mesh_build_f		\
 			check_scotch_mesh_graph			\
 			check_libmetis_v3			\
 			check_libmetis_v5			\
@@ -483,6 +489,14 @@ check_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl
 					$(EXECS) ./test_scotch_graph_part_ovl 4 data/m16x16_b100000.grf /dev/null
 
 test_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl.c	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_mesh_build_f	:	test_scotch_mesh_build_f
+					$(EXECS) ./test_scotch_mesh_build_f
+
+test_scotch_mesh_build_f	:	test_scotch_mesh_build_f.f90	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
