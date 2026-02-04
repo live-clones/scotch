@@ -221,8 +221,8 @@ Order * restrict const        cordptr)
     }
   }
   else {
-    Gnum                  leaflocnum;
-    Gnum                  vnodlocnum;
+    Gnum                leaflocnum;
+    Gnum                vnodlocnum;
 
     for (linklocptr = dordptr->linkdat.nextptr, leaflocnum = vnodlocnum = 0;
          linklocptr != &dordptr->linkdat; linklocptr = linklocptr->nextptr) { /* For all nodes */
