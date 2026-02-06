@@ -221,9 +221,9 @@ int
 SCOTCH_graphOrderCompute (
 SCOTCH_Graph * const        grafptr,              /*+ Graph to order      +*/
 SCOTCH_Ordering * const     ordeptr,              /*+ Ordering to compute +*/
-SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy   +*/
+SCOTCH_Strat * const        straptr)              /*+ Ordering strategy   +*/
 {
-  return (SCOTCH_graphOrderComputeList (grafptr, ordeptr, ((Graph *) CONTEXTOBJECT (grafptr))->vertnbr, NULL, stratptr));
+  return (SCOTCH_graphOrderComputeList (grafptr, ordeptr, ((Graph *) CONTEXTOBJECT (grafptr))->vertnbr, NULL, straptr));
 }
 
 /*+ This routine computes a partial ordering
@@ -241,13 +241,13 @@ SCOTCH_Graph * const        libgrafptr,           /*+ Graph to order            
 SCOTCH_Ordering * const     ordeptr,              /*+ Ordering to compute             +*/
 const SCOTCH_Num            listnbr,              /*+ Number of vertices in list      +*/
 const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order +*/
-SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy               +*/
+SCOTCH_Strat * const        straptr)              /*+ Ordering strategy               +*/
 {
   Hgraph              halgrafdat;                 /* Halo source graph structure     */
   Hgraph              halgraftmp;                 /* Halo source graph structure     */
   Hgraph *            halgrafptr;                 /* Pointer to halo graph structure */
   CONTEXTDECL        (libgrafptr);
-  const Strat *       ordstratptr;                /* Pointer to ordering strategy    */
+  const Strat *       ordstraptr;                 /* Pointer to ordering strategy    */
   OrderCblk *         cblkptr;
   int                 o;
 
@@ -280,11 +280,11 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     goto skip;
   }
 
-  if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */
-    SCOTCH_stratGraphOrderBuild (stratptr, SCOTCH_STRATQUALITY, 0, 0.2);
+  if (*((Strat **) straptr) == NULL)              /* Set default ordering strategy if necessary */
+    SCOTCH_stratGraphOrderBuild (straptr, SCOTCH_STRATQUALITY, 0, 0.2);
 
-  ordstratptr = *((Strat **) stratptr);
-  if (ordstratptr->tablptr != &hgraphorderststratab) {
+  ordstraptr = *((Strat **) straptr);
+  if (ordstraptr->tablptr != &hgraphorderststratab) {
     errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": not an ordering strategy");
     goto abort;
   }
@@ -357,7 +357,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
     halgrafptr = &halgraftmp;
   }
 
-  o = hgraphOrderSt (halgrafptr, &libordeptr->o, 0, cblkptr, ordstratptr);
+  o = hgraphOrderSt (halgrafptr, &libordeptr->o, 0, cblkptr, ordstraptr);
 
   if (halgrafptr != &halgrafdat)                  /* If induced subgraph created */
     hgraphExit (halgrafptr);                      /* Free it                     */
@@ -398,7 +398,7 @@ abort:
 int
 SCOTCH_graphOrder (
 SCOTCH_Graph * const        grafptr,              /*+ Graph to order                     +*/
-SCOTCH_Strat * const        stratptr,             /*+ Ordering strategy                  +*/
+SCOTCH_Strat * const        straptr,              /*+ Ordering strategy                  +*/
 SCOTCH_Num * const          permtab,              /*+ Ordering permutation               +*/
 SCOTCH_Num * const          peritab,              /*+ Inverse permutation array          +*/
 SCOTCH_Num * const          cblkptr,              /*+ Pointer to number of column blocks +*/
@@ -411,7 +411,7 @@ SCOTCH_Num * const          treetab)              /*+ Separator tree array      
   if (SCOTCH_graphOrderInit (grafptr, &ordedat, permtab, peritab, cblkptr, rangtab, treetab) != 0)
     return (1);
 
-  o = SCOTCH_graphOrderCompute (grafptr, &ordedat, stratptr);
+  o = SCOTCH_graphOrderCompute (grafptr, &ordedat, straptr);
   SCOTCH_graphOrderExit (grafptr, &ordedat);
 
   return (o);
@@ -432,7 +432,7 @@ SCOTCH_graphOrderList (
 SCOTCH_Graph * const        grafptr,              /*+ Graph to order                     +*/
 const SCOTCH_Num            listnbr,              /*+ Number of vertices in list         +*/
 const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order    +*/
-SCOTCH_Strat * const        stratptr,             /*+ Ordering strategy                  +*/
+SCOTCH_Strat * const        straptr,              /*+ Ordering strategy                  +*/
 SCOTCH_Num * const          permtab,              /*+ Ordering permutation               +*/
 SCOTCH_Num * const          peritab,              /*+ Inverse permutation array          +*/
 SCOTCH_Num * const          cblkptr,              /*+ Pointer to number of column blocks +*/
@@ -443,7 +443,7 @@ SCOTCH_Num * const          treetab)              /*+ Column block range array  
   int                 o;
 
   SCOTCH_graphOrderInit (grafptr, &ordedat, permtab, peritab, cblkptr, rangtab, treetab);
-  o = SCOTCH_graphOrderComputeList (grafptr, &ordedat, listnbr, listtab, stratptr);
+  o = SCOTCH_graphOrderComputeList (grafptr, &ordedat, listnbr, listtab, straptr);
   SCOTCH_graphOrderExit (grafptr, &ordedat);
 
   return (o);
@@ -473,13 +473,13 @@ const SCOTCH_Ordering * const ordeptr)            /*+ Ordering to check +*/
 
 int
 SCOTCH_stratGraphOrder (
-SCOTCH_Strat * const        stratptr,
+SCOTCH_Strat * const        straptr,
 const char * const          string)
 {
-  if (*((Strat **) stratptr) != NULL)
-    stratExit (*((Strat **) stratptr));
+  if (*((Strat **) straptr) != NULL)
+    stratExit (*((Strat **) straptr));
 
-  if ((*((Strat **) stratptr) = stratInit (&hgraphorderststratab, string)) == NULL) {
+  if ((*((Strat **) straptr) = stratInit (&hgraphorderststratab, string)) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_stratGraphOrder) ": error in ordering strategy");
     return (1);
   }
@@ -496,7 +496,7 @@ const char * const          string)
 
 int
 SCOTCH_stratGraphOrderBuild (
-SCOTCH_Strat * const        stratptr,             /*+ Strategy to create                 +*/
+SCOTCH_Strat * const        straptr,              /*+ Strategy to create                 +*/
 const SCOTCH_Num            flagval,              /*+ Desired characteristics            +*/
 const SCOTCH_Num            levlnbr,              /*+ Number of nested dissection levels +*/
 const double                balrat)               /*+ Desired imbalance ratio            +*/
@@ -549,7 +549,7 @@ const double                balrat)               /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<OSEP>", osepptr);
   stringSubst (bufftab, "<BBAL>", bbaltab);
 
-  if (SCOTCH_stratGraphOrder (stratptr, bufftab) != 0) {
+  if (SCOTCH_stratGraphOrder (straptr, bufftab) != 0) {
     errorPrint (STRINGIFY (SCOTCH_stratGraphOrderBuild) ": error in sequential ordering strategy");
     return (1);
   }
