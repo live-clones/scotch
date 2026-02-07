@@ -142,7 +142,7 @@ static StratMethodTab       hgraphorderstmethtab[] = { /* Graph ordering methods
 static StratParamTab        hgraphorderstparatab[] = { /* The method parameter list */
                               { HGRAPHORDERSTMETHBL,  STRATPARAMSTRAT,  "strat",
                                 (byte *) &hgraphorderstdefaultbl.param,
-                                (byte *) &hgraphorderstdefaultbl.param.strat,
+                                (byte *) &hgraphorderstdefaultbl.param.straptr,
                                 (void *) &hgraphorderststratab },
                               { HGRAPHORDERSTMETHBL,  STRATPARAMINT,    "cmin",
                                 (byte *) &hgraphorderstdefaultbl.param,
