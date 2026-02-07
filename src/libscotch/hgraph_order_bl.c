@@ -93,7 +93,7 @@ const HgraphOrderBlParam * restrict const paraptr)
     return (1);
   }
 
-  if (hgraphOrderSt (grafptr, ordeptr, ordenum, cblkptr, paraptr->strat) != 0) /* Perform ordering strategy */
+  if (hgraphOrderSt (grafptr, ordeptr, ordenum, cblkptr, paraptr->straptr) != 0) /* Perform ordering strategy */
     return (1);
 
   if (cblkptr->cblktab == NULL) {                 /* If single column block */
