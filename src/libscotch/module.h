@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 11 nov 2025     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -1369,7 +1369,6 @@
 #define SCOTCH_randomSeed           SCOTCH_NAME_PUBLIC (SCOTCH_randomSeed)
 #define SCOTCH_randomVal            SCOTCH_NAME_PUBLIC (SCOTCH_randomVal)
 #define SCOTCH_stratAlloc           SCOTCH_NAME_PUBLIC (SCOTCH_stratAlloc)
-#define SCOTCH_stratArchBuild       SCOTCH_NAME_PUBLIC (SCOTCH_stratArchBuild)
 #define SCOTCH_stratDgraphClusterBuild SCOTCH_NAME_PUBLIC (SCOTCH_stratDgraphClusterBuild)
 #define SCOTCH_stratDgraphMap       SCOTCH_NAME_PUBLIC (SCOTCH_stratDgraphMap)
 #define SCOTCH_stratDgraphMapBuild  SCOTCH_NAME_PUBLIC (SCOTCH_stratDgraphMapBuild)

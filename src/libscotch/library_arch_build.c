@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2016,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2016,2018,2019,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.0  : from : 16 mar 2016     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 7.0  : from : 21 aug 2019     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,31 +95,6 @@ const char * const          string)
     errorPrint (STRINGIFY (SCOTCH_stratBipart) ": error in bipartitioning strategy");
     return (1);
   }
-
-  return (0);
-}
-
-/*+ This routine parses the given
-*** bipartitioning strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
-
-int
-SCOTCH_stratArchBuild (
-SCOTCH_Strat * const        stratptr,
-const char * const          string)
-{
-  if (*((Strat **) stratptr) != NULL)
-    stratExit (*((Strat **) stratptr));
-
-#if 0
-  if ((*((Strat **) stratptr) = stratInit (&archbuildststratab, "")) == NULL) {
-    errorPrint (STRINGIFY (SCOTCH_stratArchBuild) ": error in architecture building strategy");
-    return (1);
-  }
-#endif
 
   return (0);
 }
