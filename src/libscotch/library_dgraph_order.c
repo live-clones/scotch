@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2014,2018,2019,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014,2018,2019,2021,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 24 sep 2021     **/
 /**                                 to   : 25 sep 2021     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 30 sep 2025     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -207,8 +207,10 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  if (*((Strat **) straptr) == NULL)              /* Set default ordering strategy if necessary */
-    SCOTCH_stratDgraphOrderBuild (straptr, SCOTCH_STRATQUALITY, srcgrafptr->procglbnbr, 0, 0.2);
+  if (*((Strat **) straptr) == NULL) {            /* Set default ordering strategy if necessary */
+    if (SCOTCH_stratDgraphOrderBuild (straptr, SCOTCH_STRATQUALITY, srcgrafptr->procglbnbr, 0, 0.2))
+      goto abort;
+  }
 
   ordstraptr = *((Strat **) straptr);
   if (ordstraptr->tablptr != &hdgraphorderststratab) {
@@ -440,10 +442,5 @@ const double                balrat)               /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<BBAL>", bbaltab);
   stringSubst (bufftab, "<VERT>", verttab);
 
-  if (SCOTCH_stratDgraphOrder (straptr, bufftab) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_stratDgraphOrderBuild) ": error in parallel ordering strategy");
-    return (1);
-  }
-
-  return (0);
+  return (SCOTCH_stratDgraphOrder (straptr, bufftab));
 }

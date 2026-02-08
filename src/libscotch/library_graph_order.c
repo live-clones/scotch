@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012-2014,2018,2019,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012-2014,2018,2019,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 08 jan 2012     **/
 /**                                 to   : 29 sep 2019     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 29 sep 2025     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -280,12 +280,14 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
     goto skip;
   }
 
-  if (*((Strat **) straptr) == NULL)              /* Set default ordering strategy if necessary */
-    SCOTCH_stratGraphOrderBuild (straptr, SCOTCH_STRATQUALITY, 0, 0.2);
+  if (*((Strat **) straptr) == NULL) {            /* Set default ordering strategy if necessary */
+    if (SCOTCH_stratGraphOrderBuild (straptr, SCOTCH_STRATQUALITY, 0, 0.2))
+      goto abort;
+  }
 
   ordstraptr = *((Strat **) straptr);
   if (ordstraptr->tablptr != &hgraphorderststratab) {
-    errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": not an ordering strategy");
+    errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": not a sequential graph ordering strategy");
     goto abort;
   }
 
@@ -549,10 +551,5 @@ const double                balrat)               /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<OSEP>", osepptr);
   stringSubst (bufftab, "<BBAL>", bbaltab);
 
-  if (SCOTCH_stratGraphOrder (straptr, bufftab) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_stratGraphOrderBuild) ": error in sequential ordering strategy");
-    return (1);
-  }
-
-  return (0);
+  return (SCOTCH_stratGraphOrder (straptr, bufftab));
 }

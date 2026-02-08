@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014,2018,2019,2021,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -214,16 +214,16 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 
   archDomFrst (lmapptr->archptr, &domnorg);       /* Compute initial domain to map to */
 
-  if (*((Strat **) straptr) == NULL)              /* Set default mapping strategy if necessary */
-    SCOTCH_stratGraphMapBuild (straptr, SCOTCH_STRATDEFAULT, archDomSize (lmapptr->archptr, &domnorg), 0.01);
+  if (*((Strat **) straptr) == NULL) {            /* Set default mapping strategy if necessary */
+    if (SCOTCH_stratGraphMapBuild (straptr, SCOTCH_STRATDEFAULT, archDomSize (lmapptr->archptr, &domnorg), 0.01) != 0)
+      goto abort;
+  }
 
   mapstraptr = *((Strat **) straptr);
-#ifdef SCOTCH_DEBUG_LIBRARY1
   if (mapstraptr->tablptr != &kgraphmapststratab) {
-    errorPrint ("graphMapCompute2: not a graph mapping strategy");
+    errorPrint ("graphMapCompute2: not a sequential graph mapping strategy");
     goto abort;
   }
-#endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   if (vfixnbr > 0) {                              /* We have fixed vertices */
 #ifdef SCOTCH_DEBUG_LIBRARY1
@@ -702,12 +702,7 @@ const double                kbalval)              /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<KBAL>", kbaltab);
   stringSubst (bufftab, "<BBAL>", bbaltab);
 
-  if (SCOTCH_stratGraphMap (straptr, bufftab) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_stratGraphMapBuild) ": error in sequential mapping strategy");
-    return (1);
-  }
-
-  return (0);
+  return (SCOTCH_stratGraphMap (straptr, bufftab));
 }
 
 /*+ This routine provides predefined
@@ -756,10 +751,5 @@ const double                bbalval)              /*+ Maximum imbalance ratio +*
   stringSubst (bufftab, "<DENS>", denstab);
   stringSubst (bufftab, "<PWGT>", pwgttab);
 
-  if (SCOTCH_stratGraphMap (straptr, bufftab) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_stratGraphClusterBuild) ": error in sequential mapping strategy");
-    return (1);
-  }
-
-  return (0);
+  return (SCOTCH_stratGraphMap (straptr, bufftab));
 }
