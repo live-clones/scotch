@@ -68,11 +68,11 @@
 
 SCOTCH_FORTRAN (                      \
 STRATINIT, stratinit, (               \
-SCOTCH_Strat * const        stratptr, \
+SCOTCH_Strat * const        straptr,  \
 int * const                 revaptr), \
-(stratptr, revaptr))
+(straptr, revaptr))
 {
-  *revaptr = SCOTCH_stratInit (stratptr);
+  *revaptr = SCOTCH_stratInit (straptr);
 }
 
 /*
@@ -81,22 +81,22 @@ int * const                 revaptr), \
 
 SCOTCH_FORTRAN (                       \
 STRATEXIT, stratexit, (                \
-SCOTCH_Strat * const        stratptr), \
-(stratptr))
+SCOTCH_Strat * const        straptr),  \
+(straptr))
 {
-  SCOTCH_stratExit (stratptr);
+  SCOTCH_stratExit (straptr);
 }
 
 /*
 **
 */
 
-SCOTCH_FORTRAN (                       \
-STRATFREE, stratfree, (                \
-SCOTCH_Strat * const        stratptr), \
-(stratptr))
+SCOTCH_FORTRAN (                      \
+STRATFREE, stratfree, (               \
+SCOTCH_Strat * const        straptr), \
+(straptr))
 {
-  SCOTCH_stratFree (stratptr);
+  SCOTCH_stratFree (straptr);
 }
 
 /*
@@ -105,10 +105,10 @@ SCOTCH_Strat * const        stratptr), \
 
 SCOTCH_FORTRAN (                      \
 STRATSAVE, stratsave, (               \
-SCOTCH_Strat * const        stratptr, \
+SCOTCH_Strat * const        straptr,  \
 int * const                 fileptr,  \
 int * const                 revaptr), \
-(stratptr, fileptr, revaptr))
+(straptr, fileptr, revaptr))
 {
   FILE *              stream;                     /* Stream to build from handle */
   int                 filenum;                    /* Duplicated handle           */
@@ -127,7 +127,7 @@ int * const                 revaptr), \
     return;
   }
 
-  o = SCOTCH_stratSave (stratptr, stream);
+  o = SCOTCH_stratSave (straptr, stream);
 
   fclose (stream);                                /* This closes filenum too */
 
