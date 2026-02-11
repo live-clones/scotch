@@ -194,7 +194,7 @@ GraphCoarsenData * restrict const coarptr)
 #ifdef SCOTCH_PTHREAD
       if (thrdnum == 0)                           /* Thread 0 sets the return value */
 #endif /* SCOTCH_PTHREAD */
-	coarptr->retuval = 1;
+        coarptr->retuval = 1;
       return;
     }
   }

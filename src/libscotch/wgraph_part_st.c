@@ -1,4 +1,4 @@
-/* Copyright 2007-2011,2018,2020,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2011,2018,2020,2021,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 25 aug 2020     **/
 /**                                 to   : 26 nov 2021     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 07 nov 2024     **/
+/**                                 to   : 09 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -193,7 +193,8 @@ const Strat * restrict const straptr)             /*+ Overlap partitioning strat
   StratTest           testdat;                    /* Result of condition evaluation */
   WgraphStore         savetab[2];                 /* Results of the two strategies  */
   int                 o;
-  int                 o2;
+  int                 o0;
+  int                 o1;
 
 #ifdef SCOTCH_DEBUG_WGRAPH2
   if (sizeof (Gnum) != sizeof (INT)) {
@@ -252,18 +253,29 @@ const Strat * restrict const straptr)             /*+ Overlap partitioning strat
       }
 
       wgraphStoreSave   (grafptr, &savetab[1]);   /* Save initial partition                   */
-      o = wgraphPartSt  (grafptr, straptr->data.seledat.stratab[0]); /* Apply first strategy  */
+      o0 = wgraphPartSt (grafptr, straptr->data.seledat.stratab[0]); /* Apply first strategy  */
       wgraphStoreSave   (grafptr, &savetab[0]);   /* Save its result                          */
       wgraphStoreUpdt   (grafptr, &savetab[1]);   /* Restore initial partition                */
-      o2 = wgraphPartSt (grafptr, straptr->data.seledat.stratab[1]); /* Apply second strategy */
+      o1 = wgraphPartSt (grafptr, straptr->data.seledat.stratab[1]); /* Apply second strategy */
 
-      if ((o == 0) || (o2 == 0)) {                /* If at least one method make a k-partition */
-        if (savetab[0].fronload < grafptr->fronload) /* If first strategy is better            */
-          wgraphStoreUpdt (grafptr, &savetab[0]); /* Restore its result                        */
+      if ((o0 | o1) != 0) {                       /* If at least one method failed */
+        if (o0 == 0)                              /* If first succeeded, take it   */
+          goto take0;
+        if (o1 != 0) {                            /* If none succeeded           */
+          wgraphStoreUpdt (grafptr, &savetab[1]); /* Restore initial bipartition */
+          o = 1;                                  /* Indicate error              */
+        }
+        goto take1;                               /* If second succeeded, keep it; anyway, go freeing data structures */
       }
 
-      wgraphStoreExit (&savetab[0]);              /* Free both save areas */
-      wgraphStoreExit (&savetab[1]);
+      if (savetab[0].fronload >= grafptr->fronload) /* If second strategy is better */
+        goto take1;
+
+take0:
+      wgraphStoreUpdt (grafptr, &savetab[0]);     /* Restore first partition          */
+take1:                                            /* Keep second partition by default */
+      wgraphStoreExit (&savetab[1]);              /* Free both save areas             */
+      wgraphStoreExit (&savetab[0]);
       break;
 #ifdef SCOTCH_DEBUG_WGRAPH2
     case STRATNODEMETHOD :

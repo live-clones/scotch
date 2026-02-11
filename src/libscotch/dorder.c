@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2019,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.0  : from : 18 apr 2006     **/
 /**                                 to   : 28 jul 2006     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 17 sep 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -106,6 +106,7 @@ DorderCblk * restrict const cblkptr)
 #ifdef SCOTCH_DEBUG_DORDER2
   if ((cblkptr->typeval !=  DORDERCBLKNONE) && /* If not distributed leaf of a local sequential nested dissection */
       (cblkptr->typeval !=  DORDERCBLKNEDI) && /* If not distributed leaf of a local sequential nested dissection */
+      (cblkptr->typeval !=  DORDERCBLKDICO) && /* And if not a node of a disconnected component split             */
       (cblkptr->typeval !=  DORDERCBLKLEAF) && /* And if not sub-ordering computed elsewhere by hdgraphOrderSq()  */
       (cblkptr->typeval != (DORDERCBLKLEAF | DORDERCBLKNEDI)) &&
       (cblkptr->typeval != (DORDERCBLKLEAF | DORDERCBLKDICO)) &&

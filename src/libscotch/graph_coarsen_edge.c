@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2012,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2012,2018,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.0  : from : 28 oct 2012     **/
 /**                                 to   : 28 feb 2015     **/
 /**                # Version 7.0  : from : 28 jul 2018     **/
-/**                                 to   : 02 aug 2018     **/
+/**                                 to   : 28 oct 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,15 +117,15 @@ GraphCoarsenThread * restrict const     thrdptr)
       for (fineedgenum = fineverttax[finevertnum];
            fineedgenum < finevendtax[finevertnum]; fineedgenum ++) {
         Gnum                coarvertend;          /* Number of coarse vertex which is end of fine edge */
-        Gnum                h;
+        Gnum                hashnum;
 
         coarvertend = finecoartax[fineedgetax[fineedgenum]];
         if (coarvertend != coarvertnum) {         /* If not end of collapsed edge */
-          for (h = (coarvertend * GRAPHCOARSENHASHPRIME) & coarhashmsk; ; h = (h + 1) & coarhashmsk) {
-            if (coarhashtab[h].vertorgnum != coarvertnum) { /* If old slot           */
-              coarhashtab[h].vertorgnum = coarvertnum; /* Mark it in reference array */
-              coarhashtab[h].vertendnum = coarvertend;
-              coarhashtab[h].edgenum    = coaredgenum;
+          for (hashnum = (coarvertend * GRAPHCOARSENHASHPRIME) & coarhashmsk; ; hashnum = (hashnum + 1) & coarhashmsk) {
+            if (coarhashtab[hashnum].vertorgnum != coarvertnum) { /* If old slot           */
+              coarhashtab[hashnum].vertorgnum = coarvertnum; /* Mark it in reference array */
+              coarhashtab[hashnum].vertendnum = coarvertend;
+              coarhashtab[hashnum].edgenum    = coaredgenum;
 #ifndef GRAPHCOARSENEDGECOUNT                     /* If we do not only want to count */
               coaredgetax[coaredgenum]  = coarvertend; /* One more edge created      */
 #ifdef GRAPHCOARSENEDLOTAB
@@ -137,12 +137,12 @@ GraphCoarsenThread * restrict const     thrdptr)
               coaredgenum ++;
               break;                              /* Give up hashing */
             }
-            if (coarhashtab[h].vertendnum == coarvertend) { /* If coarse edge already exists */
+            if (coarhashtab[hashnum].vertendnum == coarvertend) { /* If coarse edge already exists */
 #ifndef GRAPHCOARSENEDGECOUNT
 #ifdef GRAPHCOARSENEDLOTAB
-              coaredlotax[coarhashtab[h].edgenum] += fineedlotax[fineedgenum]; /* Accumulate edge load */
+              coaredlotax[coarhashtab[hashnum].edgenum] += fineedlotax[fineedgenum]; /* Accumulate edge load */
 #else /* GRAPHCOARSENEDLOTAB */
-              coaredlotax[coarhashtab[h].edgenum] ++;
+              coaredlotax[coarhashtab[hashnum].edgenum] ++;
 #endif /* GRAPHCOARSENEDLOTAB */
 #endif /* GRAPHCOARSENEDGECOUNT */
               break;                              /* Give up hashing */

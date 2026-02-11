@@ -71,7 +71,7 @@ bgraphCost2 (
 const Bgraph * restrict const     grafptr,        /*+ Graph the topology and external gains of which to use +*/
 const GraphPart * restrict const  parttax,        /*+ Part array to use; may not be graph's parttax         +*/
 Gnum * restrict const             frontab,        /*+ Frontier array to compute; NULL if no need to         +*/
-Gnum * restrict const             fnbrptr,        /*+ Pointer to frontier size fo compute if needed         +*/
+Gnum * restrict const             fnbrptr,        /*+ Pointer to frontier size to compute if needed         +*/
 Gnum * restrict const             cpl1ptr,        /*+ Pointer to load sum in part 1 to compute              +*/
 Gnum * restrict const             ver1ptr,        /*+ Pointer to size of part 1 to compute                  +*/
 Gnum * restrict const             cmliptr,        /*+ Pointer to internal communication load to compute     +*/

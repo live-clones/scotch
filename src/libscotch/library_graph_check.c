@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2019,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 4.0  : from : 11 dec 2001     **/
 /**                                 to   : 22 apr 2004     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 15 oct 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,5 +78,12 @@ int
 SCOTCH_graphCheck (
 const SCOTCH_Graph * const  grafptr)
 {
-  return (graphCheck ((const Graph * const) CONTEXTOBJECT (grafptr)));
+  const Graph * const srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr);
+
+  if (srcgrafptr->vnumtax != NULL) {
+    errorPrint (STRINGIFY (SCOTCH_graphCheck) ": vertex number array should not be defined");
+    return (1);
+  }
+
+  return (graphCheck (srcgrafptr));
 }

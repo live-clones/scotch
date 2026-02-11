@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009-2011,2014,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009-2011,2014,2018,2021,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 18 jul 2021     **/
 /**                                 to   : 18 jul 2021     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 07 nov 2024     **/
+/**                                 to   : 09 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -267,7 +267,8 @@ const Strat * restrict const  straptr)            /*+ Mapping strategy +*/
   Gnum                comploaddltasu[2];          /* Absolute sum of computation load delta */
   Anum                partnum;
   int                 o;
-  int                 o2;
+  int                 o0;
+  int                 o1;
 
 #ifdef SCOTCH_DEBUG_KGRAPH2
   if (sizeof (Gnum) != sizeof (INT)) {
@@ -316,74 +317,72 @@ const Strat * restrict const  straptr)            /*+ Mapping strategy +*/
     case STRATNODEEMPTY :
       break;
     case STRATNODESELECT :
-      if (kgraphStoreInit (grafptr, &savetab[1]) != 0) { /* Allocate second save area for current graph state */
-        errorPrint ("kgraphMapSt: out of memory (1)");
+      if (((kgraphStoreInit (grafptr, &savetab[0])) != 0) || /* Allocate save areas */
+          ((kgraphStoreInit (grafptr, &savetab[1])) != 0)) {
+        errorPrint ("kgraphMapSt: out of memory");
+        kgraphStoreExit (&savetab[0]);
         return (1);
       }
-      kgraphStoreSave (grafptr, &savetab[1]);     /* Save initial partition                */
-      o = kgraphMapSt (grafptr, straptr->data.seledat.stratab[0]); /* Apply first strategy */
 
-      if (kgraphStoreInit (grafptr, &savetab[0]) != 0) { /* Allocate first save area for after first strategy */
-        errorPrint      ("kgraphMapSt: out of memory (2)");
-        kgraphStoreExit (&savetab[1]);
-        return (1);
-      }
-      kgraphStoreSave  (grafptr, &savetab[0]);    /* Save result of first strategy           */
-      kgraphStoreUpdt  (grafptr, &savetab[1]);    /* Restore initial partition               */
-      o2 = kgraphMapSt (grafptr, straptr->data.seledat.stratab[1]); /* Apply second strategy */
+      kgraphStoreSave  (grafptr, &savetab[1]);    /* Save initial mapping                    */
+      o0 = kgraphMapSt (grafptr, straptr->data.seledat.stratab[0]); /* Apply first strategy  */
+      kgraphStoreSave  (grafptr, &savetab[0]);    /* Save its result                         */
+      kgraphStoreUpdt  (grafptr, &savetab[1]);    /* Restore initial mapping                 */
+      o1 = kgraphMapSt (grafptr, straptr->data.seledat.stratab[1]); /* Apply second strategy */
 
-      if ((o == 0) || (o2 == 0)) {                /* If at least one method has computed a partition */
-        int                 b0;
-        int                 b1;
-
-        b0 = o;                                   /* Assume that balance is invalid if partitioning has failed */
-        comploaddltasu[0] = 0;
-        for (partnum = 0; partnum < savetab[0].domnnbr; partnum ++) {
-          Gnum                comploadadlt;
-
-          comploadadlt = abs (savetab[0].comploaddlt[partnum]);
-          if (comploadadlt > ((Gnum) ((double) savetab[0].comploadavg[partnum] * savetab[0].kbalval)))
-            b0 |= 1;
-          comploaddltasu[0] += comploadadlt;
+      if ((o0 | o1) != 0) {                       /* If at least one method failed */
+        if (o0 == 0)                              /* If first succeeded, take it   */
+          goto take0;
+        if (o1 != 0) {                            /* If none succeeded       */
+          kgraphStoreUpdt (grafptr, &savetab[1]); /* Restore initial mapping */
+          o = 1;                                  /* Indicate error          */
         }
-
-        b1 = o2;
-        comploaddltasu[1] = 0;
-        for (partnum = 0; partnum < grafptr->m.domnnbr; partnum ++) {
-          Gnum                comploadadlt;
-
-          comploadadlt = abs (grafptr->comploaddlt[partnum]);
-          if (comploadadlt > ((Gnum) ((double) grafptr->comploadavg[partnum] * grafptr->kbalval)))
-            b1 |= 1;
-          comploaddltasu[1] += comploadadlt;
-        }
-
-        do {                                      /* Do we want to restore partition 0? */
-          if (b0 > b1)
-            break;
-          if (b0 == b1) {                         /* If both are valid or invalid  */
-            if (b0 == 0) {                        /* If both are valid             */
-              if ( (savetab[0].commload >  grafptr->commload) || /* Compare on cut */
-                  ((savetab[0].commload == grafptr->commload) &&
-                   (comploaddltasu[0] > comploaddltasu[1])))
-                break;
-            }
-            else {                                /* If both are invalid               */
-              if ( (comploaddltasu[0] >  comploaddltasu[1]) || /* Compare on imbalance */
-                  ((comploaddltasu[0] == comploaddltasu[1]) &&
-                   (savetab[0].commload > grafptr->commload)))
-                break;
-            }
-          }
-
-          kgraphStoreUpdt (grafptr, &savetab[0]); /* Restore its result */
-        } while (0);
+        goto take1;                               /* If second succeeded, keep it; anyway, go freeing data structures */
       }
-      if (o2 < o)                                 /* o = min(o,o2): if one parts, then part   */
-        o = o2;                                   /* Else if one stops, then stop, else error */
 
-      kgraphStoreExit (&savetab[0]);              /* Free both save areas */
-      kgraphStoreExit (&savetab[1]);
+      comploaddltasu[0] = 0;
+      for (partnum = 0; partnum < savetab[0].domnnbr; partnum ++) {
+        Gnum                comploadadlt;
+
+        comploadadlt = abs (savetab[0].comploaddlt[partnum]);
+        if (comploadadlt > ((Gnum) ((double) savetab[0].comploadavg[partnum] * savetab[0].kbalval)))
+          o0 = 1;
+        comploaddltasu[0] += comploadadlt;
+      }
+
+      comploaddltasu[1] = 0;
+      for (partnum = 0; partnum < grafptr->m.domnnbr; partnum ++) {
+        Gnum                comploadadlt;
+
+        comploadadlt = abs (grafptr->comploaddlt[partnum]);
+        if (comploadadlt > ((Gnum) ((double) grafptr->comploadavg[partnum] * grafptr->kbalval)))
+          o1 = 1;
+        comploaddltasu[1] += comploadadlt;
+      }
+
+      if (o0 > o1)                                /* If first mapping is imbalanced  */
+        goto take1;                               /* Take the second one             */
+      if (o0 < o1)                                /* If second mapping is imbalanced */
+        goto take0;                               /* Take the first one              */
+
+      if (o0 == 0) {                              /* If both are valid       */
+        if ( (savetab[0].commload >  grafptr->commload) || /* Compare on cut */
+            ((savetab[0].commload == grafptr->commload) &&
+             (comploaddltasu[0] > comploaddltasu[1])))
+          goto take1;
+      }
+      else {                                      /* If both are invalid         */
+        if ( (comploaddltasu[0] >  comploaddltasu[1]) || /* Compare on imbalance */
+            ((comploaddltasu[0] == comploaddltasu[1]) &&
+             (savetab[0].commload > grafptr->commload)))
+          goto take1;
+      }
+
+take0:
+      kgraphStoreUpdt (grafptr, &savetab[0]);     /* Restore first mapping          */
+take1:                                            /* Keep second mapping by default */
+      kgraphStoreExit (&savetab[1]);              /* Free both save areas           */
+      kgraphStoreExit (&savetab[0]);
       break;
 #ifdef SCOTCH_DEBUG_KGRAPH1
     case STRATNODEMETHOD :

@@ -74,12 +74,13 @@ each of them. This leads to the creation of a leaf
 locally-computed, centralized column block sub-tree is compacted as an
 array of \texttt{Dorder\lbt Node} data structures. From the above, at
 the time being, the distributed column block tree structure contains
-only either nested dissection nodes, of type
-\texttt{DORDER\lbt CBLK\lbt NEDI}, and leaf nodes, of type 
-\texttt{DORDER\lbt CBLK\lbt LEAF}. In order to facilitate the
-integration of centralized column block sub-trees into a global
-distributed column block tree, the values of the type flags are the
-same for the \texttt{Dorder} and \texttt{Order} data types.
+either nested dissection nodes, of type \texttt{DORDER\lbt CBLK\lbt NEDI},
+leaf nodes, of type \texttt{DORDER\lbt CBLK\lbt LEAF}, or disconnected
+components nodes of type \texttt{DORDER\lbt CBLK\lbt DICO}.
+In order to facilitate the integration of centralized column block
+sub-trees into a global distributed column block tree, the values of
+the type flags are the same for the \texttt{Dorder} and \texttt{Order}
+data types.
 
 The fields of the \texttt{Dorder} data structure are the following:
 \begin{itemize}
@@ -242,8 +243,9 @@ The fields of the \texttt{DorderCblk} data type are the following:
   column block tree node belongs.
 \iteme[\texttt{typeval}]
   Type of tree node; at the time being, it is either
-  \texttt{DORDER\lbt CBLK\lbt NEDI} for a nested dissection node, or
-  \texttt{DORDER\lbt CBLK\lbt LEAF} for a leaf node.
+  \texttt{DORDER\lbt CBLK\lbt NEDI} for a nested dissection node,
+  \texttt{DORDER\lbt CBLK\lbt LEAF} for a leaf node, or
+  \texttt{DORDER\lbt CBLK\lbt DICO} for disconnected components.
 \iteme[\texttt{fathnum}]
   Identifier of the father of the given column block tree node. If the
   given tree node is a root, the value of the father index is
@@ -1009,7 +1011,7 @@ can be used in the following way.
         }
       }                                           /* Go on searching for an empty cell */
     }
-  }   
+  }
 \end{lstlisting}
 
 \subsubsection{Resizing}

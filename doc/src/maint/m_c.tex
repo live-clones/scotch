@@ -626,3 +626,99 @@ Once the \texttt{vert\lbt loc\lbt tax} and
 \texttt{edge\lbt loc\lbt tax} arrays are complete, the
 \texttt{dgraphBuild2\,()} routine is called, to finalize the
 construction of the distributed dual graph.
+
+\subsection{\texttt{dorderCheck()}}
+
+The \texttt{dorderCheck()} routine checks the consistency of a
+distributed ordering of type \texttt{Dorder}. Since distributed
+orderings are complex structures (see Section~\ref{sec-data-dorder}),
+checking their global consistency in a scalable way is not trivial.
+
+After a distributed ordering is computed, every processing element
+contains a piece of the inverse permutation array, split into local
+fragments. Each fragment belongs to a \texttt{Dorder\lbt Cblk} node of
+type \texttt{DORDER\lbt CBLK\lbt LEAF}, in the form of a
+\texttt{peri\lbt loc\lbt tab} array and an
+\texttt{orde\lbt loc\lbt val} index. The index is the start global
+node vertex index associated with the first value in the array, and
+array values represent inverse permutation values associated with
+consecutive indices starting from the provided one. This core
+inverse permutation data is supplemented with management data, such as
+the local and global number of node vertices in the ordering.
+
+\subsubsection{Checking management data}
+
+In order to perform checks on the inverse permutation, management data
+must be consistent, especially regarding the number of local and
+global vertex nodes in the permutation.
+
+On each process, the list of column blocks is traversed, and the
+number of local node vertices of leaf column blocks is accumulated
+locally. It is compared with the preexisting local sum, and summed
+across all processes to recompute \texttt{vnod\lbt glb\lbt nbr}, the
+global number of node vertices in the ordering. A maximum reduction is
+also performed on these values to compute
+\texttt{vnod\lbt glb\lbt max}, the size of the biggest chunk of data
+that might be sent from a process to another in the following phase,
+and to check the consistency of \texttt{baseval} across processes.
+
+\subsubsection{Checking permutations}
+
+To be scalable, the permutation checking algorithm does not perform
+any centralization of data. Therefore, the search for duplicate or
+missing indices has to be performed twice: a first time for the
+inverse permutation indices, and a second time for the inverse
+permutation values.
+
+In a first phase, all permutation fragments present on a process are
+gathered into a single local array, \texttt{sort\lbt snd\lbt tab}, of
+size double of \texttt{vnod\lbt loc\lbt nbr}.
+This array contains pairs of integer values, made of the global index
+in the inverse permutation, and the index of the permuted node
+vertex. All these index values are verified to range from
+$\mathtt{baseval}$ to $\mathtt{vnodglbnbr} + \mathtt{baseval} - 1$,
+inclusive. Then, \texttt{sort\lbt snd\lbt tab} arrays are locally
+sorted by ascending first index, to prepare for the communication
+rounds that will follow. Indeed, while there are
+\texttt{vnod\lbt glb\lbt nbr} such pairs with valid indices spread
+across all processes, they may not collectively represent a valid
+permutation, \eg, in case of missing or duplicate indices. 
+
+In a second phase, to start checking the consistency of the
+permutation, a \texttt{flag\lbt loc\lbt tab} array is created on each
+process, of a size equal to
+$\mathtt{vnod\lbt glb\lbt nbr} / \mathtt{proc\lbt glb\lbt nbr}$,
+within one. Then, $\mathtt{proc\lbt glb\lbt nbr}$ rounds of
+communication take place. During each round $r$, each process,
+of rank $\mathtt{proc\lbt loc\lbt num}$, sends a single message to the
+process of rank
+$(\mathtt{proc\lbt loc\lbt num} + r) \% \mathtt{proc\lbt glb\lbt nbr}$.
+This message contains all the permutation pairs that the sender
+process holds and which are in the range managed by the receiver
+process in its \texttt{flag\lbt loc\lbt tab} array. Message contents
+are in fact sub-arrays of the senders local
+\texttt{sort\lbt snd\lbt tab} arrays, the lower and upper bounds of
+which are computed by dichotomy, thanks to the arrays being
+sorted.
+Transmitting the permutation values along with the permutation indices
+is not necessary in itself for the algorithm, yet may help for
+subsequent debugging.
+Receiving processes read the contents of their message, and flag the
+received permutation indices in their \texttt{flag\lbt loc\lbt tab}
+array.
+Duplicate indices are detected when trying to flag an already flagged
+index. Missing indices are detected after the last communication round
+is complete, by checking all \texttt{flag\lbt loc\lbt tab} arrays for
+un-flagged cells.
+Transmitting the permutation values along with the permutation indices
+is not necessary in itself for the algorithm, yet may help in
+subsequent debugging.
+The above algorithm guarantees that the inverse permutation fragments
+collected on every process cover all the node vertices in the
+distributed ordering.
+
+To check the consistency of the inverse permutation data, the values
+of the pairs in the \texttt{sort\lbt snd\lbt tab} arrays are swapped,
+and the array is sorted again. Then, the whole flagging algorithm
+described above is performed anew. This guarantees that all inverse
+permutation indices are unique, and cover all the node vertices.

@@ -190,3 +190,4 @@ DorderCblk *                dorderNew           (DorderCblk * const, MPI_Comm);
 DorderCblk *                dorderNewSequ       (DorderCblk * const);
 Gnum                        dorderNewSequIndex  (DorderCblk * const, const Gnum);
 void                        dorderDispose       (DorderCblk * const);
+int                         dorderCheck         (const Dorder * const);

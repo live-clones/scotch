@@ -37,7 +37,7 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     02 aug 2025     ##
+##                                 to     08 oct 2025     ##
 ##                                                        ##
 ############################################################
 
@@ -66,7 +66,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 set(SCOTCH_VERSION 7)
 set(SCOTCH_RELEASE 0)
-set(SCOTCH_PATCHLEVEL 10)
+set(SCOTCH_PATCHLEVEL 11)
 set(SCOTCH_CODENAME "Sankara")
 
 add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}

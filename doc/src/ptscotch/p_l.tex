@@ -3349,6 +3349,67 @@ arrays may however have been partially or completely filled, but their
 contents are not significant.
 \end{itemize}
 
+\subsubsection{{\tt SCOTCH\_dgraphOrderComputeList}}
+\label{sec-lib-func-dgraphordercomputelist}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_dgraphOrderComputeList ( & SCOTCH\_Dgraph *    & grafptr, \\
+                                     & SCOTCH\_Dordering * & ordeptr, \\
+                                     & SCOTCH\_Num         & listnbr, \\
+                                     & const SCOTCH\_Num * & listtab, \\
+                                     & SCOTCH\_Strat *     & straptr)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfdgraphordercomputelist ( & doubleprecision (*)   & grafdat, \\
+                                & doubleprecision (*)   & ordedat, \\
+                                & integer*{\it num}     & listnbr, \\
+                                & integer*{\it num} (*) & listtab, \\
+                                & doubleprecision (*)   & stradat, \\
+                                & integer               & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_dgraphOrderComputeList} routine computes in parallel
+a distributed block ordering of a subgraph of the graph structure
+pointed to by \texttt{grafptr}, using the distributed ordering strategy
+pointed to by \texttt{straptr}, and stores its result in the distributed
+ordering structure pointed to by \texttt{ordeptr}. The induced subgraph
+is described by means of local vertex lists, one for each process:
+\texttt{listnbr} holds the number of local vertices to keep in the
+induced subgraph, the local indices of which are given, in any order, in
+the \texttt{listtab} array. Note that \texttt{listtab} must contain local
+vertex numbers, i.e ranging from \texttt{baseval} to $\mathtt{vertlocnbr}
++ \mathtt{baseval}$.
+
+Because an ordering always refers to the full graph, the ordering
+computed by \texttt{SCOTCH\_\lbt dgraph\lbt Order\lbt Compute\lbt List}
+is divided into two disconnected components: the induced graph
+vertices are ordered by applying the strategy provided by the
+\texttt{straptr} parameter, while vertices excluded from the list are
+ordered consecutively with the highest available indices. Consequently,
+the permuted indices of induced vertices range from \texttt{baseval}
+to $(\mathtt{listnbr} + \mathtt{baseval} - 1)$, while the permuted
+indices of the remaining vertices range from $(\mathtt{listnbr} +
+\mathtt{baseval})$ to $(\mathtt{vertnbr} + \mathtt{baseval} - 1)$,
+inclusive. Accordingly, the separation tree yielded by
+\texttt{SCOTCH\_\lbt dgraph\lbt Order\lbt Compute\lbt List} starts
+from a root with two children, the first one corresponding to the
+induced subgraph, and the second one to the vertices excluded from the
+list.
+
+\progret
+
+\texttt{SCOTCH\_dgraphOrderComputeList} returns $0$ if the ordering
+has been successfully computed, and $1$ else. In this latter case, the
+ordering arrays may have been partially or completely filled, but
+their contents are not significant.
+\end{itemize}
+
 \subsubsection{{\tt SCOTCH\_dgraphOrderExit}}
 
 \begin{itemize}
@@ -3609,14 +3670,16 @@ nested dissection, before the ordering process goes sequential.
 Sequential nodes generated locally on individual processes are not
 represented in this structure.
 
-A node can either be a leaf column block, which has no
-descendants, or a nested dissection node, which has most often
-three sons: its two separated sub-parts and the separator. A
-nested dissection node may have two sons only if the separator is
-empty; it cannot have only one son. Sons are indexed such that the
-separator of a block, if any, is always the son of highest index.
-Hence, the order of the indices of the two sub-parts matches the one
-of the direct permutation of the unknowns.
+A node can either be a leaf column block, which has no descendants, a
+disconnected components node with two sons as computed by
+\texttt{SCOTCH\_\lbt dgraph\lbt Order\lbt Compute\lbt List} (see
+Section~\ref{sec-lib-func-dgraphordercomputelist}), or a nested
+dissection node, which has most often three sons: its two separated
+sub-parts and the separator. A nested dissection node may have two
+sons only if the separator is empty; it cannot have only one son.
+Sons are indexed such that the separator of a block, if any, is always
+the son of highest index. Hence, the order of the indices of the two
+sub-parts matches that of the direct permutation of the unknowns.
 
 For any column block $i$, {\tt treeglbtab[}$i${\tt ]} holds the index
 of the father of node $i$ in the elimination tree, or $-1$ if $i$ is

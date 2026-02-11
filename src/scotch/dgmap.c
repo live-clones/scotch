@@ -46,7 +46,7 @@
 /**                # Version 6.0  : from : 01 jan 2012     **/
 /**                                 to   : 17 apr 2019     **/
 /**                # Version 7.0  : from : 03 sep 2020     **/
-/**                                 to   : 10 jun 2025     **/
+/**                                 to   : 07 oct 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -364,7 +364,7 @@ char *                      argv[])
   clockStart (&runtime[0]);
 
   SCOTCH_dgraphInit (&grafdat, MPI_COMM_WORLD);   /* Initialize distributed source graph */
-  SCOTCH_dgraphLoad (&grafdat, C_filepntrsrcinp, -1, 0);
+  SCOTCH_dgraphLoad (&grafdat, C_filepntrsrcinp, -1, grafflag);
 
   SCOTCH_archInit (&archdat);                     /* Create architecture structure             */
   if ((flagval & C_FLAGPART) != 0) {              /* If program run as the partitioner         */

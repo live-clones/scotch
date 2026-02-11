@@ -1,4 +1,4 @@
-/* Copyright 2010,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2010,2014,2018,2019,2021,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 02 dec 2021     **/
 /**                                 to   : 20 dec 2021     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,12 +96,14 @@ SCOTCH_Num * const          parttab)              /*+ Partition array       +*/
     return     (o);
   }
 
-  if (*((Strat **) straptr) == NULL)              /* Set default partitioning strategy if necessary */
-    SCOTCH_stratGraphPartOvlBuild (straptr, SCOTCH_STRATQUALITY, (Gnum) partnbr, (double) 0.05);
+  if (*((Strat **) straptr) == NULL) {            /* Set default partitioning strategy if necessary */
+    if (SCOTCH_stratGraphPartOvlBuild (straptr, SCOTCH_STRATQUALITY, (Gnum) partnbr, (double) 0.05))
+      goto abort;
+  }
 
   partstraptr = *((Strat **) straptr);
   if (partstraptr->tablptr != &wgraphpartststratab) {
-    errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": not a graph partitioning with overlap strategy");
+    errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": not a sequential graph partitioning with overlap strategy");
     goto abort;
   }
 
@@ -173,10 +175,5 @@ const double                balrat)               /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<RECU>", "r{sep=m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<KBAL>},org=(|h{pass=10})f{bal=<KBAL>}}}|m{rat=0.7,vert=100,low=h{pass=10},asc=b{width=3,bnd=f{bal=<KBAL>},org=(|h{pass=10})f{bal=<KBAL>}}}}");
   stringSubst (bufftab, "<KBAL>", kbaltab);
 
-  if (SCOTCH_stratGraphPartOvl (straptr, bufftab) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_stratGraphPartOvlBuild) ": error in sequential overlap partitioning strategy");
-    return (1);
-  }
-
-  return (0);
+  return (SCOTCH_stratGraphPartOvl (straptr, bufftab));
 }

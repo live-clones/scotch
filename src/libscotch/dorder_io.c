@@ -160,7 +160,7 @@ FILE * restrict const         stream)
         cblkptr = (DorderCblk *) linkptr;         /* TRICK: FIRST */
         if (((cblkptr->typeval & DORDERCBLKLEAF) != 0) &&
             (cblkptr->data.leaf.ordelocval == vertnum) && /* If column block fragment starts at proper index       */
-            (cblkptr->data.leaf.vnodlocnbr > 0)) { /* And is not an empty local block with relevent data elsewhere */
+            (cblkptr->data.leaf.vnodlocnbr > 0)) { /* And is not an empty local block with relevant data elsewhere */
           memCpy (peritab + vertnum, cblkptr->data.leaf.periloctab, cblkptr->data.leaf.vnodlocnbr * sizeof (Gnum));
           vertnum += cblkptr->data.leaf.vnodlocnbr;
           break;

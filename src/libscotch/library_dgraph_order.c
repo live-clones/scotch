@@ -1,4 +1,4 @@
-/* Copyright 2007-2010,2012,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2010,2012,2014,2018,2019,2021,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 24 sep 2021     **/
 /**                                 to   : 25 sep 2021     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,8 +61,10 @@
 #include "context.h"
 #include "parser.h"
 #include "dgraph.h"
+#include "order.h"
 #include "dorder.h"
 #include "hdgraph.h"
+#include "hdgraph_order_si.h"
 #include "hdgraph_order_st.h"
 #include "ptscotch.h"
 
@@ -143,7 +145,7 @@ SCOTCH_Dgraph * const       grafptr,              /*+ Graph to order      +*/
 SCOTCH_Dordering * const    ordeptr,              /*+ Ordering to compute +*/
 SCOTCH_Strat * const        straptr)              /*+ Ordering strategy   +*/
 {
-  return (SCOTCH_dgraphOrderComputeList (grafptr, ordeptr, 0, NULL, straptr));
+  return (SCOTCH_dgraphOrderComputeList (grafptr, ordeptr, ((Dgraph *) CONTEXTOBJECT (grafptr))->vertlocnbr, NULL, straptr));
 }
 
 /*+ This routine computes a partial ordering
@@ -157,31 +159,47 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy   +*/
 
 int
 SCOTCH_dgraphOrderComputeList (
-SCOTCH_Dgraph * const       libgrafptr,           /*+ Graph to order                  +*/
-SCOTCH_Dordering * const    libordeptr,           /*+ Ordering to compute             +*/
-const SCOTCH_Num            listnbr,              /*+ Number of vertices in list      +*/
-const SCOTCH_Num * const    listtab,              /*+ List of vertex indices to order +*/
-SCOTCH_Strat * const        straptr)              /*+ Ordering strategy               +*/
+SCOTCH_Dgraph * const       libgrafptr,           /*+ Graph to order                   +*/
+SCOTCH_Dordering * const    libordeptr,           /*+ Ordering to compute              +*/
+const SCOTCH_Num            listlocnbr,           /*+ Number of vertices in local list +*/
+const SCOTCH_Num * const    listloctab,           /*+ List of vertex indices to order  +*/
+SCOTCH_Strat * const        straptr)              /*+ Ordering strategy                +*/
 {
-  Dorder *            srcordeptr;                 /* Pointer to ordering          */
-  DorderCblk *        srccblkptr;                 /* Initial column block         */
-  Dgraph * restrict   srcgrafptr;                 /* Pointer to scotch graph      */
-  Hdgraph             srcgrafdat;                 /* Halo source graph structure  */
-  Gnum                srclistnbr;                 /* Number of items in list      */
-  Gnum * restrict     srclisttab;                 /* Subgraph vertex list         */
-  const Strat *       ordstraptr;                 /* Pointer to ordering strategy */
+  Gnum                listglbnbr;                 /* Global number of vertices in list */
+  Dorder *            srcordeptr;                 /* Pointer to ordering               */
+  Dgraph * restrict   srcgrafptr;                 /* Pointer to scotch graph           */
+  const Strat *       ordstraptr;                 /* Pointer to ordering strategy      */
+  Hdgraph             halgrafdat;                 /* Halo source graph structure       */
+  Hdgraph *           halgrafptr;
+  Hdgraph             halgraftmp;
+  DorderCblk *        cbl0ptr;                    /* Root column block                 */
+  DorderCblk *        cbl1ptr;                    /* Column block induced from list    */
+  DorderCblk *        cbl2ptr;                    /* Complement of cbl1                */
+  DorderCblk *        cblkptr;                    /* Column block to be ordered        */
   CONTEXTDECL        (libgrafptr);
   int                 o;
+
+  halgrafptr = NULL;
+  cbl0ptr    = NULL;
+  cbl1ptr    = NULL;
+  cbl2ptr    = NULL;
+  cblkptr    = NULL;
 
   o = 1;                                          /* Assume an error */
 
   if (CONTEXTINIT (libgrafptr)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot initialize context");
-    return (o);
+    goto abort;
   }
 
   srcgrafptr = (Dgraph *) CONTEXTGETOBJECT (libgrafptr);
 
+#ifdef SCOTCH_DEBUG_DGRAPH1
+  if ((listlocnbr < 0) || (listlocnbr > srcgrafptr->vertlocnbr)) {
+    errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": invalid parameters (1)");
+    goto abort;
+  }
+#endif /* SCOTCH_DEBUG_DGRAPH1 */
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphCheck (srcgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": invalid input graph");
@@ -189,8 +207,10 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
-  if (*((Strat **) straptr) == NULL)              /* Set default ordering strategy if necessary */
-    SCOTCH_stratDgraphOrderBuild (straptr, SCOTCH_STRATQUALITY, srcgrafptr->procglbnbr, 0, 0.2);
+  if (*((Strat **) straptr) == NULL) {            /* Set default ordering strategy if necessary */
+    if (SCOTCH_stratDgraphOrderBuild (straptr, SCOTCH_STRATQUALITY, srcgrafptr->procglbnbr, 0, 0.2))
+      goto abort;
+  }
 
   ordstraptr = *((Strat **) straptr);
   if (ordstraptr->tablptr != &hdgraphorderststratab) {
@@ -198,33 +218,134 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
     goto abort;
   }
 
-  srcgrafdat.s            = *srcgrafptr;          /* Copy non-halo graph data       */
-  srcgrafdat.s.flagval   &= ~DGRAPHFREEALL;       /* Do not free anything from it   */
-  srcgrafdat.s.edloloctax = NULL;                 /* Never mind about edge loads    */
-  srcgrafdat.s.vlblloctax = NULL;                 /* Do not propagate vertex labels */
-  srcgrafdat.vhallocnbr   = 0;                    /* No halo on graph               */
-  srcgrafdat.vhndloctax   = srcgrafdat.s.vendloctax;
-  srcgrafdat.ehallocnbr   = 0;
-  srcgrafdat.levlnum      = 0;
-  srcgrafdat.contptr      = CONTEXTGETDATA (libgrafptr);
-
   srcordeptr = (Dorder *) libordeptr;             /* Get ordering */
 
-  srclistnbr = (Gnum)   listnbr;                  /* Build vertex list */
-  srclisttab = (Gnum *) listtab;
-
-/* TODO: Take list into account */
   dorderFree (srcordeptr);                        /* Clean all existing ordering data */
-  if ((srccblkptr = dorderFrst (srcordeptr)) == NULL) {
+  if ((cbl0ptr = dorderFrst (srcordeptr)) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create root column block");
     goto abort;
   }
-  o = hdgraphOrderSt (&srcgrafdat, srccblkptr, ordstraptr);
-  hdgraphExit   (&srcgrafdat);                   /* Free ghost arrays if allocated internally */
-  dorderDispose (srccblkptr);
+
+  if (dgraphGhst (srcgrafptr) != 0) {             /* Compute ghost edge array if not already present */
+    errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot compute ghost edge array");
+    goto abort;
+  }
+
+  halgrafdat.s            = *srcgrafptr;          /* Copy non-halo graph data       */
+  halgrafdat.s.flagval   &= ~DGRAPHFREEALL;       /* Do not free anything from it   */
+  halgrafdat.s.edloloctax = NULL;                 /* Never mind about edge loads    */
+  halgrafdat.s.vlblloctax = NULL;                 /* Do not propagate vertex labels */
+  halgrafdat.vhallocnbr   = 0;                    /* No halo on graph               */
+  halgrafdat.vhndloctax   = halgrafdat.s.vendloctax;
+  halgrafdat.ehallocnbr   = 0;
+  halgrafdat.levlnum      = 0;
+  halgrafdat.contptr      = CONTEXTGETDATA (libgrafptr);
+
+  halgrafptr = &halgrafdat;                       /* Assume we work on the whole graph */
+
+  if (MPI_Allreduce (&listlocnbr, &listglbnbr, 1, GNUM_MPI, MPI_SUM, srcgrafptr->proccomm) != MPI_SUCCESS) {
+    errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": communication error (1)");
+    goto abort;
+  }
+  if (listglbnbr == 0) {                          /* If empty list, return identity permutation */
+    o = hdgraphOrderSi (halgrafptr, cbl0ptr);
+    goto abort;
+  }
+
+  if (listglbnbr == srcgrafptr->vertglbnbr)       /* If all vertices in list, order whole graph */
+    cblkptr = cbl0ptr;
+  else {                                          /* If not, order the subset of vertices */
+    if (hdgraphInduceList (&halgrafdat, listlocnbr, listloctab, &halgraftmp) != 0) {
+      errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create induced subgraph");
+      goto abort;
+    }
+    halgrafptr = &halgraftmp;                     /* Ordering will be computed on induced graph */
+
+    cbl0ptr->typeval = DORDERCBLKDICO;            /* Node is a set of two disconnected components */
+
+    if ((cbl1ptr = dorderNew (cbl0ptr, srcordeptr->proccomm)) == NULL) {
+      errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create induced column block (1)");
+      goto abort;
+    }
+    cbl1ptr->ordeglbval = 0;                      /* Un-based inverse permutation index */
+    cbl1ptr->vnodglbnbr = halgrafptr->s.vertglbnbr;
+    cbl1ptr->cblkfthnum = 0;
+
+    cblkptr = cbl1ptr;                            /* Order induced graph */
+  }
+
+  if (hdgraphOrderSt (halgrafptr, cblkptr, ordstraptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot compute ordering");
+    goto abort;
+  }
+
+  if (listglbnbr < srcgrafptr->vertglbnbr) {      /* Order vertices excluded from list, if any    */
+    Gnum                vnumlocnbr;               /* Local number of vertices excluded from list  */
+    Gnum                procvrtval;               /* Vertex offset of the process                 */
+    Gnum                vertlocadj;               /* Adjustment from local to global vertex index */
+    Gnum *              vnumloctab;
+    Gnum                vertlocnum;
+    Gnum                vnumlocnum;
+    Gnum                listlocnum;
+
+    vertlocadj = halgrafdat.s.procvrttab[halgrafdat.s.proclocnum];
+    vnumlocnbr = halgrafdat.s.vertlocnbr - listlocnbr;
+
+    if ((vnumloctab = memAlloc (halgrafdat.s.vertlocnbr * sizeof (Gnum))) == NULL) {
+      errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": out of memory");
+      goto abort;
+    }
+
+    memSet (vnumloctab, 0, halgrafdat.s.vertlocnbr * sizeof (Gnum));
+    for (listlocnum = 0; listlocnum < listlocnbr; listlocnum ++) /* Flag vertices in list */
+      vnumloctab[listloctab[listlocnum] - halgrafdat.s.baseval] = ~0;
+
+    for (vertlocnum = 0, vnumlocnum = 0; vertlocnum < halgrafdat.s.vertlocnbr; vertlocnum ++) {
+      if (vnumloctab[vertlocnum] != ~0)           /* Vertex was excluded from list */
+        vnumloctab[vnumlocnum ++] = vertlocnum + vertlocadj;
+    }
+#ifdef SCOTCH_DEBUG_DGRAPH1
+    if (vnumlocnum != vnumlocnbr) {
+      errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": internal error");
+      memFree    (vnumloctab);
+      goto abort;
+    }
+#endif /* SCOTCH_DEBUG_DGRAPH1 */
+
+    if ((cbl2ptr = dorderNew (cbl0ptr, srcordeptr->proccomm)) == NULL) { /* TRICK: create column block after first ordering */
+      errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create induced column block (2)");
+      memFree    (vnumloctab);
+      goto abort;
+    }
+    cbl2ptr->ordeglbval = halgrafptr->s.vertglbnbr;
+    cbl2ptr->vnodglbnbr = srcgrafptr->vertglbnbr - halgrafptr->s.vertglbnbr;
+    cbl2ptr->cblkfthnum = 1;
+
+    if (MPI_Scan (&vnumlocnbr, &procvrtval,       /* Compute vertex offset by partial sum reduction */
+                  1, GNUM_MPI, MPI_SUM, srcgrafptr->proccomm) != MPI_SUCCESS) {
+      errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": communication error (2)");
+      memFree    (vnumloctab);
+      goto abort;
+    }
+    procvrtval -= vnumlocnbr - halgrafdat.s.baseval;
+
+    o = hdgraphOrderSi2 (cbl2ptr,                 /* Simple ordering of vertices not in list */
+                         halgrafdat.s.baseval, vnumlocnbr, vnumloctab - halgrafdat.s.baseval, procvrtval, halgrafdat.s.proccomm);
+
+    memFree (vnumloctab);
+  }
+  else
+    o = 0;
 
 abort:
+  if (halgrafptr != NULL) {                       /* If at least one halo graph structure has been created */
+    hdgraphExit (&halgrafdat);                    /* Free the contents of the full halo graph structure    */
+    if (halgrafptr == &halgraftmp)                /* If the induced subgraph structure has been created    */
+      hdgraphExit (&halgraftmp);                  /* Free it as well                                       */
+  }
+
   CONTEXTEXIT (libgrafptr);
+
   return (o);
 }
 
@@ -321,10 +442,5 @@ const double                balrat)               /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<BBAL>", bbaltab);
   stringSubst (bufftab, "<VERT>", verttab);
 
-  if (SCOTCH_stratDgraphOrder (straptr, bufftab) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_stratDgraphOrderBuild) ": error in parallel ordering strategy");
-    return (1);
-  }
-
-  return (0);
+  return (SCOTCH_stratDgraphOrder (straptr, bufftab));
 }

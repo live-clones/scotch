@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2012,2018,2019,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2012,2018,2019,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 14 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 12 sep 2019     **/
-/**                                 to   : 17 jan 2025     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -250,8 +250,10 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
 
-  if (*((Strat **) stratptr) == NULL)             /* Set default ordering strategy if necessary */
-    SCOTCH_stratMeshOrderBuild (stratptr, SCOTCH_STRATQUALITY, 0.1);
+  if (*((Strat **) stratptr) == NULL) {           /* Set default ordering strategy if necessary */
+    if (SCOTCH_stratMeshOrderBuild (stratptr, SCOTCH_STRATQUALITY, 0.1))
+      goto abort;
+  }
 
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tablptr != &hmeshorderststratab) {
@@ -385,7 +387,7 @@ const char * const          string)
 
   if ((*((Strat **) stratptr) = stratInit (&hmeshorderststratab, string)) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_stratMeshOrder) ": error in ordering strategy");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -412,10 +414,5 @@ const double                balrat)               /*+ Desired imbalance ratio +*
   sprintf (bbaltab, "%lf", balrat);
   stringSubst (bufftab, "<BBAL>", bbaltab);
 
-  if (SCOTCH_stratMeshOrder (stratptr, bufftab) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_stratMeshOrderBuild) ": error in sequential ordering strategy");
-    return     (1);
-  }
-
-  return (0);
+  return (SCOTCH_stratMeshOrder (stratptr, bufftab));
 }

@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2018,2021,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 24 jan 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -109,11 +109,11 @@ SCOTCH_Mesh * const         meshptr)
 {
   if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
     errorPrint (STRINGIFY (SCOTCH_meshInit) ": internal error (1)");
-    return     (1);
+    return (1);
   }
   if (sizeof (SCOTCH_Mesh) < sizeof (Mesh)) {
     errorPrint (STRINGIFY (SCOTCH_meshInit) ": internal error (2)");
-    return     (1);
+    return (1);
   }
 
   return (meshInit ((Mesh *) meshptr));
@@ -151,7 +151,7 @@ const SCOTCH_Num            baseval)
 {
   if ((baseval < -1) || (baseval > 1)) {
     errorPrint (STRINGIFY (SCOTCH_meshLoad) ": invalid base parameter");
-    return     (1);
+    return (1);
   }
 
   return (meshLoad ((Mesh * const) meshptr, stream, (Gnum) baseval));
@@ -204,19 +204,18 @@ const SCOTCH_Num * const    edgetab)              /* Edge array [edgenbr]       
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Mesh) < sizeof (Mesh)) {
     errorPrint (STRINGIFY (SCOTCH_meshBuild) ": internal error (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
   if ((velmbas < 0) ||
-      (vnodbas < 0) ||
-      ((velmbas > 1) && (vnodbas > 1))) {
+      (vnodbas < 0)) {
     errorPrint (STRINGIFY (SCOTCH_meshBuild) ": invalid base parameters");
-    return     (1);
+    return (1);
   }
   if (((velmbas + velmnbr) != vnodbas) &&
       ((vnodbas + vnodnbr) != velmbas)) {
     errorPrint (STRINGIFY (SCOTCH_meshBuild) ": invalid element or node range");
-    return     (1);
+    return (1);
   }
 
   srcmeshptr = (Mesh *) meshptr;                  /* Use structure as source mesh */
@@ -282,13 +281,6 @@ const SCOTCH_Num * const    edgetab)              /* Edge array [edgenbr]       
       degrmax = degrval;
   }
   srcmeshptr->degrmax = degrmax;
-
-#ifdef SCOTCH_DEBUG_LIBRARY1
-  if (meshCheck (srcmeshptr) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_meshBuild) ": internal error (2)");
-    return     (1);
-  }
-#endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   return (0);
 }

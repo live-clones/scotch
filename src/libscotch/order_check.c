@@ -94,7 +94,9 @@ Gnum * const                      treenbr)
     if ((cblkptr->cblknbr <= 0) ||
         ((cblkptr->typeval == ORDERCBLKNEDI) &&
          ((cblkptr->cblknbr < 2) ||
-          (cblkptr->cblknbr > 3)))) {
+          (cblkptr->cblknbr > 3))) ||
+        ((cblkptr->typeval == ORDERCBLKDICO) &&
+         ((cblkptr->cblknbr != 2)))) {
       errorPrint ("orderCheck2: invalid number of column blocks (1)");
       return (1);
     }
