@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2012,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2012,2018,2019,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 27 nov 2012     **/
 /**                                 to   : 23 may 2018     **/
 /**                # Version 7.0  : from : 04 aug 2018     **/
-/**                                 to   : 19 jan 2023     **/
+/**                                 to   : 07 oct 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -185,16 +185,17 @@ Hgraph * restrict const     cgrfptr)              /* Centralized halo graph */
       cgrfptr->contptr   = dgrfptr->contptr;
     }
   }
-  if ((cheklocval == 0) &&
-      (memAllocGroup ((void **) (void *)
-                      &verthaltax, (size_t) (dgrfptr->vhallocnbr * sizeof (Gnum)),
-                      &edgehaltax, (size_t) (dgrfptr->ehallocnbr * sizeof (Gnum)), NULL) == NULL)) {
-    errorPrint ("hdgraphGather: out of memory (4)");
-    cheklocval = 1;
-  }
-  else {
-    verthaltax -= dgrfptr->s.baseval;
-    edgehaltax -= dgrfptr->s.baseval;
+  if (cheklocval == 0) {
+    if (memAllocGroup ((void **) (void *)
+                       &verthaltax, (size_t) (dgrfptr->vhallocnbr * sizeof (Gnum)),
+                       &edgehaltax, (size_t) (dgrfptr->ehallocnbr * sizeof (Gnum)), NULL) == NULL) {
+      errorPrint ("hdgraphGather: out of memory (4)");
+      cheklocval = 1;
+    }
+    else {
+      verthaltax -= dgrfptr->s.baseval;
+      edgehaltax -= dgrfptr->s.baseval;
+    }
   }
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_SUM, dgrfptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint ("hdgraphGather: communication error (2)");

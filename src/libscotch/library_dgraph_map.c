@@ -1,4 +1,4 @@
-/* Copyright 2008-2012,2018,2019,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2008-2012,2018,2019,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 14 nov 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -172,11 +172,16 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy   +*/
     ArchDom             archdomnorg;
 
     archDomFrst (&srcmappptr->m.archdat, &archdomnorg);
-    if (archVar (&srcmappptr->m.archdat))
-      SCOTCH_stratDgraphClusterBuild (straptr, 0, srcgrafptr->procglbnbr, 1, 1.0, 0.05);
-    else
-      SCOTCH_stratDgraphMapBuild (straptr, 0, srcgrafptr->procglbnbr, archDomSize (&srcmappptr->m.archdat, &archdomnorg), 0.05);
+    if (archVar (&srcmappptr->m.archdat)) {
+      if (SCOTCH_stratDgraphClusterBuild (straptr, 0, srcgrafptr->procglbnbr, 1, 1.0, 0.05))
+        goto abort;
+    }
+    else {
+      if (SCOTCH_stratDgraphMapBuild (straptr, 0, srcgrafptr->procglbnbr, archDomSize (&srcmappptr->m.archdat, &archdomnorg), 0.05))
+        goto abort;
+    }
   }
+
   mapstraptr = *((Strat **) straptr);
   if (mapstraptr->tablptr != &kdgraphmapststratab) {
     errorPrint (STRINGIFY (SCOTCH_dgraphMapCompute) ": not a parallel graph mapping strategy");
@@ -245,7 +250,7 @@ SCOTCH_Num * const          termloctab)           /*+ Mapping array    +*/
   SCOTCH_archInit  (&archdat);
   SCOTCH_archCmplt (&archdat, partnbr);
   o = SCOTCH_dgraphMap (grafptr, &archdat, straptr, termloctab);
-  SCOTCH_archExit  (&archdat);
+  SCOTCH_archExit (&archdat);
 
   return (o);
 }
@@ -342,12 +347,7 @@ const double                kbalval)              /*+ Desired imbalance ratio   
   stringSubst (bufftab, "<KBAL>", kbaltab);
   stringSubst (bufftab, "<VERT>", verttab);
 
-  if (SCOTCH_stratDgraphMap (straptr, bufftab) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_stratDgraphMapBuild) ": error in parallel mapping strategy");
-    return (1);
-  }
-
-  return (0);
+  return (SCOTCH_stratDgraphMap (straptr, bufftab));
 }
 
 /*+ This routine provides predefined
@@ -423,10 +423,5 @@ const double                bbalval)              /*+ Maximum imbalance ratio   
   stringSubst (bufftab, "<PWGT>", pwgttab);
   stringSubst (bufftab, "<VERT>", verttab);
 
-  if (SCOTCH_stratDgraphMap (straptr, bufftab) != 0) {
-    errorPrint (STRINGIFY (SCOTCH_stratDgraphClusterBuild) ": error in parallel mapping strategy");
-    return (1);
-  }
-
-  return (0);
+  return (SCOTCH_stratDgraphMap (straptr, bufftab));
 }

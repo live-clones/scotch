@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018,2019,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 02 jan 2012     **/
 /**                                 to   : 25 apr 2018     **/
 /**                # Version 7.0  : from : 24 aug 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 16 jan 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -75,10 +75,10 @@
 
 int
 SCOTCH_graphColor (
-const SCOTCH_Graph * restrict const libgrafptr,   /* Graph to color              */
-SCOTCH_Num * restrict const         colotab,      /* Pointer to color array      */
-SCOTCH_Num * restrict const         coloptr,      /* Pointer to number of colors */
-const SCOTCH_Num                    flagval)      /* Flag value (not used)       */
+const SCOTCH_Graph * const  libgrafptr,           /* Graph to color              */
+SCOTCH_Num * const          colotab,              /* Pointer to color array      */
+SCOTCH_Num * const          coloptr,              /* Pointer to number of colors */
+const SCOTCH_Num            flagval)              /* Flag value (not used)       */
 {
   CONTEXTDECL        (libgrafptr);
   Gnum                baseval;
@@ -94,7 +94,7 @@ const SCOTCH_Num                    flagval)      /* Flag value (not used)      
 
   if (CONTEXTINIT (libgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_graphColor) ": cannot initialize context");
-    return     (1);
+    return (1);
   }
 
   const Graph * restrict const  grafptr = CONTEXTGETOBJECT (libgrafptr);
@@ -139,11 +139,14 @@ const SCOTCH_Num                    flagval)      /* Flag value (not used)      
       for (edgenum = verttax[vertnum], edgennd = vendtax[vertnum]; edgenum < edgennd; edgenum ++) {
         Gnum                vertend;
         Gnum                randend;
+        Gnum                coloend;
 
         vertend = edgetax[edgenum];
+        coloend = colotax[vertend];
 
-        if (colotax[vertend] >= 0)
-          continue;
+        if ((coloend >= 0) &&                     /* If vertex has been colored    */
+            (coloend < colonum))                  /* In a former pass              */
+          continue;                               /* Do not consider it any longer */
 
         randend = randtax[vertend];
         if ((randend > randval) ||

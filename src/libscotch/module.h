@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2016,2018-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2016,2018-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 12 sep 2025     **/
+/**                                 to   : 08 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -63,7 +63,7 @@
 ** Version and copyright strings.
 */
 
-#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2025 IPB, Universite de Bordeaux, INRIA & CNRS, France"
+#define SCOTCH_COPYRIGHT_STRING     "Copyright 1992-2026 IPB, Universite de Bordeaux, INRIA & CNRS, France"
 #define SCOTCH_LICENSE_STRING       "This software is libre/free software under CeCILL-C -- see the user's manual for more information"
 #ifdef SCOTCH_CODENAME
 #define SCOTCH_VERSION_STRING       STRINGIFY (SCOTCH_VERSION) "." STRINGIFY (SCOTCH_RELEASE) "." STRINGIFY (SCOTCH_PATCHLEVEL) " (" STRINGIFY (SCOTCH_CODENAME) ")"
@@ -265,6 +265,7 @@
 #define SCOTCH_COARSENFOLD          SCOTCH_NAME_PUBLIC (SCOTCH_COARSENFOLD)
 #define SCOTCH_COARSENFOLDDUP       SCOTCH_NAME_PUBLIC (SCOTCH_COARSENFOLDDUP)
 #define SCOTCH_COARSENNOMERGE       SCOTCH_NAME_PUBLIC (SCOTCH_COARSENNOMERGE)
+#define SCOTCH_NUM_MPI              SCOTCH_NAME_PUBLIC (SCOTCH_NUM_MPI)
 #define SCOTCH_NUMMAX               SCOTCH_NAME_PUBLIC (SCOTCH_NUMMAX)
 #define SCOTCH_NUMSTRING            SCOTCH_NAME_PUBLIC (SCOTCH_NUMSTRING)
 #define SCOTCH_STRATDEFAULT         SCOTCH_NAME_PUBLIC (SCOTCH_STRATDEFAULT)
@@ -287,6 +288,7 @@
 #define SCOTCH_Dgraph               SCOTCH_NAME_PUBLIC (SCOTCH_Dgraph)
 #define SCOTCH_DgraphHaloReq        SCOTCH_NAME_PUBLIC (SCOTCH_DgraphHaloReq)
 #define SCOTCH_Dmapping             SCOTCH_NAME_PUBLIC (SCOTCH_Dmapping)
+#define SCOTCH_Dmesh                SCOTCH_NAME_PUBLIC (SCOTCH_Dmesh)
 #define SCOTCH_Dordering            SCOTCH_NAME_PUBLIC (SCOTCH_Dordering)
 #define SCOTCH_Geom                 SCOTCH_NAME_PUBLIC (SCOTCH_Geom)
 #define SCOTCH_Graph                SCOTCH_NAME_PUBLIC (SCOTCH_Graph)
@@ -806,6 +808,7 @@
 #define dmeshInit                   SCOTCH_NAME_INTERN (dmeshInit)
 #define dmeshLoad                   SCOTCH_NAME_INTERN (dmeshLoad)
 
+#define dorderCheck                 SCOTCH_NAME_INTERN (dorderCheck)
 #define dorderDispose               SCOTCH_NAME_INTERN (dorderDispose)
 #define dorderExit                  SCOTCH_NAME_INTERN (dorderExit)
 #define dorderFree                  SCOTCH_NAME_INTERN (dorderFree)
@@ -1247,6 +1250,16 @@
 #define SCOTCH_dgraphStat           SCOTCH_NAME_PUBLIC (SCOTCH_dgraphStat)
 #define SCOTCH_dmapAlloc            SCOTCH_NAME_PUBLIC (SCOTCH_dmapAlloc)
 #define SCOTCH_dmapSizeof           SCOTCH_NAME_PUBLIC (SCOTCH_dmapSizeof)
+#define SCOTCH_dmeshAlloc           SCOTCH_NAME_PUBLIC (SCOTCH_dmeshAlloc)
+#define SCOTCH_dmeshBuildAdm        SCOTCH_NAME_PUBLIC (SCOTCH_dmeshBuildAdm)
+#define SCOTCH_dmeshData            SCOTCH_NAME_PUBLIC (SCOTCH_dmeshData)
+#define SCOTCH_dmeshDgraphDual      SCOTCH_NAME_PUBLIC (SCOTCH_dmeshDgraphDual)
+#define SCOTCH_dmeshExit            SCOTCH_NAME_PUBLIC (SCOTCH_dmeshExit)
+#define SCOTCH_dmeshFree            SCOTCH_NAME_PUBLIC (SCOTCH_dmeshFree)
+#define SCOTCH_dmeshInit            SCOTCH_NAME_PUBLIC (SCOTCH_dmeshInit)
+#define SCOTCH_dmeshLoad            SCOTCH_NAME_PUBLIC (SCOTCH_dmeshLoad)
+#define SCOTCH_dmeshSize            SCOTCH_NAME_PUBLIC (SCOTCH_dmeshSize)
+#define SCOTCH_dmeshSizeof          SCOTCH_NAME_PUBLIC (SCOTCH_dmeshSizeof)
 #define SCOTCH_dorderAlloc          SCOTCH_NAME_PUBLIC (SCOTCH_dorderAlloc)
 #define SCOTCH_dorderSizeof         SCOTCH_NAME_PUBLIC (SCOTCH_dorderSizeof)
 #define SCOTCH_geomAlloc            SCOTCH_NAME_PUBLIC (SCOTCH_geomAlloc)
@@ -1357,7 +1370,6 @@
 #define SCOTCH_randomSeed           SCOTCH_NAME_PUBLIC (SCOTCH_randomSeed)
 #define SCOTCH_randomVal            SCOTCH_NAME_PUBLIC (SCOTCH_randomVal)
 #define SCOTCH_stratAlloc           SCOTCH_NAME_PUBLIC (SCOTCH_stratAlloc)
-#define SCOTCH_stratArchBuild       SCOTCH_NAME_PUBLIC (SCOTCH_stratArchBuild)
 #define SCOTCH_stratDgraphClusterBuild SCOTCH_NAME_PUBLIC (SCOTCH_stratDgraphClusterBuild)
 #define SCOTCH_stratDgraphMap       SCOTCH_NAME_PUBLIC (SCOTCH_stratDgraphMap)
 #define SCOTCH_stratDgraphMapBuild  SCOTCH_NAME_PUBLIC (SCOTCH_stratDgraphMapBuild)

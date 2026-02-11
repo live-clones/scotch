@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 25 aug 2012     **/
 /**                                 to   : 18 nov 2012     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 11 aug 2025     **/
+/**                                 to   : 07 oct 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -267,7 +267,7 @@ const int                   protnum)              /* Root process number        
     vertloctax  =
     vertlocptr -= baseval;
     vertlocptr += vertglbmax + 2;                 /* TRICK: "+2" for space for velolocsum */
-    if (proptab[2] != 0) {
+    if ((proptab[2] != 0) && ((flagval & GRAPHIONOLOADVERT) == 0)) {
       veloloctax  = vertlocptr;
       vertlocptr += vertglbmax;
     }

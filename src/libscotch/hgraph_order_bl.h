@@ -58,7 +58,7 @@
 /*+ This structure holds the method parameters. +*/
 
 typedef struct HgraphOrderBlParam_ {
-  Strat *                   strat;                /*+ Ordering strategy    +*/
+  Strat *                   straptr;              /*+ Ordering strategy    +*/
   INT                       cblkmin;              /*+ Block splitting size +*/
 } HgraphOrderBlParam;
 

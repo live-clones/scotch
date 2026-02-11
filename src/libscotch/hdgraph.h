@@ -68,7 +68,7 @@
 /*+ Halo distributed graph structure. In order to
     keep efficiency, distributed halo graphs are not
     considered as regular graphs as sequential halo
-    graphs were. Halo distributed graphs have a compact
+    graphs are. Halo distributed graphs have a compact
     vertex array, with halo edges added at the end of
     each vertex sub-array. They are not visible when
     considering the vertlocnbr, vertloctax (which is in
@@ -83,7 +83,7 @@
     existence in distributed graphs, they are simply
     numbered from baseval. They are converted into real
     vertices when a distributed halo graph is turned into
-    a sequential halo graph.                                */
+    a sequential halo graph.                                +*/
 
 typedef struct Hdgraph_ {
   Dgraph                    s;                    /*+ Source distributed graph                       +*/

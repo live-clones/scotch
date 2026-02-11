@@ -1,4 +1,4 @@
-/* Copyright 2007,2010,2013,2014,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2010,2013,2014,2018,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 23 dec 2013     **/
 /**                                 to   : 03 jun 2018     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 01 oct 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -242,7 +242,7 @@ const Gnum                  degrlocmax)
 ** - !0  : on error.
 */
 
-DGRAPHALLREDUCEMAXSUMOP (17, 3)
+DGRAPHALLREDUCEMAXSUMOP (17, 4)
 
 int
 dgraphBuild3 (
@@ -262,7 +262,6 @@ Gnum * const                edgegsttax,           /* Ghost edge array (if any); 
 Gnum * const                edloloctax,           /* Local edge load array (if any)          */
 const Gnum                  degrlocmax)
 {
-  int                   procglbnbr;               /* Number of processes sharing graph data       */
   int                   procrcvnum;               /* Number of process from which to receive      */
   int                   procsndnum;               /* Number of process to which to send           */
   int                   procngbnbr;               /* Number of neighbors processed                */
@@ -283,8 +282,8 @@ const Gnum                  degrlocmax)
   MPI_Status            statloctab[2];
   int                   cheklocval;               /* Local consistency flag                           */
   int                   chekglbval;               /* Global consistency flag                          */
-  Gnum                  reduloctab[20];           /* Arrays for reductions                            */
-  Gnum                  reduglbtab[20];
+  Gnum                  reduloctab[21];           /* Arrays for reductions                            */
+  Gnum                  reduglbtab[21];
 
   reduloctab[0]  =   baseval;                     /* Check argument consistency */
   reduloctab[1]  = - baseval;
@@ -307,8 +306,9 @@ const Gnum                  degrlocmax)
   reduloctab[17] = vertlocnbr;                    /* Sum local sizes */
   reduloctab[18] = velolocsum;
   reduloctab[19] = edgelocnbr;
+  reduloctab[20] = (vendloctax == (vertloctax + 1)) ? 1 : 0; /* Check whether the graph is compact */
 
-  if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 17, 3, grafptr->proccomm) != 0) {
+  if (dgraphAllreduceMaxSum (reduloctab, reduglbtab, 17, 4, grafptr->proccomm) != 0) {
     errorPrint ("dgraphBuild3: cannot compute reductions");
     return (1);
   }
@@ -331,6 +331,8 @@ const Gnum                  degrlocmax)
   grafptr->edgeglbsmx = reduglbtab[14];           /* Set maximum size of local edge arrays */
   grafptr->degrglbmax = reduglbtab[15];           /* Set maximum degree                    */
 
+  if (reduglbtab[20] != grafptr->procglbnbr)      /* If at least one process does not seem to have a compact vertex array */
+    grafptr->flagval |= DGRAPHHASVENDLOC;
   grafptr->baseval    = baseval;
   grafptr->vertglbnbr = reduglbtab[17];           /* Set global and local data */
   grafptr->vertlocnbr = vertlocnbr;
@@ -356,6 +358,8 @@ const Gnum                  degrlocmax)
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   if (vlblloctax != NULL) {                       /* If vertex labels given */
+    int               procglbnbr;
+
     procglbnbr = grafptr->procglbnbr;
 
     if (memAllocGroup ((void **) (void *)

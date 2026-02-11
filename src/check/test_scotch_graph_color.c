@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2018,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018,2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 06 jan 2012     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 14 jan 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,6 +60,57 @@
 #include "../libscotch/common.h"
 
 #include "scotch.h"
+
+/*************************************/
+/*                                   */
+/* The consistency checking routine. */
+/*                                   */
+/*************************************/
+
+static
+int
+checkColor (
+const SCOTCH_Graph * const  grafptr,
+const SCOTCH_Num * const    colotab)
+{
+  SCOTCH_Num          baseval;
+  SCOTCH_Num          vertnbr;
+  SCOTCH_Num          vertnnd;
+  SCOTCH_Num          vertnum;
+  SCOTCH_Num *        verttab;
+  const SCOTCH_Num *  verttax;
+  SCOTCH_Num *        vendtab;
+  const SCOTCH_Num *  vendtax;
+  SCOTCH_Num *        edgetab;
+  const SCOTCH_Num *  edgetax;
+  const SCOTCH_Num *  colotax;
+
+  SCOTCH_graphData (grafptr, &baseval, &vertnbr, &verttab, &vendtab, NULL, NULL, NULL, &edgetab, NULL);
+
+  verttax = verttab - baseval;
+  vendtax = vendtab - baseval;
+  edgetax = edgetab - baseval;
+  colotax = colotab - baseval;
+
+  for (vertnum = baseval, vertnnd = vertnbr + baseval;
+       vertnum < vertnnd; vertnum ++) {
+    SCOTCH_Num          edgenum;
+    SCOTCH_Num          coloval;
+
+    coloval = colotax[vertnum];
+    for (edgenum = verttax[vertnum]; edgenum < vendtax[vertnum]; edgenum ++) {
+      SCOTCH_Num          vertend;
+
+      vertend = edgetax[edgenum];
+      if (colotax[vertend] == coloval) {
+        SCOTCH_errorPrint ("checkColor: invalid coloring");
+        return (1);
+      }
+    }
+  }
+
+  return (0);
+}
 
 /*********************/
 /*                   */
@@ -122,6 +173,9 @@ char *              argv[])
     SCOTCH_errorPrint ("main: cannot color graph");
     exit (EXIT_FAILURE);
   }
+
+  if (checkColor (&grafdat, colotab) != 0)        /* Verify coloring validity */
+    exit (EXIT_FAILURE);
 
   printf ("Number of colors: %ld\n", (long) colonbr);
 

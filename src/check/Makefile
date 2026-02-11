@@ -173,6 +173,7 @@ realclean			:	clean
 					test_scotch_dgraph_band		\
 					test_scotch_dgraph_check	\
 					test_scotch_dgraph_coarsen	\
+					test_scotch_dgraph_order	\
 					test_scotch_dgraph_grow		\
 					test_scotch_dgraph_induce	\
 					test_scotch_dgraph_redist	\
@@ -237,6 +238,7 @@ CHECKPTSCOTCH = 	check_strat_par				\
 			check_scotch_dgraph_check		\
 			check_scotch_dgraph_band		\
 			check_scotch_dgraph_coarsen		\
+			check_scotch_dgraph_order		\
 			check_scotch_dgraph_grow		\
 			check_scotch_dgraph_induce     		\
 			check_scotch_dgraph_redist		\
@@ -530,6 +532,16 @@ test_scotch_dgraph_coarsen	:	test_scotch_dgraph_coarsen.c	\
 
 ##
 
+check_scotch_dgraph_order	:	test_scotch_dgraph_order
+					$(EXECP3) ./test_scotch_dgraph_order data/bump.grf
+					$(EXECP3) ./test_scotch_dgraph_order data/bump_b100000.grf
+					$(EXECP3) ./test_scotch_dgraph_order data/m4x4_b1.grf
+
+test_scotch_dgraph_order	:	test_scotch_dgraph_order.c	\
+					$(SCOTCHLIBDIR)/libptscotch$(LIB)
+
+##
+
 check_scotch_dgraph_check	:	test_scotch_dgraph_check
 					$(EXECP3) ./test_scotch_dgraph_check data/bump.grf
 					$(EXECP3) ./test_scotch_dgraph_check data/bump_b100000.grf
@@ -654,6 +666,7 @@ check_prog_gord			:	check_prog_gmk_msh
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf $(TMPDIR)/bump.ord -Cu -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b100000.grf $(TMPDIR)/bump_b100000.ord -Cd -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf '-On{sep=(/((vert)>(240))?(e{strat=g}|g|h);),ole=d{cmin=15,cmax=100000,frat=0},ose=g{pass=3}}' $(TMPDIR)/bump_b1.ord -Cr -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/m16x16_b100000_v.grf '-On{sep=(/((vert)>(20))?h;),ole=b{cmin=100},ose=b{cmin=3}}' $(TMPDIR)/m16x16_b100000_v.ord -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32.ord -Cf -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/nocoarsen.grf $(TMPDIR)/nocoarsen.ord -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/compress-coarsen.grf $(TMPDIR)/compress-coarsen.ord -vt
@@ -749,9 +762,18 @@ check_prog_dgscat-dggath	:
 					$(EXECP3) $(SCOTCHBINDIR)/dgscat -c data/m16x16_b100000.grf "$(TMP)2-%r.grf"
 					$(EXECP3) $(SCOTCHBINDIR)/dggath -c "$(TMP)2-%r.grf" "$(TMP)2.grf"
 					$(PROGDIFF) data/m16x16_b100000.grf "$(TMP)2.grf"
+					$(EXECP3) $(SCOTCHBINDIR)/dgscat -c data/m4x4_b1_elv.grf "$(TMP)3-%r.grf"
+					$(EXECP3) $(SCOTCHBINDIR)/dggath -c "$(TMP)3-%r.grf" "$(TMP)3.grf"
+					$(PROGDIFF) data/m4x4_b1_elv.grf "$(TMP)3.grf"
 
+check_prog_dgtst		:	TMP := $(shell mktemp -u)
 check_prog_dgtst		:
 					$(EXECP4) $(SCOTCHBINDIR)/dgtst data/small1-%r.grf
+					$(EXECP3) $(SCOTCHBINDIR)/dgscat data/m4x4_b1_elv.grf "$(TMP)1-%r.grf"
+					$(EXECP3) $(SCOTCHBINDIR)/dgtst "$(TMP)1-%r.grf" "$(TMP)1.txt"
+					$(EXECS) $(SCOTCHBINDIR)/gtst data/m4x4_b1_elv.grf "$(TMP)2.txt"
+					$(PROGDIFF) "$(TMP)1.txt" "$(TMP)2.txt"
+
 ##
 
 check_prog_dfull		:

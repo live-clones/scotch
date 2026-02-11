@@ -100,7 +100,7 @@ const HmeshOrderBlParam * restrict const  paraptr)
     cblknbr = cblkptr->vnodnbr / paraptr->cblkmin; /* Get new number of blocks */
 
     if ((cblkptr->cblktab = (OrderCblk *) memAlloc (cblknbr * sizeof (OrderCblk))) == NULL) {
-      errorPrint ("hgraphOrderBl: out of memory");
+      errorPrint ("hmeshOrderBl: out of memory");
       return (1);
     }
     cblkptr->typeval = ORDERCBLKSEQU;             /* Node becomes a sequence of blocks */

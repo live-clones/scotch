@@ -1,4 +1,4 @@
-/* Copyright 2009,2018,2022-2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2009,2018,2022-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 05 sep 2020     **/
 /**                # Version 7.0  : from : 21 apr 2022     **/
-/**                                 to   : 20 nov 2024     **/
+/**                                 to   : 24 nov 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -117,12 +117,10 @@
 #define SCOTCH_NAME_PUBLICFU(f)     SCOTCH_NAME_MACRO3 (SCOTCH_NAME_PREFIX_PUBLICFU,f,SCOTCH_NAME_SUFFIXFU)
 #define SCOTCH_FORTRAN(nu,nl,pl,pc) FORTRAN (SCOTCH_NAME_PUBLICFU(nu),SCOTCH_NAME_PUBLICFL(nl),pl,pc)
 
-#ifdef SCOTCH_COMMON_RENAME
-#define SCOTCH_NAME_GLOBAL(n)       SCOTCH_NAME_MACRO2 (SCOTCH_, n) /* Same name whatever the suffix is, since external library */
+#define SCOTCH_NAME_GLOBAL(n)       SCOTCH_NAME_MACRO2 (SCOTCH_, n) /* Always renamed, since exposed in Scotch user's manual */
 #define errorPrint                  SCOTCH_NAME_GLOBAL (errorPrint)
 #define errorPrintW                 SCOTCH_NAME_GLOBAL (errorPrintW)
 #define errorProg                   SCOTCH_NAME_GLOBAL (errorProg)
-#endif /* SCOTCH_COMMON_RENAME */
 
 #if ((defined SCOTCH_COMMON_RENAME) && ! (defined SCOTCH_COMMON_INTERNAL))
 #define intLoad                     SCOTCH_NAME_INTERN (intLoad)

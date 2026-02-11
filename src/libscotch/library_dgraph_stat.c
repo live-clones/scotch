@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2012,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2012,2014,2018,2019,2021,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -46,7 +46,7 @@
 /**                # Version 6.1  : from : 05 apr 2021     **/
 /**                                 to   : 05 apr 2021     **/
 /**                # Version 7.0  : from : 20 sep 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 08 oct 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -246,7 +246,7 @@ double *                    edlodltptr)
         errorPrint (STRINGIFY (SCOTCH_dgraphStat) ": communication error (1)");
         return (1);
       }
-      edloglbavg = (double) edloglbsum / (double) (2 * srcgrafptr->edgeglbnbr);
+      edloglbavg = (double) edloglbsum / (double) srcgrafptr->edgeglbnbr; /* Divide arc sum by arc count */
 
       for (vertlocnum = srcgrafptr->baseval; vertlocnum < srcgrafptr->vertlocnnd; vertlocnum ++) {
         Gnum                edgelocnum;
@@ -255,6 +255,9 @@ double *                    edlodltptr)
              edgelocnum < srcgrafptr->vendloctax[vertlocnum]; edgelocnum ++)
           edlolocdlt += fabs ((double) srcgrafptr->edloloctax[edgelocnum] - edloglbavg);
       }
+
+      srclstadat.edlomin = edlolocmin;
+      srclstadat.edlomax = edlolocmax;
     }
     else {
       srclstadat.edlomin =

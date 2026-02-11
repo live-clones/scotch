@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2012,2014,2016,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2012,2014,2016,2018,2019,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -53,7 +53,7 @@
 /**                # Version 6.1  : from : 01 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
 /**                # Version 7.0  : from : 05 may 2019     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 03 oct 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -136,11 +136,11 @@ const Gnum                                ordenum,
 OrderCblk * restrict const                cblkptr,
 const HgraphOrderNdParam * restrict const paraptr)
 {
-  Gnum *                    vspvnumptr[3];        /* Pointers to vertex lists to fill   */
-  VertList                  vsplisttab[3];        /* Array of separated part lists      */
-  Vgraph                    vspgrafdat;           /* Vertex separation graph data       */
-  Gnum                      vspvertnum;           /* Current vertex in separation graph */
-  int                       o;
+  Gnum *              vspvnumptr[3];              /* Pointers to vertex lists to fill   */
+  VertList            vsplisttab[3];              /* Array of separated part lists      */
+  Vgraph              vspgrafdat;                 /* Vertex separation graph data       */
+  Gnum                vspvertnum;                 /* Current vertex in separation graph */
+  int                 o;
 
   hgraphUnhalo (grafptr, &vspgrafdat.s);          /* Keep only non-halo vertices for separation */
   if ((vspgrafdat.frontab = (Gnum *) memAlloc (vspgrafdat.s.vertnbr * sizeof (Gnum))) == NULL) {
@@ -174,9 +174,9 @@ const HgraphOrderNdParam * restrict const paraptr)
 
   if ((vspgrafdat.compsize[0] == 0) ||            /* If could not separate more */
       (vspgrafdat.compsize[1] == 0)) {
-    vgraphExit    (&vspgrafdat);                  /* Free useless space */
-    hgraphOrderSt (grafptr, ordeptr, ordenum, cblkptr, paraptr->ordstratlea); /* Order this leaf */
-    return (0);                                   /* Leaf has been processed */
+    vgraphExit (&vspgrafdat);                     /* Free useless space */
+
+    return (hgraphOrderSt (grafptr, ordeptr, ordenum, cblkptr, paraptr->ordstratlea)); /* Order this leaf */
   }
 
   vsplisttab[0].vnumnbr = vspgrafdat.compsize[0]; /* Build vertex lists within frontier array */
@@ -220,13 +220,13 @@ const HgraphOrderNdParam * restrict const paraptr)
   memFree (vspgrafdat.parttax + vspgrafdat.s.baseval); /* Free useless space    */
   vspgrafdat.parttax = NULL;                      /* Prevent subsequent freeing */
 
-  cblkptr->typeval = ORDERCBLKNEDI;               /* Node becomes a nested dissection node */
   if ((cblkptr->cblktab = (OrderCblk *) memAlloc (3 * sizeof (OrderCblk))) == NULL) {
     errorPrint ("hgraphOrderNd: out of memory (3)");
     vgraphExit (&vspgrafdat);
     return (1);
   }
-  cblkptr->cblktab[0].typeval = ORDERCBLKLEAF;    /* Build column blocks */
+  cblkptr->typeval = ORDERCBLKNEDI;               /* Node becomes a nested dissection node   */
+  cblkptr->cblktab[0].typeval = ORDERCBLKLEAF;    /* Build column blocks for separated parts */
   cblkptr->cblktab[0].vnodnbr = vsplisttab[0].vnumnbr;
   cblkptr->cblktab[0].cblknbr = 0;
   cblkptr->cblktab[0].cblktab = NULL;

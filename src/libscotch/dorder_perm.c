@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 26 sep 2008     **/
 /**                                 to   : 26 sep 2008     **/
 /**                # Version 7.0  : from : 18 jan 2023     **/
-/**                                 to   : 10 aug 2023     **/
+/**                                 to   : 17 sep 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -102,9 +102,10 @@ Gnum * restrict const         permloctab)
     if ((cblklocptr->typeval & DORDERCBLKLEAF) != 0) /* If node is leaf         */
       vnodlocnbr += cblklocptr->data.leaf.vnodlocnbr; /* And more node vertices */
 #ifdef SCOTCH_DEBUG_DORDER2
-    else if (cblklocptr->typeval != DORDERCBLKNEDI) {
+    else if ((cblklocptr->typeval != DORDERCBLKNEDI) &&
+             (cblklocptr->typeval != DORDERCBLKDICO)) {
       errorPrint ("dorderPerm: invalid parameters (1)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DORDER2 */
   }
@@ -146,7 +147,7 @@ Gnum * restrict const         permloctab)
   if (reduglbtab[0] != grafptr->vertglbnbr) {
     errorPrint ("dorderPerm: invalid parameters (2)");
     memFree    (senddsptab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 
   for (linklocptr = ordeptr->linkdat.nextptr, vnodlocnum = 0; /* For all nodes in local ordering structure */
@@ -169,7 +170,7 @@ Gnum * restrict const         permloctab)
             (sortsndtab[vnodlocnum].permnum <  ordeptr->baseval) ||
             (sortsndtab[vnodlocnum].permnum > (ordeptr->baseval + ordeptr->vnodglbnbr))) {
           errorPrint ("dorderPerm: internal error (1)");
-          return     (1);
+          return (1);
         }
 #endif /* SCOTCH_DEBUG_DORDER2 */
       }
@@ -191,7 +192,7 @@ Gnum * restrict const         permloctab)
 #ifdef SCOTCH_DEBUG_DORDER2
       if (vnodlocnum > vnodlocnbr) {              /* If beyond regular indices plus end marker */
         errorPrint ("dorderPerm: internal error (2)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DORDER2 */
     }
@@ -200,13 +201,13 @@ Gnum * restrict const         permloctab)
 #ifdef SCOTCH_DEBUG_DORDER2
   if (vnodlocnum != vnodlocnbr) {
     errorPrint ("dorderPerm: internal error (3)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DORDER2 */
 
   if (MPI_Alltoall (sendcnttab, 1, MPI_INT, recvcnttab, 1, MPI_INT, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderPerm: communication error (2)");
-    return     (1);
+    return (1);
   }
 
   for (procnum = 0, vnodrcvnbr = vnodsndnbr = 0; procnum < grafptr->procglbnbr; procnum ++) { /* Accumulate send and receive indices */
@@ -218,7 +219,7 @@ Gnum * restrict const         permloctab)
 
   if (MPI_Alltoallv (sortsndtab, sendcnttab, senddsptab, GNUM_MPI, sortrcvtab, recvcnttab, recvdsptab, GNUM_MPI, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderPerm: communication error (3)");
-    return     (1);
+    return (1);
   }
 
 #ifdef SCOTCH_DEBUG_DORDER2
@@ -230,7 +231,7 @@ Gnum * restrict const         permloctab)
 #ifdef SCOTCH_DEBUG_DORDER2
     if (permloctax[sortrcvtab[vnodlocnum].vertnum] != ~0) {
       errorPrint ("dorderPerm: internal error (4)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DORDER2 */
     permloctax[sortrcvtab[vnodlocnum].vertnum] = sortrcvtab[vnodlocnum].permnum;
@@ -239,7 +240,7 @@ Gnum * restrict const         permloctab)
   for (vnodlocnum = 0; vnodlocnum < grafptr->vertlocnbr; vnodlocnum ++) {
     if (permloctab[vnodlocnum] == ~0) {
       errorPrint ("dorderPerm: internal error (5)");
-      return     (1);
+      return (1);
     }
   }
 #endif /* SCOTCH_DEBUG_DORDER2 */

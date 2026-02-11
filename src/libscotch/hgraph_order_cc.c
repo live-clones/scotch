@@ -1,4 +1,4 @@
-/* Copyright 2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 04 apr 2018     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 02 oct 2025     **/
 /**                                                        **/
 /************************************************************/
 
@@ -79,16 +79,16 @@ const Gnum                                ordenum, /*+ Zero-based ordering numbe
 OrderCblk * restrict const                cblkptr, /*+ Single column-block        +*/
 const HgraphOrderCcParam * restrict const paraptr)
 {
-  Hgraph                indgrafdat;
-  Gnum                  indordenum;
-  Gnum * restrict       flagtax;                  /* Flag array                       */
-  Gnum * restrict       roottab;                  /* Array of root indices in queutab */
-  Gnum                  rootnbr;                  /* Number of connected components   */
-  Gnum                  rootnum;
-  Gnum                  vrotnum;                  /* Number of found root vertex      */
-  Gnum * restrict       queutab;                  /* Vertex queue and sub-lists       */
-  Gnum                  qhedidx;
-  Gnum                  qtalidx;
+  Hgraph              indgrafdat;
+  Gnum * restrict     flagtax;                    /* Flag array                       */
+  Gnum * restrict     roottab;                    /* Array of root indices in queutab */
+  Gnum                rootnbr;                    /* Number of connected components   */
+  Gnum                rootnum;
+  Gnum                vrotnum;                    /* Number of found root vertex      */
+  Gnum * restrict     queutab;                    /* Vertex queue and sub-lists       */
+  Gnum                qhedidx;
+  Gnum                qtalidx;
+  int                 o;
 
   const Gnum * restrict const verttax = grafptr->s.verttax;
   const Gnum * restrict const vnhdtax = grafptr->vnhdtax;
@@ -170,39 +170,36 @@ const HgraphOrderCcParam * restrict const paraptr)
 #endif /* SCOTCH_PTHREAD */
   cblkptr->typeval = ORDERCBLKDICO;               /* Node becomes a set of disconnected components */
   cblkptr->cblknbr = rootnbr;
+
+  o = 0;                                          /* Assume everything will be all right */
+
   for (rootnum = 0; rootnum < rootnbr; rootnum ++) { /* Initialize tree node array */
+    Gnum                vnodnbr;
+
+    vnodnbr = roottab[rootnum + 1] - roottab[rootnum];
     cblkptr->cblktab[rootnum].typeval = ORDERCBLKLEAF;
-    cblkptr->cblktab[rootnum].vnodnbr = roottab[rootnum + 1] - roottab[rootnum];
+    cblkptr->cblktab[rootnum].vnodnbr = vnodnbr;
     cblkptr->cblktab[rootnum].cblknbr = 0;
     cblkptr->cblktab[rootnum].cblktab = NULL;
-  }
 
-  for (rootnum = 0, indordenum = 0; rootnum < rootnbr; rootnum ++) {
-    Gnum                indvnohnbr;
-    int                 o;
-
-    indvnohnbr = roottab[rootnum + 1] - roottab[rootnum];
-
-    if (hgraphInduceList (grafptr, indvnohnbr, &queutab[roottab[rootnum]], grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat) != 0) {
+    if (hgraphInduceList (grafptr, vnodnbr, &queutab[roottab[rootnum]], grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat) != 0) {
       errorPrint ("hgraphOrderCc: cannot create induced graph");
       memFree    (queutab);
       return (1);
     }
 
-    o = hgraphOrderSt (&indgrafdat, ordeptr, indordenum, &cblkptr->cblktab[rootnum], paraptr->straptr); /* Perform strategy on induced subgraph */
+    o = hgraphOrderSt (&indgrafdat, ordeptr, ordenum + roottab[rootnum], /* Perform strategy on induced subgraph */
+                       &cblkptr->cblktab[rootnum], paraptr->straptr);
 
     hgraphExit (&indgrafdat);
 
     if (o != 0) {
       errorPrint ("hgraphOrderCc: cannot compute ordering on induced graph");
-      memFree    (queutab);
-      return (1);
+      break;
     }
-
-    indordenum += indvnohnbr;
   }
 
   memFree (queutab);
 
-  return (0);
+  return (o);
 }

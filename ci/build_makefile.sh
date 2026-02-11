@@ -17,4 +17,4 @@ then
 else
   SCAN=""
 fi
-eval '${SCAN}make scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build-${JOBNAME}.log' || fatal
+eval '${SCAN}make -j scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build-${JOBNAME}.log' || fatal

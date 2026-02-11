@@ -160,7 +160,7 @@ const BgraphBipartGpParam * const paraptr)        /*+ Method parameters +*/
           Gnum                vertend;            /* End vertex number */
 
           vertend = edgetax[edgenum];
-          if (vexxtax[vertend].passnum < passnum) { /* If vertex not yet queued      */
+          if (vexxtax[vertend].passnum < passnum) { /* If vertex not yet queued    */
             bgraphBipartGpQueuePut (&queudat, vertend); /* Enqueue neighbor vertex */
             vexxtax[vertend].passnum = passnum;
             vexxtax[vertend].distval = distval;
