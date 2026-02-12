@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2011-2014,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2011-2014,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 09 mar 2011     **/
 /**                                 to   : 01 may 2014     **/
 /**                # Version 7.0  : from : 16 jan 2023     **/
-/**                                 to   : 07 nov 2024     **/
+/**                                 to   : 12 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -241,6 +241,8 @@ const Strat * restrict const  straptr)            /*+ Separation strategy +*/
   VgraphStore         savetab[2];                 /* Results of the two strategies */
   Gnum                compload2;                  /* Saved separator load          */
   int                 o;
+  int                 o0;
+  int                 o1;
 
 #ifdef SCOTCH_DEBUG_VGRAPH2
   if (sizeof (Gnum) != sizeof (INT)) {
@@ -299,26 +301,33 @@ const Strat * restrict const  straptr)            /*+ Separation strategy +*/
         return (1);
       }
 
-      vgraphStoreSave (grafptr, &savetab[1]);     /* Save initial bipartition                                   */
-      if (vgraphSeparateSt (grafptr, straptr->data.seledat.stratab[0]) != 0) { /* If first strategy didn't work */
-        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition                                */
-        vgraphStoreSave (grafptr, &savetab[0]);   /* Save it as result                                          */
+      vgraphStoreSave       (grafptr, &savetab[1]); /* Save initial separation                    */
+      o0 = vgraphSeparateSt (grafptr, straptr->data.seledat.stratab[0]); /* Apply first strategy  */
+      vgraphStoreSave       (grafptr, &savetab[0]); /* Save its result                            */
+      vgraphStoreUpdt       (grafptr, &savetab[1]); /* Restore initial separation                 */
+      o1 = vgraphSeparateSt (grafptr, straptr->data.seledat.stratab[1]); /* Apply second strategy */
+
+      if ((o0 | o1) != 0) {                       /* If at least one method failed */
+        if (o0 == 0)                              /* If first succeeded, take it   */
+          goto take0;
+        if (o1 != 0) {                            /* If none succeeded          */
+          vgraphStoreUpdt (grafptr, &savetab[1]); /* Restore initial separation */
+          o = 1;                                  /* Indicate error             */
+        }
+        goto take1;                               /* If second succeeded, keep it; anyway, go freeing data structures */
       }
-      else {                                      /* First strategy worked       */
-        vgraphStoreSave (grafptr, &savetab[0]);   /* Save its result             */
-        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition */
-      }
-      if (vgraphSeparateSt (grafptr, straptr->data.seledat.stratab[1]) != 0) /* If second strategy didn't work */
-        vgraphStoreUpdt (grafptr, &savetab[1]);   /* Restore initial bipartition as its result                 */
 
       compload2 = grafptr->s.velosum - savetab[0].compload[0] - savetab[0].compload[1]; /* Compute saved separator load */
-      if ( (compload2 <  grafptr->compload[2]) || /* If first strategy is better */
+      if ( (compload2 >  grafptr->compload[2]) || /* If second strategy is better */
           ((compload2 == grafptr->compload[2]) &&
-           (abs (savetab[0].comploaddlt) < abs (grafptr->comploaddlt))))
-        vgraphStoreUpdt (grafptr, &savetab[0]);   /* Restore its result */
+           (abs (savetab[0].comploaddlt) >= abs (grafptr->comploaddlt))))
+        goto take1;
 
-      vgraphStoreExit (&savetab[0]);              /* Free both save areas */
-      vgraphStoreExit (&savetab[1]);
+take0:
+      vgraphStoreUpdt (grafptr, &savetab[0]);     /* Restore first separation          */
+take1:                                            /* Keep second separation by default */
+      vgraphStoreExit (&savetab[1]);              /* Free both save areas              */
+      vgraphStoreExit (&savetab[0]);
       break;
 #ifdef SCOTCH_DEBUG_VGRAPH1
     case STRATNODEMETHOD :
