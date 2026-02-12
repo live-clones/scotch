@@ -326,7 +326,7 @@ const Strat * restrict const  straptr)            /*+ Bipartitioning strategy   
     case STRATNODESELECT :
       if (((bgraphStoreInit (grafptr, &savetab[0])) != 0) || /* Allocate save areas */
           ((bgraphStoreInit (grafptr, &savetab[1])) != 0)) {
-        errorPrint ("bgraphBipartSt: out of memory");
+        errorPrint      ("bgraphBipartSt: out of memory");
         bgraphStoreExit (&savetab[0]);
         return (1);
       }
