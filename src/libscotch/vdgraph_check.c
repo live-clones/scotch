@@ -89,7 +89,7 @@ const Vdgraph * const       grafptr)
   proccomm = grafptr->s.proccomm;
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize */
     errorPrint ("vdgraphCheck: communication error (1)");
-    return     (1);
+    return (1);
   }
 
   cheklocval = 0;                                 /* Assume everything is all right */
@@ -169,7 +169,7 @@ const Vdgraph * const       grafptr)
 
   if (MPI_Allreduce (reduloctab, reduglbtab, 11, GNUM_MPI, MPI_MAX, proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphCheck: communication error (2)");
-    return     (1);
+    return (1);
   }
 
   if (reduglbtab[10] != 0) {                      /* Return from previous errors */
@@ -184,7 +184,7 @@ const Vdgraph * const       grafptr)
       (reduglbtab[7] != - reduglbtab[6]) ||
       (reduglbtab[9] != - reduglbtab[8])) {
     errorPrint ("vdgraphCheck: inconsistent global graph data");
-    return     (1);
+    return (1);
   }
 
   memCpy (partgsttax, grafptr->partgsttax + grafptr->s.baseval, grafptr->s.vertlocnbr); /* Copy local part data           */
@@ -245,7 +245,7 @@ const Vdgraph * const       grafptr)
 
   if (MPI_Allreduce (reduloctab, reduglbtab, 7, GNUM_MPI, MPI_SUM, proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphCheck: communication error (3)");
-    return     (1);
+    return (1);
   }
   if (reduglbtab[6] != 0)                         /* Return from previous errors */
     return (1);
@@ -265,7 +265,7 @@ const Vdgraph * const       grafptr)
 
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, proccomm) != MPI_SUCCESS) {
     errorPrint ("vdgraphCheck: communication error (4)");
-    return     (1);
+    return (1);
   }
 
   return (chekglbval);
