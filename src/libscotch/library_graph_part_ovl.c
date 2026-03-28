@@ -69,13 +69,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine computes a partition with
-*** overlap of the given graph structure
-*** with respect to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a partition with
+** overlap of the given graph structure
+** with respect to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphPartOvl (
@@ -126,12 +126,12 @@ abort:
   return (o);
 }
 
-/*+ This routine parses the given
-*** partitioning strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
+/* This routine parses the given
+** partitioning strategy.
+** It returns:
+** - 0   : if string successfully scanned.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratGraphPartOvl (
@@ -149,12 +149,12 @@ const char * const          string)
   return (0);
 }
 
-/*+ This routine provides predefined
-*** overlap partitioning strategies.
-*** It returns:
-*** - 0   : if string successfully initialized.
-*** - !0  : on error.
-+*/
+/* This routine provides predefined
+** overlap partitioning strategies.
+** It returns:
+** - 0   : if string successfully initialized.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratGraphPartOvlBuild (
