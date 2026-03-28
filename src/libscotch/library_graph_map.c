@@ -80,13 +80,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine initializes an API opaque
-*** mapping with respect to the given source
-*** graph and the locations of output parameters.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine initializes an API opaque
+** mapping with respect to the given source
+** graph and the locations of output parameters.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphMapInit (
@@ -114,10 +114,10 @@ SCOTCH_Num * const          parttab)              /*+ Mapping array             
   return (0);
 }
 
-/*+ This routine frees an API mapping.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees an API mapping.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_graphMapExit (
@@ -133,15 +133,15 @@ SCOTCH_Mapping * const      mappptr)
   memSet (lmapptr, 0, sizeof (LibMapping));
 }
 
-/*+ This routine computes a mapping or a
-*** remapping, with or without fixed
-*** vertices, of the API mapping
-*** structures given in input, with
-*** respect to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a mapping or a
+** remapping, with or without fixed
+** vertices, of the API mapping
+** structures given in input, with
+** respect to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 static
 int
@@ -301,13 +301,13 @@ abort:
   return (o);
 }
 
-/*+ This routine computes a mapping
-*** of the API mapping structure with
-*** respect to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a mapping
+** of the API mapping structure with
+** respect to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphMapCompute (
@@ -318,14 +318,14 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy   +*/
   return (graphMapCompute2 (grafptr, mappptr, NULL, 1, NULL, 0, straptr));
 }
 
-/*+ This routine computes a mapping
-*** with fixed vertices of the API
-*** mapping structure with respect
-*** to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a mapping
+** with fixed vertices of the API
+** mapping structure with respect
+** to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphMapFixedCompute (
@@ -336,13 +336,13 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy   +*/
   return (SCOTCH_graphRemapFixedCompute (grafptr, mappptr, NULL, 1, NULL, straptr));
 }
 
-/*+ This routine computes a remapping
-*** of the API mapping structure with
-*** respect to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a remapping
+** of the API mapping structure with
+** respect to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphRemapCompute (
@@ -356,14 +356,14 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
   return (graphMapCompute2 (grafptr, mappptr, mapoptr, emraval, vmlotab, 0, straptr));
 }
 
-/*+ This routine computes a remapping
-*** with fixed vertices of the API
-*** mapping structure with respect
-*** to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a remapping
+** with fixed vertices of the API
+** mapping structure with respect
+** to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphRemapFixedCompute (
@@ -389,14 +389,14 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
   return (graphMapCompute2 (grafptr, mappptr, mapoptr, emraval, vmlotab, vfixnbr, straptr));
 }
 
-/*+ This routine computes a mapping of the
-*** given graph structure onto the given
-*** target architecture with respect to the
-*** given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a mapping of the
+** given graph structure onto the given
+** target architecture with respect to the
+** given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphMap (
@@ -415,15 +415,15 @@ SCOTCH_Num * const          parttab)              /*+ Partition array     +*/
   return (o);
 }
 
-/*+ This routine computes a mapping of the
-*** given graph structure onto the given
-*** target architecture with respect to the
-*** given strategy and the fixed vertices in
-*** maptab.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a mapping of the
+** given graph structure onto the given
+** target architecture with respect to the
+** given strategy and the fixed vertices in
+** maptab.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphMapFixed (
@@ -442,14 +442,14 @@ SCOTCH_Num * const          parttab)              /*+ Partition array     +*/
   return (o);
 }
 
-/*+ This routine computes a remapping of the
-*** given graph structure onto the given
-*** target architecture with respect to the
-*** given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a remapping of the
+** given graph structure onto the given
+** target architecture with respect to the
+** given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphRemap (
@@ -474,15 +474,15 @@ SCOTCH_Num * const          parttab)              /*+ Partition array           
   return (o);
 }
 
-/*+ This routine computes a remapping of the
-*** given graph structure onto the given
-*** target architecture with respect to the
-*** given strategy and the fixed vertices in
-*** maptab.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a remapping of the
+** given graph structure onto the given
+** target architecture with respect to the
+** given strategy and the fixed vertices in
+** maptab.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphRemapFixed (
@@ -507,13 +507,13 @@ SCOTCH_Num * const          parttab)              /*+ Partition array           
   return (o);
 }
 
-/*+ This routine computes a partition of
-*** the given graph structure with respect
-*** to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a partition of
+** the given graph structure with respect
+** to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphPart (
@@ -533,14 +533,14 @@ SCOTCH_Num * const          parttab)              /*+ Partition array  +*/
   return (o);
 }
 
-/*+ This routine computes a partition of
-*** the given graph structure with respect
-*** to the given strategy and the fixed
-*** vertices in maptab.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a partition of
+** the given graph structure with respect
+** to the given strategy and the fixed
+** vertices in maptab.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphPartFixed (
@@ -560,13 +560,13 @@ SCOTCH_Num * const          parttab)              /*+ Partition array  +*/
   return (o);
 }
 
-/*+ This routine computes a repartitionning
-*** of the given graph structure with
-*** respect to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a repartitionning
+** of the given graph structure with
+** respect to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphRepart (
@@ -589,14 +589,14 @@ SCOTCH_Num * const          parttab)              /*+ Partition array           
   return (o);
 }
 
-/*+ This routine computes a repartitionning
-*** of the given graph structure with
-*** respect to the given strategy and the
-*** fixed vertices in maptab.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a repartitionning
+** of the given graph structure with
+** respect to the given strategy and the
+** fixed vertices in maptab.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphRepartFixed (
@@ -619,12 +619,12 @@ SCOTCH_Num * const          parttab)              /*+ Partition array           
   return (o);
 }
 
-/*+ This routine parses the given
-*** mapping strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
+/* This routine parses the given
+** mapping strategy.
+** It returns:
+** - 0   : if string successfully scanned.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratGraphMap (
@@ -642,12 +642,12 @@ const char * const          string)
   return (0);
 }
 
-/*+ This routine provides predefined
-*** mapping strategies.
-*** It returns:
-*** - 0   : if string successfully initialized.
-*** - !0  : on error.
-+*/
+/* This routine provides predefined
+** mapping strategies.
+** It returns:
+** - 0   : if string successfully initialized.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratGraphMapBuild (
@@ -705,12 +705,12 @@ const double                kbalval)              /*+ Desired imbalance ratio   
   return (SCOTCH_stratGraphMap (straptr, bufftab));
 }
 
-/*+ This routine provides predefined
-*** clustering strategies.
-*** It returns:
-*** - 0   : if string successfully initialized.
-*** - !0  : on error.
-+*/
+/* This routine provides predefined
+** clustering strategies.
+** It returns:
+** - 0   : if string successfully initialized.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratGraphClusterBuild (
