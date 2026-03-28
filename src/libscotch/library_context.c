@@ -63,13 +63,13 @@
 /*                                      */
 /****************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** context structure.
-*** It returns:
-*** - !NULL  : if the initialization succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** context structure.
+** It returns:
+** - !NULL  : if the initialization succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Context *
 SCOTCH_contextAlloc ()
@@ -77,11 +77,11 @@ SCOTCH_contextAlloc ()
   return ((SCOTCH_Context *) memAlloc (sizeof (SCOTCH_Context)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Context structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Context structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_contextSizeof ()
@@ -89,13 +89,13 @@ SCOTCH_contextSizeof ()
   return (sizeof (SCOTCH_Context));
 }
 
-/*+ This routine initializes the opaque
-*** graph structure used to handle graphs
-*** in the Scotch library.
-*** It returns:
-*** - 0   : if the initialization succeeded.
-*** - !0  : on error.
-+*/
+/* This routine initializes the opaque
+** graph structure used to handle graphs
+** in the Scotch library.
+** It returns:
+** - 0   : if the initialization succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_contextInit (
@@ -118,11 +118,11 @@ SCOTCH_Context * const      libcontptr)
   return (0);
 }
 
-/*+ This routine frees the contents of the
-*** given opaque context structure.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees the contents of the
+** given opaque context structure.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_contextExit (
@@ -138,13 +138,13 @@ SCOTCH_Context * const      libcontptr)
 /*                                  */
 /************************************/
 
-/*+ This routine creates a clone of the default
-*** pseudo-random in its current state and places
-*** it in the given context.
-*** It returns:
-*** - 0   : if the cloning succeeded.
-*** - !0  : on error.
-+*/
+/* This routine creates a clone of the default
+** pseudo-random in its current state and places
+** it in the given context.
+** It returns:
+** - 0   : if the cloning succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_contextRandomClone (
@@ -153,12 +153,12 @@ SCOTCH_Context * const      libcontptr)
   return (contextRandomClone ((Context *) libcontptr));
 }
 
-/*+ This routine resets the random generator
-*** of the given context, to simulate a start
-*** from scratch.
-*** It returns:
-*** - void  : in all cases.
-+*/
+/* This routine resets the random generator
+** of the given context, to simulate a start
+** from scratch.
+** It returns:
+** - void  : in all cases.
+*/
 
 void
 SCOTCH_contextRandomReset (
@@ -167,11 +167,11 @@ SCOTCH_Context * const      libcontptr)
   intRandReset (((Context *) libcontptr)->randptr);
 }
 
-/*+ This routine sets the value of the
-*** random seed.
-*** It returns:
-*** - void  : in all cases.
-+*/
+/* This routine sets the value of the
+** random seed.
+** It returns:
+** - void  : in all cases.
+*/
 
 void
 SCOTCH_contextRandomSeed (
@@ -188,14 +188,14 @@ const SCOTCH_Num            seedval)
 /*                                  */
 /************************************/
 
-/*+ This routine, called by the master thread of
-*** a thread pool, initiates the environment to
-*** capture this thread pool within the given
-*** opaque context structure.
-*** It returns:
-*** - 0   : if thread context prepared.
-*** - !0  : on error.
-+*/
+/* This routine, called by the master thread of
+** a thread pool, initiates the environment to
+** capture this thread pool within the given
+** opaque context structure.
+** It returns:
+** - 0   : if thread context prepared.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_contextThreadImport1 (
@@ -219,13 +219,13 @@ const int                   thrdnbr)
   return (0);
 }
 
-/*+ This routine, called by all the threads of
-*** a thread pool, captures the slave threads
-*** and yields back control to the master thread.
-*** It returns:
-*** - 0   : if thread context finalized.
-*** - !0  : on error.
-+*/
+/* This routine, called by all the threads of
+** a thread pool, captures the slave threads
+** and yields back control to the master thread.
+** It returns:
+** - 0   : if thread context finalized.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_contextThreadImport2 (
@@ -244,13 +244,13 @@ const int                   thrdnum)
   return (0);
 }
 
-/*+ This routine creates a thread context with
-*** the given number of threads, possibly mapped
-*** onto the given set of cores.
-*** It returns:
-*** - 0   : if thread context created.
-*** - !0  : on error.
-+*/
+/* This routine creates a thread context with
+** the given number of threads, possibly mapped
+** onto the given set of cores.
+** It returns:
+** - 0   : if thread context created.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_contextThreadSpawn (
@@ -268,12 +268,12 @@ const int * const           coretab)
 /*                               */
 /*********************************/
 
-/*+ This routine gets an interger option value
-*** from the given context.
-*** It returns:
-*** - 0   : if the value was obtained.
-*** - !0  : invalid option number.
-+*/
+/* This routine gets an interger option value
+** from the given context.
+** It returns:
+** - 0   : if the value was obtained.
+** - !0  : invalid option number.
+*/
 
 int
 SCOTCH_contextOptionGetNum (
@@ -284,12 +284,12 @@ SCOTCH_Num * const          optiptr)
   return (contextValuesGetInt ((Context *) libcontptr, optinum, optiptr));
 }
 
-/*+ This routine sets an interger option value
-*** in the given context.
-*** It returns:
-*** - 0   : if the value was set.
-*** - !0  : on error.
-+*/
+/* This routine sets an interger option value
+** in the given context.
+** It returns:
+** - 0   : if the value was set.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_contextOptionSetNum (
@@ -323,13 +323,13 @@ const SCOTCH_Num            optival)
   return (o || contextValuesSetInt ((Context *) libcontptr, optinum, optitmp));
 }
 
-/*+ This routine parses a context option
-*** string and sets the option values of
-*** the given context accordingly.
-*** It returns:
-*** - 0   : if the string was properly parsed.
-*** - !0  : on error.
-+*/
+/* This routine parses a context option
+** string and sets the option values of
+** the given context accordingly.
+** It returns:
+** - 0   : if the string was properly parsed.
+** - !0  : on error.
+*/
 
 static ContextOptionArg     contextOptionTab[] = {
   { 'd',  CONTEXTOPTIONNUMDETERMINISTIC,   1 },
