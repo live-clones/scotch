@@ -70,13 +70,13 @@
 /*                                      */
 /****************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** SCOTCH_Dgraph structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** SCOTCH_Dgraph structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Dgraph *
 SCOTCH_dgraphAlloc ()
@@ -84,11 +84,11 @@ SCOTCH_dgraphAlloc ()
   return ((SCOTCH_Dgraph *) memAlloc (sizeof (SCOTCH_Dgraph)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Dgraph structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Dgraph structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_dgraphSizeof ()
@@ -96,14 +96,14 @@ SCOTCH_dgraphSizeof ()
   return (sizeof (SCOTCH_Dgraph));
 }
 
-/*+ This routine initializes the opaque
-*** distributed graph structure used to
-*** handle distributed graphs in the
-*** Scotch library.
-*** It returns:
-*** - 0   : if the initialization succeeded.
-*** - !0  : on error.
-+*/
+/* This routine initializes the opaque
+** distributed graph structure used to
+** handle distributed graphs in the
+** Scotch library.
+** It returns:
+** - 0   : if the initialization succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphInit (
@@ -124,11 +124,11 @@ MPI_Comm                    proccomm)             /* Communicator to be used for
   return (dgraphInit ((Dgraph *) grafptr, proccomm));
 }
 
-/*+ This routine frees the contents of the
-*** given opaque graph structure.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees the contents of the
+** given opaque graph structure.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dgraphExit (
@@ -138,12 +138,12 @@ SCOTCH_Dgraph * const       grafptr)
     dgraphExit ((Dgraph *) grafptr);
 }
 
-/*+ This routine frees the contents of the
-*** given opaque graph structure but does
-*** not free its private data.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees the contents of the
+** given opaque graph structure but does
+** not free its private data.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dgraphFree (
@@ -153,12 +153,12 @@ SCOTCH_Dgraph * const       grafptr)
     dgraphFree ((Dgraph *) grafptr);
 }
 
-/*+ This routine accesses graph size data.
-*** NULL pointers on input indicate unwanted
-*** data.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine accesses graph size data.
+** NULL pointers on input indicate unwanted
+** data.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dgraphSize (
@@ -180,13 +180,13 @@ SCOTCH_Num * const          edgelocnbr)
     *edgelocnbr = (SCOTCH_Num) srcgrafptr->edgelocnbr;
 }
 
-/*+ This routine accesses all of the graph data.
-*** NULL pointers on input indicate unwanted
-*** data. NULL pointers on output indicate
-*** unexisting arrays.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine accesses all of the graph data.
+** NULL pointers on input indicate unwanted
+** data. NULL pointers on output indicate
+** unexisting arrays.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dgraphData (
