@@ -62,13 +62,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine returns the version,
-*** release and patchlevel numbers of
-*** the library being used (useful for
-*** dynamic libraries).
-*** It returns:
-*** - void  : in all cases.
-+*/
+/* This routine returns the version,
+** release and patchlevel numbers of
+** the library being used (useful for
+** dynamic libraries).
+** It returns:
+** - void  : in all cases.
+*/
 
 void
 SCOTCH_version (
