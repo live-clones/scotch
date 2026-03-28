@@ -62,12 +62,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine loads a random state.
-*** It returns:
-*** - 0  : if state successfully loaded.
-*** - 1  : state cannot be loaded.
-*** - 2  : on error.
-+*/
+/* This routine loads a random state.
+** It returns:
+** - 0  : if state successfully loaded.
+** - 1  : state cannot be loaded.
+** - 2  : on error.
+*/
 
 int
 SCOTCH_randomLoad (
@@ -76,12 +76,12 @@ FILE *                      stream)
   return (intRandLoad (&intranddat, stream));
 }
 
-/*+ This routine saves the random state.
-*** It returns:
-*** - 0  : if state successfully saved.
-*** - 1  : state cannot be saved.
-*** - 2  : on error.
-+*/
+/* This routine saves the random state.
+** It returns:
+** - 0  : if state successfully saved.
+** - 1  : state cannot be saved.
+** - 2  : on error.
+*/
 
 int
 SCOTCH_randomSave (
@@ -90,12 +90,12 @@ FILE *                      stream)
   return (intRandSave (&intranddat, stream));
 }
 
-/*+ This routine sets the process number that
-*** is used to generate a different seed across
-*** all processes.
-*** It returns:
-*** - void  : in all cases.
-+*/
+/* This routine sets the process number that
+** is used to generate a different seed across
+** all processes.
+** It returns:
+** - void  : in all cases.
+*/
 
 void
 SCOTCH_randomProc (
@@ -104,11 +104,11 @@ int                         procnum)
   intRandProc (&intranddat, procnum);
 }
 
-/*+ This routine resets the random generator
-*** to simulate a start from scratch.
-*** It returns:
-*** - void  : in all cases.
-+*/
+/* This routine resets the random generator
+** to simulate a start from scratch.
+** It returns:
+** - void  : in all cases.
+*/
 
 void
 SCOTCH_randomReset ()
@@ -117,11 +117,11 @@ SCOTCH_randomReset ()
   intRandReset (&intranddat);
 }
 
-/*+ This routine sets the value of the
-*** random seed.
-*** It returns:
-*** - void  : in all cases.
-+*/
+/* This routine sets the value of the
+** random seed.
+** It returns:
+** - void  : in all cases.
+*/
 
 void
 SCOTCH_randomSeed (
@@ -130,13 +130,13 @@ SCOTCH_Num                  seedval)
   intRandSeed (&intranddat, seedval);
 }
 
-/*+ This routine returns a pseudo-random integer
-*** value in the range [0..randmax[. This routine
-*** is not thread-safe as it uses a global state
-*** variable.
-*** It returns:
-*** - x  : pseudo-random number, in all cases.
-+*/
+/* This routine returns a pseudo-random integer
+** value in the range [0..randmax[. This routine
+** is not thread-safe as it uses a global state
+** variable.
+** It returns:
+** - x  : pseudo-random number, in all cases.
+*/
 
 SCOTCH_Num
 SCOTCH_randomVal (
