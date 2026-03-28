@@ -338,12 +338,12 @@ const float                 fillrat)
   return (0);
 }
 
-/*+ This routine computes the inverse
-*** permutation according to the
-*** elimination tree.
-*** It returns:
-*** - >0  : next index to be used to order, in all cases.
-+*/
+/* This routine computes the inverse
+** permutation according to the
+** elimination tree.
+** It returns:
+** - >0  : next index to be used to order, in all cases.
+*/
 
 Gnum
 hallOrderHxTree (
