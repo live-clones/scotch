@@ -70,13 +70,13 @@
 /*                                 */
 /***********************************/
 
-/*+ This routine creates a distributed induced graph
-*** from the given graph, according to the partition
-*** map that is passed to the routine.
-*** It returns:
-*** - 0   : if the induced graph has been created.
-*** - !0  : on error.
-+*/
+/* This routine creates a distributed induced graph
+** from the given graph, according to the partition
+** map that is passed to the routine.
+** It returns:
+** - 0   : if the induced graph has been created.
+** - !0  : on error.
+*/
 
 typedef struct _SCOTCHDgraphInducePartData_ {
   const Gnum *              orgpartloctax;        /* In the public interface, parts are represented as Gnum's */
