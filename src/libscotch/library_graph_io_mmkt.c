@@ -67,11 +67,11 @@
 /*                                   */
 /*************************************/
 
-/*+ This routine loads the given opaque geom
-*** structure with the data of the given stream.
-*** - 0   : if loading succeeded.
-*** - !0  : on error.
-+*/
+/* This routine loads the given opaque geom
+** structure with the data of the given stream.
+** - 0   : if loading succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphGeomLoadMmkt (
@@ -84,12 +84,12 @@ const char * const            dataptr)
   return (graphGeomLoadMmkt ((Graph *) CONTEXTOBJECT (grafptr), (Geom *) geomptr, filegrfptr, filegeoptr, dataptr));
 }
 
-/*+ This routine saves the contents of the given
-*** opaque graph structure to the given stream.
-*** It returns:
-*** - 0   : if the saving succeeded.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of the given
+** opaque graph structure to the given stream.
+** It returns:
+** - 0   : if the saving succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphGeomSaveMmkt (
