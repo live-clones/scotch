@@ -58,12 +58,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine initializes a values context
-*** in the given context.
-*** It returns:
-*** - 0   : if the values context has been created.
-*** - !0  : else.
-+*/
+/* This routine initializes a values context
+** in the given context.
+** It returns:
+** - 0   : if the values context has been created.
+** - !0  : else.
+*/
 
 int
 contextValuesInit (
@@ -97,12 +97,12 @@ const size_t                odblval)
   return (0);
 }
 
-/*+ These routines get a value of the said
-*** type from the given context.
-*** They return:
-*** - 0   : if the value was obtained.
-*** - !0  : invalid value number.
-+*/
+/* These routines get a value of the said
+** type from the given context.
+** They return:
+** - 0   : if the value was obtained.
+** - !0  : invalid value number.
+*/
 
 int
 contextValuesGetDbl (
@@ -137,12 +137,13 @@ INT * const                 vintptr)
 
   return (0);
 }
-/*+ This routine sets an interger option value
-*** in the given context.
-*** It returns:
-*** - 0   : if the value was set.
-*** - !0  : on error.
-+*/
+
+/* This routine sets an interger option value
+** in the given context.
+** It returns:
+** - 0   : if the value was set.
+** - !0  : on error.
+*/
 
 static
 int
