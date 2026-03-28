@@ -72,12 +72,12 @@
 /*                                    */
 /**************************************/
 
-/*+ This routine writes distributed mapping
-*** statistics to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine writes distributed mapping
+** statistics to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphMapView (
