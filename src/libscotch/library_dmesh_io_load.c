@@ -62,18 +62,18 @@
 /*                                      */
 /****************************************/
 
-/*+ This routine loads the given opaque mesh
-*** structure with the data of the given stream.
-*** The base value allows the user to set the
-*** mesh base to 0 or 1, or to the base value
-*** of the stream if the base value is equal
-*** to -1. On input, vertex loads are discarded if
-*** flagval is 1, edge loads are discarded if flagval
-*** is 2, and both if flagval is set to 3.
-*** It returns:
-*** - 0   : if the loading succeeded.
-*** - !0  : on error.
-+*/
+/* This routine loads the given opaque mesh
+** structure with the data of the given stream.
+** The base value allows the user to set the
+** mesh base to 0 or 1, or to the base value
+** of the stream if the base value is equal
+** to -1. On input, vertex loads are discarded if
+** flagval is 1, edge loads are discarded if flagval
+** is 2, and both if flagval is set to 3.
+** It returns:
+** - 0   : if the loading succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dmeshLoad (
