@@ -65,13 +65,13 @@
 /*                               */
 /*********************************/
 
-/*+ This routine creates a color array for the
-*** given graph.
-*** It returns:
-*** - 0  : if the graph has been coarsened.
-*** - 1  : if the graph could not be coarsened.
-*** - 2  : on error.
-+*/
+/* This routine creates a color array for the
+** given graph.
+** It returns:
+** - 0  : if the graph has been coarsened.
+** - 1  : if the graph could not be coarsened.
+** - 2  : on error.
+*/
 
 int
 SCOTCH_graphColor (
