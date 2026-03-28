@@ -73,13 +73,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine computes distributed mapping
-*** statistics and returns them in the pointer
-*** arguments.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes distributed mapping
+** statistics and returns them in the pointer
+** arguments.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphMapStat (
