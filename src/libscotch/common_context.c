@@ -139,13 +139,13 @@ Context * const             contptr)
 /*                                  */
 /************************************/
 
-/*+ This routine creates a clone of the default
-*** pseudo-random in its current state and places
-*** it in the given context.
-*** It returns:
-*** - 0   : if the cloning succeeded.
-*** - !0  : on error.
-+*/
+/* This routine creates a clone of the default
+** pseudo-random in its current state and places
+** it in the given context.
+** It returns:
+** - 0   : if the cloning succeeded.
+** - !0  : on error.
+*/
 
 int
 contextRandomClone (
