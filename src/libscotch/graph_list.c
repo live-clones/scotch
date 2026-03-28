@@ -125,7 +125,7 @@ Gnum                vnumnbr)
   if (vnumnbr > 0) {                              /* Reallocate vertex space */
     if ((listptr->vnumtab = (Gnum *) memAlloc (vnumnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("listAlloc: out of memory");
-      return     (1);
+      return (1);
     }
     listptr->vnumnbr = vnumnbr;
   }
@@ -171,18 +171,18 @@ FILE *              stream)
 
   if (intLoad (stream, &vnumnbr) != 1) {          /* Read number of vertices */
     errorPrint ("listLoad: bad input (1)");
-    return     (1);
+    return (1);
   }
 
   if (listAlloc (listptr, vnumnbr) != 0) {        /* Allocate vertex space */
     errorPrint ("listLoad: out of memory");
-    return     (1);
+    return (1);
   }
 
   for (vnumnum = 0; vnumnum < vnumnbr; vnumnum ++) { /* Read vertex list contents */
     if (intLoad (stream, &listptr->vnumtab[vnumnum]) != 1) {
       errorPrint ("listLoad: bad input (2)");
-      return     (1);
+      return (1);
     }
   }
 
@@ -190,7 +190,7 @@ FILE *              stream)
   for (vnumnum = 1; vnumnum < vnumnbr; vnumnum ++) { /* Search list for duplicates       */
     if (listptr->vnumtab[vnumnum] == listptr->vnumtab[vnumnum - 1]) {
       errorPrint ("listLoad: duplicate vertex numbers");
-      return     (1);
+      return (1);
     }
   }
 
@@ -253,7 +253,7 @@ VertList *          srclistptr)                   /* Source list      */
 {
   if (listAlloc (dstlistptr, dstlistptr->vnumnbr) != 0) { /* Allocate vertex space */
     errorPrint ("listCopy: out of memory");
-    return     (1);
+    return (1);
   }
   memCpy (dstlistptr->vnumtab,                    /* Copy list data */
           srclistptr->vnumtab,
