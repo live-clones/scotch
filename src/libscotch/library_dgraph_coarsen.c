@@ -68,15 +68,15 @@
 /*                                  */
 /************************************/
 
-/*+ This routine provides an upper bound of the
-*** number of local vertices, on the calling
-*** process, of the coarse graph that would be
-*** created by calling SCOTCH_dgraphCoarsen().
-*** It is notably used to allocate the external
-*** multinode array.
-*** It returns:
-*** - >= 0  : in all cases.
-+*/
+/* This routine provides an upper bound of the
+** number of local vertices, on the calling
+** process, of the coarse graph that would be
+** created by calling SCOTCH_dgraphCoarsen().
+** It is notably used to allocate the external
+** multinode array.
+** It returns:
+** - >= 0  : in all cases.
+*/
 
 SCOTCH_Num
 SCOTCH_dgraphCoarsenVertLocMax (
@@ -90,20 +90,20 @@ const SCOTCH_Num                      flagval)    /* Coarsening type       */
   return (dgraphCoarsenVertLocMax (finegrafptr, (int) flagval));
 }
 
-/*+ This routine creates a distributed coarse graph
-*** from the given fine graph, unless the coarse graph
-*** is smaller than some threshold size or the
-*** coarsening ratio is above some other threshold.
-*** If the coarse graph is created, a coarse-to-fine
-*** vertex array is created, that contains a pair of
-*** fine indices for each coarse index. It is the
-*** user's responsibility to provide and free this
-*** array whenever it is no longer needed.
-*** It returns:
-*** - 0  : if the graph has been coarsened (and folded).
-*** - 1  : if the graph could not be coarsened.
-*** - 2  : on error.
-+*/
+/* This routine creates a distributed coarse graph
+** from the given fine graph, unless the coarse graph
+** is smaller than some threshold size or the
+** coarsening ratio is above some other threshold.
+** If the coarse graph is created, a coarse-to-fine
+** vertex array is created, that contains a pair of
+** fine indices for each coarse index. It is the
+** user's responsibility to provide and free this
+** array whenever it is no longer needed.
+** It returns:
+** - 0  : if the graph has been coarsened (and folded).
+** - 1  : if the graph could not be coarsened.
+** - 2  : on error.
+*/
 
 int
 SCOTCH_dgraphCoarsen (
