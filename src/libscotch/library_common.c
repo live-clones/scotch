@@ -59,12 +59,12 @@
 /*                                    */
 /**************************************/
 
-/*+ This routine returns the amount of
-*** memory currently in use by the
-*** libScotch / libPTScotch.
-*** It returns:
-*** - >= 0  : in all cases.
-+*/
+/* This routine returns the amount of
+** memory currently in use by the
+** libScotch / libPTScotch.
+** It returns:
+** - >= 0  : in all cases.
+*/
 
 SCOTCH_Idx
 SCOTCH_memCur ()
@@ -72,12 +72,12 @@ SCOTCH_memCur ()
   return ((SCOTCH_Idx) memCur ());
 }
 
-/*+ This routine returns the maximum
-*** amount of memory used by the
-*** libScotch / libPTScotch.
-*** It returns:
-*** - >= 0  : in all cases.
-+*/
+/* This routine returns the maximum
+** amount of memory used by the
+** libScotch / libPTScotch.
+** It returns:
+** - >= 0  : in all cases.
+*/
 
 SCOTCH_Idx
 SCOTCH_memMax ()
