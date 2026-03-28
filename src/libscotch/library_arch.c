@@ -89,13 +89,13 @@
 /*                                     */
 /***************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** SCOTCH_ArchDom structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** SCOTCH_ArchDom structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_ArchDom *
 SCOTCH_archDomAlloc ()
@@ -103,11 +103,11 @@ SCOTCH_archDomAlloc ()
   return ((SCOTCH_ArchDom *) memAlloc (sizeof (SCOTCH_ArchDom)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_ArchDom structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_ArchDom structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_archDomSizeof ()
@@ -115,13 +115,13 @@ SCOTCH_archDomSizeof ()
   return (sizeof (SCOTCH_ArchDom));
 }
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** SCOTCH_Arch structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** SCOTCH_Arch structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Arch *
 SCOTCH_archAlloc ()
@@ -129,11 +129,11 @@ SCOTCH_archAlloc ()
   return ((SCOTCH_Arch *) memAlloc (sizeof (SCOTCH_Arch)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Arch structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Arch structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_archSizeof ()
@@ -141,13 +141,13 @@ SCOTCH_archSizeof ()
   return (sizeof (SCOTCH_Arch));
 }
 
-/*+ This routine initializes the opaque
-*** architecture structure used to handle
-*** target architectures in the Scotch library.
-*** It returns:
-*** - 0   : if the initialization succeeded.
-*** - !0  : on error.
-+*/
+/* This routine initializes the opaque
+** architecture structure used to handle
+** target architectures in the Scotch library.
+** It returns:
+** - 0   : if the initialization succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_archInit (
@@ -165,11 +165,11 @@ SCOTCH_Arch * const         archptr)
   return (archInit ((Arch *) archptr));
 }
 
-/*+ This routine frees the contents of the
-*** given opaque architecture structure.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees the contents of the
+** given opaque architecture structure.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_archExit (
@@ -178,13 +178,13 @@ SCOTCH_Arch * const         archptr)
   archExit ((Arch *) archptr);
 }
 
-/*+ This routine loads the given opaque
-*** architecture structure with the data of
-*** the given stream.
-*** It returns:
-*** - 0   : if the loading succeeded.
-*** - !0  : on error.
-+*/
+/* This routine loads the given opaque
+** architecture structure with the data of
+** the given stream.
+** It returns:
+** - 0   : if the loading succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_archLoad (
@@ -194,13 +194,13 @@ FILE * const                stream)
   return (archLoad ((Arch *) archptr, stream));
 }
 
-/*+ This routine saves the given opaque
-*** architecture structure to the given
-*** stream.
-*** It returns:
-*** - 0   : if the saving succeeded.
-*** - !0  : on error.
-+*/
+/* This routine saves the given opaque
+** architecture structure to the given
+** stream.
+** It returns:
+** - 0   : if the saving succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_archSave (
@@ -210,12 +210,12 @@ FILE * const                stream)
   return (archSave ((Arch *) archptr, stream));
 }
 
-/*+ This routine returns the name of the
-*** given target architecture.
-*** It returns:
-*** - !NULL  : pointer to the name of the
-***            target architecture.
-+*/
+/* This routine returns the name of the
+** given target architecture.
+** It returns:
+** - !NULL  : pointer to the name of the
+**            target architecture.
+*/
 
 char *
 SCOTCH_archName (
@@ -224,11 +224,11 @@ const SCOTCH_Arch * const   archptr)
   return (archName ((const Arch * const) archptr));
 }
 
-/*+ This routine returns the size of the
-*** given target architecture.
-*** It returns:
-*** - !0  : size of the target architecture.
-+*/
+/* This routine returns the size of the
+** given target architecture.
+** It returns:
+** - !0  : size of the target architecture.
+*/
 
 SCOTCH_Num
 SCOTCH_archSize (
@@ -240,12 +240,12 @@ const SCOTCH_Arch * const   archptr)
   return (archDomSize ((Arch *) archptr, &domdat)); /* Return domain size */
 }
 
-/*+ This routine tells if the given architecture
-*** is a variable-sized architecture or not.
-*** It returns:
-*** - 0  : if the architecture is not variable-sized.
-*** - 1  : if the architecture is variable-sized.
-+*/
+/* This routine tells if the given architecture
+** is a variable-sized architecture or not.
+** It returns:
+** - 0  : if the architecture is not variable-sized.
+** - 1  : if the architecture is variable-sized.
+*/
 
 int
 SCOTCH_archVar (
@@ -254,13 +254,13 @@ const SCOTCH_Arch * const   archptr)
   return ((archVar ((Arch *) archptr) != 0) ? 1 : 0);
 }
 
-/*+ These routines fill the contents of the given
-*** opaque target structure so as to yield target
-*** architectures of the given types.
-*** It returns:
-*** - 0   : if the computation succeeded.
-*** - !0  : on error.
-+*/
+/* These routines fill the contents of the given
+** opaque target structure so as to yield target
+** architectures of the given types.
+** It returns:
+** - 0   : if the computation succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_archCmplt (
