@@ -69,13 +69,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** SCOTCH_Mesh structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** SCOTCH_Mesh structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Mesh *
 SCOTCH_meshAlloc ()
@@ -83,11 +83,11 @@ SCOTCH_meshAlloc ()
   return ((SCOTCH_Mesh *) memAlloc (sizeof (SCOTCH_Mesh)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Mesh structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Mesh structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_meshSizeof ()
@@ -95,13 +95,13 @@ SCOTCH_meshSizeof ()
   return (sizeof (SCOTCH_Mesh));
 }
 
-/*+ This routine initializes the opaque
-*** mesh structure used to handle meshes
-*** in the Scotch library.
-*** It returns:
-*** - 0   : if the initialization succeeded.
-*** - !0  : on error.
-+*/
+/* This routine initializes the opaque
+** mesh structure used to handle meshes
+** in the Scotch library.
+** It returns:
+** - 0   : if the initialization succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshInit (
@@ -119,11 +119,11 @@ SCOTCH_Mesh * const         meshptr)
   return (meshInit ((Mesh *) meshptr));
 }
 
-/*+ This routine frees the contents of the
-*** given opaque mesh structure.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees the contents of the
+** given opaque mesh structure.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_meshExit (
@@ -132,16 +132,16 @@ SCOTCH_Mesh * const         meshptr)
   meshExit ((Mesh *) meshptr);
 }
 
-/*+ This routine loads the given opaque mesh
-*** structure with the data of the given stream.
-*** The base value allows the user to set the
-*** mesh base to 0 or 1, or to the base value
-*** of the stream if the base value is equal
-*** to -1.
-*** It returns:
-*** - 0   : if the loading succeeded.
-*** - !0  : on error.
-+*/
+/* This routine loads the given opaque mesh
+** structure with the data of the given stream.
+** The base value allows the user to set the
+** mesh base to 0 or 1, or to the base value
+** of the stream if the base value is equal
+** to -1.
+** It returns:
+** - 0   : if the loading succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshLoad (
@@ -157,12 +157,12 @@ const SCOTCH_Num            baseval)
   return (meshLoad ((Mesh * const) meshptr, stream, (Gnum) baseval));
 }
 
-/*+ This routine saves the contents of the given
-*** opaque mesh structure to the given stream.
-*** It returns:
-*** - 0   : if the saving succeeded.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of the given
+** opaque mesh structure to the given stream.
+** It returns:
+** - 0   : if the saving succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshSave (
@@ -172,14 +172,14 @@ FILE * const                stream)
   return (meshSave ((const Mesh * const) meshptr, stream));
 }
 
-/*+ This routine fills the contents of the given
-*** opaque mesh structure with the data provided
-*** by the user. The base value allows the user to
-*** set the mesh base to 0 or 1.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine fills the contents of the given
+** opaque mesh structure with the data provided
+** by the user. The base value allows the user to
+** set the mesh base to 0 or 1.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshBuild (
@@ -285,12 +285,12 @@ const SCOTCH_Num * const    edgetab)              /* Edge array [edgenbr]       
   return (0);
 }
 
-/*+ This routine checks the consistency
-*** of the given mesh.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine checks the consistency
+** of the given mesh.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshCheck (
@@ -299,12 +299,12 @@ const SCOTCH_Mesh * const   meshptr)
   return (meshCheck ((const Mesh * const) meshptr));
 }
 
-/*+ This routine accesses mesh size data.
-*** NULL pointers on input indicate unwanted
-*** data.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine accesses mesh size data.
+** NULL pointers on input indicate unwanted
+** data.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_meshSize (
@@ -325,13 +325,13 @@ SCOTCH_Num * const          edgenbr)
     *edgenbr = (SCOTCH_Num) srcmeshptr->edgenbr;
 }
 
-/*+ This routine accesses all of the mesh data.
-*** NULL pointers on input indicate unwanted
-*** data. NULL pointers on output indicate
-*** unexisting arrays.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine accesses all of the mesh data.
+** NULL pointers on input indicate unwanted
+** data. NULL pointers on output indicate
+** unexisting arrays.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_meshData (
@@ -379,11 +379,11 @@ SCOTCH_Num * const          degrnbr)              /* Maximum degree            *
     *degrnbr = srcmeshptr->degrmax;
 }
 
-/*+ This routine computes statistics
-*** on the given graph.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine computes statistics
+** on the given graph.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_meshStat (
