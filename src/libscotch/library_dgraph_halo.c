@@ -69,12 +69,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine requests the computation
-*** of the ghost edge array.
-*** It returns:
-*** - 0   : if the computation succeeded.
-*** - !0  : on error.
-+*/
+/* This routine requests the computation
+** of the ghost edge array.
+** It returns:
+** - 0   : if the computation succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphGhst (
@@ -83,13 +83,13 @@ SCOTCH_Dgraph * const       libgrafptr)
   return (dgraphGhst ((Dgraph *) CONTEXTOBJECT (libgrafptr)));
 }
 
-/*+ This routine requests the computation of the
-*** ghost edge array in replacement of the global
-*** edge array.
-*** It returns:
-*** - 0   : if the computation succeeded.
-*** - !0  : on error.
-+*/
+/* This routine requests the computation of the
+** ghost edge array in replacement of the global
+** edge array.
+** It returns:
+** - 0   : if the computation succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphGhstReplace (
@@ -110,13 +110,13 @@ SCOTCH_Dgraph * const       libgrafptr)
   return (o);
 }
 
-/*+ This routine spreads local information
-*** borne by local vertices across the ghost
-*** vertices of the neighboring processes.
-*** It returns:
-*** - 0   : if the exchange succeeded.
-*** - !0  : on error.
-+*/
+/* This routine spreads local information
+** borne by local vertices across the ghost
+** vertices of the neighboring processes.
+** It returns:
+** - 0   : if the exchange succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphHalo (
@@ -127,14 +127,14 @@ const MPI_Datatype          typeval)
   return (dgraphHaloSync ((Dgraph *) CONTEXTOBJECT (libgrafptr), (byte *) datatab, typeval));
 }
 
-/*+ This routine spreads local information
-*** borne by local vertices across the ghost
-*** vertices of the neighboring processes, in
-*** an asynchronous way.
-*** It returns:
-*** - 0   : if the exchange succeeded.
-*** - !0  : on error.
-+*/
+/* This routine spreads local information
+** borne by local vertices across the ghost
+** vertices of the neighboring processes, in
+** an asynchronous way.
+** It returns:
+** - 0   : if the exchange succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphHaloAsync (
@@ -147,12 +147,12 @@ SCOTCH_DgraphHaloReq * const  requptr)
   return (0);
 }
 
-/*+ This routine waits for the termination of
-*** an asynchronous halo request.
-*** It returns:
-*** - 0   : if the exchange succeeded.
-*** - !0  : on error.
-+*/
+/* This routine waits for the termination of
+** an asynchronous halo request.
+** It returns:
+** - 0   : if the exchange succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphHaloWait (
@@ -161,13 +161,13 @@ SCOTCH_DgraphHaloReq * const  requptr)
   return (dgraphHaloWait ((DgraphHaloRequest *) requptr));
 }
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** halo request structure.
-*** It returns:
-*** - !NULL  : if the initialization succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** halo request structure.
+** It returns:
+** - !NULL  : if the initialization succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_DgraphHaloReq *
 SCOTCH_dgraphHaloReqAlloc ()
@@ -175,11 +175,11 @@ SCOTCH_dgraphHaloReqAlloc ()
   return ((SCOTCH_DgraphHaloReq *) memAlloc (sizeof (SCOTCH_DgraphHaloReq)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a halo request structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a halo request structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_dgraphHaloReqSizeof ()
