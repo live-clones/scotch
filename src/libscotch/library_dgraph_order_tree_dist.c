@@ -68,13 +68,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine returns the number of
-*** distributed column blocks contained
-*** in the given distributed ordering.
-*** It returns:
-*** - >=0  : on success.
-*** - <0   : on error.
-+*/
+/* This routine returns the number of
+** distributed column blocks contained
+** in the given distributed ordering.
+** It returns:
+** - >=0  : on success.
+** - <0   : on error.
+*/
 
 SCOTCH_Num
 SCOTCH_dgraphOrderCblkDist (
@@ -84,13 +84,13 @@ const SCOTCH_Dordering * const  ordeptr)          /*+ Computed ordering +*/
   return (dorderCblkDist ((Dorder *) ordeptr));
 }
 
-/*+ This routine fills the given distributed
-*** permutation array with the permutation
-*** stored in the given distributed ordering.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine fills the given distributed
+** permutation array with the permutation
+** stored in the given distributed ordering.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderTreeDist (
