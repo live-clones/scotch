@@ -66,12 +66,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine scatters the data of a
-*** centralized graph on a distributed graph.
-*** It returns:
-*** - 0   : if the scattering succeeded.
-*** - !0  : on error.
-+*/
+/* This routine scatters the data of a
+** centralized graph on a distributed graph.
+** It returns:
+** - 0   : if the scattering succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphScatter (
