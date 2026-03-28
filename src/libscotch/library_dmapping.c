@@ -65,13 +65,13 @@
 /*                                      */
 /****************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** SCOTCH_Dmapping structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** SCOTCH_Dmapping structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Dmapping *
 SCOTCH_dmapAlloc ()
@@ -79,11 +79,11 @@ SCOTCH_dmapAlloc ()
   return ((SCOTCH_Dmapping *) memAlloc (sizeof (SCOTCH_Dmapping)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Dmapping structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Dmapping structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_dmapSizeof ()
