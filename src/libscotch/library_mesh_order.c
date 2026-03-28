@@ -79,13 +79,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine initializes an API ordering
-*** with respect to the given source graph
-*** and the locations of output parameters.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine initializes an API ordering
+** with respect to the given source graph
+** and the locations of output parameters.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshOrderInit (
@@ -118,10 +118,10 @@ SCOTCH_Num * const          treetab)              /*+ Separator tree array      
   return (orderInit (&libordeptr->o, srcmeshptr->baseval, srcmeshptr->vnodnbr, libordeptr->peritab));
 }
 
-/*+ This routine frees an API ordering.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees an API ordering.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_meshOrderExit (
@@ -131,12 +131,12 @@ SCOTCH_Ordering * const     ordeptr)
   orderExit (&((LibOrder *) ordeptr)->o);
 }
 
-/*+ This routine saves the contents of
-*** the given ordering to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of
+** the given ordering to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshOrderSave (
@@ -147,13 +147,13 @@ FILE * const                  stream)             /*+ Output stream    +*/
   return (orderSave (&((LibOrder *) ordeptr)->o, ((Mesh *) meshptr)->vlbltax, stream));
 }
 
-/*+ This routine saves the mapping data
-*** associated with the given ordering
-*** to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves the mapping data
+** associated with the given ordering
+** to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshOrderSaveMap (
@@ -164,13 +164,13 @@ FILE * const                  stream)             /*+ Output stream    +*/
   return (orderSaveMap (&((LibOrder *) ordeptr)->o, ((Mesh *) meshptr)->vlbltax, stream));
 }
 
-/*+ This routine saves to the given stream
-*** the separator tree data associated with
-*** the given ordering.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves to the given stream
+** the separator tree data associated with
+** the given ordering.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshOrderSaveTree (
@@ -181,13 +181,13 @@ FILE * const                  stream)             /*+ Output stream    +*/
   return (orderSaveTree (&((LibOrder *) ordeptr)->o, ((Mesh *) meshptr)->vlbltax, stream));
 }
 
-/*+ This routine computes an ordering
-*** of the API ordering structure with
-*** respect to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes an ordering
+** of the API ordering structure with
+** respect to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshOrderCompute (
@@ -198,14 +198,14 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy   +*/
   return (SCOTCH_meshOrderComputeList (meshptr, ordeptr, 0, NULL, stratptr));
 }
 
-/*+ This routine computes a partial ordering
-*** of the listed nodes of the API ordering
-*** structure mesh with respect to the given
-*** strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a partial ordering
+** of the listed nodes of the API ordering
+** structure mesh with respect to the given
+** strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshOrderComputeList (
@@ -295,13 +295,13 @@ abort:
   return (o);
 }
 
-/*+ This routine computes an ordering
-*** of the API ordering structure with
-*** respect to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes an ordering
+** of the API ordering structure with
+** respect to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshOrder (
@@ -323,15 +323,15 @@ SCOTCH_Num * const          treetab)              /*+ Separator tree array      
   return (o);
 }
 
-/*+ This routine computes an ordering
-*** of the submesh of the API ordering
-*** structure mesh induced by the given
-*** vertex list, with respect to the given
-*** strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes an ordering
+** of the submesh of the API ordering
+** structure mesh induced by the given
+** vertex list, with respect to the given
+** strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshOrderList (
@@ -355,12 +355,12 @@ SCOTCH_Num * const          treetab)              /*+ Column block range array  
   return (o);
 }
 
-/*+ This routine checks the consistency
-*** of the given mesh ordering.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine checks the consistency
+** of the given mesh ordering.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshOrderCheck (
@@ -370,12 +370,12 @@ const SCOTCH_Ordering * const ordeptr)            /*+ Ordering to check +*/
   return (orderCheck (&((LibOrder *) ordeptr)->o));
 }
 
-/*+ This routine parses the given
-*** mesh ordering strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
+/* This routine parses the given
+** mesh ordering strategy.
+** It returns:
+** - 0   : if string successfully scanned.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratMeshOrder (
@@ -393,12 +393,12 @@ const char * const          string)
   return (0);
 }
 
-/*+ This routine provides predefined
-*** ordering strategies.
-*** It returns:
-*** - 0   : if string successfully initialized.
-*** - !0  : on error.
-+*/
+/* This routine provides predefined
+** ordering strategies.
+** It returns:
+** - 0   : if string successfully initialized.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratMeshOrderBuild (
