@@ -67,11 +67,11 @@
 /*                                   */
 /*************************************/
 
-/*+ This routine loads the given opaque geom
-*** structure with the data of the given stream.
-*** - 0   : if loading succeeded.
-*** - !0  : on error.
-+*/
+/* This routine loads the given opaque geom
+** structure with the data of the given stream.
+** - 0   : if loading succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphGeomLoadHabo (
