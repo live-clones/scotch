@@ -62,13 +62,13 @@
 /*                                      */
 /****************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** SCOTCH_Dmesh structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** SCOTCH_Dmesh structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Dmesh *
 SCOTCH_dmeshAlloc ()
@@ -76,11 +76,11 @@ SCOTCH_dmeshAlloc ()
   return ((SCOTCH_Dmesh *) memAlloc (sizeof (SCOTCH_Dmesh)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Dmesh structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Dmesh structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_dmeshSizeof ()
@@ -88,14 +88,14 @@ SCOTCH_dmeshSizeof ()
   return (sizeof (SCOTCH_Dmesh));
 }
 
-/*+ This routine initializes the opaque
-*** distributed mesh structure used to
-*** handle distributed meshs in the
-*** Scotch library.
-*** It returns:
-*** - 0   : if the initialization succeeded.
-*** - !0  : on error.
-+*/
+/* This routine initializes the opaque
+** distributed mesh structure used to
+** handle distributed meshs in the
+** Scotch library.
+** It returns:
+** - 0   : if the initialization succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dmeshInit (
@@ -116,11 +116,11 @@ MPI_Comm                    proccomm)             /* Communicator to be used for
   return (dmeshInit ((Dmesh *) meshptr, proccomm));
 }
 
-/*+ This routine frees the contents of the
-*** given opaque mesh structure.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees the contents of the
+** given opaque mesh structure.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dmeshExit (
@@ -130,12 +130,12 @@ SCOTCH_Dmesh * const        meshptr)
     dmeshExit ((Dmesh *) meshptr);
 }
 
-/*+ This routine frees the contents of the
-*** given opaque mesh structure but does
-*** not free its private data.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees the contents of the
+** given opaque mesh structure but does
+** not free its private data.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dmeshFree (
@@ -145,12 +145,12 @@ SCOTCH_Dmesh * const        meshptr)
     dmeshFree ((Dmesh *) meshptr);
 }
 
-/*+ This routine accesses mesh size data.
-*** NULL pointers on input indicate unwanted
-*** data.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine accesses mesh size data.
+** NULL pointers on input indicate unwanted
+** data.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dmeshSize (
@@ -175,13 +175,13 @@ SCOTCH_Num * const          vnodglbnbr)
     *vnodglbnbr = (SCOTCH_Num) (srcmeshptr->vnodglbnbr);
 }
 
-/*+ This routine accesses all of the graph data.
-*** NULL pointers on input indicate unwanted
-*** data. NULL pointers on output indicate
-*** unexisting arrays.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine accesses all of the graph data.
+** NULL pointers on input indicate unwanted
+** data. NULL pointers on output indicate
+** unexisting arrays.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dmeshData (
