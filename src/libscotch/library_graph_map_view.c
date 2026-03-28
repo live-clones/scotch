@@ -83,12 +83,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine computes the pseudo-diameter of
-*** the given part.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes the pseudo-diameter of
+** the given part.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 static
 Gnum
@@ -179,13 +179,13 @@ const Anum                  partval)              /*+ Part value +*/
   return (diamdist);
 }
 
-/*+ This routine writes standard or raw
-*** mapping or remapping statistics to
-*** the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine writes standard or raw
+** mapping or remapping statistics to
+** the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 static
 int
@@ -603,12 +603,12 @@ FILE * const                  stream)             /*+ Output stream             
   return (0);
 }
 
-/*+ This routine writes mapping statistics
-*** to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine writes mapping statistics
+** to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphMapView (
@@ -619,12 +619,12 @@ FILE * const                  stream)             /*+ Output stream    +*/
   return (graphMapView2 (libgrafptr, libmappptr, NULL, 0, NULL, 0, stream));
 }
 
-/*+ This routine writes remapping statistics
-*** to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine writes remapping statistics
+** to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphRemapView (
@@ -638,12 +638,12 @@ FILE * const                  stream)             /*+ Output stream             
   return (graphMapView2 (libgrafptr, libmappptr, libmapoptr, emraval, vmlotab, 0, stream));
 }
 
-/*+ This routine writes raw mapping statistics
-*** to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine writes raw mapping statistics
+** to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphMapViewRaw (
@@ -654,12 +654,12 @@ FILE * const                  stream)             /*+ Output stream    +*/
   return (graphMapView2 (libgrafptr, libmappptr, NULL, 0, NULL, 1, stream));
 }
 
-/*+ This routine writes raw remapping statistics
-*** to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine writes raw remapping statistics
+** to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphRemapViewRaw (
