@@ -66,12 +66,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine gathers the data of a
-*** distributed graph on a centralized graph.
-*** It returns:
-*** - 0   : if the centralization succeeded.
-*** - !0  : on error.
-+*/
+/* This routine gathers the data of a
+** distributed graph on a centralized graph.
+** It returns:
+** - 0   : if the centralization succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphGather (
