@@ -65,12 +65,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine computes a distributed graph
-*** that matches the provided partition.
-*** It returns:
-*** - 0   : if redistributed graph created.
-*** - !0  : on error.
-+*/
+/* This routine computes a distributed graph
+** that matches the provided partition.
+** It returns:
+** - 0   : if redistributed graph created.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphRedist (
