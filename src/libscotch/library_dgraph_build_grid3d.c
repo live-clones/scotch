@@ -64,12 +64,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine builds a distributed
-*** 3D grid or torus graph structure.
-*** It returns:
-*** - 0   : if the creation succeeded.
-*** - !0  : on error.
-+*/
+/* This routine builds a distributed
+** 3D grid or torus graph structure.
+** It returns:
+** - 0   : if the creation succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphBuildGrid3D (
