@@ -67,13 +67,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine builds a distributed
-*** band graph, without anchors, from the
-*** given distributed graph.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine builds a distributed
+** band graph, without anchors, from the
+** given distributed graph.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphBand (
