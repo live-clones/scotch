@@ -67,12 +67,12 @@
 /*                                   */
 /*************************************/
 
-/*+ This routine loads the contents of the
-*** given mapping array from the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine loads the contents of the
+** given mapping array from the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphTabLoad (
@@ -188,12 +188,12 @@ end: ;
   return (0);
 }
 
-/*+ This routine saves the contents of the
-*** given mapping array to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of the
+** given mapping array to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphTabSave (
@@ -224,13 +224,13 @@ FILE * const                stream)               /*+ Input stream  +*/
   return (0);
 }
 
-/*+ This routine loads the contents of
-*** the given user mapping from the
-*** given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine loads the contents of
+** the given user mapping from the
+** given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphMapLoad (
@@ -258,13 +258,13 @@ FILE * const                stream)               /*+ Output stream   +*/
   return (SCOTCH_graphTabLoad (actgrafptr, (SCOTCH_Num *) lmapptr->parttab, stream));
 }
 
-/*+ This routine saves the contents of
-*** the given user mapping to the given
-*** stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of
+** the given user mapping to the given
+** stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphMapSave (
