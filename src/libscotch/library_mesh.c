@@ -183,18 +183,18 @@ FILE * const                stream)
 
 int
 SCOTCH_meshBuild (
-SCOTCH_Mesh * const         meshptr,              /* Mesh structure to fill               */
-const SCOTCH_Num            velmbas,              /* Base index for element vertices      */
-const SCOTCH_Num            vnodbas,              /* Base index for node vertices         */
-const SCOTCH_Num            velmnbr,              /* Number of elements in mesh graph     */
-const SCOTCH_Num            vnodnbr,              /* Number of vertices in mesh graph     */
-const SCOTCH_Num * const    verttab,              /* Vertex array [vertnbr or vertnbr+1]  */
-const SCOTCH_Num * const    vendtab,              /* Vertex end array [vertnbr]           */
-const SCOTCH_Num * const    velotab,              /* Element vertex load array            */
-const SCOTCH_Num * const    vnlotab,              /* Node vertex load array               */
-const SCOTCH_Num * const    vlbltab,              /* Vertex label array                   */
-const SCOTCH_Num            edgenbr,              /* Number of edges (arcs)               */
-const SCOTCH_Num * const    edgetab)              /* Edge array [edgenbr]                 */
+SCOTCH_Mesh * const         meshptr,              /*+ Mesh structure to fill               +*/
+const SCOTCH_Num            velmbas,              /*+ Base index for element vertices      +*/
+const SCOTCH_Num            vnodbas,              /*+ Base index for node vertices         +*/
+const SCOTCH_Num            velmnbr,              /*+ Number of elements in mesh graph     +*/
+const SCOTCH_Num            vnodnbr,              /*+ Number of vertices in mesh graph     +*/
+const SCOTCH_Num * const    verttab,              /*+ Vertex array [vertnbr or vertnbr+1]  +*/
+const SCOTCH_Num * const    vendtab,              /*+ Vertex end array [vertnbr]           +*/
+const SCOTCH_Num * const    velotab,              /*+ Element vertex load array            +*/
+const SCOTCH_Num * const    vnlotab,              /*+ Node vertex load array               +*/
+const SCOTCH_Num * const    vlbltab,              /*+ Vertex label array                   +*/
+const SCOTCH_Num            edgenbr,              /*+ Number of edges (arcs)               +*/
+const SCOTCH_Num * const    edgetab)              /*+ Edge array [edgenbr]                 +*/
 {
   Mesh *              srcmeshptr;                 /* Pointer to source mesh structure    */
   Gnum                degrmax;                    /* Maximum degree                      */
@@ -335,19 +335,19 @@ SCOTCH_Num * const          edgenbr)
 
 void
 SCOTCH_meshData (
-const SCOTCH_Mesh * const   meshptr,              /* Mesh structure to read    */
-SCOTCH_Num * const          velmbas,              /* Base index for elements   */
-SCOTCH_Num * const          vnodbas,              /* Base index for nodes      */
-SCOTCH_Num * const          velmnbr,              /* Number of elements        */
-SCOTCH_Num * const          vnodnbr,              /* Number of nodes           */
-SCOTCH_Num ** const         verttab,              /* Vertex array [vertnbr+1]  */
-SCOTCH_Num ** const         vendtab,              /* Vertex array [vertnbr]    */
-SCOTCH_Num ** const         velotab,              /* Element vertex load array */
-SCOTCH_Num ** const         vnlotab,              /* Vertex load array         */
-SCOTCH_Num ** const         vlbltab,              /* Vertex label array        */
-SCOTCH_Num * const          edgenbr,              /* Number of edges (arcs)    */
-SCOTCH_Num ** const         edgetab,              /* Edge array [edgenbr]      */
-SCOTCH_Num * const          degrnbr)              /* Maximum degree            */
+const SCOTCH_Mesh * const   meshptr,              /*+ Mesh structure to read    +*/
+SCOTCH_Num * const          velmbas,              /*+ Base index for elements   +*/
+SCOTCH_Num * const          vnodbas,              /*+ Base index for nodes      +*/
+SCOTCH_Num * const          velmnbr,              /*+ Number of elements        +*/
+SCOTCH_Num * const          vnodnbr,              /*+ Number of nodes           +*/
+SCOTCH_Num ** const         verttab,              /*+ Vertex array [vertnbr+1]  +*/
+SCOTCH_Num ** const         vendtab,              /*+ Vertex array [vertnbr]    +*/
+SCOTCH_Num ** const         velotab,              /*+ Element vertex load array +*/
+SCOTCH_Num ** const         vnlotab,              /*+ Vertex load array         +*/
+SCOTCH_Num ** const         vlbltab,              /*+ Vertex label array        +*/
+SCOTCH_Num * const          edgenbr,              /*+ Number of edges (arcs)    +*/
+SCOTCH_Num ** const         edgetab,              /*+ Edge array [edgenbr]      +*/
+SCOTCH_Num * const          degrmax)              /*+ Maximum degree            +*/
 {
   const Mesh *       srcmeshptr;                  /* Pointer to source mesh structure */
 
@@ -375,8 +375,8 @@ SCOTCH_Num * const          degrnbr)              /* Maximum degree            *
     *edgenbr = srcmeshptr->edgenbr;
   if (edgetab != NULL)
     *edgetab = srcmeshptr->edgetax + srcmeshptr->baseval;
-  if (degrnbr != NULL)
-    *degrnbr = srcmeshptr->degrmax;
+  if (degrmax != NULL)
+    *degrmax = srcmeshptr->degrmax;
 }
 
 /* This routine computes statistics
@@ -388,16 +388,16 @@ SCOTCH_Num * const          degrnbr)              /* Maximum degree            *
 void
 SCOTCH_meshStat (
 const SCOTCH_Mesh * const   meshptr,
-SCOTCH_Num * const          vnlominptr,           /* Vertex loads only for nodes */
+SCOTCH_Num * const          vnlominptr,           /*+ Vertex loads only for nodes +*/
 SCOTCH_Num * const          vnlomaxptr,
 SCOTCH_Num * const          vnlosumptr,
 double * const              vnloavgptr,
 double * const              vnlodltptr,
-SCOTCH_Num * const          edegminptr,           /* Element degree data */
+SCOTCH_Num * const          edegminptr,           /*+ Element degree data         +*/
 SCOTCH_Num * const          edegmaxptr,
 double * const              edegavgptr,
 double * const              edegdltptr,
-SCOTCH_Num * const          ndegminptr,           /* Node degree data */
+SCOTCH_Num * const          ndegminptr,           /*+ Node degree data            +*/
 SCOTCH_Num * const          ndegmaxptr,
 double * const              ndegavgptr,
 double * const              ndegdltptr)
