@@ -1,4 +1,4 @@
-/* Copyright 2020,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020,2021,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 6.1  : from : 01 sep 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 06 aug 2025     **/
+/**                                 to   : 01 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -145,21 +145,22 @@ SCOTCH_Num * const          npart)                /*+ Node partition array to be
   }
 
   SCOTCH_meshInit (&meshdat);
-  if ((o = _SCOTCH_METIS_MeshToDual2 (&meshdat, baseval, *nn, *ne, eptr, eind)) != METIS_OK) {
+  edgenbr = eptr[*ne] - baseval;                  /* Number of arcs in element array */
+  if (SCOTCH_meshBuildElem (&meshdat, baseval, baseval, *ne, *nn,
+                            eptr, eptr + 1, NULL, NULL, NULL, edgenbr, eind) != 0) {
     SCOTCH_errorPrint ("SCOTCH_METIS_PartMeshDual: cannot build dual mesh");
     SCOTCH_archExit   (&archdat);
-    *objval = o;                                  /* Error value for the Fortran interface */
-    return (o);
+    *objval = METIS_ERROR;                        /* Error value for the Fortran interface */
+    return (METIS_ERROR);
   }
 
   SCOTCH_graphInit (&grafdat);
-  o = SCOTCH_meshGraphDual (&meshdat, &grafdat, *ncommon);
-  if (o != 0) {
+  if (SCOTCH_meshGraphDual (&meshdat, &grafdat, *ncommon) != 0) {
     SCOTCH_errorPrint ("SCOTCH_METIS_PartMeshDual: cannot build dual graph");
     SCOTCH_meshExit   (&meshdat);
     SCOTCH_graphExit  (&grafdat);
     SCOTCH_archExit   (&archdat);
-    *objval = METIS_ERROR_MEMORY;
+    *objval = METIS_ERROR_MEMORY;                 /* Error value for the Fortran interface */
     return (METIS_ERROR_MEMORY);
   }
 

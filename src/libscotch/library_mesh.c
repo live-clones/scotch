@@ -48,7 +48,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 24 jan 2026     **/
+/**                                 to   : 01 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -181,6 +181,67 @@ FILE * const                stream)
 ** - !0  : on error.
 */
 
+static
+void
+meshBuild2 (
+Mesh * const                meshptr)              /*+ Mesh structure to fill +*/
+{
+  Gnum                degrmax;                    /* Maximum degree              */
+  Gnum                veisnbr;                    /* Number of isolated elements */
+  Gnum                velosum;                    /* Sum of element vertex loads */
+  Gnum                vnlosum;                    /* Sum of node vertex loads    */
+  Gnum                velmnum;
+  Gnum                vnodnum;
+
+  const Gnum                  velmnnd = meshptr->velmnnd;
+  const Gnum                  vnodnnd = meshptr->vnodnnd;
+  const Gnum * restrict const verttax = meshptr->verttax;
+  const Gnum * restrict const vendtax = meshptr->vendtax;
+  const Gnum * restrict const velotax = meshptr->velotax;
+  const Gnum * restrict const vnlotax = meshptr->vnlotax;
+
+  if (velotax == NULL)                            /* Compute element vertex load sum */
+    velosum = meshptr->velmnbr;
+  else {
+    for (velmnum = meshptr->velmbas, velosum = 0;
+         velmnum < velmnnd; velmnum ++)
+      velosum += velotax[velmnum];
+  }
+  meshptr->velosum = velosum;
+
+  if (vnlotax == NULL)                            /* Compute node vertex load sum */
+    vnlosum = meshptr->vnodnbr;
+  else {
+    for (vnodnum = meshptr->vnodbas, vnlosum = 0;
+         vnodnum < vnodnnd; vnodnum ++)
+      vnlosum += vnlotax[vnodnum];
+  }
+  meshptr->vnlosum = vnlosum;
+
+  degrmax = 0;                                    /* Compute maximum degree */
+  for (velmnum = meshptr->velmbas, veisnbr = 0;
+       velmnum < velmnnd; velmnum ++) {
+    Gnum                degrval;                  /* Degree of current vertex */
+
+    degrval = vendtax[velmnum] - verttax[velmnum];
+    if (degrval > degrmax)
+      degrmax = degrval;
+    else if (degrval == 0)                        /* Count number of isolated element vertices */
+      veisnbr ++;
+  }
+  meshptr->veisnbr = veisnbr;
+
+  for (vnodnum = meshptr->vnodbas;                /* Compute maximum degree on node vertices as well */
+       vnodnum < vnodnnd; vnodnum ++) {
+    Gnum                degrval;                  /* Degree of current vertex */
+
+    degrval = vendtax[vnodnum] - verttax[vnodnum];
+    if (degrval > degrmax)
+      degrmax = degrval;
+  }
+  meshptr->degrmax = degrmax;
+}
+
 int
 SCOTCH_meshBuild (
 SCOTCH_Mesh * const         meshptr,              /*+ Mesh structure to fill               +*/
@@ -196,25 +257,22 @@ const SCOTCH_Num * const    vlbltab,              /*+ Vertex label array        
 const SCOTCH_Num            edgenbr,              /*+ Number of edges (arcs)               +*/
 const SCOTCH_Num * const    edgetab)              /*+ Edge array [edgenbr]                 +*/
 {
-  Mesh *              srcmeshptr;                 /* Pointer to source mesh structure    */
-  Gnum                degrmax;                    /* Maximum degree                      */
-  Gnum                veisnbr;                    /* Number of isolated element vertices */
-  Gnum                vertnum;                    /* Current vertex number               */
+  Mesh *              srcmeshptr;                 /* Pointer to source mesh structure */
 
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (sizeof (SCOTCH_Mesh) < sizeof (Mesh)) {
-    errorPrint (STRINGIFY (SCOTCH_meshBuild) ": internal error (1)");
+    errorPrint (STRINGIFY (SCOTCH_meshBuild) ": internal error");
     return (1);
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
   if ((velmbas < 0) ||
       (vnodbas < 0)) {
-    errorPrint (STRINGIFY (SCOTCH_meshBuild) ": invalid base parameters");
+    errorPrint (STRINGIFY (SCOTCH_meshBuild) ": invalid parameters (1)");
     return (1);
   }
   if (((velmbas + velmnbr) != vnodbas) &&
       ((vnodbas + vnodnbr) != velmbas)) {
-    errorPrint (STRINGIFY (SCOTCH_meshBuild) ": invalid element or node range");
+    errorPrint (STRINGIFY (SCOTCH_meshBuild) ": invalid parameters (2)");
     return (1);
   }
 
@@ -237,50 +295,205 @@ const SCOTCH_Num * const    edgetab)              /*+ Edge array [edgenbr]      
   srcmeshptr->edgenbr = edgenbr;
   srcmeshptr->edgetax = (Gnum *) edgetab - srcmeshptr->baseval;
 
-  if (srcmeshptr->velotax == NULL)                /* Compute element vertex load sum */
-    srcmeshptr->velosum = srcmeshptr->velmnbr;
-  else {
-    Gnum                velosum;                  /* Sum of element vertex loads */
+  meshBuild2 (srcmeshptr);                        /* Compute remaining fields */
 
-    for (vertnum = srcmeshptr->velmbas, velosum = 0;
-         vertnum < srcmeshptr->velmnnd; vertnum ++)
-      velosum += srcmeshptr->velotax[vertnum];
+  return (0);
+}
 
-    srcmeshptr->velosum = velosum;
+/* This routine creates a mesh structure from the
+** partial mesh connectivity data that is passed
+** to it. The base values allow the user to set
+** the mesh base to any positive base value.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
+
+int
+SCOTCH_meshBuildElem (
+SCOTCH_Mesh * const         meshptr,              /*+ Mesh structure to fill                        +*/
+const SCOTCH_Num            velmbas,              /*+ Input base index for element vertices         +*/
+const SCOTCH_Num            vnodbas,              /*+ Input base index for node vertices            +*/
+const SCOTCH_Num            velmnbr,              /*+ Number of elements in mesh                    +*/
+const SCOTCH_Num            vnodnbr,              /*+ Number of nodes in mesh                       +*/
+const SCOTCH_Num * const    verttab,              /*+ Array of start indices of elements in edgetab +*/
+const SCOTCH_Num * const    vendtab,              /*+ Array of end indices of elements in edgetab   +*/
+const SCOTCH_Num * const    velotab,              /*+ Element vertex load array                     +*/
+const SCOTCH_Num * const    vnlotab,              /*+ Node vertex load array                        +*/
+const SCOTCH_Num * const    vlbltab,              /*+ Vertex label array                            +*/
+const SCOTCH_Num            edgenbr,              /*+ Number of element-to-node edges (arcs)        +*/
+const SCOTCH_Num * const    edgetab)              /*+ Array of element adjacencies                  +*/
+{
+  Gnum * restrict     srcverttax;                 /* Pointer to combined vertex array      */
+  Gnum * restrict     srcedgetax;                 /* Pointer to combined edge array        */
+  Gnum                edgenum;
+  Gnum                vertnum;                    /* Current vertex number in created mesh */
+  Gnum                velmnum;                    /* Current element number in input data  */
+  Gnum                velmadj;                    /* Adjustment value for element indices  */
+  Gnum                vnodadj;                    /* Adjustment value for node indices     */
+#ifdef SCOTCH_DEBUG_LIBRARY1
+  Gnum                edelnbr;                    /* Number of element-to-node edges       */
+#endif /* SCOTCH_DEBUG_LIBRARY1 */
+
+  Mesh * const                      srcmeshptr = (Mesh *) meshptr; /* Use structure as source mesh             */
+  const Gnum                        baseval = MIN (velmbas, vnodbas); /* Take smallest input base as mesh base */
+  const Gnum                        velmnnd = velmnbr + velmbas;
+  const Gnum                        vnodnnd = vnodnbr + vnodbas;
+  const Gnum * const                verttax = verttab - velmbas; /* Base from input base */
+  const Gnum * const                vendtax = ((vendtab == NULL) || (vendtab == verttab)) ? (verttax + 1) : (vendtab - velmbas);
+  const Gnum * const                edgetax = edgetab - velmbas;
+
+#ifdef SCOTCH_DEBUG_LIBRARY1
+  if (sizeof (SCOTCH_Mesh) < sizeof (Mesh)) {
+    errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": internal error (1)");
+    return (1);
   }
-  if (srcmeshptr->vnlotax == NULL)                /* Compute node vertex load sum */
-    srcmeshptr->vnlosum = srcmeshptr->vnodnbr;
-  else {
-    Gnum                vnlosum;                  /* Sum of node vertex loads */
+  if ((velmbas < 0) ||
+      (vnodbas < 0) ||
+      (edgenbr < 0)) {
+    errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": invalid parameters (1)");
+    return (1);
+  }
+#endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-    for (vertnum = srcmeshptr->vnodbas, vnlosum = 0;
-         vertnum < srcmeshptr->vnodnnd; vertnum ++)
-      vnlosum += srcmeshptr->vnlotax[vertnum];
+  srcmeshptr->flagval = MESHFREEEDGE | MESHFREEVERT;
+  srcmeshptr->baseval = baseval;
+  srcmeshptr->velmbas = velmbas;                  /* Elements are placed first */
+  srcmeshptr->velmnbr = velmnbr;
+  srcmeshptr->velmnnd = baseval + velmnbr;
+  srcmeshptr->vnodbas = srcmeshptr->velmnnd;      /* Nodes are placed after elements in new node numbering */
+  srcmeshptr->vnodnbr = vnodnbr;
+  srcmeshptr->vnodnnd = srcmeshptr->velmnnd + vnodnbr;
+  srcmeshptr->velotax = ((velotab == NULL) || (velotab == verttab)) ? NULL : (Gnum *) velotab - srcmeshptr->velmbas;
+  srcmeshptr->vnlotax = ((vnlotab == NULL) || (vnlotab == verttab)) ? NULL : (Gnum *) vnlotab - srcmeshptr->vnodbas;
+  srcmeshptr->vlbltax = ((vlbltab == NULL) || (vlbltab == verttab)) ? NULL : (Gnum *) vlbltab - srcmeshptr->baseval;
+  srcmeshptr->edgenbr = edgenbr * 2;              /* Number of mesh arcs is twice the number of element-to-node arcs */
 
-    srcmeshptr->vnlosum = vnlosum;
+#ifdef SCOTCH_DEBUG_LIBRARY1
+  if ((srcmeshptr->vlbltax != NULL) &&            /* If vertex label array provided            */
+      ((velmbas != (vnodbas + vnodnbr)) &&        /* And nodes and elements are not contiguous */
+       (vnodbas != (velmbas + velmnbr)))) {
+    errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": invalid parameters (2)");
+    return (1);
   }
 
-  for (vertnum = srcmeshptr->velmbas, veisnbr = degrmax = 0; /* Compute maximum degree */
-       vertnum < srcmeshptr->velmnnd; vertnum ++) {
-    Gnum                degrval;                  /* Degree of current vertex */
+  for (velmnum = velmbas, edelnbr = 0; velmnum < velmnnd; velmnum ++) { /* For all element vertices */
+    Gnum                edelnum;
+    Gnum                edelnnd;
 
-    degrval = srcmeshptr->vendtax[vertnum] - srcmeshptr->verttax[vertnum];
-    if (degrval > degrmax)
-      degrmax = degrval;
-    else if (degrval == 0)                        /* Count number of isolated element vertices */
-      veisnbr ++;
+    edelnum = verttax[velmnum];
+    edelnnd = vendtax[velmnum];
+    if (edelnnd < edelnum) {
+      SCOTCH_errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": invalid parameters (3)");
+      return (1);
+    }
+    edelnbr += (edelnnd - edelnum);               /* Accumulate number of edges */
+
+    for ( ; edelnum < edelnnd; edelnum ++) {
+      if ((edgetax[edelnum] <  vnodbas) ||
+          (edgetax[edelnum] >= vnodnnd)) {
+        SCOTCH_errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": invalid parameters (4)");
+        return (1);
+      }
+    }
   }
-  srcmeshptr->veisnbr = veisnbr;
+  if (edelnbr != edgenbr) {
+    SCOTCH_errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": invalid parameters (5)");
+    return (1);
+  }
+#endif /* SCOTCH_DEBUG_LIBRARY1 */
 
-  for (vertnum = srcmeshptr->vnodbas;             /* Compute maximum degree */
+  if ((srcverttax = memAlloc ((velmnbr + vnodnbr + 1) * sizeof (Gnum))) == NULL) { /* Allocate compact vertex array for mesh vertices */
+    SCOTCH_errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": out of memory (1)");
+    return (1);
+  }
+  if ((srcedgetax = memAlloc (srcmeshptr->edgenbr * sizeof (Gnum))) == NULL) { /* Twice the number of initial arcs */
+    SCOTCH_errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": out of memory (2)");
+    memFree           (srcverttax);
+    return (1);
+  }
+
+  memSet (srcverttax + velmnbr, 0, vnodnbr * sizeof (Gnum)); /* Initialize node part of array as node vertex degrees */
+  srcverttax -= baseval;                          /* Array is now based with respect to new mesh (element) base      */
+  srcedgetax -= baseval;
+  srcmeshptr->verttax = srcverttax;
+  srcmeshptr->vendtax = srcverttax + 1;           /* Array is compact */
+  srcmeshptr->edgetax = srcedgetax;
+
+  velmadj = baseval - velmbas;                    /* Compute adjustments from initial element and node base values */
+  vnodadj = baseval + velmnbr - vnodbas;
+  for (velmnum = velmbas, edgenum = baseval; velmnum < velmnnd; velmnum ++) { /* For all element vertices */
+    Gnum                edelnum;
+    Gnum                edelnnd;
+
+    srcverttax[velmnum + velmadj] = edgenum;      /* Set index in mesh vertex array */
+    for (edelnum = verttax[velmnum], edelnnd = vendtax[velmnum];
+         edelnum < edelnnd; edelnum ++) {
+      Gnum              vnodend;
+
+      vnodend = edgetax[edelnum];
+      srcedgetax[edgenum ++] = vnodend + vnodadj; /* Compact and adjust edge array for element vertices */
+      srcverttax[vnodend + vnodadj] ++;           /* Accumulate degrees of end node vertices            */
+    }
+  }
+#ifdef SCOTCH_DEBUG_LIBRARY1
+  if ((edgenum - baseval) != edgenbr) {
+    SCOTCH_errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": invalid parameters (6)");
+    return (1);
+  }
+
+  for (vertnum = srcmeshptr->vnodbas, edelnbr = 0; vertnum < srcmeshptr->vnodnnd; vertnum ++) /* For all newly based node vertices */
+    edelnbr += srcverttax[vertnum];
+  if (edelnbr != edgenbr) {
+    SCOTCH_errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": invalid parameters (7)");
+    return (1);
+  }
+#endif /* SCOTCH_DEBUG_LIBRARY1 */
+
+  for (vertnum = srcmeshptr->vnodbas;             /* For all newly based node vertex indices in mesh */
        vertnum < srcmeshptr->vnodnnd; vertnum ++) {
-    Gnum                degrval;                  /* Degree of current vertex */
+    Gnum                degrval;
 
-    degrval = srcmeshptr->vendtax[vertnum] - srcmeshptr->verttax[vertnum];
-    if (degrval > degrmax)
-      degrmax = degrval;
+    degrval = srcverttax[vertnum];
+    srcverttax[vertnum] = edgenum;                /* Fill node part of vertex array */
+    edgenum += degrval;
   }
-  srcmeshptr->degrmax = degrmax;
+  srcverttax[vertnum] = edgenum;                  /* Set end of vertex array */
+#ifdef SCOTCH_DEBUG_LIBRARY2
+  if ((edgenum - baseval) != srcmeshptr->edgenbr) {
+    SCOTCH_errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": internal error (2)");
+    return (1);
+  }
+#endif /* SCOTCH_DEBUG_LIBRARY2 */
+
+  for (vertnum = baseval; vertnum < (srcmeshptr->velmnnd - 1); vertnum ++) { /* For all newly based element vertices, except the last */
+    Gnum                edgenum;
+    Gnum                edgennd;
+
+    for (edgenum = srcverttax[vertnum], edgennd = srcverttax[vertnum + 1]; /* Build edge array for node vertices */
+         edgenum < edgennd; edgenum ++)
+      srcedgetax[srcverttax[srcedgetax[edgenum]] ++] = vertnum;
+  }
+  if (vertnum < srcmeshptr->velmnnd) {            /* If mesh has at least one (last) element */
+    Gnum                edgenum;
+    Gnum                edgennd;
+
+    for (edgenum = srcverttax[vertnum], edgennd = baseval + edgenbr; /* Build edge array for node vertices, with prescribed end */
+         edgenum < edgennd; edgenum ++)
+      srcedgetax[srcverttax[srcedgetax[edgenum]] ++] = vertnum;
+  }
+
+  memMov (srcverttax + srcmeshptr->velmnnd + 1, srcverttax + srcmeshptr->velmnnd, (vnodnbr - 1) * sizeof (Gnum));  /* Re-build node part of vertex array */
+  srcverttax[srcmeshptr->velmnnd] = edgenbr + baseval; /* Restore first index of sequence */
+
+  meshBuild2 (srcmeshptr);                        /* Compute remaining fields */
+
+#ifdef SCOTCH_DEBUG_LIBRARY2
+  if (SCOTCH_meshCheck (meshptr) != 0) {
+    errorPrint (STRINGIFY (SCOTCH_meshBuildElem) ": internal error (3)");
+    return (1);
+  }
+#endif /* SCOTCH_DEBUG_LIBRARY2 */
 
   return (0);
 }
