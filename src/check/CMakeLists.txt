@@ -518,17 +518,17 @@ foreach(mmk_msh m2_5_1 m2_5_4 m3_5_4_3)
   set_tests_properties(gmk_msh_${mmk_msh} PROPERTIES FIXTURES_REQUIRED MMK_MESHES FIXTURES_SETUP GMK_GRAPHS)
 endforeach()
 
-add_test(NAME gmk_msh_ship001 COMMAND ${BASH} -c "'$<TARGET_FILE:gmk_msh>' ${dat}/ship001.msh ship001.grf && '$<TARGET_FILE:gtst>' ship001.grf")
+add_test(NAME gmk_msh_ship001 COMMAND ${BASH} -c "'$<TARGET_FILE:gmk_msh>' ${dat}/ship001.msh ${CMAKE_CURRENT_BINARY_DIR}/ship001.grf && '$<TARGET_FILE:gtst>' ${CMAKE_CURRENT_BINARY_DIR}/ship001.grf")
 set_tests_properties(gmk_msh_ship001 PROPERTIES FIXTURES_SETUP GMK_GRAPHS)
 
 foreach(i RANGE 1 2)
-  add_test(NAME gmk_msh_dual_${i} COMMAND ${BASH} -c "'$<TARGET_FILE:gmk_msh>' '${dat}/small2.msh' small2_d${i}.grf -d${i} && \
-    '${CMAKE_COMMAND}' -E compare_files '${dat}/small2_d${i}.grf' small2_d${i}.grf")
+  add_test(NAME gmk_msh_dual_${i} COMMAND ${BASH} -c "'$<TARGET_FILE:gmk_msh>' '${dat}/small2.msh' ${CMAKE_CURRENT_BINARY_DIR}/small2_d${i}.grf -d${i} && \
+  '${CMAKE_COMMAND}' -E compare_files '${dat}/small2_d${i}.grf' ${CMAKE_CURRENT_BINARY_DIR}/small2_d${i}.grf")
   set_tests_properties(gmk_msh_dual_${i} PROPERTIES FIXTURES_SETUP GMK_GRAPHS)
 endforeach()
 
-add_test(NAME gmk_msh_dual_3 COMMAND ${BASH} -c "'$<TARGET_FILE:gmk_msh>' '${dat}/small2.msh' small2_d3.grf -d3 && \
-  '${CMAKE_COMMAND}' -E compare_files '${dat}/small2_d2.grf' small2_d3.grf")
+add_test(NAME gmk_msh_dual_3 COMMAND ${BASH} -c "'$<TARGET_FILE:gmk_msh>' '${dat}/small2.msh' ${CMAKE_CURRENT_BINARY_DIR}/small2_d3.grf -d3 && \
+'${CMAKE_COMMAND}' -E compare_files '${dat}/small2_d2.grf' ${CMAKE_CURRENT_BINARY_DIR}/small2_d3.grf")
 set_tests_properties(gmk_msh_dual_3 PROPERTIES FIXTURES_SETUP GMK_GRAPHS)
 
 # check_prog_mcv
@@ -547,7 +547,7 @@ foreach(mmk_msh m2_5_1 m2_5_4 m3_5_4_3)
   set_tests_properties(mord_${mmk_msh} PROPERTIES FIXTURES_REQUIRED MMK_MESHES)
 endforeach()
 
-add_test(NAME mord_ship001 COMMAND ${BASH} -c "'$<TARGET_FILE:mord>' ${dat}/ship001.msh | '$<TARGET_FILE:gotst>' ship001.grf")
+add_test(NAME mord_ship001 COMMAND ${BASH} -c "'$<TARGET_FILE:mord>' ${dat}/ship001.msh | '$<TARGET_FILE:gotst>' ${CMAKE_CURRENT_BINARY_DIR}/ship001.grf")
 set_tests_properties(mord_ship001 PROPERTIES FIXTURES_REQUIRED GMK_GRAPHS)
 
 # check_prog_gmap
@@ -558,20 +558,20 @@ add_test(NAME gmap_small COMMAND $<TARGET_FILE:gmap> ${dat}/small1.grf ${tgt}/m1
 
 # check_prog_gord
 
-add_test(NAME gord_bump COMMAND $<TARGET_FILE:gord> ${dat}/bump.grf bump.ord -vt)
+add_test(NAME gord_bump COMMAND $<TARGET_FILE:gord> ${dat}/bump.grf ${CMAKE_CURRENT_BINARY_DIR}/bump.ord -vt)
 
-add_test(NAME gord_bump_b100000 COMMAND $<TARGET_FILE:gord> ${dat}/bump_b100000.grf bump_b100000.ord -vt)
+add_test(NAME gord_bump_b100000 COMMAND $<TARGET_FILE:gord> ${dat}/bump_b100000.grf ${CMAKE_CURRENT_BINARY_DIR}/bump_b100000.ord -vt)
 
-add_test(NAME gord_bump_b1 COMMAND ${BASH} -c "'$<TARGET_FILE:gord>' '${dat}/bump_b1.grf' '-On{sep=(/((vert)>(240))?(e{strat=g}|g|h);),ole=d{cmin=15,cmax=100000,frat=0},ose=g{pass=3}}' bump_b1.ord -vt")
+add_test(NAME gord_bump_b1 COMMAND ${BASH} -c "'$<TARGET_FILE:gord>' '${dat}/bump_b1.grf' '-On{sep=(/((vert)>(240))?(e{strat=g}|g|h);),ole=d{cmin=15,cmax=100000,frat=0},ose=g{pass=3}}' ${CMAKE_CURRENT_BINARY_DIR}/bump_b1.ord -vt")
 
-add_test(NAME gord_bump_imbal COMMAND $<TARGET_FILE:gord> ${dat}/bump_imbal_32.grf bump_imbal_32.ord -vt)
+add_test(NAME gord_bump_imbal COMMAND $<TARGET_FILE:gord> ${dat}/bump_imbal_32.grf ${CMAKE_CURRENT_BINARY_DIR}/bump_imbal_32.ord -vt)
 
-add_test(NAME gord_ship001 COMMAND $<TARGET_FILE:gord> ship001.grf ship001.ord -vt)
+add_test(NAME gord_ship001 COMMAND $<TARGET_FILE:gord> ${CMAKE_CURRENT_BINARY_DIR}/ship001.grf ${CMAKE_CURRENT_BINARY_DIR}/ship001.ord -vt)
 set_tests_properties(gord_ship001 PROPERTIES FIXTURES_REQUIRED GMK_GRAPHS)
 
-add_test(NAME gord_nocoarsen COMMAND $<TARGET_FILE:gord> ${dat}/nocoarsen.grf nocoarsen.ord -vt)
+add_test(NAME gord_nocoarsen COMMAND $<TARGET_FILE:gord> ${dat}/nocoarsen.grf ${CMAKE_CURRENT_BINARY_DIR}/nocoarsen.ord -vt)
 
-add_test(NAME gord_compress-coarsen COMMAND $<TARGET_FILE:gord> ${dat}/compress-coarsen.grf compress-coarsen.ord -vt)
+add_test(NAME gord_compress-coarsen COMMAND $<TARGET_FILE:gord> ${dat}/compress-coarsen.grf ${CMAKE_CURRENT_BINARY_DIR}/compress-coarsen.ord -vt)
 
 set_tests_properties(gord_bump gord_bump_b100000 gord_ship001 gord_bump_b1 gord_bump_imbal gord_nocoarsen gord_compress-coarsen PROPERTIES FIXTURES_SETUP GORD_DEPS)
 
@@ -595,11 +595,11 @@ add_test(NAME gord_block_3 COMMAND $<TARGET_FILE:gord> ${dat}/m4x4_b1_ev.grf m4x
 
 # check_prog_gpart
 
-add_test(NAME gpart_1 COMMAND $<TARGET_FILE:gpart> 9 ${dat}/bump.grf bump_k9.map -vmt)
+add_test(NAME gpart_1 COMMAND $<TARGET_FILE:gpart> 9 ${dat}/bump.grf ${CMAKE_CURRENT_BINARY_DIR}/bump_k9.map -vmt)
 
-add_test(NAME gpart_2 COMMAND $<TARGET_FILE:gpart> 9 ${dat}/bump_b100000.grf bump_k9_b100000.map -vmt)
+add_test(NAME gpart_2 COMMAND $<TARGET_FILE:gpart> 9 ${dat}/bump_b100000.grf ${CMAKE_CURRENT_BINARY_DIR}/bump_k9_b100000.map -vmt)
 
-add_test(NAME gpart_3 COMMAND $<TARGET_FILE:gpart> 9 ${dat}/nocoarsen.grf nocoarsen_k9.map -vmt)
+add_test(NAME gpart_3 COMMAND $<TARGET_FILE:gpart> 9 ${dat}/nocoarsen.grf ${CMAKE_CURRENT_BINARY_DIR}/nocoarsen_k9.map -vmt)
 
 add_test(NAME gpart_4 COMMAND $<TARGET_FILE:gpart> 5 ${dat}/bump_b100000.grf bump_k5.map -vmt -Mr{bal=0.05,sep=m{vert=120,low=h{pass=10}f{bal=0.05,move=120},asc=b{bnd=f{bal=0.05,move=120},org=f{bal=0.05,move=120}}}}|m{vert=1000,low=r{bal=0.05,sep=m{vert=120,low=h{pass=10}f{bal=0.05,move=120},asc=b{bnd=f{bal=0.05,move=120},org=f{bal=0.05,move=120}}}},asc=b{bnd=f{bal=0.05,move=120},org=f{bal=0.05,move=120}}})
 
@@ -607,34 +607,34 @@ set_tests_properties(gpart_1 gpart_2 gpart_3 gpart_4 PROPERTIES FIXTURES_SETUP G
 
 # check_prog_gout
 
-add_test(NAME gout_1 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Oi{c,r}' '${dat}/bump.grf' '${dat}/bump.xyz' bump_k9.map bump_k9.iv")
+add_test(NAME gout_1 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Oi{c,r}' '${dat}/bump.grf' '${dat}/bump.xyz' ${CMAKE_CURRENT_BINARY_DIR}/bump_k9.map bump_k9.iv")
 set_tests_properties(gout_1 PROPERTIES FIXTURES_REQUIRED GPART_DEPS)
 
-add_test(NAME gout_2 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Oi{g,r}' '${dat}/bump_b100000.grf' '${dat}/bump_b100000.xyz' bump_k9_b100000.map bump_k9_b100000.iv")
+add_test(NAME gout_2 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Oi{g,r}' '${dat}/bump_b100000.grf' '${dat}/bump_b100000.xyz' ${CMAKE_CURRENT_BINARY_DIR}/bump_k9_b100000.map bump_k9_b100000.iv")
 set_tests_properties(gout_2 PROPERTIES FIXTURES_REQUIRED GPART_DEPS)
 
-add_test(NAME gout_3 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Om{e}' -gn '${dat}/bump.grf' ${dev_null} bump.ord bump_ord.eps")
+add_test(NAME gout_3 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Om{e}' -gn '${dat}/bump.grf' ${dev_null} ${CMAKE_CURRENT_BINARY_DIR}/bump.ord bump_ord.eps")
 set_tests_properties(gout_3 PROPERTIES FIXTURES_REQUIRED GORD_DEPS)
 
-add_test(NAME gout_4 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Om{e}' -gn '${dat}/bump_b100000.grf' ${dev_null} bump_b100000.ord bump_ord_b100000.eps")
+add_test(NAME gout_4 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Om{e}' -gn '${dat}/bump_b100000.grf' ${dev_null} ${CMAKE_CURRENT_BINARY_DIR}/bump_b100000.ord bump_ord_b100000.eps")
 set_tests_properties(gout_4 PROPERTIES FIXTURES_REQUIRED GORD_DEPS)
 
-add_test(NAME gout_5 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Op{d,e,g,r,s}' '${dat}/bump.grf' '${dat}/bump.xyz' bump_k9.map bump_k9.eps")
+add_test(NAME gout_5 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Op{d,e,g,r,s}' '${dat}/bump.grf' '${dat}/bump.xyz' ${CMAKE_CURRENT_BINARY_DIR}/bump_k9.map bump_k9.eps")
 set_tests_properties(gout_5 PROPERTIES FIXTURES_REQUIRED GPART_DEPS)
 
-add_test(NAME gout_6 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Op{a,e,c,d,l}' '${dat}/bump_b100000.grf' '${dat}/bump_b100000.xyz' bump_k9_b100000.map bump_k9_b100000.eps")
+add_test(NAME gout_6 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Op{a,e,c,d,l}' '${dat}/bump_b100000.grf' '${dat}/bump_b100000.xyz' ${CMAKE_CURRENT_BINARY_DIR}/bump_k9_b100000.map bump_k9_b100000.eps")
 set_tests_properties(gout_6 PROPERTIES FIXTURES_REQUIRED GPART_DEPS)
 
 add_test(NAME gout_7 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Ot{c,d,v}' -mn '${dat}/bump.grf' '${dat}/bump.xyz' ${dev_null} bump_k9.tlp")
 set_tests_properties(gout_7 PROPERTIES FIXTURES_REQUIRED GPART_DEPS)
 
-add_test(NAME gout_8 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Ot{b,a,r}' '${dat}/bump_b100000.grf' '${dat}/bump_b100000.xyz' bump_k9_b100000.map bump_k9_b100000.tlp")
+add_test(NAME gout_8 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Ot{b,a,r}' '${dat}/bump_b100000.grf' '${dat}/bump_b100000.xyz' ${CMAKE_CURRENT_BINARY_DIR}/bump_k9_b100000.map bump_k9_b100000.tlp")
 set_tests_properties(gout_8 PROPERTIES FIXTURES_REQUIRED GPART_DEPS)
 
-add_test(NAME gout_9 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Ov{r}' '${dat}/bump.grf' '${dat}/bump.xyz' bump_k9.map bump_k9.vtk")
+add_test(NAME gout_9 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Ov{r}' '${dat}/bump.grf' '${dat}/bump.xyz' ${CMAKE_CURRENT_BINARY_DIR}/bump_k9.map bump_k9.vtk")
 set_tests_properties(gout_9 PROPERTIES FIXTURES_REQUIRED GPART_DEPS)
 
-add_test(NAME gout_10 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Ov{v}' '${dat}/bump_b100000.grf' '${dat}/bump_b100000.xyz' bump_k9_b100000.map bump_k9_b100000.vtk")
+add_test(NAME gout_10 COMMAND ${BASH} -c "'$<TARGET_FILE:gout>' '-Ov{v}' '${dat}/bump_b100000.grf' '${dat}/bump_b100000.xyz' ${CMAKE_CURRENT_BINARY_DIR}/bump_k9_b100000.map bump_k9_b100000.vtk")
 set_tests_properties(gout_10 PROPERTIES FIXTURES_REQUIRED GPART_DEPS)
 
 # check_prog_gpart_clustering
