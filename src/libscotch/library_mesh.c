@@ -174,8 +174,8 @@ FILE * const                stream)
 
 /* This routine fills the contents of the given
 ** opaque mesh structure with the data provided
-** by the user. The base value allows the user to
-** set the mesh base to 0 or 1.
+** by the user. The base values allow the user to
+** set the mesh base to any positive base value.
 ** It returns:
 ** - 0   : on success.
 ** - !0  : on error.
