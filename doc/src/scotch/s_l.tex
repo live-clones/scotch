@@ -5390,7 +5390,7 @@ $\min(\mathtt{velmbas}, \mathtt{vnodbas})$ is $0$ for
 structures built from C and $1$ for structures built from Fortran.
 {\tt verttab} is the adjacency index array, of size $({\tt velmnbr} +
 {\tt vnodnbr} + 1)$ if the edge array is compact (that is, if
-{\tt vendtab} equals $\mathtt{vendtab}+1$ or {\tt NULL}), or of
+{\tt vendtab} equals $(\mbox{\texttt{verttab}}+1)$ or {\tt NULL}), or of
 size $({\tt velmnbr} + {\tt vnodnbr})$ else.
 {\tt vendtab} is the adjacency end index array, of size $({\tt velmnbr} +
 {\tt vnodnbr})$ if it is disjoint from {\tt verttab}.
