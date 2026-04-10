@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 24 jun 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 12 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -292,6 +292,11 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  if (SCOTCH_graphCheck (&coargrafdat) != 0) {
+    SCOTCH_errorPrint ("main: invalid coarse graph (1)");
+    exit (EXIT_FAILURE);
+  }
+
   SCOTCH_graphSize (&coargrafdat, &coarvertnbr, &coaredgenbr);
 
   printf ("Coarse graph has " SCOTCH_NUMSTRING " vertices and " SCOTCH_NUMSTRING " edges\n",
@@ -320,6 +325,11 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  if (SCOTCH_graphCheck (&coargrafdat) != 0) {
+    SCOTCH_errorPrint ("main: invalid coarse graph (2)");
+    exit (EXIT_FAILURE);
+  }
+
   SCOTCH_graphSize (&coargrafdat, &coarvertnbr, &coaredgenbr);
   printf ("Coarse graph has " SCOTCH_NUMSTRING " vertices and " SCOTCH_NUMSTRING " edges\n",
           coarvertnbr,
@@ -337,6 +347,11 @@ char *              argv[])
 
   if (SCOTCH_graphCoarsen (&finegrafdat, 1, 1.0, SCOTCH_COARSENNONE, &coargrafdat, coarmulttab) != 0) {
     SCOTCH_errorPrint ("main: cannot coarsen graph");
+    exit (EXIT_FAILURE);
+  }
+
+  if (SCOTCH_graphCheck (&coargrafdat) != 0) {
+    SCOTCH_errorPrint ("main: invalid coarse graph (3)");
     exit (EXIT_FAILURE);
   }
 

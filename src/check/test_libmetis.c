@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 22 jun 2021     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 08 aug 2024     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 12 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -65,6 +65,82 @@
 
 #include "scotch.h"
 #include "metis.h"                                /* Our "metis.h" file */
+
+/**************************************/
+/*                                    */
+/* The consistency checking routines. */
+/*                                    */
+/**************************************/
+
+/* This routine checks that the produced
+** permutation and inverse permutation are
+** inverses of each other.
+** It exits on error.
+*/
+
+static
+void
+checkOrder (
+const SCOTCH_Num            baseval,
+const SCOTCH_Num            vertnbr,
+const SCOTCH_Num * const    permtab,
+const SCOTCH_Num * const    peritab)
+{
+  SCOTCH_Num          vertnum;
+
+  const SCOTCH_Num                  vertnnd = vertnbr + baseval;
+
+  for (vertnum = 0; vertnum < vertnbr; vertnum ++) {  /* Un-based traversal */
+    SCOTCH_Num          perival;
+    SCOTCH_Num          permval;
+
+    permval = permtab[vertnum];
+    if ((permval <  baseval) ||
+        (permval >= vertnnd)) {
+      SCOTCH_errorPrint ("checkOrder: invalid permutation value");
+      exit (EXIT_FAILURE);
+    }
+
+    perival = peritab[vertnum];
+    if ((perival <  baseval) ||
+        (perival >= vertnnd)) {
+      SCOTCH_errorPrint ("checkOrder: invalid inverse permutation value");
+      exit (EXIT_FAILURE);
+    }
+
+    if (peritab[permval - baseval] != (vertnum + baseval)) {
+      SCOTCH_errorPrint ("checkOrder: invalid permutation pair");
+      exit (EXIT_FAILURE);
+    }
+  }
+}
+
+/* This routine checks that the produced
+** partition is valid.
+** It exits on error.
+*/
+
+static
+void
+checkPart (
+const SCOTCH_Num            baseval,
+const SCOTCH_Num            vertnbr,
+const SCOTCH_Num * const    parttab,
+const SCOTCH_Num            partnbr)
+{
+  SCOTCH_Num          vertnum;
+
+  for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Un-based traversal */
+    SCOTCH_Num          partval;
+
+    partval = parttab[vertnum];
+    if ((partval <   baseval) ||
+        (partval >= (baseval + partnbr))) {
+      SCOTCH_errorPrint ("checkPart: invalid partition");
+      exit (EXIT_FAILURE);
+    }
+  }
+}
 
 /*********************/
 /*                   */
@@ -143,11 +219,15 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  checkPart (baseval, vertnbr, parttab, partnbr);
+
   if (SCOTCHMETISNAMEC (METIS_PartGraphRecursive) (&vertnbr, verttab, edgetab, velotab, edlotab,
                                                    &fwgtval, &baseval, &partnbr, &foptval, &edgecut, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_PartGraphRecursive");
     exit (EXIT_FAILURE);
   }
+
+  checkPart (baseval, vertnbr, parttab, partnbr);
 
   fwgtval &= ~2;                                  /* Take vertex load array as communication volume array */
   if (SCOTCHMETISNAMEC (METIS_PartGraphVKway) (&vertnbr, verttab, edgetab, NULL, velotab,
@@ -156,20 +236,28 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  checkPart (baseval, vertnbr, parttab, partnbr);
+
   if (SCOTCHMETISNAMEC (METIS_EdgeND) (&vertnbr, verttab, edgetab, &baseval, &foptval, peritab, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_EdgeND");
     exit (EXIT_FAILURE);
   }
+
+  checkOrder (baseval, vertnbr, parttab, peritab);
 
   if (SCOTCHMETISNAMEC (METIS_NodeND) (&vertnbr, verttab, edgetab, &baseval, &foptval, peritab, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_NodeND");
     exit (EXIT_FAILURE);
   }
 
+  checkOrder (baseval, vertnbr, parttab, peritab);
+
   if (SCOTCHMETISNAMEC (METIS_NodeWND) (&vertnbr, verttab, edgetab, velotab, &baseval, &foptval, peritab, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V3_NodeWND");
     exit (EXIT_FAILURE);
   }
+
+  checkOrder (baseval, vertnbr, parttab, peritab);
 #endif /* (SCOTCH_METIS_VERSION == 3) */
 
 #if (SCOTCH_METIS_VERSION == 5)
@@ -182,16 +270,22 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  checkPart (baseval, vertnbr, parttab, partnbr);
+
   if (SCOTCHMETISNAMEC (METIS_PartGraphRecursive) (&vertnbr, &nconval, verttab, edgetab, velotab, NULL, edlotab,
                                                    &partnbr, awgttab, kbaltab, options, &edgecut, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V5_PartGraphRecursive");
     exit (EXIT_FAILURE);
   }
 
+  checkPart (baseval, vertnbr, parttab, partnbr);
+
   if (SCOTCHMETISNAMEC (METIS_NodeND) (&vertnbr, verttab, edgetab, velotab, options, peritab, parttab) != METIS_OK) {
     SCOTCH_errorPrint ("main: error in METIS_V5_NodeND");
     exit (EXIT_FAILURE);
   }
+
+  checkOrder (baseval, vertnbr, parttab, peritab);
 #endif /* (SCOTCH_METIS_VERSION == 5) */
 
   free (peritab);

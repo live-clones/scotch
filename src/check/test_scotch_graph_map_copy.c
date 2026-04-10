@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 15 oct 2014     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 26 mar 2026     **/
+/**                                 to   : 11 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +64,7 @@
 #include "scotch.h"
 
 #define STRANBR                     3
+#define PARTNBR                     5             /* Number of vertices in target architecture */
 
 /*********************/
 /*                   */
@@ -138,10 +139,13 @@ char *              argv[])
     SCOTCH_errorPrint ("main: cannot initialize architecture");
     exit (EXIT_FAILURE);
   }
-  SCOTCH_archCmplt (&archdat, 5);
+
+  SCOTCH_archCmplt (&archdat, PARTNBR);
 
   for (stranum = 0; stranum < (STRANBR - 1); stranum ++) {
     for (typenum = 0; typenum < 2; typenum ++) {
+      SCOTCH_Num          vertnum;
+
       printf ("Strat %d, type %d\n", stranum, typenum);
 
       switch (typenum) {
@@ -167,6 +171,14 @@ char *              argv[])
       if (o != 0) {
         SCOTCH_errorPrint ("main: cannot compute mapping");
         exit (EXIT_FAILURE);
+      }
+
+      for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Check partition range */
+        if ((parttab[vertnum] <  0) ||
+            (parttab[vertnum] >= PARTNBR)) {
+          SCOTCH_errorPrint ("main: invalid mapping");
+          exit (EXIT_FAILURE);
+        }
       }
     }
 

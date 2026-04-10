@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2018,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2018,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 21 feb 2012     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 03 jul 2023     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 11 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -88,11 +88,15 @@ char *              argv[])
 
 #ifdef SCOTCH_PTHREAD
   thrdreqlvl = MPI_THREAD_MULTIPLE;
-  if (MPI_Init_thread (&argc, &argv, thrdreqlvl, &thrdprolvl) != MPI_SUCCESS)
+  if (MPI_Init_thread (&argc, &argv, thrdreqlvl, &thrdprolvl) != MPI_SUCCESS) {
     SCOTCH_errorPrint ("main: Cannot initialize (1)");
+    exit (EXIT_FAILURE);
+  }
 #else /* SCOTCH_PTHREAD */
-  if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
+  if (MPI_Init (&argc, &argv) != MPI_SUCCESS) {
     SCOTCH_errorPrint ("main: Cannot initialize (2)");
+    exit (EXIT_FAILURE);
+  }
 #endif /* SCOTCH_PTHREAD */
 
   if (argc != 2) {
@@ -166,6 +170,11 @@ char *              argv[])
 
   if (SCOTCH_dgraphRedist (&srcgrafdat, partloctab, NULL, -1, -1, &dstgrafdat) != 0) {
     SCOTCH_errorPrint ("main: cannot compute redistributed graph");
+    exit (EXIT_FAILURE);
+  }
+
+  if (SCOTCH_dgraphCheck (&dstgrafdat) != 0) {
+    SCOTCH_errorPrint ("main: invalid redistributed graph");
     exit (EXIT_FAILURE);
   }
 

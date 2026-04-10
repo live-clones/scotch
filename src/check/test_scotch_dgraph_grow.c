@@ -1,4 +1,4 @@
-/* Copyright 2012,2014,2015,2018,2020,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2014,2015,2018,2020,2021,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 28 dec 2021     **/
 /**                                 to   : 28 dec 2021     **/
 /**                # Version 7.0  : from : 14 jan 2020     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 11 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,6 +78,7 @@ char *              argv[])
   long                vertlocadj;
   SCOTCH_Num          vertglbnbr;
   SCOTCH_Num          vertlocnbr;
+  SCOTCH_Num          vertlocnum;
   SCOTCH_Num          vertgstnbr;
   SCOTCH_Num *        seedloctab;
   SCOTCH_Num *        partgsttab;
@@ -94,11 +95,15 @@ char *              argv[])
 
 #ifdef SCOTCH_PTHREAD
   thrdreqlvl = MPI_THREAD_MULTIPLE;
-  if (MPI_Init_thread (&argc, &argv, thrdreqlvl, &thrdprolvl) != MPI_SUCCESS)
+  if (MPI_Init_thread (&argc, &argv, thrdreqlvl, &thrdprolvl) != MPI_SUCCESS) {
     SCOTCH_errorPrint ("main: Cannot initialize (1)");
+    exit (EXIT_FAILURE);
+  }
 #else /* SCOTCH_PTHREAD */
-  if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
+  if (MPI_Init (&argc, &argv) != MPI_SUCCESS) {
     SCOTCH_errorPrint ("main: Cannot initialize (2)");
+    exit (EXIT_FAILURE);
+  }
 #endif /* SCOTCH_PTHREAD */
 
   if (argc != 3) {
@@ -182,6 +187,14 @@ char *              argv[])
   if (SCOTCH_dgraphGrow (&grafdat, 3, seedloctab, 4, partgsttab) != 0) {
     SCOTCH_errorPrint ("main: cannot compute grown regions");
     exit (EXIT_FAILURE);
+  }
+
+  for (vertlocnum = 0; vertlocnum < vertlocnbr; vertlocnum ++) { /* Check partition values */
+    if ((partgsttab[vertlocnum] < -1) ||
+        (partgsttab[vertlocnum] >= 3)) {
+      SCOTCH_errorPrint ("main: invalid partition");
+      exit (EXIT_FAILURE);
+    }
   }
 
   free (seedloctab);

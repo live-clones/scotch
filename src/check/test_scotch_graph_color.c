@@ -42,6 +42,7 @@
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
 /**                                 to   : 14 jan 2026     **/
+/**                                 to   : 10 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -87,7 +88,7 @@ const SCOTCH_Num * const    colotab)
 
   SCOTCH_graphData (grafptr, &baseval, &vertnbr, &verttab, &vendtab, NULL, NULL, NULL, &edgetab, NULL);
 
-  verttax = verttab - baseval;
+  verttax = verttab - baseval;                    /* Create based arrays */
   vendtax = vendtab - baseval;
   edgetax = edgetab - baseval;
   colotax = colotab - baseval;
@@ -102,10 +103,8 @@ const SCOTCH_Num * const    colotab)
       SCOTCH_Num          vertend;
 
       vertend = edgetax[edgenum];
-      if (colotax[vertend] == coloval) {
-        SCOTCH_errorPrint ("checkColor: invalid coloring");
+      if (colotax[vertend] == coloval)
         return (1);
-      }
     }
   }
 
@@ -174,8 +173,10 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
-  if (checkColor (&grafdat, colotab) != 0)        /* Verify coloring validity */
+  if (checkColor (&grafdat, colotab) != 0) {      /* Check coloring */
+    SCOTCH_errorPrint ("main: invalid coloring");
     exit (EXIT_FAILURE);
+  }
 
   printf ("Number of colors: %ld\n", (long) colonbr);
 

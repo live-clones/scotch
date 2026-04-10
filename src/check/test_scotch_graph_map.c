@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 12 aug 2014     **/
 /**                                 to   : 17 jul 2024     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 26 mar 2026     **/
+/**                                 to   : 11 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,6 +66,46 @@
 #define STRANBR                     2
 
 #define COORD(x,y)                  ((y) * xdimsiz + (x))
+
+/*************************************/
+/*                                   */
+/* The consistency checking routine. */
+/*                                   */
+/*************************************/
+
+/* This routine checks that the produced
+** mapping is valid.
+** It exits on error.
+*/
+
+static
+void
+checkMap (
+const SCOTCH_Num            vertnbr,
+const SCOTCH_Num * const    parttab,
+const SCOTCH_Num            partnbr,
+const int                   flagval)              /* If true, fixed vertices may have larger indices */
+{
+  SCOTCH_Num          vertnum;
+
+  for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Un-based traversal */
+    SCOTCH_Num          partval;
+
+    partval = parttab[vertnum];
+    if (partval == -1)                            /* Unmapped vertex */
+      continue;
+    if (partval < 0) {                            /* Other negative values are invalid */
+      SCOTCH_errorPrint ("checkMap: invalid mapping (1)");
+      exit (EXIT_FAILURE);
+    }
+
+    if ((flagval == 0) &&
+        (partval >= partnbr)) {                   /* For fixed mappings, check against partnbr */
+      SCOTCH_errorPrint ("checkMap: invalid mapping (2)");
+      exit (EXIT_FAILURE);
+    }
+  }
+}
 
 /*********************/
 /*                   */
@@ -188,7 +228,7 @@ char *              argv[])
 
         memset (parttab, ~0, xdimsiz * xdimsiz * sizeof (SCOTCH_Num)); /* Assume all vertices are not fixed */
         if (archnum < 2) {                        /* For fixed-size architectures                           */
-          for (i = 0; i < (xdimsiz - 1); i ++) {    /* Place fixed vertices at all four sides               */
+          for (i = 0; i < (xdimsiz - 1); i ++) {  /* Place fixed vertices at all four sides                 */
             parttab[COORD (0, i)] = 0;
             parttab[COORD (i + 1, 0)] = 1;
             parttab[COORD (xdimsiz - 1, i + 1)] = archsiz - 2;
@@ -235,6 +275,8 @@ char *              argv[])
           SCOTCH_errorPrint ("main: cannot compute mapping");
           exit (EXIT_FAILURE);
         }
+
+        checkMap (vertnbr, parttab, archsiz, (archnum == (ARCHNBR - 1)) ? 1 : 0);
       }
 
       if (SCOTCH_graphMapSave (&grafdat, &mappdat, fileptr) != 0) {

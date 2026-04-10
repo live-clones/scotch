@@ -43,7 +43,7 @@
 /**   DATES      : # Version 6.1  : from : 10 feb 2021     **/
 /**                                 to   : 17 jul 2021     **/
 /**                # Version 7.0  : from : 08 aug 2024     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 12 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -157,6 +157,21 @@ char *              argv[])
   if (objval < 0) {
     SCOTCH_errorPrint ("main: error in METIS_PartMeshDual");
     exit (EXIT_FAILURE);
+  }
+
+  for (vertnum = 0; vertnum < ne; vertnum ++) {   /* Verify element partition range */
+    if ((epart[vertnum] <   baseval) ||
+        (epart[vertnum] >= (baseval + nparts))) {
+      SCOTCH_errorPrint ("main: invalid partition (1)");
+      exit (EXIT_FAILURE);
+    }
+  }
+  for (vertnum = 0; vertnum < nn; vertnum ++) {   /* Verify node partition range */
+    if ((npart[vertnum] <   baseval) ||
+        (npart[vertnum] >= (baseval + nparts))) {
+      SCOTCH_errorPrint ("main: invalid partition (2)");
+      exit (EXIT_FAILURE);
+    }
   }
 
   free (npart);
