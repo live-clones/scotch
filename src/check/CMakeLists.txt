@@ -558,24 +558,26 @@ add_test(NAME gmap_small COMMAND $<TARGET_FILE:gmap> ${dat}/small1.grf ${tgt}/m1
 
 # check_prog_gord
 
-add_test(NAME gord_bump COMMAND $<TARGET_FILE:gord> ${dat}/bump.grf ${CMAKE_CURRENT_BINARY_DIR}/bump.ord -vt)
+add_test(NAME gord_bump COMMAND $<TARGET_FILE:gord> ${dat}/bump.grf ${CMAKE_CURRENT_BINARY_DIR}/bump.ord -Cu -vt)
 
-add_test(NAME gord_bump_b100000 COMMAND $<TARGET_FILE:gord> ${dat}/bump_b100000.grf ${CMAKE_CURRENT_BINARY_DIR}/bump_b100000.ord -vt)
+add_test(NAME gord_bump_b1 COMMAND ${BASH} -c "'$<TARGET_FILE:gord>' '${dat}/bump_b1.grf' '-On{sep=(/((vert)>(240))?(e{strat=g}|g|h);),ole=d{cmin=15,cmax=100000,frat=0},ose=g{pass=3}}' ${CMAKE_CURRENT_BINARY_DIR}/bump_b1.ord -Cr -vt")
 
-add_test(NAME gord_bump_b1 COMMAND ${BASH} -c "'$<TARGET_FILE:gord>' '${dat}/bump_b1.grf' '-On{sep=(/((vert)>(240))?(e{strat=g}|g|h);),ole=d{cmin=15,cmax=100000,frat=0},ose=g{pass=3}}' ${CMAKE_CURRENT_BINARY_DIR}/bump_b1.ord -vt")
+add_test(NAME gord_bump_b100000 COMMAND $<TARGET_FILE:gord> ${dat}/bump_b100000.grf ${CMAKE_CURRENT_BINARY_DIR}/bump_b100000.ord -Cd -vt)
 
 add_test(NAME gord_bump_imbal COMMAND $<TARGET_FILE:gord> ${dat}/bump_imbal_32.grf ${CMAKE_CURRENT_BINARY_DIR}/bump_imbal_32.ord -vt)
 
+add_test(NAME gord_compress-coarsen COMMAND $<TARGET_FILE:gord> ${dat}/compress-coarsen.grf ${CMAKE_CURRENT_BINARY_DIR}/compress-coarsen.ord -vt)
+
 add_test(NAME gord_disconnected COMMAND $<TARGET_FILE:gord> ${dat}/disconnected.grf ${CMAKE_CURRENT_BINARY_DIR}/disconnected.ord -cd -vt)
 
-add_test(NAME gord_ship001 COMMAND $<TARGET_FILE:gord> ${CMAKE_CURRENT_BINARY_DIR}/ship001.grf ${CMAKE_CURRENT_BINARY_DIR}/ship001.ord -vt)
-set_tests_properties(gord_ship001 PROPERTIES FIXTURES_REQUIRED GMK_GRAPHS)
+add_test(NAME gord_m16x16_b100000_v COMMAND ${BASH} -c "'$<TARGET_FILE:gord>' '${dat}/m16x16_b100000_v.grf' '-On{sep=(/((vert)>(20))?h;),ole=b{cmin=100},ose=b{cmin=3}}' ${CMAKE_CURRENT_BINARY_DIR}/m16x16_b100000_v.ord -vt")
 
 add_test(NAME gord_nocoarsen COMMAND $<TARGET_FILE:gord> ${dat}/nocoarsen.grf ${CMAKE_CURRENT_BINARY_DIR}/nocoarsen.ord -vt)
 
-add_test(NAME gord_compress-coarsen COMMAND $<TARGET_FILE:gord> ${dat}/compress-coarsen.grf ${CMAKE_CURRENT_BINARY_DIR}/compress-coarsen.ord -vt)
+add_test(NAME gord_ship001 COMMAND $<TARGET_FILE:gord> ${CMAKE_CURRENT_BINARY_DIR}/ship001.grf ${CMAKE_CURRENT_BINARY_DIR}/ship001.ord -vt)
 
-set_tests_properties(gord_bump gord_bump_b100000 gord_ship001 gord_bump_b1 gord_bump_imbal gord_nocoarsen gord_compress-coarsen PROPERTIES FIXTURES_SETUP GORD_DEPS)
+set_tests_properties(gord_bump gord_bump_b1 gord_bump_b100000 gord_bump_imbal gord_disconnected gord_m16x16_b100000_v gord_nocoarsen gord_compress-coarsen gord_ship001 PROPERTIES FIXTURES_SETUP GORD_DEPS)
+set_tests_properties(gord_ship001 PROPERTIES FIXTURES_REQUIRED GMK_GRAPHS)
 
 # check_prog_gotst
 

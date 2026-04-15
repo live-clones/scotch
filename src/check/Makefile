@@ -679,13 +679,13 @@ check_prog_gmap			:
 
 check_prog_gord			:	check_prog_gmk_msh
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf $(TMPDIR)/bump.ord -Cu -vt
-					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b100000.grf $(TMPDIR)/bump_b100000.ord -Cd -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf '-On{sep=(/((vert)>(240))?(e{strat=g}|g|h);),ole=d{cmin=15,cmax=100000,frat=0},ose=g{pass=3}}' $(TMPDIR)/bump_b1.ord -Cr -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b100000.grf $(TMPDIR)/bump_b100000.ord -Cd -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32.ord -Cf -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/compress-coarsen.grf $(TMPDIR)/compress-coarsen.ord -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/disconnected.grf $(TMPDIR)/disconnected.ord -cd -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/m16x16_b100000_v.grf '-On{sep=(/((vert)>(20))?h;),ole=b{cmin=100},ose=b{cmin=3}}' $(TMPDIR)/m16x16_b100000_v.ord -vt
-					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32.ord -Cf -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/nocoarsen.grf $(TMPDIR)/nocoarsen.ord -vt
-					$(EXECS) $(SCOTCHBINDIR)/gord data/compress-coarsen.grf $(TMPDIR)/compress-coarsen.ord -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord $(TMPDIR)/ship001.grf $(TMPDIR)/ship001.ord -vt
 
 check_prog_gotst		:	check_prog_gord
