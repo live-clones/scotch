@@ -1,4 +1,4 @@
-/* Copyright 2018,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2018,2021,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 04 apr 2018     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 26 apr 2021     **/
-/**                                 to   : 02 oct 2025     **/
+/**                                 to   : 14 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -111,9 +111,10 @@ const HgraphOrderCcParam * restrict const paraptr)
   while (qtalidx < grafptr->vnohnbr) {
     while (flagtax[vrotnum] >= 0)                 /* Search for an unflagged vertex */
       vrotnum ++;
+
     roottab[rootnbr] = qtalidx;                   /* Record start vertex of component */
     flagtax[vrotnum] = rootnbr;                   /* Flag vertex as enqueued          */
-    queutab[qtalidx ++] = vrotnum;                /* Enqueue found root vertex        */
+    queutab[qtalidx ++] = vrotnum ++;             /* Enqueue found root vertex        */
 
     while (qhedidx < qtalidx) {
       Gnum                vertnum;
@@ -184,7 +185,7 @@ const HgraphOrderCcParam * restrict const paraptr)
 
     if (hgraphInduceList (grafptr, vnodnbr, &queutab[roottab[rootnum]], grafptr->s.vertnbr - grafptr->vnohnbr, &indgrafdat) != 0) {
       errorPrint ("hgraphOrderCc: cannot create induced graph");
-      memFree    (queutab);
+      memFree    (queutab);                       /* Free group leader */
       return (1);
     }
 
