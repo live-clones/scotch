@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2023,2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.0  : from : 26 jul 2007     **/
 /**                                 to   : 26 jul 2007     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 19 aug 2025     **/
+/**                                 to   : 15 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -96,7 +96,7 @@ Gnum * const                      treenbr)
          ((cblkptr->cblknbr < 2) ||
           (cblkptr->cblknbr > 3))) ||
         ((cblkptr->typeval == ORDERCBLKDICO) &&
-         ((cblkptr->cblknbr != 2)))) {
+         ((cblkptr->cblknbr <= 1)))) {
       errorPrint ("orderCheck2: invalid number of column blocks (1)");
       return (1);
     }
