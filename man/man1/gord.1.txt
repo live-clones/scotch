@@ -27,6 +27,7 @@ OPTIONS
   -copt     Choose default ordering strategy according to one or
               several options among:
               b  enforce load balance as much as possible.
+              d  manage disconnected graphs more efficiently.
               q  privilege quality over speed (default).
               s  privilege speed over quality.
               t  enforce safety.
