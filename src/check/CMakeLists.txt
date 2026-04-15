@@ -566,6 +566,8 @@ add_test(NAME gord_bump_b1 COMMAND ${BASH} -c "'$<TARGET_FILE:gord>' '${dat}/bum
 
 add_test(NAME gord_bump_imbal COMMAND $<TARGET_FILE:gord> ${dat}/bump_imbal_32.grf ${CMAKE_CURRENT_BINARY_DIR}/bump_imbal_32.ord -vt)
 
+add_test(NAME gord_disconnected COMMAND $<TARGET_FILE:gord> ${dat}/disconnected.grf ${CMAKE_CURRENT_BINARY_DIR}/disconnected.ord -cd -vt)
+
 add_test(NAME gord_ship001 COMMAND $<TARGET_FILE:gord> ${CMAKE_CURRENT_BINARY_DIR}/ship001.grf ${CMAKE_CURRENT_BINARY_DIR}/ship001.ord -vt)
 set_tests_properties(gord_ship001 PROPERTIES FIXTURES_REQUIRED GMK_GRAPHS)
 
