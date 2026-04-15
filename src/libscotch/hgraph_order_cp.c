@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009,2014,2015,2018,2020,2021,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009,2014,2015,2018,2020,2021,2023,2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 04 aug 2014     **/
 /**                                 to   : 27 jan 2020     **/
 /**                # Version 7.0  : from : 05 may 2019     **/
-/**                                 to   : 17 jan 2025     **/
+/**                                 to   : 15 apr 2026     **/
 /**                                                        **/
 /**   NOTES      : # Pre-hashing proves itself extremely   **/
 /**                  efficient, since for graphs that      **/
@@ -126,7 +126,6 @@ const HgraphOrderCpParam * const  paraptr)
   Gnum                          finevertnbr;      /* Number of fine vertices in compressed elimination tree                */
 #endif /* SCOTCH_DEBUG_ORDER2 */
 
-
   Gnum * restrict const         fineperitab = fineordeptr->peritab;
   const Gnum * restrict const   fineverttax = finegrafptr->s.verttax;
   const Gnum * restrict const   finevelotax = finegrafptr->s.velotax;
@@ -134,6 +133,9 @@ const HgraphOrderCpParam * const  paraptr)
   const Gnum * restrict const   finevnumtax = finegrafptr->s.vnumtax;
   const Gnum * restrict const   finevnhdtax = finegrafptr->vnhdtax;
   const Gnum * restrict const   fineedgetax = finegrafptr->s.edgetax;
+
+  if (finegrafptr->s.vertnbr <= 2)                /* Do not lose time when compression is irrelevant */
+    return (hgraphOrderSt (finegrafptr, fineordeptr, ordenum, cblkptr, paraptr->stratunc));
 
   for (finehashmsk = 15;                          /* Set neighbor hash table sizes */
        finehashmsk < finegrafptr->s.degrmax;
@@ -475,7 +477,7 @@ loop_failed: ;
   coarvpostax = coargrafdat.s.verttax;            /* Re-cycle verttab (not velotab as may be merged with coarvsiztab) */
   coarperitax = coarperitab - coargrafdat.s.baseval;
 
-  for (coarvertnum = coargrafdat.s.baseval, finevsizsum = 0; /* Compute initial indices for inverse permutation expansion */
+  for (coarvertnum = coargrafdat.s.baseval, finevsizsum = ordenum; /* Compute initial indices for inverse permutation expansion */
        coarvertnum < coargrafdat.vnohnnd; coarvertnum ++) {
     coarvpostax[coarperitax[coarvertnum]] = finevsizsum;
     finevsizsum += coarvsiztax[coarperitax[coarvertnum]];
