@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2021,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -49,7 +49,7 @@
 /**                # Version 6.1  : from : 21 nov 2021     **/
 /**                                 to   : 21 nov 2021     **/
 /**                # Version 7.0  : from : 16 jan 2023     **/
-/**                                 to   : 16 jan 2023     **/
+/**                                 to   : 17 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -123,6 +123,11 @@ const Vgraph * const        grafptr)
     Gnum                edgenum;                  /* Number of current edge */
 
     partnum = (int) grafptr->parttax[vertnum];
+    if ((partnum < 0) ||
+        (partnum > 2)) {
+      errorPrint ("vgraphCheck: invalid part value");
+      return (1);
+    }
 
     compload[partnum] += (grafptr->s.velotax == NULL) ? 1 : grafptr->s.velotax[vertnum];
     compsize[partnum] ++;
@@ -147,23 +152,21 @@ const Vgraph * const        grafptr)
       commcut[grafptr->parttax[vertend]] ++;
     }
 
-#ifdef SCOTCH_DEBUG_VGRAPH3
-    if (partnum == 2) {
+    if (partnum != 2) {                           /* If vertex not in separator           */
+      if (commcut[1 - partnum] != 0) {            /* And has a neighbor in the other part */
+        errorPrint ("vgraphCheck: vertex should be in separator (%ld)", (long) vertnum);
+        return (1);
+      }
+    }
+#ifdef SCOTCH_DEBUG_VGRAPH_CHECK                  /* Specific macro in case test is needed */
+    else {                                        /* Vertex belongs to separator           */
       if ((commcut[0] == 0) ||
           (commcut[1] == 0))
         errorPrintW ("vgraphCheck: no-use separator vertex%s (%ld)", /* Warning only */
                      ((grafptr->levlnum == 0) ? " at level 0" : ""),
                      (long) vertnum);
     }
-    else {
-#else
-    if (partnum != 2) {
-#endif /* SCOTCH_DEBUG_VGRAPH3 */
-      if (commcut[1 - partnum] != 0) {
-        errorPrint ("vgraphCheck: vertex should be in separator (%ld)", (long) vertnum);
-        return (1);
-      }
-    }
+#endif /* SCOTCH_DEBUG_VGRAPH_CHECK */
   }
 
   if ((grafptr->compsize[0] != compsize[0]) ||
