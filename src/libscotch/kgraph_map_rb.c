@@ -337,7 +337,7 @@ Gnum * restrict const             vflowgttab)     /*+ Fixed vertex load in each 
 
   vflomax = vflonbr;
   if (archVar (archptr) == 0) {
-    for (vflonum = 0, vflonnd = vflonbr - 1; vflonum < vflonnd; ) {
+    for (vflonum = 0, vflonnd = vflonbr - 1; vflonum <= vflonnd; ) {
       while (1) {
 #ifdef SCOTCH_DEBUG_KGRAPH2
         int                 o;
