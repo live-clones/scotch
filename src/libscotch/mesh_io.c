@@ -110,7 +110,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
   if ((intLoad (stream, &versval) != 1) ||        /* Read version number */
       (versval != 1)) {
     errorPrint ("meshLoad: bad input (1)");
-    return     (1);
+    return (1);
   }
 
   if ((intLoad (stream, &velmnbr)          != 1) || /* Read rest of header */
@@ -128,7 +128,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
       (((velmbas + velmnbr) != vnodbas) &&
        ((vnodbas + vnodnbr) != velmbas))) {
     errorPrint ("meshLoad: bad input (2)");
-    return     (1);
+    return (1);
   }
   sprintf (proptab, "%3.3d", (int) propval);      /* Compute file properties */
   proptab[0] -= '0';                              /* Vertex labels flag      */
@@ -163,7 +163,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
       &meshptr->edgetax, (size_t) ( meshptr->edgenbr * sizeof (Gnum)), NULL) == NULL) { /* Edge array grouped with vertex arrays   */
     errorPrint ("meshLoad: out of memory (1)");
     meshFree   (meshptr);
-    return     (1);
+    return (1);
   }
   meshptr->verttax -= meshptr->baseval;
   meshptr->vendtax  = meshptr->verttax + 1;       /* Use compact vertex array */
@@ -216,7 +216,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
         if (intLoad (stream, &vlblval) != 1) {    /* Read label data    */
           errorPrint ("meshLoad: bad input (3)");
           meshFree   (meshptr);
-          return     (1);
+          return (1);
         }
         meshptr->vlbltax[vertnum] = vlblval + vertbas + baseadj; /* Adjust vertex label */
         if (meshptr->vlbltax[vertnum] > vlblmax)  /* Get maximum vertex label           */
@@ -227,7 +227,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
             (veloval < 1)) {
           errorPrint ("meshLoad: bad input (4)");
           meshFree   (meshptr);
-          return     (1);
+          return (1);
         }
         if (veloval > velomax)
           velomax = veloval;
@@ -237,7 +237,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
       if (intLoad (stream, &degrval) != 1) {      /* Read vertex degree */
         errorPrint ("meshLoad: bad input (5)");
         meshFree   (meshptr);
-        return     (1);
+        return (1);
       }
       if (degrmax < degrval)                      /* Set maximum degree */
         degrmax = degrval;
@@ -247,7 +247,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
       if (degrval > edgennd) {                    /* Check if edge array overflows */
         errorPrint ("meshLoad: invalid arc count (1)");
         meshFree   (meshptr);
-        return     (1);
+        return (1);
       }
 
       for ( ; edgenum < degrval; edgenum ++) {
@@ -255,13 +255,13 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
           if (intLoad (stream, &edloval) != 1) {  /* Read edge load data (useless) */
             errorPrint ("meshLoad: bad input (6)");
             meshFree   (meshptr);
-            return     (1);
+            return (1);
           }
         }
         if (intLoad (stream, &edgeval) != 1) {    /* Read edge data */
           errorPrint ("meshLoad: bad input (7)");
           meshFree   (meshptr);
-          return     (1);
+          return (1);
         }
         meshptr->edgetax[edgenum] = edgeval + edgeadj;
       }
@@ -285,7 +285,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
   if (edgenum != edgennd) {                       /* Check if number of edges is valid */
     errorPrint ("meshLoad: invalid arc count (2)");
     meshFree   (meshptr);
-    return     (1);
+    return (1);
   }
 
   meshptr->degrmax = degrmax;
@@ -295,7 +295,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
                     meshptr->vendtax, meshptr->edgetax, vlblmax, meshptr->vlbltax) != 0) {
       errorPrint ("meshLoad: cannot relabel vertices");
       meshFree   (meshptr);
-      return     (1);
+      return (1);
     }
   }
 
@@ -303,7 +303,7 @@ const Gnum                  baseval)              /* Base value (-1 means keep f
   if (meshCheck (meshptr) != 0) {                 /* Check mesh consistency */
     errorPrint  ("meshLoad: inconsistent mesh data");
     meshFree    (meshptr);
-    return      (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
 
@@ -343,7 +343,7 @@ FILE * restrict const       stream)
                (Gnum) meshptr->vnodbas,
                propstr) == EOF) {
     errorPrint ("meshSave: bad output (1)");
-    return     (1);
+    return (1);
   }
 
   vertbastab[0] = meshptr->baseval;
