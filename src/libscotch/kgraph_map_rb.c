@@ -337,7 +337,7 @@ Gnum * restrict const             vflowgttab)     /*+ Fixed vertex load in each 
 
   vflomax = vflonbr;
   if (archVar (archptr) == 0) {
-    for (vflonum = 0, vflonnd = vflonbr - 1; vflonum < vflonnd; ) {
+    for (vflonum = 0, vflonnd = vflonbr - 1; vflonum <= vflonnd; ) {
       while (1) {
 #ifdef SCOTCH_DEBUG_KGRAPH2
         int                 o;
@@ -370,8 +370,9 @@ Gnum * restrict const             vflowgttab)     /*+ Fixed vertex load in each 
         archDomTerm (archptr, &domndat, vflotab[vflonnd].termnum);
         if (archDomIncl (archptr, &domnsubtab[1], &domndat) == 1) { /* If terminal vertex subdomain included in second subdomain */
           compload1 += vflotab[vflonnd].veloval;  /* Fixed vertex belongs to second subdomain                                    */
-          if (-- vflonnd <= vflonum) {            /* If matched the location of a slot that also belongs to second subdomain     */
-            compload1 += vflotab[vflonnd].veloval; /* Add load of reached slot to second subdomain                               */
+          if (-- vflonnd <= vflonum) {            /* If reached the candidate slot found by the first loop                       */
+            if (vflonnd == vflonum)               /* If this candidate slot has not yet been accounted for                      */
+              compload1 += vflotab[vflonnd].veloval; /* Add load of reached slot to second subdomain                            */
             goto quit;
           }
         }
