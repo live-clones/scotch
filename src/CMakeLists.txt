@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     28 aug 2025     ##
+##                                 to     05 jun 2026     ##
 ##                                                        ##
 ############################################################
 
@@ -80,20 +80,24 @@ endif()
 
 # Bison
 find_package(BISON)
+if(BISON_VERSION VERSION_LESS "3.8.2")
+  message(WARNING "Bison >= 3.8.2 required. Else, fallback parser files will be used")
+  set(BISON_FOUND FALSE)
+endif()
 if(NOT BISON_FOUND)
-  message(WARNING "Compiling with a default version of parser files. Install Bison >= 3.8.2 if it does not work")
+  message(WARNING "Compiling with fallback parser files. Install Bison >= 3.8.2 if it does not work")
 else()
   message(STATUS "Bison found here: ${BISON_EXECUTABLE}")
 endif()
 
 # Flex
 find_package(FLEX)
-if (FLEX_VERSION VERSION_EQUAL "2.6.1")
-  message(WARNING "Flex 2.6.1 is bogus")
+if(FLEX_VERSION VERSION_LESS "2.6.4")
+  message(WARNING "Flex >= 2.6.4 required. Else, fallback lexer files will be used")
   set(FLEX_FOUND FALSE)
 endif()
 if(NOT FLEX_FOUND)
-  message(WARNING "Compiling with a default version of lexer files. Install Flex >= 2.6.4 if it does not work")
+  message(WARNING "Compiling with fallback lexer files. Install Flex >= 2.6.4 if it does not work")
 else()
   message(STATUS "Flex found here: ${FLEX_EXECUTABLE}")
 endif()
