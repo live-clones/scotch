@@ -151,6 +151,8 @@ scotch_sonar:
     - if: $CI_PIPELINE_SOURCE != "schedule"
 
 ## Build
+## Use a custom build directory setting GIT_CLONE_PATH
+## because CMake uses absolute paths and needs a stable directory between builds and tests
 
 .build_cmake: &build_cmake
   <<: *rule_noschedule
@@ -171,12 +173,14 @@ build_cmake_gcc:
   variables:
     CC: "gcc"
     FC: "gfortran"
+    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_RUNNER_SHORT_TOKEN/cmake_gcc
 
 build_cmake_clang:
   <<: *build_cmake
   variables:
     CC: "clang"
     FC: "gfortran"
+    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_RUNNER_SHORT_TOKEN/cmake_clang
 
 build_cmake_intel:
   <<: *build_cmake
@@ -184,6 +188,7 @@ build_cmake_intel:
   variables:
     CC: "icx"
     FC: "gfortran"
+    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_RUNNER_SHORT_TOKEN/cmake_intel
 
 build_cmake_pgi:
   <<: *build_cmake
@@ -191,8 +196,10 @@ build_cmake_pgi:
   variables:
     CC: "pgcc"
     FC: "pgf90"
+    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_RUNNER_SHORT_TOKEN/cmake_pgi
 
 ## Test
+## Use the same GIT_CLONE_PATH as the build
 
 .test_cmake: &test_cmake
   <<: *rule_noschedule
@@ -214,6 +221,7 @@ test_cmake_gcc:
   variables:
     CC: "gcc"
     FC: "gfortran"
+    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_RUNNER_SHORT_TOKEN/cmake_gcc
 
 test_cmake_clang:
   <<: *test_cmake
@@ -222,6 +230,7 @@ test_cmake_clang:
   variables:
     CC: "clang"
     FC: "gfortran"
+    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_RUNNER_SHORT_TOKEN/cmake_clang
 
 test_cmake_intel:
   <<: *test_cmake
@@ -230,6 +239,7 @@ test_cmake_intel:
   variables:
     CC: "icx"
     FC: "ifx"
+    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_RUNNER_SHORT_TOKEN/cmake_intel
 
 test_cmake_pgi:
   <<: *test_cmake
@@ -238,3 +248,4 @@ test_cmake_pgi:
   variables:
     CC: "pgcc"
     FC: "pgf90"
+    GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_RUNNER_SHORT_TOKEN/cmake_pgi
