@@ -7,9 +7,9 @@ fatal() {
 
 source ci/env_makefile.sh
 cd src
-make check${JOBCHECK} || fatal
-make ptcheck${JOBCHECK} || fatal
-make escheck || fatal
+make check${JOBCHECK} TMPDIR=. || fatal
+make ptcheck${JOBCHECK} TMPDIR=. || fatal
+make escheck TMPDIR=. || fatal
 find . -print0 | xargs -0 touch
 cp libscotch/parser_ll.c libscotch/lex.yy.c
 cp libscotch/parser_yy.c libscotch/y.tab.c
