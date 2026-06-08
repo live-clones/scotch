@@ -770,7 +770,7 @@ check_prog_dgpart		:
 					$(EXECP3) $(SCOTCHBINDIR)/dgpart 9 data/bump_b100000.grf /dev/null -Cd -vmt
 					$(EXECP4) $(SCOTCHBINDIR)/dgpart 50 data/small1-%r.grf /dev/null -vmt
 
-check_prog_dgscat-dggath	:	TMP := $(shell mktemp -u)
+check_prog_dgscat-dggath	:	TMP := $(shell mktemp -u -t XXXXXX)
 check_prog_dgscat-dggath	:
 					$(EXECP3) $(SCOTCHBINDIR)/dgscat -r1 -c data/m16x16.grf "$(TMP)1-%r.grf"
 					$(EXECP3) $(SCOTCHBINDIR)/dggath -r1 -c "$(TMP)1-%r.grf" "$(TMP)1.grf"
@@ -782,7 +782,7 @@ check_prog_dgscat-dggath	:
 					$(EXECP3) $(SCOTCHBINDIR)/dggath -c "$(TMP)3-%r.grf" "$(TMP)3.grf"
 					$(PROGDIFF) data/m4x4_b1_elv.grf "$(TMP)3.grf"
 
-check_prog_dgtst		:	TMP := $(shell mktemp -u)
+check_prog_dgtst		:	TMP := $(shell mktemp -u -t XXXXXX)
 check_prog_dgtst		:
 					$(EXECP4) $(SCOTCHBINDIR)/dgtst data/small1-%r.grf
 					$(EXECP3) $(SCOTCHBINDIR)/dgscat data/m4x4_b1_elv.grf "$(TMP)1-%r.grf"
