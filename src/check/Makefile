@@ -594,8 +594,10 @@ test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
 ##  Sequential program tests.
 ##
 
-check_prog_acpl			:	check_prog_amk
+check_prog_acpl			:	check_prog_amk check_prog_amk_grf
 					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 | $(SCOTCHBINDIR)/acpl | $(SCOTCHBINDIR)/atst
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf data/m4x4.grf | $(SCOTCHBINDIR)/acpl | $(SCOTCHBINDIR)/atst
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf -2 data/m4x4.grf | $(SCOTCHBINDIR)/acpl | $(SCOTCHBINDIR)/atst
 
 check_prog_amk			:	check_prog_atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_ccc 5 | $(SCOTCHBINDIR)/atst

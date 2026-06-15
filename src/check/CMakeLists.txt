@@ -444,7 +444,9 @@ endif(BUILD_PTSCOTCH)
 
 # check_prog_acpl
 
-add_test(NAME amk_acpl COMMAND ${BASH} -c "'$<TARGET_FILE:amk_m2>' 5 12 | '$<TARGET_FILE:acpl>' | '$<TARGET_FILE:atst>'")
+add_test(NAME amk_acpl_1 COMMAND ${BASH} -c "'$<TARGET_FILE:amk_m2>' 5 12 | '$<TARGET_FILE:acpl>' | '$<TARGET_FILE:atst>'")
+add_test(NAME amk_acpl_2 COMMAND ${BASH} -c "'$<TARGET_FILE:amk_grf>' ${dat}/m4x4.grf | '$<TARGET_FILE:acpl>' | '$<TARGET_FILE:atst>'")
+add_test(NAME amk_acpl_3 COMMAND ${BASH} -c "'$<TARGET_FILE:amk_grf>' -2 ${dat}/m4x4.grf | '$<TARGET_FILE:acpl>' | '$<TARGET_FILE:atst>'")
 
 # check_prog_amk
 
