@@ -214,17 +214,17 @@ const int                   filenbr)
       if (filetab[i].nameptr[0] != '-') {         /* If not standard stream, open it */
         if ((filetab[i].fileptr = fopen (filetab[i].nameptr, ((filetab[i].flagval & FILEMODE) == FILEMODER) ? "r" : "w")) == NULL) { /* Open the file */
           errorPrint ("fileBlockOpen: cannot open file (%d)", i);
-          return     (1);
+          return (1);
         }
       }
       compval = (((filetab[i].flagval & FILEMODE) == FILEMODER) ? fileDecompressType : fileCompressType) (filetab[i].nameptr);
       if (compval < 0) {
         errorPrint ("fileBlockOpen: (de)compression method not implemented");
-        return     (2);
+        return (2);
       }
       if ((((filetab[i].flagval & FILEMODE) == FILEMODER) ? fileDecompress : fileCompress) (&filetab[i], compval) != 0) {
         errorPrint ("fileBlockOpen: cannot create (de)compression subprocess");
-        return     (1);
+        return (1);
       }
     }
   }
@@ -257,7 +257,7 @@ const int                   protglbnum)
 
     if ((naexptr = fileNameDistExpand (filetab[i].nameptr, procglbnbr, proclocnum)) == NULL) {
       errorPrint ("fileBlockOpenDist: cannot create file name (%d)", i);
-      return     (1);
+      return (1);
     }
     if (naexptr == filetab[i].nameptr) {          /* If centralized stream */
       if (proclocnum != protglbnum) {             /* If not root process   */
