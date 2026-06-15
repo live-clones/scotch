@@ -1,4 +1,4 @@
-/* Copyright 2015-2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015-2018,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 30 apr 2015     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 15 jun 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -142,12 +142,13 @@ FILE * restrict const       stream)
     errorPrint ("archDeco2ArchLoad2: bad input (1)");
     return     (1);
   }
+  archptr->domnnbr = 2 * archptr->termnbr - 1;
   archptr->termtab = NULL;                        /* Assume nothing allocated yet */
   archptr->vnumtab = NULL;
   archptr->levltab = NULL;
 
   termnbr = archptr->termnbr;
-  domnnbr = 2 * termnbr - 1;
+  domnnbr = archptr->domnnbr;
   levlnbr = archptr->levlmax --;                  /* Get levlmax */
   if (memAllocGroup ((void **) (void *)
                      &archptr->termtab, (size_t) (termnbr * sizeof (ArchSubTerm)),
