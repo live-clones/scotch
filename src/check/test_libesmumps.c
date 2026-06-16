@@ -71,19 +71,19 @@ main (
 int                 argc,
 char *              argv[])
 {
-  FILE *                  fileptr;
-  SCOTCH_Graph            grafdat;
-  SCOTCH_Num              vertnbr;
-  SCOTCH_Num              vertnum;
-  SCOTCH_Num *            verttab;
-  SCOTCH_Num *            velotab;
-  SCOTCH_Num              edgenbr;
-  SCOTCH_Num *            edgetab;
-  SCOTCH_Num *            elentab;
-  SCOTCH_Num *            lasttab;
-  SCOTCH_Num *            lentab;
-  SCOTCH_Num *            nvtab;
-  SCOTCH_Num *            petab;
+  FILE *              fileptr;
+  SCOTCH_Graph        grafdat;
+  SCOTCH_Num          vertnbr;
+  SCOTCH_Num          vertnum;
+  SCOTCH_Num *        verttab;
+  SCOTCH_Num *        velotab;
+  SCOTCH_Num          edgenbr;
+  SCOTCH_Num *        edgetab;
+  SCOTCH_Num *        elentab;
+  SCOTCH_Num *        lasttab;
+  SCOTCH_Num *        lentab;
+  SCOTCH_Num *        nvtab;
+  SCOTCH_Num *        petab;
 
   SCOTCH_errorProg (argv[0]);
 
