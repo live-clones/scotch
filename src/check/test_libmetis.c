@@ -77,28 +77,28 @@ main (
 int                 argc,
 char *              argv[])
 {
-  FILE *                  fileptr;
-  SCOTCH_Graph            grafdat;
-  SCOTCH_Num              baseval;
-  SCOTCH_Num              vertnbr;
-  SCOTCH_Num *            verttab;
-  SCOTCH_Num *            velotab;
-  SCOTCH_Num *            edgetab;
-  SCOTCH_Num *            edlotab;
-  SCOTCH_Num              edgecut;
-  SCOTCH_Num *            parttab;
-  SCOTCH_Num *            peritab;
+  FILE *              fileptr;
+  SCOTCH_Graph        grafdat;
+  SCOTCH_Num          baseval;
+  SCOTCH_Num          vertnbr;
+  SCOTCH_Num *        verttab;
+  SCOTCH_Num *        velotab;
+  SCOTCH_Num *        edgetab;
+  SCOTCH_Num *        edlotab;
+  SCOTCH_Num          edgecut;
+  SCOTCH_Num *        parttab;
+  SCOTCH_Num *        peritab;
 #if (SCOTCH_METIS_VERSION == 3)
-  SCOTCH_Num              fwgtval;
+  SCOTCH_Num          fwgtval;
 
-  const SCOTCH_Num          foptval = 0;
+  const SCOTCH_Num    foptval = 0;
 #endif /* (SCOTCH_METIS_VERSION == 3) */
-  const SCOTCH_Num          partnbr = 9;
+  const SCOTCH_Num    partnbr = 9;
 #if (SCOTCH_METIS_VERSION == 5)
-  const double              awgttab[9] = { 0.10, 0.10, 0.05, 0.10, 0.20, 0.30, 0.05, 0.05, 0.05 };
-  const SCOTCH_Num          nconval = 1;
-  const double              kbaltab[1] = { 0.05 };
-  SCOTCH_Num                options[METIS_NOPTIONS];
+  const double        awgttab[9] = { 0.10, 0.10, 0.05, 0.10, 0.20, 0.30, 0.05, 0.05, 0.05 };
+  const SCOTCH_Num    nconval = 1;
+  const double        kbaltab[1] = { 0.05 };
+  SCOTCH_Num          options[METIS_NOPTIONS];
 #endif /* (SCOTCH_METIS_VERSION == 5) */
 
   SCOTCH_errorProg (argv[0]);
