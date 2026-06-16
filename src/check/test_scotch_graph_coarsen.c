@@ -156,15 +156,15 @@ matchBuild (
 const SCOTCH_Graph * const  finegrafptr,
 SCOTCH_Num * const          finematetab)
 {
-  SCOTCH_Num * restrict finematetax;
-  SCOTCH_Num *          fineverttax;
-  SCOTCH_Num *          finevendtax;
-  SCOTCH_Num            finevertnbr;
-  SCOTCH_Num            finevertnnd;
-  SCOTCH_Num            finevertnum;
-  SCOTCH_Num *          fineedgetax;
-  SCOTCH_Num            coarvertnbr;
-  SCOTCH_Num            baseval;
+  SCOTCH_Num *        finematetax;
+  SCOTCH_Num *        fineverttax;
+  SCOTCH_Num *        finevendtax;
+  SCOTCH_Num          finevertnbr;
+  SCOTCH_Num          finevertnnd;
+  SCOTCH_Num          finevertnum;
+  SCOTCH_Num *        fineedgetax;
+  SCOTCH_Num          coarvertnbr;
+  SCOTCH_Num          baseval;
 
   SCOTCH_graphData (finegrafptr, &baseval,
                     &finevertnbr, &fineverttax, &finevendtax, NULL, NULL,
@@ -229,15 +229,15 @@ main (
 int                 argc,
 char *              argv[])
 {
-  SCOTCH_Num              baseval;                /* Base value                */
-  SCOTCH_Graph            finegrafdat;            /* Fine graph                */
-  SCOTCH_Num              finevertnbr;            /* Number of fine vertices   */
-  SCOTCH_Num *            finematetab;            /* Mate array                */
-  SCOTCH_Graph            coargrafdat;            /* Coarse graph              */
-  SCOTCH_Num *            coarmulttab;            /* Multinode array           */
-  SCOTCH_Num              coarvertnbr;            /* Number of coarse vertices */
-  SCOTCH_Num              coaredgenbr;            /* Number of coarse edges    */
-  FILE *                  fileptr;
+  SCOTCH_Num          baseval;                    /* Base value                */
+  SCOTCH_Graph        finegrafdat;                /* Fine graph                */
+  SCOTCH_Num          finevertnbr;                /* Number of fine vertices   */
+  SCOTCH_Num *        finematetab;                /* Mate array                */
+  SCOTCH_Graph        coargrafdat;                /* Coarse graph              */
+  SCOTCH_Num *        coarmulttab;                /* Multinode array           */
+  SCOTCH_Num          coarvertnbr;                /* Number of coarse vertices */
+  SCOTCH_Num          coaredgenbr;                /* Number of coarse edges    */
+  FILE *              fileptr;
 
   SCOTCH_errorProg (argv[0]);
 
