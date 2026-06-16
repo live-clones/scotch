@@ -8,12 +8,10 @@ ARFLAGS		= -ruv
 CAT		= cat
 CCS		= gcc
 CCP		= mpicc
-CCD		= gcc
+CCD		= mpicc
 FCS		= gfortran
-FCP		= mpif90
-SCOTCH_NAME_SUFFIX=
-CFLAGS		= -Wall --coverage -fdiagnostics-show-option `pkg-config --cflags mpi` -Drestrict=__restrict -DSCOTCH_GITLAB_SEPARATOR -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_FILE_COMPRESS_BZ2 -DSCOTCH_RENAME
-LDFLAGS		= --coverage `pkg-config --libs --static mpi` -lz -lbz2 -llzma -lm -lrt -pthread
+CFLAGS		= -Wall -fdiagnostics-show-option -Drestrict=__restrict -DSCOTCH_GITLAB_SEPARATOR -DCOMMON_FILE_COMPRESS_GZ -DCOMMON_FILE_COMPRESS_BZ2 -DSCOTCH_RENAME ${COVERAGE}
+LDFLAGS	= -lz -lbz2 -llzma -lm -lrt -pthread ${COVERAGE}
 CP		= cp
 FLEX		= flex
 LN		= ln

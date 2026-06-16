@@ -76,13 +76,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine initializes an API ordering
-*** with respect to the given source graph
-*** and the locations of output parameters.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine initializes an API ordering
+** with respect to the given source graph
+** and the locations of output parameters.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderInit (
@@ -102,10 +102,10 @@ SCOTCH_Dordering * const    libordeptr)           /*+ Ordering structure to init
   return (dorderInit (srcordeptr, srcgrafptr->baseval, srcgrafptr->vertglbnbr, srcgrafptr->proccomm));
 }
 
-/*+ This routine frees an API ordering.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees an API ordering.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dgraphOrderExit (
@@ -115,12 +115,12 @@ SCOTCH_Dordering * const    libordeptr)
   dorderExit ((Dorder *) libordeptr);
 }
 
-/*+ This routine saves the contents of
-*** the given ordering to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of
+** the given ordering to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderSave (
@@ -131,13 +131,13 @@ FILE * const                    stream)           /*+ Output stream    +*/
   return (dorderSave ((Dorder *) libordeptr, (Dgraph *) CONTEXTOBJECT (libgrafptr), stream));
 }
 
-/*+ This routine computes an ordering
-*** of the API ordering structure with
-*** respect to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes an ordering
+** of the API ordering structure with
+** respect to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderCompute (
@@ -148,14 +148,14 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy   +*/
   return (SCOTCH_dgraphOrderComputeList (grafptr, ordeptr, ((Dgraph *) CONTEXTOBJECT (grafptr))->vertlocnbr, NULL, straptr));
 }
 
-/*+ This routine computes a partial ordering
-*** of the listed vertices of the API ordering
-*** structure graph with respect to the given
-*** strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a partial ordering
+** of the listed vertices of the API ordering
+** structure graph with respect to the given
+** strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderComputeList (
@@ -349,12 +349,12 @@ abort:
   return (o);
 }
 
-/*+ This routine parses the given
-*** distributed graph ordering strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
+/* This routine parses the given
+** distributed graph ordering strategy.
+** It returns:
+** - 0   : if string successfully scanned.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratDgraphOrder (
@@ -372,12 +372,12 @@ const char * const          string)
   return (0);
 }
 
-/*+ This routine provides predefined
-*** ordering strategies.
-*** It returns:
-*** - 0   : if string successfully initialized.
-*** - !0  : on error.
-+*/
+/* This routine provides predefined
+** ordering strategies.
+** It returns:
+** - 0   : if string successfully initialized.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratDgraphOrderBuild (

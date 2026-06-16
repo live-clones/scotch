@@ -69,13 +69,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine initializes an API centralized
-*** ordering with respect to the given distributed
-*** source graph and the locations of output parameters.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine initializes an API centralized
+** ordering with respect to the given distributed
+** source graph and the locations of output parameters.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphCorderInit (
@@ -108,10 +108,10 @@ SCOTCH_Num * const          treetab)              /*+ Separator tree array      
   return (orderInit (&libcordptr->o, srcgrafptr->baseval, srcgrafptr->vertglbnbr, libcordptr->peritab));
 }
 
-/*+ This routine frees an API centralized ordering.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees an API centralized ordering.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dgraphCorderExit (
@@ -121,13 +121,13 @@ SCOTCH_Ordering * const     cordptr)
   orderExit (&((LibOrder *) cordptr)->o);
 }
 
-/*+ This routine gathers the contents of
-*** the given distributed ordering into the
-*** given centralized ordering.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine gathers the contents of
+** the given distributed ordering into the
+** given centralized ordering.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderGather (

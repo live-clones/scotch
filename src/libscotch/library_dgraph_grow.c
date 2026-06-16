@@ -87,13 +87,13 @@
 /*                               */
 /*********************************/
 
-/*+ This routine grows areas from a given
-*** set of seeds of some color. Several
-*** seeds can have the same color.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine grows areas from a given
+** set of seeds of some color. Several
+** seeds can have the same color.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphGrow (

@@ -81,13 +81,13 @@
 /*                              */
 /********************************/
 
-/*+ This routine builds an opaque nodal graph structure
-*** from an opaque mesh structure. The nodal graph
-*** adjacency is defined such that two nodes are adjacent
-*** if both share at least one element.
-*** - 0   : if building has succeeded.
-*** - !0  : on error.
-+*/
+/* This routine builds an opaque nodal graph structure
+** from an opaque mesh structure. The nodal graph
+** adjacency is defined such that two nodes are adjacent
+** if both share at least one element.
+** - 0   : if building has succeeded.
+** - !0  : on error.
+*/
 
 int
 meshGraphNodal (

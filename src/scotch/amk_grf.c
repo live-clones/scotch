@@ -82,7 +82,7 @@ static File                 C_fileTab[C_FILENBR] = { /* File array              
 
 static const char *         C_usageList[] = {     /* Usage */
   "amk_grf [<input source file> [<output target file>]] <options>",
-  "  -2         : Create a 'deco 2' instead of a 'deco 0' architecture",
+  "  -2         : Create a 'deco 2' instead of a 'deco 1' architecture",
   "  -b<strat>  : Apply bipartitioning strategy <strat> (for 'deco 0' architectures)",
   "  -h         : Display this help",
   "  -l<file>   : Load vertex list from <file>",
@@ -225,7 +225,7 @@ char *                      argv[])
   if ((flagval & C_FLAGDECO2) != 0)
     SCOTCH_archBuild2 (&archdat, &grafdat, listnbr, listtab); /* Compute type-2 architecture */
   else
-    SCOTCH_archBuild0 (&archdat, &grafdat, listnbr, listtab, &bipastrat); /* Compute type-0 architecture */
+    SCOTCH_archBuild0 (&archdat, &grafdat, listnbr, listtab, &bipastrat); /* Compute type-1 architecture */
   SCOTCH_archSave  (&archdat, C_filepntrtgtout);  /* Write target architecture                           */
 
   fileBlockClose (C_fileTab, C_FILENBR);          /* Always close explicitely to end potential (un)compression tasks */

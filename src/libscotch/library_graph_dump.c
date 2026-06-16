@@ -63,12 +63,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine dumps the given graph on the form
-*** of C source code, using a prefix and a suffix.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine dumps the given graph on the form
+** of C source code, using a prefix and a suffix.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphDump (

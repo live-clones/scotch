@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 19 jan 2020     **/
 /**                                 to   : 19 jan 2020     **/
 /**                # Version 6.1  : from : 22 feb 2020     **/
-/**                                 to   : 05 sep 2020     **/
+/**                                 to   : 12 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -60,6 +60,53 @@
 #include "scotch.h"
 #include "esmumps.h"
 
+/**************************************/
+/*                                    */
+/* The consistency checking routines. */
+/*                                    */
+/**************************************/
+
+/* checkEsmumps: verify nv and pe arrays after esmumps ordering.
+** After ordering, nv[i] >= 0 for all i (0 for secondary variables,
+** > 0 for principal variables), and pe[i] <= 0 for all i
+** (0 for tree roots, negative for parent/principal pointers).
+*/
+
+static
+void
+checkEsmumps (
+const SCOTCH_Num            vertnbr,
+const SCOTCH_Num * const    nvtab,
+const SCOTCH_Num * const    petab)
+{
+  SCOTCH_Num          vertnum;
+
+  for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Un-based traversal */
+    if (nvtab[vertnum] < 0) {
+      SCOTCH_errorPrint ("checkEsmumps: invalid ordering (1)");
+      exit (EXIT_FAILURE);
+    }
+
+    if (petab[vertnum] > 0) {
+      SCOTCH_errorPrint ("checkEsmumps: invalid ordering (2)");
+      exit (EXIT_FAILURE);
+    }
+    else if (petab[vertnum] < 0) {                /* Check parent pointer is valid */
+      SCOTCH_Num          pelmval;
+
+      pelmval = - petab[vertnum];                 /* Get 1-based parent index */
+      if ((pelmval < 1) || (pelmval > vertnbr)) {
+        SCOTCH_errorPrint ("checkEsmumps: invalid ordering (3)");
+        exit (EXIT_FAILURE);
+      }
+      if (nvtab[pelmval - 1] <= 0) {              /* Parent must be a principal variable */
+        SCOTCH_errorPrint ("checkEsmumps: invalid ordering (4)");
+        exit (EXIT_FAILURE);
+      }
+    }
+  }
+}
+
 /*********************/
 /*                   */
 /* The main routine. */
@@ -71,19 +118,19 @@ main (
 int                 argc,
 char *              argv[])
 {
-  FILE *                  fileptr;
-  SCOTCH_Graph            grafdat;
-  SCOTCH_Num              vertnbr;
-  SCOTCH_Num              vertnum;
-  SCOTCH_Num *            verttab;
-  SCOTCH_Num *            velotab;
-  SCOTCH_Num              edgenbr;
-  SCOTCH_Num *            edgetab;
-  SCOTCH_Num *            elentab;
-  SCOTCH_Num *            lasttab;
-  SCOTCH_Num *            lentab;
-  SCOTCH_Num *            nvtab;
-  SCOTCH_Num *            petab;
+  FILE *              fileptr;
+  SCOTCH_Graph        grafdat;
+  SCOTCH_Num          vertnbr;
+  SCOTCH_Num          vertnum;
+  SCOTCH_Num *        verttab;
+  SCOTCH_Num *        velotab;
+  SCOTCH_Num          edgenbr;
+  SCOTCH_Num *        edgetab;
+  SCOTCH_Num *        elentab;
+  SCOTCH_Num *        lasttab;
+  SCOTCH_Num *        lentab;
+  SCOTCH_Num *        nvtab;
+  SCOTCH_Num *        petab;
 
   SCOTCH_errorProg (argv[0]);
 
@@ -129,6 +176,8 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  checkEsmumps (vertnbr, nvtab, petab);
+
 #ifdef ESMUMPS_HAS_ESMUMPSV
   if (velotab != NULL) {
     memcpy (petab, verttab, vertnbr * sizeof (SCOTCH_Num)); /* Prepare graph topology arrays */
@@ -141,6 +190,8 @@ char *              argv[])
       SCOTCH_errorPrint ("main: cannot run esmumpsv");
       exit (EXIT_FAILURE);
     }
+
+    checkEsmumps (vertnbr, nvtab, petab);
   }
 #endif /* ESMUMPS_HAS_ESMUMPSV */
 

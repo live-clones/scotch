@@ -73,26 +73,26 @@ main (
 int                 argc,
 char *              argv[])
 {
-  SCOTCH_Graph          grafdat;
-  SCOTCH_Strat          stradat;
-  SCOTCH_Num            baseval;
-  SCOTCH_Num            partnbr;
-  SCOTCH_Num            partnum;
-  SCOTCH_Num * restrict parttax;
-  SCOTCH_Num            vertnbr;
-  SCOTCH_Num            vertnum;
-  SCOTCH_Num *          verttab;
-  SCOTCH_Num *          vendtab;
-  SCOTCH_Num *          velotab;
-  SCOTCH_Num *          vlbltab;
-  SCOTCH_Num *          edgetax;
-  SCOTCH_Num * restrict flagtab;
-  SCOTCH_Num * restrict loadtab;
-  SCOTCH_Num            loadmin;
-  SCOTCH_Num            loadmax;
-  SCOTCH_Num            loadsum;
-  double                loadavg;
-  FILE *                fileptr;
+  SCOTCH_Graph        grafdat;
+  SCOTCH_Strat        stradat;
+  SCOTCH_Num          baseval;
+  SCOTCH_Num          partnbr;
+  SCOTCH_Num          partnum;
+  SCOTCH_Num *        parttax;
+  SCOTCH_Num          vertnbr;
+  SCOTCH_Num          vertnum;
+  SCOTCH_Num *        verttab;
+  SCOTCH_Num *        vendtab;
+  SCOTCH_Num *        velotab;
+  SCOTCH_Num *        vlbltab;
+  SCOTCH_Num *        edgetax;
+  SCOTCH_Num *        flagtab;
+  SCOTCH_Num *        loadtab;
+  SCOTCH_Num          loadmin;
+  SCOTCH_Num          loadmax;
+  SCOTCH_Num          loadsum;
+  double              loadavg;
+  FILE *              fileptr;
 
   SCOTCH_errorProg (argv[0]);
 
@@ -144,26 +144,36 @@ char *              argv[])
   }
 
   if (SCOTCH_graphPartOvl (&grafdat, partnbr, &stradat, parttax) != 0) { /* Parttax is not based yet */
-    SCOTCH_errorPrint ("main: cannot compute mapping");
+    SCOTCH_errorPrint ("main: cannot compute partition");
     exit (EXIT_FAILURE);
   }
-
-  edgetax -= baseval;
-  parttax -= baseval;
 
   memset (loadtab,  0, partnbr * sizeof (SCOTCH_Num)); /* Part loads set to 0                */
   memset (flagtab, ~0, partnbr * sizeof (SCOTCH_Num)); /* Flags set to invalid vertex number */
 
-  for (vertnum = 0; vertnum < vertnbr; vertnum ++) {
+  edgetax -= baseval;
+  parttax -= baseval;
+
+  for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Un-based traversal */
     SCOTCH_Num          veloval;
     SCOTCH_Num          partval;
 
     veloval = (velotab == NULL) ? 1 : velotab[vertnum];
     partval = parttax[vertnum + baseval];         /* vertnum is not based               */
-    if (partval >= 0)                             /* If vertex belongs to one part only */
-      loadtab[partval] += veloval;                /* Add vertex load to this part       */
-    else {                                        /* Vertex belongs to several parts    */
+    if (partval >= 0) {                           /* If vertex belongs to one part only */
+      if (partval >= partnbr) {
+        SCOTCH_errorPrint ("main: invalid partition (1)");
+        exit (EXIT_FAILURE);
+      }
+      loadtab[partval] += veloval;                /* Add vertex load to this part */
+    }
+    else {                                        /* Vertex belongs to several parts */
       SCOTCH_Num          edgenum;
+
+      if (partval != -1) {
+        SCOTCH_errorPrint ("main: invalid partition (2)");
+        exit (EXIT_FAILURE);
+      }
 
       for (edgenum = verttab[vertnum]; edgenum < vendtab[vertnum]; edgenum ++) {
         SCOTCH_Num          vertend;

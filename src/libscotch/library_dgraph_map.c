@@ -71,13 +71,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine initializes an API opaque
-*** mapping with respect to the given source
-*** graph and the locations of output parameters.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine initializes an API opaque
+** mapping with respect to the given source
+** graph and the locations of output parameters.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphMapInit (
@@ -100,10 +100,10 @@ SCOTCH_Num * const          termloctab)           /*+ Mapping array             
   return (dmapInit (&mappptr->m, (Arch *) archptr));
 }
 
-/*+ This routine frees an API mapping.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees an API mapping.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_dgraphMapExit (
@@ -113,12 +113,12 @@ SCOTCH_Dmapping * const     mappptr)
   dmapExit (&((LibDmapping *) mappptr)->m);
 }
 
-/*+ This routine saves the contents of
-*** the given mapping to the given stream.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of
+** the given mapping to the given stream.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphMapSave (
@@ -129,13 +129,13 @@ FILE * const                  stream)             /*+ Output stream   +*/
   return (dmapSave (&((LibDmapping *) libmappptr)->m, (Dgraph *) CONTEXTOBJECT (libgrafptr), stream));
 }
 
-/*+ This routine computes a mapping
-*** of the API mapping structure with
-*** respect to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a mapping
+** of the API mapping structure with
+** respect to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphMapCompute (
@@ -203,14 +203,14 @@ abort:
   return (o);
 }
 
-/*+ This routine computes a mapping of the
-*** given graph structure onto the given
-*** target architecture with respect to the
-*** given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a mapping of the
+** given graph structure onto the given
+** target architecture with respect to the
+** given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphMap (
@@ -229,13 +229,13 @@ SCOTCH_Num * const          termloctab)           /*+ Mapping array       +*/
   return (o);
 }
 
-/*+ This routine computes a partition of
-*** the given graph structure with respect
-*** to the given strategy.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine computes a partition of
+** the given graph structure with respect
+** to the given strategy.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphPart (
@@ -255,12 +255,12 @@ SCOTCH_Num * const          termloctab)           /*+ Mapping array    +*/
   return (o);
 }
 
-/*+ This routine parses the given
-*** mapping strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
+/* This routine parses the given
+** mapping strategy.
+** It returns:
+** - 0   : if string successfully scanned.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratDgraphMap (
@@ -278,12 +278,12 @@ const char * const          string)
   return (0);
 }
 
-/*+ This routine provides predefined
-*** mapping strategies.
-*** It returns:
-*** - 0   : if string successfully initialized.
-*** - !0  : on error.
-+*/
+/* This routine provides predefined
+** mapping strategies.
+** It returns:
+** - 0   : if string successfully initialized.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratDgraphMapBuild (
@@ -350,12 +350,12 @@ const double                kbalval)              /*+ Desired imbalance ratio   
   return (SCOTCH_stratDgraphMap (straptr, bufftab));
 }
 
-/*+ This routine provides predefined
-*** clustering strategies.
-*** It returns:
-*** - 0   : if string successfully initialized.
-*** - !0  : on error.
-+*/
+/* This routine provides predefined
+** clustering strategies.
+** It returns:
+** - 0   : if string successfully initialized.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratDgraphClusterBuild (

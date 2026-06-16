@@ -1,4 +1,4 @@
-/* Copyright 2014,2015,2018,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018,2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 15 oct 2014     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 11 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +64,7 @@
 #include "scotch.h"
 
 #define STRANBR                     3
+#define PARTNBR                     5             /* Number of vertices in target architecture */
 
 /*********************/
 /*                   */
@@ -76,17 +77,18 @@ main (
 int                 argc,
 char *              argv[])
 {
-  SCOTCH_Mapping          mappdat;                /* Mapping to compute */
-  SCOTCH_Mapping          mapodat;                /* Old mapping        */
-  FILE *                  fileptr;
-  SCOTCH_Graph            grafdat;
-  SCOTCH_Arch             archdat;
-  SCOTCH_Strat            stratab[STRANBR];
-  int                     stranum;
-  int                     typenum;
-  SCOTCH_Num              vertnbr;
-  SCOTCH_Num *            parttab;
-  SCOTCH_Num *            parotab;
+  SCOTCH_Mapping      mappdat;                    /* Mapping to compute */
+  SCOTCH_Mapping      mapodat;                    /* Old mapping        */
+  FILE *              fileptr;
+  SCOTCH_Graph        grafdat;
+  SCOTCH_Arch         archdat;
+  SCOTCH_Strat        stratab[STRANBR];
+  int                 stranum;
+  int                 typenum;
+  SCOTCH_Num          vertnbr;
+  SCOTCH_Num *        parttab;
+  SCOTCH_Num *        parotab;
+  int                 o;
 
   SCOTCH_errorProg (argv[0]);
 
@@ -94,6 +96,8 @@ char *              argv[])
     SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
     exit (EXIT_FAILURE);
   }
+
+  o = 0;                                          /* Assume everything will be all right */
 
   if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
@@ -126,18 +130,21 @@ char *              argv[])
       exit (EXIT_FAILURE);
     }
   }
-  SCOTCH_stratGraphMap (&stratab[0], "cf{move=10000,pass=-1,bal=0.05}");
-  SCOTCH_stratGraphMap (&stratab[1], "m{vert=120,low=cf{move=10000,pass=-1,bal=0.05},asc=b{bnd=f{move=10000,pass=-1,bal=0.05},org=f{move=10000,pass=-1,bal=0.05}}}");
+  o |= SCOTCH_stratGraphMap (&stratab[0], "cf{move=10000,pass=-1,bal=0.05}");
+  o |= SCOTCH_stratGraphMap (&stratab[1], "m{vert=120,low=cf{move=10000,pass=-1,bal=0.05},asc=b{bnd=f{move=10000,pass=-1,bal=0.05},org=f{move=10000,pass=-1,bal=0.05}}}");
+  if (o != 0)
+    exit (EXIT_FAILURE);
 
   if (SCOTCH_archInit (&archdat) != 0) {
     SCOTCH_errorPrint ("main: cannot initialize architecture");
     exit (EXIT_FAILURE);
   }
-  SCOTCH_archCmplt (&archdat, 5);
+
+  SCOTCH_archCmplt (&archdat, PARTNBR);
 
   for (stranum = 0; stranum < (STRANBR - 1); stranum ++) {
     for (typenum = 0; typenum < 2; typenum ++) {
-      int                 o;
+      SCOTCH_Num          vertnum;
 
       printf ("Strat %d, type %d\n", stranum, typenum);
 
@@ -165,12 +172,19 @@ char *              argv[])
         SCOTCH_errorPrint ("main: cannot compute mapping");
         exit (EXIT_FAILURE);
       }
+
+      for (vertnum = 0; vertnum < vertnbr; vertnum ++) { /* Check partition range */
+        if ((parttab[vertnum] <  0) ||
+            (parttab[vertnum] >= PARTNBR)) {
+          SCOTCH_errorPrint ("main: invalid mapping");
+          exit (EXIT_FAILURE);
+        }
+      }
     }
 
     SCOTCH_graphMapExit (&grafdat, &mapodat);
     SCOTCH_graphMapExit (&grafdat, &mappdat);
   }
-
 
   SCOTCH_archExit (&archdat);
 

@@ -62,14 +62,14 @@
 /*                                      */
 /****************************************/
 
-/*+ This routine fills the contents of the given
-*** opaque distributed mesh structure with the
-*** data provided by the user. The base value
-*** allows the user to set the graph base to 0 or 1.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine fills the contents of the given
+** opaque distributed mesh structure with the
+** data provided by the user. The base value
+** allows the user to set the graph base to 0 or 1.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dmeshBuildAdm (

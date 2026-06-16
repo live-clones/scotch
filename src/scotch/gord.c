@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010-2012,2014,2018,2019,2021,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -56,7 +56,7 @@
 /**                # Version 6.1  : from : 30 oct 2019     **/
 /**                                 to   : 30 oct 2019     **/
 /**                # Version 7.0  : from : 23 oct 2021     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 15 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,6 +91,7 @@ static const char *         C_usageList[] = {
   "                 Default behavior depends on compilation flags",
   "  -c<opt>    : Choose default ordering strategy according to one or several of <opt>:",
   "                 b  : enforce load balance as much as possible",
+  "                 d  : manage disconnected graphs more efficiently",
   "                 q  : privilege quality over speed (default)",
   "                 s  : privilege speed over quality",
   "                 t  : enforce safety",
@@ -164,6 +165,10 @@ char *                      argv[])
               case 'B' :
               case 'b' :
                 straval |= SCOTCH_STRATBALANCE;
+                break;
+              case 'D' :
+              case 'd' :
+                straval |= SCOTCH_STRATDISCONNECTED;
                 break;
               case 'Q' :
               case 'q' :

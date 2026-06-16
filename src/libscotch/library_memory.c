@@ -60,11 +60,11 @@
 /*                                  */
 /************************************/
 
-/*+ This routine frees a structure allocated
-*** by a SCOTCH_*Alloc () routine.
-*** It returns:
-*** - void  : in all cases.
-+*/
+/* This routine frees a structure allocated
+** by a SCOTCH_*Alloc () routine.
+** It returns:
+** - void  : in all cases.
+*/
 
 void
 SCOTCH_memFree (
@@ -73,11 +73,11 @@ void * const                dataptr)
   memFree (dataptr);
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Num.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Num.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_numSizeof ()

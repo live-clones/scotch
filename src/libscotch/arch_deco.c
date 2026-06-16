@@ -110,7 +110,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
   if ((sizeof (ArchDeco)    > sizeof (ArchDummy)) ||
       (sizeof (ArchDecoDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archDecoArchBuild2: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -121,7 +121,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
                      &archptr->domverttab, (size_t) (termdommax * sizeof (ArchDecoVert)),
                      &archptr->domdisttab, (size_t) ((((termdommax * (termdommax - 1)) / 2) + 1) * sizeof (Anum)), NULL) == NULL) {
     errorPrint ("archDecoArchBuild2: out of memory");
-    return     (1);
+    return (1);
   }
   archptr->flagval    = ARCHDECOFREE;
   archptr->domtermnbr = termdomnbr;
@@ -138,7 +138,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
     if (termverttab[i].num > termdommax) {        /* If incorrect maximum terminal number */
       errorPrint       ("archDecoArchBuild2: bad maximum terminal");
       archDecoArchFree (archptr);
-      return           (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -160,7 +160,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
 #ifdef SCOTCH_DEBUG_ARCH1
   if (archptr->domverttab[0].size != termdomnbr) { /* If incorrect accumulation */
     errorPrint ("archDecoArchBuild2: bad terminal count");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -196,7 +196,7 @@ const Anum * const              termdisttab)      /*+ Terminal distance map     
           if (archDecoArchDist (archptr, i, j) == 0) { /* Distance value must be greater than zero */
             errorPrint       ("archDecoArchBuild2: invalid null distance");
             archDecoArchFree (archptr);
-            return           (1);
+            return (1);
           }
         }
 #endif /* SCOTCH_DEBUG_ARCH1 */
@@ -231,7 +231,7 @@ FILE * restrict const       stream)
   if ((sizeof (ArchDeco)    > sizeof (ArchDummy)) ||
       (sizeof (ArchDecoDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archDecoArchLoad: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -239,7 +239,7 @@ FILE * restrict const       stream)
       (typeval  < 0)                    ||
       (typeval  > 2)) {
     errorPrint ("archDecoArchLoad: bad input (1)");
-    return     (1);
+    return (1);
   }
 
   if (typeval == 2) {                             /* If type-2 decomposition                      */
@@ -252,7 +252,7 @@ FILE * restrict const       stream)
       (termdommax < termdomnbr)            ||
       (termdomnbr < 1)) {
     errorPrint ("archDecoArchLoad: bad input (2)");
-    return     (1);
+    return (1);
   }
 
   if (typeval == 0) {                             /* If raw decomposition */
@@ -260,7 +260,7 @@ FILE * restrict const       stream)
                        &termverttab, (size_t) (termdomnbr * sizeof (ArchDecoTermVert)),
                        &termdisttab, (size_t) ((((termdommax * (termdommax - 1)) / 2) + 1) * sizeof (Anum)), NULL) == NULL) {
       errorPrint ("archDecoArchLoad: out of memory (1)");
-      return     (1);
+      return (1);
     }
 
     for (i = 0; i < termdomnbr; i ++) {           /* For all declared terminals  */
@@ -275,7 +275,7 @@ FILE * restrict const       stream)
           (termvertnum > termdommax)) {
         errorPrint       ("archDecoArchLoad: bad input (3)");
         memFree          (termverttab);           /* Free group leader */
-        return           (1);
+        return (1);
       }
       termverttab[i].labl = (ArchDomNum) termvertlabl;
       termverttab[i].wght = (Anum)       termvertwght;
@@ -289,7 +289,7 @@ FILE * restrict const       stream)
           (termdistval < 1)) {
         errorPrint       ("archDecoArchLoad: bad input (4)");
         memFree          (termverttab);           /* Free group leader */
-        return           (1);
+        return (1);
       }
       termdisttab[i] = (Anum) termdistval;
     }
@@ -303,7 +303,7 @@ FILE * restrict const       stream)
                        &archptr->domverttab, (size_t) (termdommax * sizeof (ArchDecoVert)),
                        &archptr->domdisttab, (size_t) ((((termdommax * (termdommax - 1)) / 2) + 1) * sizeof (Anum)), NULL) == NULL) {
       errorPrint       ("archDecoArchLoad: out of memory (2)");
-      return           (1);
+      return (1);
     }
     archptr->flagval    = ARCHDECOFREE;
     archptr->domtermnbr = (Anum) termdomnbr;
@@ -319,7 +319,7 @@ FILE * restrict const       stream)
 	  (intLoad (stream, &domvertwght) != 1)) {
         errorPrint       ("archDecoArchLoad: bad input (5)");
         archDecoArchFree (archptr);
-        return           (1);
+        return (1);
       }
       archptr->domverttab[i].labl = (ArchDomNum) domvertlabl;
       archptr->domverttab[i].size = (Anum)       domvertsize;
@@ -332,7 +332,7 @@ FILE * restrict const       stream)
       if (intLoad (stream, &domdistval) != 1) {
         errorPrint       ("archDecoArchLoad: bad input (6)");
         archDecoArchFree (archptr);
-        return           (1);
+        return (1);
       }
       archptr->domdisttab[i] = domdistval;
     }
@@ -356,7 +356,7 @@ ArchDeco * const            archptr)
   if ((sizeof (ArchDeco)    > sizeof (ArchDummy)) ||
       (sizeof (ArchDecoDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archDecoArchFree: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -390,7 +390,7 @@ FILE * restrict const       stream)
   if ((sizeof (ArchDeco)    > sizeof (ArchDummy)) ||
       (sizeof (ArchDecoDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archDecoArchSave: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -398,7 +398,7 @@ FILE * restrict const       stream)
                (Anum) archptr->domtermnbr,
                (Anum) archptr->domvertnbr) == EOF) {
     errorPrint ("archDecoArchSave: bad output (1)");
-    return     (1);
+    return (1);
   }
 
   for (i = 0; i < archptr->domvertnbr; i ++) {    /* Write domain array */
@@ -407,7 +407,7 @@ FILE * restrict const       stream)
                  (Anum) archptr->domverttab[i].size,
                  (Anum) archptr->domverttab[i].wght) == EOF) {
       errorPrint ("archDecoArchSave: bad output (2)");
-      return     (1);
+      return (1);
     }
   }
 
@@ -417,13 +417,13 @@ FILE * restrict const       stream)
                  (Anum) archptr->domdisttab[i],
                  (((i % 8) == 7) && (i != (j - 1))) ? '\n' : '\t') == EOF) {
       errorPrint ("archDecoArchSave: bad output (3)");
-      return     (1);
+      return (1);
     }
   }
 
   if (fprintf (stream, "\n") == EOF) {
     errorPrint ("archDecoArchSave: bad output (4)");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -545,7 +545,7 @@ FILE * restrict const         stream)
   if ((intLoad (stream, &domnptr->num) != 1) ||
       (domnptr->num < 1) || (domnptr->num > archptr->domvertnbr)) {
     errorPrint ("archDecoDomLoad: bad input");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -567,7 +567,7 @@ FILE * restrict const       stream)
   if (fprintf (stream, ANUMSTRING " ",
                (Anum) domnptr->num) == EOF) {
     errorPrint ("archDecoDomSave: bad output");
-    return     (1);
+    return (1);
   }
 
   return (0);

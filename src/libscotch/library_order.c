@@ -63,13 +63,13 @@
 /*                                       */
 /*****************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** SCOTCH_Ordering structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** SCOTCH_Ordering structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Ordering *
 SCOTCH_orderAlloc ()
@@ -77,11 +77,11 @@ SCOTCH_orderAlloc ()
   return ((SCOTCH_Ordering *) memAlloc (sizeof (SCOTCH_Ordering)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Ordering structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Ordering structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_orderSizeof ()

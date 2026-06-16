@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 11 feb 2018     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 11 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -110,8 +110,11 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  if (SCOTCH_graphCheck (&grafdat) != 0)
+    SCOTCH_errorPrint ("main: invalid graph converted from mesh");
+
   SCOTCH_graphExit (&grafdat);
-  SCOTCH_meshExit (&meshdat);
+  SCOTCH_meshExit  (&meshdat);
 
   exit (EXIT_SUCCESS);
 }

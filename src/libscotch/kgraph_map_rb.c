@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2013,2014,2018,2019,2021,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -69,7 +69,7 @@
 /**                # Version 6.0  : from : 03 mar 2011     **/
 /**                                 to   : 21 jun 2019     **/
 /**                # Version 7.0  : from : 23 aug 2019     **/
-/**                                 to   : 19 jul 2024     **/
+/**                                 to   : 13 jun 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -310,7 +310,10 @@ KgraphMapRbVflo * restrict * restrict const vflotabptr) /*+ Pointer to fixed ver
 
 /* This routine splits the fixed vertex load
 ** array in two parts, one for each of the two
-** provided subdomains.
+** provided subdomains. Fixed slots that do not
+** belong to either subdomains are discarded
+** (for variable-sized architectures or small
+** mappings).
 ** It returns:
 ** - void  : in all cases.
 */
@@ -328,111 +331,50 @@ Gnum * restrict const             vflowgttab)     /*+ Fixed vertex load in each 
   ArchDom             domndat;                    /* Terminal domain attached to fixed vertex */
   Gnum                compload0;                  /* Load of slots in first subdomain         */
   Gnum                compload1;                  /* Load of slots in second subdomain        */
-  Gnum                vflomax;
-  Gnum                vflonum;
+  Gnum                vflormn;                    /* Remaining number of slots after discard  */
   Gnum                vflonnd;
+  Gnum                vflonum;
 
   compload0 =
   compload1 = 0;
 
-  vflomax = vflonbr;
-  if (archVar (archptr) == 0) {
-    for (vflonum = 0, vflonnd = vflonbr - 1; vflonum < vflonnd; ) {
-      while (1) {
-#ifdef SCOTCH_DEBUG_KGRAPH2
-        int                 o;
+  vflormn = vflonbr;
 
-        o =
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-        archDomTerm (archptr, &domndat, vflotab[vflonum].termnum);
+  for (vflonum = 0, vflonnd = vflonbr; vflonum < vflonnd; ) { /* For all fixed vertex slots */
 #ifdef SCOTCH_DEBUG_KGRAPH2
-        if (o != 0) {
-          errorPrint ("kgraphMapRbVfloSplit: internal error (1)");
-          return;
-        }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-        if (archDomIncl (archptr, &domnsubtab[0], &domndat) == 1) { /* If terminal vertex subdomain included in first subdomain */
-          compload0 += vflotab[vflonum].veloval;  /* Fixed vertex belongs to first subdomain                                    */
-          if (++ vflonum > vflonnd)               /* If passed beyond the limit of the second subdomain                         */
-            goto quit;
-        }
-        else {
-#ifdef SCOTCH_DEBUG_KGRAPH2
-          if (archDomIncl (archptr, &domnsubtab[1], &domndat) != 1) { /* If terminal vertex subdomain not included in second subdomain */
-            errorPrint ("kgraphMapRbVfloSplit: internal error (2)");
-            return;
-          }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-          break;                                  /* We have found a candidate for swapping */
-        }
-      }
-      while (1) {
-        archDomTerm (archptr, &domndat, vflotab[vflonnd].termnum);
-        if (archDomIncl (archptr, &domnsubtab[1], &domndat) == 1) { /* If terminal vertex subdomain included in second subdomain */
-          compload1 += vflotab[vflonnd].veloval;  /* Fixed vertex belongs to second subdomain                                    */
-          if (-- vflonnd <= vflonum) {            /* If matched the location of a slot that also belongs to second subdomain     */
-            compload1 += vflotab[vflonnd].veloval; /* Add load of reached slot to second subdomain                               */
-            goto quit;
-          }
-        }
-        else {
-#ifdef SCOTCH_DEBUG_KGRAPH2
-          if (archDomIncl (archptr, &domnsubtab[0], &domndat) != 1) { /* If terminal vertex subdomain not included in first subdomain */
-            errorPrint ("kgraphMapRbVfloSplit: internal error (3)");
-            return;
-          }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-          break;                                  /* We have found a candidate for swapping */
-        }
-      }
+    int                 o;
 
-      vflodat          = vflotab[vflonum];        /* Swap slots */
+    o =
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
+    archDomTerm (archptr, &domndat, vflotab[vflonum].termnum);
+#ifdef SCOTCH_DEBUG_KGRAPH2
+    if (o != 0) {
+      errorPrint ("kgraphMapRbVfloSplit: internal error");
+      return;
+    }
+#endif /* SCOTCH_DEBUG_KGRAPH2 */
+    if (archDomIncl (archptr, &domnsubtab[0], &domndat) == 1) { /* If fixed vertex subdomain included in first subdomain */
+      compload0 += vflotab[vflonum].veloval;      /* Fixed vertex belongs to first subdomain                             */
+      vflonum ++;
+      continue;                                   /* Keep it in place */
+    }
+
+    vflonnd --;                                   /* One less slot to consider                                      */
+    if (archDomIncl (archptr, &domnsubtab[1], &domndat) == 1) { /* If vertex subdomain included in second subdomain */
+      compload1 += vflotab[vflonum].veloval;      /* Fixed vertex belongs to second subdomain                       */
+      vflodat          = vflotab[vflonum];        /* Swap with last slot before processing the latter as current    */
       vflotab[vflonum] = vflotab[vflonnd];
       vflotab[vflonnd] = vflodat;
-      compload0 += vflotab[vflonum ++].veloval;
-      compload1 += vflotab[vflonnd --].veloval;
     }
-  }
-  else {                                          /* If variable-sized architecture, pseudo-terminals may not always be included */
-    for (vflonum = 0, vflonnd = vflonbr - 1; vflonum <= vflonnd; ) {
-#ifdef SCOTCH_DEBUG_KGRAPH2
-      int                 o;
-
-      o =
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-      archDomTerm (archptr, &domndat, vflotab[vflonum].termnum);
-#ifdef SCOTCH_DEBUG_KGRAPH2
-      if (o != 0) {
-        errorPrint ("kgraphMapRbVfloSplit: internal error (4)");
-        return;
-      }
-#endif /* SCOTCH_DEBUG_KGRAPH2 */
-      if (archDomIncl (archptr, &domnsubtab[0], &domndat) == 1) { /* If vertex subdomain included in first subdomain */
-        compload0 += vflotab[vflonum].veloval;    /* Fixed vertex belongs to first subdomain                         */
-        vflonum ++;
-        continue;                                 /* Keep it in place */
-      }
-      if (archDomIncl (archptr, &domnsubtab[1], &domndat) == 1) { /* If vertex subdomain included in second subdomain */
-        compload1 += vflotab[vflonum].veloval;    /* Fixed vertex belongs to second subdomain                         */
-
-        vflodat          = vflotab[vflonum];      /* Swap slots */
-        vflotab[vflonum] = vflotab[vflonnd];
-        vflotab[vflonnd] = vflodat;
-      }
-      else {                                      /* Fixed vertex is more generic than the two subdomains */
-        vflomax --;                               /* One less slot to consider in the future              */
-        vflodat          = vflotab[vflonum];      /* Swap slots */
-        vflotab[vflonum] = vflotab[vflonnd];
-        vflotab[vflonnd] = vflotab[vflomax];
-        vflotab[vflomax] = vflodat;
-      }
-      vflonnd --;                                 /* One less slot to consider */
+    else {                                        /* Fixed vertex is out of both subdomains       */
+      vflormn --;                                 /* One less slot to consider in the future      */
+      vflotab[vflonum] = vflotab[vflonnd];        /* Replace slot with next slot to process       */
+      vflotab[vflonnd] = vflotab[vflormn];        /* Fill empty place to preserve array structure */
     }
   }
 
-quit:
   vflonbrtab[0] = vflonum;
-  vflonbrtab[1] = vflomax - vflonum;
+  vflonbrtab[1] = vflormn - vflonum;
   vflowgttab[0] = compload0;
   vflowgttab[1] = compload1;
 }

@@ -8,5 +8,5 @@ fatal() {
 source ci/env_cmake.sh
 mkdir -p build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON .. || fatal
-make -j5 || fatal
+cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_SHARED_LIBS=ON .. || fatal
+make -j16 || fatal

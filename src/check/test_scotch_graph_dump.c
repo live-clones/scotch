@@ -43,7 +43,7 @@
 /**                # Version 6.1  : from : 24 jun 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 10 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -93,6 +93,11 @@ char *              argv[])
 
   if (testGraphBuild (&grafdat) != 0) {           /* Build source graph */
     SCOTCH_errorPrint ("main: cannot build graph");
+    exit (EXIT_FAILURE);
+  }
+
+  if (SCOTCH_graphCheck (&grafdat) != 0) {        /* Check built graph */
+    SCOTCH_errorPrint ("main: invalid built graph");
     exit (EXIT_FAILURE);
   }
 

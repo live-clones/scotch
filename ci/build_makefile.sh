@@ -14,7 +14,6 @@ find . -name Makefile | xargs sed -i -e "s#-c \$(<)#-c \$\(shell pwd\)/\$\(<\)#g
 if [[ $CI_PIPELINE_SOURCE == "schedule" ]]
 then
   SCAN="scan-build -plist --intercept-first --analyze-headers -o ../analyzer_reports "
-else
-  SCAN=""
+  COVERAGE="--coverage"
 fi
-eval '${SCAN}make -j scotch ptscotch esmumps ptesmumps 2>&1 | tee ../scotch-build-${JOBNAME}.log' || fatal
+eval '${SCAN}make -j scotch ptscotch esmumps ptesmumps COVERAGE=$COVERAGE 2>&1 | tee ../scotch-build-${JOBNAME}.log' || fatal

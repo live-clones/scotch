@@ -1,4 +1,4 @@
-/* Copyright 2012,2013,2018,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2012,2013,2018,2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 08 jan 2012     **/
 /**                                 to   : 14 jul 2018     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 26 mar 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -72,6 +72,7 @@ int                 argc,
 char *              argv[])
 {
   SCOTCH_Strat        stradat;
+  int                 o;
 
   SCOTCH_errorProg (argv[0]);
 
@@ -80,71 +81,73 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  o = 0;                                          /* Assume everything will be all right */
+
   printf ("Sequential mapping strategy, SCOTCH_STRATDEFAULT\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphMapBuild (&stradat, SCOTCH_STRATDEFAULT, 16, 0.03);
+  o |= SCOTCH_stratGraphMapBuild (&stradat, SCOTCH_STRATDEFAULT, 16, 0.03);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential mapping strategy, SCOTCH_STRATRECURSIVE\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphMapBuild (&stradat, SCOTCH_STRATRECURSIVE, 16, 0.03);
+  o |= SCOTCH_stratGraphMapBuild (&stradat, SCOTCH_STRATRECURSIVE, 16, 0.03);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential mapping strategy, SCOTCH_STRATREMAP\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphMapBuild (&stradat, SCOTCH_STRATREMAP, 16, 0.03);
+  o |= SCOTCH_stratGraphMapBuild (&stradat, SCOTCH_STRATREMAP, 16, 0.03);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential mapping strategy, SCOTCH_STRATRECURSIVE | SCOTCH_STRATREMAP\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphMapBuild (&stradat, SCOTCH_STRATRECURSIVE | SCOTCH_STRATREMAP, 16, 0.03);
+  o |= SCOTCH_stratGraphMapBuild (&stradat, SCOTCH_STRATRECURSIVE | SCOTCH_STRATREMAP, 16, 0.03);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential ordering strategy, SCOTCH_STRATDEFAULT\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATDEFAULT, 0, 0.2);
+  o |= SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATDEFAULT, 0, 0.2);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential ordering strategy, SCOTCH_STRATDISCONNECTED\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATDISCONNECTED, 3, 0.2);
+  o |= SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATDISCONNECTED, 3, 0.2);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential ordering strategy, SCOTCH_STRATLEVELMAX\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATLEVELMAX, 3, 0.2);
+  o |= SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATLEVELMAX, 3, 0.2);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential ordering strategy, SCOTCH_STRATLEVELMIN\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATLEVELMIN, 3, 0.2);
+  o |= SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATLEVELMIN, 3, 0.2);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential ordering strategy, SCOTCH_STRATLEVELMAX | SCOTCH_STRATLEVELMIN\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATLEVELMAX | SCOTCH_STRATLEVELMIN, 3, 0.2);
+  o |= SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATLEVELMAX | SCOTCH_STRATLEVELMIN, 3, 0.2);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential ordering strategy, SCOTCH_STRATLEAFSIMPLE\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATLEAFSIMPLE, 3, 0.2);
+  o |= SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATLEAFSIMPLE, 3, 0.2);
   SCOTCH_stratExit (&stradat);
 
   printf ("Sequential ordering strategy, SCOTCH_STRATSEPASIMPLE\n");
 
   SCOTCH_stratInit (&stradat);
-  SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATSEPASIMPLE, 3, 0.2);
+  o |= SCOTCH_stratGraphOrderBuild (&stradat, SCOTCH_STRATSEPASIMPLE, 3, 0.2);
   SCOTCH_stratExit (&stradat);
 
-  exit (EXIT_SUCCESS);
+  exit ((o == 0) ? EXIT_SUCCESS : EXIT_FAILURE);
 }

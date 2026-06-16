@@ -68,13 +68,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine saves the contents of
-*** the given ordering to the given stream
-*** on the form of a block ordering.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of
+** the given ordering to the given stream
+** on the form of a block ordering.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderSaveBlock (

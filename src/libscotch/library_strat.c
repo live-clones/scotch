@@ -63,13 +63,13 @@
 /*                                       */
 /*****************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** distributed ordering structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** distributed ordering structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Strat *
 SCOTCH_stratAlloc ()
@@ -77,11 +77,11 @@ SCOTCH_stratAlloc ()
   return ((SCOTCH_Strat *) memAlloc (sizeof (SCOTCH_Strat)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Strat structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Strat structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_stratSizeof ()

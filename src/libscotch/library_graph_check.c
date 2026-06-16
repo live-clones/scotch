@@ -67,12 +67,12 @@
 /*                                  */
 /************************************/
 
-/*+ This routine checks the consistency
-*** of the given graph.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine checks the consistency
+** of the given graph.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_graphCheck (

@@ -71,13 +71,13 @@
 /*                                      */
 /****************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** SCOTCH_Geom structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** SCOTCH_Geom structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Geom *
 SCOTCH_geomAlloc ()
@@ -85,11 +85,11 @@ SCOTCH_geomAlloc ()
   return ((SCOTCH_Geom *) memAlloc (sizeof (SCOTCH_Geom)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Geom structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Geom structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_geomSizeof ()
@@ -97,13 +97,13 @@ SCOTCH_geomSizeof ()
   return (sizeof (SCOTCH_Geom));
 }
 
-/*+ This routine initializes the opaque
-*** geom structure used to handle graph
-*** geometry in the Scotch library.
-*** It returns:
-*** - 0   : if the initialization succeeded.
-*** - !0  : on error.
-+*/
+/* This routine initializes the opaque
+** geom structure used to handle graph
+** geometry in the Scotch library.
+** It returns:
+** - 0   : if the initialization succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_geomInit (
@@ -121,11 +121,11 @@ SCOTCH_Geom * const         geomptr)
   return (geomInit ((Geom *) geomptr));
 }
 
-/*+ This routine frees the contents of the
-*** given opaque geometry structure.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine frees the contents of the
+** given opaque geometry structure.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_geomExit (
@@ -134,13 +134,13 @@ SCOTCH_Geom * const         geomptr)
   geomExit ((Geom *) geomptr);
 }
 
-/*+ This routine accesses all of the geometry data.
-*** NULL pointers on input indicate unwanted
-*** data. NULL pointers on output indicate
-*** unexisting arrays.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine accesses all of the geometry data.
+** NULL pointers on input indicate unwanted
+** data. NULL pointers on output indicate
+** unexisting arrays.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 void
 SCOTCH_geomData (

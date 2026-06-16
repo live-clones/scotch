@@ -1,4 +1,4 @@
-/* Copyright 2020,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2020,2021,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**   DATES      : # Version 6.1  : from : 01 sep 2020     **/
 /**                                 to   : 28 may 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 06 aug 2025     **/
+/**                                 to   : 01 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -66,141 +66,6 @@
 ** It returns:
 ** - METIS_OK      : if the mesh has been successfully built.
 ** - METIS_ERROR*  : on error.
-*/
-
-int
-_SCOTCH_METIS_MeshToDual2 (
-SCOTCH_Mesh * const         meshptr,              /*+ Mesh structure to fill                        +*/
-const SCOTCH_Num            baseval,              /*+ Base value                                    +*/
-const SCOTCH_Num            vnodnbr,              /*+ Number of nodes in mesh                       +*/
-const SCOTCH_Num            velmnbr,              /*+ Number of elements in mesh                    +*/
-const SCOTCH_Num * const    verttab,              /*+ Array of start indices of elements in edgetab +*/
-const SCOTCH_Num * const    edgetab)              /*+ Array of elements                             +*/
-{
-  Gnum * restrict     srcverttax;
-  Gnum * restrict     srcedgetax;
-  Gnum                degrmax;
-  Gnum                edgenbr;
-  Gnum                edgenum;
-  Gnum                vertnum;
-
-  Mesh * const                srcmeshptr = (Mesh *) meshptr; /* Use structure as source mesh */
-  const Gnum * restrict const verttax = verttab - baseval;
-  const Gnum * restrict const edgetax = edgetab - baseval;
-  const Gnum                  velmnnd = velmnbr + baseval;
-
-#ifdef SCOTCH_DEBUG_LIBRARY1
-  for (vertnum = baseval; vertnum < velmnnd; vertnum ++) { /* For all element vertices */
-    Gnum                edgenum;
-    Gnum                edgennd;
-
-    edgenum = verttax[vertnum];
-    edgennd = verttax[vertnum + 1];
-    if (edgennd < edgenum) {
-      SCOTCH_errorPrint ("_SCOTCH_METIS_MeshToDual2: invalid input indices (1)");
-      return            (METIS_ERROR_INPUT);
-    }
-    for ( ; edgenum < edgennd; edgenum ++) {
-      if ((edgetax[edgenum] <  baseval) ||
-          (edgetax[edgenum] > (baseval + vnodnbr))) {
-        SCOTCH_errorPrint ("_SCOTCH_METIS_MeshToDual2: invalid input indices (2)");
-        return            (METIS_ERROR_INPUT);
-      }
-    }
-  }
-#endif /* SCOTCH_DEBUG_LIBRARY1 */
-
-  srcmeshptr->flagval = MESHFREEEDGE | MESHFREEVERT;
-  srcmeshptr->baseval = baseval;
-  srcmeshptr->velmbas = baseval;                  /* Elements are placed first */
-  srcmeshptr->velmnbr = velmnbr;
-  srcmeshptr->velmnnd = velmnnd;
-  srcmeshptr->vnodbas = velmnnd;                  /* Nodes are placed after */
-  srcmeshptr->vnodnbr = vnodnbr;
-  srcmeshptr->vnodnnd = vnodnbr + velmnnd;
-  srcmeshptr->velotax = NULL;                     /* No element loads */
-  srcmeshptr->velosum = velmnbr;
-  srcmeshptr->vnlotax = NULL;                     /* No node loads */
-  srcmeshptr->vnlosum = vnodnbr;
-
-  if ((srcverttax = memAlloc ((velmnbr + vnodnbr + 1) * sizeof (Gnum))) == NULL) { /* Allocate compact vertex array for mesh vertices */
-    SCOTCH_errorPrint ("_SCOTCH_METIS_MeshToDual2: out of memory (1)");
-    return            (METIS_ERROR_MEMORY);
-  }
-  memSet (srcverttax + velmnbr, 0, vnodnbr * sizeof (Gnum)); /* Initialize node part of array as node vertex degrees */
-  srcverttax -= baseval;                          /* Array is now based                                              */
-  srcmeshptr->verttax = srcverttax;
-  srcmeshptr->vendtax = srcverttax + 1;
-
-  degrmax = 0;
-  edgenbr = 0;
-  for (vertnum = baseval; vertnum < velmnnd; vertnum ++) { /* For all element vertices */
-    Gnum                edgenum;
-    Gnum                edgennd;
-    Gnum                degrval;
-
-    edgenum = verttax[vertnum];
-    edgennd = verttax[vertnum + 1];
-    degrval = edgennd - edgenum;
-    if (degrval > degrmax)                        /* Compute vertex maximum degree for element vertices */
-      degrmax = degrval;
-    edgenbr += degrval;                           /* Accumulate number of element-node arcs */
-
-    for ( ; edgenum < edgennd; edgenum ++)
-      srcverttax[velmnbr + edgetax[edgenum]] ++;  /* Accumulate degrees of end node vertices */
-  }
-  edgenbr *= 2;                                   /* Overall number of arcs is twice the number of element-node arcs */
-  srcmeshptr->edgenbr = edgenbr;
-
-  if (verttax[baseval] == baseval)                /* If vertex indices are aligned with graph base value                              */
-    memCpy (srcverttax + baseval, verttab, velmnbr * sizeof (Gnum)); /* Copy element adjacency list into element part of vertex array */
-  else {
-    Gnum                edgeadj;
-
-    edgeadj = verttax[baseval] - baseval;
-    for (vertnum = baseval; vertnum < velmnnd; vertnum ++)
-      srcverttax[vertnum] = verttax[vertnum] + edgeadj;
-  }
-
-  for (vertnum = velmnnd, edgenum = verttax[velmnnd]; vertnum < velmnnd + vnodnbr; vertnum ++) { /* For all node vertex indices in mesh */
-    Gnum                degrval;
-
-    degrval = srcverttax[vertnum];
-    if (degrval > degrmax)                        /* Compute vertex maximum degree for node vertices */
-      degrmax = degrval;
-
-    srcverttax[vertnum] = edgenum;                /* Fill node part of vertex array */
-    edgenum += degrval;
-  }
-  srcverttax[vertnum] = edgenum;                  /* Mark end of vertex array */
-  srcmeshptr->degrmax = degrmax;
-
-  if ((srcedgetax = memAlloc (edgenbr * sizeof (Gnum))) == NULL) {
-    SCOTCH_errorPrint ("_SCOTCH_METIS_MeshToDual2: out of memory (2)");
-    memFree (srcverttax + baseval);
-    return  (METIS_ERROR_MEMORY);
-  }
-  srcedgetax -= baseval;
-  srcmeshptr->edgetax = srcedgetax;
-
-  for (edgenum = baseval; edgenum < verttax[velmnnd]; edgenum ++) /* Copy skewed edge array for element vertices */
-    srcedgetax[edgenum] = edgetax[edgenum] + velmnbr;
-
-  for (vertnum = baseval; vertnum < velmnnd; vertnum ++) {
-    Gnum                edgenum;
-
-    for (edgenum = verttax[vertnum]; edgenum < verttax[vertnum + 1]; edgenum ++) /* Build edge array for node vertices */
-      srcedgetax[srcverttax[edgetax[edgenum] + velmnbr] ++] = vertnum;
-  }
-
-  memMov (srcverttax + velmnnd + 1, srcverttax + velmnnd, (vnodnbr - 1) * sizeof (Gnum));  /* Re-build node part of vertex array */
-  srcverttax[velmnnd] = verttax[velmnnd];
-
-  return (METIS_OK);
-}
-
-/*
-**
 */
 
 int
@@ -229,16 +94,17 @@ SCOTCH_Num ** const         adjncy)
   SCOTCH_meshInit  (&meshdat);
   SCOTCH_graphInit (&grafdat);
 
-  o = _SCOTCH_METIS_MeshToDual2 (&meshdat, *nuimflag, *nn, *ne, eptr, eind);
-  if (o != METIS_OK) {
+  edgenbr = eptr[*ne] - *nuimflag;                /* Number of arcs in element array */
+  if (SCOTCH_meshBuildElem (&meshdat, *nuimflag, *nuimflag, *ne, *nn,
+                            eptr, eptr + 1, NULL, NULL, NULL, edgenbr, eind) != 0) {
     SCOTCH_errorPrint ("SCOTCH_METIS_MeshToDual: cannot create mesh");
-    return (o);
+    return            (METIS_ERROR);
   }
   o = SCOTCH_meshGraphDual (&meshdat, &grafdat, *ncommon);
   SCOTCH_meshExit (&meshdat);                     /* Mesh structure is no longer needed */
   if (o != 0) {
     SCOTCH_errorPrint ("SCOTCH_METIS_MeshToDual: cannot create graph from mesh");
-    return (o);
+    return            (METIS_ERROR);
   }
 
   SCOTCH_graphData (&grafdat, &baseval, &vertnbr, &verttab, &vendtab, NULL, NULL, &edgenbr, &edgetab, NULL);

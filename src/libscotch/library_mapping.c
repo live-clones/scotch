@@ -63,13 +63,13 @@
 /*                                      */
 /****************************************/
 
-/*+ This routine reserves a memory area
-*** of a size sufficient to store a
-*** SCOTCH_Mapping structure.
-*** It returns:
-*** - !NULL  : if the allocation succeeded.
-*** - NULL   : on error.
-+*/
+/* This routine reserves a memory area
+** of a size sufficient to store a
+** SCOTCH_Mapping structure.
+** It returns:
+** - !NULL  : if the allocation succeeded.
+** - NULL   : on error.
+*/
 
 SCOTCH_Mapping *
 SCOTCH_mapAlloc ()
@@ -77,11 +77,11 @@ SCOTCH_mapAlloc ()
   return ((SCOTCH_Mapping *) memAlloc (sizeof (SCOTCH_Mapping)));
 }
 
-/*+ This routine returns the size, in bytes,
-*** of a SCOTCH_Mapping structure.
-*** It returns:
-*** - > 0  : in all cases.
-+*/
+/* This routine returns the size, in bytes,
+** of a SCOTCH_Mapping structure.
+** It returns:
+** - > 0  : in all cases.
+*/
 
 int
 SCOTCH_mapSizeof ()

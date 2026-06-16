@@ -1,4 +1,4 @@
-/* Copyright 2014,2015,2018,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018,2021,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 16 jun 2021     **/
 /**                                 to   : 28 dec 2021     **/
 /**                # Version 7.0  : from : 03 jul 2023     **/
-/**                                 to   : 02 Aug 2025     **/
+/**                                 to   : 12 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,11 +94,15 @@ char *              argv[])
 
 #ifdef SCOTCH_PTHREAD
   thrdreqlvl = MPI_THREAD_MULTIPLE;
-  if (MPI_Init_thread (&argc, &argv, thrdreqlvl, &thrdprolvl) != MPI_SUCCESS)
+  if (MPI_Init_thread (&argc, &argv, thrdreqlvl, &thrdprolvl) != MPI_SUCCESS) {
     SCOTCH_errorPrint ("main: Cannot initialize (1)");
+    exit (EXIT_FAILURE);
+  }
 #else /* SCOTCH_PTHREAD */
-  if (MPI_Init (&argc, &argv) != MPI_SUCCESS)
+  if (MPI_Init (&argc, &argv) != MPI_SUCCESS) {
     SCOTCH_errorPrint ("main: Cannot initialize (2)");
+    exit (EXIT_FAILURE);
+  }
 #endif /* SCOTCH_PTHREAD */
 
   if (argc != 2) {
@@ -214,6 +218,13 @@ char *              argv[])
     }
 
     SCOTCH_dgraphData (&coargrafdat, NULL, &coarvertglbnbr, &coarvertlocnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+    if ((o == 0) &&                               /* If coarsening took place             */
+        (coarvertglbnbr > 0) &&                   /* And process participated in folding  */
+        (SCOTCH_dgraphCheck (&coargrafdat) != 0)) { /* And folded graph is non consistent */
+      SCOTCH_errorPrint ("main: invalid coarse graph");
+      exit (EXIT_FAILURE);
+    }
 
     for (procnum = 0; procnum < procglbnbr; procnum ++) {
       if (coarvertlocnbr > coarvertlocmax) {

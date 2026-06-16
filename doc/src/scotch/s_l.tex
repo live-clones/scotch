@@ -5390,7 +5390,7 @@ $\min(\mathtt{velmbas}, \mathtt{vnodbas})$ is $0$ for
 structures built from C and $1$ for structures built from Fortran.
 {\tt verttab} is the adjacency index array, of size $({\tt velmnbr} +
 {\tt vnodnbr} + 1)$ if the edge array is compact (that is, if
-{\tt vendtab} equals $\mathtt{vendtab}+1$ or {\tt NULL}), or of
+{\tt vendtab} equals $(\mbox{\texttt{verttab}}+1)$ or {\tt NULL}), or of
 size $({\tt velmnbr} + {\tt vnodnbr})$ else.
 {\tt vendtab} is the adjacency end index array, of size $({\tt velmnbr} +
 {\tt vnodnbr})$ if it is disjoint from {\tt verttab}.
@@ -5435,6 +5435,108 @@ to any other calls to \libscotch\ routines.
 
 {\tt SCOTCH\_meshBuild} returns $0$ if the mesh structure has been
 successfully set with all of the input data, and $1$ else.
+\end{itemize}
+
+\subsubsection{{\tt SCOTCH\_meshBuildElem}}
+
+\begin{itemize}
+\progsyn
+
+{\tt\begin{tabular}{l@{}ll}
+int SCOTCH\_meshBuildElem ( & SCOTCH\_Mesh *      & meshptr, \\
+                            & const SCOTCH\_Num   & velmbas, \\
+                            & const SCOTCH\_Num   & vnodbas, \\
+                            & const SCOTCH\_Num   & velmnbr, \\
+                            & const SCOTCH\_Num   & vnodnbr, \\
+                            & const SCOTCH\_Num * & verttab, \\
+                            & const SCOTCH\_Num * & vendtab, \\
+                            & const SCOTCH\_Num * & velotab, \\
+                            & const SCOTCH\_Num * & vnlotab, \\
+                            & const SCOTCH\_Num * & vlbltab, \\
+                            & const SCOTCH\_Num   & edgenbr, \\
+                            & const SCOTCH\_Num * & edgetab)
+\end{tabular}}
+
+{\tt\begin{tabular}{l@{}ll}
+scotchfmeshbuildelem ( & doubleprecision (*)   & meshdat, \\
+                       & integer*{\it num}     & velmbas, \\
+                       & integer*{\it num}     & vnodbas, \\
+                       & integer*{\it num}     & velmnbr, \\
+                       & integer*{\it num}     & vnodnbr, \\
+                       & integer*{\it num} (*) & verttab, \\
+                       & integer*{\it num} (*) & vendtab, \\
+                       & integer*{\it num} (*) & velotab, \\
+                       & integer*{\it num} (*) & vnlotab, \\
+                       & integer*{\it num} (*) & vlbltab, \\
+                       & integer*{\it num}     & edgenbr, \\
+                       & integer*{\it num} (*) & edgetab, \\
+                       & integer*{\it num}     & ierr)
+\end{tabular}}
+
+\progdes
+
+The \texttt{SCOTCH\_meshBuildElem} routine fills the source mesh
+structure pointed to by \texttt{meshptr} with an extension of the
+element adjacency data that is passed to it.
+\texttt{velmbas} and \texttt{vnodbas} are the base values for the
+input element and node vertices, respectively. However, in order to
+create a compact mesh, the element and node base values of the
+produced mesh will be equal to \texttt{velmbas} and
+$(\mbox{\texttt{velmbas}} + \mbox{\texttt{velmnbr}})$, respectively.
+\texttt{velmnbr} and \texttt{vnodnbr} are the number of element and node
+vertices, respectively. Typically,
+$\min(\mbox{\texttt{velmbas}}, \mbox{\texttt{vnodbas}})$ is $0$ for
+structures built from C and $1$ for structures built from Fortran.
+\texttt{verttab} is the adjacency index array, of size
+$(\mbox{\texttt{velmnbr}} + 1)$ if the edge array is compact (that is,
+if \texttt{vendtab} equals $(\mbox{\texttt{verttab}}+1)$ or
+\texttt{NULL}), or of size \texttt{velmnbr} else.
+\texttt{vendtab} is the adjacency end index array, of size
+\texttt{velmnbr} if it is disjoint from \texttt{verttab}.
+\texttt{velotab} is the element vertex load array, of size
+\texttt{velmnbr} if it exists.
+\texttt{vnlotab} is the node vertex load array, of size
+\texttt{vnodnbr} if it exists.
+\texttt{vlbltab} is the vertex label array, of size
+$(\mbox{\texttt{velmnbr}} + \mbox{\texttt{vnodnbr}})$ if it exists.
+\texttt{edgenbr} is the number of element-to-node arcs.
+\texttt{edgetab} is the element-to-node adjacency array, of size at
+least \texttt{edgenbr} (it can be more if the edge array is not compact).
+
+The \texttt{vendtab}, \texttt{velotab}, \texttt{vnlotab} and
+\texttt{vlbltab} arrays are optional, and a \texttt{NULL} pointer can
+be passed as argument whenever they are not defined.
+Since, in Fortran, there is no null reference, passing the
+\texttt{scotchf\lbt mesh\lbo build\lbt elem} routine a reference equal
+to \texttt{verttab} in the \texttt{velotab}, \texttt{vnlotab} or
+\texttt{vlbltab} fields makes them be considered as missing
+arrays. Setting \texttt{vendtab} to refer to one cell after
+\texttt{verttab} yields the same result, as it is the exact semantics
+of a compact vertex array.
+
+To limit memory consumption,
+\texttt{SCOTCH\_\lbt mesh\lbo Build\lbt Elem} does not copy array
+data, but instead references them in the
+\texttt{SCOTCH\_\lbt Mesh} structure. Therefore, great care should be
+taken not to modify the contents of the arrays passed to
+\texttt{SCOTCH\_\lbt mesh\lbo Build\lbt Elem} as long as the mesh
+structure is in use. Every update of the arrays should be preceded by
+a call to \texttt{SCOTCH\_\lbt mesh\lbo Exit}, to free internal mesh
+structures, and eventually followed by a new call to
+\texttt{SCOTCH\_\lbt mesh\lbo Build\lbt Elem} to re-build these
+internal structures so as to be able to use the new mesh.
+
+To ensure that inconsistencies in user data do not result in an
+erroneous behavior of the \libscotch\ routines, it is recommended, at
+least in the development stage, to call the
+\texttt{SCOTCH\_\lbt mesh\lbt Check} routine on the newly created
+\texttt{SCOTCH\_\lbt Mesh} structure, prior to any other calls to
+\libscotch\ routines.
+
+\progret
+
+\texttt{SCOTCH\_meshBuildElem} returns $0$ if the mesh structure has
+been successfully computed from all of the input data, and $1$ else.
 \end{itemize}
 
 \subsubsection{{\tt SCOTCH\_meshCheck}}

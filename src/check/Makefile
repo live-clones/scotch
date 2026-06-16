@@ -1,4 +1,4 @@
-## Copyright 2011,2012,2014-2016,2018-2021,2024,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2011,2012,2014-2016,2018-2021,2024-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -115,6 +115,9 @@ PROGSED			?= sed
 %_v5$(EXE):	%.f90
 				$(FC) $(FFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv5 $(SCOTCHLIBS) $(LDFLAGS)
 
+%$(EXE):	%.f90
+				$(FC) $(FFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
+
 ##
 ##  Project rules.
 ##
@@ -143,42 +146,45 @@ clean				:
 					-$(RM) *~ *$(OBJ)
 
 realclean			:	clean
-					-$(RM) 				\
-					test_common_file_compress	\
-					test_common_random		\
-					test_common_thread		\
-					test_fibo			\
-					test_libesmumps			\
-					test_libmetis_v3		\
-					test_libmetis_v5		\
-					test_libmetis_dual_v3		\
-					test_libmetis_dual_v5		\
-					test_libmetis_dual_f.f90	\
-					test_libmetis_dual_f.f90.tmp	\
-					test_libmetis_dual_f_v3		\
-					test_libmetis_dual_f_v5		\
-					test_scotch_arch		\
-					test_scotch_arch_deco		\
-					test_scotch_context		\
-					test_scotch_graph_coarsen	\
-					test_scotch_graph_color		\
-					test_scotch_graph_diam		\
-					test_scotch_graph_dump2		\
-					test_scotch_graph_dump2.c	\
-					test_scotch_graph_induce	\
-					test_scotch_graph_map		\
-					test_scotch_graph_map_copy	\
-					test_scotch_graph_order		\
-					test_scotch_graph_part_ovl	\
-					test_scotch_dgraph_band		\
-					test_scotch_dgraph_check	\
-					test_scotch_dgraph_coarsen	\
-					test_scotch_dgraph_order	\
-					test_scotch_dgraph_grow		\
-					test_scotch_dgraph_induce	\
-					test_scotch_dgraph_redist	\
-					test_scotch_mesh_graph		\
-					test_strat_par			\
+					-$(RM) 					\
+					test_common_file_compress		\
+					test_common_random			\
+					test_common_thread			\
+					test_fibo				\
+					test_libesmumps				\
+					test_libmetis_v3			\
+					test_libmetis_v5			\
+					test_libmetis_dual_v3			\
+					test_libmetis_dual_v5			\
+					test_libmetis_dual_f.f90		\
+					test_libmetis_dual_f.f90.tmp		\
+					test_libmetis_dual_f_v3			\
+					test_libmetis_dual_f_v5			\
+					test_scotch_arch			\
+					test_scotch_arch_deco			\
+					test_scotch_context			\
+					test_scotch_graph_coarsen		\
+					test_scotch_graph_color			\
+					test_scotch_graph_diam			\
+					test_scotch_graph_dump2			\
+					test_scotch_graph_dump2.c		\
+					test_scotch_graph_induce		\
+					test_scotch_graph_map			\
+					test_scotch_graph_map_copy		\
+					test_scotch_graph_order			\
+					test_scotch_graph_part_ovl		\
+					test_scotch_dgraph_band			\
+					test_scotch_dgraph_check		\
+					test_scotch_dgraph_coarsen		\
+					test_scotch_dgraph_order		\
+					test_scotch_dgraph_grow			\
+					test_scotch_dgraph_induce		\
+					test_scotch_dgraph_redist		\
+					test_scotch_mesh_build_f		\
+					test_scotch_mesh_build_f.f90		\
+					test_scotch_mesh_build_f.f90.tmp	\
+					test_scotch_mesh_graph			\
+					test_strat_par				\
 					test_strat_seq
 
 ##
@@ -202,6 +208,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_scotch_graph_map_copy		\
 			check_scotch_graph_order		\
 			check_scotch_graph_part_ovl		\
+			check_scotch_mesh_build_f		\
 			check_scotch_mesh_graph			\
 			check_libmetis_v3			\
 			check_libmetis_v5			\
@@ -487,6 +494,14 @@ test_scotch_graph_part_ovl	:	test_scotch_graph_part_ovl.c	\
 
 ##
 
+check_scotch_mesh_build_f	:	test_scotch_mesh_build_f
+					$(EXECS) ./test_scotch_mesh_build_f
+
+test_scotch_mesh_build_f	:	test_scotch_mesh_build_f.f90	\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
 check_scotch_mesh_graph		:	test_scotch_mesh_graph
 					$(EXECS) ./test_scotch_mesh_graph data/ship001.msh
 
@@ -579,8 +594,10 @@ test_scotch_dgraph_redist	:	test_scotch_dgraph_redist.c
 ##  Sequential program tests.
 ##
 
-check_prog_acpl			:	check_prog_amk
+check_prog_acpl			:	check_prog_amk check_prog_amk_grf
 					$(EXECS) $(SCOTCHBINDIR)/amk_m2 5 12 | $(SCOTCHBINDIR)/acpl | $(SCOTCHBINDIR)/atst
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf data/m4x4.grf | $(SCOTCHBINDIR)/acpl | $(SCOTCHBINDIR)/atst
+					$(EXECS) $(SCOTCHBINDIR)/amk_grf -2 data/m4x4.grf | $(SCOTCHBINDIR)/acpl | $(SCOTCHBINDIR)/atst
 
 check_prog_amk			:	check_prog_atst
 					$(EXECS) $(SCOTCHBINDIR)/amk_ccc 5 | $(SCOTCHBINDIR)/atst
@@ -664,12 +681,13 @@ check_prog_gmap			:
 
 check_prog_gord			:	check_prog_gmk_msh
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump.grf $(TMPDIR)/bump.ord -Cu -vt
-					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b100000.grf $(TMPDIR)/bump_b100000.ord -Cd -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b1.grf '-On{sep=(/((vert)>(240))?(e{strat=g}|g|h);),ole=d{cmin=15,cmax=100000,frat=0},ose=g{pass=3}}' $(TMPDIR)/bump_b1.ord -Cr -vt
-					$(EXECS) $(SCOTCHBINDIR)/gord data/m16x16_b100000_v.grf '-On{sep=(/((vert)>(20))?h;),ole=b{cmin=100},ose=b{cmin=3}}' $(TMPDIR)/m16x16_b100000_v.ord -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_b100000.grf $(TMPDIR)/bump_b100000.ord -Cd -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/bump_imbal_32.grf $(TMPDIR)/bump_imbal_32.ord -Cf -vt
-					$(EXECS) $(SCOTCHBINDIR)/gord data/nocoarsen.grf $(TMPDIR)/nocoarsen.ord -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord data/compress-coarsen.grf $(TMPDIR)/compress-coarsen.ord -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/disconnected.grf $(TMPDIR)/disconnected.ord -cd -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/m16x16_b100000_v.grf '-On{sep=(/((vert)>(20))?h;),ole=b{cmin=100},ose=b{cmin=3}}' $(TMPDIR)/m16x16_b100000_v.ord -vt
+					$(EXECS) $(SCOTCHBINDIR)/gord data/nocoarsen.grf $(TMPDIR)/nocoarsen.ord -vt
 					$(EXECS) $(SCOTCHBINDIR)/gord $(TMPDIR)/ship001.grf $(TMPDIR)/ship001.ord -vt
 
 check_prog_gotst		:	check_prog_gord
@@ -754,7 +772,7 @@ check_prog_dgpart		:
 					$(EXECP3) $(SCOTCHBINDIR)/dgpart 9 data/bump_b100000.grf /dev/null -Cd -vmt
 					$(EXECP4) $(SCOTCHBINDIR)/dgpart 50 data/small1-%r.grf /dev/null -vmt
 
-check_prog_dgscat-dggath	:	TMP := $(shell mktemp -u)
+check_prog_dgscat-dggath	:	TMP := $(shell mktemp -u -t XXXXXX)
 check_prog_dgscat-dggath	:
 					$(EXECP3) $(SCOTCHBINDIR)/dgscat -r1 -c data/m16x16.grf "$(TMP)1-%r.grf"
 					$(EXECP3) $(SCOTCHBINDIR)/dggath -r1 -c "$(TMP)1-%r.grf" "$(TMP)1.grf"
@@ -766,7 +784,7 @@ check_prog_dgscat-dggath	:
 					$(EXECP3) $(SCOTCHBINDIR)/dggath -c "$(TMP)3-%r.grf" "$(TMP)3.grf"
 					$(PROGDIFF) data/m4x4_b1_elv.grf "$(TMP)3.grf"
 
-check_prog_dgtst		:	TMP := $(shell mktemp -u)
+check_prog_dgtst		:	TMP := $(shell mktemp -u -t XXXXXX)
 check_prog_dgtst		:
 					$(EXECP4) $(SCOTCHBINDIR)/dgtst data/small1-%r.grf
 					$(EXECP3) $(SCOTCHBINDIR)/dgscat data/m4x4_b1_elv.grf "$(TMP)1-%r.grf"

@@ -66,13 +66,13 @@
 /*                                      */
 /****************************************/
 
-/*+ This routine saves the contents of the given
-*** opaque distributed graph structure to the
-*** given streams.
-*** It returns:
-*** - 0   : if the saving succeeded.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of the given
+** opaque distributed graph structure to the
+** given streams.
+** It returns:
+** - 0   : if the saving succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphSave (

@@ -64,11 +64,11 @@
 /****************************************/
 
 
-/*+ This routine binds a context to a mesh.
-*** It returns:
-*** - 0   : if the binding succeeded.
-*** - !0  : on error.
-+*/
+/* This routine binds a context to a mesh.
+** It returns:
+** - 0   : if the binding succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_contextBindMesh (

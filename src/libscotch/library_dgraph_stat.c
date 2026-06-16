@@ -108,11 +108,11 @@ const MPI_Datatype * const    typedat)            /* MPI datatype; not used     
   inout->edlodlt += in->edlodlt;
 }
 
-/*+ This routine computes statistics
-*** on the given distributed graph.
-*** It returns:
-*** - VOID  : in all cases.
-+*/
+/* This routine computes statistics
+** on the given distributed graph.
+** It returns:
+** - VOID  : in all cases.
+*/
 
 int
 SCOTCH_dgraphStat (

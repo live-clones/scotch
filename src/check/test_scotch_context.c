@@ -79,7 +79,6 @@ typedef struct TestThreadData_ {
   int                       thrdnum;
 } TestThreadData;
 
-
 /**********************************/
 /*                                */
 /* The fake threaded API routine. */
@@ -247,10 +246,10 @@ char *              argv[])
 
   printf ("Using a tailored context (1)\n");
 
-  SCOTCH_contextInit (&contdat);
+  SCOTCH_contextInit        (&contdat);
   SCOTCH_contextThreadSpawn (&contdat, thrdnbr, NULL);
 
-  SCOTCH_graphInit (&graftab[1]);
+  SCOTCH_graphInit            (&graftab[1]);
   if (SCOTCH_contextBindGraph (&contdat, &graftab[0], &graftab[1]) != 0) { /* graftab[1] is the context graph */
     SCOTCH_errorPrint ("main: cannot bind context (2)");
     exit (EXIT_FAILURE);
@@ -271,7 +270,7 @@ char *              argv[])
   for (thrdnum = 1; thrdnum < thrdnbr; thrdnum ++)
     coretab[thrdnum] = thrdnbr - thrdnum;
 
-  SCOTCH_contextInit (&contdat);
+  SCOTCH_contextInit        (&contdat);
   SCOTCH_contextThreadSpawn (&contdat, thrdnbr, coretab);
   if (SCOTCH_contextRandomClone (&contdat) != 0) {
     SCOTCH_errorPrint ("main: cannot clone random context");
@@ -302,7 +301,7 @@ char *              argv[])
     thrdtab[thrdnum].thrdnum = thrdnum;           /* All threads know their index in their thread group */
   }
 
-  SCOTCH_contextInit (&contdat);                  /* Leader thread creates the context                */
+  SCOTCH_contextInit          (&contdat);         /* Leader thread creates the context                */
   SCOTCH_contextThreadImport1 (&contdat, thrdnbr); /* Leader thread calls "Import1" before any others */
 
 #ifdef COMMON_PTHREAD

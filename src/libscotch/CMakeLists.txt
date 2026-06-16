@@ -714,6 +714,7 @@ set(PTSCOTCH_C_SOURCES
   dmesh_io_load.h
   dorder.c
   dorder.h
+  dorder_check.c
   dorder_gather.c
   dorder_gather.h
   dorder_io.c

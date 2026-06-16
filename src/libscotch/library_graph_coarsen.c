@@ -67,20 +67,20 @@
 /*                               */
 /*********************************/
 
-/*+ This routine creates a coarse graph from the
-*** given fine graph, unless the coarse graph is
-*** smaller than some threshold size or the
-*** coarsening ratio is above some other threshold.
-*** If the coarse graph is created, a coarse-to-fine
-*** vertex array is created, that contains a pair of
-*** fine indices for each coarse index. The contents
-*** of the Scotch internal array are copied to the
-*** array provided by the user.
-*** It returns:
-*** - 0  : if the graph has been coarsened.
-*** - 1  : if the graph could not be coarsened.
-*** - 2  : on error.
-+*/
+/* This routine creates a coarse graph from the
+** given fine graph, unless the coarse graph is
+** smaller than some threshold size or the
+** coarsening ratio is above some other threshold.
+** If the coarse graph is created, a coarse-to-fine
+** vertex array is created, that contains a pair of
+** fine indices for each coarse index. The contents
+** of the Scotch internal array are copied to the
+** array provided by the user.
+** It returns:
+** - 0  : if the graph has been coarsened.
+** - 1  : if the graph could not be coarsened.
+** - 2  : on error.
+*/
 
 int
 SCOTCH_graphCoarsen (
@@ -109,17 +109,17 @@ SCOTCH_Num * restrict const         coarmulttab)  /* Pointer to multinode array 
   return (o);
 }
 
-/*+ This routine computes a matching of a (coarse)
-*** graph, unless the would-be coarse graph is smaller
-*** than some threshold size or the coarsening ratio is
-*** above some other threshold.
-*** If the matching is computed, both a multinode and
-*** a coarse-to-fine vertex arrays are created.
-*** It returns:
-*** - 0  : if the matching has been coarsened.
-*** - 1  : if the graph could not be matched.
-*** - 2  : on error.
-+*/
+/* This routine computes a matching of a (coarse)
+** graph, unless the would-be coarse graph is smaller
+** than some threshold size or the coarsening ratio is
+** above some other threshold.
+** If the matching is computed, both a multinode and
+** a coarse-to-fine vertex arrays are created.
+** It returns:
+** - 0  : if the matching has been coarsened.
+** - 1  : if the graph could not be matched.
+** - 2  : on error.
+*/
 
 int
 SCOTCH_graphCoarsenMatch (
@@ -147,13 +147,13 @@ SCOTCH_Num * restrict const             finematetab) /* Mating array to fill    
   return (o);
 }
 
-/*+ This routine creates a coarse graph from the
-*** given fine graph and the provided multinode
-*** array.
-*** It returns:
-*** - 0  : if the graph has been coarsened.
-*** - 1  : on error.
-+*/
+/* This routine creates a coarse graph from the
+** given fine graph and the provided multinode
+** array.
+** It returns:
+** - 0  : if the graph has been coarsened.
+** - 1  : on error.
+*/
 
 int
 SCOTCH_graphCoarsenBuild (

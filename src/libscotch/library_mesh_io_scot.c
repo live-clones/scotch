@@ -65,11 +65,11 @@
 /*                                   */
 /*************************************/
 
-/*+ This routine loads the given opaque mesh
-*** structure with the data of the given stream.
-*** - 0   : if loading succeeded.
-*** - !0  : on error.
-+*/
+/* This routine loads the given opaque mesh
+** structure with the data of the given stream.
+** - 0   : if loading succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshGeomLoadScot (
@@ -82,12 +82,12 @@ const char * const            dataptr)            /* No use */
   return (meshGeomLoadScot ((Mesh *) meshptr, (Geom *) geomptr, filesrcptr, filegeoptr, NULL));
 }
 
-/*+ This routine saves the contents of the given
-*** opaque mesh structure to the given stream.
-*** It returns:
-*** - 0   : if the saving succeeded.
-*** - !0  : on error.
-+*/
+/* This routine saves the contents of the given
+** opaque mesh structure to the given stream.
+** It returns:
+** - 0   : if the saving succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshGeomSaveScot (

@@ -76,12 +76,12 @@
 /*                                    */
 /**************************************/
 
-/*+ This routine parses the given
-*** bipartitioning strategy.
-*** It returns:
-*** - 0   : if string successfully scanned.
-*** - !0  : on error.
-+*/
+/* This routine parses the given
+** bipartitioning strategy.
+** It returns:
+** - 0   : if string successfully scanned.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_stratGraphBipart (
@@ -99,15 +99,15 @@ const char * const          string)
   return (0);
 }
 
-/*+ This routine fills the contents of the given
-*** opaque target structure with the data provided
-*** by the user. The source graph provided on input
-*** is turned into a decomposition-defined target
-*** architecture.
-*** It returns:
-*** - 0   : if the computation succeeded.
-*** - !0  : on error.
-+*/
+/* This routine fills the contents of the given
+** opaque target structure with the data provided
+** by the user. The source graph provided on input
+** is turned into a decomposition-defined target
+** architecture.
+** It returns:
+** - 0   : if the computation succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_archBuild0 (

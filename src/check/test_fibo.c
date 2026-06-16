@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 23 aug 2016     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 13 sep 2019     **/
-/**                                 to   : 05 jul 2025     **/
+/**                                 to   : 10 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -113,7 +113,8 @@ char *              argv[])
   int                 nodenbr;
   int                 nodenum;
   int                 nodetmp;
-  int                 randval;
+  INT                 prevval;
+  INT                 randval;
   int                 passnbr;
   int                 passnum;
 
@@ -231,6 +232,25 @@ char *              argv[])
         fiboHeapDecrease (&fibodat, (FiboNode *) &nodetab[nodenum]);
         break;
     }
+  }
+
+  prevval = -1;                                   /* Value under minimal node value                   */
+  while (nodenbr -- > 0) {                        /* Drain remaining elements and verify sorted order */
+    nodeptr = (TestFibo *) fiboHeapMin (&fibodat);
+
+    if (nodeptr == NULL) {                        /* If heap not empty but no minimum found */
+      errorPrint ("main: no node found");
+      exit       (EXIT_FAILURE);
+    }
+
+    if (nodeptr->randval < prevval) {             /* If nodes not in sorted order */
+      errorPrint ("main: node not in sorted order");
+      exit       (EXIT_FAILURE);
+    }
+    prevval = nodeptr->randval;                   /* Record new minimum value */
+
+    fiboHeapDel (&fibodat, (FiboNode *) nodeptr); /* Remove selected node */
+    nodeptr->randval = -1;
   }
 
   fiboHeapExit (&fibodat);

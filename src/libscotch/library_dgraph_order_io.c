@@ -67,13 +67,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine saves to the given stream
-*** the mapping data associated with the
-*** given distributed ordering.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves to the given stream
+** the mapping data associated with the
+** given distributed ordering.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderSaveMap (
@@ -84,13 +84,13 @@ FILE * const                    stream)           /*+ Output stream    +*/
   return (dorderSaveMap ((Dorder *) ordeptr, (Dgraph *) CONTEXTOBJECT (grafptr), stream));
 }
 
-/*+ This routine saves to the given stream
-*** the separator tree data associated with
-*** the given distributed ordering.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine saves to the given stream
+** the separator tree data associated with
+** the given distributed ordering.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderSaveTree (

@@ -67,13 +67,13 @@
 /*                                  */
 /************************************/
 
-/*+ This routine fills the given distributed
-*** permutation array with the permutation
-*** stored in the given distributed ordering.
-*** It returns:
-*** - 0   : on success.
-*** - !0  : on error.
-+*/
+/* This routine fills the given distributed
+** permutation array with the permutation
+** stored in the given distributed ordering.
+** It returns:
+** - 0   : on success.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_dgraphOrderPerm (

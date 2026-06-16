@@ -94,7 +94,7 @@ const char * const          dataptr)              /* No use           */
   if (((habmattag = atol (dataptr)) == 0) &&      /* Get tag value */
       (dataptr[0] != '0') && (dataptr[0] != '\0')) {
     errorPrint ("meshGeomLoadHabo: bad input (1)");
-    return     (1);
+    return (1);
   }
 
   for (habmatnum = 0; habmatnum <= habmattag; habmatnum ++) { /* Read headers and skip if necessary */
@@ -104,7 +104,7 @@ const char * const          dataptr)              /* No use           */
         (fgets (habmatbuf[2], 83, filesrcptr) == NULL) ||
         (fgets (habmatbuf[3], 83, filesrcptr) == NULL)) {
       errorPrint ("meshGeomLoadHabo: bad input (2)");
-      return     (1);
+      return (1);
     }
     habmatbuf[1][70] = '\0';                      /* Extract header values */
     habrhsnbr = atol (&habmatbuf[1][56]);
@@ -128,14 +128,14 @@ const char * const          dataptr)              /* No use           */
     if ((c = sscanf (habmatbuf[3], "(%*d%*[Ii]%d) (%*d%*[Ii]%d)",
                      &habcolsiz, &habnzrsiz)) != 2) {
       errorPrint ("meshGeomLoadHabo: bad input (3, %d)", c);
-      return     (1);
+      return (1);
     }
 
     if (habrhsnbr != 0) {
       while ((c = getc (filesrcptr)) != '\n'){    /* Skip RHS format line */
         if (c == EOF) {
           errorPrint ("meshGeomLoadHabo: bad input (4)");
-          return     (1);
+          return (1);
         }
       }
     }
@@ -145,7 +145,7 @@ const char * const          dataptr)              /* No use           */
         while ((c = getc (filesrcptr)) != '\n') { /* Skip line              */
           if (c == EOF) {
             errorPrint ("meshGeomLoadHabo: bad input (5)");
-            return     (1);
+            return (1);
           }
         }
       }
@@ -154,11 +154,11 @@ const char * const          dataptr)              /* No use           */
 
   if (habmattype[2] != 'E') {
     errorPrint ("meshGeomLoadHabo: only elemental matrices supported");
-    return     (1);
+    return (1);
   }
   if (habmattype[1] == 'R') {
     errorPrint ("meshGeomLoadHabo: rectangular matrices not supported");
-    return     (1);
+    return (1);
   }
 
   if (((meshptr->verttax = (Gnum *) memAlloc ((habeltnbr + habvarnbr + 1) * sizeof (Gnum))) == NULL) ||
@@ -198,12 +198,12 @@ const char * const          dataptr)              /* No use           */
     if (c == EOF) {
       errorPrint ("meshGeomLoadHabo: bad input (6)");
       meshFree   (meshptr);
-      return     (1);
+      return (1);
     }
 #ifdef SCOTCH_DEBUG_MESH2
     if ((habcolval < 1) || (habcolval > (habvixnbr + 1))) {
       errorPrint ("meshGeomLoadHabo: bad input (7)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_MESH2 */
 
@@ -212,7 +212,7 @@ const char * const          dataptr)              /* No use           */
   if (meshptr->verttax[velmnum - 1] != (habvixnbr + habvixnbr + 1)) {
     errorPrint ("meshGeomLoadHabo: bad input (8)");
     meshFree   (meshptr);
-    return     (1);
+    return (1);
   }
 
   memSet (meshptr->verttax + 1, 0, habvarnbr * sizeof (Gnum)); /* Pre-set node adjacency array */
@@ -230,12 +230,12 @@ const char * const          dataptr)              /* No use           */
     if (c == EOF) {
       errorPrint ("meshGeomLoadHabo: bad input (9)");
       meshFree   (meshptr);
-      return     (1);
+      return (1);
     }
 #ifdef SCOTCH_DEBUG_MESH2
     if ((habnodval < 1) || (habnodval > habvarnbr)) {
       errorPrint ("meshGeomLoadHabo: bad input (10)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_MESH2 */
     meshptr->edgetax[edgenum] = habnodval;
@@ -256,7 +256,7 @@ const char * const          dataptr)              /* No use           */
 #ifdef SCOTCH_DEBUG_MESH2
   if (edgesum != meshptr->verttax[meshptr->velmbas]) {
     errorPrint ("meshGeomLoadHabo: internal error (1)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
 
@@ -272,11 +272,11 @@ const char * const          dataptr)              /* No use           */
 #ifdef SCOTCH_DEBUG_MESH2
       if ((vnodnum < 1) || (vnodnum > habvarnbr)) {
         errorPrint ("meshGeomLoadHabo: internal error (2)");
-        return     (1);
+        return (1);
       }
       if (meshptr->verttax[vnodnum] > habvixnbr) {
         errorPrint ("meshGeomLoadHabo: internal error (3)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_MESH2 */
       meshptr->edgetax[meshptr->verttax[vnodnum] ++] = velmnum;
@@ -297,7 +297,7 @@ const char * const          dataptr)              /* No use           */
 #ifdef SCOTCH_DEBUG_MESH2
   if (meshCheck (meshptr) != 0) {
     errorPrint ("meshGeomLoadHabo: inconsistent mesh data");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
 

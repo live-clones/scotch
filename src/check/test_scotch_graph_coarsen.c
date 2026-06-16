@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 24 jun 2021     **/
 /**                                 to   : 24 jun 2021     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 12 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -156,15 +156,15 @@ matchBuild (
 const SCOTCH_Graph * const  finegrafptr,
 SCOTCH_Num * const          finematetab)
 {
-  SCOTCH_Num * restrict finematetax;
-  SCOTCH_Num *          fineverttax;
-  SCOTCH_Num *          finevendtax;
-  SCOTCH_Num            finevertnbr;
-  SCOTCH_Num            finevertnnd;
-  SCOTCH_Num            finevertnum;
-  SCOTCH_Num *          fineedgetax;
-  SCOTCH_Num            coarvertnbr;
-  SCOTCH_Num            baseval;
+  SCOTCH_Num *        finematetax;
+  SCOTCH_Num *        fineverttax;
+  SCOTCH_Num *        finevendtax;
+  SCOTCH_Num          finevertnbr;
+  SCOTCH_Num          finevertnnd;
+  SCOTCH_Num          finevertnum;
+  SCOTCH_Num *        fineedgetax;
+  SCOTCH_Num          coarvertnbr;
+  SCOTCH_Num          baseval;
 
   SCOTCH_graphData (finegrafptr, &baseval,
                     &finevertnbr, &fineverttax, &finevendtax, NULL, NULL,
@@ -229,15 +229,15 @@ main (
 int                 argc,
 char *              argv[])
 {
-  SCOTCH_Num              baseval;                /* Base value                */
-  SCOTCH_Graph            finegrafdat;            /* Fine graph                */
-  SCOTCH_Num              finevertnbr;            /* Number of fine vertices   */
-  SCOTCH_Num *            finematetab;            /* Mate array                */
-  SCOTCH_Graph            coargrafdat;            /* Coarse graph              */
-  SCOTCH_Num *            coarmulttab;            /* Multinode array           */
-  SCOTCH_Num              coarvertnbr;            /* Number of coarse vertices */
-  SCOTCH_Num              coaredgenbr;            /* Number of coarse edges    */
-  FILE *                  fileptr;
+  SCOTCH_Num          baseval;                    /* Base value                */
+  SCOTCH_Graph        finegrafdat;                /* Fine graph                */
+  SCOTCH_Num          finevertnbr;                /* Number of fine vertices   */
+  SCOTCH_Num *        finematetab;                /* Mate array                */
+  SCOTCH_Graph        coargrafdat;                /* Coarse graph              */
+  SCOTCH_Num *        coarmulttab;                /* Multinode array           */
+  SCOTCH_Num          coarvertnbr;                /* Number of coarse vertices */
+  SCOTCH_Num          coaredgenbr;                /* Number of coarse edges    */
+  FILE *              fileptr;
 
   SCOTCH_errorProg (argv[0]);
 
@@ -292,6 +292,11 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  if (SCOTCH_graphCheck (&coargrafdat) != 0) {
+    SCOTCH_errorPrint ("main: invalid coarse graph (1)");
+    exit (EXIT_FAILURE);
+  }
+
   SCOTCH_graphSize (&coargrafdat, &coarvertnbr, &coaredgenbr);
 
   printf ("Coarse graph has " SCOTCH_NUMSTRING " vertices and " SCOTCH_NUMSTRING " edges\n",
@@ -320,6 +325,11 @@ char *              argv[])
     exit (EXIT_FAILURE);
   }
 
+  if (SCOTCH_graphCheck (&coargrafdat) != 0) {
+    SCOTCH_errorPrint ("main: invalid coarse graph (2)");
+    exit (EXIT_FAILURE);
+  }
+
   SCOTCH_graphSize (&coargrafdat, &coarvertnbr, &coaredgenbr);
   printf ("Coarse graph has " SCOTCH_NUMSTRING " vertices and " SCOTCH_NUMSTRING " edges\n",
           coarvertnbr,
@@ -337,6 +347,11 @@ char *              argv[])
 
   if (SCOTCH_graphCoarsen (&finegrafdat, 1, 1.0, SCOTCH_COARSENNONE, &coargrafdat, coarmulttab) != 0) {
     SCOTCH_errorPrint ("main: cannot coarsen graph");
+    exit (EXIT_FAILURE);
+  }
+
+  if (SCOTCH_graphCheck (&coargrafdat) != 0) {
+    SCOTCH_errorPrint ("main: invalid coarse graph (3)");
     exit (EXIT_FAILURE);
   }
 

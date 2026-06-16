@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2012,2014-2016,2018-2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2012,2014-2016,2018-2021,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 01 apr 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 03 jun 2024     **/
+/**                                 to   : 01 apr 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -322,6 +322,7 @@ void                        SCOTCH_meshExit     (SCOTCH_Mesh * const);
 int                         SCOTCH_meshLoad     (SCOTCH_Mesh * const, FILE * const, const SCOTCH_Num);
 int                         SCOTCH_meshSave     (const SCOTCH_Mesh * const, FILE * const);
 int                         SCOTCH_meshBuild    (SCOTCH_Mesh * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num * const);
+int                         SCOTCH_meshBuildElem (SCOTCH_Mesh * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num * const, const SCOTCH_Num, const SCOTCH_Num * const);
 int                         SCOTCH_meshCheck    (const SCOTCH_Mesh * const);
 void                        SCOTCH_meshSize     (const SCOTCH_Mesh * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const);
 void                        SCOTCH_meshData     (const SCOTCH_Mesh * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num * const, SCOTCH_Num ** const, SCOTCH_Num ** const, SCOTCH_Num ** const, SCOTCH_Num ** const, SCOTCH_Num ** const, SCOTCH_Num * const, SCOTCH_Num ** const, SCOTCH_Num * const);

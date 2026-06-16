@@ -27,6 +27,8 @@ DESCRIPTION
   store them may save a lot of space.
 
 OPTIONS
+  -2          Create a 'deco 2' instead of a 'deco 1' architecture.
+
   -bstrat   Apply bipartitioning strategy strat to compute the
               recursive bipartition of the whole source graph into
 	      smaller target subdomains.

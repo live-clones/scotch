@@ -1,4 +1,4 @@
-/* Copyright 2007-2009,2014,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2009,2014,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 01 may 2014     **/
 /**                                 to   : 30 sep 2014     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 07 nov 2024     **/
+/**                                 to   : 21 feb 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -236,8 +236,10 @@ const Strat * restrict const  straptr)            /*+ Separation strategy       
 {
   StratTest           testdat;
   VdgraphStore        savetab[2];                 /* Results of the two strategies */
-  Gnum                compglbload2;               /* Saved global separator load   */
+  Gnum                cpl2glbval;                 /* Saved global separator load   */
   int                 o;
+  int                 o0;
+  int                 o1;
 #ifdef SCOTCH_DEBUG_VDGRAPH2
   MPI_Comm            proccommold;                /* Save area for old communicator */
 #endif /* SCOTCH_DEBUG_VDGRAPH2 */
@@ -296,25 +298,32 @@ const Strat * restrict const  straptr)            /*+ Separation strategy       
         return (1);
       }
 
-      vdgraphStoreSave (grafptr, &savetab[1]);    /* Save initial bipartition */
-      if (vdgraphSeparateSt (grafptr, straptr->data.seledat.stratab[0]) != 0) { /* If first strategy didn't work */
-        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition                                 */
-        vdgraphStoreSave (grafptr, &savetab[0]);  /* Save it as result                                           */
-      }
-      else {                                      /* First strategy worked       */
-        vdgraphStoreSave (grafptr, &savetab[0]);  /* Save its result             */
-        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition */
-      }
-      if (vdgraphSeparateSt (grafptr, straptr->data.seledat.stratab[1]) != 0) /* If second strategy didn't work */
-        vdgraphStoreUpdt (grafptr, &savetab[1]);  /* Restore initial bipartition as its result                  */
+      vdgraphStoreSave       (grafptr, &savetab[1]); /* Save initial separation                    */
+      o0 = vdgraphSeparateSt (grafptr, straptr->data.seledat.stratab[0]); /* Apply first strategy  */
+      vdgraphStoreSave       (grafptr, &savetab[0]); /* Save its result                            */
+      vdgraphStoreUpdt       (grafptr, &savetab[1]); /* Restore initial separation                 */
+      o1 = vdgraphSeparateSt (grafptr, straptr->data.seledat.stratab[1]); /* Apply second strategy */
 
-      compglbload2 = grafptr->s.veloglbsum - savetab[0].compglbload[0] - savetab[0].compglbload[1]; /* Compute saved separator load */
-      if ( (compglbload2 <  grafptr->compglbload[2]) || /* If first strategy is better */
-          ((compglbload2 == grafptr->compglbload[2]) &&
-           (abs (savetab[0].compglbloaddlt) < abs (grafptr->compglbloaddlt))))
-        vdgraphStoreUpdt (grafptr, &savetab[0]);  /* Restore its result */
+      if ((o0 | o1) != 0) {                       /* If at least one method failed */
+        if (o0 == 0)                              /* If first succeeded, take it   */
+          goto take0;
+        if (o1 != 0) {                            /* If none succeeded           */
+          vdgraphStoreUpdt (grafptr, &savetab[1]); /* Restore initial separation */
+          o = 1;                                  /* Indicate error              */
+        }
+        goto take1;                               /* If second succeeded, keep it; anyway, go freeing data structures */
+      }
 
-      vdgraphStoreExit (&savetab[0]);             /* Free both save areas */
+      cpl2glbval = grafptr->s.veloglbsum - savetab[0].compglbload[0] - savetab[0].compglbload[1]; /* Compute saved separator load */
+      if ( (cpl2glbval >  grafptr->compglbload[2]) || /* If second strategy is better */
+          ((cpl2glbval == grafptr->compglbload[2]) &&
+           (abs (savetab[0].compglbloaddlt) >= abs (grafptr->compglbloaddlt))))
+        goto take1;
+
+take0:
+      vdgraphStoreUpdt (grafptr, &savetab[0]);    /* Restore first separation          */
+take1:                                            /* Keep second separation by default */
+      vdgraphStoreExit (&savetab[0]);             /* Free both save areas              */
       vdgraphStoreExit (&savetab[1]);
       break;
 #ifdef SCOTCH_DEBUG_VDGRAPH1

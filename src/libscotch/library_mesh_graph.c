@@ -66,13 +66,13 @@
 /*                                   */
 /*************************************/
 
-/*+ This routine builds an opaque nodal graph structure
-*** from an opaque mesh structure. The nodal graph
-*** adjacency is defined such that two nodes are adjacent
-*** if both share at least one element.
-*** - 0   : if building has succeeded.
-*** - !0  : on error.
-+*/
+/* This routine builds an opaque nodal graph structure
+** from an opaque mesh structure. The nodal graph
+** adjacency is defined such that two nodes are adjacent
+** if both share at least one element.
+** - 0   : if building has succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshGraph (
@@ -82,13 +82,13 @@ SCOTCH_Graph * restrict const       grafptr)
   return (meshGraphNodal ((Mesh *) meshptr, (Graph *) grafptr));
 }
 
-/*+ This routine builds an opaque dual graph structure
-*** from an opaque mesh structure. The dual graph adjacency
-*** is defined such that two elements are adjacent, if
-*** both shared at least noconbr points.
-*** - 0   : if building has succeeded.
-*** - !0  : on error.
-+*/
+/* This routine builds an opaque dual graph structure
+** from an opaque mesh structure. The dual graph adjacency
+** is defined such that two elements are adjacent, if
+** both shared at least noconbr points.
+** - 0   : if building has succeeded.
+** - !0  : on error.
+*/
 
 int
 SCOTCH_meshGraphDual (
