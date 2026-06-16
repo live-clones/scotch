@@ -1,4 +1,4 @@
-/* Copyright 2014,2018,2024,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2018,2024-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 12 aug 2014     **/
 /**                                 to   : 17 jul 2024     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 26 mar 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -78,22 +78,23 @@ main (
 int                 argc,
 char *              argv[])
 {
-  SCOTCH_Mapping          mappdat;                /* Mapping to compute */
-  SCOTCH_Mapping          mapodat;                /* Old mapping        */
-  FILE *                  fileptr;
-  SCOTCH_Graph            grafdat;
-  SCOTCH_Num              xdimsiz;
-  int                     archnum;
-  SCOTCH_Arch             archtab[ARCHNBR];
-  SCOTCH_Strat            stratab[STRANBR];
-  int                     stranum;
-  int                     typenum;
-  SCOTCH_Num              vertnbr;
-  SCOTCH_Num              vertnum;
-  SCOTCH_Num *            parttab;
-  SCOTCH_Num *            parotab;
-  SCOTCH_Num *            vmlotab;
-  SCOTCH_Num *            vmloptr;                /* vmlotab or NULL */
+  SCOTCH_Mapping      mappdat;                    /* Mapping to compute */
+  SCOTCH_Mapping      mapodat;                    /* Old mapping        */
+  FILE *              fileptr;
+  SCOTCH_Graph        grafdat;
+  SCOTCH_Num          xdimsiz;
+  int                 archnum;
+  SCOTCH_Arch         archtab[ARCHNBR];
+  SCOTCH_Strat        stratab[STRANBR];
+  int                 stranum;
+  int                 typenum;
+  SCOTCH_Num          vertnbr;
+  SCOTCH_Num          vertnum;
+  SCOTCH_Num *        parttab;
+  SCOTCH_Num *        parotab;
+  SCOTCH_Num *        vmlotab;
+  SCOTCH_Num *        vmloptr;                    /* vmlotab or NULL    */
+  int                 o;
 
   SCOTCH_errorProg (argv[0]);
 
@@ -101,6 +102,8 @@ char *              argv[])
     SCOTCH_errorPrint ("usage: %s graph_file", argv[0]);
     exit (EXIT_FAILURE);
   }
+
+  o = 0;                                          /* Assume everything will be all right */
 
   if (SCOTCH_graphInit (&grafdat) != 0) {         /* Initialize source graph */
     SCOTCH_errorPrint ("main: cannot initialize graph");
@@ -142,8 +145,10 @@ char *              argv[])
       exit (EXIT_FAILURE);
     }
   }
-  SCOTCH_stratGraphMapBuild (&stratab[0], SCOTCH_STRATRECURSIVE, 4, 0.05);
-  SCOTCH_stratGraphMapBuild (&stratab[1], SCOTCH_STRATDEFAULT,   4, 0.05);
+  o |= SCOTCH_stratGraphMapBuild (&stratab[0], SCOTCH_STRATRECURSIVE, 4, 0.05);
+  o |= SCOTCH_stratGraphMapBuild (&stratab[1], SCOTCH_STRATDEFAULT,   4, 0.05);
+  if (o != 0)
+    exit (EXIT_FAILURE);
 
   for (archnum = 0; archnum < ARCHNBR; archnum ++) { /* Initialize architectures */
     if (SCOTCH_archInit (&archtab[archnum]) != 0) {
@@ -151,10 +156,12 @@ char *              argv[])
       exit (EXIT_FAILURE);
     }
   }
-  SCOTCH_archCmplt (&archtab[0], 5);
-  SCOTCH_archMesh2 (&archtab[1], 2, 2);
-  SCOTCH_archMesh2 (&archtab[2], xdimsiz * 2, xdimsiz * 2); /* Oversized architecture */
-  SCOTCH_archVhcub (&archtab[3]);
+  o |= SCOTCH_archCmplt (&archtab[0], 5);
+  o |= SCOTCH_archMesh2 (&archtab[1], 2, 2);
+  o |= SCOTCH_archMesh2 (&archtab[2], xdimsiz * 2, xdimsiz * 2); /* Oversized architecture */
+  o |= SCOTCH_archVhcub (&archtab[3]);
+  if (o != 0)
+    exit (EXIT_FAILURE);
 
   if ((fileptr = tmpfile ()) == NULL) {           /* Open temporary file for resulting output */
     SCOTCH_errorPrint ("main: cannot open file (2)");
@@ -178,7 +185,6 @@ char *              argv[])
 
       for (typenum = 0; typenum < 7; typenum ++) {
         int                 i;
-        int                 o;
 
         memset (parttab, ~0, xdimsiz * xdimsiz * sizeof (SCOTCH_Num)); /* Assume all vertices are not fixed */
         if (archnum < 2) {                        /* For fixed-size architectures                           */
@@ -231,7 +237,10 @@ char *              argv[])
         }
       }
 
-      SCOTCH_graphMapSave (&grafdat, &mappdat, fileptr);
+      if (SCOTCH_graphMapSave (&grafdat, &mappdat, fileptr) != 0) {
+        SCOTCH_errorPrint ("main: cannot save mapping");
+        exit (EXIT_FAILURE);
+      }
 
       SCOTCH_graphMapExit (&grafdat, &mapodat);
       SCOTCH_graphMapExit (&grafdat, &mappdat);
@@ -246,9 +255,9 @@ char *              argv[])
   for (stranum = 0; stranum < STRANBR; stranum ++)
    SCOTCH_stratExit (&stratab[stranum]);
 
-  free             (vmlotab);
-  free             (parotab);
-  free             (parttab);
+  free (vmlotab);
+  free (parotab);
+  free (parttab);
   SCOTCH_graphExit (&grafdat);
 
   exit (EXIT_SUCCESS);
