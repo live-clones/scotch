@@ -148,7 +148,7 @@ const SCOTCH_Num * const    permtab,
 SCOTCH_Num                  baseval,
 SCOTCH_Num                  vertnbr)
 {
-  SCOTCH_Num        vertnum;
+  SCOTCH_Num          vertnum;
 
   for (vertnum = 0; vertnum < vertnbr; vertnum ++) {
     if (permtab[vertnum] != vertnum + baseval)
