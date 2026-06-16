@@ -69,16 +69,16 @@ main (
 int                 argc,
 char *              argv[])
 {
-  MPI_Comm              proccomm;
-  int                   procglbnbr;               /* Number of processes sharing graph data */
-  int                   proclocnum;               /* Number of this process                 */
-  SCOTCH_Num            vertglbnbr;
-  SCOTCH_Num            vertlocnbr;
-  SCOTCH_Num            vertlocnum;
-  SCOTCH_Num *          partloctab;
-  SCOTCH_Dgraph         srcgrafdat;
-  SCOTCH_Dgraph         dstgrafdat;
-  FILE *                file;
+  MPI_Comm            proccomm;
+  int                 procglbnbr;                 /* Number of processes sharing graph data */
+  int                 proclocnum;                 /* Number of this process                 */
+  SCOTCH_Num          vertglbnbr;
+  SCOTCH_Num          vertlocnbr;
+  SCOTCH_Num          vertlocnum;
+  SCOTCH_Num *        partloctab;
+  SCOTCH_Dgraph       srcgrafdat;
+  SCOTCH_Dgraph       dstgrafdat;
+  FILE *              file;
 #ifdef SCOTCH_PTHREAD
   int                 thrdreqlvl;
   int                 thrdprolvl;
