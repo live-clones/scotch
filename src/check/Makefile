@@ -180,6 +180,7 @@ realclean			:	clean
 					test_scotch_dgraph_grow			\
 					test_scotch_dgraph_induce		\
 					test_scotch_dgraph_redist		\
+					test_scotch_mesh_build_f		\
 					test_scotch_mesh_build_f.f90		\
 					test_scotch_mesh_build_f.f90.tmp	\
 					test_scotch_mesh_graph			\
