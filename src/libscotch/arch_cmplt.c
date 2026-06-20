@@ -216,8 +216,8 @@ ArchCoarsenMulti ** restrict const  multptr)
     coarmulttab[coarvertnum].vertnum[1] = finevertnum ++;
     coarvertnum ++;
   }
-  for ( ; coarvertnum < coarvertmax; coarvertnum ++) { /* For all even slots       */
-    coarmulttab[coarvertnum].vertnum[0] = finevertnum ++; /* Dimensional splatting */
+  for ( ; coarvertnum < coarvertmax; coarvertnum ++) { /* For all even slots          */
+    coarmulttab[coarvertnum].vertnum[0] = finevertnum ++; /* Merge terminals together */
     coarmulttab[coarvertnum].vertnum[1] = finevertnum ++;
   }
   if ((finevertnbr & (passnum ^ 1)) != 0) {       /* If finevertnbr is odd and old passnum == 0 */
