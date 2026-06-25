@@ -584,11 +584,6 @@ if(BUILD_PTSCOTCH)
   add_dependencies(scotch ptscotch_h ptscotchf_h)
 endif()
 
-# Error management libraries
-if(CMAKE_BUILD_TYPE STREQUAL Debug)
-  target_compile_definitions(scotch PRIVATE SCOTCH_DEBUG_ALL)
-endif()
-
 add_library(scotcherr library_error.c)
 add_library(SCOTCH::scotcherr ALIAS scotcherr)
 set_target_properties(scotcherr PROPERTIES VERSION ${SCOTCH_VERSION_LONG}
