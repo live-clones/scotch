@@ -1,4 +1,4 @@
-## Copyright 2014-2016,2021-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2014-2016,2021-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -37,7 +37,7 @@
 ##   FUNCTION   : Top-level CMake configuration file      ##
 ##                                                        ##
 ##   DATES      : # Version 7.0  : from : 18 jan 2022     ##
-##                                 to     12 feb 2026     ##
+##                                 to     26 jun 2026     ##
 ##                                                        ##
 ############################################################
 
@@ -66,7 +66,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 set(SCOTCH_VERSION 7)
 set(SCOTCH_RELEASE 0)
-set(SCOTCH_PATCHLEVEL 12)
+set(SCOTCH_PATCHLEVEL 13)
 set(SCOTCH_CODENAME "Sankara")
 
 add_definitions(-DSCOTCH_VERSION_NUM=${SCOTCH_VERSION}
