@@ -297,7 +297,7 @@ Context * const             contptr)              /*+ Execution context         
     errorPrint ("archDecoBuild: out of memory (2)");
     mapExit    (&mappdat);
     archExit   (&archdat);
-    return     (1);
+    return (1);
   }
 
   for (termdomnum = 0, termdommax = 0; termdomnum < termdomnbr; termdomnum ++) { /* Set terminal vertex array */
