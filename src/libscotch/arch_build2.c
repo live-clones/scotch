@@ -137,7 +137,7 @@ Context * const                       contptr)
 #ifdef SCOTCH_DEBUG_ARCH1
   if (sizeof (ArchCoarsenMulti) != sizeof (GraphCoarsenMulti)) {
     errorPrint ("archDeco2BuildMatchInit: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -148,7 +148,7 @@ Context * const                       contptr)
   matcptr->hashsiz = hashsiz;
   if ((matcptr->hashtab = memAlloc (hashsiz * sizeof (ArchDeco2BuildHash))) == NULL) {
     errorPrint ("archDeco2BuildMatchInit: out of memory (1)");
-    return     (1);
+    return (1);
   }
 
   multnbr = vertnbr - 1;                          /* In case graph is star-like, only one matching will take place */
@@ -157,7 +157,7 @@ Context * const                       contptr)
                      &matcptr->ficotab, (size_t) (vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("archDeco2BuildMatchInit: out of memory (2)");
     memFree    (matcptr->hashtab);
-    return     (1);
+    return (1);
   }
 
   for (verttmp = vertnbr, levlmax = 1; verttmp != 0; verttmp >>= 1, levlmax ++) ;
@@ -264,13 +264,13 @@ ArchCoarsenMulti * restrict * restrict const  multptr)
 
     if ((lewgtmp = memRealloc (matcptr->lewgtab, levlmax * sizeof (ArchDeco2BuildLevl))) == NULL) {
       errorPrint ("archDeco2BuildMatchMate: out of memory (1)");
-      return     (-1);
+      return (-1);
     }
     matcptr->lewgtab = lewgtmp;
 
     if ((levltmp = memRealloc (matcptr->levltab, levlmax * sizeof (ArchDeco2Levl))) == NULL) {
       errorPrint ("archDeco2BuildMatchMate: out of memory (2)");
-      return     (-1);
+      return (-1);
     }
     matcptr->levltab = levltmp;
     matcptr->levlmax = levlmax;
@@ -287,7 +287,7 @@ ArchCoarsenMulti * restrict * restrict const  multptr)
                     (Gnum **) &finecoartax, (GraphCoarsenMulti **) &coarmulttax,
                     0, 1.0, GRAPHCOARSENNONE, NULL, NULL, 0, matcptr->contptr) != 0) {
     errorPrint ("archDeco2BuildMatchMate: cannot coarsen graph");
-    return     (-1);
+    return (-1);
   }
 
   matcptr->levlnum = levlnum;                     /* Record new level since coarse graph must be freed */
@@ -300,7 +300,7 @@ ArchCoarsenMulti * restrict * restrict const  multptr)
 
     if ((coarhashtmp = memRealloc (matcptr->hashtab, coarhashsiz * sizeof (ArchDeco2BuildHash))) == NULL) {
       errorPrint ("archDeco2BuildMatchMate: out of memory (3)");
-      return     (-1);
+      return (-1);
     }
     matcptr->hashtab = coarhashtmp;
     matcptr->hashsiz = coarhashsiz;
@@ -313,7 +313,7 @@ ArchCoarsenMulti * restrict * restrict const  multptr)
                      &matcptr->lewgtab[levlnum].edwgtab, (size_t) (coargrafptr->edgenbr * sizeof (Gnum)),
                      &matcptr->lewgtab[levlnum].vewgtab, (size_t) (coargrafptr->vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("archDeco2BuildMatchMate: out of memory (4)");
-    return     (-1);
+    return (-1);
   }
 
   coarvewgtax = matcptr->lewgtab[levlnum].vewgtab - coargrafptr->baseval;
@@ -394,7 +394,7 @@ ArchCoarsenMulti * restrict * restrict const  multptr)
 #ifdef SCOTCH_DEBUG_ARCH2
     if (coaredgenum != coargrafptr->verttax[coarvertnum + 1]) { /* If not same number of coarse edges found */
       errorPrint ("archDeco2BuildMatchMate: internal error (1)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_ARCH2 */
 
@@ -405,7 +405,7 @@ ArchCoarsenMulti * restrict * restrict const  multptr)
 #ifdef SCOTCH_DEBUG_ARCH2
       if (coarhashtab[h].coaredgenum != coaredgetmp) {
         errorPrint ("archDeco2BuildMatchMate: internal error (2)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_ARCH2 */
       coaredwgsum             +=
@@ -546,13 +546,13 @@ Context * const             contptr)              /*+ Execution context         
 
   if (baseval != 0) {                             /* Because of current limitations in archSubArchBuild2() */
     errorPrint ("archDeco2ArchBuild: input graph must have base value set to 0");
-    return     (1);
+    return (1);
   }
 
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((vnumnbr < 0) || (vnumnbr > vertnbr)) {
     errorPrint ("archDeco2ArchBuild: invalid number of terminal domains");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -565,12 +565,12 @@ Context * const             contptr)              /*+ Execution context         
                      &domntab, (size_t) (domnnbr * sizeof (ArchSubData)),
                      &doextab, (size_t) (domnnbr * sizeof (ArchDeco2Data)), NULL) == NULL) {
     errorPrint ("archDeco2ArchBuild: out of memory (1)");
-    return     (1);
+    return (1);
   }
   if ((treetab = memAlloc ((vertnbr + 1) * sizeof (ArchSubTree))) == NULL) { /* TRICK: One more slot to link to coarser array */
     errorPrint ("archDeco2ArchBuild: out of memory (2)");
     memFree    (termtab);                         /* Free group leader */
-    return     (1);
+    return (1);
   }
 
   velotmp = NULL;                                 /* Assume no need for temporary load array     */
@@ -579,7 +579,7 @@ Context * const             contptr)              /*+ Execution context         
       errorPrint ("archDeco2ArchBuild: out of memory (3)");
       memFree    (treetab);
       memFree    (termtab);
-      return     (1);
+      return (1);
     }
     memSet (velotmp, 0, vertnbr * sizeof (Gnum)); /* Assume no vertex kept in target architecture */
   }
@@ -663,7 +663,7 @@ Context * const             contptr)              /*+ Execution context         
 #ifdef SCOTCH_DEBUG_ARCH2
   if (rootptr->domnsiz != vnumnbr) {
     errorPrint ("archDeco2ArchBuild: internal error (2)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH2 */
   for (levlnum = matcdat.levlnum; levlnum >= 0; levlnum --) {
@@ -693,12 +693,12 @@ Context * const             contptr)              /*+ Execution context         
 #ifdef SCOTCH_DEBUG_ARCH2
     if (graphCheck (&levlptr->grafdat) != 0) {
       errorPrint ("archDeco2ArchBuild: internal error (3)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_ARCH2 */
     if ((levlptr->wdiaval = graphDiamPV (&levlptr->grafdat, matcdat.contptr)) < 0) {
       errorPrint ("archDeco2ArchBuild: cannot compute graph diameter");
-      return     (1);
+      return (1);
     }
     if (levlptr->wdiaval < 1)                     /* No division by zero allowed */
       levlptr->wdiaval = 1;
@@ -721,13 +721,13 @@ Context * const             contptr)              /*+ Execution context         
   if (archDeco2BuildBuild3 (&datadat, rootptr, 1, 0, matcdat.levlnum) != domnnbr) {
     errorPrint ("archDeco2ArchBuild: cannot create sub-architecture (2)");
     memFree    (treetab - 1);
-    return     (1);
+    return (1);
   }
   domntab[0].dfatidx = -1;                        /* Set index of root father as -1 */
 #ifdef SCOTCH_DEBUG_ARCH2
   if (datadat.vnumidx != matcdat.vertsum) {
     errorPrint ("archDeco2ArchBuild: internal error (3)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH2 */
 
