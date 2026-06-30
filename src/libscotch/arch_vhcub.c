@@ -193,7 +193,7 @@ FILE * const                  stream)
 
   if (intLoad (stream, &domptr->termnum) != 1) {
     errorPrint ("archVhcubDomLoad: bad input");
-    return     (1);
+    return (1);
   }
 
   for (termnum = domptr->termnum, termlvl = 0; termnum > 1; termnum >>= 1, termlvl ++) ; /* Compute level */
@@ -218,7 +218,7 @@ FILE * const                stream)
   if (fprintf (stream, ANUMSTRING " ",
                (Anum) domptr->termnum) == EOF) {
     errorPrint ("archVhcubDomSave: bad output");
-    return     (1);
+    return (1);
   }
 
   return (0);
