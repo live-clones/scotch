@@ -87,13 +87,13 @@ FILE * restrict const       stream)
 #ifdef SCOTCH_DEBUG_ARCH1
   if (sizeof (ArchDist) > sizeof (ArchDummy)) {
     errorPrint ("archDistArchLoad: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if (intLoad (stream, &archptr->crloval) != 1) {
     errorPrint ("archDistArchLoad: bad input");
-    return     (1);
+    return (1);
   }
 
   return (archLoad (archptr->archptr, stream));   /* Load sub-architecture */
@@ -114,14 +114,14 @@ FILE * restrict const       stream)
 #ifdef SCOTCH_DEBUG_ARCH1
   if (sizeof (ArchDist) > sizeof (ArchDummy)) {
     errorPrint ("archDistArchSave: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if (fprintf (stream, ANUMSTRING "\t",
                (Anum) archptr->crloval) == EOF) {
     errorPrint ("archDistArchSave: bad output");
-    return     (1);
+    return (1);
   }
 
   return (archSave (archptr->archptr, stream));   /* Save sub-architecture */
