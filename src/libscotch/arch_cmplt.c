@@ -99,14 +99,14 @@ FILE * restrict const       stream)
   if ((sizeof (ArchCmplt)    > sizeof (ArchDummy)) ||
       (sizeof (ArchCmpltDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archCmpltArchLoad: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if ((intLoad (stream, &archptr->termnbr) != 1) ||
       (archptr->termnbr < 1)) {
     errorPrint ("archCmpltArchLoad: bad input");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -128,13 +128,13 @@ FILE * restrict const       stream)
   if ((sizeof (ArchCmplt)    > sizeof (ArchDummy)) ||
       (sizeof (ArchCmpltDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archCmpltArchSave: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if (fprintf (stream, ANUMSTRING "\n", (Anum) archptr->termnbr) == EOF) {
     errorPrint ("archCmpltArchSave: bad output");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -160,7 +160,7 @@ const ArchCmplt * restrict const  archptr)
 
   if ((matcptr->multtab = memAlloc (((vertnbr + 1) >> 1) * sizeof (ArchCoarsenMulti))) == NULL) { /* In case vertnbr is odd */
     errorPrint ("archCmpltMatchInit: out of memory");
-    return     (1);
+    return (1);
   }
 
   matcptr->vertnbr = vertnbr;
@@ -228,7 +228,7 @@ ArchCoarsenMulti ** restrict const  multptr)
 #ifdef SCOTCH_DEBUG_ARCH2
   if (coarvertnum != ((finevertnbr + 1) >> 1)) {  /* Number of coarse vertices in all cases */
     errorPrint ("archCmpltMatchMate: internal error");
-    return     (-1);
+    return (-1);
   }
 #endif /* SCOTCH_DEBUG_ARCH2 */
 
@@ -345,7 +345,7 @@ FILE * const                  stream)
       (termnbr < 1)                     ||
       ((termnbr + termmin) > archptr->termnbr)) {
     errorPrint ("archCmpltDomLoad: bad input");
-    return     (1);
+    return (1);
   }
   domnptr->termmin = termmin;
   domnptr->termnbr = termnbr;
@@ -370,7 +370,7 @@ FILE * const                stream)
                (Anum) domnptr->termmin,
                (Anum) domnptr->termnbr) == EOF) {
     errorPrint ("archCmpltDomSave: bad output");
-    return     (1);
+    return (1);
   }
 
   return (0);
