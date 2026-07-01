@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014,2016,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2016,2018,2019,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 01 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -157,6 +157,7 @@ Context * const             contptr)              /*+ Execution context         
 
   archInit (tgtarchptr);                          /* Initialize architecture body */
   tgtarchptr->clasptr = archClass ("deco");       /* Set architecture class       */
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag   */
 
   termdomnbr = (tgtlistptr != NULL) ? tgtlistptr->vnumnbr : tgtgrafptr->vertnbr;
   if (termdomnbr == 0)                            /* If nothing to do */
@@ -188,6 +189,7 @@ Context * const             contptr)              /*+ Execution context         
 
   archInit (&archdat);                            /* Initialize terminal architecture */
   archdat.clasptr = archClass ("varcmplt");       /* Set architecture class           */
+  archdat.flagval = archdat.clasptr->flagval;     /* Copy architecture flag           */
   archDomFrst (&archdat, &mappdat.domntab[0]);    /* Get initial domain               */
   mappdat.domnnbr = 1;
 

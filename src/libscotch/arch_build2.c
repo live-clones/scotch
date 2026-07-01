@@ -1,4 +1,4 @@
-/* Copyright 2015,2016,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018,2019,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
 /**                                 to   : 22 feb 2018     **/
 /**                # Version 7.0  : from : 03 aug 2016     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 01 jul 2026     **/
 /**                                                        **/
 /**   NOTES      : # The code of the main routine derives  **/
 /**                  from that of archSubArchBuild().      **/
@@ -558,6 +558,7 @@ Context * const             contptr)              /*+ Execution context         
 
   archInit (archptr);                             /* Initialize architecture body  */
   archptr->clasptr = archClass2 ("deco", 1);      /* Set type-2 architecture class */
+  archptr->flagval = archptr->clasptr->flagval;   /* Copy architecture flag        */
 
   domnnbr = 2 * vnumnbr - 1;
   if (memAllocGroup ((void **) (void *)
