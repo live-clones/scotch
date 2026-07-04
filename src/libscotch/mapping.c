@@ -181,9 +181,9 @@ const Anum                  domnmax)
       errorPrint ("mapResize: out of memory");
       return (1);
     }
-    mappptr->domntab  = domntab;
+    mappptr->domntab = domntab;
   }
-  mappptr->domnmax  = domnmax;
+  mappptr->domnmax = domnmax;
 
   return (0);
 }
