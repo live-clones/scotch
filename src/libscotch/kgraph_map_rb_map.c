@@ -148,7 +148,7 @@ Context * const                         contptr)
   poolptr->pooltab[1] = (dataptr->paraptr->flagjobtie != 0) ? &poolptr->linktab[0] : &poolptr->linktab[1];
 
   if ((poolptr->jobtab = (KgraphMapRbMapJob *) memAlloc (mappptr->domnmax * sizeof (KgraphMapRbMapJob))) == NULL) {
-    errorPrint ("kgraphMapRbMapPoolInit: out of memory (2)");
+    errorPrint ("kgraphMapRbMapPoolInit: out of memory (1)");
     return (1);
   }
   poolptr->jobtab[0].poolflag = 0;                /* In case kgraphMapRbPoolExit() is called just afterwards on single-domain mapping */
@@ -162,7 +162,7 @@ Context * const                         contptr)
   }
   else {
     if ((poolptr->domntab[1] = (ArchDom *) memAlloc (mappptr->domnmax * sizeof (ArchDom))) == NULL) {
-      errorPrint ("kgraphMapRbMapPoolInit: out of memory (3)");
+      errorPrint ("kgraphMapRbMapPoolInit: out of memory (2)");
       memFree    (poolptr->jobtab);
       return (1);
     }
