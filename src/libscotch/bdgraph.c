@@ -147,7 +147,7 @@ const Anum                      domnwght1)
 /* This routine frees the contents
 ** of the given distributed active graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -171,7 +171,7 @@ Bdgraph * const             grafptr)
 /* This routine moves all of the graph
 ** vertices to the first part.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
