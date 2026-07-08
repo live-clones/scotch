@@ -166,7 +166,7 @@ SCOTCH_Arch * const         archptr)
 /* This routine frees the contents of the
 ** given opaque architecture structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
