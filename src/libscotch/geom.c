@@ -79,7 +79,7 @@ Geom * restrict const       geomptr)
 
 /* This routine frees a geometrical graph structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
