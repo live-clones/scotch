@@ -104,7 +104,7 @@ SCOTCH_Dordering * const    libordeptr)           /*+ Ordering structure to init
 
 /* This routine frees an API ordering.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
