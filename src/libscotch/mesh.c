@@ -78,7 +78,7 @@ Mesh * const                meshptr)
 
 /* This routine frees a source mesh structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -99,7 +99,7 @@ Mesh * const                meshptr)
 ** freeing. This is also much simpler, as
 ** load arrays can be grouped or not.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
