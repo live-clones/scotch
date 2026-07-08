@@ -115,7 +115,7 @@ MPI_Comm                    proccomm)             /* Communicator to be used for
 ** It is not a collective routine, as no communication
 ** is needed to perform the freeing of memory structures.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -188,7 +188,7 @@ Dgraph * restrict const     grafptr)
 ** Private data are always destroyed. If this is not
 ** wanted, use dgraphFree() instead.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
