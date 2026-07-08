@@ -71,7 +71,7 @@ static char                 _SCOTCHerrorProgName[32] = "";
 /* This routine sets the program name for
 ** error reporting.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -138,7 +138,7 @@ const char * const          errstr,               /*+ printf-like variable argum
 ** a variable number of arguments, as printf ()
 ** does.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
