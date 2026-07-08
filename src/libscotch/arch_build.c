@@ -85,7 +85,7 @@
 /* This routine frees the contents of
 ** the given job pool.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
