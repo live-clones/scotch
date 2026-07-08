@@ -98,7 +98,7 @@ int                      (* cmpfptr) (const FiboNode * const, const FiboNode * c
 /* This routine flushes the contents of
 ** the given Fibonacci heap.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -112,7 +112,7 @@ FiboHeap * const            treeptr)
 /* This routine flushes the contents of
 ** the given Fibonacci heap.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
