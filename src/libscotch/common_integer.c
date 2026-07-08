@@ -142,7 +142,7 @@ const INT                   val)                  /*+ Value to write     +*/
 ** consecutive INT values, in
 ** ascending order.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -163,7 +163,7 @@ const INT                   baseval)              /*+ Base value                
 /* This routine computes a random permutation
 ** of an array of INT values.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -202,7 +202,7 @@ IntRandContext              intranddat = { 0, 0 }; /*+ Global context: not initi
 ** a subsequent call to intRandInit(),
 ** intRandReset() or intRandSeed().
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -216,7 +216,7 @@ const int                   procnum)
 /* These routines initialize and/or reset the seed
 ** used by the given pseudo-random generator.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -267,7 +267,7 @@ INT                         seedval)
 ** the tasks in an asynchronous way.
 ** The routine itself is not thread-safe.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -293,7 +293,7 @@ IntRandContext * const      rnewptr)
 ** should not be called concurrently when it has never
 ** been initialized before.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -475,7 +475,7 @@ IntRandContext * const      contptr)              /*+ Random context to load +*/
 ** INT values in ascending order
 ** by their first value, used as key.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 #define INTSORTNAME                 intSort1asc1
@@ -492,7 +492,7 @@ IntRandContext * const      contptr)              /*+ Random context to load +*/
 ** INT values in ascending order by their
 ** first value, used as key.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 #define INTSORTNAME                 intSort2asc1
@@ -510,7 +510,7 @@ IntRandContext * const      contptr)              /*+ Random context to load +*/
 ** of their values, used as primary and
 ** secondary keys.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 #define INTSORTNAME                 intSort2asc2
@@ -527,7 +527,7 @@ IntRandContext * const      contptr)              /*+ Random context to load +*/
 ** INT values in ascending order by their
 ** first value, used as key.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 #define INTSORTNAME                 intSort3asc1
@@ -545,7 +545,7 @@ IntRandContext * const      contptr)              /*+ Random context to load +*/
 ** first and second values, used as primary
 ** and secondary keys.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 #define INTSORTNAME                 intSort3asc2
@@ -568,7 +568,7 @@ IntRandContext * const      contptr)              /*+ Random context to load +*/
 ** pairs of INT values in ascending order by
 ** their first value, used as key.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 #define INTSORTNAME                 intPsort2asc1
