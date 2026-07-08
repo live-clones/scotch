@@ -92,7 +92,7 @@ const Arch * restrict const   archptr)
 ** as it is usually a copy of an existing Arch
 ** structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
