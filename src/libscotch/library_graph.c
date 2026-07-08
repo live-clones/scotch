@@ -129,7 +129,7 @@ SCOTCH_Graph * const        grafptr)
 /* This routine frees the contents of the
 ** given opaque graph structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -143,7 +143,7 @@ SCOTCH_Graph * const        grafptr)
 /* This routine frees the contents of the
 ** given opaque graph structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -306,7 +306,7 @@ const SCOTCH_Num * const    edlotab)              /* Edge load array            
 ** NULL pointers on input indicate unwanted
 ** data.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -330,7 +330,7 @@ SCOTCH_Num * const          edgenbr)
 ** data. NULL pointers on output indicate
 ** unexisting arrays.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -373,7 +373,7 @@ SCOTCH_Num ** const         edlotab)              /* Edge load array          */
 /* This routine computes statistics
 ** on the given graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
