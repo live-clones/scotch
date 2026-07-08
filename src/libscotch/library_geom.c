@@ -124,7 +124,7 @@ SCOTCH_Geom * const         geomptr)
 /* This routine frees the contents of the
 ** given opaque geometry structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -139,7 +139,7 @@ SCOTCH_Geom * const         geomptr)
 ** data. NULL pointers on output indicate
 ** unexisting arrays.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
