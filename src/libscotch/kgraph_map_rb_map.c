@@ -180,7 +180,7 @@ Context * const                         contptr)
 ** succeeds, whatever part of the algorithm it
 ** is called from.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -214,7 +214,7 @@ KgraphMapRbMapPoolData * restrict const poolptr)
 /* This routine swaps the internal arrays
 ** involved in the DRB algorithms.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -319,7 +319,7 @@ KgraphMapRbMapPoolData * restrict const poolptr)
 /* This routine adds a job to pool 1 of the
 ** given pool data structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -372,7 +372,7 @@ KgraphMapRbMapPoolData * const  poolptr)
 /* This routine adds a job to the given pool
 ** as the first bipartitioning job.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -415,7 +415,7 @@ KgraphMapRbMapJob * const       jobptr)           /* Job to be added */
 ** the parent jobs of the vertices to
 ** be updated still exist.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -691,7 +691,7 @@ KgraphMapRbMapJob * const       jobnewptr1)
 ** This routine removes the influence of the
 ** given job from its neighbor jobs.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
