@@ -121,7 +121,7 @@ const float                         probval)
 /* This routine frees the contents of a matching
 ** data structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
