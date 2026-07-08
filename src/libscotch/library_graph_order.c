@@ -117,7 +117,7 @@ SCOTCH_Num * const          treetab)              /*+ Separator tree array      
 
 /* This routine frees an API ordering.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
