@@ -119,7 +119,7 @@ MPI_Comm                    proccomm)             /* Communicator to be used for
 /* This routine frees the contents of the
 ** given opaque mesh structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -134,7 +134,7 @@ SCOTCH_Dmesh * const        meshptr)
 ** given opaque mesh structure but does
 ** not free its private data.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -149,7 +149,7 @@ SCOTCH_Dmesh * const        meshptr)
 ** NULL pointers on input indicate unwanted
 ** data.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -180,7 +180,7 @@ SCOTCH_Num * const          vnodglbnbr)
 ** data. NULL pointers on output indicate
 ** unexisting arrays.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
