@@ -147,7 +147,7 @@ const Gnum * restrict const     vmlotax)          /*+ Vertex migration cost arra
 ** of the given active graph and
 ** updates the mapping data accordingly.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -184,7 +184,7 @@ Kgraph * restrict const     grafptr)
 ** vertices to the first subdomain, and
 ** computes the resulting gains.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -205,7 +205,7 @@ Kgraph * restrict const     grafptr)
 /* This routine computes the frontier
 ** array of the current partition.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
