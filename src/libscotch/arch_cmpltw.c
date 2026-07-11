@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014,2015,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2015,2018,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 12 apr 2015     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 20 sep 2024     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -493,7 +493,7 @@ FILE * const                    stream)
        vertnum < vertnnd; vertnum ++)
     velosum += archptr->velotab[vertnum].veloval;
 
-  domnptr->veloval += velosum;
+  domnptr->veloval = velosum;
 
   return (0);
 }
