@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2011,2013-2015,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2011,2013-2015,2018,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -67,7 +67,7 @@
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 28 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 10 sep 2024     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -222,6 +222,7 @@ typedef struct ArchDom_ {
 typedef union ArchMatchDummy_ {                   /*+ Architecture data                           +*/
   ArchCmpltMatch            cmplt;                /*+ Complete graph architecture                 +*/
 /*  ArchMatchCmpltw         cmpltw;                *+ Weighted complete graph architecture        +*/
+/*  ArchMatchCmpltws        cmpltws;               *+ Simple weighted complete graph architecture +*/
   ArchDecoMatch             deco;                 /*+ Type-1 decomposition-described architecture +*/
 /*  ArchMatchDist           dist;                  *+ Distance multiplicator pseudo-architecture  +*/
   ArchHcubMatch             hcub;                 /*+ Hypercube architecture                      +*/

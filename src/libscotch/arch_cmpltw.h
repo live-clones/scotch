@@ -83,6 +83,10 @@ typedef struct ArchCmpltwDom_ {
 
 #define ArchCmpltwMatch             ArchCmpltMatch
 
+#define ArchCmpltws                 ArchCmpltw
+#define ArchCmpltwsDom              ArchCmpltwDom
+#define archCmpltwsMatch            archCmpltwMatch
+
 #endif /* ARCH_CMPLTW_H_STRUCT */
 
 /*
@@ -112,6 +116,26 @@ int                         archCmpltwDomLoad   (const ArchCmpltw * const, ArchC
 int                         archCmpltwDomSave   (const ArchCmpltw * const, const ArchCmpltwDom * const, FILE * const);
 int                         archCmpltwDomBipart (const ArchCmpltw * const, const ArchCmpltwDom * const, ArchCmpltwDom * restrict const, ArchCmpltwDom * restrict const);
 int                         archCmpltwDomIncl   (const ArchCmpltw * const, const ArchCmpltwDom * const, const ArchCmpltwDom * const);
+
+int                         archCmpltwsArchBuild (ArchCmpltw * restrict const archptr, const Anum, const Anum * restrict const);
+int                         archCmpltwsArchLoad (ArchCmpltw * restrict const, FILE * restrict const);
+#define archCmpltwsArchSave          archCmpltwArchSave
+#define archCmpltwsArchFree          archCmpltwArchFree
+
+#define archCmpltwsMatchInit         archCmpltwMatchInit
+#define archCmpltwsMatchExit         archCmpltwMatchExit
+#define archCmpltwsMatchMate         archCmpltwMatchMate
+
+#define archCmpltwsDomNum            archCmpltwDomNum
+int                         archCmpltwsDomTerm  (const ArchCmpltw * const, ArchCmpltwDom * restrict const, const ArchDomNum);
+#define archCmpltwsDomSize           archCmpltwDomSize
+#define archCmpltwsDomWght           archCmpltwDomWght
+#define archCmpltwsDomDist           archCmpltwDomDist
+#define archCmpltwsDomFrst           archCmpltwDomFrst
+#define archCmpltwsDomLoad           archCmpltwDomLoad
+#define archCmpltwsDomSave           archCmpltwDomSave
+#define archCmpltwsDomBipart         archCmpltwDomBipart
+#define archCmpltwsDomIncl           archCmpltwDomIncl
 
 #endif /* ARCH_CMPLTW_H_PROTO */
 #endif /* ARCH_NOPROTO        */
