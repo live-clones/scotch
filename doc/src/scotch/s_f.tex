@@ -450,10 +450,19 @@ Its vertex labels are numbers between $0$ and $\mathit{size} - 1$.
 %%
 \iteme[{\texttt{cmpltw} {\it size} {\it load$_0$} {\it load$_1$}
 \ldots\ {\it load$_{\mathit{size} - 1}$}}]
+Defines a balanced weighted complete graph with {\it size\/} vertices.
+Its vertex labels are numbers between $0$ and $\mathit{size} - 1$,
+and vertices are assigned integer weights in the order in which
+these are provided. Subdomains are created in a way that aims to
+balance weights across target domain bipartitions.
+%%
+\iteme[{\texttt{cmpltws} {\it size} {\it load$_0$} {\it load$_1$}
+\ldots\ {\it load$_{\mathit{size} - 1}$}}]
 Defines a weighted complete graph with {\it size\/} vertices.
 Its vertex labels are numbers between $0$ and $\mathit{size} - 1$,
 and vertices are assigned integer weights in the order in which
-these are provided.
+these are provided. Target domains are kept in order during
+bipartitions.
 %%
 \iteme[{\texttt{hcub} $\mathit{dim}$}]
 Defines a binary hypercube of dimension $\mathit{dim}$.
