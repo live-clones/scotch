@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2011,2015,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2011,2015,2018,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -64,7 +64,7 @@
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 02 may 2015     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -268,14 +268,13 @@ const ArchCmplt * const     archptr,
 ArchCmpltDom * const        domnptr,
 const ArchDomNum            domnnum)
 {
-  if (domnnum < archptr->termnbr) {               /* If valid label */
-    domnptr->termmin = domnnum;                   /* Set the domain */
-    domnptr->termnbr = 1;
+  if (domnnum >= archptr->termnbr)                /* If invalid label */
+    return (1);
 
-    return (0);
-  }
+  domnptr->termmin = domnnum;                     /* Set the domain */
+  domnptr->termnbr = 1;
 
-  return (1);                                     /* Cannot set domain */
+  return (0);
 }
 
 /* This function returns the number of
