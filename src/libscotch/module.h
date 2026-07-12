@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 11 jul 2026     **/
+/**                                 to   : 13 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -1352,6 +1352,7 @@
 #define SCOTCH_memMax               SCOTCH_NAME_PUBLIC (SCOTCH_memMax)
 #define SCOTCH_meshAlloc            SCOTCH_NAME_PUBLIC (SCOTCH_meshAlloc)
 #define SCOTCH_meshBuild            SCOTCH_NAME_PUBLIC (SCOTCH_meshBuild)
+#define SCOTCH_meshBuildElem        SCOTCH_NAME_PUBLIC (SCOTCH_meshBuildElem)
 #define SCOTCH_meshCheck            SCOTCH_NAME_PUBLIC (SCOTCH_meshCheck)
 #define SCOTCH_meshData             SCOTCH_NAME_PUBLIC (SCOTCH_meshData)
 #define SCOTCH_meshExit             SCOTCH_NAME_PUBLIC (SCOTCH_meshExit)
