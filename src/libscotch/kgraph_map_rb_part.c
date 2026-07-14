@@ -327,7 +327,7 @@ end2:
   if (indgrafptr == &indgrafdat)                  /* If an induced subgraph had been created */
     graphExit (&indgrafdat);                      /* Free it                                 */
 end3:
-  if (o != 0) {                                   /* Lock only to Propagate errors */
+  if (o != 0) {                                   /* Lock only to propagate errors */
 #ifdef SCOTCH_PTHREAD
     pthread_mutex_lock (&mappptr->mutedat);
 #endif /* SCOTCH_PTHREAD */
