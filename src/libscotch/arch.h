@@ -67,7 +67,7 @@
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 28 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 11 jul 2026     **/
+/**                                 to   : 14 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -270,7 +270,7 @@ int                         archDomIncl         (const Arch * const, const ArchD
 #define archName(a)                 (((a)->clasptr == NULL) ? "" : (a)->clasptr->archname)
 #define archPart(a)                 ((((a)->flagval) & ARCHPART) != 0)
 #define archVar(a)                  ((((a)->flagval) & ARCHVAR) != 0)
-#define archArch(a)                 ((Arch *) ((char *) (a) - ((char *) (&(((Arch *) (NULL))->data)) - (char *) (NULL))))
+#define archArch(a)                 ((Arch *) ((byte *) (a) - ((byte *) (&(((Arch *) (NULL))->data)) - (byte *) (NULL))))
 
 #if ((! defined SCOTCH_DEBUG_ARCH2) || (defined ARCH))
 #define archDomNum2(arch,dom)       (((ArchDomNum (*) (const void * const, const void * const)) (arch)->clasptr->domNum) ((const void * const) &(arch)->data, (const void * const) &(dom)->data))
