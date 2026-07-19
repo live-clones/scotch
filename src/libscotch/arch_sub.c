@@ -62,8 +62,8 @@
 /*                                */
 /**********************************/
 
-/* This routine loads the distance
-** graph architecture.
+/* This routine loads the sub-architecture
+** architecture.
 ** It returns:
 ** - 0   : if the architecture has been successfully read.
 ** - !0  : on error.
@@ -125,8 +125,8 @@ FILE * restrict const       stream)
   return (o);
 }
 
-/* This routine saves the
-** distance graph architecture.
+/* This routine saves the sub-architecture
+** architecture.
 ** It returns:
 ** - 0   : if the architecture has been successfully written.
 ** - !0  : on error.
@@ -695,7 +695,7 @@ const ArchSubDom * const    domnptr)
 }
 
 /* This function returns the weight of
-** the given distance domain.
+** the given sub-architecture domain.
 */
 
 Anum
@@ -707,7 +707,7 @@ const ArchSubDom * const    domnptr)
 }
 
 /* This function returns the average
-** distance between two distance
+** distance between two sub-architecture
 ** subdomains.
 */
 
@@ -789,8 +789,8 @@ FILE * const                stream)
   return (0);
 }
 
-/* This function tries to split a distance
-** graph domain into two subdomains.
+/* This function tries to split a sub-architecture
+** domain into two subdomains.
 ** It returns:
 ** - 0  : if bipartitioning succeeded.
 ** - 1  : if bipartitioning could not be performed.
