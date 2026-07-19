@@ -646,8 +646,8 @@ FILE * restrict const       stream)
   return (0);
 }
 
-/* This routine saves the
-** tridimensional torus architecture.
+/* This routine saves the X-dimensional mesh
+** architecture.
 ** It returns:
 ** - 0   : if the architecture has been successfully written.
 ** - !0  : on error.
