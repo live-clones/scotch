@@ -314,8 +314,8 @@ const ArchCmpltDom * const  dom1ptr)
 
 int
 archCmpltDomFrst (
-const ArchCmplt * const         archptr,
-ArchCmpltDom * restrict const   domnptr)
+const ArchCmplt * const       archptr,
+ArchCmpltDom * restrict const domnptr)
 {
   domnptr->termmin = 0;
   domnptr->termnbr = archptr->termnbr;
