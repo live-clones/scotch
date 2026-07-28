@@ -1,4 +1,4 @@
-/* Copyright 2011,2013,2014,2018,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2013,2014,2018,2021,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 27 may 2011     **/
 /**                                 to   : 06 jun 2018     **/
 /**                # Version 7.0  : from : 11 jul 2021     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 28 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -343,7 +343,8 @@ const Gnum                              veloval)  /*+ Weight of vertex to map  +
   KgraphMapExFind     bestdat;
   Anum                treenum;
 
-  bestdat.comploaddlt = (doextab[domnnum].compload + veloval - doextab[domnnum].comploadmax) / doextab[domnnum].domnwght; /* Compute weighted imbalance */
+  bestdat.comploaddlt = doextab[domnnum].compload + veloval - doextab[domnnum].comploadmax; /* Compute imbalance */
+  bestdat.domnwght    = doextab[domnnum].domnwght;
   bestdat.domnnum     = domnnum;
 
   treenum = doextab[domnnum].treenum;             /* Start from leaf of subdomain tree */
@@ -407,13 +408,17 @@ const Gnum                              veloval)
   }
   else {                                          /* If current node is terminal */
     Anum                domnnum;
+    Anum                domnwght;
     Gnum                comploaddlt;
 
     domnnum = son1num;                            /* Second son records domain number */
-    comploaddlt = (doextab[domnnum].compload + veloval - doextab[domnnum].comploadmax) / doextab[domnnum].domnwght; /* Compute weighted imbalance */
+    comploaddlt = doextab[domnnum].compload + veloval - doextab[domnnum].comploadmax; /* Compute imbalance */
+    domnwght    = doextab[domnnum].domnwght;
 
-    if (comploaddlt < bestptr->comploaddlt) {     /* If found vertex that potentially improves balance */
+    if (((double) comploaddlt * (double) bestptr->domnwght) < /* Compare weighted imbalances by cross-multiplication */
+        ((double) bestptr->comploaddlt * (double) domnwght)) {
       bestptr->comploaddlt = comploaddlt;
+      bestptr->domnwght    = domnwght;
       bestptr->domnnum     = domnnum;
     }
 
