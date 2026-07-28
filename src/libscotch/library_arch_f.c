@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2010,2011,2015,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2010,2011,2015,2018,2021,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -50,7 +50,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -263,6 +263,21 @@ int * const                 revaptr), \
 (archptr, vertnbr, velotab, revaptr))
 {
   *revaptr = SCOTCH_archCmpltw (archptr, *vertnbr, velotab);
+}
+
+/*
+**
+*/
+
+SCOTCH_FORTRAN (                      \
+ARCHCMPLTWS, archcmpltws, (           \
+SCOTCH_Arch * const         archptr,  \
+const SCOTCH_Num * const    vertnbr,  \
+const SCOTCH_Num * const    velotab,  \
+int * const                 revaptr), \
+(archptr, vertnbr, velotab, revaptr))
+{
+  *revaptr = SCOTCH_archCmpltws (archptr, *vertnbr, velotab);
 }
 
 /*
