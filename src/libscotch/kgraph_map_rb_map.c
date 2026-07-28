@@ -70,7 +70,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 09 jul 2026     **/
+/**                                 to   : 28 jul 2026     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -953,7 +953,8 @@ Context * const                         contptr)  /*+ Execution context         
       if ((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) == 0) { /* If not variable-sized, impose constraints on bipartition */
         double              comploadavg;
 
-        comploadavg = (double) actgrafdat.s.velosum / (double) archDomWght (mappptr->archptr, &joborgdat.domnorg);
+        comploadavg = (double) (actgrafdat.s.velosum + vflowgttab[0] + vflowgttab[1]) /
+                      (double) archDomWght (mappptr->archptr, &joborgdat.domnorg);
         actgrafdat.compload0min = actgrafdat.compload0avg -
                                   (Gnum) MIN ((comploadmax - comploadavg) * (double) actgrafdat.domnwght[0],
                                               (comploadavg - comploadmin) * (double) actgrafdat.domnwght[1]);
