@@ -70,8 +70,8 @@
 
 int
 archMesh2DomMpiType (
-const ArchMesh2 * const       archptr,
-MPI_Datatype * const          typeptr)
+const ArchMesh2 * const     archptr,
+MPI_Datatype * const        typeptr)
 {
   return (archDomMpiTypeAnum (4, typeptr));
 }

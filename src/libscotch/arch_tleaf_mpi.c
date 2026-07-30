@@ -71,8 +71,8 @@
 #ifdef SCOTCH_PTSCOTCH
 int
 archTleafDomMpiType (
-const ArchTleaf * const       archptr,
-MPI_Datatype * const          typeptr)
+const ArchTleaf * const     archptr,
+MPI_Datatype * const        typeptr)
 {
   return (archDomMpiTypeAnum (3, typeptr));
 }
