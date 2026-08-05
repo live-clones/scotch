@@ -71,8 +71,8 @@
 
 int
 archDecoDomMpiType (
-const ArchDeco * const        archptr,
-MPI_Datatype * const          typeptr)
+const ArchDeco * const      archptr,
+MPI_Datatype * const        typeptr)
 {
   return (archDomMpiTypeAnum (1, typeptr));
 }

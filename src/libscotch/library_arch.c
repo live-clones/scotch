@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2009-2016,2018,2021,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2009-2016,2018,2021,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -57,9 +57,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 15 mar 2021     **/
 /**                # Version 7.0  : from : 21 jan 2023     **/
-/**                                 to   : 21 jan 2023     **/
-/**                # Version 8.0  : from : 18 feb 2018     **/
-/**                                 to   : 18 feb 2018     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -168,7 +166,7 @@ SCOTCH_Arch * const         archptr)
 /* This routine frees the contents of the
 ** given opaque architecture structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -307,6 +305,30 @@ const SCOTCH_Num * const    velotab)
   tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
 
   return (archCmpltwArchBuild ((ArchCmpltw *) (void *) (&tgtarchptr->data), vertnbr, velotab));
+}
+
+/*
+**
+*/
+
+int
+SCOTCH_archCmpltws (
+SCOTCH_Arch * const         archptr,
+const SCOTCH_Num            vertnbr,
+const SCOTCH_Num * const    velotab)
+{
+  Arch *              tgtarchptr;
+
+  if (sizeof (SCOTCH_Num) != sizeof (Gnum)) {
+    errorPrint (STRINGIFY (SCOTCH_archCmpltws) ": internal error");
+    return (1);
+  }
+
+  tgtarchptr          = (Arch *) archptr;
+  tgtarchptr->clasptr = archClass ("cmpltws");
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag */
+
+  return (archCmpltwsArchBuild ((ArchCmpltw *) (void *) (&tgtarchptr->data), vertnbr, velotab));
 }
 
 /*

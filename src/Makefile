@@ -1,4 +1,4 @@
-## Copyright 2004,2007,2008,2010-2012,2014,2018-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+## Copyright 2004,2007,2008,2010-2012,2014,2018-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 ##
 ## This file is part of the Scotch software package for static mapping,
 ## graph partitioning and sparse matrix ordering.
@@ -32,7 +32,7 @@
 
 VERSION = 7
 RELEASE = 0
-PATCHLEVEL = 12
+PATCHLEVEL = 13
 CODENAME = "Sankara"
 
 .PHONY				:	clean	default	install	ptscotch	realclean	required	scotch

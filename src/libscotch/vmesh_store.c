@@ -89,7 +89,7 @@ VmeshStore * const          storptr)
 /* This routine frees a mesh node
 ** separation save structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -106,7 +106,7 @@ VmeshStore * const          storptr)
 ** given node separation mesh to the given
 ** save structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -137,7 +137,7 @@ VmeshStore * const          storptr)
 /* This routine updates partition data of the
 ** given active graph, using the given save graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

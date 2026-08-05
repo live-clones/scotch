@@ -121,7 +121,7 @@ SCOTCH_Context * const      libcontptr)
 /* This routine frees the contents of the
 ** given opaque context structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

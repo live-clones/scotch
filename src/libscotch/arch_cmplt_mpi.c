@@ -70,8 +70,8 @@
 
 int
 archCmpltDomMpiType (
-const ArchCmplt * const       archptr,
-MPI_Datatype * const          typeptr)
+const ArchCmplt * const     archptr,
+MPI_Datatype * const        typeptr)
 {
   return (archDomMpiTypeAnum (2, typeptr));
 }

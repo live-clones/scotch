@@ -58,7 +58,7 @@
 /**                # Version 6.1  : from : 05 sep 2020     **/
 /**                                 to   : 01 apr 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 01 apr 2026     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -194,6 +194,7 @@ SCOTCH_Num                  SCOTCH_archSize     (const SCOTCH_Arch * const);
 int                         SCOTCH_archVar      (const SCOTCH_Arch * const);
 int                         SCOTCH_archCmplt    (SCOTCH_Arch * const, const SCOTCH_Num);
 int                         SCOTCH_archCmpltw   (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num * const);
+int                         SCOTCH_archCmpltws  (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num * const);
 int                         SCOTCH_archHcub     (SCOTCH_Arch * const, const SCOTCH_Num);
 int                         SCOTCH_archMesh2    (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num);
 int                         SCOTCH_archMesh3    (SCOTCH_Arch * const, const SCOTCH_Num, const SCOTCH_Num, const SCOTCH_Num);

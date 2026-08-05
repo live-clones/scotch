@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014,2015,2018,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2015,2018,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -44,7 +44,7 @@
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 12 apr 2015     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 20 sep 2024     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -58,11 +58,11 @@
 #include "arch.h"
 #include "arch_cmpltw.h"
 
-/******************************************/
-/*                                        */
-/* These are the complete graph routines. */
-/*                                        */
-/******************************************/
+/***************************************************/
+/*                                                 */
+/* These are the balanced complete graph routines. */
+/*                                                 */
+/***************************************************/
 
 /* This routine builds a complete weighted
 ** graph architecture from the given load array.
@@ -76,7 +76,7 @@
 
 static
 void
-archCmpltwArchBuild3 (
+archCmpltwArchBuild4 (
 ArchCmpltwLoad * restrict const velotab,
 ArchCmpltwLoad * restrict const vesotab,
 Anum                            vertnbr,
@@ -123,14 +123,14 @@ Anum                            velosum)
   }
 
   if (ver0nbr > 2)
-    archCmpltwArchBuild3 (velotab, vesotab, ver0nbr, vel0sum);
+    archCmpltwArchBuild4 (velotab, vesotab, ver0nbr, vel0sum);
   if (ver1nbr > 2)
-    archCmpltwArchBuild3 (velotab + ver0nbr, vesotab + ver0nbr, ver1nbr, vel1sum);
+    archCmpltwArchBuild4 (velotab + ver0nbr, vesotab + ver0nbr, ver1nbr, vel1sum);
 }
 
 static
 int
-archCmpltwArchBuild2 (
+archCmpltwArchBuild3 (
 ArchCmpltw * restrict const archptr)
 {
   ArchCmpltwLoad * restrict vesotab;              /* Auxiliary sort array for weighted vertices */
@@ -139,7 +139,7 @@ ArchCmpltw * restrict const archptr)
     return (0);
 
   if ((vesotab = (ArchCmpltwLoad *) memAlloc (archptr->vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
-    errorPrint ("archCmpltwArchBuild2: out of memory");
+    errorPrint ("archCmpltwArchBuild3: out of memory");
     memFree (archptr->velotab);
     archptr->velotab = NULL;
     return (1);
@@ -147,9 +147,52 @@ ArchCmpltw * restrict const archptr)
 
   intSort2asc2 (archptr->velotab, archptr->vertnbr); /* Sort load array by both keys to be portable across sorting implementations */
 
-  archCmpltwArchBuild3 (archptr->velotab, vesotab, archptr->vertnbr, archptr->velosum);
+  archCmpltwArchBuild4 (archptr->velotab, vesotab, archptr->vertnbr, archptr->velosum);
 
   memFree (vesotab);
+
+  return (0);
+}
+
+static
+int
+archCmpltwArchBuild2 (
+ArchCmpltw * restrict const archptr,
+const Anum                  vertnbr,
+const Anum * restrict const velotab)
+{
+  ArchCmpltwLoad *    vecwtab;
+  Anum                velosum;
+  Anum                vertnum;
+
+  if (vertnbr <= 0) {
+    errorPrint ("archCmpltwArchBuild2: invalid parameters (1)");
+    return (1);
+  }
+
+  if ((vecwtab = (ArchCmpltwLoad *) memAlloc (vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
+    errorPrint ("archCmpltwArchBuild2: out of memory");
+    return (1);
+  }
+
+  for (vertnum = 0, velosum = 0; vertnum < vertnbr; vertnum ++) { /* Fill vertex load array */
+    Anum                veloval;
+
+    veloval = velotab[vertnum];
+    if (veloval <= 0) {                           /* Target weights cannot be negative nor null */
+      errorPrint ("archCmpltwArchBuild2: invalid parameters (2)");
+      memFree    (velotab);
+      return (1);
+    }
+
+    velosum += veloval;
+    vecwtab[vertnum].veloval = veloval;
+    vecwtab[vertnum].vertnum = vertnum;
+  }
+
+  archptr->vertnbr = vertnbr;
+  archptr->velotab = vecwtab;
+  archptr->velosum = velosum;
 
   return (0);
 }
@@ -160,10 +203,6 @@ ArchCmpltw * restrict const archptr,
 const Anum                  vertnbr,
 const Anum * restrict const velotab)
 {
-  ArchCmpltwLoad *    vecwtab;
-  Anum                velosum;
-  Anum                vertnum;
-
 #ifdef SCOTCH_DEBUG_ARCH1
   if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
       (sizeof (ArchCmpltwDom) > sizeof (ArchDomDummy))) {
@@ -172,36 +211,10 @@ const Anum * restrict const velotab)
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
-  if (vertnbr <= 0) {
-    errorPrint ("archCmpltwArchBuild: invalid parameters (1)");
+  if (archCmpltwArchBuild2 (archptr, vertnbr, velotab) != 0)
     return (1);
-  }
 
-  if ((vecwtab = (ArchCmpltwLoad *) memAlloc (vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
-    errorPrint ("archCmpltwArchBuild: out of memory");
-    return (1);
-  }
-
-  for (vertnum = 0, velosum = 0; vertnum < vertnbr; vertnum ++) { /* Fill vertex load array */
-    Anum                veloval;
-
-    veloval = velotab[vertnum];
-    if (veloval <= 0) {                           /* Target weights cannot be negative nor null */
-      errorPrint ("archCmpltwArchBuild: invalid parameters (2)");
-      memFree    (vecwtab);
-      return (1);
-    }
-
-    velosum += veloval;
-    vecwtab[vertnum].veloval = veloval;
-    vecwtab[vertnum].vertnum = vertnum;
-  }
-
-  archptr->vertnbr = (Anum) vertnbr;
-  archptr->velotab = vecwtab;
-  archptr->velosum = (Anum) velosum;
-
-  return (archCmpltwArchBuild2 (archptr));
+  return (archCmpltwArchBuild3 (archptr));
 }
 
 /* This routine loads the weighted complete
@@ -211,47 +224,34 @@ const Anum * restrict const velotab)
 ** - !0  : on error.
 */
 
+static
 int
-archCmpltwArchLoad (
+archCmpltwArchLoad2 (
 ArchCmpltw * restrict const archptr,
 FILE * restrict const       stream)
 {
   ArchCmpltwLoad *    vecwtab;
   Anum                velosum;
-  long                vertnbr;
-  long                vertnum;
+  Anum                vertnbr;
+  Anum                vertnum;
 
-#ifdef SCOTCH_DEBUG_ARCH1
-  if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
-      (sizeof (ArchCmpltwDom) > sizeof (ArchDomDummy))) {
-    errorPrint ("archCmpltwArchLoad: invalid type specification");
-    return (1);
-  }
-#endif /* SCOTCH_DEBUG_ARCH1 */
-
-  if ((fscanf (stream, "%ld", &vertnbr) != 1) ||
-      (vertnbr < 1)) {
-    errorPrint ("archCmpltwArchLoad: bad input (1)");
+  if ((intLoad (stream, &vertnbr) != 1) ||
+      (vertnbr <= 0)) {
+    errorPrint ("archCmpltwArchLoad2: bad input (1)");
     return (1);
   }
 
   if ((vecwtab = (ArchCmpltwLoad *) memAlloc (vertnbr * sizeof (ArchCmpltwLoad))) == NULL) {
-    errorPrint ("archCmpltwArchLoad: out of memory");
+    errorPrint ("archCmpltwArchLoad2: out of memory");
     return (1);
   }
 
   for (vertnum = 0, velosum = 0; vertnum < vertnbr; vertnum ++) {
-    long                velotmp;
     Anum                veloval;
 
-    if ((fscanf (stream, "%ld", &velotmp) != 1) ||
-        (velotmp < 1)) {
-      errorPrint ("archCmpltwArchLoad: bad input (2)");
-      return (1);
-    }
-    veloval = (Anum) velotmp;
-    if (veloval <= 0) {                           /* Target weights cannot be negative nor null */
-      errorPrint ("archCmpltwArchLoad: bad input (3)");
+    if ((intLoad (stream, &veloval) != 1) ||
+        (veloval <= 0)) {                         /* Target weights cannot be negative nor null */
+      errorPrint ("archCmpltwArchLoad2: bad input (2)");
       memFree    (vecwtab);
       return (1);
     }
@@ -261,11 +261,30 @@ FILE * restrict const       stream)
     vecwtab[vertnum].vertnum = vertnum;
   }
 
-  archptr->vertnbr = (Anum) vertnbr;
+  archptr->vertnbr = vertnbr;
   archptr->velotab = vecwtab;
-  archptr->velosum = (Anum) velosum;
+  archptr->velosum = velosum;
 
-  return (archCmpltwArchBuild2 (archptr));
+  return (0);
+}
+
+int
+archCmpltwArchLoad (
+ArchCmpltw * restrict const archptr,
+FILE * restrict const       stream)
+{
+#ifdef SCOTCH_DEBUG_ARCH1
+  if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchCmpltwDom) > sizeof (ArchDomDummy))) {
+    errorPrint ("archCmpltwArchLoad: invalid type specification");
+    return (1);
+  }
+#endif /* SCOTCH_DEBUG_ARCH1 */
+
+  if (archCmpltwArchLoad2 (archptr, stream) != 0)
+    return (1);
+
+  return (archCmpltwArchBuild3 (archptr));
 }
 
 /* This routine saves the weighted
@@ -376,28 +395,27 @@ const ArchCmpltw * const    archptr,
 ArchCmpltwDom * const       domnptr,
 const ArchDomNum            domnnum)
 {
-  if (domnnum < archptr->vertnbr) {               /* If valid label */
-    Anum                vertnum;
+  Anum                vertnum;
 
-    for (vertnum = 0; vertnum < archptr->vertnbr; vertnum ++) { /* Search for terminal domain index matching vertex label */
-      if (archptr->velotab[vertnum].vertnum == domnnum)
-        break;
-    }
+  if (domnnum >= archptr->vertnbr)                /* If invalid label */
+    return (1);
+
+  for (vertnum = 0; vertnum < archptr->vertnbr; vertnum ++) { /* Search for terminal domain index matching vertex label */
+    if (archptr->velotab[vertnum].vertnum == domnnum)
+      break;
+  }
 #ifdef SCOTCH_DEBUG_ARCH2
-    if (vertnum == archptr->vertnbr) {            /* If index not found */
-      errorPrint ("archCmpltwDomTerm: internal error");
-      return (2);
-    }
+  if (vertnum == archptr->vertnbr) {              /* If index not found */
+    errorPrint ("archCmpltwDomTerm: internal error");
+    return (2);
+  }
 #endif /* SCOTCH_DEBUG_ARCH2 */
 
-    domnptr->vertmin = vertnum;                   /* Set the domain */
-    domnptr->vertnbr = 1;
-    domnptr->veloval = archptr->velotab[vertnum].veloval;
+  domnptr->vertmin = vertnum;                     /* Set the domain */
+  domnptr->vertnbr = 1;
+  domnptr->veloval = archptr->velotab[vertnum].veloval;
 
-    return (0);
-  }
-
-  return (1);                                     /* Cannot set domain */
+  return (0);
 }
 
 /* This function returns the number of
@@ -472,28 +490,27 @@ const ArchCmpltw * const        archptr,
 ArchCmpltwDom * restrict const  domnptr,
 FILE * const                    stream)
 {
-  long                vertmin;
-  long                vertnbr;
+  Anum                vertmin;
+  Anum                vertnbr;
   Anum                vertnum;
   Anum                vertnnd;
   Anum                velosum;
 
-  if ((fscanf (stream, "%ld%ld",
-               &vertmin,
-               &vertnbr) != 2) ||
-      (vertnbr < 1)            ||
-      (vertnbr + vertmin > (long) archptr->vertnbr)) {
+  if (((intLoad (stream, &vertmin) +
+        intLoad (stream, &vertnbr)) != 2) ||
+      (vertnbr <= 0)                      ||
+      ((vertnbr + vertmin) > archptr->vertnbr)) {
     errorPrint ("archCmpltwDomLoad: bad input");
     return (1);
   }
-  domnptr->vertmin = (Anum) vertmin;
-  domnptr->vertnbr = (Anum) vertnbr;
+  domnptr->vertmin = vertmin;
+  domnptr->vertnbr = vertnbr;
 
   for (vertnum = domnptr->vertmin, vertnnd = vertnum + domnptr->vertnbr, velosum = 0;
        vertnum < vertnnd; vertnum ++)
     velosum += archptr->velotab[vertnum].veloval;
 
-  domnptr->veloval += velosum;
+  domnptr->veloval = velosum;
 
   return (0);
 }
@@ -582,6 +599,76 @@ const ArchCmpltwDom * const dom1ptr)
   if ((dom1ptr->vertmin >= dom0ptr->vertmin) &&
       ((dom1ptr->vertmin + dom1ptr->vertnbr) <= (dom0ptr->vertmin + dom0ptr->vertnbr)))
     return (1);
+
+  return (0);
+}
+
+/**********************************************************/
+/*                                                        */
+/* These are the simple weighted complete graph routines. */
+/*                                                        */
+/**********************************************************/
+
+int
+archCmpltwsArchBuild (
+ArchCmpltw * restrict const archptr,
+const Anum                  vertnbr,
+const Anum * restrict const velotab)
+{
+#ifdef SCOTCH_DEBUG_ARCH1
+  if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchCmpltwDom) > sizeof (ArchDomDummy))) {
+    errorPrint ("archCmpltwsArchBuild: invalid type specification");
+    return (1);
+  }
+#endif /* SCOTCH_DEBUG_ARCH1 */
+
+  return (archCmpltwArchBuild2 (archptr, vertnbr, velotab));
+}
+
+/* This routine loads the weighted complete
+** graph architecture.
+** It returns:
+** - 0   : if the architecture has been successfully read.
+** - !0  : on error.
+*/
+
+int
+archCmpltwsArchLoad (
+ArchCmpltw * restrict const archptr,
+FILE * restrict const       stream)
+{
+#ifdef SCOTCH_DEBUG_ARCH1
+  if ((sizeof (ArchCmpltw)    > sizeof (ArchDummy)) ||
+      (sizeof (ArchCmpltwDom) > sizeof (ArchDomDummy))) {
+    errorPrint ("archCmpltwsArchLoad: invalid type specification");
+    return (1);
+  }
+#endif /* SCOTCH_DEBUG_ARCH1 */
+
+  return (archCmpltwArchLoad2 (archptr, stream));
+}
+
+/* This function returns the terminal domain associated
+** with the given terminal number in the architecture.
+**
+** It returns:
+** - 0  : if label is valid and domain has been updated.
+** - 1  : if label is invalid.
+** - 2  : on error.
+*/
+
+int
+archCmpltwsDomTerm (
+const ArchCmpltw * const    archptr,
+ArchCmpltwDom * const       domnptr,
+const ArchDomNum            domnnum)
+{
+  if (domnnum >= archptr->vertnbr)                /* If invalid label */
+    return (1);
+
+  domnptr->vertmin = domnnum;                     /* Set the domain */
+  domnptr->vertnbr = 1;
 
   return (0);
 }

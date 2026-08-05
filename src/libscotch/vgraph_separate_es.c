@@ -399,7 +399,7 @@ const Gnum                            vertrow)    /* Row vertex to backtrack fro
 ** large, so that the depth of the trees is small
 ** and the stack will not overflow.
 ** They return:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static

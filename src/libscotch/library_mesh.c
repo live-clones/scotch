@@ -122,7 +122,7 @@ SCOTCH_Mesh * const         meshptr)
 /* This routine frees the contents of the
 ** given opaque mesh structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -516,7 +516,7 @@ const SCOTCH_Mesh * const   meshptr)
 ** NULL pointers on input indicate unwanted
 ** data.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -543,7 +543,7 @@ SCOTCH_Num * const          edgenbr)
 ** data. NULL pointers on output indicate
 ** unexisting arrays.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -595,7 +595,7 @@ SCOTCH_Num * const          degrmax)              /*+ Maximum degree            
 /* This routine computes statistics
 ** on the given graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

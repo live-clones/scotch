@@ -68,7 +68,7 @@
 /* This routine frees the contents
 ** of the given active graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -92,7 +92,7 @@ Vgraph * const              grafptr)
 /* This routine moves all of the graph
 ** vertices to the first part.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

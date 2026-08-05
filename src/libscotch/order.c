@@ -153,7 +153,7 @@ const Gnum                  cblknbr)
 ** of the given permutation, according to the
 ** direct and inverse base values.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -173,7 +173,7 @@ const Gnum                    peribas)            /* Base value of inverse permu
 /* This routine computes the column block
 ** range array of the given ordering.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -225,7 +225,7 @@ const OrderCblk * restrict const  cblkptr)
 /* This routine computes the separator tree
 ** array of the given ordering.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

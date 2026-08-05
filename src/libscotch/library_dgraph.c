@@ -127,7 +127,7 @@ MPI_Comm                    proccomm)             /* Communicator to be used for
 /* This routine frees the contents of the
 ** given opaque graph structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -142,7 +142,7 @@ SCOTCH_Dgraph * const       grafptr)
 ** given opaque graph structure but does
 ** not free its private data.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -157,7 +157,7 @@ SCOTCH_Dgraph * const       grafptr)
 ** NULL pointers on input indicate unwanted
 ** data.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -185,7 +185,7 @@ SCOTCH_Num * const          edgelocnbr)
 ** data. NULL pointers on output indicate
 ** unexisting arrays.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

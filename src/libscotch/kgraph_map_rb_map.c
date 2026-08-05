@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2009,2011,2014,2018,2019,2021,2023,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2009,2011,2014,2018,2019,2021,2023,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -70,7 +70,7 @@
 /**                # Version 6.1  : from : 28 jun 2021     **/
 /**                                 to   : 28 jun 2021     **/
 /**                # Version 7.0  : from : 25 aug 2019     **/
-/**                                 to   : 09 aug 2024     **/
+/**                                 to   : 28 jul 2026     **/
 /**                                                        **/
 /**   NOTES      : # This code is a complete rewrite of    **/
 /**                  the original code of kgraphMapRb(),   **/
@@ -148,7 +148,7 @@ Context * const                         contptr)
   poolptr->pooltab[1] = (dataptr->paraptr->flagjobtie != 0) ? &poolptr->linktab[0] : &poolptr->linktab[1];
 
   if ((poolptr->jobtab = (KgraphMapRbMapJob *) memAlloc (mappptr->domnmax * sizeof (KgraphMapRbMapJob))) == NULL) {
-    errorPrint ("kgraphMapRbMapPoolInit: out of memory (2)");
+    errorPrint ("kgraphMapRbMapPoolInit: out of memory (1)");
     return (1);
   }
   poolptr->jobtab[0].poolflag = 0;                /* In case kgraphMapRbPoolExit() is called just afterwards on single-domain mapping */
@@ -162,7 +162,7 @@ Context * const                         contptr)
   }
   else {
     if ((poolptr->domntab[1] = (ArchDom *) memAlloc (mappptr->domnmax * sizeof (ArchDom))) == NULL) {
-      errorPrint ("kgraphMapRbMapPoolInit: out of memory (3)");
+      errorPrint ("kgraphMapRbMapPoolInit: out of memory (2)");
       memFree    (poolptr->jobtab);
       return (1);
     }
@@ -180,7 +180,7 @@ Context * const                         contptr)
 ** succeeds, whatever part of the algorithm it
 ** is called from.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -214,7 +214,7 @@ KgraphMapRbMapPoolData * restrict const poolptr)
 /* This routine swaps the internal arrays
 ** involved in the DRB algorithms.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -319,7 +319,7 @@ KgraphMapRbMapPoolData * restrict const poolptr)
 /* This routine adds a job to pool 1 of the
 ** given pool data structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -372,7 +372,7 @@ KgraphMapRbMapPoolData * const  poolptr)
 /* This routine adds a job to the given pool
 ** as the first bipartitioning job.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -415,7 +415,7 @@ KgraphMapRbMapJob * const       jobptr)           /* Job to be added */
 ** the parent jobs of the vertices to
 ** be updated still exist.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -691,7 +691,7 @@ KgraphMapRbMapJob * const       jobnewptr1)
 ** This routine removes the influence of the
 ** given job from its neighbor jobs.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -897,7 +897,7 @@ Context * const                         contptr)  /*+ Execution context         
         parttax[vertnum] = ~0;
     }
   }
-  mappptr->domnmax = 1;                           /* Force resizing of job arrays, for debugging */
+  mappptr->domnmax = mappptr->domnnbr;            /* Force resizing of job arrays, for debugging */
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
   if (kgraphMapRbMapPoolInit (&pooldat, dataptr, contptr) != 0) /* Initialize pool data; done first for kgraphMapRbMapPoolExit() to succeed afterwards */
@@ -953,7 +953,8 @@ Context * const                         contptr)  /*+ Execution context         
       if ((pooldat.flagval & KGRAPHMAPRBMAPARCHVAR) == 0) { /* If not variable-sized, impose constraints on bipartition */
         double              comploadavg;
 
-        comploadavg = (double) actgrafdat.s.velosum / (double) archDomWght (mappptr->archptr, &joborgdat.domnorg);
+        comploadavg = (double) (actgrafdat.s.velosum + vflowgttab[0] + vflowgttab[1]) /
+                      (double) archDomWght (mappptr->archptr, &joborgdat.domnorg);
         actgrafdat.compload0min = actgrafdat.compload0avg -
                                   (Gnum) MIN ((comploadmax - comploadavg) * (double) actgrafdat.domnwght[0],
                                               (comploadavg - comploadmin) * (double) actgrafdat.domnwght[1]);

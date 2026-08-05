@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2014,2016,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2014,2016,2018,2019,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 03 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -85,7 +85,7 @@
 /* This routine frees the contents of
 ** the given job pool.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 static
@@ -157,6 +157,7 @@ Context * const             contptr)              /*+ Execution context         
 
   archInit (tgtarchptr);                          /* Initialize architecture body */
   tgtarchptr->clasptr = archClass ("deco");       /* Set architecture class       */
+  tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag   */
 
   termdomnbr = (tgtlistptr != NULL) ? tgtlistptr->vnumnbr : tgtgrafptr->vertnbr;
   if (termdomnbr == 0)                            /* If nothing to do */
@@ -188,6 +189,7 @@ Context * const             contptr)              /*+ Execution context         
 
   archInit (&archdat);                            /* Initialize terminal architecture */
   archdat.clasptr = archClass ("varcmplt");       /* Set architecture class           */
+  archdat.flagval = archdat.clasptr->flagval;     /* Copy architecture flag           */
   archDomFrst (&archdat, &mappdat.domntab[0]);    /* Get initial domain               */
   mappdat.domnnbr = 1;
 
@@ -297,7 +299,7 @@ Context * const             contptr)              /*+ Execution context         
     errorPrint ("archDecoBuild: out of memory (2)");
     mapExit    (&mappdat);
     archExit   (&archdat);
-    return     (1);
+    return (1);
   }
 
   for (termdomnum = 0, termdommax = 0; termdomnum < termdomnbr; termdomnum ++) { /* Set terminal vertex array */
@@ -306,7 +308,7 @@ Context * const             contptr)              /*+ Execution context         
     tgtvertnum = (tgtlistptr != NULL) ? tgtlistptr->vnumtab[termdomnum] : (termdomnum + tgtgrafptr->baseval);
     termverttab[termdomnum].labl = tgtvertnum;
     termverttab[termdomnum].wght = (tgtgrafptr->velotax != NULL) ? tgtgrafptr->velotax[tgtvertnum] : 1;
-    termverttab[termdomnum].num  = archDomNum (&archdat, mapDomain (&mappdat, tgtvertnum - tgtgrafptr->baseval));
+    termverttab[termdomnum].num  = archDomNum (&archdat, &mappdat.domntab[termdomnum]);
     if (termverttab[termdomnum].num > termdommax) /* Find maximum terminal number */
       termdommax = termverttab[termdomnum].num;
   }

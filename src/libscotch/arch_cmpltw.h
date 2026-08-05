@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2010,2011,2014,2015,2018 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2010,2011,2014,2015,2018,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 28 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 18 feb 2018     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -81,7 +81,11 @@ typedef struct ArchCmpltwDom_ {
   Anum                      veloval;              /*+ Weight of subdomain   +*/
 } ArchCmpltwDom;
 
-#define archCmpltwMatch             archCmpltMatch
+#define ArchCmpltwMatch             ArchCmpltMatch
+
+#define ArchCmpltws                 ArchCmpltw
+#define ArchCmpltwsDom              ArchCmpltwDom
+#define archCmpltwsMatch            archCmpltwMatch
 
 #endif /* ARCH_CMPLTW_H_STRUCT */
 
@@ -112,6 +116,26 @@ int                         archCmpltwDomLoad   (const ArchCmpltw * const, ArchC
 int                         archCmpltwDomSave   (const ArchCmpltw * const, const ArchCmpltwDom * const, FILE * const);
 int                         archCmpltwDomBipart (const ArchCmpltw * const, const ArchCmpltwDom * const, ArchCmpltwDom * restrict const, ArchCmpltwDom * restrict const);
 int                         archCmpltwDomIncl   (const ArchCmpltw * const, const ArchCmpltwDom * const, const ArchCmpltwDom * const);
+
+int                         archCmpltwsArchBuild (ArchCmpltw * restrict const archptr, const Anum, const Anum * restrict const);
+int                         archCmpltwsArchLoad (ArchCmpltw * restrict const, FILE * restrict const);
+#define archCmpltwsArchSave          archCmpltwArchSave
+#define archCmpltwsArchFree          archCmpltwArchFree
+
+#define archCmpltwsMatchInit         archCmpltwMatchInit
+#define archCmpltwsMatchExit         archCmpltwMatchExit
+#define archCmpltwsMatchMate         archCmpltwMatchMate
+
+#define archCmpltwsDomNum            archCmpltwDomNum
+int                         archCmpltwsDomTerm  (const ArchCmpltw * const, ArchCmpltwDom * restrict const, const ArchDomNum);
+#define archCmpltwsDomSize           archCmpltwDomSize
+#define archCmpltwsDomWght           archCmpltwDomWght
+#define archCmpltwsDomDist           archCmpltwDomDist
+#define archCmpltwsDomFrst           archCmpltwDomFrst
+#define archCmpltwsDomLoad           archCmpltwDomLoad
+#define archCmpltwsDomSave           archCmpltwDomSave
+#define archCmpltwsDomBipart         archCmpltwDomBipart
+#define archCmpltwsDomIncl           archCmpltwDomIncl
 
 #endif /* ARCH_CMPLTW_H_PROTO */
 #endif /* ARCH_NOPROTO        */

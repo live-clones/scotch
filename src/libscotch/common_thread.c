@@ -164,7 +164,7 @@ const int * const           coretab)
 ** those created by splitting an existing
 ** context.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -197,7 +197,7 @@ ThreadContext * const       contptr)
 /* This routine frees the given thread context
 ** and restores the thread affinity mask.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

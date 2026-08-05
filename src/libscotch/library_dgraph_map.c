@@ -102,7 +102,7 @@ SCOTCH_Num * const          termloctab)           /*+ Mapping array             
 
 /* This routine frees an API mapping.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

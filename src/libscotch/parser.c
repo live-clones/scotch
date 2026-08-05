@@ -460,7 +460,7 @@ const void * restrict const       dataptr)        /*+ Pointer to data structure 
 ** of the two input values so as to
 ** get the same type for both values.
 ** It returns:
-** - VOID  : in all cases;
+** - void  : in all cases;
 */
 
 static

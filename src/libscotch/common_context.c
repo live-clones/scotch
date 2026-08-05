@@ -83,7 +83,7 @@ Context * const             contptr)
 
 /* This routine frees a context structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

@@ -132,6 +132,11 @@ if(NOT IDXSIZE STREQUAL "")
   endif()
 endif()
 
+# Error management libraries
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  add_definitions(-DSCOTCH_DEBUG_ALL)
+endif()
+
 # Thread support in Scotch
 if(THREADS)
   find_package(Threads)

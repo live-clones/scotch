@@ -55,7 +55,7 @@
 /**                # Version 6.1  : from : 24 aug 2020     **/
 /**                                 to   : 30 dec 2021     **/
 /**                # Version 7.0  : from : 19 feb 2018     **/
-/**                                 to   : 08 feb 2026     **/
+/**                                 to   : 13 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -458,6 +458,21 @@
 #define archCmpltwDomSave           SCOTCH_NAME_INTERN (archCmpltwDomSave)
 #define archCmpltwDomBipart         SCOTCH_NAME_INTERN (archCmpltwDomBipart)
 #define archCmpltwDomMpiType        SCOTCH_NAME_INTERN (archCmpltwDomMpiType)
+#define archCmpltwsArchBuild        SCOTCH_NAME_INTERN (archCmpltwsArchBuild)
+/* #define archCmpltwsArchFree      SCOTCH_NAME_INTERN (archCmpltwsArchFree) Already a macro */
+#define archCmpltwsArchLoad         SCOTCH_NAME_INTERN (archCmpltwsArchLoad)
+/* #define archCmpltwsArchSave      SCOTCH_NAME_INTERN (archCmpltwsArchSave) Already a macro  */
+/* #define archCmpltwsDomNum        SCOTCH_NAME_INTERN (archCmpltwsDomNum) Already a macro */
+#define archCmpltwsDomTerm          SCOTCH_NAME_INTERN (archCmpltwsDomTerm)
+/* #define archCmpltwsDomSize       SCOTCH_NAME_INTERN (archCmpltwsDomSize) Already a macro */
+/* #define archCmpltwsDomWght       SCOTCH_NAME_INTERN (archCmpltwsDomWght) Already a macro */
+/* #define archCmpltwsDomDist       SCOTCH_NAME_INTERN (archCmpltwsDomDist) Already a macro */
+/* #define archCmpltwsDomFrst       SCOTCH_NAME_INTERN (archCmpltwsDomFrst) Already a macro */
+/* #define archCmpltwsDomIncl       SCOTCH_NAME_INTERN (archCmpltwsDomIncl) Already a macro */
+/* #define archCmpltwsDomLoad       SCOTCH_NAME_INTERN (archCmpltwsDomLoad) Already a macro */
+/* #define archCmpltwsDomSave       SCOTCH_NAME_INTERN (archCmpltwsDomSave) Already a macro */
+/* #define archCmpltwsDomBipart     SCOTCH_NAME_INTERN (archCmpltwsDomBipart) Already a macro */
+/* #define archCmpltwsDomMpiType    SCOTCH_NAME_INTERN (archCmpltwsDomMpiType) Already a macro */
 #define archDecoArchBuild           SCOTCH_NAME_INTERN (archDecoArchBuild)
 #define archDecoArchBuild2          SCOTCH_NAME_INTERN (archDecoArchBuild2)
 #define archDecoArchFree            SCOTCH_NAME_INTERN (archDecoArchFree)
@@ -1154,6 +1169,7 @@
 #define SCOTCH_archBuild2           SCOTCH_NAME_PUBLIC (SCOTCH_archBuild2)
 #define SCOTCH_archCmplt            SCOTCH_NAME_PUBLIC (SCOTCH_archCmplt)
 #define SCOTCH_archCmpltw           SCOTCH_NAME_PUBLIC (SCOTCH_archCmpltw)
+#define SCOTCH_archCmpltws          SCOTCH_NAME_PUBLIC (SCOTCH_archCmpltws)
 #define SCOTCH_archDomAlloc         SCOTCH_NAME_PUBLIC (SCOTCH_archDomAlloc)
 #define SCOTCH_archDomBipart        SCOTCH_NAME_PUBLIC (SCOTCH_archDomBipart)
 #define SCOTCH_archDomDist          SCOTCH_NAME_PUBLIC (SCOTCH_archDomDist)
@@ -1333,9 +1349,11 @@
 #define SCOTCH_mapAlloc             SCOTCH_NAME_PUBLIC (SCOTCH_mapAlloc)
 #define SCOTCH_mapSizeof            SCOTCH_NAME_PUBLIC (SCOTCH_mapSizeof)
 #define SCOTCH_memCur               SCOTCH_NAME_PUBLIC (SCOTCH_memCur)
+#define SCOTCH_memFree              SCOTCH_NAME_PUBLIC (SCOTCH_memFree)
 #define SCOTCH_memMax               SCOTCH_NAME_PUBLIC (SCOTCH_memMax)
 #define SCOTCH_meshAlloc            SCOTCH_NAME_PUBLIC (SCOTCH_meshAlloc)
 #define SCOTCH_meshBuild            SCOTCH_NAME_PUBLIC (SCOTCH_meshBuild)
+#define SCOTCH_meshBuildElem        SCOTCH_NAME_PUBLIC (SCOTCH_meshBuildElem)
 #define SCOTCH_meshCheck            SCOTCH_NAME_PUBLIC (SCOTCH_meshCheck)
 #define SCOTCH_meshData             SCOTCH_NAME_PUBLIC (SCOTCH_meshData)
 #define SCOTCH_meshExit             SCOTCH_NAME_PUBLIC (SCOTCH_meshExit)

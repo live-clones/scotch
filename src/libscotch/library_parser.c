@@ -92,7 +92,7 @@ SCOTCH_Strat * const        stratptr)
 
 /* This routine frees a strategy structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -107,7 +107,7 @@ SCOTCH_Strat * const        stratptr)
 ** strategy structure and cleans it for
 ** future use.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

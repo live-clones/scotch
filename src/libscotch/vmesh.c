@@ -67,7 +67,7 @@
 /* This routine frees the contents
 ** of the given active mesh.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -87,7 +87,7 @@ Vmesh * const               meshptr)
 /* This routine moves all of the mesh
 ** elements to the first part.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

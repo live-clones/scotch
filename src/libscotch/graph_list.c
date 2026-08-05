@@ -91,7 +91,7 @@ VertList *          listptr)
 
 /* This routine deletes the given vertex number list.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -200,7 +200,7 @@ FILE *              stream)
 /* This routine sorts a vertex list
 ** by ascending order.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

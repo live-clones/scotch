@@ -72,8 +72,8 @@
 
 int
 archDistDomMpiType (
-const ArchDist * const        archptr,
-MPI_Datatype * const          typeptr)
+const ArchDist * const      archptr,
+MPI_Datatype * const        typeptr)
 {
   return (archDomMpiType (archptr->archptr, typeptr)); /* Call proper routine as we don't add any parameter */
 }

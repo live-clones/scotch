@@ -1,4 +1,4 @@
-/* Copyright 2011,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2011,2018,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 08 jun 2011     **/
 /**                                 to   : 07 jun 2018     **/
 /**                # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 20 jan 2023     **/
+/**                                 to   : 28 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -73,8 +73,9 @@ typedef struct KgraphMapExDom_ {
     candidate domain found to date. +*/
 
 typedef struct KgraphMapExFind_ {
-  Gnum                      comploaddlt;          /*+ Best imbalance +*/
-  Anum                      domnnum;              /*+ Domain number  +*/
+  Gnum                      comploaddlt;          /*+ Best imbalance       +*/
+  Anum                      domnwght;             /*+ Weight of the domain +*/
+  Anum                      domnnum;              /*+ Domain number        +*/
 } KgraphMapExFind;
 
 /*+ This structure allows one to

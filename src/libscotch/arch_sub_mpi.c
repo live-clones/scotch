@@ -72,8 +72,8 @@
 
 int
 archSubDomMpiType (
-const ArchSub * const         archptr,
-MPI_Datatype * const          typeptr)
+const ArchSub * const       archptr,
+MPI_Datatype * const        typeptr)
 {
   return (archDomMpiTypeAnum (2, typeptr));
 }

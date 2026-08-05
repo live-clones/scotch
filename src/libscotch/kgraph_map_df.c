@@ -76,7 +76,7 @@
 ** array during the diffusion process, is always preserved
 ** when all liquid amounts are equal.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 #define INTSORTQUAL                 static

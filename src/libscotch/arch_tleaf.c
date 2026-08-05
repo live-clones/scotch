@@ -108,18 +108,18 @@ FILE * restrict const       stream)
   if ((sizeof (ArchTleaf)    > sizeof (ArchDummy)) ||
       (sizeof (ArchTleafDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archTleafArchLoad: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if (intLoad (stream, &archptr->levlnbr) != 1) {
     errorPrint ("archTleafArchLoad: bad input (1)");
-    return     (1);
+    return (1);
   }
 
   if ((archptr->sizetab = memAlloc ((archptr->levlnbr * 2 + 1) * sizeof (Anum))) == NULL) { /* TRICK: One more slot for linktab[-1] */
     errorPrint ("archTleafArchLoad: out of memory");
-    return     (1);
+    return (1);
   }
   archptr->linktab     = archptr->sizetab + archptr->levlnbr + 1; /* TRICK: One more slot     */
   archptr->linktab[-1] = 0;                       /* Dummy slot for for level-0 communication */
@@ -155,7 +155,7 @@ ArchTleaf * const           archptr)
   if ((sizeof (ArchTleaf)    > sizeof (ArchDummy)) ||
       (sizeof (ArchTleafDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archTleafArchFree: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
@@ -190,14 +190,14 @@ FILE * restrict const       stream)
   if ((sizeof (ArchTleaf)    > sizeof (ArchDummy)) ||
       (sizeof (ArchTleafDom) > sizeof (ArchDomDummy))) {
     errorPrint ("archTleafArchSave: invalid type specification");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   if (fprintf (stream, ANUMSTRING,
                (Anum) archptr->levlnbr) == EOF) {
     errorPrint ("archTleafArchSave: bad output (1)");
-    return     (1);
+    return (1);
   }
 
   for (levlnum = 0; levlnum < archptr->levlnbr; levlnum ++) {
@@ -205,13 +205,13 @@ FILE * restrict const       stream)
                  (Anum) archptr->sizetab[levlnum],
                  (Anum) archptr->linktab[levlnum]) == EOF) {
       errorPrint ("archTleafArchSave: bad output (2)");
-      return     (1);
+      return (1);
     }
   }
 
   if (fprintf (stream, "\n") == EOF) {
     errorPrint ("archTleafArchSave: bad output (3)");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -246,7 +246,7 @@ const ArchTleaf * restrict const   archptr)
 
   if ((matcptr->multtab = memAlloc (multnbr * sizeof (ArchCoarsenMulti))) == NULL) {
     errorPrint ("archTleafMatchInit: out of memory");
-    return     (1);
+    return (1);
   }
 
   matcptr->archptr = archptr;
@@ -309,7 +309,7 @@ ArchCoarsenMulti ** restrict const  multptr)
 #ifdef SCOTCH_DEBUG_ARCH2
   if (finevertnbr % levlsiz != 0) {
     errorPrint ("archTleafMatchMate: internal error (1)");
-    return     (-1);
+    return (-1);
   }
 #endif /* SCOTCH_DEBUG_ARCH2 */
   bloknbr = finevertnbr / levlsiz;
@@ -348,7 +348,7 @@ ArchCoarsenMulti ** restrict const  multptr)
 #ifdef SCOTCH_DEBUG_ARCH2
   if (finevertnum != finevertnbr) {
     errorPrint ("archTleafMatchMate: internal error (2)");
-    return     (-1);
+    return (-1);
   }
 #endif /* SCOTCH_DEBUG_ARCH2 */
 
@@ -394,7 +394,7 @@ const ArchDomNum            domnnum)
 #ifdef SCOTCH_DEBUG_ARCH2
   if (domnnum < 0) {
     errorPrint ("archTleafDomTerm: invalid parameter");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH2 */
 
@@ -490,7 +490,7 @@ const ArchTleafDom * const  dom1ptr)
 #ifdef SCOTCH_DEBUG_ARCH2
     if (lev0num == 0) {
       errorPrint ("archTleafDomDist: internal error");
-      return     (0);
+      return (0);
     }
 #endif /* SCOTCH_DEBUG_ARCH2 */
     lev0num --;
@@ -541,7 +541,7 @@ FILE * const                  stream)
       (domnptr->levlnum < 0)                     ||
       (domnptr->levlnum > archptr->levlnbr)) {
     errorPrint ("archTleafDomLoad: bad input");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -565,7 +565,7 @@ FILE * const                stream)
                (Anum) domnptr->indxmin,
                (Anum) domnptr->indxnbr) == EOF) {
     errorPrint ("archTleafDomSave: bad output");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -686,7 +686,7 @@ FILE * restrict const       stream)
   if ((intLoad (stream, &archptr->permnbr) != 1) ||
       (archptr->permnbr <= 0)) {
     errorPrint ("archLtleafArchLoad: bad input (1)");
-    return     (1);
+    return (1);
   }
 
 #ifdef SCOTCH_DEBUG_ARCH2
@@ -698,7 +698,7 @@ FILE * restrict const       stream)
          sizeval != archptr->permnbr; levlnum --, sizeval *= archptr->sizetab[levlnum]) {
       if (levlnum < 0) {
         errorPrint ("archLtleafArchLoad: permutation size does not match level boundaries");
-        return     (1);
+        return (1);
       }
     }
   }
@@ -706,7 +706,7 @@ FILE * restrict const       stream)
 
   if ((archptr->permtab = memAlloc (archptr->permnbr * 2 * sizeof (Anum))) == NULL) { /* TRICK: space for peritab too */
     errorPrint ("archLtleafArchLoad: out of memory");
-    return     (1);
+    return (1);
   }
 
   for (permnum = 0; permnum < archptr->permnbr; permnum ++) {
@@ -724,7 +724,7 @@ FILE * restrict const       stream)
     for (permtmp = 0; permtmp < permnum; permtmp ++) {
       if (archptr->permtab[permtmp] == archptr->permtab[permnum]) {
         errorPrint ("archLtleafArchLoad: duplicate permutation index");
-        return     (1);
+        return (1);
       }
     }
 #endif /* SCOTCH_DEBUG_ARCH2 */
@@ -757,20 +757,20 @@ FILE * restrict const       stream)
   if (fprintf (stream, ANUMSTRING,
                (Anum) archptr->permnbr) == EOF) {
     errorPrint ("archLtleafArchSave: bad output (1)");
-    return     (1);
+    return (1);
   }
 
   for (permnum = 0; permnum < archptr->permnbr; permnum ++) {
     if (fprintf (stream, " " ANUMSTRING,
                  (Anum) archptr->permtab[permnum]) == EOF) {
       errorPrint ("archLtleafArchSave: bad output (2)");
-      return     (1);
+      return (1);
     }
   }
 
   if (fprintf (stream, "\n") == EOF) {
     errorPrint ("archLtleafArchSave: bad output (3)");
-    return     (1);
+    return (1);
   }
 
   return (0);
@@ -818,7 +818,7 @@ const ArchDomNum            domnnum)
 #ifdef SCOTCH_DEBUG_ARCH2
   if (domnnum < 0) {
     errorPrint ("archLtleafDomTerm: invalid parameter");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_ARCH2 */
 

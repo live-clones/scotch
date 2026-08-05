@@ -188,7 +188,7 @@ const INT                   subbits)
 
 /* This routine deletes a gain list
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -201,7 +201,7 @@ GainTabl * const         tablptr)
 /* This routine flushes the contents of
 ** the given gain table.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -222,7 +222,7 @@ GainTabl * const            tablptr)
 ** and table gain indicated in the vertex
 ** fields.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -264,7 +264,7 @@ const INT                   gain)                 /*+ Gain value              +*
 ** and table gain indicated in the vertex
 ** fields.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -318,7 +318,7 @@ const INT                   gain)                 /*+ Gain value              +*
 /* This routine removes a link
 ** from the table.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 #ifdef SCOTCH_DEBUG_GAIN1                         /* Compiled only in debug mode */

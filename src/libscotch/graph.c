@@ -95,7 +95,7 @@ Graph * const               grafptr)
 
 /* This routine frees a source graph structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -111,7 +111,7 @@ Graph * const               grafptr)
 
 /* This routine frees the graph data.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

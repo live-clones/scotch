@@ -71,7 +71,7 @@
 /* This routine initialize the active graph
 ** corresponding to the source graph
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -90,7 +90,7 @@ const Anum                      partnbr)
 /* This routine frees the contents
 ** of the given active graph
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -139,7 +139,7 @@ Wgraph * const              grafptr)              /* Active graph */
 /* This routine moves all of the graph
 ** vertices to the first part.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

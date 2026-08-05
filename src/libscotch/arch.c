@@ -1,4 +1,4 @@
-/* Copyright 2004,2007-2013,2015,2016,2018-2021,2024 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007-2013,2015,2016,2018-2021,2024,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -68,7 +68,7 @@
 /**                # Version 6.1  : from : 05 apr 2021     **/
 /**                                 to   : 05 apr 2021     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 30 nov 2024     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -99,23 +99,24 @@
 **  The static definitions.
 */
 
-static const ArchClass      archClassTab[] = { ARCHCLASSBLOCK (Cmplt,  "cmplt",    ARCHPART),
-                                               ARCHCLASSBLOCK (Cmpltw, "cmpltw",   ARCHPART),
-                                               ARCHCLASSBLOCK (Deco,   "deco",     ARCHNONE),
-                                               ARCHCLASSBLOCK (Deco2,  "deco",     ARCHNONE), /* Hidden, type-2 decomposition-defined architecture */
-                                               ARCHCLASSBLOCK (Dist,   "dist",     ARCHNONE),
-                                               ARCHCLASSBLOCK (Hcub,   "hcub",     ARCHNONE),
-                                               ARCHCLASSBLOCK (Tleaf,  "tleaf",    ARCHNONE),
-                                               ARCHCLASSBLOCK (Ltleaf, "ltleaf",   ARCHNONE),
-                                               ARCHCLASSBLOCK (Mesh2,  "mesh2D",   ARCHNONE),
-                                               ARCHCLASSBLOCK (Mesh3,  "mesh3D",   ARCHNONE),
-                                               ARCHCLASSBLOCK (MeshX,  "meshXD",   ARCHNONE),
-                                               ARCHCLASSBLOCK (Sub,    "sub",      ARCHNONE),
-                                               ARCHCLASSBLOCK (Torus2, "torus2D",  ARCHNONE),
-                                               ARCHCLASSBLOCK (Torus3, "torus3D",  ARCHNONE),
-                                               ARCHCLASSBLOCK (TorusX, "torusXD",  ARCHNONE),
-                                               ARCHCLASSBLOCK (Vcmplt, "varcmplt", ARCHPART | ARCHVAR),
-                                               ARCHCLASSBLOCK (Vhcub,  "varhcub",  ARCHVAR),
+static const ArchClass      archClassTab[] = { ARCHCLASSBLOCK (Cmplt,   "cmplt",    ARCHPART),
+                                               ARCHCLASSBLOCK (Cmpltw,  "cmpltw",   ARCHPART),
+                                               ARCHCLASSBLOCK (Cmpltws, "cmpltws",  ARCHPART),
+                                               ARCHCLASSBLOCK (Deco,    "deco",     ARCHNONE),
+                                               ARCHCLASSBLOCK (Deco2,   "deco",     ARCHNONE), /* Hidden, type-2 decomposition-defined architecture */
+                                               ARCHCLASSBLOCK (Dist,    "dist",     ARCHNONE),
+                                               ARCHCLASSBLOCK (Hcub,    "hcub",     ARCHNONE),
+                                               ARCHCLASSBLOCK (Tleaf,   "tleaf",    ARCHNONE),
+                                               ARCHCLASSBLOCK (Ltleaf,  "ltleaf",   ARCHNONE),
+                                               ARCHCLASSBLOCK (Mesh2,   "mesh2D",   ARCHNONE),
+                                               ARCHCLASSBLOCK (Mesh3,   "mesh3D",   ARCHNONE),
+                                               ARCHCLASSBLOCK (MeshX,   "meshXD",   ARCHNONE),
+                                               ARCHCLASSBLOCK (Sub,     "sub",      ARCHNONE),
+                                               ARCHCLASSBLOCK (Torus2,  "torus2D",  ARCHNONE),
+                                               ARCHCLASSBLOCK (Torus3,  "torus3D",  ARCHNONE),
+                                               ARCHCLASSBLOCK (TorusX,  "torusXD",  ARCHNONE),
+                                               ARCHCLASSBLOCK (Vcmplt,  "varcmplt", ARCHPART | ARCHVAR),
+                                               ARCHCLASSBLOCK (Vhcub,   "varhcub",  ARCHVAR),
                                                ARCHCLASSBLOCKNULL };
 
 /**************************************/

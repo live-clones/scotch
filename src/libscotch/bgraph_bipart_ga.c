@@ -77,7 +77,7 @@
 ** By nature of the sorting algorithm, data are left in
 ** place in case of equality.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 #define INTSORTQUAL                 static

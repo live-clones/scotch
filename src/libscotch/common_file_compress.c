@@ -103,7 +103,7 @@ static FileCompressTab      filetab[] = {
 ** of the de/compressing task associated with
 ** the given file.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

@@ -87,7 +87,7 @@ VdgraphStore * restrict const   storptr)
 
 /* This routine frees a save structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -103,7 +103,7 @@ VdgraphStore * const        storptr)
 /* This routine saves partition data from the
 ** given active graph to the given save structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -132,7 +132,7 @@ VdgraphStore * const        storptr)
 /* This routine updates partition data of the
 ** given active graph, using the given save graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

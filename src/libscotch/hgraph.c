@@ -82,7 +82,7 @@ Hgraph * restrict const     grafptr)
 
 /* This routine frees a source graph structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -94,7 +94,7 @@ Hgraph * restrict const     grafptr)
 
 /* This routine frees a source graph structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -115,7 +115,7 @@ Hgraph * restrict const     grafptr)
 /* This routine creates a non-halo graph from a
 ** halo graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -144,7 +144,7 @@ Graph * restrict const        ugrfptr)
 ** halo graph from the fields of its non-halo,
 ** underlying source graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

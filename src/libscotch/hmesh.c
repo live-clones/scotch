@@ -63,7 +63,7 @@
 
 /* This routine frees a source halo mesh structure.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

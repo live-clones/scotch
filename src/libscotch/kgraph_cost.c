@@ -63,7 +63,7 @@
 /* This routine computes the cost of the
 ** current partition.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

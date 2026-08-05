@@ -90,7 +90,7 @@ MPI_Comm                    proccomm)             /* Communicator to be used for
 /* This routine frees the contents
 ** of the given distributed active graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void
@@ -112,7 +112,7 @@ Vdgraph * const             grafptr)
 /* This routine moves all of the graph
 ** vertices to the first part.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

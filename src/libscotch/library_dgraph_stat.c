@@ -111,7 +111,7 @@ const MPI_Datatype * const    typedat)            /* MPI datatype; not used     
 /* This routine computes statistics
 ** on the given distributed graph.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 int

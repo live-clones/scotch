@@ -179,7 +179,7 @@ STRING                      \"[^\"]*\"
 /* This routine selects the sub-parser
 ** to parse the input.
 ** It returns:
-** - VOID  : in all cases.
+** - void  : in all cases.
 */
 
 void

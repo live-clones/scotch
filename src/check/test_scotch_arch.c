@@ -1,4 +1,4 @@
-/* Copyright 2014,2015,2018,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2014,2015,2018,2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 6.0  : from : 25 jun 2014     **/
 /**                                 to   : 22 may 2018     **/
 /**                # Version 7.0  : from : 04 jul 2025     **/
-/**                                 to   : 04 jul 2025     **/
+/**                                 to   : 11 jul 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,7 +61,7 @@
 
 #include "scotch.h"
 
-#define ARCHNBR                     20
+#define ARCHNBR                     24
 
 /*********************/
 /*                   */
@@ -83,6 +83,7 @@ char *              argv[])
   SCOTCH_Num          levlnbr = 3;
   SCOTCH_Num          sizetab[3] = { 6, 3, 4 };
   SCOTCH_Num          linktab[3] = { 20, 5, 1 };
+  SCOTCH_Num          wghttab[8] = { 1, 1, 3, 3, 5, 1, 4, 2 };
   int                 archnbr = 0;
   int                 i;
 
@@ -97,6 +98,16 @@ char *              argv[])
 
   if (SCOTCH_archCmplt (&archtab[archnbr ++], 8) != 0) {
     SCOTCH_errorPrint ("main: cannot create cmplt architecture");
+    exit (EXIT_FAILURE);
+  }
+
+  if (SCOTCH_archCmpltw (&archtab[archnbr ++], 8, wghttab) != 0) {
+    SCOTCH_errorPrint ("main: cannot create cmpltw architecture");
+    exit (EXIT_FAILURE);
+  }
+
+  if (SCOTCH_archCmpltws (&archtab[archnbr ++], 8, wghttab) != 0) {
+    SCOTCH_errorPrint ("main: cannot create cmpltws architecture");
     exit (EXIT_FAILURE);
   }
 
@@ -137,6 +148,11 @@ char *              argv[])
 
   if (SCOTCH_archSub (&archtab[archnbr ++], &archtab[0], vnumnbr + 3, vnumtab) != 0) { /* TRICK: create sub-architecture of hypercube at rank 0 */
     SCOTCH_errorPrint ("main: cannot create sub-architecture (1)");
+    exit (EXIT_FAILURE);
+  }
+
+  if ((archnbr * 2) > ARCHNBR) {
+    SCOTCH_errorPrint ("main: internal error");
     exit (EXIT_FAILURE);
   }
 
