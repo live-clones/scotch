@@ -92,12 +92,12 @@ const ArchDom                   domnsubtab[])     /* Subdomains                 
   domndist  = archDomDist (archptr, &domnsubtab[0], &domnsubtab[1]); /* Get distance between subdomains */
   domnwght0 = archDomWght (archptr, &domnsubtab[0]); /* Get weights of subdomains                       */
   domnwght1 = archDomWght (archptr, &domnsubtab[1]);
-  actgrafptr->s            = *indgrafptr;            /* Get source graph data                        */
-  actgrafptr->s.flagval   &= ~DGRAPHFREEALL;         /* Do not free contents of separation graph     */
-  actgrafptr->s.vlblloctax = NULL;                   /* Never mind about vertex labels in the future */
-  actgrafptr->veexloctax   = NULL;                   /* No external gain (yet)                       */
+  actgrafptr->s            = *indgrafptr;         /* Get source graph data                        */
+  actgrafptr->s.flagval   &= ~DGRAPHFREEALL;      /* Do not free contents of separation graph     */
+  actgrafptr->s.vlblloctax = NULL;                /* Never mind about vertex labels in the future */
+  actgrafptr->veexloctax   = NULL;                /* No external gain (yet)                       */
   actgrafptr->veexglbsum   = 0;
-  actgrafptr->partgsttax   = NULL;                   /* Do not allocate frontier arrays yet */
+  actgrafptr->partgsttax   = NULL;                /* Do not allocate frontier arrays yet */
   actgrafptr->fronloctab   = NULL;
 
   bdgraphInit2 (actgrafptr, domndist, domnwght0, domnwght1);
