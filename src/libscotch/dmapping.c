@@ -207,7 +207,7 @@ Gnum * restrict const           termloctab)
   if (reduglbtab[0] != grafptr->vertglbnbr) {
     errorPrint ("dmapTerm: invalid mapping (1)");
     memFree    (senddsptab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 
   for (fragptr = dmapptr->fragptr, vertlocnum = 0; fragptr != NULL; fragptr = fragptr->nextptr) {
@@ -217,7 +217,7 @@ Gnum * restrict const           termloctab)
 #ifdef SCOTCH_DEBUG_DMAP2
       if ((vertlocnum >= dmapptr->vertlocnbr) || (fragptr->parttab[fraglocnum] < 0) || (fragptr->parttab[fraglocnum] >= fragptr->domnnbr)) {
         errorPrint ("dmapTerm: invalid mapping (2)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DMAP2 */
       sortsndtab[vertlocnum].vertnum = fragptr->vnumtab[fraglocnum];
@@ -227,7 +227,7 @@ Gnum * restrict const           termloctab)
 #ifdef SCOTCH_DEBUG_DMAP2
   if (vertlocnum != dmapptr->vertlocnbr) {
     errorPrint ("dmapTerm: invalid mapping (3)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DMAP2 */
 
@@ -247,7 +247,7 @@ Gnum * restrict const           termloctab)
 #ifdef SCOTCH_DEBUG_DMAP2
       if (vertlocnum > dmapptr->vertlocnbr) {     /* If beyond regular indices plus end marker */
         errorPrint ("dmapTerm: internal error (1)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DMAP2 */
     }
@@ -256,13 +256,13 @@ Gnum * restrict const           termloctab)
 #ifdef SCOTCH_DEBUG_DMAP2
   if (vertlocnum != dmapptr->vertlocnbr) {
     errorPrint ("dmapTerm: internal error (2)");
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DMAP2 */
 
   if (MPI_Alltoall (sendcnttab, 1, MPI_INT, recvcnttab, 1, MPI_INT, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dmapTerm: communication error (2)");
-    return     (1);
+    return (1);
   }
 
   for (procnum = 0, vertrcvnbr = vertsndnbr = 0; procnum < grafptr->procglbnbr; procnum ++) { /* Accumulate send and receive indices */
@@ -274,7 +274,7 @@ Gnum * restrict const           termloctab)
 
   if (MPI_Alltoallv (sortsndtab, sendcnttab, senddsptab, GNUM_MPI, sortrcvtab, recvcnttab, recvdsptab, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dmapTerm: communication error (3)");
-    return     (1);
+    return (1);
   }
 
   memSet (termloctab, ~0, grafptr->vertlocnbr * sizeof (Gnum));
@@ -284,7 +284,7 @@ Gnum * restrict const           termloctab)
 #ifdef SCOTCH_DEBUG_DMAP2
     if (termloctax[sortrcvtab[vertlocnum].vertnum] != ~0) {
       errorPrint ("dmapTerm: internal error (3)");
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DMAP2 */
     termloctax[sortrcvtab[vertlocnum].vertnum] = sortrcvtab[vertlocnum].termnum;
@@ -293,7 +293,7 @@ Gnum * restrict const           termloctab)
   for (vertlocnum = 0; vertlocnum < grafptr->vertlocnbr; vertlocnum ++) {
     if (termloctab[vertlocnum] == ~0) {
       errorPrint ("dmapTerm: internal error (4)");
-      return     (1);
+      return (1);
     }
   }
 #endif /* SCOTCH_DEBUG_DMAP2 */
