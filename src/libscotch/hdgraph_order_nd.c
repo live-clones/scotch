@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2012,2019,2022,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2012,2019,2022,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 12 sep 2012     **/
 /**                                 to   : 01 may 2019     **/
 /**                # Version 7.0  : from : 27 aug 2019     **/
-/**                                 to   : 03 jul 2023     **/
+/**                                 to   : 17 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -324,6 +324,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
 
     hdgraphOrderSt (grafptr, cblkptr, paraptr->ordstratlea); /* Order this leaf */
     hdgraphExit    (grafptr);                     /* Free graph at this level   */
+    dorderDispose  (cblkptr);                     /* Clean up column block      */
     return (0);                                   /* Leaf has been processed    */
   }
 
