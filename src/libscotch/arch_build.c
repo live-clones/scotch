@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 03 jul 2026     **/
+/**                                 to   : 18 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -308,7 +308,7 @@ Context * const             contptr)              /*+ Execution context         
     tgtvertnum = (tgtlistptr != NULL) ? tgtlistptr->vnumtab[termdomnum] : (termdomnum + tgtgrafptr->baseval);
     termverttab[termdomnum].labl = tgtvertnum;
     termverttab[termdomnum].wght = (tgtgrafptr->velotax != NULL) ? tgtgrafptr->velotax[tgtvertnum] : 1;
-    termverttab[termdomnum].num  = archDomNum (&archdat, &mappdat.domntab[termdomnum]);
+    termverttab[termdomnum].num  = archDomNum (&archdat, mapDomain (&mappdat, tgtvertnum));
     if (termverttab[termdomnum].num > termdommax) /* Find maximum terminal number */
       termdommax = termverttab[termdomnum].num;
   }
