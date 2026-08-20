@@ -97,10 +97,10 @@ PROGSED			?= sed
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(SCOTCHINCLUDEDIR) -c $(<) -o $(@)
 
 %_v3$(EXE) :	%.c
-				$(CC) $(CFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv3 $(SCOTCHLIBS) $(LDFLAGS)
+				$(CC) $(CFLAGS) -DSCOTCH_METIS_VERSION=3 -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv3 $(SCOTCHLIBS) $(LDFLAGS)
 
 %_v5$(EXE) :	%.c
-				$(CC) $(CFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv5 $(SCOTCHLIBS) $(LDFLAGS)
+				$(CC) $(CFLAGS) -DSCOTCH_METIS_VERSION=5 -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv5 $(SCOTCHLIBS) $(LDFLAGS)
 
 %$(EXE)	:	%.c
 				$(CC) $(CFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
