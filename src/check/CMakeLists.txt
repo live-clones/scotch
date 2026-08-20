@@ -221,6 +221,12 @@ add_test_scotch(test_scotch_arch)
 
 add_test(NAME test_scotch_arch COMMAND test_scotch_arch arch.tgt)
 
+# test_scotch_arch_build
+
+add_test_scotch(test_scotch_arch_build)
+
+add_test(NAME test_scotch_arch_build COMMAND test_scotch_arch_build arch3.tgt)
+
 # test_scotch_arch_deco
 
 add_test_scotch(test_scotch_arch_deco)

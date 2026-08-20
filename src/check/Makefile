@@ -161,6 +161,7 @@ realclean			:	clean
 					test_libmetis_dual_f_v3			\
 					test_libmetis_dual_f_v5			\
 					test_scotch_arch			\
+					test_scotch_arch_build			\
 					test_scotch_arch_deco			\
 					test_scotch_context			\
 					test_scotch_graph_coarsen		\
@@ -197,6 +198,7 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_fibo				\
 			check_strat_seq				\
 			check_scotch_arch			\
+			check_scotch_arch_build			\
 			check_scotch_arch_deco			\
 			check_scotch_context			\
 			check_scotch_graph_coarsen		\
@@ -385,6 +387,14 @@ check_scotch_arch		:	test_scotch_arch
 					$(EXECS) ./test_scotch_arch "$(TMPDIR)/arch.tgt"
 
 test_scotch_arch		:	test_scotch_arch.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+##
+
+check_scotch_arch_build		:	test_scotch_arch_build
+					$(EXECS) ./test_scotch_arch_build "$(TMPDIR)/arch3.tgt"
+
+test_scotch_arch_build		:	test_scotch_arch_build.c	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
