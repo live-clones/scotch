@@ -212,7 +212,6 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_scotch_graph_map_copy		\
 			check_scotch_graph_order		\
 			check_scotch_graph_part_ovl		\
-			check_scotch_mesh_build_f		\
 			check_scotch_mesh_graph			\
 			check_libmetis_v3			\
 			check_libmetis_v5			\
@@ -239,7 +238,9 @@ CHECKSCOTCH = 		check_common_file_compress		\
 			check_prog_mord
 
 CHECKSCOTCHF = 		check_libmetis_dual_f_v3		\
-			check_libmetis_dual_f_v5
+			check_libmetis_dual_f_v5		\
+			check_scotch_mesh_build_f
+
 
 ifeq ($(strip $(FCS)),)
   CHECKSCOTCHF =	nothing
