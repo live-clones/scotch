@@ -139,6 +139,16 @@ add_test(NAME test_common_random COMMAND ${BASH} -c
 
 add_test_scotch(test_common_thread 1)
 
+# test_arch_deco
+
+add_test_scotch(test_arch_deco)
+
+add_test(NAME test_arch_deco_1 COMMAND test_arch_deco 5 1)
+
+add_test(NAME test_arch_deco_2 COMMAND test_arch_deco 5 0.5)
+
+add_test(NAME test_arch_deco_3 COMMAND test_arch_deco 9 0.34)
+
 # test_fibo
 
 add_test_scotch(test_fibo 1)

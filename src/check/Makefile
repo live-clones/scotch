@@ -150,6 +150,7 @@ realclean			:	clean
 					test_common_file_compress		\
 					test_common_random			\
 					test_common_thread			\
+					test_arch_deco				\
 					test_fibo				\
 					test_libesmumps				\
 					test_libmetis_v3			\
@@ -195,6 +196,7 @@ realclean			:	clean
 CHECKSCOTCH = 		check_common_file_compress		\
 			check_common_random			\
 			check_common_thread			\
+			check_arch_deco				\
 			check_fibo				\
 			check_strat_seq				\
 			check_scotch_arch			\
@@ -263,6 +265,8 @@ CHECKESMUMPS = 		check_libesmumps
 ##  Sequential library tests.
 ##
 
+## Check 'common' first
+
 check_common_file_compress	:	test_common_file_compress
 					-cp "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf"
 					$(EXECS) ./test_common_file_compress "data/bump_b1.grf" "$(TMPDIR)/bump_b1.grf.gz"
@@ -295,6 +299,16 @@ check_common_thread		:	test_common_thread
 					$(EXECS) ./test_common_thread
 
 test_common_thread		:	test_common_thread.c		\
+					$(SCOTCHLIBDIR)/libscotch$(LIB)
+
+## Check all other modules after 'common'
+
+check_arch_deco			:	test_arch_deco
+					$(EXECS) ./test_arch_deco 5 1
+					$(EXECS) ./test_arch_deco 5 0.5
+					$(EXECS) ./test_arch_deco 9 0.34
+
+test_arch_deco			:	test_arch_deco.c		\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)
 
 ##
