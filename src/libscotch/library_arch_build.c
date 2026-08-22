@@ -63,7 +63,7 @@
 #include "graph.h"
 #include "arch.h"
 #include "arch_deco_build.h"
-#include "arch_build2.h"
+#include "arch_deco2_build.h"
 #include "mapping.h"
 #include "bgraph.h"
 #include "bgraph_bipart_st.h"

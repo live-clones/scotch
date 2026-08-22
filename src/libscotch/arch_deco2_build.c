@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
 /**                                 to   : 22 feb 2018     **/
 /**                # Version 7.0  : from : 03 aug 2016     **/
-/**                                 to   : 01 jul 2026     **/
+/**                                 to   : 22 aug 2026     **/
 /**                                                        **/
 /**   NOTES      : # The code of the main routine derives  **/
 /**                  from that of archSubArchBuild().      **/
@@ -54,7 +54,7 @@
 */
 
 #define SCOTCH_ARCH_DECO2
-#define SCOTCH_ARCH_BUILD2
+#define SCOTCH_ARCH_DECO2_BUILD
 
 #include "module.h"
 #include "common.h"
@@ -63,7 +63,7 @@
 #include "arch_sub.h"
 #include "arch_deco2.h"
 #include "graph_coarsen.h"
-#include "arch_build2.h"
+#include "arch_deco2_build.h"
 
 /***********************************/
 /*                                 */

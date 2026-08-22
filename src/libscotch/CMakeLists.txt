@@ -151,8 +151,6 @@ add_custom_target(parser_ll_c DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parser_ll.c ${
 set(SCOTCH_C_SOURCES
   arch.c
   arch.h
-  arch_build2.c
-  arch_build2.h
   arch_cmplt.c
   arch_cmplt.h
   arch_cmpltw.c
@@ -163,6 +161,8 @@ set(SCOTCH_C_SOURCES
   arch_deco_build.h
   arch_deco2.c
   arch_deco2.h
+  arch_deco2_build.c
+  arch_deco2_build.h
   arch_dist.c
   arch_dist.h
   arch_hcub.c
