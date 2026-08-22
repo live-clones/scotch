@@ -197,7 +197,7 @@ Context * const             contptr)              /*+ Execution context         
   if ((tgtlistptr != NULL) && (tgtlistptr->vnumtab != NULL)) /* If vertex list given      */
     graphInduceList (tgtgrafptr, tgtlistptr->vnumnbr, tgtlistptr->vnumtab, &jobtab[0].grafdat); /* Restrict initial job */
   else {                                          /* If no vertex list given              */
-    memCpy (&jobtab[0].grafdat, tgtgrafptr, sizeof (Graph)); /* Job takes whole graph     */
+    jobtab[0].grafdat = *tgtgrafptr;              /* Job takes whole graph                */
     jobtab[0].grafdat.flagval &= ~GRAPHFREETABS;  /* Graph is a clone                     */
     jobtab[0].grafdat.vnumtax  = NULL;            /* Assume we have no vertex index array */
   }
