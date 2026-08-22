@@ -48,7 +48,7 @@
 /**                # Version 6.0  : from : 16 mar 2016     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 7.0  : from : 21 aug 2019     **/
-/**                                 to   : 08 feb 2026     **/
+/**                                 to   : 22 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,7 +62,7 @@
 #include "parser.h"
 #include "graph.h"
 #include "arch.h"
-#include "arch_build.h"
+#include "arch_deco_build.h"
 #include "arch_build2.h"
 #include "mapping.h"
 #include "bgraph.h"

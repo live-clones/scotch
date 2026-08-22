@@ -40,7 +40,7 @@
 /**                graph.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 20 aug 2026     **/
-/**                                 to   : 21 aug 2026     **/
+/**                                 to   : 22 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -61,7 +61,7 @@
 #include "../libscotch/parser.h"
 #include "../libscotch/graph.h"
 #include "../libscotch/arch.h"
-#include "../libscotch/arch_build.h"
+#include "../libscotch/arch_deco_build.h"
 #include "../libscotch/bgraph.h"
 #include "../libscotch/bgraph_bipart_st.h"
 

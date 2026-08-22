@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : arch_build.c                            **/
+/**   NAME       : arch_deco_build.c                       **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Sebastien FOURESTIER (v6.0)             **/
@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 18 aug 2026     **/
+/**                                 to   : 22 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,7 +62,7 @@
 **  The defines and includes.
 */
 
-#define SCOTCH_ARCH_BUILD
+#define SCOTCH_ARCH_DECO_BUILD
 
 #include "module.h"
 #include "common.h"
@@ -74,7 +74,7 @@
 #include "mapping.h"
 #include "bgraph.h"
 #include "bgraph_bipart_st.h"
-#include "arch_build.h"
+#include "arch_deco_build.h"
 
 /************************************/
 /*                                  */
