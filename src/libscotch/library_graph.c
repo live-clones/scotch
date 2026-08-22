@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2018,2019,2021,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2018,2019,2021,2023,2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -54,7 +54,7 @@
 /**                # Version 6.1  : from : 15 mar 2021     **/
 /**                                 to   : 31 may 2021     **/
 /**                # Version 7.0  : from : 07 may 2019     **/
-/**                                 to   : 11 aug 2025     **/
+/**                                 to   : 22 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -184,10 +184,6 @@ const SCOTCH_Num            flagval)
     errorPrint (STRINGIFY (SCOTCH_graphLoad) ": invalid base parameter");
     return (1);
   }
-#ifdef SCOTCH_DEBUG_GRAPH1
-  if (baseval > 1)
-    errorPrintW (STRINGIFY (SCOTCH_graphLoad) ": unusual base parameter");
-#endif /* SCOTCH_DEBUG_GRAPH1 */
 
   flagtmp = (((flagval & 1) != 0) ? GRAPHIONOLOADVERT : 0) +
             (((flagval & 2) != 0) ? GRAPHIONOLOADEDGE : 0);
@@ -241,8 +237,6 @@ const SCOTCH_Num * const    edlotab)              /* Edge load array            
     errorPrint (STRINGIFY (SCOTCH_graphBuild) ": internal error");
     return (1);
   }
-  if ((baseval < 0) || (baseval > 1))
-    errorPrintW (STRINGIFY (SCOTCH_graphBuild) ": non-standard base parameter");
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   srcgrafptr = (Graph *) CONTEXTOBJECT (grafptr); /* Use structure as source graph */
