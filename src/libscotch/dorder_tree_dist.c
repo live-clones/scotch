@@ -68,27 +68,56 @@
 ** - <0  : on error.
 */
 
-Gnum
-dorderCblkDist (
-const Dorder * restrict const ordeptr)
+static
+int
+dorderCblkDist2 (
+const Dorder * restrict const ordeptr,
+Gnum * restrict const         dblklocptr,         /*+ Pointer to local number of locally-rooted distributed column blocks  +*/
+Gnum * restrict const         dblkglbptr)         /*+ Pointer to global number of locally-rooted distributed column blocks +*/
 {
   const DorderLink * restrict linklocptr;
-  Gnum                        dblklocnbr;         /* Local number of locally-rooted distributed column blocks */
-  Gnum                        dblkglbnbr;
+  Gnum                        dblklocnbr;         /* Local number of locally-rooted distributed column blocks  */
+  Gnum                        dblkglbnbr;         /* Global number of locally-rooted distributed column blocks */
 
   for (linklocptr = ordeptr->linkdat.nextptr, dblklocnbr = 0; /* For all nodes in local ordering structure */
        linklocptr != &ordeptr->linkdat; linklocptr = linklocptr->nextptr) {
     const DorderCblk * restrict cblklocptr;
 
     cblklocptr = (DorderCblk *) linklocptr;       /* TRICK: FIRST */
-    if (cblklocptr->cblknum.proclocnum == ordeptr->proclocnum)
+    if (cblklocptr->cblknum.proclocnum == ordeptr->proclocnum) {
+#ifdef SCOTCH_DEBUG_DORDER2
+      Gnum                        cblklocnum;
+
+      cblklocnum = cblklocptr->cblknum.cblklocnum;
+      if ((cblklocnum < 0) || (cblklocnum >= ordeptr->cblklocnbr)) {
+        errorPrint ("dorderCblkDist2: internal error");
+        return (1);
+      }
+#endif /* SCOTCH_DEBUG_DORDER2 */
       dblklocnbr ++;
+    }
   }
 
   if (MPI_Allreduce (&dblklocnbr, &dblkglbnbr, 1, GNUM_MPI, MPI_SUM, ordeptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("dorderCblkDist: communication error");
-    return     ((Gnum) -1);
+    errorPrint ("dorderCblkDist2: communication error");
+    return (1);
   }
+
+  *dblklocptr = dblklocnbr;
+  *dblkglbptr = dblkglbnbr;
+
+  return (0);
+}
+
+Gnum
+dorderCblkDist (
+const Dorder * restrict const ordeptr)
+{
+  Gnum                dblklocnbr;
+  Gnum                dblkglbnbr;
+
+  if (dorderCblkDist2 (ordeptr, &dblklocnbr, &dblkglbnbr) != 0)
+    return (1);
 
   return (dblkglbnbr);
 }
@@ -118,9 +147,11 @@ Gnum * restrict const         sizeglbtab)
   Gnum                        dblklocnbr;         /* Local number of distributed column blocks  */
   Gnum                        dblkglbnbr;         /* Global number of distributed column blocks */
   Gnum                        dblkglbnum;
-  Gnum                        dblkglbtmp;
+  Gnum                        dbl1glbnum;
+  Gnum                        dbl2glbnum;
   int * restrict              dblkcnttab;
   int * restrict              dblkdsptab;
+  int                         dblkdspidx;
   int *                       cblkdsptab;         /* TRICK: continues dblkcnttab [norestrict]   */
   Gnum                        cblkglbtmp;
   Gnum * restrict             srt1glbtab;
@@ -134,28 +165,8 @@ Gnum * restrict const         sizeglbtab)
 
   const Gnum                        baseval = ordeptr->baseval;
 
-  for (linklocptr = ordeptr->linkdat.nextptr, dblklocnbr = 0; /* For all nodes in local ordering structure */
-       linklocptr != &ordeptr->linkdat; linklocptr = linklocptr->nextptr) {
-    const DorderCblk * restrict cblklocptr;
-
-    cblklocptr = (DorderCblk *) linklocptr;       /* TRICK: FIRST */
-    if (cblklocptr->cblknum.proclocnum == ordeptr->proclocnum) {
-#ifdef SCOTCH_DEBUG_DORDER2
-      Gnum                        cblklocnum;
-
-      cblklocnum = cblklocptr->cblknum.cblklocnum;
-      if ((cblklocnum < 0) || (cblklocnum >= ordeptr->cblklocnbr)) {
-        errorPrint ("dorderTreeDist: internal error (1)");
-        return (1);
-      }
-#endif /* SCOTCH_DEBUG_DORDER2 */
-      dblklocnbr ++;
-    }
-  }
-  if (MPI_Allreduce (&dblklocnbr, &dblkglbnbr, 1, GNUM_MPI, MPI_SUM, ordeptr->proccomm) != MPI_SUCCESS) { /* Get overall number of distributed blocks */
-    errorPrint ("dorderTreeDist: communication error (1)");
+  if (dorderCblkDist2 (ordeptr, &dblklocnbr, &dblkglbnbr) != 0)
     return (1);
-  }
 
   MPI_Comm_size (ordeptr->proccomm, &procglbnbr);
 
@@ -220,9 +231,9 @@ Gnum * restrict const         sizeglbtab)
     dblkcnttab[procnum] = dblkcnttab[2 * procnum] * 4; /* Four times for dataloctab */
     cblkglbtmp         += dblkcnttab[2 * procnum + 1];
   }
-  for (procnum = dblkglbtmp = 0; procnum < procglbnbr; procnum ++) { /* Accumulate un-based global start indices for distributed column blocks */
-    dblkdsptab[procnum] = dblkglbtmp;
-    dblkglbtmp         += dblkcnttab[procnum];
+  for (procnum = dblkdspidx = 0; procnum < procglbnbr; procnum ++) { /* Accumulate un-based global start indices for distributed column blocks */
+    dblkdsptab[procnum] = dblkdspidx;
+    dblkdspidx         += dblkcnttab[procnum];
   }
 
   for (linklocptr = ordeptr->linkdat.nextptr, dblklocnum = 0; /* For all nodes in local ordering structure */
@@ -243,53 +254,53 @@ Gnum * restrict const         sizeglbtab)
     return (1);
   }
 
-  for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
-    srt1glbtab[2 * dblkglbnum]     = dataglbtab[4 * dblkglbnum + 1]; /* Start inverse permutation index for column block */
-    srt1glbtab[2 * dblkglbnum + 1] = dataglbtab[4 * dblkglbnum]; /* Global index of column block                         */
+  for (dbl1glbnum = 0; dbl1glbnum < dblkglbnbr; dbl1glbnum ++) {
+    srt1glbtab[2 * dbl1glbnum]     = dataglbtab[4 * dbl1glbnum + 1]; /* Start inverse permutation index for column block */
+    srt1glbtab[2 * dbl1glbnum + 1] = dataglbtab[4 * dbl1glbnum]; /* Global index of column block                         */
   }
   intSort2asc2 (srt1glbtab, dblkglbnbr);          /* Sort nodes by ascending inverse start index to get permutation of column block indices */
-  for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
-    srt1glbtab[2 * dblkglbnum]     = srt1glbtab[2 * dblkglbnum + 1]; /* Global index of column block */
-    srt1glbtab[2 * dblkglbnum + 1] = dblkglbnum + baseval; /* Base global column block numbers       */
+  for (dbl1glbnum = 0; dbl1glbnum < dblkglbnbr; dbl1glbnum ++) {
+    srt1glbtab[2 * dbl1glbnum]     = srt1glbtab[2 * dbl1glbnum + 1]; /* Global index of column block */
+    srt1glbtab[2 * dbl1glbnum + 1] = dbl1glbnum + baseval; /* Base global column block numbers       */
   }
   intSort2asc2 (srt1glbtab, dblkglbnbr);          /* Sort nodes by ascending column block index to match with the ones of dataglbtab */
 
-  for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
-    srt2glbtab[2 * dblkglbnum]     = dataglbtab[4 * dblkglbnum + 2]; /* Global index of father */
-    srt2glbtab[2 * dblkglbnum + 1] = dblkglbnum;  /* Index of column block data                */
+  for (dbl2glbnum = 0; dbl2glbnum < dblkglbnbr; dbl2glbnum ++) {
+    srt2glbtab[2 * dbl2glbnum]     = dataglbtab[4 * dbl2glbnum + 2]; /* Global index of father */
+    srt2glbtab[2 * dbl2glbnum + 1] = dbl2glbnum;  /* Index of column block data                */
   }
   intSort2asc2 (srt2glbtab, dblkglbnbr);          /* Sort father indices by ascending column block indices */
 #ifdef SCOTCH_DEBUG_DORDER2
   if (srt2glbtab[0] != -1) {                      /* If tree has no root */
-    errorPrint ("dorderTreeDist: internal error (2)");
+    errorPrint ("dorderTreeDist: internal error (1)");
     memFree    (dblkcnttab);                      /* Free group leader */
     return (1);
   }
   if ((dblkglbnbr > 1) && (srt2glbtab[2] == -1)) { /* If tree has multiple roots */
-    errorPrint ("dorderTreeDist: internal error (3)");
+    errorPrint ("dorderTreeDist: internal error (2)");
     memFree    (dblkcnttab);                      /* Free group leader */
     return (1);
   }
 #endif /* SCOTCH_DEBUG_DORDER2 */
-  for (dblkglbnum = 1, dblkglbtmp = 0; dblkglbnum < dblkglbnbr; ) { /* Replace in block data the father column block indices by the new permuted indices */
-    if (srt2glbtab[2 * dblkglbnum] == srt1glbtab[2 * dblkglbtmp])
-      dataglbtab[4 * srt2glbtab[2 * (dblkglbnum ++) + 1] + 2] = srt1glbtab[2 * dblkglbtmp + 1]; /* Propagate based global column block numbers */
+  for (dbl2glbnum = 1, dbl1glbnum = 0; dbl2glbnum < dblkglbnbr; ) { /* Replace in block data the father column block indices by the new permuted indices */
+    if (srt2glbtab[2 * dbl2glbnum] == srt1glbtab[2 * dbl1glbnum])
+      dataglbtab[4 * srt2glbtab[2 * (dbl2glbnum ++) + 1] + 2] = srt1glbtab[2 * dbl1glbnum + 1]; /* Propagate based global column block numbers */
     else {
 #ifdef SCOTCH_DEBUG_DORDER2
-      if ((srt2glbtab[2 * dblkglbnum] < srt1glbtab[2 * dblkglbtmp]) || /* If column block index not found in table */
-          (dblkglbtmp >= (dblkglbnbr - 1))) {
-        errorPrint ("dorderTreeDist: internal error (4)");
+      if ((srt2glbtab[2 * dbl2glbnum] < srt1glbtab[2 * dbl1glbnum]) || /* If column block index not found in table */
+          (dbl1glbnum >= (dblkglbnbr - 1))) {
+        errorPrint ("dorderTreeDist: internal error (3)");
         memFree    (dblkcnttab);                  /* Free group leader */
         return (1);
       }
 #endif /* SCOTCH_DEBUG_DORDER2 */
-      dblkglbtmp ++;
+      dbl1glbnum ++;
     }
   }
 
-  for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
-    srt2glbtab[2 * dblkglbnum]     = dataglbtab[4 * dblkglbnum]; /* Global index of column block */
-    srt2glbtab[2 * dblkglbnum + 1] = dblkglbnum;  /* Index of column block data                  */
+  for (dbl2glbnum = 0; dbl2glbnum < dblkglbnbr; dbl2glbnum ++) {
+    srt2glbtab[2 * dbl2glbnum]     = dataglbtab[4 * dbl2glbnum]; /* Global index of column block */
+    srt2glbtab[2 * dbl2glbnum + 1] = dbl2glbnum;  /* Index of column block data                  */
   }
   intSort2asc2 (srt2glbtab, dblkglbnbr);          /* Sort father indices by ascending column block indices */
   treeglbtax = treeglbtab - baseval;
@@ -297,7 +308,7 @@ Gnum * restrict const         sizeglbtab)
   for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
 #ifdef SCOTCH_DEBUG_DORDER2
     if (srt1glbtab[2 * dblkglbnum] != srt2glbtab[2 * dblkglbnum]) {
-      errorPrint ("dorderTreeDist: internal error (5)");
+      errorPrint ("dorderTreeDist: internal error (4)");
       memFree    (dblkcnttab);                    /* Free group leader */
       return (1);
     }
