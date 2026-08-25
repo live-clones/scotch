@@ -14,6 +14,120 @@
 This section explains some of the most complex algorithms implemented
 in \scotch\ and \ptscotch.
 
+\subsection{\texttt{archDecoArchBuild()}}
+
+The \texttt{archDecoArchBuild()} routine creates a
+decomposition-defined architecture of type ``\texttt{0}'', that is, a
+``\texttt{deco~0}'' architecture, from a graph and an optional vertex
+list.
+
+The ``\texttt{deco~0}'' decomposition-defined architecture is
+described, from the user's perspective, in the \textit{Scotch User's
+Guide}. It builds a target architecture from a graph by relying on
+a set of recursive bipartitions of the graph to provide the successive
+target architecture subdomains as well as a lower triangular,
+diagonal-less, distance matrix of pre-computed distances
+between subdomains. The tree of recursive bipartitioning is
+materialized through the labeling of the graph vertices: the initial
+domain, comprising all wanted graph vertices, is numbered as $1$, and
+the bipartition of some domain of number $i$ yields two subdomains
+numbered $2i$ and $(2i+1)$. These domain numbers, borne by the graph
+vertices (as ``terminal'' domains, that is, domains of size $1$),
+allows one to reconstruct the sequence of bipartitions applied to the
+initial graph, as shown in Figure~\ref{fig-file-targetdeco-zero},
+page~\pageref{fig-file-targetdeco-zero}.
+
+In practice, during mapping computations, one needs to know quickly
+the weights of all subdomains, and not only of the terminal ones, as
+well as the distances between all such subdomains. The enlarged domain
+list and distance matrices can be computed on the fly when loading a 
+``\texttt{deco~0}'' architecture, or can be pre-computed once for good
+and stored as a ``\texttt{deco~1}'' target architecture, described
+in Section~\ref{sec-file-target-deco-one} (the ``\texttt{deco~2}''
+format is of a completely different nature).
+
+\subsubsection{Computing recursively the bipartitions}
+
+Recursive bipartitions are computed independently from each other. A
+job queue \texttt{joblink} chains all the bipartitioning jobs yet to
+be performed, in arbitrary order, while job data is stored in the
+\texttt{jobtab} array. The current state of the graph bipartitions is
+maintained in a \texttt{Mapping} structure \texttt{mappdat}. Since
+a mapping must be attached to a valid target architecture, a
+``\texttt{vcmplt}'' variable-sized complete graph target architecture
+is created in \texttt{archdat}; its benefit is that the numbering
+scheme of the ``\texttt{vcmplt}'' target architecture is indeed the
+binary tree numbering scheme discussed above. Hence, the
+\texttt{mappdat} data structure is fully operational, and represents
+the current state of the recursive bipartitioning process.
+
+The \texttt{archDecoArchBuild()} routine also takes a vertex list
+\texttt{tgtlisttab} as parameter, so that a target architecture can be
+created from a subset of vertices of the given graph. When this list
+is present, an induced graph is created from the initial graph
+\texttt{tgtgrafptr} in the initial job graph field. This has the
+current inconvenient of depriving the graph bipartitioning algorithm
+of the locality information between disconnected subparts, and will be
+changed in future versions.
+
+Once the initial job is placed in the job list, the recursive
+bipartitioning process takes place. As long as the list is not empty,
+the first job in list is picked. The job graph data is cloned into the
+active bipartitioning \texttt{Bgraph} structure \texttt{actgrafdat},
+which is completed by a call to \texttt{bgraph\lbt Init2()}. The graph
+is then bipartitioned by calling \texttt{bgraph\lbt Bipart\lbt St()}.
+If no partition is created (that is, all graph vertices are placed in
+the same part), an error is raised, because else the bipartitioning
+process would loop infinitely.
+
+The result of each bipartitioning is accumulated in the
+\texttt{mappdat} structure. the \texttt{parttax} of this
+\texttt{Mapping} yields, for each vertex of the initial graph, onto
+which domain it is currently mapped. Once a bipartitioning has been
+computed, vertices in the first part point to the same domain, which
+is updated to refer to the first ``\texttt{vcmplt}'' subdomain, while
+the \texttt{parttax} array cells of the vertices of the second part
+are updated to point to a new domain, created at the current end of
+the part array, indexed by \texttt{mappdat.\lbt domnnbr}, and which is
+set to the second ``\texttt{vcmplt}'' subdomain.
+
+After all jobs have been processed, the \texttt{mappdat} structure
+holds the complete mapping of the graph vertices (or just those
+belonging to \texttt{tgtlisttab}): the \texttt{parttax} cells index
+the cells of the \texttt{domntab} array, which contain the
+``\texttt{vcmplt}'' terminal domain numbers. Graph vertices that do
+not belong to the vertex list keep their initial \texttt{partax} value
+of \texttt{0}, thus pointing to invalid mapping data; however, this
+information will never be used. When a vertex list is provided, an
+induced graph is created, which possesses a \texttt{vnumtab}; this
+index array is used to write vertex mapping data into the
+\texttt{parttax} array of \texttt{mappdat} at the proper initial
+vertex indices. Hence, domain information has always to be retrieved
+through the \texttt{parttax} array.
+
+\subsubsection{Computing the terminal distance matrix}
+
+Firstly, the \texttt{termverttab} array, meant to summarize
+information on all terminal domains, is created. It holds, in an
+arbitrary order depending both on the order of the vertices in the
+input vertex list and on the result of successive bipartitions: the
+label of the vertex associated with the terminal domain, the weight of
+the domain, and its terminal domain number.
+
+Then, the distance matrix for terminals is computed. For each terminal
+domain taken as a root vertex, a breadth-first traversal of the input
+graph is performed. Vertices yet to be processed are enqueued in
+\texttt{queutab}, and, once picked, their distance information is
+stored into \texttt{disttax}, which also acts as a flag array. Once
+all vertices have been processed, the lower part of the
+\texttt{disttab} array is copied into the \texttt{term\lbt disttab}
+array.
+
+Finally, the distance matrix and domain information must be extended
+from terminal domains to all domains, which is performed by calling the
+\texttt{arch\lbt Deco\lbt Arch\lbt Build2()} routine, which is
+also used by \texttt{archDeco\lbt Arch\lbt Load()}.
+
 \subsection{\texttt{dgraphCoarsenBuild()}}
 
 The \texttt{dgraphCoarsenBuild()} routine creates a coarse distributed
