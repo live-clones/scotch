@@ -48,7 +48,7 @@
 /**                # Version 6.0  : from : 16 mar 2016     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 7.0  : from : 21 aug 2019     **/
-/**                                 to   : 22 aug 2026     **/
+/**                                 to   : 25 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -114,12 +114,11 @@ SCOTCH_archBuild0 (
 SCOTCH_Arch * const         archptr,              /*+ Target architecture to build    +*/
 const SCOTCH_Graph * const  libgrafptr,           /*+ Graph to turn into architecture +*/
 const SCOTCH_Num            listnbr,              /*+ Number of elements in sublist   +*/
-const SCOTCH_Num * const    listptr,              /*+ Pointer to sublist              +*/
+const SCOTCH_Num * const    listtab,              /*+ Pointer to sublist              +*/
 const SCOTCH_Strat * const  stratptr)             /*+ Bipartitoning strategy          +*/
 {
   Strat *             bipstratptr;
-  VertList            graflistdat;
-  VertList *          graflistptr;
+  Gnum *              graflisttab;
   CONTEXTDECL        (libgrafptr);
   int                 o;
 
@@ -142,15 +141,9 @@ const SCOTCH_Strat * const  stratptr)             /*+ Bipartitoning strategy    
     return     (1);
   }
 
-  if ((listnbr == (((Graph *) CONTEXTGETOBJECT (libgrafptr))->vertnbr)) || (listnbr == 0) || (listptr == NULL))
-    graflistptr = NULL;
-  else {
-    graflistptr = &graflistdat;
-    graflistdat.vnumnbr = (Gnum)   listnbr;
-    graflistdat.vnumtab = (Gnum *) listptr;
-  }
+  graflisttab = ((listnbr == 0) || (listtab == NULL)) ? NULL : (Gnum *) listtab;
 
-  o = archDecoArchBuild ((Arch * const) archptr, (Graph *) CONTEXTGETOBJECT (libgrafptr), graflistptr, bipstratptr, CONTEXTGETDATA (libgrafptr));
+o = archDecoArchBuild ((Arch * const) archptr, (Graph *) CONTEXTGETOBJECT (libgrafptr), (Gnum) listnbr, graflisttab, bipstratptr, CONTEXTGETDATA (libgrafptr));
 
   CONTEXTEXIT (libgrafptr);
   return (o);

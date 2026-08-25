@@ -47,7 +47,7 @@
 /**                # Version 6.0  : from : 14 mar 2016     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 7.0  : from : 21 aug 2019     **/
-/**                                 to   : 22 aug 2026     **/
+/**                                 to   : 25 aug 2026     **/
 /**                                                        **/
 /**   NOTES      : # This file contains pieces of code     **/
 /**                  extracted from release 3.1 of         **/
@@ -89,4 +89,4 @@ typedef struct ArchDecoBuildQueuElem_ {
 static void                 archDecoBuildJobExit (ArchDecoBuildJob *);
 #endif /* SCOTCH_ARCH_DECO_BUILD */
 
-int                         archDecoArchBuild   (Arch * const, const Graph * const, const VertList * const, const Strat * const, Context * restrict const);
+int                         archDecoArchBuild   (Arch * const, const Graph * const, const Gnum, const Gnum * const, const Strat * const, Context * restrict const);

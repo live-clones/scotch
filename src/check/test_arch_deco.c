@@ -40,7 +40,7 @@
 /**                graph.                                  **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 20 aug 2026     **/
-/**                                 to   : 22 aug 2026     **/
+/**                                 to   : 25 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,7 +77,8 @@ int                 argc,
 char *              argv[])
 {
   Context             contdat;
-  VertList            listdat;
+  Gnum                listnbr;
+  Gnum *              listtab;
   Strat *             straptr;
   Arch                archdat;
   ArchDom *           domntab;
@@ -105,30 +106,29 @@ char *              argv[])
   contextCommit (&contdat);
 
   if (argc == 2)
-    listdat.vnumnbr = vertnbr;
+    listnbr = vertnbr;
   else {
     double              termrat;
 
     termrat = (double) atof (argv[2]);
-    listdat.vnumnbr = (Anum) (((double) vertnbr) * termrat);
+    listnbr = (Anum) (((double) vertnbr) * termrat);
 
-    if ((listdat.vnumnbr <= 0) ||
-        (listdat.vnumnbr >  vertnbr)) {
+    if ((listnbr <= 0) || (listnbr > vertnbr)) {
       SCOTCH_errorPrint ("main: invalid terminal ratio (\"%s\")", argv[2]);
       exit (EXIT_FAILURE);
     }
   }
 
   if (memAllocGroup ((void **) (void *)
-                     &verttab,         (size_t) ((vertnbr + 1) * sizeof (Gnum)),
-                     &edgetab,         (size_t) ((vertnbr - 1) * sizeof (Gnum) * 2),
-                     &listdat.vnumtab, (size_t) (vertnbr       * sizeof (Gnum)), NULL) == NULL) {
+                     &verttab, (size_t) ((vertnbr + 1) * sizeof (Gnum)),
+                     &edgetab, (size_t) ((vertnbr - 1) * sizeof (Gnum) * 2),
+                     &listtab, (size_t) (vertnbr       * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("main: out of memory (1)");
     exit       (EXIT_FAILURE);
   }
 
-  intAscn (listdat.vnumtab, vertnbr, 0);
-  intPerm (listdat.vnumtab, vertnbr, &contdat);
+  intAscn (listtab, vertnbr, 0);
+  intPerm (listtab, vertnbr, &contdat);
 
   edgenbr = 0;                                    /* Build 0-based, compact path graph arrays */
   for (vertnum = 0; vertnum < vertnbr; vertnum ++) {
@@ -156,7 +156,7 @@ char *              argv[])
   archInit (&archdat);
   straptr = stratInit (&bgraphbipartststratab, "(m{vert=50,low=h{pass=10},asc=f{move=100,bal=0.1}}f{move=100,bal=0.05})(/((load0=load)|(load0=0))?x;)");
 
-  if (archDecoArchBuild (&archdat, &grafdat, &listdat, straptr, &contdat) != 0) {
+  if (archDecoArchBuild (&archdat, &grafdat, listnbr, listtab, straptr, &contdat) != 0) {
     errorPrint ("main: cannot build architecture");
     exit       (EXIT_FAILURE);
   }
@@ -168,21 +168,21 @@ char *              argv[])
     exit       (EXIT_FAILURE);
   }
 
-  for (vnumnum = 0; vnumnum < listdat.vnumnbr; vnumnum ++) { /* For all terminals */
+  for (vnumnum = 0; vnumnum < listnbr; vnumnum ++) { /* For all terminals */
     Anum                termnum;
     Anum                vnumend;
 
-    termnum = listdat.vnumtab[vnumnum];
+    termnum = listtab[vnumnum];
     if (archDomTerm (&archdat, &domntab[0], termnum) != 0) { /* Set terminal domain */
       errorPrint ("main: invalid terminal domain (1)");
       exit       (EXIT_FAILURE);
     }
 
-    for (vnumend = 0; vnumend < listdat.vnumnbr; vnumend ++) {
+    for (vnumend = 0; vnumend < listnbr; vnumend ++) {
       Anum                termend;
       Anum                distval;
 
-      termend = listdat.vnumtab[vnumend];
+      termend = listtab[vnumend];
       if (archDomTerm (&archdat, &domntab[1], termend) != 0) { /* Set end terminal domain */
         errorPrint ("main: invalid terminal domain (2)");
         exit       (EXIT_FAILURE);
