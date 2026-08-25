@@ -141,7 +141,7 @@ Gnum * restrict const         sizeglbtab)
       cblklocnum = cblklocptr->cblknum.cblklocnum;
       if ((cblklocnum < 0) || (cblklocnum >= ordeptr->cblklocnbr)) {
         errorPrint ("dorderTreeDist: internal error (1)");
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DORDER2 */
       dblklocnbr ++;
@@ -149,7 +149,7 @@ Gnum * restrict const         sizeglbtab)
   }
   if (MPI_Allreduce (&dblklocnbr, &dblkglbnbr, 1, GNUM_MPI, MPI_SUM, ordeptr->proccomm) != MPI_SUCCESS) { /* Get overall number of distributed blocks */
     errorPrint ("dorderTreeDist: communication error (1)");
-    return     (1);
+    return (1);
   }
 
   MPI_Comm_size (ordeptr->proccomm, &procglbnbr);
@@ -208,7 +208,7 @@ Gnum * restrict const         sizeglbtab)
   cblkdsptab[1] = (int) ordeptr->cblklocnbr;      /* TRICK: cblkdsptab is at least of size 2 */
   if (MPI_Allgather (cblkdsptab, 2, MPI_INT, dblkcnttab, 2, MPI_INT, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderTreeDist: communication error (2)");
-    return     (1);
+    return (1);
   }
   for (procnum = cblkglbtmp = 0; procnum < procglbnbr; procnum ++) { /* Accumulate un-based global start indices for all column blocks */
     cblkdsptab[procnum] = cblkglbtmp;
@@ -235,7 +235,7 @@ Gnum * restrict const         sizeglbtab)
   }
   if (MPI_Allgatherv (dataloctab, 4 * dblklocnbr, GNUM_MPI, dataglbtab, dblkcnttab, dblkdsptab, GNUM_MPI, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderTreeDist: communication error (3)");
-    return     (1);
+    return (1);
   }
 
   for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
@@ -258,12 +258,12 @@ Gnum * restrict const         sizeglbtab)
   if (srt2glbtab[0] != -1) {                      /* If tree has no root */
     errorPrint ("dorderTreeDist: internal error (2)");
     memFree    (dblkcnttab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
   if ((dblkglbnbr > 1) && (srt2glbtab[2] == -1)) { /* If tree has multiple roots */
     errorPrint ("dorderTreeDist: internal error (3)");
     memFree    (dblkcnttab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DORDER2 */
   for (dblkglbnum = 1, dblkglbtmp = 0; dblkglbnum < dblkglbnbr; ) { /* Replace in block data the father column block indices by the new permuted indices */
@@ -275,7 +275,7 @@ Gnum * restrict const         sizeglbtab)
           (dblkglbtmp >= (dblkglbnbr - 1))) {
         errorPrint ("dorderTreeDist: internal error (4)");
         memFree    (dblkcnttab);                  /* Free group leader */
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DORDER2 */
       dblkglbtmp ++;
@@ -292,7 +292,7 @@ Gnum * restrict const         sizeglbtab)
     if (srt1glbtab[2 * dblkglbnum] != srt2glbtab[2 * dblkglbnum]) {
       errorPrint ("dorderTreeDist: internal error (5)");
       memFree    (dblkcnttab);                    /* Free group leader */
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DORDER2 */
     treeglbtab[srt1glbtab[2 * dblkglbnum + 1]] = dataglbtab[4 * srt2glbtab[2 * dblkglbnum + 1] + 2];
