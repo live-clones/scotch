@@ -1,4 +1,4 @@
-/* Copyright 2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**                conversion function.                    **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 20 jan 2023     **/
-/**                                 to   : 27 aug 2025     **/
+/**                                 to   : 26 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -585,12 +585,15 @@ const Gnum                    noconbr)            /*+ Number of common points to
 
         velmlocend = nrcvdattab[enoddatnum];      /* Get number of end element vertex */
 
+redo:
         for (helmend = (velmlocend * DMESHDGRAPHHASHPRIME) & helmmsk; ; helmend = (helmend + 1) & helmmsk) {
           Gnum                nghbnbr;
 
           if (helmtab[helmend].vertnum != velmlocnum) { /* If edge not yet created      */
-            if (helmnbr >= helmmax)               /* If edge hash table full, resize it */
+            if (helmnbr >= helmmax) {             /* If edge hash table full, resize it */
               dmeshDgraphDualHashEdgeResize (&helmtab, &helmsiz, &helmmax, &helmmsk, velmlocnum);
+              goto redo;                          /* Recompute helmend with new mask */
+            }
 
             helmtab[helmend].vertnum = velmlocnum; /* Record new edge */
             helmtab[helmend].vertend = velmlocend;
