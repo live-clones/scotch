@@ -836,3 +836,119 @@ of the pairs in the \texttt{sort\lbt snd\lbt tab} arrays are swapped,
 and the array is sorted again. Then, the whole flagging algorithm
 described above is performed anew. This guarantees that all inverse
 permutation indices are unique, and cover all the node vertices.
+
+\subsection{\texttt{dorderTreeDist()}}
+
+The \texttt{dorderTreeDist()} routine builds, on every process, the
+column block elimination tree of the given distributed ordering (see
+Section~\ref{sec-data-dorder}). It is the distributed counterpart of
+routine \texttt{orderTree()}. To perform its task, it must gather all
+column block data scattered on all processes, and index it
+globally. This reconciliation process is performed in four main
+phases.
+
+\subsubsection{Gathering locally-rooted column block data}
+
+Each processing element has a set of local column blocks, of
+type \texttt{Dorder\lbt Cblk}, which possess fragments of the global
+inverse permutation. Among these are locally-rooted column blocks,
+that is, column block tree nodes the \texttt{proc\lbt loc\lbt num}
+index of which is equal to the rank of the processing element.
+
+Firstly, \texttt{dorder\lbt Cblk\lbt Dist2()} is called to compute the
+local number of locally-rooted column blocks, \texttt{dblklocnbr}, and
+the global number of such column blocks in the distributed ordering,
+\texttt{dblkglbnbr}. These two values are subsequently used to
+allocate all the data arrays that will be required by the different
+phases of the algorithm.
+
+Then, the local numbers of locally-rooted column blocks,
+\texttt{dblklocnbr}, and the local number of column blocks (that is,
+inverse permutation fragments),
+\texttt{ordeptr->\lbt cblk\lbt locnbr}, are gathered on all processing
+elements, as duos of \texttt{int}s in the \texttt{dblkcnttab} (``data
+for column block'') count array. In the corresponding
+\texttt{MPI\_\lbt Allgather()} operation, the destination area,
+pointed to by \texttt{dblkcnttab}, is in fact of twice the declared
+size of this array: it is the combination of \texttt{dblkcnttab} and
+\texttt{dblkdsptab}. \texttt{Gnum}s are converted to \texttt{int}s at
+this stage because these values will subsequently be used as count
+values in MPI functions, which are of type \texttt{int}.
+
+The count data received in the combined \texttt{dblkcnttab} and
+\texttt{dblkdsptab} arrays is then processed in a sequence designed
+not to overlap with the boundaries of the declared arrays. The count
+values of local column blocks are accumulated in the
+\texttt{cblkdsptab} displacement array, while the count values in
+\texttt{dblkcnttab} are multiplied by $4$, because the data to be
+gathered will consist in quartets of \texttt{Gnum} values. In a second
+loop, the \texttt{dblkdsptab} displacement array is generated
+from the newly updated \texttt{dblkcnttab}.
+
+Then, for each locally-rooted column block, the \texttt{dataloctab}
+local send data array is filled in with quadruplets of data: the
+global index of the column block (using \texttt{cblkdsptab} as the
+base index for each processing element), the start index in the
+inverse permutation for the vertices contained in the column block,
+the global index of the father of the column block, and the number of
+vertices contained in the column block sub-tree. This data is then
+shared across all processing elements, in the \texttt{dblkglbtab}
+array.
+
+\subsubsection{Sorting column block data}
+
+This phase aims at preparing data index arrays for the next phase.
+
+The first sorting array, \texttt{srt1\lbt glb\lbt tab}, takes
+the start index of the inverse permutation of the column block (its
+\texttt{ordeglb\lbt val} value) as key, and the global index of the
+column block as its value. Once this array is sorted in ascending
+order by way of a call to \texttt{intSort2\lbt asc2()}, the key is
+replaced by the value, and the value is replaced by the based global
+column block index. After the second sorting of this array, it
+provides, when traversed in order, for each global index of some
+column block, the position of this column block data in the
+\texttt{dataglbtab} array.
+
+The second sorting array, \texttt{srt2\lbt glb\lbt tab}, takes the
+global index of the father column block as key, and the position
+of the column block data in the \texttt{dataglbtab} array. After
+sorting, it provides, when traversed in order, for each global index
+of a father column block, the position of a child column block in the
+\texttt{dataglbtab} array. Because of the sorting, the first cell of
+the array should now contain a ``\texttt{-1}'', which identifies the
+root column block. With the current implementation, this root should
+be unique.
+
+\subsubsection{Reconciling column block data}
+
+This phase aims at reconciling all the data gathered from the
+processing elements, using the sorted data index arrays created in the
+previous phase, to build a unified elimination tree.
+
+The first loop propagates father global block indices to their
+children. In it, the \texttt{srt2glbtab} and \texttt{srt1glbtab}
+arrays are traversed jointly. The loop starts at index $1$ for
+\texttt{srt2glbtab}, so that the ``\texttt{-1}'' father index is not
+taken into account, and at index $0$ for \texttt{srt1glbtab}, which
+identifies children column blocks by their father index.
+When their keys match, it means that a column block has its father as
+the current father index; if so, the index is replaced in
+\texttt{dataglbtab} by the global column block number of the father.
+
+The second loop updates the \texttt{srt2glbtab} array, with global
+index of column blocks as key, and their index in \texttt{dataglbtab}
+as value. After sorting, it provides, when traversed in order, the
+index to the data in \texttt{dataglbtab} for each column block index.
+
+\subsubsection{Filling-in of user arrays}
+
+In the last loop, the user-provided arrays are filled-in. This loop
+traverses jointly \texttt{srt1glbtab} and \texttt{srt2glbtab}, which
+have been sorted by ascending global column block index; hence, their
+key values must be absolutely identical. \texttt{srt1glbtab} provides
+the based index of the column block in the \texttt{treeglbtax} and
+\texttt{sizeglbtax} user arrays to fill, while \texttt{srt2glbtab}
+provides the index of block data in \texttt{dataglbtab}. The two user
+arrays are filled in with the global column block number of their
+father, and the size of the subtree, respectively.
