@@ -1108,5 +1108,29 @@ indexing either the new part of the hash table, or a cell that has been
 cleared after moving. In both cases, the value of the pass number has
 been explicitly set to `\texttt{\~{}0}'.
 
+When resizing takes place within a search loop, it may happen that the
+location of the empty slot changes when the mask changes. Hence,
+writing data to some empty slot after resizing may result in data
+loss. To prevent such case, either resizing must happen before the
+hash table index is computed, or the computation must be restarted by
+jumping back to the beginning of the loop, as exemplified below.
+
+\begin{lstlisting}[style=language-c]
+redo:
+  for (hashnum = (vertnum * HASHPRIME) & hashmsk; ; hashnum = (hashnum + 1) & hashmsk) {
+    if (hashtab[hashnum].vertnum != vertnum) {    /* If vertex not found           */
+      if (hashnbr >= hashmax) {                   /* If hash table full, resize it */
+        hashResize (&hashtab, &hashsiz, &hashmax, &hashmsk);
+        goto redo;                                /* Recompute hashnum with new mask */
+      }
+
+      hashtab[hashnum].vertnum = vertnum;         /* Record new vertex */
+      ...
+      hashnbr ++;                                 /* One more item added to hash table */
+    }
+    ...
+  }
+\end{lstlisting}
+
 Depending on the use case, in each concerned \scotch\ routine,
 relevant variables and fields may have different names and semantics.
