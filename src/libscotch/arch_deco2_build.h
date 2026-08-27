@@ -1,4 +1,4 @@
-/* Copyright 2015,2016,2018,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2015,2016,2018,2019,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : arch_build2.h                           **/
+/**   NAME       : arch_deco2_build.h                      **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                                                        **/
@@ -42,7 +42,7 @@
 /**   DATES      : # Version 6.0  : from : 02 may 2015     **/
 /**                                 to   : 31 may 2018     **/
 /**                # Version 7.0  : from : 22 aug 2019     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 22 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -50,7 +50,7 @@
 **  The internal type and structure definitions.
 */
 
-#ifdef SCOTCH_ARCH_BUILD2
+#ifdef SCOTCH_ARCH_DECO2_BUILD
 
 /*+ Ancillary structure to avoid passing
     too many parameters recursively in
@@ -103,16 +103,16 @@ typedef struct ArchDeco2BuildMatch_ {
   Context *                 contptr;              /*+ Execution context                        +*/
 } ArchDeco2BuildMatch;
 
-#endif /* SCOTCH_ARCH_BUILD2 */
+#endif /* SCOTCH_ARCH_DECO2_BUILD */
 
 /*
 **  The function prototypes.
 */
 
-#ifdef SCOTCH_ARCH_BUILD2
+#ifdef SCOTCH_ARCH_DECO2_BUILD
 static int                  archDeco2BuildMatchInit (ArchDeco2BuildMatch * restrict const, const Graph * restrict const, Context * const);
 static void                 archDeco2BuildMatchExit (ArchDeco2BuildMatch * restrict const);
 static Anum                 archDeco2BuildMatchMate (ArchDeco2BuildMatch * restrict const, ArchCoarsenMulti * restrict * restrict const);
-#endif /* SCOTCH_ARCH_BUILD2 */
+#endif /* SCOTCH_ARCH_DECO2_BUILD */
 
 int                         archDeco2ArchBuild  (Arch * const, const Graph * const, const Gnum, const Gnum * restrict const, Context * restrict const);

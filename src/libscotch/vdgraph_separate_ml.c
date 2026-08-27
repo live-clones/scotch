@@ -151,10 +151,10 @@ const VdgraphSeparateMlParam * const  paraptr)     /*+ Method parameters        
 static
 void
 vdgraphSeparateMlOpBest (
-const Gnum * const          in,                   /* First operand                               */
-Gnum * const                inout,                /* Second and output operand                   */
-const int * const           len,                  /* Number of instances ; should be 1, not used */
-const MPI_Datatype * const  typedat)              /* MPI datatype ; not used                     */
+const Gnum * const          in,                   /* First operand                              */
+Gnum * const                inout,                /* Second and output operand                  */
+const int * const           len,                  /* Number of instances; should be 1, not used */
+const MPI_Datatype * const  typedat)              /* MPI datatype; not used                     */
 {
   inout[5] |= in[5];                              /* Memory error flag */
 

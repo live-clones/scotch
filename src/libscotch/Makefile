@@ -306,12 +306,12 @@ LIBPTSCOTCHDEPS =	arch_mpi$(OBJ)				\
 			vdgraph_store$(OBJ)
 
 LIBSCOTCHDEPS	=	arch$(OBJ)				\
-			arch_build$(OBJ)			\
-			arch_build2$(OBJ)			\
 			arch_cmplt$(OBJ)			\
 			arch_cmpltw$(OBJ)			\
 			arch_deco$(OBJ)				\
+			arch_deco_build$(OBJ)			\
 			arch_deco2$(OBJ)			\
+			arch_deco2_build$(OBJ)			\
 			arch_dist$(OBJ)				\
 			arch_hcub$(OBJ)				\
 			arch_mesh$(OBJ)				\
@@ -643,30 +643,6 @@ arch_mpi$(OBJ)			:	arch_mpi.c				\
 					arch_vcmplt_mpi.h			\
 					arch_vhcub_mpi.h
 
-arch_build$(OBJ)		:	arch_build.c				\
-					module.h				\
-					common.h				\
-					parser.h				\
-					graph.h					\
-					arch.h					\
-					arch_deco.h				\
-					arch_vcmplt.h				\
-					mapping.h				\
-					bgraph.h				\
-					bgraph_bipart_st.h			\
-					arch_build.h
-
-arch_build2$(OBJ)		:	arch_build2.c				\
-					module.h				\
-					common.h				\
-					graph.h					\
-					arch.h					\
-					arch.h					\
-					arch_sub.h				\
-					arch_deco2.h				\
-					graph_coarsen.h				\
-					arch_build2.h
-
 arch_cmplt$(OBJ)		:	arch_cmplt.c				\
 					module.h				\
 					common.h				\
@@ -700,6 +676,19 @@ arch_deco$(OBJ)			:	arch_deco.c				\
 					arch_deco2.h				\
 					arch_deco.h
 
+arch_deco_build$(OBJ)		:	arch_deco_build.c			\
+					module.h				\
+					common.h				\
+					parser.h				\
+					graph.h					\
+					arch.h					\
+					arch_deco.h				\
+					arch_vcmplt.h				\
+					mapping.h				\
+					bgraph.h				\
+					bgraph_bipart_st.h			\
+					arch_deco_build.h
+
 arch_deco_mpi$(OBJ)		:	arch_deco_mpi.c				\
 					module.h				\
 					common.h				\
@@ -713,6 +702,17 @@ arch_deco2$(OBJ)		:	arch_deco2.c				\
 					graph.h					\
 					arch.h					\
 					arch_deco2.h
+
+arch_deco2_build$(OBJ)		:	arch_deco2_build.c			\
+					module.h				\
+					common.h				\
+					graph.h					\
+					arch.h					\
+					arch.h					\
+					arch_sub.h				\
+					arch_deco2.h				\
+					graph_coarsen.h				\
+					arch_deco2_build.h
 
 arch_deco2_mpi$(OBJ)		:	arch_deco2_mpi.c			\
 					module.h				\
@@ -2156,7 +2156,7 @@ library_arch_build$(OBJ)	:	library_arch_build.c			\
 					parser.h				\
 					graph.h					\
 					arch.h					\
-					arch_build.h				\
+					arch_deco_build.h			\
 					mapping.h				\
 					bgraph.h				\
 					bgraph_bipart_st.h			\

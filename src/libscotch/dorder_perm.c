@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2023,2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,7 +43,7 @@
 /**                # Version 5.1  : from : 26 sep 2008     **/
 /**                                 to   : 26 sep 2008     **/
 /**                # Version 7.0  : from : 18 jan 2023     **/
-/**                                 to   : 17 sep 2025     **/
+/**                                 to   : 14 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,6 +94,8 @@ Gnum * restrict const         permloctab)
   Gnum                        reduloctab[2];
   Gnum                        reduglbtab[2];
 
+  reduloctab[1] = 0;                              /* Assume everything will go well */
+
   for (linklocptr = ordeptr->linkdat.nextptr, vnodlocnbr = 0; /* For all nodes in local ordering structure */
        linklocptr != &ordeptr->linkdat; linklocptr = linklocptr->nextptr) {
     const DorderCblk * restrict cblklocptr;
@@ -105,13 +107,12 @@ Gnum * restrict const         permloctab)
     else if ((cblklocptr->typeval != DORDERCBLKNEDI) &&
              (cblklocptr->typeval != DORDERCBLKDICO)) {
       errorPrint ("dorderPerm: invalid parameters (1)");
-      return (1);
+      reduloctab[1] = 1;
+      break;
     }
 #endif /* SCOTCH_DEBUG_DORDER2 */
   }
 
-  reduloctab[0] = vnodlocnbr;
-  reduloctab[1] = 0;
   if (memAllocGroup ((void **) (void *)
                      &senddsptab, (size_t) (grafptr->procglbnbr * sizeof (int)),
                      &sendcnttab, (size_t) (grafptr->procglbnbr * sizeof (int)),
@@ -123,6 +124,7 @@ Gnum * restrict const         permloctab)
     reduloctab[1] = 1;
   }
 
+  reduloctab[0] = vnodlocnbr;
   if (MPI_Allreduce (reduloctab, reduglbtab, 2, GNUM_MPI, MPI_SUM, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderPerm: communication error (1)");
     reduglbtab[1] = 1;

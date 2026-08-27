@@ -1,4 +1,4 @@
-/* Copyright 2007,2012,2019,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2012,2019,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -45,7 +45,7 @@
 /**                # Version 6.0  : from : 29 nov 2012     **/
 /**                                 to   : 29 nov 2012     **/
 /**                # Version 7.0  : from : 20 sep 2019     **/
-/**                                 to   : 21 jan 2023     **/
+/**                                 to   : 25 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -94,10 +94,10 @@ const SCOTCH_Dordering * const  ordeptr)          /*+ Computed ordering +*/
 
 int
 SCOTCH_dgraphOrderTreeDist (
-const SCOTCH_Dgraph * const     grafptr,          /*+ Graph to order    +*/
-const SCOTCH_Dordering * const  ordeptr,          /*+ Computed ordering +*/
-SCOTCH_Num * const              treeglbtab,       /*+ Father array      +*/
-SCOTCH_Num * const              sizeglbtab)       /*+ Size array        +*/
+const SCOTCH_Dgraph * const     grafptr,          /*+ Graph to order; not used +*/
+const SCOTCH_Dordering * const  ordeptr,          /*+ Computed ordering        +*/
+SCOTCH_Num * const              treeglbtab,       /*+ Father array             +*/
+SCOTCH_Num * const              sizeglbtab)       /*+ Size array               +*/
 {
-  return (dorderTreeDist ((Dorder *) ordeptr, (Dgraph *) CONTEXTOBJECT (grafptr), treeglbtab, sizeglbtab));
+  return (dorderTreeDist ((Dorder *) ordeptr, treeglbtab, sizeglbtab));
 }

@@ -1,4 +1,4 @@
-/* Copyright 2007,2008,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007,2008,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -41,7 +41,7 @@
 /**   DATES      : # Version 5.1  : from : 28 nov 2007     **/
 /**                                 to   : 09 may 2008     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 25 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -68,66 +68,16 @@
 ** - <0  : on error.
 */
 
-Gnum
-dorderCblkDist (
-const Dorder * restrict const ordeptr)
-{
-  const DorderLink * restrict linklocptr;
-  Gnum                        dblklocnbr;         /* Local number of locally-rooted distributed column blocks */
-  Gnum                        dblkglbnbr;
-
-  for (linklocptr = ordeptr->linkdat.nextptr, dblklocnbr = 0; /* For all nodes in local ordering structure */
-       linklocptr != &ordeptr->linkdat; linklocptr = linklocptr->nextptr) {
-    const DorderCblk * restrict cblklocptr;
-
-    cblklocptr = (DorderCblk *) linklocptr;       /* TRICK: FIRST */
-    if (cblklocptr->cblknum.proclocnum == ordeptr->proclocnum)
-      dblklocnbr ++;
-  }
-
-  if (MPI_Allreduce (&dblklocnbr, &dblkglbnbr, 1, GNUM_MPI, MPI_SUM, ordeptr->proccomm) != MPI_SUCCESS) {
-    errorPrint ("dorderCblkDist: communication error");
-    return     ((Gnum) -1);
-  }
-
-  return (dblkglbnbr);
-}
-
-/* This function returns on all of the procesors the
-** distributed part of the distributed structure of
-** the given distributed ordering. The two array
-** pointers which must be passed should both point to
-** arrays of size dorderCblkDist().
-** It returns:
-** - 0   : if the distributed tree structure could be computed.
-** - !0  : on error.
-*/
-
+static
 int
-dorderTreeDist (
+dorderCblkDist2 (
 const Dorder * restrict const ordeptr,
-const Dgraph * restrict const grafptr,
-Gnum * restrict const         treeglbtab,
-Gnum * restrict const         sizeglbtab)
+Gnum * restrict const         dblklocptr,         /*+ Pointer to local number of locally-rooted distributed column blocks  +*/
+Gnum * restrict const         dblkglbptr)         /*+ Pointer to global number of locally-rooted distributed column blocks +*/
 {
   const DorderLink * restrict linklocptr;
-  Gnum * restrict             dataloctab;
-  Gnum * restrict             dataglbtab;
-  Gnum                        dblklocnum;
-  Gnum                        dblklocnbr;         /* Local number of distributed column blocks  */
-  Gnum                        dblkglbnbr;         /* Global number of distributed column blocks */
-  Gnum                        dblkglbnum;
-  Gnum                        dblkglbtmp;
-  int * restrict              dblkcnttab;
-  int * restrict              dblkdsptab;
-  int * restrict              cblkdsptab;
-  Gnum                        cblkglbtmp;
-  Gnum * restrict             srt1glbtab;
-  Gnum * restrict             srt2glbtab;
-  int                         procglbnbr;
-  int                         procnum;
-  Gnum                        reduloctab[3];
-  Gnum                        reduglbtab[3];
+  Gnum                        dblklocnbr;         /* Local number of locally-rooted distributed column blocks  */
+  Gnum                        dblkglbnbr;         /* Global number of locally-rooted distributed column blocks */
 
   for (linklocptr = ordeptr->linkdat.nextptr, dblklocnbr = 0; /* For all nodes in local ordering structure */
        linklocptr != &ordeptr->linkdat; linklocptr = linklocptr->nextptr) {
@@ -140,17 +90,83 @@ Gnum * restrict const         sizeglbtab)
 
       cblklocnum = cblklocptr->cblknum.cblklocnum;
       if ((cblklocnum < 0) || (cblklocnum >= ordeptr->cblklocnbr)) {
-        errorPrint ("dorderTreeDist: internal error (1)");
-        return     (1);
+        errorPrint ("dorderCblkDist2: internal error");
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DORDER2 */
       dblklocnbr ++;
     }
   }
-  if (MPI_Allreduce (&dblklocnbr, &dblkglbnbr, 1, GNUM_MPI, MPI_SUM, ordeptr->proccomm) != MPI_SUCCESS) { /* Get overall number of distributed blocks */
-    errorPrint ("dorderTreeDist: communication error (1)");
-    return     (1);
+
+  if (MPI_Allreduce (&dblklocnbr, &dblkglbnbr, 1, GNUM_MPI, MPI_SUM, ordeptr->proccomm) != MPI_SUCCESS) {
+    errorPrint ("dorderCblkDist2: communication error");
+    return (1);
   }
+
+  *dblklocptr = dblklocnbr;
+  *dblkglbptr = dblkglbnbr;
+
+  return (0);
+}
+
+Gnum
+dorderCblkDist (
+const Dorder * restrict const ordeptr)
+{
+  Gnum                dblklocnbr;
+  Gnum                dblkglbnbr;
+
+  if (dorderCblkDist2 (ordeptr, &dblklocnbr, &dblkglbnbr) != 0)
+    return (1);
+
+  return (dblkglbnbr);
+}
+
+/* This function returns on all of the procesors the
+** distributed part of the distributed structure of
+** the given distributed ordering. The two array
+** pointers which must be passed should both point to
+** arrays of size dorderCblkDist(). Tree node indices
+** are based, while the father index of fatherless
+** nodes (tree roots) is always -1.
+** It returns:
+** - 0   : if the distributed tree structure could be computed.
+** - !0  : on error.
+*/
+
+int
+dorderTreeDist (
+const Dorder * restrict const ordeptr,
+Gnum * restrict const         treeglbtab,
+Gnum * restrict const         sizeglbtab)
+{
+  const DorderLink * restrict linklocptr;
+  Gnum * restrict             dataloctab;
+  Gnum * restrict             dataglbtab;
+  Gnum                        dblklocnum;
+  Gnum                        dblklocnbr;         /* Local number of distributed column blocks  */
+  Gnum                        dblkglbnbr;         /* Global number of distributed column blocks */
+  Gnum                        dblkglbnum;
+  Gnum                        dbl1glbnum;
+  Gnum                        dbl2glbnum;
+  int * restrict              dblkcnttab;
+  int * restrict              dblkdsptab;
+  int                         dblkdspidx;
+  int *                       cblkdsptab;         /* TRICK: continues dblkcnttab [norestrict]   */
+  Gnum                        cblkglbtmp;
+  Gnum * restrict             srt1glbtab;
+  Gnum * restrict             srt2glbtab;
+  Gnum * restrict             sizeglbtax;         /* Based access to sizeglbtab                 */
+  Gnum * restrict             treeglbtax;         /* Based access to treeglbtab                 */
+  int                         procglbnbr;
+  int                         procnum;
+  Gnum                        reduloctab[3];
+  Gnum                        reduglbtab[3];
+
+  const Gnum                        baseval = ordeptr->baseval;
+
+  if (dorderCblkDist2 (ordeptr, &dblklocnbr, &dblkglbnbr) != 0)
+    return (1);
 
   MPI_Comm_size (ordeptr->proccomm, &procglbnbr);
 
@@ -208,16 +224,16 @@ Gnum * restrict const         sizeglbtab)
   cblkdsptab[1] = (int) ordeptr->cblklocnbr;      /* TRICK: cblkdsptab is at least of size 2 */
   if (MPI_Allgather (cblkdsptab, 2, MPI_INT, dblkcnttab, 2, MPI_INT, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderTreeDist: communication error (2)");
-    return     (1);
+    return (1);
   }
   for (procnum = cblkglbtmp = 0; procnum < procglbnbr; procnum ++) { /* Accumulate un-based global start indices for all column blocks */
     cblkdsptab[procnum] = cblkglbtmp;
     dblkcnttab[procnum] = dblkcnttab[2 * procnum] * 4; /* Four times for dataloctab */
     cblkglbtmp         += dblkcnttab[2 * procnum + 1];
   }
-  for (procnum = dblkglbtmp = 0; procnum < procglbnbr; procnum ++) { /* Accumulate un-based global start indices for distributed column blocks */
-    dblkdsptab[procnum] = dblkglbtmp;
-    dblkglbtmp         += dblkcnttab[procnum];
+  for (procnum = dblkdspidx = 0; procnum < procglbnbr; procnum ++) { /* Accumulate un-based global start indices for distributed column blocks */
+    dblkdsptab[procnum] = dblkdspidx;
+    dblkdspidx         += dblkcnttab[procnum];
   }
 
   for (linklocptr = ordeptr->linkdat.nextptr, dblklocnum = 0; /* For all nodes in local ordering structure */
@@ -226,77 +242,79 @@ Gnum * restrict const         sizeglbtab)
 
     cblklocptr = (DorderCblk *) linklocptr;       /* TRICK: FIRST                    */
     if (cblklocptr->cblknum.proclocnum == ordeptr->proclocnum) { /* If node is local */
-      dataloctab[4 * dblklocnum]     = cblkdsptab[ordeptr->proclocnum] + cblklocptr->cblknum.cblklocnum;
-      dataloctab[4 * dblklocnum + 1] = cblklocptr->ordeglbval;
-      dataloctab[4 * dblklocnum + 2] = cblkdsptab[cblklocptr->fathnum.proclocnum] + cblklocptr->fathnum.cblklocnum;
-      dataloctab[4 * dblklocnum + 3] = cblklocptr->vnodglbnbr;
+      dataloctab[4 * dblklocnum]     = cblkdsptab[ordeptr->proclocnum] + cblklocptr->cblknum.cblklocnum; /* Global index of column block      */
+      dataloctab[4 * dblklocnum + 1] = cblklocptr->ordeglbval; /* Start inverse permutation index for column block                            */
+      dataloctab[4 * dblklocnum + 2] = cblkdsptab[cblklocptr->fathnum.proclocnum] + cblklocptr->fathnum.cblklocnum; /* Global index of father */
+      dataloctab[4 * dblklocnum + 3] = cblklocptr->vnodglbnbr; /* Size of column block subtree */
       dblklocnum ++;
     }
   }
   if (MPI_Allgatherv (dataloctab, 4 * dblklocnbr, GNUM_MPI, dataglbtab, dblkcnttab, dblkdsptab, GNUM_MPI, ordeptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderTreeDist: communication error (3)");
-    return     (1);
+    return (1);
   }
 
-  for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
-    srt1glbtab[2 * dblkglbnum]     = dataglbtab[4 * dblkglbnum + 1];
-    srt1glbtab[2 * dblkglbnum + 1] = dataglbtab[4 * dblkglbnum];
+  for (dbl1glbnum = 0; dbl1glbnum < dblkglbnbr; dbl1glbnum ++) {
+    srt1glbtab[2 * dbl1glbnum]     = dataglbtab[4 * dbl1glbnum + 1]; /* Start inverse permutation index for column block */
+    srt1glbtab[2 * dbl1glbnum + 1] = dataglbtab[4 * dbl1glbnum]; /* Global index of column block                         */
   }
   intSort2asc2 (srt1glbtab, dblkglbnbr);          /* Sort nodes by ascending inverse start index to get permutation of column block indices */
-  for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
-    srt1glbtab[2 * dblkglbnum]     = srt1glbtab[2 * dblkglbnum + 1];
-    srt1glbtab[2 * dblkglbnum + 1] = dblkglbnum;
+  for (dbl1glbnum = 0; dbl1glbnum < dblkglbnbr; dbl1glbnum ++) {
+    srt1glbtab[2 * dbl1glbnum]     = srt1glbtab[2 * dbl1glbnum + 1]; /* Global index of column block */
+    srt1glbtab[2 * dbl1glbnum + 1] = dbl1glbnum + baseval; /* Base global column block numbers       */
   }
   intSort2asc2 (srt1glbtab, dblkglbnbr);          /* Sort nodes by ascending column block index to match with the ones of dataglbtab */
 
-  for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
-    srt2glbtab[2 * dblkglbnum]     = dataglbtab[4 * dblkglbnum + 2];
-    srt2glbtab[2 * dblkglbnum + 1] = dblkglbnum;
+  for (dbl2glbnum = 0; dbl2glbnum < dblkglbnbr; dbl2glbnum ++) {
+    srt2glbtab[2 * dbl2glbnum]     = dataglbtab[4 * dbl2glbnum + 2]; /* Global index of father */
+    srt2glbtab[2 * dbl2glbnum + 1] = dbl2glbnum;  /* Index of column block data                */
   }
   intSort2asc2 (srt2glbtab, dblkglbnbr);          /* Sort father indices by ascending column block indices */
 #ifdef SCOTCH_DEBUG_DORDER2
   if (srt2glbtab[0] != -1) {                      /* If tree has no root */
-    errorPrint ("dorderTreeDist: internal error (2)");
+    errorPrint ("dorderTreeDist: internal error (1)");
     memFree    (dblkcnttab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
   if ((dblkglbnbr > 1) && (srt2glbtab[2] == -1)) { /* If tree has multiple roots */
-    errorPrint ("dorderTreeDist: internal error (3)");
+    errorPrint ("dorderTreeDist: internal error (2)");
     memFree    (dblkcnttab);                      /* Free group leader */
-    return     (1);
+    return (1);
   }
 #endif /* SCOTCH_DEBUG_DORDER2 */
-  for (dblkglbnum = 1, dblkglbtmp = 0; dblkglbnum < dblkglbnbr; ) { /* Replace in block data the father column block indices by the new permuted indices */
-    if (srt2glbtab[2 * dblkglbnum] == srt1glbtab[2 * dblkglbtmp])
-      dataglbtab[4 * srt2glbtab[2 * (dblkglbnum ++) + 1] + 2] = srt1glbtab[2 * dblkglbtmp + 1];
+  for (dbl2glbnum = 1, dbl1glbnum = 0; dbl2glbnum < dblkglbnbr; ) { /* Replace in block data the father column block indices by the new permuted indices */
+    if (srt2glbtab[2 * dbl2glbnum] == srt1glbtab[2 * dbl1glbnum])
+      dataglbtab[4 * srt2glbtab[2 * (dbl2glbnum ++) + 1] + 2] = srt1glbtab[2 * dbl1glbnum + 1]; /* Propagate based global column block numbers */
     else {
 #ifdef SCOTCH_DEBUG_DORDER2
-      if ((srt2glbtab[2 * dblkglbnum] < srt1glbtab[2 * dblkglbtmp]) || /* If column block index not found in table */
-          (dblkglbtmp >= (dblkglbnbr - 1))) {
-        errorPrint ("dorderTreeDist: internal error (4)");
+      if ((srt2glbtab[2 * dbl2glbnum] < srt1glbtab[2 * dbl1glbnum]) || /* If column block index not found in table */
+          (dbl1glbnum >= (dblkglbnbr - 1))) {
+        errorPrint ("dorderTreeDist: internal error (3)");
         memFree    (dblkcnttab);                  /* Free group leader */
-        return     (1);
+        return (1);
       }
 #endif /* SCOTCH_DEBUG_DORDER2 */
-      dblkglbtmp ++;
+      dbl1glbnum ++;
     }
   }
 
-  for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
-    srt2glbtab[2 * dblkglbnum]     = dataglbtab[4 * dblkglbnum];
-    srt2glbtab[2 * dblkglbnum + 1] = dblkglbnum;
+  for (dbl2glbnum = 0; dbl2glbnum < dblkglbnbr; dbl2glbnum ++) {
+    srt2glbtab[2 * dbl2glbnum]     = dataglbtab[4 * dbl2glbnum]; /* Global index of column block */
+    srt2glbtab[2 * dbl2glbnum + 1] = dbl2glbnum;  /* Index of column block data                  */
   }
   intSort2asc2 (srt2glbtab, dblkglbnbr);          /* Sort father indices by ascending column block indices */
+  treeglbtax = treeglbtab - baseval;
+  sizeglbtax = sizeglbtab - baseval;
   for (dblkglbnum = 0; dblkglbnum < dblkglbnbr; dblkglbnum ++) {
 #ifdef SCOTCH_DEBUG_DORDER2
     if (srt1glbtab[2 * dblkglbnum] != srt2glbtab[2 * dblkglbnum]) {
-      errorPrint ("dorderTreeDist: internal error (5)");
+      errorPrint ("dorderTreeDist: internal error (4)");
       memFree    (dblkcnttab);                    /* Free group leader */
-      return     (1);
+      return (1);
     }
 #endif /* SCOTCH_DEBUG_DORDER2 */
-    treeglbtab[srt1glbtab[2 * dblkglbnum + 1]] = dataglbtab[4 * srt2glbtab[2 * dblkglbnum + 1] + 2];
-    sizeglbtab[srt1glbtab[2 * dblkglbnum + 1]] = dataglbtab[4 * srt2glbtab[2 * dblkglbnum + 1] + 3];
+    treeglbtax[srt1glbtab[2 * dblkglbnum + 1]] = dataglbtab[4 * srt2glbtab[2 * dblkglbnum + 1] + 2]; /* Based column block numbers   */
+    sizeglbtax[srt1glbtab[2 * dblkglbnum + 1]] = dataglbtab[4 * srt2glbtab[2 * dblkglbnum + 1] + 3]; /* Size of column block subtree */
   }
 
   memFree (dblkcnttab);                           /* Free group leader */

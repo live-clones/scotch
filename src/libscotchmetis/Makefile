@@ -44,7 +44,7 @@ V		= v$(SCOTCH_METIS_VERSION)
 include ../Makefile.inc
 
 %_$(V)$(OBJ):	%.c
-				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(SCOTCHINCLUDEDIR) -I../libscotch -c $(<) -o $(@)
+				$(CC) $(CFLAGS) $(CLIBFLAGS) -DSCOTCH_METIS_VERSION=$(SCOTCH_METIS_VERSION) -I$(SCOTCHINCLUDEDIR) -I../libscotch -c $(<) -o $(@)
 
 %$(EXE)	:	%.c
 		 		$(CC) $(CFLAGS) -I$(SCOTCHINCLUDEDIR) -I../libscotch $(<) -o $(@) -L$(SCOTCHLIBDIR) $(LDFLAGS)

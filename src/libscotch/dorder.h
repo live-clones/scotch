@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2018,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -179,7 +179,7 @@ int                         dorderSaveTree2     (const Dorder * restrict const, 
 #endif /* SCOTCH_ORDER_H */
 #endif /* SCOTCH_DGRAPH_H */
 Gnum                        dorderCblkDist      (const Dorder * restrict const);
-int                         dorderTreeDist      (const Dorder * restrict const, const Dgraph * restrict const, Gnum * restrict const, Gnum * restrict const);
+int                         dorderTreeDist      (const Dorder * restrict const, Gnum * restrict const, Gnum * restrict const);
 #ifdef SCOTCH_ORDER_H
 int                         dorderGather        (const Dorder * const, Order * const);
 int                         dorderGatherTree    (const Dorder * const, Order * const, const int);

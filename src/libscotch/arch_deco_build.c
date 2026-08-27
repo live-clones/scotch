@@ -31,7 +31,7 @@
 */
 /************************************************************/
 /**                                                        **/
-/**   NAME       : arch_build.c                            **/
+/**   NAME       : arch_deco_build.c                       **/
 /**                                                        **/
 /**   AUTHOR     : Francois PELLEGRINI                     **/
 /**                Sebastien FOURESTIER (v6.0)             **/
@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 03 jul 2026     **/
+/**                                 to   : 25 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -62,7 +62,7 @@
 **  The defines and includes.
 */
 
-#define SCOTCH_ARCH_BUILD
+#define SCOTCH_ARCH_DECO_BUILD
 
 #include "module.h"
 #include "common.h"
@@ -74,7 +74,7 @@
 #include "mapping.h"
 #include "bgraph.h"
 #include "bgraph_bipart_st.h"
-#include "arch_build.h"
+#include "arch_deco_build.h"
 
 /************************************/
 /*                                  */
@@ -122,7 +122,8 @@ int
 archDecoArchBuild (
 Arch * restrict const       tgtarchptr,           /*+ Decomposition architecture to build    +*/
 const Graph * const         tgtgrafptr,           /*+ Source graph modeling the architecture +*/
-const VertList * const      tgtlistptr,           /*+ Subset of source graph vertices        +*/
+const Gnum                  tgtlistnbr,           /*+ Size of graph vertex list              +*/
+const Gnum * const          tgtlisttab,           /*+ Subset array of source graph vertices  +*/
 const Strat * const         mapstrat,             /*+ Bipartitioning strategy                +*/
 Context * const             contptr)              /*+ Execution context                      +*/
 {
@@ -159,7 +160,7 @@ Context * const             contptr)              /*+ Execution context         
   tgtarchptr->clasptr = archClass ("deco");       /* Set architecture class       */
   tgtarchptr->flagval = tgtarchptr->clasptr->flagval; /* Copy architecture flag   */
 
-  termdomnbr = (tgtlistptr != NULL) ? tgtlistptr->vnumnbr : tgtgrafptr->vertnbr;
+  termdomnbr = (tgtlisttab != NULL) ? tgtlistnbr : tgtgrafptr->vertnbr;
   if (termdomnbr == 0)                            /* If nothing to do */
     return (0);
 
@@ -193,13 +194,13 @@ Context * const             contptr)              /*+ Execution context         
   archDomFrst (&archdat, &mappdat.domntab[0]);    /* Get initial domain               */
   mappdat.domnnbr = 1;
 
-  jobtab[0].domnum = 0;                           /* All vertices mapped to first domain  */
-  if ((tgtlistptr != NULL) && (tgtlistptr->vnumtab != NULL)) /* If vertex list given      */
-    graphInduceList (tgtgrafptr, tgtlistptr->vnumnbr, tgtlistptr->vnumtab, &jobtab[0].grafdat); /* Restrict initial job */
-  else {                                          /* If no vertex list given              */
-    memCpy (&jobtab[0].grafdat, tgtgrafptr, sizeof (Graph)); /* Job takes whole graph     */
-    jobtab[0].grafdat.flagval &= ~GRAPHFREETABS;  /* Graph is a clone                     */
-    jobtab[0].grafdat.vnumtax  = NULL;            /* Assume we have no vertex index array */
+  jobtab[0].domnum = 0;                           /* All vertices mapped to first domain              */
+  if (tgtlisttab != NULL)                         /* If vertex list given                             */
+    graphInduceList (tgtgrafptr, tgtlistnbr, tgtlisttab, &jobtab[0].grafdat); /* Restrict initial job */
+  else {                                          /* If no vertex list given                          */
+    jobtab[0].grafdat = *tgtgrafptr;              /* Job takes whole graph                            */
+    jobtab[0].grafdat.flagval &= ~GRAPHFREETABS;  /* Graph is a clone                                 */
+    jobtab[0].grafdat.vnumtax  = NULL;            /* Assume we have no vertex index array             */
   }
 
   if (tgtedlotax != NULL) {                       /* If architecture graph has edge loads                     */
@@ -305,10 +306,10 @@ Context * const             contptr)              /*+ Execution context         
   for (termdomnum = 0, termdommax = 0; termdomnum < termdomnbr; termdomnum ++) { /* Set terminal vertex array */
     Gnum                tgtvertnum;
 
-    tgtvertnum = (tgtlistptr != NULL) ? tgtlistptr->vnumtab[termdomnum] : (termdomnum + tgtgrafptr->baseval);
+    tgtvertnum = (tgtlisttab != NULL) ? tgtlisttab[termdomnum] : (termdomnum + tgtgrafptr->baseval);
     termverttab[termdomnum].labl = tgtvertnum;
     termverttab[termdomnum].wght = (tgtgrafptr->velotax != NULL) ? tgtgrafptr->velotax[tgtvertnum] : 1;
-    termverttab[termdomnum].num  = archDomNum (&archdat, &mappdat.domntab[termdomnum]);
+    termverttab[termdomnum].num  = archDomNum (&archdat, mapDomain (&mappdat, tgtvertnum));
     if (termverttab[termdomnum].num > termdommax) /* Find maximum terminal number */
       termdommax = termverttab[termdomnum].num;
   }

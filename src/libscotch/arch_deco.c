@@ -1,4 +1,4 @@
-/* Copyright 2004,2007,2008,2010,2011,2016,2018,2023 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2010,2011,2016,2018,2023,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -66,7 +66,7 @@
 /**                # Version 6.0  : from : 14 feb 2011     **/
 /**                                 to   : 28 apr 2019     **/
 /**                # Version 7.0  : from : 17 jan 2023     **/
-/**                                 to   : 17 jan 2023     **/
+/**                                 to   : 21 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -464,7 +464,7 @@ const ArchDomNum            domnnum)
     if (archptr->domverttab[domvertnum].size == 1) { /* If terminal vertex                      */
       domtermnum --;                              /* One more terminal scanned                  */
       if (archptr->domverttab[domvertnum].labl == domnnum) { /* If terminal domain number found */
-        domnptr->num = domvertnum;                /* Set domain number                          */
+        domnptr->num = domvertnum + 1;            /* Set domain number from found domain index  */
         return (0);
       }
     }
