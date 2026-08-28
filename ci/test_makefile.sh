@@ -23,5 +23,5 @@ make -j check${JOBCHECK} TMPDIR=. COVERAGE=$COVERAGE || fatal
 cd ..
 
 if [[ $CI_PIPELINE_SOURCE == "schedule" ]]; then
-  gcovr --xml-pretty --exclude-unreachable-branches --gcov-ignore-parse-errors --print-summary -o ${JOBNAME}.cov --root . || fatal
+  gcovr --xml-pretty --exclude-unreachable-branches --merge-mode-functions separate --gcov-ignore-parse-errors --print-summary -o ${JOBNAME}.cov --root . || fatal
 fi
