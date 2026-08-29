@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 25 aug 2026     **/
+/**                                 to   : 29 aug 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -247,7 +247,7 @@ Context * const             contptr)              /*+ Execution context         
       return   (1);
     }
 
-    archVcmpltDomBipart ((const ArchVcmplt * const) (void *) &archdat, /* Update mapping domains */
+    archVcmpltDomBipart ((const ArchVcmplt * const) (void *) &archdat.data, /* Update mapping domains */
                          (const ArchVcmpltDom * const) (void *) &mappdat.domntab[joborgptr->domnum],
                          (ArchVcmpltDom * const) (void *) &domsub0,
                          (ArchVcmpltDom * const) (void *) &mappdat.domntab[mappdat.domnnbr]);
