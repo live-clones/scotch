@@ -150,9 +150,9 @@ Gnum * restrict const         sizeglbtab)
   Gnum                        dbl1glbnum;
   Gnum                        dbl2glbnum;
   int * restrict              dblkcnttab;
-  int * restrict              dblkdsptab;
+  int *                       dblkdsptab;        /* TRICK: continues dblkcnttab [norestrict]   */
   int                         dblkdspidx;
-  int *                       cblkdsptab;         /* TRICK: continues dblkcnttab [norestrict]   */
+  int * restrict              cblkdsptab;
   Gnum                        cblkglbtmp;
   Gnum * restrict             srt1glbtab;
   Gnum * restrict             srt2glbtab;
@@ -175,7 +175,7 @@ Gnum * restrict const         sizeglbtab)
   reduloctab[2] = 0;
   if (memAllocGroup ((void **) (void *)
                      &dblkcnttab, (size_t) ( procglbnbr      * sizeof (int)),
-                     &dblkdsptab, (size_t) ( procglbnbr      * sizeof (int)), /* TRICK: cblkdsptab used as secondary array after cblkcnttab */
+                     &dblkdsptab, (size_t) ( procglbnbr      * sizeof (int)), /* TRICK: dblkdsptab used as secondary array after cblkcnttab */
                      &cblkdsptab, (size_t) ((procglbnbr + 1) * sizeof (int)), /* TRICK: have an array at least of size 2                    */
                      &dataloctab, (size_t) ( dblklocnbr * 4  * sizeof (Gnum)),
                      &dataglbtab, (size_t) ( dblkglbnbr * 4  * sizeof (Gnum)),
