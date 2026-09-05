@@ -121,7 +121,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
 
   if (CONTEXTINIT (orggrafptr)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": cannot initialize context");
-    goto abort;
+    goto fail;
   }
   grafptr = (Dgraph *) CONTEXTGETOBJECT (orggrafptr);
 
@@ -129,13 +129,13 @@ SCOTCH_Dgraph * const       bndgrafptr)
   MPI_Comm_compare (grafptr->proccomm, bandgrafptr->proccomm, &o);
   if ((o != MPI_IDENT) && (o != MPI_CONGRUENT)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": communicators are not congruent");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 
   if (dgraphGhst (grafptr) != 0) {                /* Compute ghost edge array if not already present */
     errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": cannot compute ghost edge array");
-    goto abort;
+    goto fail;
   }
 
   cheklocval = 0;
@@ -151,7 +151,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
       (grafptr, fronlocnbr, fronloctab, distval, bandvnumgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz, CONTEXTGETDATA (orggrafptr)) != 0) {
     if (bandvnumgsttax != NULL)
       memFree (bandvnumgsttax + grafptr->baseval);
-    goto abort;
+    goto fail;
   }
 
   vertloctax = grafptr->vertloctax;
@@ -202,18 +202,18 @@ SCOTCH_Dgraph * const       bndgrafptr)
     if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, GNUM_MPI, /* Send received data to dummy array */
                        bandvnumgsttax + bandgrafptr->baseval, 1, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
       errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": communication error (2)");
-      goto abort;
+      goto fail;
     }
     dgraphExit (bandgrafptr);
     memFree    (bandvnumgsttax + bandgrafptr->baseval);
-    goto abort;
+    goto fail;
   }
   else {
     bandgrafptr->procdsptab[0] = bandvertlocnbr;
     if (MPI_Allgather (&bandgrafptr->procdsptab[0], 1, GNUM_MPI,
                        &bandgrafptr->procdsptab[1], 1, GNUM_MPI, grafptr->proccomm) != MPI_SUCCESS) {
       errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": communication error (3)");
-      goto abort;
+      goto fail;
     }
   }
   bandgrafptr->procdsptab[0] = bandgrafptr->baseval; /* Build vertex-to-process array */
@@ -225,7 +225,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
     if (bandgrafptr->procdsptab[procngbnum] < 0) { /* If error notified by another process                                       */
       dgraphExit (bandgrafptr);
       memFree    (bandvnumgsttax + bandgrafptr->baseval);
-      goto abort;
+      goto fail;
     }
     bandgrafptr->procdsptab[procngbnum]    += bandgrafptr->procdsptab[procngbnum - 1];
     bandgrafptr->proccnttab[procngbnum - 1] = bandgrafptr->procdsptab[procngbnum] - bandgrafptr->procdsptab[procngbnum - 1];
@@ -246,7 +246,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
 
   if (dgraphHaloSync (grafptr, (byte *) (bandvnumgsttax + bandgrafptr->baseval), GNUM_MPI) != 0) { /* Share global indexing of halo vertices */
     errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": cannot perform halo exchange");
-    goto abort;
+    goto fail;
   }
 
   edgegsttax = grafptr->edgegsttax;
@@ -279,7 +279,7 @@ SCOTCH_Dgraph * const       bndgrafptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
       if (bandvnumgsttax[edgegsttax[edgelocnum]] == ~0) { /* All ends should belong to the band graph too */
         errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": internal error (1)");
-        goto abort;
+        goto fail;
       }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
       bandedgeloctax[bandedgelocnum ++] = bandvnumgsttax[edgegsttax[edgelocnum]];
@@ -348,17 +348,17 @@ SCOTCH_Dgraph * const       bndgrafptr)
   bandgrafptr->degrglbmax = banddegrlocmax;       /* Local maximum degree will be turned into global maximum degree */
   if (dgraphBuild4 (bandgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": cannot build band graph");
-    goto abort;
+    goto fail;
   }
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphCheck (bandgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": internal error (2)");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   o = 0;                                          /* Everything went well */
-abort:
+fail:
   CONTEXTEXIT (orggrafptr);
   return (o);
 }
