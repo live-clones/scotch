@@ -101,9 +101,28 @@ test:         if (nghbnbr <= 0) {                 /* If threshold reached       
 
 Label names for \texttt{goto} statements should be in lowercase only,
 as their visibility is limited to the inside of a routine, like local
-variables. They should be short and telling, \eg~: ``\texttt{abort}'',
-``\texttt{fail}'', ``\texttt{loop}'', ``\texttt{nomatch}'', etc. Their
+variables. They should be short and telling, \eg~: ``\texttt{fail}'',
+``\texttt{loop}'', ``\texttt{nomatch}'', ``\texttt{redo}'', etc. Their
 indentation rules are explained below.
+
+Labels should be short and standardized. Typical label names comprise:
+\begin{itemize}
+\item
+\texttt{fail}: abort some computation because of failure.
+\item
+\texttt{loop}: skip some computation and start next iteration of
+some loop from the beginning.
+\item
+\texttt{redo}: restart a process because some condition has changed.
+\item
+\texttt{skip}: skip some computation (\eg, to avoid or exit some loop
+or function).
+\end{itemize}
+
+When several labels of the same kind are present in the same function,
+they are numbered consecutively with an integer suffix, \eg:
+``\texttt{fail1}'', ``\texttt{fail2}''. Labels are numbered by order
+of definition in the code, and not by of first occurrence of use.
 
 \subsubsection{The \texttt{return} keyword}
 
