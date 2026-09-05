@@ -179,7 +179,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if (grafptr != lmapptr->grafptr) {
     errorPrint ("graphMapCompute2: output mapping does not correspond to input graph");
-    goto abort;
+    goto fail;
   }
   if (lmaoptr != NULL) {
     Gnum                vertnbr;
@@ -187,11 +187,11 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 
     if (grafptr != lmaoptr->grafptr) {
       errorPrint ("graphMapCompute2: old mapping does not correspond to input graph");
-      goto abort;
+      goto fail;
     }
     if (lmapptr->archptr != lmaoptr->archptr) {
       errorPrint ("graphMapCompute2: output and old mappings do not correspond to same architecture");
-      goto abort;
+      goto fail;
     }
 
     for (vertnum = 0, vertnbr = lmaoptr->grafptr->vertnbr; vertnum < vertnbr; vertnum ++) {
@@ -200,7 +200,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
       if ((lmaoptr->parttab[vertnum] >= 0) &&
           (archDomTerm (lmapptr->archptr, &domndat, lmaoptr->parttab[vertnum]) != 0)) {
         errorPrint ("graphMapCompute2: invalid old partition");
-        goto abort;
+        goto fail;
       }
     }
   }
@@ -208,7 +208,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 #ifdef SCOTCH_DEBUG_LIBRARY2
   if (graphCheck (grafptr) != 0) {                /* Vertex loads can be 0 if we have fixed vertices */
     errorPrint ("graphMapCompute2: invalid input graph");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
@@ -216,13 +216,13 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 
   if (*((Strat **) straptr) == NULL) {            /* Set default mapping strategy if necessary */
     if (SCOTCH_stratGraphMapBuild (straptr, SCOTCH_STRATDEFAULT, archDomSize (lmapptr->archptr, &domnorg), 0.01) != 0)
-      goto abort;
+      goto fail;
   }
 
   mapstraptr = *((Strat **) straptr);
   if (mapstraptr->tablptr != &kgraphmapststratab) {
     errorPrint ("graphMapCompute2: not a sequential graph mapping strategy");
-    goto abort;
+    goto fail;
   }
 
   if (vfixnbr > 0) {                              /* We have fixed vertices */
@@ -233,19 +233,19 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 
     if (lmapptr->parttab == NULL) {               /* We must have fixed vertex information */
       errorPrint ("graphMapCompute2: missing output mapping part array");
-      goto abort;
+      goto fail;
     }
     for (vertnum = 0, vertnbr = lmapptr->grafptr->vertnbr; vertnum < vertnbr; vertnum ++) {
       if ((lmapptr->parttab[vertnum] >= 0) &&
           (archDomTerm (lmapptr->archptr, &domndat, lmapptr->parttab[vertnum]) != 0)) {
         errorPrint ("graphMapCompute2: invalid fixed partition");
-        goto abort;
+        goto fail;
       }
     }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
     if (vfixnbr >= grafptr->vertnbr) {            /* If all fixed vertices, do nothing */
       o = 0;
-      goto abort;
+      goto fail;
     }
 
     pfixtax = lmapptr->parttab - baseval;
@@ -270,13 +270,13 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
   }
 
   if (kgraphInit (&mapgrafdat, grafptr, lmapptr->archptr, &domnorg, vfixnbr, pfixtax, crloval, cmloval, vmlotax) != 0)
-    goto abort;
+    goto fail;
 
   if (lmaoptr != NULL) {                          /* If we are doing a repartitioning, fill old mapping structure */
     if (mapAlloc (&mapgrafdat.r.m) != 0) {        /* Allocate part and domain arrays                              */
       errorPrint ("kgraphInit: cannot initialize remapping (1)");
       kgraphExit (&mapgrafdat);
-      goto abort;
+      goto fail;
     }
 
     memSet (mapgrafdat.r.m.parttax + baseval, ~0, grafptr->vertnbr * sizeof (Anum)); /* Pre-set unknown vertex domains */
@@ -285,7 +285,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
     if (mapBuild (&mapgrafdat.r.m, lmaoptr->parttab - baseval) != 0) { /* Merge old part information to incomplete mapping */
       errorPrint ("kgraphInit: cannot initialize remapping (2)");
       kgraphExit (&mapgrafdat);
-      goto abort;
+      goto fail;
     }
   }
 
@@ -296,7 +296,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy          
 
   kgraphExit (&mapgrafdat);
 
-abort:
+fail:
   CONTEXTEXIT (actgrafptr);
   return (o);
 }
