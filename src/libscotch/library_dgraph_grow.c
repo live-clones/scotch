@@ -115,7 +115,7 @@ SCOTCH_Num * const          partgsttab)
 
   if (CONTEXTINIT (orggrafptr)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphBand) ": cannot initialize context");
-    goto abort;
+    goto fail;
   }
 
   grafdat = *((Dgraph *) CONTEXTGETOBJECT (orggrafptr)); /* Clone original graph */
@@ -132,7 +132,7 @@ SCOTCH_Num * const          partgsttab)
         (&grafdat, seedlocnbr, seedloctab, distmax, bandpartgsttax, &bandvertlvlnum, &bandvertlocnbr, &bandedgelocsiz, CONTEXTGETDATA (orggrafptr));
 
   dgraphExit (&grafdat);                          /* Free ghost edge arrays if any */
-abort:
+fail:
   CONTEXTEXIT (orggrafptr);
   return (o);
 }
