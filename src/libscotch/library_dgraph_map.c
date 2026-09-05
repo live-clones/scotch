@@ -164,7 +164,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy   +*/
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphCheck (srcgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphMapCompute) ": invalid input graph");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -174,22 +174,22 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy   +*/
     archDomFrst (&srcmappptr->m.archdat, &archdomnorg);
     if (archVar (&srcmappptr->m.archdat)) {
       if (SCOTCH_stratDgraphClusterBuild (straptr, 0, srcgrafptr->procglbnbr, 1, 1.0, 0.05))
-        goto abort;
+        goto fail;
     }
     else {
       if (SCOTCH_stratDgraphMapBuild (straptr, 0, srcgrafptr->procglbnbr, archDomSize (&srcmappptr->m.archdat, &archdomnorg), 0.05))
-        goto abort;
+        goto fail;
     }
   }
 
   mapstraptr = *((Strat **) straptr);
   if (mapstraptr->tablptr != &kdgraphmapststratab) {
     errorPrint (STRINGIFY (SCOTCH_dgraphMapCompute) ": not a parallel graph mapping strategy");
-    goto abort;
+    goto fail;
   }
 
   if (kdgraphInit (&mapgrafdat, srcgrafptr, &srcmappptr->m) != 0)
-    goto abort;
+    goto fail;
   mapgrafdat.contptr = CONTEXTGETDATA (libgrafptr);
   mapmappdat.mappptr = &srcmappptr->m;
 
@@ -198,7 +198,7 @@ SCOTCH_Strat * const        straptr)              /*+ Mapping strategy   +*/
     o = dmapTerm (&srcmappptr->m, &mapgrafdat.s, srcmappptr->termloctab); /* Use "&mapgrafdat.s" to take advantage of ghost arrays */
   kdgraphExit (&mapgrafdat);
 
-abort:
+fail:
   CONTEXTEXIT (libgrafptr);
   return (o);
 }
