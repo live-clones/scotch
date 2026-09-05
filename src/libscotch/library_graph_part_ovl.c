@@ -98,13 +98,13 @@ SCOTCH_Num * const          parttab)              /*+ Partition array       +*/
 
   if (*((Strat **) straptr) == NULL) {            /* Set default partitioning strategy if necessary */
     if (SCOTCH_stratGraphPartOvlBuild (straptr, SCOTCH_STRATQUALITY, (Gnum) partnbr, (double) 0.05))
-      goto abort;
+      goto fail;
   }
 
   partstraptr = *((Strat **) straptr);
   if (partstraptr->tablptr != &wgraphpartststratab) {
     errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": not a sequential graph partitioning with overlap strategy");
-    goto abort;
+    goto fail;
   }
 
   wgraphInit (&grafdat, (Graph *) CONTEXTGETOBJECT (libgrafptr), partnbr); /* Initialize graph from given graph */
@@ -114,14 +114,14 @@ SCOTCH_Num * const          parttab)              /*+ Partition array       +*/
 
   if (wgraphAlloc (&grafdat) != 0) {              /* Always allocate graph data when calling */
     errorPrint (STRINGIFY (SCOTCH_graphPartOvl) ": out of memory");
-    goto abort;
+    goto fail;
   }
 
   o = wgraphPartSt (&grafdat, partstraptr);
 
   wgraphExit (&grafdat);
 
-abort:
+fail:
   CONTEXTEXIT (libgrafptr);
   return (o);
 }
