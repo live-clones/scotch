@@ -279,7 +279,7 @@ const Dgraph * restrict const grafptr)
       (reduglbtab[18] != - reduloctab[17])) {
     errorPrint ("dgraphCheck: inconsistent global graph data (1)");
     cheklocval = 1;
-    goto abort;
+    goto fail;
   }
   if (((reduglbtab[19] != 0) && (reduglbtab[19] != procglbnbr)) ||
       ((reduglbtab[20] != 0) && (reduglbtab[20] != procglbnbr)) ||
@@ -289,7 +289,7 @@ const Dgraph * restrict const grafptr)
       (reduglbtab[24] != grafptr->edgeglbnbr)) {
     errorPrint ("dgraphCheck: inconsistent global graph data (2)");
     cheklocval = 1;
-    goto abort;
+    goto fail;
   }
   
   for (vertlocnum = grafptr->baseval, edgelocnbr = 0; vertlocnum < grafptr->vertlocnnd; vertlocnum ++) {
@@ -299,7 +299,7 @@ const Dgraph * restrict const grafptr)
         (vendloctax[vertlocnum] > (grafptr->edgelocsiz + grafptr->baseval))) {
       errorPrint ("dgraphCheck: inconsistent local vertex arrays");
       cheklocval = 1;
-      goto abort;
+      goto fail;
     }
     edgelocnbr += vendloctax[vertlocnum] - vertloctax[vertlocnum];
 
@@ -309,14 +309,14 @@ const Dgraph * restrict const grafptr)
             (edgegsttax[edgelocnum] >= grafptr->vertgstnnd)) {
           errorPrint ("dgraphCheck: inconsistent ghost edge array");
           cheklocval = 1;
-          goto abort;
+          goto fail;
         }
 
         if ((edloloctax != NULL) &&
             (edloloctax[edgelocnum] <= 0)) {
           errorPrint ("dgraphCheck: invalid edge load");
           cheklocval = 1;
-          goto abort;
+          goto fail;
         }
       }
     }
@@ -326,7 +326,7 @@ const Dgraph * restrict const grafptr)
     cheklocval = 1;
   }
 
-abort:
+fail:
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, proccomm) != MPI_SUCCESS) {
     errorPrint ("dgraphCheck: communication error (6)");
     return (1);
