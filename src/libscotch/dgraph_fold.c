@@ -1,4 +1,4 @@
-/* Copyright 2007-2011,2014,2021,2023,2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2007-2011,2014,2021,2023,2025,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -47,7 +47,7 @@
 /**                # Version 6.1  : from : 18 jun 2021     **/
 /**                                 to   : 19 jun 2021     **/
 /**                # Version 7.0  : from : 14 sep 2021     **/
-/**                                 to   : 29 sep 2025     **/
+/**                                 to   : 05 sep 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -264,12 +264,12 @@ MPI_Datatype                  datatype)
     }
   }
   else {                                          /* Process is a sender */
-#ifdef SCOTCH_DEBUG_HDGRAPH2
+#ifdef SCOTCH_DEBUG_DGRAPH2
     if (fldproccomm != MPI_COMM_NULL) {
       errorPrint ("dgraphFold2: invalid parameters (3)");
       return (1);
     }
-#endif /* SCOTCH_DEBUG_HDGRAPH2 */
+#endif /* SCOTCH_DEBUG_DGRAPH2 */
 
     if (dgraphFoldComm (orggrafptr, partval, &commmax, &fldcommtypval, &fldcommdattab, &fldcommvrttab, NULL, NULL, NULL, NULL) != 0) {
       errorPrint ("dgraphFold2: cannot compute folding communications (2)");
