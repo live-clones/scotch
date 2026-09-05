@@ -182,13 +182,13 @@ const char * const          typestr)
           (perxlocnum >= perxlocnnd)) {
         errorPrint ("dorderCheck2: internal error");
         cheklocval = 1;                           /* We can exit nicely */
-        goto abort;
+        goto fail;
       }
 #endif /* SCOTCH_DEBUG_DORDER2 */
       if (flagloctax[perxlocnum] != ~0) {         /* If permutation index already assigned */
         errorPrint ("dorderCheck2: duplicate global %s permutation index", typestr);
         cheklocval = 1;                           /* We can exit nicely */
-        goto abort;
+        goto fail;
       }
       flagloctax[perxlocnum] = sortrcvtab[sortrcvnum ++]; /* Record index in inverse permutation */
     }
@@ -203,11 +203,11 @@ const char * const          typestr)
     if (flagloctax[perxlocnum] == ~0) {           /* Unused index */
       errorPrint ("dorderCheck2: missing global %s permutation index", typestr);
       cheklocval = 1;                             /* We can exit nicely */
-      goto abort;
+      goto fail;
     }
   }
 
-abort:                                            /* Check whether all of the above succeeded */
+fail:                                             /* Check whether all of the above succeeded */
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderCheck2: communication error (6)");
     return (1);
@@ -294,7 +294,7 @@ const Dorder * const  dordptr)
       (reduglbtab[2] != - reduglbtab[1])) {       /* Or if inconsistent baseval */
     errorPrint ("dorderCheck: inconsistent global ordering data (2)");
     cheklocval = 1;
-    goto abort1;
+    goto fail1;
   }
 
   perircvbas = DATASCAN (vnodglbnbr, procglbnbr, proclocnum); /* Spread evenly inverse permutation values for checking */
@@ -305,7 +305,7 @@ const Dorder * const  dordptr)
                      &sortrcvtab, (size_t) (vnodglbmax * sizeof (Gnum) * 2), NULL) == NULL) {
     errorPrint ("dorderCheck: out of memory");
     cheklocval = 1;
-    goto abort1;
+    goto fail1;
   }
 
   baseval = dordptr->baseval;
@@ -334,13 +334,13 @@ const Dorder * const  dordptr)
             (perilocval >= (vnodglbnbr + baseval))) {
           errorPrint ("dorderCheck: invalid inverse permutation value");
           cheklocval = 1;
-          goto abort1;
+          goto fail1;
         }
 #ifdef SCOTCH_DEBUG_DORDER2
         if (sortsndnbr >= (2 * vnodlocnbr)) {
           errorPrint ("dorderCheck: internal error (1)");
           cheklocval = 1;                         /* We can exit nicely */
-          goto abort1;
+          goto fail1;
         }
 #endif /* SCOTCH_DEBUG_DORDER2 */
         sortsndtab[sortsndnbr ++] = ordelocval ++;
@@ -363,7 +363,7 @@ const Dorder * const  dordptr)
         if (vnodleanbr != cblklocptr->data.leaf.vnodlocnbr) {
           errorPrint ("dorderCheck: invalid number of node vertices in column block");
           cheklocval = 1;
-          goto abort1;
+          goto fail1;
         }
       }
     }
@@ -372,20 +372,20 @@ const Dorder * const  dordptr)
           (cblklocptr->data.nedi.cblkglbnbr > 3)) {
         errorPrint ("dorderCheck: invalid number of descendent nodes");
         cheklocval = 1;
-        goto abort1;
+        goto fail1;
       }
     }
     else if ((cblklocptr->typeval & DORDERCBLKDICO) == 0) {
       errorPrint ("dorderCheck: invalid column block type");
       cheklocval = 1;
-      goto abort1;
+      goto fail1;
     }
   }
 #ifdef SCOTCH_DEBUG_DORDER2
   if (sortsndnbr != (2 * vnodlocnbr)) {
     errorPrint ("dorderCheck: internal error (2)");
     cheklocval = 1;                               /* We can exit nicely */
-    goto abort1;
+    goto fail1;
   }
 #endif /* SCOTCH_DEBUG_DORDER2 */
 
@@ -394,7 +394,7 @@ const Dorder * const  dordptr)
     cheklocval = 1;
   }
 
-abort1:                                           /* Check whether all of the above succeeded */
+fail1:                                            /* Check whether all of the above succeeded */
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, dordptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dorderCheck: communication error (2)");
     return (1);
@@ -410,7 +410,7 @@ abort1:                                           /* Check whether all of the ab
   cheklocval = 1;                                 /* Assume an error */
   if (dorderCheck2 (baseval, vnodglbnbr, flagloctab, sortsndnbr, sortsndtab,
                     vnodglbmax * 2, sortrcvtab, dordptr->proccomm, "inverse") != 0)
-    goto abort2;
+    goto fail2;
 
   for (sortsndnum = 0; sortsndnum < sortsndnbr; sortsndnum += 2) { /* Swap global indices in send array for permutation */
     Gnum                tempval;
@@ -423,11 +423,11 @@ abort1:                                           /* Check whether all of the ab
 
   if (dorderCheck2 (baseval, vnodglbnbr, flagloctab, sortsndnbr, sortsndtab,
                     vnodglbmax * 2, sortrcvtab, dordptr->proccomm, "direct") != 0)
-    goto abort2;
+    goto fail2;
 
   cheklocval = 0;                                 /* Everything went all right */
 
-abort2:
+fail2:
   memFree (flagloctab);                           /* Free group leader */
 
   return (cheklocval);
