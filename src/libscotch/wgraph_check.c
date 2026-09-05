@@ -113,13 +113,13 @@ const Wgraph * const        grafptr)
     if ((partnum >= grafptr->partnbr) ||
         (partnum <  -1)) {
       errorPrint ("wgraphCheck: invalid part array");
-      goto abort;
+      goto fail;
     }
   }
 
   if (grafptr->fronnbr < 0) {
     errorPrint ("wgraphCheck: invalid frontier size");
-    goto abort;
+    goto fail;
   }
   for (fronnum = 0; fronnum < grafptr->fronnbr; fronnum ++) {
     Gnum                vertnum;
@@ -127,7 +127,7 @@ const Wgraph * const        grafptr)
     vertnum = grafptr->frontab[fronnum];
     if (grafptr->parttax[vertnum] != -1) {
       errorPrint ("wgraphCheck: invalid frontier array");
-      goto abort;
+      goto fail;
     }
   }
 
@@ -168,25 +168,25 @@ const Wgraph * const        grafptr)
   for (partnum = 0; partnum < grafptr->partnbr; partnum ++) {
     if (grafptr->compsize[partnum] != compsizetab[partnum]) {
       errorPrint ("wgraphCheck: invalid part size array");
-      goto abort;
+      goto fail;
     }
     if (grafptr->compload[partnum] != comploadtab[partnum]) {
       errorPrint ("wgraphCheck: invalid part load array");
-      goto abort;
+      goto fail;
     }
   }
 
   if (grafptr->fronload != frlosum) {
     errorPrint ("wgraphCheck: invalid frontier load");
-    goto abort;
+    goto fail;
   }
   if (grafptr->fronnbr != fronnbr) {
     errorPrint ("wgraphCheck: invalid frontier size");
-    goto abort;
+    goto fail;
   }
 
   o = 0;                                          /* Everything went all right */
-abort :
+fail:
   memFree (flagtab);                              /* Free group leader */
 
   return (o);
