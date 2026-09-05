@@ -222,7 +222,7 @@ const Vmesh * const         meshptr)
 
   o = 0;                                          /* Everything turned well */
 
-fail :
+fail:
   memFree (frontax + meshptr->m.vnodbas);
 
   return (o);
