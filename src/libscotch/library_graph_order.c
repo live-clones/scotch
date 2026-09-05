@@ -264,13 +264,13 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 #ifdef SCOTCH_DEBUG_LIBRARY1
   if ((listnbr < 0) || (listnbr > srcgrafptr->vertnbr)) {
     errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": invalid parameters (1)");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_LIBRARY1 */
 #ifdef SCOTCH_DEBUG_LIBRARY2
   if (graphCheck (srcgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": invalid input graph");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
@@ -282,13 +282,13 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 
   if (*((Strat **) straptr) == NULL) {            /* Set default ordering strategy if necessary */
     if (SCOTCH_stratGraphOrderBuild (straptr, SCOTCH_STRATQUALITY, 0, 0.2))
-      goto abort;
+      goto fail;
   }
 
   ordstraptr = *((Strat **) straptr);
   if (ordstraptr->tablptr != &hgraphorderststratab) {
     errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": not a sequential graph ordering strategy");
-    goto abort;
+    goto fail;
   }
 
   memCpy (&halgrafdat.s, srcgrafptr, sizeof (Graph)); /* Copy non-halo graph data   */
@@ -311,7 +311,7 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 
     if ((cblkptr = (OrderCblk *) memAlloc (2 * sizeof (OrderCblk))) == NULL) {
       errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": out of memory");
-      goto abort;
+      goto fail;
     }
     libordeptr->o.treenbr = 3;
     libordeptr->o.cblknbr = 2;
@@ -336,7 +336,7 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
       if ((listtab[listnum] <  srcgrafptr->baseval) ||
           (listtab[listnum] >= srcgrafptr->vertnnd)) {
         errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": invalid parameters (2)");
-        goto abort;
+        goto fail;
       }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
       peritax[listtab[listnum]] = ~0;             /* TRICK: use peritab as flag array to mark used vertices */
@@ -348,13 +348,13 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 #ifdef SCOTCH_DEBUG_LIBRARY2
     if (halonum != (listnbr + srcgrafptr->baseval - 1)) {
       errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": internal error");
-      goto abort;
+      goto fail;
     }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
     if (hgraphInduceList (&halgrafdat, listnbr, (Gnum * const) listtab, srcgrafptr->vertnbr - listnbr, &halgraftmp) != 0) {
       errorPrint (STRINGIFY (SCOTCH_graphOrderComputeList) ": cannot create induced subgraph");
-      goto abort;
+      goto fail;
     }
     halgrafptr = &halgraftmp;
   }
@@ -365,13 +365,13 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
     hgraphExit (halgrafptr);                      /* Free it                     */
 
   if (o != 0)
-    goto abort;
+    goto fail;
 
 skip:
 #ifdef SCOTCH_DEBUG_LIBRARY2
   if (orderCheck (&libordeptr->o) != 0) {
     o = 1;
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
@@ -384,7 +384,7 @@ skip:
   if (libordeptr->cblkptr != NULL)                /* Set number of column blocks if wanted */
     *(libordeptr->cblkptr) = libordeptr->o.cblknbr;
 
-abort:
+fail:
   CONTEXTEXIT (libgrafptr);
   return (o);
 }
