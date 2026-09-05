@@ -194,7 +194,7 @@ const Bgraph * restrict const grafptr)
 
   o = 0;                                          /* Everything turned well */
 
-fail :
+fail:
   memFree (flagtax + baseval);
 
   return (o);
