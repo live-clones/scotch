@@ -228,7 +228,7 @@ const VdgraphSeparateDfParam * const  paraptr)    /*+ Method parameters +*/
         }
         if (isnan (diffval)) {                    /* If overflow occured                    */
           ovflval = 1;                            /* We are in state of overflow            */
-          goto abort;                             /* Exit this loop without swapping arrays */
+          goto fail;                             /* Exit this loop without swapping arrays */
         }
         difngsttax[vertlocnum] = diffval;
       }
@@ -260,7 +260,7 @@ const VdgraphSeparateDfParam * const  paraptr)    /*+ Method parameters +*/
         }
         if (isnan (diffval)) {                    /* If overflow occured                    */
           ovflval = 1;                            /* We are in state of overflow            */
-          goto abort;                             /* Exit this loop without swapping arrays */
+          goto fail;                              /* Exit this loop without swapping arrays */
         }
         difngsttax[vertlocnum] = diffval;
       }
@@ -269,7 +269,7 @@ const VdgraphSeparateDfParam * const  paraptr)    /*+ Method parameters +*/
       difngsttax = (float *) difogsttax;          /* Casts to prevent IBM compiler from yelling */
       difogsttax = (float *) diftgsttax;
     }
-abort :                                           /* If overflow occured, resume here    */
+fail:                                             /* If overflow occured, resume here    */
     if (++ passnum >= paraptr->passnbr)           /* If maximum number of passes reached */
       break;                                      /* Exit main loop                      */
 
