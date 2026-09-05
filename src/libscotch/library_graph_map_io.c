@@ -164,12 +164,12 @@ FILE * const                  stream)             /*+ Input stream  +*/
       while (mappsorttab[mappfilenum].labl < vertsorttab[vertsortnum].labl) {
         mappfilenum ++;                           /* Search mapping vertex with same label */
         if (mappfilenum >= mappfilenbr)           /* If all mapping data processed         */
-          goto end;                               /* Exit main loop                        */
+          goto skip;                              /* Exit main loop                        */
       }
       if (mappsorttab[mappfilenum].labl == vertsorttab[vertsortnum].labl) /* If label match found */
         ((Anum *) parttab)[vertsorttab[vertsortnum].num] = mappsorttab[mappfilenum ++].num;
     }
-end: ;
+skip: ;
   }
   else {                                          /* Graph does not have vertex labels */
     const Gnum          baseval = grafptr->baseval;
