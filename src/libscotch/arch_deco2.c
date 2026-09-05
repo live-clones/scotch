@@ -168,7 +168,7 @@ FILE * restrict const       stream)
         (termtab[termnum].domnidx >= domnnbr) ||
         (termtab[termnum].termnum < 0)) {
       errorPrint ("archDeco2ArchLoad2: bad input (2)");
-      goto abort;
+      goto fail;
     }
   }
 
@@ -198,7 +198,7 @@ FILE * restrict const       stream)
         (doextab[domnnum].levlnum >= levlnbr)    ||
         (doextab[domnnum].vnumidx < 0)) {
       errorPrint ("archDeco2ArchLoad2: bad input (3)");
-      goto abort;
+      goto fail;
     }
     if (doextab[domnnum].vnumidx > vnummax)       /* Keep track of max index */
       vnummax = doextab[domnnum].vnumidx;
@@ -206,7 +206,7 @@ FILE * restrict const       stream)
 
   if ((levltab = memAlloc (levlnbr * sizeof (ArchDeco2Levl))) == NULL) {
     errorPrint ("archDeco2ArchLoad2: out of memory (2)");
-    goto abort;
+    goto fail;
   }
   archptr->levltab = levltab;
 
@@ -214,12 +214,12 @@ FILE * restrict const       stream)
     if (graphLoad (&levltab[levlnum].grafdat, stream, -1, 0) != 0) {
       errorPrint ("archDeco2ArchLoad2: bad input (4)");
       archptr->levlmax = levlnum - 1;             /* Only free existing levels */
-      goto abort;
+      goto fail;
     }
     if (intLoad (stream, &levltab[levlnum].wdiaval) != 1) { /* Read graph diameter */
       errorPrint ("archDeco2ArchLoad2: bad input (5)");
       archptr->levlmax = levlnum;                 /* Free this level as well */
-      goto abort;
+      goto fail;
     }
   }
   archptr->levlmax = levlnbr - 1;                 /* All levels have been read */
@@ -228,12 +228,12 @@ FILE * restrict const       stream)
   vnumnbr = archptr->vnumnbr;
   if (vnummax >= vnumnbr) {
     errorPrint ("archDeco2ArchLoad2: bad input (6)");
-    goto abort;
+    goto fail;
   }
 
   if ((vnumtab = memAlloc (vnumnbr * sizeof (Anum))) == NULL) {
     errorPrint ("archDeco2ArchLoad2: out of memory (3)");
-    goto abort;
+    goto fail;
   }
   archptr->vnumtab = vnumtab;
 
@@ -243,7 +243,7 @@ FILE * restrict const       stream)
         (vnumtab[vnumnum] < 0)                     ||
         (vnumtab[vnumnum] >= vertnbr)) {
       errorPrint ("archDeco2ArchLoad2: bad input (7)");
-      goto abort;
+      goto fail;
     }
   }
 
@@ -251,14 +251,14 @@ FILE * restrict const       stream)
   for (domnnum = 0; domnnum < domnnbr; domnnum ++) {
     if (doextab[domnnum].vnumidx > vnumnbr) {
       errorPrint ("archDeco2ArchLoad2: bad input (8)");
-      goto abort;
+      goto fail;
     }
   }
 #endif /* SCOTCH_DEBUG_ARCH1 */
 
   return (0);
 
-abort:
+fail:
   archDeco2ArchFree (archptr);
   return (1);
 }
