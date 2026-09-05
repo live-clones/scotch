@@ -272,7 +272,7 @@ BgraphBipartDfData * restrict const loopptr)
     difotax[vertnnd - 1] = loopptr->vanctab[1] * ielstax[vertnnd - 1];
   }
 
-skip :
+skip:
 #ifndef BGRAPHBIPARTDFNOTHREAD
   threadBarrier (descptr);                        /* Wait until all array values have been computed */
 #endif /* BGRAPHBIPARTDFNOTHREAD */
