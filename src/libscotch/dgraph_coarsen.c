@@ -715,7 +715,7 @@ DgraphCoarsenData * restrict const  coarptr)
     coarptr->thrdtab[thrdnum].edgelocnbr = 0;
     coarptr->thrdtab[thrdnum].degrlocmax = 0;
     o = 0;                                        /* Everything went well */
-    goto abort2;                                  /* Skip all work        */
+    goto fail2;                                   /* Skip all work        */
   }
 
   o = 1;                                          /* Assume an error */
@@ -725,7 +725,7 @@ DgraphCoarsenData * restrict const  coarptr)
                      &coarhashtab, (size_t) coarhashsiz,
                      &ercvdsptab,  (size_t) (procngbnbr * sizeof (int)), NULL) == NULL) {
     errorPrint ("dgraphCoarsenBuildThr: out of memory");
-    goto abort2;
+    goto fail2;
   }
   memSet (coarhashtab, ~0, coarhashsiz);
 
@@ -771,7 +771,7 @@ DgraphCoarsenData * restrict const  coarptr)
 #ifdef SCOTCH_DEBUG_DGRAPH2
     if (coaredgelocnum > (coargrafptr->edgelocsiz + coargrafptr->baseval)) { /* Number of local edges can be reached, not exceeded */
       errorPrint ("dgraphCoarsenBuildThr: internal error");
-      goto abort1;
+      goto fail1;
     }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
@@ -789,10 +789,10 @@ DgraphCoarsenData * restrict const  coarptr)
     coargrafptr->edgelocsiz = coaredgelocnum - finegrafptr->baseval; /* For non-compact edge array, array size is end of last edge sub-array */
 
 #ifdef SCOTCH_DEBUG_DGRAPH2
-abort1:
+fail1:
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
   memFree (coarhashtab);                          /* Free group leader */
-abort2:
+fail2:
   coarptr->thrdtab[thrdnum].retuval = o;
 
   threadReduce (descptr, &coarptr->thrdtab[thrdnum], sizeof (DgraphCoarsenThread), (ThreadReduceFunc) dgraphCoarsenBuildThrReduce, 0, NULL); /* Sum edges and get maximum of degrmax */
