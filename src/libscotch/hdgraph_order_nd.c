@@ -301,13 +301,13 @@ const HdgraphOrderNdParam * restrict const  paraptr)
 #ifdef SCOTCH_DEBUG_HDGRAPH1                      /* Communication cannot be merged with a useful one */
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_MAX, grafptr->s.proccomm) != MPI_SUCCESS) {
     errorPrint  ("hdgraphOrderNd2: communication error (1)");
-    goto abort;
+    goto fail;
   }
 #else /* SCOTCH_DEBUG_HDGRAPH1 */
   chekglbval = cheklocval;
 #endif /* SCOTCH_DEBUG_HDGRAPH1 */
   if (chekglbval != 0)
-    goto abort;
+    goto fail;
 
   vspgrafdat.partgsttax -= vspgrafdat.s.baseval;
   vspgrafdat.levlnum     = grafptr->levlnum;      /* Set level of separation graph as level of halo graph */
@@ -315,7 +315,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
   vdgraphZero (&vspgrafdat);                      /* Set all local vertices to part 0 */
 
   if (vdgraphSeparateSt (&vspgrafdat, paraptr->sepstrat) != 0) /* Separate vertex-separation graph */
-    goto abort;
+    goto fail;
 
   if ((vspgrafdat.compglbsize[0] == 0) ||         /* If could not separate more */
       (vspgrafdat.compglbsize[1] == 0)) {
@@ -349,7 +349,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
   if ((vspvnumptr0 != vspvnumtab[0] + vspgrafdat.complocsize[0]) ||
       (vspvnumptr1 != vspvnumtab[1] + vspgrafdat.complocsize[1])) {
     errorPrint  ("hdgraphOrderNd2: internal error (1)");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
 
@@ -370,7 +370,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
     if (dgraphInduceList (&grafptr->s, vspgrafdat.complocsize[2], /* Perform non-halo induction for separator, as it will get highest numbers */
                           vspgrafdat.fronloctab, &indgrafdat2.s) != 0) {
       errorPrint ("hdgraphOrderNd2: cannot build induced subgraph (1)");
-      goto abort;
+      goto fail;
     }
     indgrafdat2.vhallocnbr = 0;                   /* No halo on graph */
     indgrafdat2.vhndloctax = indgrafdat2.s.vendloctax;
@@ -382,7 +382,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
     hdgraphExit   (&indgrafdat2);
     dorderDispose (cblkptr2);                     /* Dispose of separator column block (may be kept as leaf) */
     if (o != 0)
-      goto abort;
+      goto fail;
   }
   else                                            /* Separator is empty         */
     cblkptr->data.nedi.cblkglbnbr = 2;            /* It is a two-cell tree node */
@@ -403,12 +403,12 @@ const HdgraphOrderNdParam * restrict const  paraptr)
 
   if (hdgraphOrderNdFold (grafptr, vspgrafdat.complocsize[partmax], vspvnumtab[partmax],
                           vspgrafdat.complocsize[partmax ^ 1], vspvnumtab[partmax ^ 1], &indgrafdat01) != 0)
-    goto abort;
+    goto fail;
 
   switch (indgrafdat01.typeval) {
     case HDGRAPHORDERNDTYPECENT :
       if ((cblkptr01 = dorderNewSequ (cblkptr)) == NULL)
-        goto abort;
+        goto fail;
       if (grafptr->levlnum > 0) {                 /* If intermediate level nested dissection graph */
         hdgraphExit   (grafptr);                  /* Free graph before going to next level         */
         dorderDispose (cblkptr);                  /* Dispose of column block node too              */
@@ -425,7 +425,7 @@ const HdgraphOrderNdParam * restrict const  paraptr)
     default :
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
       if ((cblkptr01 = dorderNew (cblkptr, indgrafdat01.data.dgrfdat.s.proccomm)) == NULL)
-        goto abort;
+        goto fail;
       if (grafptr->levlnum > 0) {                 /* If intermediate level nested dissection graph */
         hdgraphExit   (grafptr);                  /* Free graph before going to next level         */
         dorderDispose (cblkptr);                  /* Dispose of column block node too              */
@@ -438,14 +438,14 @@ const HdgraphOrderNdParam * restrict const  paraptr)
 #ifdef SCOTCH_DEBUG_HDGRAPH2
     default :
       errorPrint ("hdgraphOrderNd2: internal error (2)");
-      goto abort;
+      goto fail;
 #endif /* SCOTCH_DEBUG_HDGRAPH2 */
   }
 
   memFree (vspgrafdat.fronloctab);                /* Free remaining space */
   return  (o);
 
-abort :
+fail:
   if (vspgrafdat.partgsttax != NULL)
     memFree (vspgrafdat.partgsttax + vspgrafdat.s.baseval);
   if (vspgrafdat.fronloctab != NULL)
