@@ -151,11 +151,11 @@ DgraphMatchData * restrict const    mateptr)
     vertlocnum = vertglbnum - vertlocadj;         /* First vertex is always local */
     if ((vertlocnum < baseval) || (vertlocnum >= vertlocnnd)) {
       errorPrint ("dgraphMatchCheck: invalid multinode vertex (1)");
-      goto abort;
+      goto fail;
     }
     if (flaggsttax[vertlocnum] != -1) {
       errorPrint ("dgraphMatchCheck: duplicate multinode vertex (1)");
-      goto abort;
+      goto fail;
     }
     flaggsttax[vertlocnum] = multlocnum + vertlocadj;
 
@@ -170,44 +170,44 @@ DgraphMatchData * restrict const    mateptr)
       if ((edgelocnum < grafptr->baseval) ||
           (edgelocnum >= (grafptr->edgelocsiz + grafptr->baseval))) {
         errorPrint ("dgraphMatchCheck: invalid multinode vertex (2)");
-        goto abort;
+        goto fail;
       }
 
       vertglbend = edgeloctax[edgelocnum];
 
       if (mategsttax[vertlocnum] != vertglbend) {
         errorPrint ("dgraphMatchCheck: invalid mate array (1)");
-        goto abort;
+        goto fail;
       }
 
       vertgstend = edgegsttax[edgelocnum];
 
       if (flaggsttax[vertgstend] != -1) {
         errorPrint ("dgraphMatchCheck: duplicate multinode vertex (2)");
-        goto abort;
+        goto fail;
       }
       flaggsttax[vertgstend] = multlocnum + vertlocadj;
 
       if (mategsttax[vertgstend] != vertglbnum) {
         errorPrint ("dgraphMatchCheck: invalid mate array (2)");
-        goto abort;
+        goto fail;
       }
 
       procngbnum = procgsttax[vertgstend];        /* Find neighbor owner process                                      */
       if ((procngbnum < 0) || (procngbnum >= grafptr->procngbnbr)) { /* If neighbor had not been computed or is wrong */
         errorPrint ("dgraphMatchCheck: internal error (1)");
-        goto abort;
+        goto fail;
       }
       if ((grafptr->procvrttab[procngbtab[procngbnum]]     >  vertglbend) ||
           (grafptr->procvrttab[procngbtab[procngbnum] + 1] <= vertglbend)) {
         errorPrint ("dgraphMatchCheck: internal error (2)");
-        goto abort;
+        goto fail;
       }
 
       vsndidxnum = nsndidxtab[procngbnum] ++;     /* Get position of message in send array */
       if (vsndidxnum >= mateptr->c.vsnddsptab[procngbtab[procngbnum] + 1]) {
         errorPrint ("dgraphMatchCheck: internal error (3)");
-        goto abort;
+        goto fail;
       }
       vsnddattab[vsndidxnum].datatab[0] = vertglbnum;
       vsnddattab[vsndidxnum].datatab[1] = vertglbend;
@@ -219,7 +219,7 @@ DgraphMatchData * restrict const    mateptr)
 
       if (mategsttax[vertlocnum] != vertglbend) {
         errorPrint ("dgraphMatchCheck: invalid mate array (3)");
-        goto abort;
+        goto fail;
       }
 
       if (vertglbend == vertglbnum)               /* If single multinode */
@@ -228,7 +228,7 @@ DgraphMatchData * restrict const    mateptr)
       vertlocend = vertglbend - vertlocadj;
       if ((vertlocend < baseval) || (vertlocend >= vertlocnnd)) {
         errorPrint ("dgraphMatchCheck: invalid multinode vertex (3)");
-        goto abort;
+        goto fail;
       }
 
       edgelocnum = vertloctax[vertlocnum];
@@ -237,7 +237,7 @@ DgraphMatchData * restrict const    mateptr)
         for ( ; ; edgelocnum ++) {                /* Loop on edges of first multinode vertex             */
           if (edgelocnum >= edgelocnnd) {         /* If not a valid neighbor                             */
             errorPrint ("dgraphMatchCheck: invalid multinode vertex (4)");
-            goto abort;
+            goto fail;
           }
           if (edgeloctax[edgelocnum] == vertglbend) /* If edge to end vertex found */
             break;
@@ -246,18 +246,18 @@ DgraphMatchData * restrict const    mateptr)
 
       if (flaggsttax[vertlocend] != -1) {
         errorPrint ("dgraphMatchCheck: duplicate multinode vertex (3)");
-        goto abort;
+        goto fail;
       }
       flaggsttax[vertlocend] = multlocnum + vertlocadj;
 
       if (mategsttax[vertlocend] != vertglbnum) {
         errorPrint ("dgraphMatchCheck: invalid mate array (4)");
-        goto abort;
+        goto fail;
       }
     }
   }
   cheklocval = -1;
-abort:
+fail:
   cheklocval ++;
 
   if (MPI_Allreduce (&cheklocval, &chekglbval, 1, MPI_INT, MPI_SUM, mateptr->c.finegrafptr->proccomm) != MPI_SUCCESS) {
