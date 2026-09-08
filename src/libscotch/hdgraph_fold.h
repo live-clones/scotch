@@ -1,4 +1,4 @@
-/* Copyright 2007-2009 ENSEIRB, INRIA & CNRS
+/* Copyright 2007-2009,2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -43,6 +43,8 @@
 /**                                 to   : 06 sep 2006     **/
 /**                # Version 5.1  : from : 03 jan 2009     **/
 /**                                 to   : 03 jan 2009     **/
+/**                # Version 7.0  : from : 08 sep 2026     **/
+/**                                 to   : 08 sep 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -51,13 +53,15 @@
 */
 
 /* Slot indices used for point-to-point folding
-   communications. First indices are used for
-   communications without further processing.
-   At the moment, there is one anonymous slot:
-   vnumloctab.                                  */
+   communications. First slot indices are used
+   incrementally for communications that do not
+   require to wait for further processing upon
+   reception: all sends for all kinds of senders,
+   and one kind of data for pure receivers:
+   vnumloctab.                                    */
 
 typedef enum HdgraphFoldTag_ {
-  HDGRAPHFOLDTAGENBR = 1,                         /*+ Edge size message  +*/
+  HDGRAPHFOLDTAGESIZ = 1,                         /*+ Edge size message  +*/
   HDGRAPHFOLDTAGVERT,                             /*+ vertloctab message +*/
   HDGRAPHFOLDTAGVEND,                             /*+ vendloctab message +*/
   HDGRAPHFOLDTAGVELO,                             /*+ veloloctab message +*/
