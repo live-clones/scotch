@@ -37,7 +37,7 @@
 /**                Clement BARTHELEMY                      **/
 /**                                                        **/
 /**   FUNCTION   : This module tests the operation of      **/
-/**                the SCOTCH_dgraphBand() routine.        **/
+/**                the SCOTCH_dgraphRedist() routine.      **/
 /**                                                        **/
 /**   DATES      : # Version 6.0  : from : 21 feb 2012     **/
 /**                                 to   : 22 may 2018     **/
@@ -161,7 +161,7 @@ char *              argv[])
   SCOTCH_dgraphData (&srcgrafdat, NULL, &vertglbnbr, &vertlocnbr, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
   if ((partloctab = malloc (vertlocnbr * sizeof (SCOTCH_Num))) == NULL) {
-    SCOTCH_errorPrint ("main: cannot allocate frontier array");
+    SCOTCH_errorPrint ("main: cannot allocate part array");
     exit (EXIT_FAILURE);
   }
 
