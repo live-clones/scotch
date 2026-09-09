@@ -173,6 +173,8 @@ The following people contribute(d) to the development of **Scotch**:
 
 * Xavier MULLER
 
+* Charles PELLEGRINI
+
 * François PELLEGRINI (PI)
 
 * Florent PRUVOST
