@@ -189,7 +189,7 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 
   if (CONTEXTINIT (libgrafptr)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot initialize context");
-    goto abort;
+    goto fail;
   }
 
   srcgrafptr = (Dgraph *) CONTEXTGETOBJECT (libgrafptr);
@@ -197,25 +197,25 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 #ifdef SCOTCH_DEBUG_DGRAPH1
   if ((listlocnbr < 0) || (listlocnbr > srcgrafptr->vertlocnbr)) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": invalid parameters (1)");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_DGRAPH1 */
 #ifdef SCOTCH_DEBUG_DGRAPH2
   if (dgraphCheck (srcgrafptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": invalid input graph");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_DGRAPH2 */
 
   if (*((Strat **) straptr) == NULL) {            /* Set default ordering strategy if necessary */
     if (SCOTCH_stratDgraphOrderBuild (straptr, SCOTCH_STRATQUALITY, srcgrafptr->procglbnbr, 0, 0.2))
-      goto abort;
+      goto fail;
   }
 
   ordstraptr = *((Strat **) straptr);
   if (ordstraptr->tablptr != &hdgraphorderststratab) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": not a distributed ordering strategy");
-    goto abort;
+    goto fail;
   }
 
   srcordeptr = (Dorder *) libordeptr;             /* Get ordering */
@@ -223,12 +223,12 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
   dorderFree (srcordeptr);                        /* Clean all existing ordering data */
   if ((cbl0ptr = dorderFrst (srcordeptr)) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create root column block");
-    goto abort;
+    goto fail;
   }
 
   if (dgraphGhst (srcgrafptr) != 0) {             /* Compute ghost edge array if not already present */
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot compute ghost edge array");
-    goto abort;
+    goto fail;
   }
 
   halgrafdat.s            = *srcgrafptr;          /* Copy non-halo graph data       */
@@ -245,11 +245,11 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 
   if (MPI_Allreduce (&listlocnbr, &listglbnbr, 1, GNUM_MPI, MPI_SUM, srcgrafptr->proccomm) != MPI_SUCCESS) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": communication error (1)");
-    goto abort;
+    goto fail;
   }
   if (listglbnbr == 0) {                          /* If empty list, return identity permutation */
     o = hdgraphOrderSi (halgrafptr, cbl0ptr);
-    goto abort;
+    goto fail;
   }
 
   if (listglbnbr == srcgrafptr->vertglbnbr)       /* If all vertices in list, order whole graph */
@@ -257,7 +257,7 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
   else {                                          /* If not, order the subset of vertices */
     if (hdgraphInduceList (&halgrafdat, listlocnbr, listloctab, &halgraftmp) != 0) {
       errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create induced subgraph");
-      goto abort;
+      goto fail;
     }
     halgrafptr = &halgraftmp;                     /* Ordering will be computed on induced graph */
 
@@ -265,7 +265,7 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 
     if ((cbl1ptr = dorderNew (cbl0ptr, srcordeptr->proccomm)) == NULL) {
       errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create induced column block (1)");
-      goto abort;
+      goto fail;
     }
     cbl1ptr->ordeglbval = 0;                      /* Un-based inverse permutation index */
     cbl1ptr->vnodglbnbr = halgrafptr->s.vertglbnbr;
@@ -276,7 +276,7 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 
   if (hdgraphOrderSt (halgrafptr, cblkptr, ordstraptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot compute ordering");
-    goto abort;
+    goto fail;
   }
 
   if (listglbnbr < srcgrafptr->vertglbnbr) {      /* Order vertices excluded from list, if any    */
@@ -293,7 +293,7 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
 
     if ((vnumloctab = memAlloc (halgrafdat.s.vertlocnbr * sizeof (Gnum))) == NULL) {
       errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": out of memory");
-      goto abort;
+      goto fail;
     }
 
     memSet (vnumloctab, 0, halgrafdat.s.vertlocnbr * sizeof (Gnum));
@@ -308,14 +308,14 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
     if (vnumlocnum != vnumlocnbr) {
       errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": internal error");
       memFree    (vnumloctab);
-      goto abort;
+      goto fail;
     }
 #endif /* SCOTCH_DEBUG_DGRAPH1 */
 
     if ((cbl2ptr = dorderNew (cbl0ptr, srcordeptr->proccomm)) == NULL) { /* TRICK: create column block after first ordering */
       errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": cannot create induced column block (2)");
       memFree    (vnumloctab);
-      goto abort;
+      goto fail;
     }
     cbl2ptr->ordeglbval = halgrafptr->s.vertglbnbr;
     cbl2ptr->vnodglbnbr = srcgrafptr->vertglbnbr - halgrafptr->s.vertglbnbr;
@@ -325,7 +325,7 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
                   1, GNUM_MPI, MPI_SUM, srcgrafptr->proccomm) != MPI_SUCCESS) {
       errorPrint (STRINGIFY (SCOTCH_dgraphOrderComputeList) ": communication error (2)");
       memFree    (vnumloctab);
-      goto abort;
+      goto fail;
     }
     procvrtval -= vnumlocnbr - halgrafdat.s.baseval;
 
@@ -337,7 +337,7 @@ SCOTCH_Strat * const        straptr)              /*+ Ordering strategy         
   else
     o = 0;
 
-abort:
+fail:
   if (halgrafptr != NULL) {                       /* If at least one halo graph structure has been created */
     hdgraphExit (&halgrafdat);                    /* Free the contents of the full halo graph structure    */
     if (halgrafptr == &halgraftmp)                /* If the induced subgraph structure has been created    */

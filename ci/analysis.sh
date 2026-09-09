@@ -4,7 +4,10 @@
 #for filename in $(ls -1 scotch-*.lcov); do export LCOVFILES="$LCOVFILES -a $filename"; done
 #lcov $LCOVFILES -o scotch.lcov
 #lcov_cobertura scotch.lcov --output scotch-coverage.xml
-gcovr --xml-pretty --exclude-unreachable-branches --print-summary -o coverage.xml --root .
+
+# --merge-mode-functions is needed for libscotchmetisv3/v5 functions with the same name
+# needs gcovr > 6.0
+gcovr --xml-pretty --exclude-unreachable-branches --merge-mode-functions separate --print-summary -o coverage.xml --root .
 
 export CPPCHECK_DEFINITIONS="$(grep SCOTCH_GITLAB_SEPARATOR < src/Makefile.inc | sed -e 's#^CFLAGS.*SCOTCH_GITLAB_SEPARATOR##1' | sed -e 's#[ ][^-][^ ]*##g' -e 's#[ ][-][^D][^ ]*##g')"
 export CPPCHECK_INCLUDES="-Isrc/scotch -Isrc/misc -Isrc/libscotch -Isrc/esmumps -Isrc/libscotchmetis"

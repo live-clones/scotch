@@ -115,7 +115,7 @@ const SCOTCH_Num            flagval)              /* Flag value (not used)      
                      &queutax, (size_t) (vertnbr * sizeof (Gnum)),
                      &randtax, (size_t) (vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint (STRINGIFY (SCOTCH_graphColor) ": out of memory");
-    goto abort;
+    goto fail;
   }
   queutax -= baseval;
   randtax -= baseval;
@@ -167,7 +167,7 @@ const SCOTCH_Num            flagval)              /* Flag value (not used)      
 
   o = 0;
 
-abort:
+fail:
   CONTEXTEXIT (libgrafptr);
   return (o);
 }

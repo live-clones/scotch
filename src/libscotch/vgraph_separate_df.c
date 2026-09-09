@@ -213,7 +213,7 @@ const VgraphSeparateDfParam * const paraptr)      /*+ Method parameters +*/
               diffval = -VGRAPHSEPARATEDFEPSILON;
           }
           if (isnan (diffval))                    /* If overflow occured                                                       */
-            goto abort;                           /* Exit main loop without swapping arrays so as to keep last valid iteration */
+            goto fail;                            /* Exit main loop without swapping arrays so as to keep last valid iteration */
 
           difntax[vertnum] = diffval / edlstax[vertnum]; /* Prepare vertex for diffusion */
         }
@@ -227,7 +227,7 @@ const VgraphSeparateDfParam * const paraptr)      /*+ Method parameters +*/
       difntax = difotax;
       difotax = difttax;
     }
-abort :                                           /* If overflow occured, resume here */
+fail:                                             /* If overflow occured, resume here */
 
     for (vertnum = grafptr->s.baseval; vertnum < grafptr->s.vertnnd; vertnum ++) /* Pre-set parts without separator */
       parttax[vertnum] = (difotax[vertnum] <= 0.0F) ? 0 : 1;

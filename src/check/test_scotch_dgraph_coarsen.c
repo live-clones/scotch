@@ -44,7 +44,7 @@
 /**                # Version 6.1  : from : 16 jun 2021     **/
 /**                                 to   : 28 dec 2021     **/
 /**                # Version 7.0  : from : 03 jul 2023     **/
-/**                                 to   : 12 apr 2026     **/
+/**                                 to   : 08 sep 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -77,9 +77,12 @@ char *              argv[])
   MPI_Comm            proccomm;
   int                 procglbnbr;                 /* Number of processes sharing graph data */
   int                 proclocnum;                 /* Number of this process                 */
-  SCOTCH_Dgraph       finegrafdat;
+  SCOTCH_Num *        partloctab;
+  SCOTCH_Dgraph *     finegrafptr;
+  SCOTCH_Dgraph       finegraftab[2];
   SCOTCH_Num          finevertglbnbr;
   SCOTCH_Num          finevertlocnbr;
+  SCOTCH_Num          finevertlocnum;
   SCOTCH_Dgraph       coargrafdat;
   SCOTCH_Num          coarvertglbnbr;
   SCOTCH_Num          coarvertlocnbr;
@@ -88,6 +91,7 @@ char *              argv[])
   int                 thrdreqlvl;
   int                 thrdprolvl;
 #endif /* SCOTCH_PTHREAD */
+  char *              imbastr;
   int                 i;
 
   SCOTCH_errorProg (argv[0]);
@@ -133,31 +137,45 @@ char *              argv[])
   fileBlockInit (C_fileTab, 1);                   /* Set default stream pointers */
   fileBlockName (C_fileTab, 0) = argv[1];         /* Use provided file           */
 
-  if (SCOTCH_dgraphInit (&finegrafdat, proccomm) != 0) { /* Initialize fine graph */
+  if (SCOTCH_dgraphInit (&finegraftab[0], proccomm) != 0) { /* Initialize fine graph */
     SCOTCH_errorPrint ("main: cannot initialize graph (1)");
     exit (EXIT_FAILURE);
   }
 
   fileBlockOpenDist (C_fileTab, 1, procglbnbr, proclocnum, 0); /* Open all files */
 
-  if (SCOTCH_dgraphLoad (&finegrafdat, fileBlockFile (C_fileTab, 0), -1, 0) != 0) {
+  if (SCOTCH_dgraphLoad (&finegraftab[0], fileBlockFile (C_fileTab, 0), -1, 0) != 0) {
     SCOTCH_errorPrint ("main: cannot load graph");
     exit (EXIT_FAILURE);
   }
 
-  fileBlockClose (C_fileTab, 1);                  /* Always close explicitely to end eventual (un)compression tasks */
+  fileBlockClose (C_fileTab, 1);                  /* Always close explicitely to end eventual (de)compression tasks */
 
   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
     SCOTCH_errorPrint ("main: cannot communicate (2)");
     exit (EXIT_FAILURE);
   }
 
-  SCOTCH_dgraphData (&finegrafdat, NULL, &finevertglbnbr, &finevertlocnbr, NULL, NULL, NULL, NULL, NULL,
+  SCOTCH_dgraphData (&finegraftab[0], NULL, &finevertglbnbr, &finevertlocnbr, NULL, NULL, NULL, NULL, NULL,
                      NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+  if ((partloctab = malloc (finevertlocnbr * sizeof (SCOTCH_Num))) == NULL) {
+    SCOTCH_errorPrint ("main: cannot allocate part array");
+    exit (EXIT_FAILURE);
+  }
+
+  for (finevertlocnum = 0; finevertlocnum < finevertlocnbr; finevertlocnum ++) { /* Create imbalanced distribution */
+    SCOTCH_Num          partnum;
+
+    partnum = finevertlocnum % (3 * procglbnbr);
+    partloctab[finevertlocnum] = (partnum >= (procglbnbr - 1)) ? 0 : ((procglbnbr - 1) - partnum);
+  }
 
   coarrat = 0.8;                                  /* Lazy coarsening ratio */
 
-  for (i = 0; i < 3; i ++) {                      /* For all test cases */
+  imbastr     = "";
+  finegrafptr = &finegraftab[0];                  /* Point to first graph */
+  for (i = 0; i < 6; i ++) {                      /* For all test cases   */
     SCOTCH_Num          coarvertlocmax;
     SCOTCH_Num *        multloctab;
     SCOTCH_Num          foldval;
@@ -166,7 +184,23 @@ char *              argv[])
     int                 procnum;
     int                 o;
 
-    switch (i) {
+    if (i == 3) {                                 /* Switch to imbalanced fine graph */
+      if (SCOTCH_dgraphInit (&finegraftab[1], proccomm) != 0) {
+        SCOTCH_errorPrint ("main: cannot initialize graph (2)");
+        exit (EXIT_FAILURE);
+      }
+      if (SCOTCH_dgraphRedist (&finegraftab[0], partloctab, NULL, -1, -1, &finegraftab[1]) != 0) {
+        SCOTCH_errorPrint ("main: cannot compute imbalanced redistributed graph");
+        exit (EXIT_FAILURE);
+      }
+      finegrafptr = &finegraftab[1];              /* Point to imbalanced graph */
+      imbastr     = ", imbalanced";
+
+      SCOTCH_dgraphData (finegrafptr, NULL, &finevertglbnbr, &finevertlocnbr, NULL, NULL, NULL, NULL, NULL,
+                         NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    }
+
+    switch (i % 3) {                              /* For all groups of three */
       case 0 :
         foldval = SCOTCH_COARSENNONE;
         foldstr = "Plain coarsening";
@@ -182,21 +216,21 @@ char *              argv[])
     }
 
     if (proclocnum == 0)
-      printf ("%s\n", foldstr);
+      printf ("%s%s\n", foldstr, imbastr);
 
-    coarvertlocmax = SCOTCH_dgraphCoarsenVertLocMax (&finegrafdat, foldval); /* Get upper bound on size of multinode array */
+    coarvertlocmax = SCOTCH_dgraphCoarsenVertLocMax (finegrafptr, foldval); /* Get upper bound on size of multinode array */
 
     if ((multloctab = malloc (coarvertlocmax * 2 * sizeof (SCOTCH_Num))) == NULL) { /* Allocate prescribed size */
       SCOTCH_errorPrint ("main: cannot allocate multinode array");
       exit (EXIT_FAILURE);
     }
 
-    if (SCOTCH_dgraphInit (&coargrafdat, proccomm) != 0) { /* Initialize band graph */
-      SCOTCH_errorPrint ("main: cannot initialize graph (2)");
+    if (SCOTCH_dgraphInit (&coargrafdat, proccomm) != 0) { /* Initialize coarse graph */
+      SCOTCH_errorPrint ("main: cannot initialize graph (3)");
       exit (EXIT_FAILURE);
     }
 
-    o = SCOTCH_dgraphCoarsen (&finegrafdat, 0, coarrat, foldval, &coargrafdat, multloctab);
+    o = SCOTCH_dgraphCoarsen (finegrafptr, 0, coarrat, foldval, &coargrafdat, multloctab);
 
     switch (o) {
       case 0 :
@@ -248,7 +282,9 @@ char *              argv[])
     free (multloctab);
   }
 
-  SCOTCH_dgraphExit (&finegrafdat);
+  free (partloctab);
+  SCOTCH_dgraphExit (&finegraftab[1]);
+  SCOTCH_dgraphExit (&finegraftab[0]);
 
   MPI_Finalize ();
   exit (EXIT_SUCCESS);

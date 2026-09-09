@@ -186,7 +186,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
     velmnum = meshptr->m.velmbas + contextIntRandVal (meshptr->contptr, meshptr->m.velmnbr); /* Randomly select first root element vertex */
     velxptr = velxtax + velmnum;                  /* Set root pointer to root element                                                     */
     if (meshptr->m.verttax[velmnum] == meshptr->m.vendtax[velmnum]) /* If picked an isolated element, search for another root             */
-      goto next;
+      goto skip;
 
     do {                                          /* Loop on root element vertices        */
       Gnum                velmnum;                /* Number of current element to process */
@@ -359,7 +359,7 @@ const VmeshSeparateGgParam * restrict const paraptr) /*+ Method parameters    +*
 #endif /* SCOTCH_DEBUG_VMESH3 */
       } while ((velxptr = (VmeshSeparateGgElem *) gainTablFrst (tablptr)) != NULL);
 
-next:                                             /* Select next root element systematically */
+skip:                                             /* Select next root element systematically */
       if (permptr == NULL) {                      /* If element permutation not yet built    */
         if (permtab == NULL) {                    /* If permutation array not yet allocated  */
           if ((permtab = (Gnum *) memAlloc (meshptr->m.velmnbr * sizeof (Gnum))) == NULL) {

@@ -311,7 +311,7 @@ const WgraphPartRbSplit * const spltptr)
   else {                                          /* If not the case, build induced subgraph */
     if (graphInducePart (orggrafptr, orgparttax, indvertnbr, indpartval, &actgrafdat.s) != 0) {
       errorPrint ("wgraphPartRb2: cannot induce graph");
-      goto abort;
+      goto fail;
     }
   }
 
@@ -320,7 +320,7 @@ const WgraphPartRbSplit * const spltptr)
                      &actgrafdat.frontab, (size_t) (actgrafdat.s.vertnbr * sizeof (Gnum)), NULL) == NULL) {
     errorPrint ("wgraphPartRb2: out of memory");
     graphExit  (&actgrafdat.s);
-    goto abort;
+    goto fail;
   }
   actgrafdat.parttax   -= actgrafdat.s.baseval;
   actgrafdat.s.flagval |= VGRAPHFREEPART;         /* Free group leader   */
@@ -333,7 +333,7 @@ const WgraphPartRbSplit * const spltptr)
   if (vgraphSeparateSt (&actgrafdat, dataptr->straptr) != 0) { /* Perform bipartitioning */
     errorPrint ("wgraphPartRb2: cannot bipartition graph");
     vgraphExit (&actgrafdat);
-    goto abort;
+    goto fail;
   }
 
   if (inddomnsiz <= 2) {                          /* If end of recursion, set both parts and separator */
@@ -363,7 +363,7 @@ const WgraphPartRbSplit * const spltptr)
     wgraphPartRb2 (contptr, partval, &spltdat);
     vgraphExit    (&actgrafdat);
     if (o != 0)
-      goto abort;
+      goto fail;
     return;
   }
 
@@ -387,7 +387,7 @@ const WgraphPartRbSplit * const spltptr)
   if (o == 0)                                     /* If no error detected, return directly */
     return;
 
-abort:
+fail:
 #ifdef SCOTCH_PTHREAD
   pthread_mutex_lock (&dataptr->mutedat);
 #endif /* SCOTCH_PTHREAD */

@@ -40,6 +40,8 @@ SCOTCHTGTDIR		?= ../../tgt
 LIBESMUMPS		= -lesmumps -lscotch -lscotcherr
 LIBPTSCOTCH		= -lptscotch -lscotch -lptscotcherr
 LIBSCOTCH		= -lscotch -lscotcherr
+LIBMETIS		= -lscotchmetis
+LIBPARMETIS		= -lptscotchparmetis
 
 include ../Makefile.inc
 
@@ -97,10 +99,10 @@ PROGSED			?= sed
 				$(CC) $(CFLAGS) $(CLIBFLAGS) -I$(SCOTCHINCLUDEDIR) -c $(<) -o $(@)
 
 %_v3$(EXE) :	%.c
-				$(CC) $(CFLAGS) -DSCOTCH_METIS_VERSION=3 -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv3 $(SCOTCHLIBS) $(LDFLAGS)
+				$(CC) $(CFLAGS) -DSCOTCH_METIS_VERSION=3 -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(METISLIB)v3 $(SCOTCHLIBS) $(LDFLAGS)
 
 %_v5$(EXE) :	%.c
-				$(CC) $(CFLAGS) -DSCOTCH_METIS_VERSION=5 -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv5 $(SCOTCHLIBS) $(LDFLAGS)
+				$(CC) $(CFLAGS) -DSCOTCH_METIS_VERSION=5 -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(METISLIB)v5 $(SCOTCHLIBS) $(LDFLAGS)
 
 %$(EXE)	:	%.c
 				$(CC) $(CFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
@@ -110,10 +112,10 @@ PROGSED			?= sed
 				$(PROGSED) -e 's/SCOTCHMETISNAMEFU[[:space:]]*(\([A-Za-z0-9_]*\))/'"$(SCOTCH_METIS_PREFIXFU)"'\1/g' $(@).tmp > $(@)
 
 %_v3$(EXE):	%.f90
-				$(FC) $(FFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv3 $(SCOTCHLIBS) $(LDFLAGS)
+				$(FC) $(FFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(METISLIB)v3 $(SCOTCHLIBS) $(LDFLAGS)
 
 %_v5$(EXE):	%.f90
-				$(FC) $(FFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) -lscotchmetisv5 $(SCOTCHLIBS) $(LDFLAGS)
+				$(FC) $(FFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(METISLIB)v5 $(SCOTCHLIBS) $(LDFLAGS)
 
 %$(EXE):	%.f90
 				$(FC) $(FFLAGS) -I$(SCOTCHINCLUDEDIR) -L$(SCOTCHLIBDIR) $(<) -o $(@) $(SCOTCHLIBS) $(LDFLAGS)
@@ -127,17 +129,17 @@ PROGSED			?= sed
 nothing				:
 
 check				:	realclean
-					$(MAKE) CC="$(CCS)" CCD="$(CCS)" SCOTCHLIBS="$(LIBSCOTCH)" $(CHECKSCOTCH)
-					$(MAKE) CC="$(CCS)" CCD="$(CCS)" FC="$(FCS)" SCOTCHLIBS="$(LIBSCOTCH)" $(CHECKSCOTCHF)
+					$(MAKE) CC="$(CCS)" CCD="$(CCS)" SCOTCHLIBS="$(LIBSCOTCH)" METISLIB="$(LIBMETIS)" $(CHECKSCOTCH)
+					$(MAKE) CC="$(CCS)" CCD="$(CCS)" FC="$(FCS)" SCOTCHLIBS="$(LIBSCOTCH)" METISLIB="$(LIBMETIS)" $(CHECKSCOTCHF)
 
 check_full			:	realclean
-					$(MAKE) CC="$(CCS) -DSCOTCH_DEBUG_FULL" CCD="$(CCS)" SCOTCHLIBS="$(LIBSCOTCH)" check_prog_full
+					$(MAKE) CC="$(CCS) -DSCOTCH_DEBUG_FULL" CCD="$(CCS)" SCOTCHLIBS="$(LIBSCOTCH)" METISLIB="$(LIBMETIS)" check_prog_full
 
 ptcheck				:	realclean
-					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIBS="$(LIBPTSCOTCH)" $(CHECKPTSCOTCH)
+					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIBS="$(LIBPTSCOTCH)" METISLIB="$(LIBPARMETIS)" $(CHECKPTSCOTCH)
 
 ptcheck_full			:	realclean
-					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIBS="$(LIBPTSCOTCH)" check_prog_dfull
+					$(MAKE) CFLAGS="$(CFLAGS) -DSCOTCH_PTSCOTCH" CC="$(CCP)" SCOTCHLIBS="$(LIBPTSCOTCH)" METISLIB="$(LIBPARMETIS)" check_prog_dfull
 
 escheck				:	realclean
 					$(MAKE) CFLAGS="$(CFLAGS)" CC="$(CCP)" SCOTCHLIBS="$(LIBESMUMPS)" $(CHECKESMUMPS)
@@ -161,6 +163,7 @@ realclean			:	clean
 					test_libmetis_dual_f.f90.tmp		\
 					test_libmetis_dual_f_v3			\
 					test_libmetis_dual_f_v5			\
+					test_libparmetis_v3			\
 					test_scotch_arch			\
 					test_scotch_arch_build			\
 					test_scotch_arch_deco			\
@@ -254,6 +257,7 @@ CHECKPTSCOTCH = 	check_strat_par				\
 			check_scotch_dgraph_grow		\
 			check_scotch_dgraph_induce     		\
 			check_scotch_dgraph_redist		\
+			check_libparmetis_v3			\
 			check_libparmetis_dual          	\
 			check_prog_dgord			\
 			check_prog_dgpart			\
@@ -384,6 +388,16 @@ test_libmetis_dual_f_v5		:	test_libmetis_dual_f.f90	\
 					$(SCOTCHLIBDIR)/libscotch$(LIB)	\
 					$(SCOTCHLIBDIR)/libscotchmetisv5$(LIB)
 # libparmetis
+
+check_libparmetis_v3		:	test_libparmetis_v3
+					$(EXECP4) ./test_libparmetis_v3 data/bump.grf
+					$(EXECP4) ./test_libparmetis_v3 data/bump_b1.grf
+					$(EXECP4) ./test_libparmetis_v3 data/bump_imbal_32.grf
+
+test_libparmetis_v3		:	test_libparmetis.c				\
+					$(SCOTCHLIBDIR)/libptscotchparmetisv3$(LIB)	\
+					$(SCOTCHLIBDIR)/libptscotch$(LIB)
+
 
 check_libparmetis_dual		:	$(SCOTCHBINDIR)/adm2dgr$(EXE)
 					$(EXECP3) $(SCOTCHBINDIR)/adm2dgr -c2 data/small3-%r.adm $(TMPDIR)/small3-%r.dgr

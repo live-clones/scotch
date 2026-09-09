@@ -225,7 +225,7 @@ Gnum * restrict * restrict const  bandvnumptr)    /*+ Pointer to bandvnumtax    
   if (mapAlloc (&bandgrafptr->m) != 0) {          /* Allocate band mapping part array                       */
     errorPrint ("kgraphBand: out of memory (2)");
     bandgrafptr->m.domntab = NULL;                /* TRICK: clean domain array to prevent its freeing on error */
-abort:
+fail:
     kgraphExit (bandgrafptr);
     if (termhashtab != NULL)
       memFree (termhashtab);
@@ -240,7 +240,7 @@ abort:
                       &bandgrafptr->s.velotax, (size_t) ( bandvertnbr      * sizeof (Gnum)), NULL) == NULL) ||
       ((bandgrafptr->s.edgetax = memAlloc ((bandedgenbr + bandedlonbr) * sizeof (Gnum))) == NULL)) {
     errorPrint ("kgraphBand: out of memory (3)");
-    goto abort;
+    goto fail;
   }
   bandgrafptr->s.verttax -= bandgrafptr->s.baseval;
   bandgrafptr->s.velotax -= bandgrafptr->s.baseval;
@@ -250,7 +250,7 @@ abort:
   if (vmlotax != NULL) {
     if ((bandvmlotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("kgraphBand: out of memory (4)");
-      goto abort;
+      goto fail;
     }
     bandvmlotax -= bandgrafptr->s.baseval;
     bandgrafptr->r.vmlotax  = bandvmlotax;
@@ -262,7 +262,7 @@ abort:
   if (parotax != NULL) {
     if ((bandparotax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) {
       errorPrint ("kgraphBand: out of memory (5)");
-      goto abort;
+      goto fail;
     }
     memSet (bandparotax + bandvertnbr - bandgrafptr->r.m.domnnbr, ~0, bandgrafptr->r.m.domnnbr * sizeof (Gnum)); /* Old parts of anchors are unspecified */
     bandparotax -= bandgrafptr->s.baseval;
@@ -276,13 +276,13 @@ abort:
                       &bandgrafptr->comploadavg, (size_t) ((domnnbr + 2) * sizeof (Gnum)), /* TRICK: always keep two slots for collective communication */
                       &bandgrafptr->comploaddlt, (size_t) ((domnnbr + 2) * sizeof (Gnum)), NULL) == NULL)) {
     errorPrint ("kgraphBand: out of memory (6)");
-    goto abort;                                   /* TRICK: kgraphExit() will free frontab */
+    goto fail;                                   /* TRICK: kgraphExit() will free frontab */
   }
   bandfrontab = bandgrafptr->frontab;
 
   if ((bandvnumtax = memAlloc (bandvertnbr * sizeof (Gnum))) == NULL) { /* Allocate alone since it is an output */
     errorPrint ("kgraphBand: out of memory (7)");
-    goto abort;
+    goto fail;
   }
 #ifdef SCOTCH_DEBUG_KGRAPH2
   memSet (bandvnumtax, ~0, (bandvertnbr * sizeof (Gnum)));

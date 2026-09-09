@@ -184,13 +184,13 @@ Context * restrict const    contptr)
 
     if (vertnbr != grafptr->vertnbr) {            /* If graph is not connected */
       diambst = GNUMMAX;
-      goto abort;
+      goto fail;
     }
   } while (diambst < diammax);
 
   diambst = diammax;
 
-abort:
+fail:
   fiboHeapExit (&fibodat);
   memFree (vexxtax + grafptr->baseval);
 

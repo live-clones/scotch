@@ -246,19 +246,19 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
 #ifdef SCOTCH_DEBUG_MESH2
   if (meshCheck (srcmeshptr) != 0) {
     errorPrint (STRINGIFY (SCOTCH_meshOrderComputeList) ": invalid input mesh");
-    goto abort;
+    goto fail;
   }
 #endif /* SCOTCH_DEBUG_MESH2 */
 
   if (*((Strat **) stratptr) == NULL) {           /* Set default ordering strategy if necessary */
     if (SCOTCH_stratMeshOrderBuild (stratptr, SCOTCH_STRATQUALITY, 0.1))
-      goto abort;
+      goto fail;
   }
 
   ordstratptr = *((Strat **) stratptr);
   if (ordstratptr->tablptr != &hmeshorderststratab) {
     errorPrint (STRINGIFY (SCOTCH_meshOrderComputeList) ": not a mesh ordering strategy");
-    goto abort;
+    goto fail;
   }
 
   srclistdat.vnumnbr = (Gnum)   listnbr;          /* Build vertex list */
@@ -268,15 +268,15 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
                 ? NULL : &srclistdat;             /* Is the list really necessary */
   if (srclistptr != NULL) {
     errorPrint (STRINGIFY (SCOTCH_meshOrderComputeList) ": node lists not yet implemented");
-    goto abort;
+    goto fail;
   }
 
   if ((o = hmeshOrderSt (&srcmeshdat, &libordeptr->o, 0, &libordeptr->o.rootdat, ordstratptr)) != 0)
-    goto abort;
+    goto fail;
 
 #ifdef SCOTCH_DEBUG_LIBRARY2
   if (orderCheck (&libordeptr->o) != 0)
-    goto abort;
+    goto fail;
 #endif /* SCOTCH_DEBUG_LIBRARY2 */
 
   if (libordeptr->permtab != NULL)                 /* Build direct permutation if wanted */
@@ -288,7 +288,7 @@ SCOTCH_Strat * const        stratptr)             /*+ Ordering strategy         
   if (libordeptr->cblkptr != NULL)                /* Set number of column blocks if wanted */
     *(libordeptr->cblkptr) = libordeptr->o.cblknbr;
 
-abort:
+fail:
   meshExit (&srcmeshdat.m);                       /* Free in case mesh had been reordered */
 
   CONTEXTEXIT (libmeshptr);

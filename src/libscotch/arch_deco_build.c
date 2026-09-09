@@ -54,7 +54,7 @@
 /**                # Version 6.0  : from : 28 jun 2011     **/
 /**                                 to   : 15 may 2018     **/
 /**                # Version 7.0  : from : 18 feb 2018     **/
-/**                                 to   : 25 aug 2026     **/
+/**                                 to   : 03 sep 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -95,11 +95,8 @@ ArchDecoBuildJob * const    jobtab)
 {
   ArchDecoBuildJob *      jobptr;
 
-  jobptr = jobtab;
-  do {
+  for (jobptr = jobtab; jobptr != NULL; jobptr = jobptr->joblink)
     graphExit (&jobptr->grafdat);
-    jobptr = jobptr->joblink;
-  } while (jobptr != NULL);
 }
 
 /********************************************/
@@ -219,35 +216,30 @@ Context * const             contptr)              /*+ Execution context         
     joblink = &jobtab[0];
   }
   while (joblink != NULL) {                       /* For all jobs in list */
-    joborgptr          = joblink;                 /* Get job              */
-    joblink            = joblink->joblink;        /* Remove job from list */
-    joborgptr->joblink = NULL;                    /* In case of freeing   */
+    joborgptr = joblink;                          /* Get job              */
+    joblink   = joblink->joblink;                 /* Remove job from list */
 
-    memCpy (&actgrafdat.s, &joborgptr->grafdat, sizeof (Graph));
+    memCpy (&actgrafdat.s, &joborgptr->grafdat, sizeof (Graph)); /* Graph structure is now managed within the active graph */
+
     actgrafdat.s.flagval = joborgptr->grafdat.flagval & ~GRAPHFREETABS;
     bgraphInit2 (&actgrafdat, 1, 1, 1, 0, 0);     /* Create active graph         */
     if (bgraphBipartSt (&actgrafdat, mapstrat) != 0) { /* Perform bipartitioning */
       errorPrint ("archDecoBuild: internal error");
-      archDecoBuildJobExit (joborgptr);
+fail:
       archDecoBuildJobExit (joblink);
-      archExit (&archdat);
-      mapExit  (&mappdat);
-      memFree  (jobtab);
-      return   (1);
+      graphExit (&actgrafdat.s);                  /* Only free graph part, global arrays kept */
+      archExit  (&archdat);
+      mapExit   (&mappdat);
+      memFree   (jobtab);
+      return (1);
     }
     if ((actgrafdat.compsize0 == 0) ||            /* If one of the jobs is empty */
         (actgrafdat.compsize0 == actgrafdat.s.vertnbr)) {
       errorPrint ("archDecoBuild: strategy leads to empty domains");
-      graphExit  (&actgrafdat.s);                 /* Only free graph part, global arrays kept */
-      archDecoBuildJobExit (joborgptr);
-      archDecoBuildJobExit (joblink);
-      archExit (&archdat);
-      mapExit  (&mappdat);
-      memFree  (jobtab);
-      return   (1);
+      goto fail;
     }
 
-    archVcmpltDomBipart ((const ArchVcmplt * const) (void *) &archdat, /* Update mapping domains */
+    archVcmpltDomBipart ((const ArchVcmplt * const) (void *) &archdat.data, /* Update mapping domains */
                          (const ArchVcmpltDom * const) (void *) &mappdat.domntab[joborgptr->domnum],
                          (ArchVcmpltDom * const) (void *) &domsub0,
                          (ArchVcmpltDom * const) (void *) &mappdat.domntab[mappdat.domnnbr]);

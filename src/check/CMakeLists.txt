@@ -435,6 +435,17 @@ if(BUILD_PTSCOTCH)
   add_test_ptscotch(test_scotch_dgraph_redist ${dat}/bump_b100000.grf)
   if(BUILD_LIBSCOTCHMETIS)
     set(version 3)
+
+    add_executable(test_libparmetisv${version} test_libparmetis.c)
+    set_target_properties(test_libparmetisv${version} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    target_compile_definitions(test_libparmetisv${version} PRIVATE SCOTCH_METIS_VERSION=${version})
+    target_include_directories(test_libparmetisv${version} PRIVATE ${GENERATED_INCLUDE_DIR})
+    target_link_libraries(test_libparmetisv${version} ptscotchparmetisv${version} ptscotch ptscotcherr)
+
+    add_test(NAME test_libparmetisv${version}_1 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:test_libparmetisv${version}> ${dat}/bump.grf)
+    add_test(NAME test_libparmetisv${version}_2 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:test_libparmetisv${version}> ${dat}/bump_b1.grf)
+    add_test(NAME test_libparmetisv${version}_3 COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 4 $<TARGET_FILE:test_libparmetisv${version}> ${dat}/bump_imbal_32.grf)
+
     # Small test (procnbr, baseval, noconbr) = (3, 1, 2)
     add_test(NAME parmetis_mesh2dual_small COMMAND ${BASH} -c
       "${MPIEXEC_EXECUTABLE} ${MPIEXEC_PREFLAGS} ${MPIEXEC_NUMPROC_FLAG} 3 $<TARGET_FILE:adm2dgr> -c2 '${dat}/small3-%r.adm' small3-%r.dgr && \

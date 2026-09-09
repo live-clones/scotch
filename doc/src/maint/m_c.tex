@@ -267,7 +267,133 @@ set of point-to-point communications, but collectives. It could well
 be redesigned to re-use the mechanisms implemented here, with relevant
 code factorization.
 
+\subsubsection{\texttt{dgraphFold2()}}
+
+The \texttt{dgraphFold2()} routine creates the folded distributed
+graph from the provided initial distributed graph and a part value
+which indicates to which half of the processing elements the graph
+is to be folded. This routine may be called simultaneously by two
+threads which will each perform the folding to their respective part.
+
+In the context of this routine, a processing element can be of any of
+the following three kinds: a sender, which belongs to the other part,
+and has to transfer all its vertex and edge data to receiver
+processes; a receiver, which belongs to the receiving part and has
+vertex data to receive from sender processes; and a receiver-sender,
+that is, a process belonging to the receiving part yet is
+overloaded so that it has to off-load some of its data to other
+receivers.
+
+The first phase of the algorithm set the data structures. Firstly, it
+computes compact graph data from the input graph, if needed, since the
+routine expects the adjacency sub-arrays to be contiguous. Then,
+\texttt{dgraph\lbt Fold\lbt Comm()} is called (see
+Section~\ref{sec-code-dgraphfoldcomm}), to compute the communication
+pattern for graph data exchange. The output of this routine consists,
+among others, in \texttt{comm\lbt vrt\lbt tab}, an array of blocks of
+data that contain each: the number of vertices to be sent/received,
+and the sender/receiver process number. This array is traversed to
+accumulate the number of vertices to be received, in
+\texttt{fld\lbt vert\lbt locnbr}. Once this size is known, folded
+vertex arrays can be allocated, as well as work data index
+arrays. These arrays, which depend on the number of exchanges per
+process, are:
+\begin{itemize}
+\iteme[\texttt{fldvertidxtab}]
+  Array of vertex buffer start indices for vertex data send/receive
+  operations. For pure senders and pure receivers, the first index
+  value in this array is always $0$. For receiver-senders, it is the
+  number of vertices kept on the processing element. It is created
+  independently on sender and receiver processing elements, thanks to
+  the data returned by \texttt{dgraph\lbt Fold\lbt Comm()}.
+\iteme[\texttt{fldedgeidxtab}]
+  Array of edge buffer start indices for edge data send/receive
+  operations. For pure senders and pure receivers, the first index
+  value in this array is always be $0$. For receiver-senders, it is
+  the number of edge arcs kept on the processing element. This array
+  is created locally by sender and receiver-sender processes; for pure
+  receivers, it is created from the data received in their
+  \texttt{fld\lbt edge\lbt cnttab} arrays from sender processes.
+\iteme[\texttt{fldedgecnttab}]
+  Array of edge buffer sizes for edge data send/receive operations.
+  This array is created locally by sender and receiver-sender
+  processes; for pure receivers, it is filled-in with data received
+  from sender and receiver-sender processes.
+\iteme[\texttt{fldedgecnptab}]
+  This array is used by senders only. It is a copy of their
+  \texttt{fld\lbt edge\lbt cnttab} array. Since the MPI standard
+  prescribes that buffers used for asynchronous sending cannot be used
+  during communication, the \texttt{fld\lbt edge\lbt cnptab} array is
+  used for sending data, while the \texttt{fld\lbt edge\lbt cnttab}
+  array can still be used to provide data to subsequent MPI
+  asynchronous communication function calls.
+\iteme[\texttt{requtab}]
+  MPI asynchronous send or receive request array. Each type of data
+  to be exchanged (number of edges to be exchanged, vertex indices,
+  adjacency sub-arrays, etc.) will lead to the creation of
+  \texttt{commnbr} requests. This array is of size \texttt{commmax}
+  times the number of categories of requests, that is,
+  \texttt{DGRAPH\lbt FOLD\lbt TAGNBR}.
+  The first slot indices are used incrementally for communications
+  that do not require to wait for further processing: all sends for
+  senders and receiver-senders, and two kinds of data for pure
+  receivers: \texttt{vnum\lbt loctab} and \texttt{data\lbt loctab},
+  because these two are not needed to check the consistency of the
+  produced graph.
+\end{itemize}
+In debug mode, a collective communication terminates this phase, to
+assess whether all computations and memory allocations went well.
+~\\
+
+In the second phase of the algorithm, asynchronous data exchange
+requests are launched and processed. At this stage, the
+\texttt{fld\lbt vert\lbt idxtab}, \texttt{fld\lbt edge\lbt idxtab},
+and \texttt{fld\lbt edge\lbt cnttab} arrays are built on sender and
+receiver-sender processing elements. By way of asynchronous
+communications, vertex sub-arrays are exchanged between sender and
+receiver processes. Also, the numbers of edges to be exchanged are
+transferred between the \texttt{fld\lbt edge\lbt cnptab} arrays of
+senders and the \texttt{fld\lbt edge\lbt cnttab} of pure
+receivers. Once this data is received and aggregated, pure receiver
+processing elements can allocate their \texttt{edge\lbt loc\lbt tab}
+edge array, and compute their \texttt{fld\lbt edge\lbt idxtab} array,
+which will subsequently be used for edge data reception.
+
+For senders, the \texttt{requtab} array is filled incrementally, using
+the \texttt{requnbr} index, with all their send requests. For pure
+receivers, only the beginning of the \texttt{requtab} array will be
+used incrementally, for data that does not require to wait before
+further processing: \texttt{vnumloctab} and
+\texttt{data\lbt loctab}. For all other kinds of data, requests are
+placed in specific blocks of the \texttt{requtab} array, of size
+\texttt{commmax}. Because of the above, these request blocks start at
+block index~$2$.
+\\
+
+In a third phase of the algorithm, intertwined with the second one,
+vertex and edge adjacency data is renumbered by receivers according to
+the global ordering of folded vertices, according to the adjustment
+data returned by \texttt{dgraph\lbt Fold\lbt Comm()}. Each type of
+data to process is subject to a loop of \texttt{commnbr} iterations,
+which performs a \texttt{MPI\_\lbt Waitany()} operation using the tag
+of the data type, and processes the received chunk of data, in any
+order.
+
+Sender-receiver processing elements execute both the code of senders,
+to off-load their extra data to pure receivers, and the code of
+receivers, to participate in the construction of the folded
+graph. Before entering this second role, their \texttt{commnbr}
+variable is set to $0$, since they do not expect any incoming
+communication.
+\\
+
+Once all computations have taken place, followed by an optional
+\texttt{dgraph\lbt Check()}, a \texttt{MPI\_\lbt Waitany()} is
+performed on all the requests stored incrementally in the
+\texttt{requtab} array, to complete all outstanding communications.
+
 \subsubsection{\texttt{dgraphFoldComm()}}
+\label{sec-code-dgraphfoldcomm}
 
 The \texttt{dgraphFoldComm()} routine is at the heart of the folding
 operation. It computes the sets of point-to-point communications

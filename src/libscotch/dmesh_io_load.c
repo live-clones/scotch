@@ -318,7 +318,7 @@ const DmeshFlag             flagval)              /* Mesh loading flags         
   if (preldspadj != (velmglbnbr + baseval)) {
     errorPrint ("dmeshLoadAdm: bad input (2)");
     reduloctab[0] = 1;
-    goto abort;
+    goto fail;
   }
 
   vnodglbnnd  = vnodglbnbr + baseval;
@@ -333,7 +333,7 @@ const DmeshFlag             flagval)              /* Mesh loading flags         
         (degrval < 0)) {
       errorPrint ("dmeshLoadAdm: bad input (3)");
       reduloctab[0] = 1;
-      goto abort;
+      goto fail;
     }
     while (degrval -- > 0) {                      /* For all neighbors              */
       if ((eelmlocnum >= eelmlocnnd)                        || /* If out of bounds  */
@@ -343,7 +343,7 @@ const DmeshFlag             flagval)              /* Mesh loading flags         
           (eelmloctax[eelmlocnum] >= vnodglbnnd)) {
         errorPrint ("dmeshLoadAdm: bad input (4)");
         reduloctab[0] = 1;
-        goto abort;
+        goto fail;
       }
 
       eelmlocnum ++;                              /* One more edge recorded */
@@ -355,7 +355,7 @@ const DmeshFlag             flagval)              /* Mesh loading flags         
     reduloctab[0] = 1;
   }
 
-abort:
+fail:
   if (MPI_Allreduce (&reduloctab[0], &reduglbtab[0], 1, GNUM_MPI, MPI_MAX, meshptr->proccomm) != MPI_SUCCESS) {
     errorPrint ("dmeshLoadAdm: communication error (4)");
     return (1);

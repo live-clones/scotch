@@ -233,7 +233,7 @@ const Kgraph * restrict const grafptr)
 
   o = 0;                                          /* Everything turned well */
 
-fail :
+fail:
   memFree (comploadtab);                          /* Free group leader */
 
   return (o);

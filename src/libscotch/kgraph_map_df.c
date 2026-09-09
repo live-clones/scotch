@@ -177,7 +177,7 @@ KgraphMapDfData * restrict const  loopptr)
       if ((vendtax[vertnum] - verttax[vertnum]) == 0) { /* Non-anchor vertices should not be isolated */
         errorPrint ("kgraphMapDfLoop: internal error (1)");
         loopptr->abrtval = 1;
-        goto abort;
+        goto fail;
       }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
@@ -205,7 +205,7 @@ KgraphMapDfData * restrict const  loopptr)
       if ((vendtax[vertnum] - verttax[vertnum]) == 0) { /* Non-anchor vertices should not be isolated */
         errorPrint ("kgraphMapDfLoop: internal error (2)");
         loopptr->abrtval = 1;
-        goto abort;
+        goto fail;
       }
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
 
@@ -221,13 +221,13 @@ KgraphMapDfData * restrict const  loopptr)
   }
   if (velsmsk == 0) {                             /* If graph is too small to have any usable anchors */
     loopptr->abrtval = 1;                         /* We will leave during the first iteration         */
-    goto abort;
+    goto fail;
   }
 
   if ((sorttab = memAlloc (domnnbr * sizeof (KgraphMapDfSort))) == NULL) { /* Allocate here for memory affinity as it is a private array */
     errorPrint ("kgraphMapDfLoop: out of memory");
     loopptr->abrtval = 1;
-    goto abort;
+    goto fail;
   }
 
   if (velotax == NULL) {
@@ -427,7 +427,7 @@ endloop1 : ;
         errorPrintW ("kgraphMapDfLoop: overflow (1)");
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
         loopptr->abrtval = 1;                     /* Threads need to halt              */
-        goto abort;                               /* Skip computations but synchronize */
+        goto fail;                                /* Skip computations but synchronize */
       }
 
       if (parotax != NULL) {
@@ -515,7 +515,7 @@ endloop2 : ;
         errorPrintW ("kgraphMapDfLoop: overflow (2)");
 #endif /* SCOTCH_DEBUG_KGRAPH2 */
         loopptr->abrtval = 1;                     /* Threads need to halt              */
-        goto abort;                               /* Skip computations but synchronize */
+        goto fail;                                /* Skip computations but synchronize */
       }
 
       difntax[vertnum].partval = domnnum;         /* Anchor part is always domain part */
@@ -525,7 +525,7 @@ endloop2 : ;
     difttax = (KgraphMapDfVertex *) difntax;      /* Swap old and new diffusion arrays          */
     difntax = (KgraphMapDfVertex *) difotax;      /* Casts to prevent IBM compiler from yelling */
     difotax = (KgraphMapDfVertex *) difttax;
-abort : ;                                         /* If overflow occured, resume here */
+fail: ;                                           /* If overflow occured, resume here */
 #ifndef KGRAPHMAPDFNOTHREAD
     threadBarrier (descptr);
 #endif /* KGRAPHMAPDFNOTHREAD */

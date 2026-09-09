@@ -664,7 +664,7 @@ Context * const                         contptr)  /*+ Execution context         
   }
   o = 0;                                          /* Computations succeeded */
 
-fail :
+fail:
   if ((o != 0) || (veexmsk == 0)) {               /* If external gain array is useless */
     memFree (veextax + actgrafptr->s.baseval);    /* Forget about it                   */
     return  (o);                                  /* Return error code                 */
