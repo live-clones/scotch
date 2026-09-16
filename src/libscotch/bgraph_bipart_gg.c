@@ -219,7 +219,7 @@ const BgraphBipartGgParam * const paraptr)        /*+ Method parameters +*/
 
     vexxptr = vexxtax + (grafptr->s.baseval + contextIntRandVal (grafptr->contptr, grafptr->s.vertnbr)); /* Randomly select first root vertex */
 
-    do {                                          /* For all root vertices, till balance  */
+    do {                                          /* For all root vertices, till balance */
 #ifdef SCOTCH_TABLE_GAIN
       vexxptr->gainlink.next =                    /* TRICK: allow deletion of root vertex */
       vexxptr->gainlink.prev = (GainLink *) vexxptr;
