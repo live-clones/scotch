@@ -181,7 +181,7 @@ const Anum * restrict const velotab)
     veloval = velotab[vertnum];
     if (veloval <= 0) {                           /* Target weights cannot be negative nor null */
       errorPrint ("archCmpltwArchBuild2: invalid parameters (2)");
-      memFree    (velotab);
+      memFree    (vecwtab);
       return (1);
     }
 
