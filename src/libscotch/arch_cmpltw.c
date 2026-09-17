@@ -669,6 +669,7 @@ const ArchDomNum            domnnum)
 
   domnptr->vertmin = domnnum;                     /* Set the domain */
   domnptr->vertnbr = 1;
+  domnptr->veloval = archptr->velotab[domnnum].veloval;
 
   return (0);
 }
