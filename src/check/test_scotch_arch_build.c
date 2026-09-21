@@ -42,7 +42,7 @@
 /**                SCOTCH_archBuild0().                    **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 04 jul 2026     **/
-/**                                 to   : 19 aug 2026     **/
+/**                                 to   : 21 sep 2026     **/
 /**                                                        **/
 /**   NOTES      : # This test builds a "deco 0"           **/
 /**                  architecture a from weighted path     **/
@@ -249,8 +249,10 @@ FILE *                      fileptr)
     return (1);
   }
   for (domnnum = 0; domnnum < darcptr->domnnbr; domnnum ++) {
-    if (fscanf (fileptr, "" SCOTCH_NUMSTRING SCOTCH_NUMSTRING SCOTCH_NUMSTRING,
-                &darcptr->labltab[domnnum], &darcptr->sizetab[domnnum], &darcptr->wghttab[domnnum]) != 3) {
+    if ((fscanf (fileptr, "" SCOTCH_NUMSTRING SCOTCH_NUMSTRING SCOTCH_NUMSTRING,
+                 &darcptr->labltab[domnnum], &darcptr->sizetab[domnnum], &darcptr->wghttab[domnnum]) != 3) ||
+        (darcptr->sizetab[domnnum] < -1) ||
+        (darcptr->wghttab[domnnum] < -1)) {
       SCOTCH_errorPrint ("C_archLoad: invalid input (3)");
       return (1);
     }
@@ -284,10 +286,10 @@ const C_ArchDeco * const    darcptr,
 const SCOTCH_Num            baseval,
 const SCOTCH_Num            vertnbr)
 {
-  int                       flagtab[PATHMAX];
-  SCOTCH_Num                termnbr;
-  SCOTCH_Num                domnnum;
-  SCOTCH_Num                lablval;
+  int                 flagtab[PATHMAX];
+  SCOTCH_Num          termnbr;
+  SCOTCH_Num          domnnbr;
+  SCOTCH_Num          domnnum;
 
   if (darcptr->sizetab[0] != vertnbr) {           /* If root domain does not hold all terminals */
     SCOTCH_errorPrint ("C_archCheck: invalid root size");
@@ -296,21 +298,47 @@ const SCOTCH_Num            vertnbr)
 
   memset (flagtab, 0, PATHMAX * sizeof (int));
 
-  for (domnnum = 0, termnbr = 0; domnnum < darcptr->domnnbr; domnnum ++) {
-    if (darcptr->sizetab[domnnum] != 1)
-      continue;
+  for (domnnum = 0, domnnbr = darcptr->domnnbr, termnbr = 0; /* For all domains in architecture */
+       domnnum < domnnbr; domnnum ++) {
+    if (darcptr->sizetab[domnnum] > 1) {          /* If non-terminal domain */
+      SCOTCH_Num          dsonnum;
 
-    termnbr ++;
-    lablval = darcptr->labltab[domnnum];
+      if (darcptr->sizetab[domnnum] > darcptr->wghttab[domnnum]) {
+        SCOTCH_errorPrint ("C_archCheck: invalid non-terminal domain (1)");
+        return (1);
+      }
 
-    if ((lablval <   baseval) ||
-        (lablval >= (baseval + vertnbr))) {
-      SCOTCH_errorPrint ("C_archCheck: invalid terminal label");
-      return (1);
+      dsonnum = 2 * (domnnum + 1);                /* Index of second son in array */
+      if (dsonnum >= domnnbr) {                   /* If second son does not exist */
+        SCOTCH_errorPrint ("C_archCheck: invalid non-terminal domain (2)");
+        return (1);
+      }
+      if ((darcptr->sizetab[domnnum] != (darcptr->sizetab[dsonnum - 1] + darcptr->sizetab[dsonnum])) ||
+          (darcptr->wghttab[domnnum] != (darcptr->wghttab[dsonnum - 1] + darcptr->wghttab[dsonnum]))) {
+        SCOTCH_errorPrint ("C_archCheck: invalid non-terminal domain (3)");
+        return (1);
+      }
     }
-    if (flagtab[lablval - baseval] ++ != 0) {
-      SCOTCH_errorPrint ("C_archCheck: duplicate terminal label");
-      return (1);
+    else if (darcptr->sizetab[domnnum] == 1) {    /* If terminal domain */
+      SCOTCH_Num          lablval;
+
+      termnbr ++;                                 /* One more terminal */
+      lablval = darcptr->labltab[domnnum];
+
+      if (darcptr->sizetab[domnnum] > darcptr->wghttab[domnnum]) {
+        SCOTCH_errorPrint ("C_archCheck: invalid terminal domain");
+        return (1);
+      }
+
+      if ((lablval <   baseval) ||
+          (lablval >= (baseval + vertnbr))) {
+        SCOTCH_errorPrint ("C_archCheck: invalid terminal label");
+        return (1);
+      }
+      if (flagtab[lablval - baseval] ++ != 0) {
+        SCOTCH_errorPrint ("C_archCheck: duplicate terminal label");
+        return (1);
+      }
     }
   }
   if (termnbr != vertnbr) {
@@ -318,8 +346,8 @@ const SCOTCH_Num            vertnbr)
     return (1);
   }
 
-  for (domnnum = 2; domnnum < darcptr->domnnbr; domnnum ++) { /* For all sibling pairs (2k, 2k+1) */
-    if ((darcptr->sizetab[domnnum - 1] != 1) ||   /* Consider pairs of terminal domains only      */
+  for (domnnum = 2; domnnum < darcptr->domnnbr; domnnum += 2) { /* For all sibling pairs (2k, 2k+1) */
+    if ((darcptr->sizetab[domnnum - 1] != 1) ||   /* Consider pairs of terminal domains only        */
         (darcptr->sizetab[domnnum]     != 1))
       continue;
 
@@ -327,7 +355,6 @@ const SCOTCH_Num            vertnbr)
       SCOTCH_errorPrint ("C_archCheck: non-adjacent terminal domains");
       return (1);
     }
-    domnnum ++;                                   /* Pair of terminals has been consumed */
   }
 
   return (0);
