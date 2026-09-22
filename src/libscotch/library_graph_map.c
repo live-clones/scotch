@@ -676,12 +676,12 @@ const double                kbalval)              /*+ Desired imbalance ratio   
           : "m{vert=<MVRT>,low=<RECU>,asc=b{bnd=<DIFK>f{bal=<KBAL>,move=<KMOV>},org=f{bal=<KBAL>,move=<KMOV>}}}<EXAX>");
   stringSubst (bufftab, "<RECU>", "r{job=t,map=t,poli=S,bal=<KBAL>,sep=<BSEP><EXAS>}");
   stringSubst (bufftab, "<BSEP>", ((flagval & SCOTCH_STRATQUALITY) != 0) ?  "<BSEQ>|<BSEQ>|<BSEQ>" :  "<BSEQ>|<BSEQ>");
-  stringSubst (bufftab, "<BSEQ>", "m{vert=120,low=h{pass=10}f{bal=<BBAL>,move=120},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=120},org=f{bal=<BBAL>,move=120}}}");
+  stringSubst (bufftab, "<BSEQ>", "m{vert=120,low=h{pass=20}f{bal=<BBAL>,move=120},asc=b{bnd=<DIFS>,org=f{bal=<BBAL>,move=120}}}");
 
   if ((flagval & SCOTCH_STRATSAFETY) != 0)
-    difsptr = "";
+    difsptr = "f{bal=<BBAL>,move=120}";
   else
-    difsptr = "(d{pass=40}|)";
+    difsptr = "((d{pass=40}f{bal=<BBAL>,move=120})|f{bal=<BBAL>,move=120})";
   difkptr = "d{pass=40}";
 
   if ((flagval & SCOTCH_STRATBALANCE) != 0) {
@@ -731,7 +731,7 @@ const double                bbalval)              /*+ Maximum imbalance ratio +*
   sprintf (denstab, "%lf", densval);
   sprintf (pwgttab, GNUMSTRING, pwgtval);
 
-  strcpy (bufftab, "r{job=u,map=t,poli=L,sep=/((load><PWGT>)&!(edge>vert*<DENS>*(vert-1)))?(<BIPA>m{vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}})<EXAS>;}");
+  strcpy (bufftab, "r{job=u,map=t,poli=L,sep=/((load><PWGT>)&!(edge>vert*<DENS>*(vert-1)))?(<BIPA>m{vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>,org=f{bal=<BBAL>,move=80}}})<EXAS>;}");
   stringSubst (bufftab, "<BIPA>", ((flagval & SCOTCH_STRATSPEED) != 0) ? ""
                : "m{vert=80,low=h{pass=10}f{bal=<BBAL>,move=80},asc=b{bnd=<DIFS>f{bal=<BBAL>,move=80},org=f{bal=<BBAL>,move=80}}}|");
 
@@ -743,7 +743,7 @@ const double                bbalval)              /*+ Maximum imbalance ratio +*
   if ((flagval & SCOTCH_STRATSAFETY) != 0)
     difsptr = "";
   else
-    difsptr = "(d{pass=40}|)";
+    difsptr = "((d{pass=40}f{bal=<BBAL>,move=80})|f{bal=<BBAL>,move=80})";
 
   stringSubst (bufftab, "<EXAS>", exasptr);
   stringSubst (bufftab, "<DIFS>", difsptr);
