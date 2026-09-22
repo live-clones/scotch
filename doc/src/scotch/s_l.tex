@@ -813,6 +813,11 @@ graphs only, or on specifically crafted graphs. Applying it to any
 other graphs is very likely to lead to extremely poor results.
 The physical analogy of this method loses weight when it is applied to
 target architectures that are not complete graphs.
+Also, since this method does not guarantee load balance, it should not
+be used as the last term of a selection operator, as it is most likely
+that its outcome will never be selected; it should always be followed
+by a method that restores load balance, such as the
+Fiduccia-Mattheyses method.
 The parameters of the diffusion mapping method are listed below.
 \begin{itemize}
 \iteme[{\tt dif=}{\it rat}]
@@ -1058,8 +1063,12 @@ method these are the anchor vertices which represent all of the removed
 vertices of each part. Therefore, this method must be used on band
 graphs only, or on specifically crafted graphs. Applying it to any
 other graphs is very likely to lead to extremely poor results.
-The parameters of the diffusion bipartitioning method are
-listed below.
+Also, since this method does not guarantee load balance, it should not
+be used as the last term of a selection operator, as it is most likely
+that its outcome will never be selected; it should always be followed
+by a method that restores load balance, such as the
+Fiduccia-Mattheyses method.
+The parameters of the diffusion bipartitioning method are listed below.
 \begin{itemize}
 \iteme[{\tt dif=}{\it rat}]
 Fraction of liquid which is diffused to neighbor vertices at each
