@@ -1,5 +1,5 @@
 %top{
-/* Copyright 2004,2007,2018-2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2018-2021,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -51,7 +51,7 @@
 /**                # Version 5.1  : from : 09 jun 2009     **/
 /**                                 to   : 24 jul 2011     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 07 jun 2025     **/
+/**                                 to   : 25 sep 2026     **/
 /**                                                        **/
 /**   NOTES      : # In order for flex to read its input   **/
 /**                  with getc() instead of fread, we set  **/
@@ -92,9 +92,11 @@
 
 %option bison-bridge
 %option noinput
+%option nounistd
 %option nounput
 %option noyywrap
 %option reentrant
+
 
 IDENT                       [A-Za-z][0-9A-Za-z]*
 INTEGER                     [0-9]+

@@ -1,5 +1,5 @@
 %{
-/* Copyright 2004,2007,2008,2011,2014,2018,2019,2021,2023-2025 IPB, Universite de Bordeaux, INRIA & CNRS
+/* Copyright 2004,2007,2008,2011,2014,2018,2019,2021,2023-2026 IPB, Universite de Bordeaux, INRIA & CNRS
 **
 ** This file is part of the Scotch software package for static mapping,
 ** graph partitioning and sparse matrix ordering.
@@ -52,7 +52,7 @@
 /**                # Version 6.0  : from : 30 sep 2014     **/
 /**                                 to   : 27 apr 2018     **/
 /**                # Version 7.0  : from : 02 mar 2018     **/
-/**                                 to   : 11 sep 2024     **/
+/**                                 to   : 25 sep 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -64,6 +64,7 @@
 
 #include "module.h"
 #include "common.h"
+#define YY_NO_UNISTD_H                            /* Improve portability */
 #include "parser.h"
 #include "parser_yy.h"
 #include "parser_ly.h"
