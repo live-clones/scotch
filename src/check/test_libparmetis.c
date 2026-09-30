@@ -40,7 +40,7 @@
 /**                the libscotchmetis routines.            **/
 /**                                                        **/
 /**   DATES      : # Version 7.0  : from : 17 aug 2026     **/
-/**                                 to   : 17 aug 2026     **/
+/**                                 to   : 25 sep 2026     **/
 /**                                                        **/
 /************************************************************/
 
@@ -91,33 +91,43 @@ MPI_Comm                    proccomm)
   SCOTCH_Num          vertnum;
   SCOTCH_Num *        permtab;
   SCOTCH_Num *        peritab;
-  int *               dspltab;
-  int *               countab;
+  int *               permdsptab;
+  int *               permcnttab;
+  int                 permcntnbr;
 
   const SCOTCH_Num    vertnnd = vertglbnbr + baseval;
+
   MPI_Comm_size (proccomm, &procglbnbr);
   MPI_Comm_rank (proccomm, &proclocnum);
 
   if (proclocnum == 0) {
-    if (((permtab = malloc (vertglbnbr * 2 * sizeof (SCOTCH_Num))) == NULL) ||
-        ((dspltab = malloc (procglbnbr * 2 * sizeof (int))) == NULL)) {
+    if (((permtab    = malloc (vertglbnbr * 2 * sizeof (SCOTCH_Num))) == NULL) ||
+        ((permdsptab = malloc (procglbnbr * 2 * sizeof (int))) == NULL)) {
       SCOTCH_errorPrint ("checkOrder: out of memory");
+      if (permtab != NULL)
+	free (permtab);
       exit (EXIT_FAILURE);
     }
-    peritab = permtab + vertglbnbr;
-    countab = dspltab + procglbnbr;
+    peritab    = permtab    + vertglbnbr;
+    permcnttab = permdsptab + procglbnbr;
     memset (peritab, ~0, vertglbnbr * sizeof (SCOTCH_Num));
   }
 
-  MPI_Gather (&vertlocnbr, 1, MPI_INT, countab, 1, MPI_INT, 0, proccomm); /* Possible int/SCOTCH_Num size mismatch, ignore */
+  permcntnbr = (int) vertlocnbr;                  /* Potential SCOTCH_Num truncation */
+  if (((SCOTCH_Num) permcntnbr) != vertlocnbr) {
+    SCOTCH_errorPrint ("checkOrder: value overflow");
+  }
+  MPI_Gather (&permcntnbr, 1, MPI_INT, permcnttab, 1, MPI_INT, 0, proccomm);
 
   if (proclocnum == 0) {
-    dspltab[0] = 0;
-    for (int procnum = 1; procnum < procglbnbr; procnum ++)
-      dspltab[procnum] = dspltab[procnum - 1] + countab[procnum - 1];
+    int                 procnum;
+
+    permdsptab[0] = 0;
+    for (procnum = 1; procnum < procglbnbr; procnum ++)
+      permdsptab[procnum] = permdsptab[procnum - 1] + permcnttab[procnum - 1];
   }
 
-  MPI_Gatherv (permloctab, vertlocnbr, SCOTCH_NUM_MPI, permtab, countab, dspltab, SCOTCH_NUM_MPI, 0, proccomm);
+  MPI_Gatherv (permloctab, vertlocnbr, SCOTCH_NUM_MPI, permtab, permcnttab, permdsptab, SCOTCH_NUM_MPI, 0, proccomm);
 
   if (proclocnum != 0)
     return;
@@ -130,13 +140,13 @@ MPI_Comm                    proccomm)
         (permval >= vertnnd)) {
       SCOTCH_errorPrint ("checkOrder: invalid permutation value");
       free (permtab);
-      free (dspltab);
+      free (permdsptab);
       exit (EXIT_FAILURE);
     }
     if (peritab[permval - baseval] != ~0) {
       SCOTCH_errorPrint ("checkOrder: duplicate permutation value");
       free (permtab);
-      free (dspltab);
+      free (permdsptab);
       exit (EXIT_FAILURE);
     }
     peritab[permval - baseval] = vertnum + baseval;
@@ -146,13 +156,13 @@ MPI_Comm                    proccomm)
     if (peritab[vertnum] == ~0) {
       SCOTCH_errorPrint ("checkOrder: missing permutation value");
       free (permtab);
-      free (dspltab);
+      free (permdsptab);
       exit (EXIT_FAILURE);
     }
   }
 
   free (permtab);
-  free (dspltab);
+  free (permdsptab);
 }
 
 /* This routine checks that the produced
@@ -211,6 +221,7 @@ char *              argv[])
   SCOTCH_Num *        parttab;
   SCOTCH_Num *        sizetab;
   SCOTCH_Num *        vtxdist;
+  SCOTCH_Num          partnum;
 #if (SCOTCH_METIS_VERSION == 3)
   SCOTCH_Num          fwgtval;
   float *             tpwgtab;
@@ -279,15 +290,15 @@ char *              argv[])
                      &edgeloctab, NULL, &edloloctab, NULL);
 
   if (((parttab = malloc (vertlocnbr           * sizeof (SCOTCH_Num))) == NULL) ||
-      ((tpwgtab = malloc (partnbr              * sizeof (SCOTCH_Num))) == NULL) ||
-      ((vtxdist = malloc ((procglbnbr + 1) * 3 * sizeof (SCOTCH_Num))) == NULL)) {
+      ((vtxdist = malloc ((procglbnbr + 1) * 3 * sizeof (SCOTCH_Num))) == NULL) ||
+      ((tpwgtab = malloc (partnbr              * sizeof (float)))      == NULL)) {
     SCOTCH_errorPrint ("main: out of memory");
     exit (EXIT_FAILURE);
   }
   sizetab = vtxdist + procglbnbr + 1;
 
-  for (int i = 0; i < partnbr; i++)
-    tpwgtab[i] = 1.0 / partnbr;
+  for (partnum = 0; partnum < partnbr; partnum ++)
+    tpwgtab[partnum] = 1.0 / partnbr;
 
   if (MPI_Scan (&vertlocnbr, &procvrtval, 1, SCOTCH_NUM_MPI, MPI_SUM, proccomm) != MPI_SUCCESS) {
     SCOTCH_errorPrint ("main: communication error (2)");
@@ -324,8 +335,8 @@ char *              argv[])
   }
 
   free (parttab);
-  free (tpwgtab);
   free (vtxdist);
+  free (tpwgtab);
   SCOTCH_dgraphExit (&grafdat);
 
   MPI_Finalize ();

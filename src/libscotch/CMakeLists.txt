@@ -553,23 +553,21 @@ else()
   message(STATUS "Determinism: none")
 endif()
 
-# Add (de)compression libraries
+# Link the imported targets, not the raw *_LIBRARIES variables, so the
+# exported static scotch target gets a real per-config library path.
 if(ZLIB_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_GZ)
-  target_include_directories(scotch PRIVATE ${ZLIB_INCLUDE_DIRS})
-  target_link_libraries(scotch PRIVATE ${ZLIB_LIBRARIES})
+  target_link_libraries(scotch PRIVATE ZLIB::ZLIB)
 endif()
 
 if(BZIP2_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_BZ2)
-  target_include_directories(scotch PRIVATE ${BZIP2_INCLUDE_DIRS})
-  target_link_libraries(scotch PRIVATE ${BZIP2_LIBRARIES})
+  target_link_libraries(scotch PRIVATE BZip2::BZip2)
 endif()
 
 if(LIBLZMA_FOUND)
   target_compile_definitions(scotch PRIVATE COMMON_FILE_COMPRESS_LZMA)
-  target_include_directories(scotch PRIVATE ${LIBLZMA_INCLUDE_DIRS})
-  target_link_libraries(scotch PRIVATE ${LIBLZMA_LIBRARIES})
+  target_link_libraries(scotch PRIVATE LibLZMA::LibLZMA)
 endif()
 
 # Add thread library
@@ -594,6 +592,10 @@ target_include_directories(scotcherr PUBLIC
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_dependencies(scotcherr scotch_h)
+
+if(NOT "${LIBSCOTCHERR}" STREQUAL "")
+  add_dependencies(scotch ${LIBSCOTCHERR})
+endif()
 
 add_library(scotcherrexit library_error_exit.c)
 add_library(SCOTCH::scotcherrexit ALIAS scotcherrexit)
@@ -880,6 +882,7 @@ if(BUILD_PTSCOTCH)
   add_dependencies(ptscotcherrexit ptscotch_h scotch_h)
   if(NOT "${LIBPTSCOTCHERR}" STREQUAL "")
     target_link_libraries(ptscotch PUBLIC ${LIBPTSCOTCHERR})
+    add_dependencies(ptscotch ${LIBPTSCOTCHERR})
   endif()
 endif()
 

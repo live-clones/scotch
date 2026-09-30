@@ -42,7 +42,7 @@
 ##   DATES      : # Version 6.0  : from : 01 sep 2014     ##
 ##                                 to     01 sep 2021     ##
 ##                # Version 7.0  : from : 01 sep 2021     ##
-##                                 to     08 jul 2025     ##
+##                                 to     28 sep 2026     ##
 ##                                                        ##
 ############################################################
 
@@ -56,7 +56,18 @@ set_and_check(@PROJECT_NAME@_LIBRARY_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@")
 
 # Manage dependencies
 include(CMakeFindDependencyMacro)
+
 find_dependency(Threads)
+if(@ZLIB_FOUND@)
+  find_dependency(ZLIB)
+endif()
+if(@BZIP2_FOUND@)
+  find_dependency(BZip2)
+endif()
+if(@LIBLZMA_FOUND@)
+  find_dependency(LibLZMA)
+endif()
+
 if(@BUILD_PTSCOTCH@)
   find_dependency(MPI REQUIRED)
 endif()
